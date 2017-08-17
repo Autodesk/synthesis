@@ -10,29 +10,39 @@ using System.IO;
 using Assets.Scripts.FEA;
 using Assets.Scripts.FSM;
 using System.Linq;
+using Assets.Scripts.BUExtensions;
+using Assets.Scripts;
 
+/// <summary>
+/// This is the main class of the simulator; it handles all the initialization of robot and field objects within the simulator.
+/// Handles replay tracking and loading
+/// Handles interfaces between the SimUI and the active robot such as resetting, orienting, etc.
+/// </summary>
 public class MainState : SimState
 {
 
     public static bool draggingWindow = false;
-
-    const float ResetVelocity = 0.05f;
     private const int SolverIterations = 100;
 
     private BPhysicsWorld physicsWorld;
     private int lastFrameCount;
 
-    private bool tracking;
+    public bool Tracking { get; private set; }
     private bool awaitingReplay;
 
     private UnityPacket unityPacket;
 
+    private List<Robot> robots;
+    public Robot activeRobot { get; private set; }
+
     private DynamicCamera dynamicCamera;
     public GameObject dynamicCameraObject;
 
-    private RobotCamera robotCamera;
+    private RobotCameraManager robotCameraManager;
     public GameObject robotCameraObject;
 
+    private SensorManager sensorManager;
+    private SensorManagerGUI sensorManagerGUI;
     //Testing camera location, can be deleted later
     private Vector3 robotCameraPosition = new Vector3(0f, 0.5f, 0f);
     private Vector3 robotCameraRotation = new Vector3(0f, 0f, 0f);
@@ -42,47 +52,29 @@ public class MainState : SimState
     private Vector3 robotCameraRotation3 = new Vector3(0f, 180f, 0f);
     //Testing camera location, can be deleted later
 
-    //=================================IN PROGRESS=============================
-    //private UltraSensor ultraSensor;
-    //private GameObject ultraSensorObject;
-    //=========================================================================
-
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
 
-    private GameObject robotObject;
-    private RigidNode_Base rootNode;
-
-    private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
-    private Vector3 nodeToRobotOffset;
-    private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+    public bool IsResetting;
     private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
 
-    private List<GameObject> extraElements;
-
     private OverlayWindow oWindow;
 
-    private System.Random random;
-
-    private FixedQueue<List<ContactDescriptor>> contactPoints;
-
-    //Flags to tell different types of reset
-    private bool isResettingOrientation;
-    public bool IsResetting { get; set; }
-
-    private DriverPractice driverPractice;
-
-    public List<Tracker> Trackers { get; private set; }
-
-    public static bool ControlsDisabled = false;
+    public CollisionTracker CollisionTracker { get; private set; }
 
     private string fieldPath;
     private string robotPath;
 
-    public RigidNode_Base activeRobot;
-    public List<RigidNode_Base> dummyRootNodes = new List<RigidNode_Base>();
+    public List<Robot> SpawnedRobots { get; private set; }
+    private const int MAX_ROBOTS = 6;
 
+    public bool IsMetric;
+
+    /// <summary>
+    /// Called when the script instance is being initialized.
+    /// Initializes the bullet physics environment
+    /// </summary>
     public override void Awake()
     {
         Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
@@ -92,37 +84,59 @@ public class MainState : SimState
         ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
     }
 
-    public override void OnGUI()
-    {
-        UserMessageManager.Render();
-    }
-
+    /// <summary>
+    /// Called after Awake() when the script instance is enabled.
+    /// Initializes variables then loads the field and robot as well as setting up replay features.
+    /// </summary>
     public override void Start()
     {
+        AppModel.ClearError();
+
+        //getting bullet physics information
         physicsWorld = BPhysicsWorld.Get();
+        ((DynamicsWorld)physicsWorld.world).SetInternalTickCallback(BPhysicsTickListener.Instance.PhysicsTick);
         lastFrameCount = physicsWorld.frameCount;
 
-        Trackers = new List<Tracker>();
+        //setting up raycast robot tick callback
+        BPhysicsTickListener.Instance.OnTick += BRobotManager.Instance.UpdateRaycastRobots;
 
+        //setting up replay
+        CollisionTracker = new CollisionTracker(this);
+
+        //starts a new instance of unity packet which receives packets from the driver station
         unityPacket = new UnityPacket();
         unityPacket.Start();
 
-        extraElements = new List<GameObject>();
-
-        random = new System.Random();
-
-        contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
-        isResettingOrientation = false;
-
+        //loads all the controls
         Controls.Load();
 
+        //If a replay has been selected, load the replay. Otherwise, load the field and robot.
         string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
+
+        SpawnedRobots = new List<Robot>();
 
         if (string.IsNullOrEmpty(selectedReplay))
         {
-            tracking = true;
-            Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
-            Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
+            Tracking = true;
+            
+            if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
+            {
+                AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
+                return;
+            }
+
+            if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot")))
+            {
+                AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
+                return;
+            }
+
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); // 0 is false, 1 is true
+            int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
+            if (isMixAndMatch == 1 && hasManipulator == 1)
+            {
+                Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
+            }
         }
         else
         {
@@ -130,110 +144,83 @@ public class MainState : SimState
             LoadReplay(selectedReplay);
         }
 
+        //initializes the dynamic camera
         dynamicCameraObject = GameObject.Find("Main Camera");
         dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
-
         DynamicCamera.MovingEnabled = true;
+
+        sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
+        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
+
+        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
     }
 
+    /// <summary>
+    /// Called every step of the program to listen to input commands for various features
+    /// </summary>
     public override void Update()
     {
-        //Debug.Log(ultraSensor.ReturnOutput());
-
-        //(InputControl.GetButton(Controls.buttons.pwm5Plus))
-        //Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]
-
-        if ((InputControl.GetButtonDown(Controls.buttons.resetRobot)) && !IsResetting)
+        if (activeRobot == null)
         {
-            keyDownTime = Time.time;
-        }
-        if ((InputControl.GetButtonUp(Controls.buttons.resetRobot)) && !IsResetting)
-        {
-            if (Time.time - keyDownTime > HOLD_TIME)
-            {
-                IsResetting = true;
-                BeginReset();
-            }
-            else
-            {
-                BeginReset();
-                EndReset();
-            }
+            AppModel.ErrorToMenu("Robot instance not valid.");
+            return;
         }
 
-        // Will switch the camera state with the camera toggle button
-        if ((InputControl.GetButtonDown(Controls.buttons.cameraToggle)))
+        //If the reset button is held down after a certain amount of time, then go into change spawnpoint mode (reset spawnpoint feature)
+        //Otherwise, reset the robot normally (quick reset feature)
+        if (!activeRobot.IsResetting)
+        {
+            if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);
+            if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
+        }
+
+        // Toggles between the different camera states if the camera toggle button is pressed
+        if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)))
         {
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
-
-                //Toggle afterwards and will not activate dynamic camera
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
-
             }
         }
 
-        BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
-
-        if (!rigidBody.GetCollisionObject().IsActive)
-            rigidBody.GetCollisionObject().Activate();
-
-        if (!IsResetting && Input.GetKeyDown(KeyCode.Tab))
+        // Switches to replay mode
+        if (!activeRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
         {
-            contactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
-
-        UpdateTrackers();
     }
 
     public override void FixedUpdate()
     {
-        if (activeRobot != null)
-        {
-            UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
-
-            if (!ControlsDisabled) DriveJoints.UpdateAllMotors(activeRobot, packet.dio);
-        }
-
-        if (IsResetting)
-        {
-            Resetting();
-        }
-
         //This line is essential for the reset to work accurately
-        robotCameraObject.transform.position = robotObject.transform.GetChild(0).transform.position;
+        //robotCameraObject.transform.position = activeRobot.transform.GetChild(0).transform.position;
+        if (activeRobot == null)
+        {
+            AppModel.ErrorToMenu("Robot instance not valid.");
+            return;
+        }
 
-        UpdateTrackers();
+        SendRobotPackets();
     }
 
+    /// <summary>
+    /// If a replay has been loaded, this is called at the end of the initialization process to switch to the replay state
+    /// </summary>
     public override void LateUpdate()
     {
         if (awaitingReplay)
         {
             awaitingReplay = false;
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
     }
 
-    public override void Resume()
-    {
-        lastFrameCount = physicsWorld.frameCount;
-        tracking = true;
-
-        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = true;
-
-        contactPoints.Clear(null);
-    }
-
-    public override void Pause()
-    {
-        tracking = false;
-        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = false;
-
-        ToDynamicCamera();
-    }
-
+    /// <summary>
+    /// Loads the field from a given directory
+    /// </summary>
+    /// <param name="directory">field directory</param>
+    /// <returns>whether the process was successful</returns>
     bool LoadField(string directory)
     {
         fieldPath = directory;
@@ -245,114 +232,189 @@ public class MainState : SimState
             return new UnityFieldDefinition(guid, name);
         };
 
+        if (!File.Exists(directory + "\\definition.bxdf"))
+            return false;
+
         string loadResult;
-        //Change to .field file. Maybe FieldProperties? Also need to look at field definition
         fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
         Debug.Log(loadResult);
         fieldDefinition.CreateTransform(fieldObject.transform);
         return fieldDefinition.CreateMesh(directory + "\\mesh.bxda");
     }
 
-    bool LoadRobot(string directory)
+    /// <summary>
+    /// Loads a new robot from a given directory
+    /// </summary>
+    /// <param name="directory">robot directory</param>
+    /// <returns>whether the process was successful</returns>
+    public bool LoadRobot(string directory)
     {
-        robotPath = directory;
-
-        robotObject = new GameObject("Robot");
-        robotObject.transform.position = robotStartPosition;
-
-        RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
+        if (SpawnedRobots.Count < MAX_ROBOTS)
         {
-            return new RigidNode(guid);
-        };
+            robotPath = directory;
 
-        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        //Read .robot instead. Maybe need a RobotSkeleton class
-        rootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
-        rootNode.ListAllNodes(nodes);
+            GameObject robotObject = new GameObject("Robot");
+            Robot robot = robotObject.AddComponent<Robot>();
 
-        foreach (RigidNode_Base n in nodes)
-        {
-            RigidNode node = (RigidNode)n;
-            node.CreateTransform(robotObject.transform);
+            //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
+            if (!robot.InitializeRobot(directory, this)) return false;
 
-            if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+            //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
+            if (activeRobot == null)
             {
-                Debug.Log("Robot not loaded!");
-                UnityEngine.Object.Destroy(robotObject);
-                return false;
+                activeRobot = robot;
             }
 
-            node.CreateJoint();
-
-            node.MainObject.AddComponent<Tracker>().Trace = true;
-
-            Tracker t = node.MainObject.GetComponent<Tracker>();
-            Debug.Log(t);
+            robot.controlIndex = SpawnedRobots.Count;
+            SpawnedRobots.Add(robot);
+            return true;
         }
-
-        driverPractice = robotObject.AddComponent<DriverPractice>();
-
-        //For Ultrasonic testing purposes
-        //ultraSensorObject = GameObject.Find("node_0.bxda");
-        //ultraSensor = ultraSensorObject.AddComponent<UltraSensor>();
-
-        nodeToRobotOffset = robotObject.transform.GetChild(0).transform.position - robotObject.transform.position;
-        //Robot camera feature
-        if (robotCamera == null)
-        {
-            robotCameraObject = GameObject.Find("RobotCameraList");
-            robotCamera = robotCameraObject.GetComponent<RobotCamera>();
-        }
-
-        robotCamera.RemoveCameras();
-        //The camera data should be read here as a foreach loop and included in robot file
-        //Attached to main frame and face the front
-        robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
-        //Attached to the first node and face the front
-        robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
-        //Attached to main frame and face the back
-        robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
-
-        robotCameraObject.SetActive(true);
-
-
-        RotateRobot(robotStartOrientation);
-
-        activeRobot = rootNode;
-        return true;
+        return false;
     }
 
+    /// <summary>
+    /// Changes the active robot to a new robot with a given directory
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <returns>whether the process was successful</returns>
+    public bool ChangeRobot(string directory)
+    {
+        sensorManager.RemoveSensorsFromRobot(activeRobot);
+        sensorManagerGUI.ShiftOutputPanels();
+        sensorManagerGUI.EndProcesses();
+        return activeRobot.InitializeRobot(directory, this);
+    }
+
+    /// <summary>
+    /// Used to delete manipulator nodes in MaM mode
+    /// </summary>
+    public void DeleteManipulatorNodes()
+    {
+        activeRobot.DeleteManipulatorNodes();
+    }
+
+    /// <summary>
+    /// Changes the active robot from the current one to the next one in the list
+    /// </summary>
+    private void SwitchActiveRobot()
+    {
+        if (SpawnedRobots.Count >= 1)
+        {
+
+            if (activeRobot != null)
+            {
+                int index = SpawnedRobots.IndexOf(activeRobot);
+                if (index < SpawnedRobots.Count - 1)
+                {
+                    activeRobot = SpawnedRobots[index + 1];
+                }
+                else
+                {
+                    activeRobot = SpawnedRobots[0];
+                }
+            }
+            else activeRobot = SpawnedRobots[0];
+            dynamicCamera.cameraState.robot = activeRobot.gameObject;
+        }
+    }
+
+    /// <summary>
+    /// Changes the active robot to a different robot based on a given index
+    /// </summary>
+    public void SwitchActiveRobot(int index)
+    {
+        if (index < SpawnedRobots.Count)
+        {
+            activeRobot = SpawnedRobots[index];
+            dynamicCamera.cameraState.robot = activeRobot.gameObject;
+        }
+    }
+
+    /// <summary>
+    /// Changes the control index of the active robot
+    /// </summary>
+    public void ChangeControlIndex(int index)
+    {
+        activeRobot.controlIndex = index;
+    }
+
+    /// <summary>
+    /// If there are two robots or more, remove and delete the robot at that index
+    /// </summary>
+    public void RemoveRobot(int index)
+    {
+        if (index < SpawnedRobots.Count && SpawnedRobots.Count > 1)
+        {
+            robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
+            sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
+
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
+            if (isMixAndMatch == 1 && SpawnedRobots[index].robotHasManipulator == 1)
+            {
+                GameObject.Destroy(SpawnedRobots[index].manipulatorObject);
+            }
+
+            GameObject.Destroy(SpawnedRobots[index].gameObject);
+            SpawnedRobots.RemoveAt(index);
+            activeRobot = null;
+            SwitchActiveRobot();
+
+            int i = 0;
+            foreach (Robot robot in SpawnedRobots)
+            {
+                robot.controlIndex = i;
+                i++;
+            }
+        }
+    }
+
+
+    #region Replay Functions
+    /// <summary>
+    /// Loads the replay from the given replay file name.
+    /// </summary>
+    /// <param name="name"></param>
     void LoadReplay(string name)
     {
         List<FixedQueue<StateDescriptor>> fieldStates;
-        List<FixedQueue<StateDescriptor>> robotStates;
+        List<KeyValuePair<string, List<FixedQueue<StateDescriptor>>>> robotStates;
         Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates;
         List<List<KeyValuePair<ContactDescriptor, int>>> contacts;
 
-        string simSelectedField;
-        string simSelectedRobot;
+        string fieldDirectory;
 
-        ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out gamePieceStates, out contacts);
+        ReplayImporter.Read(name, out fieldDirectory, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
-        LoadField(simSelectedField);
-        LoadRobot(simSelectedRobot);
+        if (!LoadField(fieldDirectory))
+        {
+            AppModel.ErrorToMenu("Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
+            return;
+        }
 
-        List<Tracker> robotTrackers = Trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
-        List<Tracker> fieldTrackers = Trackers.Except(robotTrackers).ToList();
+        foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> rs in robotStates)
+        {
+            if (!LoadRobot(rs.Key))
+            {
+                AppModel.ErrorToMenu("Could not load robot: " + rs.Key + "\nHas it been moved or deleted?");
+                return;
+            }
+
+            int j = 0;
+
+            foreach (Tracker t in SpawnedRobots.Last().GetComponentsInChildren<Tracker>())
+            {
+                t.States = rs.Value[j];
+                j++;
+            }
+        }
+
+        Tracker[] fieldTrackers = fieldObject.GetComponentsInChildren<Tracker>();
 
         int i = 0;
 
         foreach (Tracker t in fieldTrackers)
         {
             t.States = fieldStates[i];
-            i++;
-        }
-
-        i = 0;
-
-        foreach (Tracker t in robotTrackers)
-        {
-            t.States = robotStates[i];
             i++;
         }
 
@@ -366,7 +428,7 @@ public class MainState : SimState
             foreach (FixedQueue<StateDescriptor> f in k.Value)
             {
                 GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
-                currentPiece.name = "clone_" + k.Key;
+                currentPiece.name = k.Key + "(Clone)";
                 currentPiece.GetComponent<Tracker>().States = f;
             }
         }
@@ -380,314 +442,187 @@ public class MainState : SimState
                 foreach (var d in c)
                 {
                     ContactDescriptor currentContact = d.Key;
-                    currentContact.RobotBody = robotTrackers[d.Value].GetComponent<BRigidBody>();
+                    currentContact.RobotBody = activeRobot.transform.GetChild(d.Value).GetComponent<BRigidBody>();
                     currentContacts.Add(currentContact);
                 }
 
-                contactPoints.Add(currentContacts);
+                CollisionTracker.ContactPoints.Add(currentContacts);
             }
             else
             {
-                contactPoints.Add(null);
+                CollisionTracker.ContactPoints.Add(null);
             }
         }
     }
 
-    public bool ChangeRobot(string directory)
+    /// <summary>
+    /// Loads a manipulator for Quick Swap Mode and maps it to the robot. 
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <returns></returns>
+    public bool LoadManipulator(string directory)
     {
-        if (GameObject.Find("Robot") != null) GameObject.Destroy(GameObject.Find("Robot"));
-        return LoadRobot(directory);
+        return activeRobot.LoadManipulator(directory);
     }
 
-    private void UpdateTrackers()
+    /// <summary>
+    /// Loads a manipulator for Quick Swap Mode and maps it to the robot. 
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <returns></returns>
+    public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
-        int numSteps = physicsWorld.frameCount - lastFrameCount;
+        return activeRobot.LoadManipulator(directory, robotGameObject);
+    }
 
-        if (tracking && numSteps > 0)
+    /// <summary>
+    /// Loads a new robot and manipulator from given directorys
+    /// </summary>
+    /// <param name="directory">robot directory</param>
+    /// <returns>whether the process was successful</returns>
+    public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
+    {
+        if (SpawnedRobots.Count < MAX_ROBOTS)
         {
-            foreach (Tracker t in Trackers)
-                t.AddState(numSteps);
+            robotPath = baseDirectory;
 
-            for (int i = numSteps; i > 0; i--)
+            GameObject robotObject = new GameObject("Robot");
+            Robot robot = robotObject.AddComponent<Robot>();
+
+            //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
+            if (!robot.InitializeRobot(baseDirectory, this)) return false;
+
+            robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
+
+            //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
+            if (activeRobot == null)
             {
-                List<ContactDescriptor> frameContacts = null;
-
-                int numManifolds = physicsWorld.world.Dispatcher.NumManifolds;
-
-                for (int j = 0; j < numManifolds; j++)
-                {
-                    PersistentManifold contactManifold = physicsWorld.world.Dispatcher.GetManifoldByIndexInternal(j);
-                    BRigidBody obA = (BRigidBody)contactManifold.Body0.UserObject;
-                    BRigidBody obB = (BRigidBody)contactManifold.Body1.UserObject;
-
-                    if (!obA.gameObject.name.StartsWith("node") && !obB.gameObject.name.StartsWith("node"))
-                        continue;
-
-                    ManifoldPoint mp = null;
-
-                    int numContacts = contactManifold.NumContacts;
-
-                    for (int k = 0; k < numContacts; k++)
-                    {
-                        mp = contactManifold.GetContactPoint(k);
-
-                        if (mp.LifeTime == i)
-                            break;
-                    }
-
-                    if (mp == null)
-                        continue;
-
-                    if (frameContacts == null)
-                        frameContacts = new List<ContactDescriptor>();
-
-                    frameContacts.Add(new ContactDescriptor
-                    {
-                        AppliedImpulse = mp.AppliedImpulse,
-                        Position = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f,
-                        RobotBody = obA.name.StartsWith("node") ? obA : obB
-                    });
-                }
-
-                contactPoints.Add(frameContacts);
+                activeRobot = robot;
             }
-        }
 
-        lastFrameCount += numSteps;
+            robot.controlIndex = SpawnedRobots.Count;
+            SpawnedRobots.Add(robot);
+
+            robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
-    /// Return the robot to robotStartPosition and destroy extra game pieces
+    /// Resumes the normal simulation and exits the replay mode, showing all UI elements again
     /// </summary>
-    /// <param name="resetTransform"></param>
-
-    public void BeginReset()
+    public override void Resume()
     {
-        foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
-            t.Clear();
+        lastFrameCount = physicsWorld.frameCount;
+        Tracking = true;
 
-        foreach (RigidNode n in rootNode.ListAllNodes())
-        {
-            RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
-            r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
-            r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+        foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
+            c.enabled = true;
 
-            BulletSharp.Math.Matrix newTransform = r.WorldTransform;
-            newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
-            newTransform.Basis = BulletSharp.Math.Matrix.Identity;
-            r.WorldTransform = newTransform;
-        }
-
-        RotateRobot(robotStartOrientation);
-
-        foreach (GameObject g in extraElements)
-            UnityEngine.Object.Destroy(g);
-
-
-        if (IsResetting)
-        {
-            Debug.Log("is resetting!");
-        }
+        CollisionTracker.Reset();
     }
 
     /// <summary>
-    /// Can move robot around in this state, update robotStartPosition if hit enter
+    /// Pauses the normal simulation for rpelay mode by disabling tracking of physics objects and disabling UI elements
     /// </summary>
-    void Resetting()
+    public override void Pause()
     {
-        if (Input.GetMouseButton(1))
-        {
-            //Transform rotation along the horizontal plane
-            Vector3 rotation = new Vector3(0f,
-                Input.GetKey(KeyCode.RightArrow) ? ResetVelocity : Input.GetKey(KeyCode.LeftArrow) ? -ResetVelocity : 0f,
-                0f);
-            if (!rotation.Equals(Vector3.zero))
-                RotateRobot(rotation);
+        Tracking = false;
 
+        foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
+            c.enabled = false;
+    }
+
+    public void EnterReplayState()
+    {
+        if (!activeRobot.IsResetting)
+        {
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
         else
         {
-            //Transform position
-            Vector3 transposition = new Vector3(
-                Input.GetKey(KeyCode.RightArrow) ? ResetVelocity : Input.GetKey(KeyCode.LeftArrow) ? -ResetVelocity : 0f,
-                0f,
-                Input.GetKey(KeyCode.UpArrow) ? ResetVelocity : Input.GetKey(KeyCode.DownArrow) ? -ResetVelocity : 0f);
-
-            if (!transposition.Equals(Vector3.zero))
-                TransposeRobot(transposition);
+            UserMessageManager.Dispatch("Please finish resetting before entering replay mode!", 5f);
         }
+    }
+    #endregion
 
-        //Update robotStartPosition when hit enter
-        if (Input.GetKey(KeyCode.Return))
-        {
-            robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-            robotStartPosition = robotObject.transform.GetChild(0).transform.position - nodeToRobotOffset;
-            //Debug.Log(robotStartPosition);
-            EndReset();
-        }
+
+    #region Robot Interaction Functions
+
+    /// <summary>
+    /// Starts the resetting process of the active robot
+    /// </summary>
+    public void BeginRobotReset()
+    {
+        activeRobot.BeginReset();
     }
 
     /// <summary>
-    /// Put robot back down and switch back to normal state
+    /// Ends the restting process of the active robot and resets the replay tracking objects
     /// </summary>
-    public void EndReset()
+    public void EndRobotReset()
     {
-        IsResetting = false;
-        isResettingOrientation = false;
-
-        foreach (RigidNode n in rootNode.ListAllNodes())
-        {
-            RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
-            r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
-        }
-
+        activeRobot.EndReset();
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
         {
             t.Clear();
 
-            contactPoints.Clear(null);
-
+            CollisionTracker.Reset();
         }
     }
 
+    /// <summary>
+    /// Shifts the active robot by a set transposition vector
+    /// </summary>
     public void TransposeRobot(Vector3 transposition)
     {
-        foreach (RigidNode n in rootNode.ListAllNodes())
-        {
-            RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
-
-            BulletSharp.Math.Matrix newTransform = r.WorldTransform;
-            newTransform.Origin += transposition.ToBullet();
-            r.WorldTransform = newTransform;
-        }
+        activeRobot.TransposeRobot(transposition);
     }
 
+    /// <summary>
+    /// Rotates the active robot about its origin by a mathematical 4x4 matrix
+    /// </summary>
     public void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
     {
-        BulletSharp.Math.Vector3? origin = null;
-
-        foreach (RigidNode n in rootNode.ListAllNodes())
-        {
-            RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
-
-            if (origin == null)
-                origin = r.CenterOfMassPosition;
-
-            BulletSharp.Math.Matrix rotationTransform = new BulletSharp.Math.Matrix();
-            rotationTransform.Basis = rotationMatrix;
-            rotationTransform.Origin = BulletSharp.Math.Vector3.Zero;
-
-            BulletSharp.Math.Matrix currentTransform = r.WorldTransform;
-            BulletSharp.Math.Vector3 pos = currentTransform.Origin;
-            currentTransform.Origin -= origin.Value;
-            currentTransform *= rotationTransform;
-            currentTransform.Origin += origin.Value;
-
-            r.WorldTransform = currentTransform;
-        }
+        activeRobot.RotateRobot(rotationMatrix);
     }
 
+    /// <summary>
+    /// Rotates the active robot about its origin by a set vector
+    /// </summary>
     public void RotateRobot(Vector3 rotation)
     {
-        RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
+        activeRobot.RotateRobot(rotation);
     }
 
-
-    //Helper methods to avoid conflicts between main camera and robot cameras
-    void ToDynamicCamera()
-    {
-        dynamicCameraObject.SetActive(true);
-        //robotCameraObject.SetActive(false);
-        if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
-        {
-            robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(false);
-        }
-    }
-
-    void ToRobotCamera()
-    {
-        dynamicCameraObject.SetActive(false);
-        //robotCameraObject.SetActive(true);
-        if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
-        {
-            robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(true);
-        }
-        else
-        {
-            UserMessageManager.Dispatch("No camera on robot", 2);
-        }
-    }
-
-    public DriverPractice GetDriverPractice()
-    {
-        return driverPractice;
-    }
-
+    /// <summary>
+    /// Resets the active robot orientation to how the CAD model was originally defined (should be standing upright and facing forward if CAD was done properly)
+    /// </summary>
     public void ResetRobotOrientation()
     {
-        robotStartOrientation = BulletSharp.Math.Matrix.Identity;
-        BeginReset();
-        EndReset();
+        activeRobot.ResetRobotOrientation();
     }
 
+    /// <summary>
+    /// Saves the active robot's current orientation to be used whenever robot is reset
+    /// </summary>
     public void SaveRobotOrientation()
     {
-        robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-        robotStartOrientation.ToUnity();
-        EndReset();
+        activeRobot.SaveRobotOrientation();
     }
 
-    public bool SpawnDummyRobot(string directory)
+    /// <summary>
+    /// Sends the received packets to the active robot
+    /// </summary>
+    private void SendRobotPackets()
     {
-
-        GameObject dummyObject = new GameObject("DummyRobot");
-        dummyObject.transform.position = robotStartPosition;
-
-        RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
+        activeRobot.Packet = unityPacket.GetLastPacket();
+        foreach (Robot robot in SpawnedRobots)
         {
-            return new RigidNode(guid);
-        };
-
-        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        //Read .robot instead. Maybe need a RobotSkeleton class
-        RigidNode_Base dummyRootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
-        
-        dummyRootNode.ListAllNodes(nodes);
-        dummyRootNodes.Add(dummyRootNode);
-        foreach (RigidNode_Base n in nodes)
-        {
-            RigidNode node = (RigidNode)n;
-            node.CreateTransform(dummyObject.transform);
-
-            if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
-            {
-                Debug.Log("Robot not loaded!");
-                UnityEngine.Object.Destroy(dummyObject);
-                return false;
-            }
-
-            node.CreateJoint();
-
-            node.MainObject.AddComponent<Tracker>().Trace = true;
-
-            Tracker t = node.MainObject.GetComponent<Tracker>();
-            Debug.Log(t);
-        }
-        activeRobot = dummyRootNode;
-        return true;
-    }
-
-    public RigidNode_Base GetRootNode()
-    {
-        return rootNode;
-    }
-
-    public void StartReplay()
-    {
-        if (!IsResetting)
-        {
-            contactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
+            if (robot != activeRobot) robot.Packet = null;
         }
     }
+    #endregion
 }

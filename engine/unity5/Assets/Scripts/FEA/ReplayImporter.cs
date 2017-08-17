@@ -22,14 +22,13 @@ namespace Assets.Scripts.FEA
         /// <param name="fieldStates"></param>
         /// <param name="robotStates"></param>
         /// <param name="contacts"></param>
-        public static void Read(string fileName, out string fieldPath, out string robotPath,
-            out List<FixedQueue<StateDescriptor>> fieldStates, out List<FixedQueue<StateDescriptor>> robotStates,
+        public static void Read(string fileName, out string fieldPath,
+            out List<FixedQueue<StateDescriptor>> fieldStates, out List<KeyValuePair<string, List<FixedQueue<StateDescriptor>>>> robotStates,
             out Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates, out List<List<KeyValuePair<ContactDescriptor, int>>> contacts)
         {
             fieldPath = string.Empty;
-            robotPath = string.Empty;
             fieldStates = new List<FixedQueue<StateDescriptor>>();
-            robotStates = new List<FixedQueue<StateDescriptor>>();
+            robotStates = new List<KeyValuePair<string, List<FixedQueue<StateDescriptor>>>>();
             gamePieceStates = new Dictionary<string, List<FixedQueue<StateDescriptor>>>();
             contacts = new List<List<KeyValuePair<ContactDescriptor, int>>>();
 
@@ -44,7 +43,7 @@ namespace Assets.Scripts.FEA
                             ReadFieldStates(reader.ReadSubtree(), out fieldStates, out fieldPath);
                             break;
                         case "robot":
-                            ReadRobotStates(reader.ReadSubtree(), out robotStates, out robotPath);
+                            ReadRobotStates(reader.ReadSubtree(), robotStates);
                             break;
                         case "gamepiece":
                             ReadGamePieces(reader.ReadSubtree(), gamePieceStates);
@@ -92,9 +91,9 @@ namespace Assets.Scripts.FEA
         /// <param name="reader"></param>
         /// <param name="robotStates"></param>
         /// <param name="robotPath"></param>
-        private static void ReadRobotStates(XmlReader reader, out List<FixedQueue<StateDescriptor>> robotStates, out string robotPath)
+        private static void ReadRobotStates(XmlReader reader, List<KeyValuePair<string, List<FixedQueue<StateDescriptor>>>> robotStates)
         {
-            robotPath = string.Empty;
+            string robotPath = string.Empty;
 
             int uncompressedLength = 0;
             byte[] compressedBuffer = null;
@@ -112,7 +111,8 @@ namespace Assets.Scripts.FEA
                 }
             }
 
-            robotStates = ReadStates(DecompressBuffer(uncompressedLength, compressedBuffer));
+            robotStates.Add(new KeyValuePair<string, List<FixedQueue<StateDescriptor>>>(robotPath,
+                ReadStates(DecompressBuffer(uncompressedLength, compressedBuffer))));
         }
 
         /// <summary>

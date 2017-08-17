@@ -6,27 +6,19 @@ using System.Drawing;
 using System.Collections;
 using System.Timers;
 using ExportProcess;
-using InvAddIn;
-using System.Diagnostics;
+using System.Threading;
 
 namespace BxDFieldExporter
 {
-    //User Defined Interface Exposed through the Add-In Automation property
-    public interface AutomationInterface
-    {
-        void setDone(bool isDone);
-        bool getDone();
-        void setRunOnce(bool run);
-        bool getRunOnce();
-        void setCancel(bool isCancel);
-    }
+
     //TLDR: exports the field
 
+
     [GuidAttribute("e50be244-9f7b-4b94-8f87-8224faba8ca1")]
-    public class StandardAddInServer : Inventor.ApplicationAddInServer, AutomationInterface
+    public class StandardAddInServer : ApplicationAddInServer
     {
         // all the global variables
-        #region variables
+        #region Variables
         // Inventor application object.
         public static Inventor.Application m_inventorApplication;// the main inventor application
         [DllImport("user32.dll")]
@@ -34,8 +26,10 @@ namespace BxDFieldExporter
         ClientNodeResource oRsc;// client resources that buttons will use
         static Document nativeDoc;
         static bool runOnce;
-        EnvironmentManager envMan;
+        static bool ErrorCancel = false;
+        static EnvironmentManager envMan;
         static RibbonPanel ComponentControls;// the ribbon panels that the buttons will be a part of
+        static RibbonPanel SpawnControls;
         static RibbonPanel AddItems;
         static RibbonPanel RemoveItems;
         static RibbonPanel ExporterControl;
@@ -44,17 +38,21 @@ namespace BxDFieldExporter
         static ButtonDefinition editComponent;
         static ButtonDefinition addAssembly;
         static ButtonDefinition addPart;// contain the buttons that the user can interact with
-        static ButtonDefinition removePart;
+        static ButtonDefinition removeSubAssembly;
         static ButtonDefinition removeAssembly;
         static ButtonDefinition cancelExport;
         static ButtonDefinition exportField;
         static ButtonDefinition removeComponent;
+        static ButtonDefinition createNewRobotSpawnLocation;
+        static ButtonDefinition editSpawnLocation;
+        static ButtonDefinition removeSpawnPoint;
         EditCoordinate coorForm;
         Inventor.Environment oNewEnv;
+        int spawnLocationNumber;
         static bool done;
-        static bool cancel = false;
         static Random rand;// random number genator that can create internal ids
         static ArrayList FieldComponents;// arraylist of all the field properties the user has set
+        static ArrayList SpawnPoints;
         public static FieldDataComponent selectedComponent;// the current component that the user is editing
         static BrowserPanes oPanes;// all the browser panes in the active doc
         object resultObj;
@@ -65,7 +63,6 @@ namespace BxDFieldExporter
         UserInputEvents UIEvent;// the uievents that react to selections
         static Document oDoc;// a doc to add new highlight sets to
         static HighlightSet oSet;// highlight set that represents the selection
-        static HighlightSet partSet; //highlight set for current selected parts 
         Inventor.UserInputEventsSink_OnSelectEventHandler click_OnSelectEventDelegate;// handles the selection events
         Inventor.UserInterfaceEventsSink_OnEnvironmentChangeEventHandler enviroment_OnChangeEventDelegate;
         static bool inExportView;// boolean to help in detecting wether or not to react to an event based on wether or not the application is exporting
@@ -74,7 +71,6 @@ namespace BxDFieldExporter
         static Object currentSelected;// the current component that the user is editing, needed for the unselection stuff
         static bool found;// boolean to help in searching for objects and the corrosponding actions
         private static uint fieldID = 0; //Numerical ID to associate STLs with the field Property
-        
         #endregion 
         public StandardAddInServer()
         {
@@ -96,9 +92,10 @@ namespace BxDFieldExporter
                 FieldComponents = new ArrayList();// clear the field Component array
                 form = new ComponentPropertiesForm();// init the component form to enter data into
                 AddParallelEnvironment();
-                UIEvent = m_inventorApplication.CommandManager.UserInputEvents;// get the application's userinput events object
-                click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(oUIEvents_OnSelect);// make a new ui event reactor
+                UIEvent = m_inventorApplication.CommandManager.UserInputEvents;// get the application's userinput events object                
+                click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(OUIEvents_OnSelect);// make a new ui event reactor
                 UIEvent.OnSelect += click_OnSelectEventDelegate;// add the event reactor to the onselect 
+                //enterKey = m_inventorApplication.CommandManager.CreateInteractionEvents();
             }
             catch (Exception e)
             {
@@ -118,10 +115,10 @@ namespace BxDFieldExporter
             // Release objects.
             try
             {
-                writeFieldComponentNames();
+                WriteFieldComponentNames();
                 foreach (FieldDataComponent data in FieldComponents)
                 {
-                    writeSaveFieldComponent(data);
+                    WriteSaveFieldComponent(data);
                 }
                 m_inventorApplication.ActiveDocument.Save();
             }
@@ -138,58 +135,34 @@ namespace BxDFieldExporter
             // ControlDefinition functionality for implementing commands.
         }
         // a method to help with addin apis
-        public object Automation
-        {
+        public object Automation {
             // This property is provided to allow the AddIn to expose an API 
             // of its own to other programs. Typically, this  would be done by
             // implementing the AddIn's API interface in a class and returning 
             // that class object through this property.
 
-            get
-            {
+            get {
                 // TODO: Add ApplicationAddInServer.Automation getter implementation
-                return this;
+                return null;
             }
         }
 
         #endregion
-
-        #region API exposed methods
-        public void setDone(bool isDone)
-        {
-            done = isDone;
-        }
-
-        public bool getDone()
-        {
-            return done;
-        }
-
-        public void setRunOnce(bool run)
-        {
-            runOnce = run;
-        }
-
-        public bool getRunOnce()
-        {
-            return runOnce;
-        }
-
-        public void setCancel(bool isCancel)
-        {
-            cancel = isCancel;
-        }
-    
-        #endregion 
-
         // called when the exporter starts
-        public void startExport_OnExecute(Inventor.NameValueMap Context)
+
+      
+
+        public void StartExport_OnExecute(Inventor.NameValueMap Context)
         {
+
 
             try
-            {
+            { 
                 if (!inExportView)
                 {
+                    
+                    SpawnPoints = new ArrayList();
+                    spawnLocationNumber = 1;
                     nativeDoc = m_inventorApplication.ActiveDocument;
                     envMan = ((AssemblyDocument)m_inventorApplication.ActiveDocument).EnvironmentManager;
                     inExportView = true;
@@ -202,16 +175,14 @@ namespace BxDFieldExporter
                     exportField.Enabled = true;
                     addPart.Enabled = true;
                     removeAssembly.Enabled = true;
-                    removePart.Enabled = true;
+                    removeSubAssembly.Enabled = true;
                     AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;// get the active assembly document
                     BrowserNodeDefinition oDef; // create browsernodedef to use to add browser node to the pane
-                    oDoc = m_inventorApplication.ActiveDocument;// get the active document in inventor
+                   
+                    oDoc = m_inventorApplication.ActiveDocument;
                     oPanes = oDoc.BrowserPanes;// get the browserpanes to add
                     oSet = oDoc.CreateHighlightSet();// create a highlightset to add the selected occcurences to
-                    oSet.Color = m_inventorApplication.TransientObjects.CreateColor(100, 0, 200);
-
-                    partSet = oDoc.CreateHighlightSet();
-                    partSet.Color = m_inventorApplication.TransientObjects.CreateColor(100, 0, 200);
+                    oSet.Color = m_inventorApplication.TransientObjects.CreateColor(125, 0, 255);
                     rand = new Random();// create new random num generator to generate internal ids
                     try
                     {// if no browser pane previously created then create a new one
@@ -248,7 +219,7 @@ namespace BxDFieldExporter
                     }
 
                     oPane.Refresh();
-                    readSaveFieldData();// read the save so the user doesn't loose any previous work
+                    ReadSaveFieldData();// read the save so the user doesn't loose any previous work
                     TimerWatch();// begin the timer watcher to detect deselect
 
                 }
@@ -263,20 +234,32 @@ namespace BxDFieldExporter
                 MessageBox.Show(e.ToString());
             }
         }
+       
+    
+        /// <summary>
+        /// Upon the loading of Inventor, this will register all of the plugin's buttons and their respective icons
+        /// </summary>
         public void OnEnvironmentChange(Inventor.Environment environment, EnvironmentStateEnum EnvironmentState, EventTimingEnum BeforeOrAfter, NameValueMap Context, out HandlingCodeEnum HandlingCode)
         {
+           
             if (environment.Equals(oNewEnv) && EnvironmentState.Equals(EnvironmentStateEnum.kActivateEnvironmentState) && !closing)
             {
+
                 closing = true;
-                startExport_OnExecute(null);
+                StartExport_OnExecute(null);
             }
             else if (environment.Equals(oNewEnv) && EnvironmentState.Equals(EnvironmentStateEnum.kTerminateEnvironmentState) && closing)
             {
                 closing = false;
-                cancleExporter_OnExecute(null);
+                CancelExporter_OnExecute(null);
             }
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
+            if(environment.InternalName.Equals("BxD:FieldExporter:Environment"))
+            {
+                BrowserNodeIcons();
+            }
         }
+        
 
         public void AddParallelEnvironment()
         {
@@ -288,122 +271,159 @@ namespace BxDFieldExporter
                 stdole.IPictureDisp addNewComponentIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewType16));
                 stdole.IPictureDisp addNewComponentIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewType32));
 
-                stdole.IPictureDisp removeComponentIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveType16));
-                stdole.IPictureDisp removeComponentIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveType32));
-
                 stdole.IPictureDisp editComponentIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.EditType16));
                 stdole.IPictureDisp editComponentIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.EditType32));
-
-                stdole.IPictureDisp addAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddAssembly16));
-                stdole.IPictureDisp addAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddAssembly32));
-
-                stdole.IPictureDisp addPartIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewPart16));
-                stdole.IPictureDisp addPartIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewPart32));
 
                 stdole.IPictureDisp removeAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveAssembly16));
                 stdole.IPictureDisp removeAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveAssembly32));
 
-                stdole.IPictureDisp removePartIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly16));
-                stdole.IPictureDisp removePartIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly16));
+                stdole.IPictureDisp removeSubAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly16));
+                stdole.IPictureDisp removeSubAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly32));
+
+                stdole.IPictureDisp addPartIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewPart16));
+                stdole.IPictureDisp addPartIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewPart32));
+
+                stdole.IPictureDisp addAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddAssembly16));
+                stdole.IPictureDisp addAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddAssembly32));
+
+                stdole.IPictureDisp removeComponentIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveType16));
+                stdole.IPictureDisp removeComponentIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveType32));
+
+                stdole.IPictureDisp addSpawnLocationIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddSpawnLocation16));
+                stdole.IPictureDisp addSpawnLocationIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddSpawnLocation32));
+
+                stdole.IPictureDisp changeSpawnLocationLocationIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ChangeSpawnLocation16));
+                stdole.IPictureDisp changeSpawnLocationLocationIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ChangeSpawnLocation32));
 
                 stdole.IPictureDisp exportFieldIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField16));
                 stdole.IPictureDisp exportFieldIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField32));
 
-                stdole.IPictureDisp ttAddNewComponent = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddNewComponent));
-                stdole.IPictureDisp ttRemoveComponent = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemoveComponent));
-                stdole.IPictureDisp ttComponentProperties = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTComponentProperties));
-                stdole.IPictureDisp ttAddAssembly = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddAssembly));
-                stdole.IPictureDisp ttAddPart = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddPart));     
-                stdole.IPictureDisp ttRemovePart = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemovePart));
-                stdole.IPictureDisp ttRemoveAssembly = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemoveAssembly));
-                stdole.IPictureDisp ttExportField = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTExportField));
+                stdole.IPictureDisp removeSpawnPointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSpawnLocation16));
+                stdole.IPictureDisp removeSpawnPointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSpawnLocation32));
 
+                stdole.IPictureDisp ttAddNewComponent = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddNewComponent));
+                stdole.IPictureDisp ttAddAssembly = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddAssembly));
+                stdole.IPictureDisp ttAddPart = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddPart));
+                stdole.IPictureDisp ttAddSpawnLocation = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddSpawnLocation));
+                stdole.IPictureDisp ttComponentProperties = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTComponentProperties));
+                stdole.IPictureDisp ttEditSpawnLocation = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTEditSpawnLocation));
+                stdole.IPictureDisp ttExportField = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTExportField));
+                stdole.IPictureDisp ttRemovePart = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemovePart));
+                stdole.IPictureDisp ttRemoveComponent = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemoveComponent));
+                stdole.IPictureDisp ttRemoveAssembly = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemoveAssembly));
+                stdole.IPictureDisp ttRemoveSpawnPoint = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemoveSpawnPoint));
+                                
                 // Get the Environments collection
                 Environments oEnvironments = m_inventorApplication.UserInterfaceManager.Environments;
 
                 // Create a new environment
                 oNewEnv = oEnvironments.Add("Field Exporter", "BxD:FieldExporter:Environment", null, startExporterIconSmall, startExporterIconLarge);
-
+                
                 // Get the ribbon associated with the assembly environment
                 Ribbon oAssemblyRibbon = m_inventorApplication.UserInterfaceManager.Ribbons["Assembly"];
 
                 // Create contextual tabs and panels within them
                 RibbonTab oContextualTabOne = oAssemblyRibbon.RibbonTabs.Add("Field Exporter", "BxD:FieldExporter:RibbonTab", "ClientId123", "", false, true);
+
+
                 ComponentControls = oContextualTabOne.RibbonPanels.Add("Component Controls", "BxD:FieldExporter:ComponentControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 AddItems = oContextualTabOne.RibbonPanels.Add("Add Items", "BxD:FieldExporter:AddItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
-                AddItems.Reposition("BxD:FieldExporter:ComponentControls", false);
                 RemoveItems = oContextualTabOne.RibbonPanels.Add("Remove Items", "BxD:FieldExporter:RemoveItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
+                SpawnControls = oContextualTabOne.RibbonPanels.Add("Spawn Location Controls", "BxD:FieldExporter:SpawnLocationControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
+                ExporterControl = oContextualTabOne.RibbonPanels.Add("Robot Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");// inits the part panels
+                AddItems.Reposition("BxD:FieldExporter:ComponentControls", false);
                 RemoveItems.Reposition("BxD:FieldExporter:AddItems", false);
-                ExporterControl = oContextualTabOne.RibbonPanels.Add("Robot Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");// inits the part panels               
-                
+                SpawnControls.Reposition("BxD:FieldExporter:RemoveItems", false);
+                ExporterControl.Reposition("BxD:FieldExporter:SpawnLocationControls", false);
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;// get the controls for Inventor
-                beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "BxD:FieldExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, "Starts the field exporter", "Yay lets start!", startExporterIconSmall, startExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
-                beginExporter.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
 
-                #region Create Buttons
+                beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "BxD:FieldExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, "Starts the field exporter", "Yay lets start!", startExporterIconSmall, startExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
+                beginExporter.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(StartExport_OnExecute);
+
                 addNewComponent = controlDefs.AddButtonDefinition(" Add New Component ", "BxD:FieldExporter:AddNewComponent", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addNewComponentIconSmall, addNewComponentIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
-                addNewComponent.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewComponent_OnExecute);
-                toolTip(addNewComponent, "Creates a physics object to hold parts or assemblies.",
+                addNewComponent.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(AddNewComponent_OnExecute);
+                ToolTip(addNewComponent, "Creates a physics object to hold parts or assemblies.",
                     "For example, \"floor\", \"wall.\" or \"airship.\"After creating a component, you can add parts or assemblies to the component using either the \"Add New Part\" or \"Add New Assembly\" button.",
                     ttAddNewComponent, "Add New Component");
 
-                removeComponent = controlDefs.AddButtonDefinition(" Remove Component ", "BxD:FieldExporter:RemoveComponent", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeComponentIconSmall, removeComponentIconLarge);
-                removeComponent.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeComponent_OnExecute);
-                toolTip(removeComponent, "Removes a component from the field components hierarchy.",
-                    "Removing the component will ungroup all parts or assemblies attached to the component.",
-                    ttRemoveComponent, "Remove Component");
-
-                editComponent = controlDefs.AddButtonDefinition(" Edit Component Properties ", "BxD:FieldExporter:EditComponentProperties", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, editComponentIconSmall, editComponentIconLarge);// init the button
-                editComponent.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(editComponentProperites_OnExecute);// add the reacting method to the button
-                toolTip(editComponent, "Edit properties including collider type, friction and dynamic.",
-                    @"Collider types include box (flat surfaces), sphere (round surfaces), and mesh (uneven or organic surfaces.) 
-
-Use the friction slider to adjust the friction coefficient in the simulator. 
-
-Checking “Dynamic” enables an object to be moved in the simulator. For example, check “Dynamic” for objects like balls or other game pieces. Do not check “Dynamic” for static objects like the floor and walls.",
-                    ttComponentProperties, "Edit Component Properties");
-
                 addAssembly = controlDefs.AddButtonDefinition(" Add New Assembly ", "BxD:FieldExporter:AddNewItem", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addAssemblyIconSmall, addAssemblyIconLarge);
-                addAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewAssemblies_OnExecute);
-                toolTip(addAssembly, "Adds an assembly to a field component.",
+                addAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(AddNewAssembly_OnExecute);
+                ToolTip(addAssembly, "Adds an assembly to a field component.",
                     "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click \"Add New Assembly\", and select the assembly to add to the component. To add multiple assemblies to one component, repeat the process.",
                     ttAddAssembly, "Add Assembly");
 
-                addPart = controlDefs.AddButtonDefinition(" Add New Part ", "BxD:FieldExporter:AddNewPart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addPartIconSmall, addPartIconLarge);
-                addPart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewPart_OnExecute);
-                toolTip(addPart, "Adds a part to a field component.",
-                    "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click “Add New Part”, and select the part to add to the component. To add multiple part to one component, repeat the process.",
-                    ttAddPart, "Add New Part");
+                createNewRobotSpawnLocation = controlDefs.AddButtonDefinition(" Add New Spawn Location ", "BxD:FieldExporter:AddNewSpawnLocation", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addSpawnLocationIconSmall, addSpawnLocationIconLarge);
+                createNewRobotSpawnLocation.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(CreateNewSpawnLocation_OnExecute);
+                ToolTip(createNewRobotSpawnLocation, "Creates a new spawn point.",
+                    "Spawn points allow the robot to start at specific locations on the field in the simulation.",
+                     ttAddSpawnLocation, "Add New Spawn Location");
+
+                editSpawnLocation = controlDefs.AddButtonDefinition(" Edit Spawn Location ", "BxD:FieldExporter:EditSpawnLocation", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, changeSpawnLocationLocationIconSmall, changeSpawnLocationLocationIconLarge);
+                editSpawnLocation.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditSpawnLocation_OnExecute);
+                ToolTip(editSpawnLocation, "Edits the coordinates of a spawn location.",
+                    "Select a spawn in the Field Components hierarchy. Click “Edit Spawn Location” and input the desired x, y, and z coordinates of the spawn location.",
+                    ttEditSpawnLocation, "Edit Spawn Location");
 
                 removeAssembly = controlDefs.AddButtonDefinition(" Remove Assembly ", "BxD:FieldExporter:RemoveAssembly", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeAssemblyIconSmall, removeAssemblyIconLarge);
-                removeAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeAssembly_OnExecute);
-                toolTip(removeAssembly, "Removes an assembly from a field component.",
+                removeAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(RemoveAssembly_OnExecute);
+                ToolTip(removeAssembly, "Removes an assembly from a field component.",
                     "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click \"Remove Assembly\", and select the assembly to remove from the component. To remove multiple assemblies from one component, repeat the process",
                     ttRemoveAssembly, "Remove Assembly");
 
-                removePart = controlDefs.AddButtonDefinition(" Remove Part ", "BxD:FieldExporter:RemovePart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removePartIconSmall, removePartIconLarge);
-                removePart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removePart_OnExecute);
-                toolTip(removePart, "Removes a part from a field component.",
+                removeSubAssembly = controlDefs.AddButtonDefinition(" Remove Part ", "BxD:FieldExporter:RemovePart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeSubAssemblyIconSmall, removeSubAssemblyIconLarge);
+                removeSubAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(RemoveSubAssembly_OnExecute);
+                ToolTip(removeSubAssembly, "Removes a part from a field component.",
                    "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click “Remove Part”, and select the part to remove from the component. To remove multiple parts from one component, repeat the process.",
                    ttRemovePart, "Remove Assembly");
 
+                editComponent = controlDefs.AddButtonDefinition(" Edit Component Properties ", "BxD:FieldExporter:EditComponentProperties", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, editComponentIconSmall, editComponentIconLarge);// init the button
+                editComponent.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditComponentProperites_OnExecute);// add the reacting method to the button
+                ToolTip(editComponent, "Edit properties including collider type, friction and dynamic.",
+                    @"Collider types include box (flat surfaces), sphere (round surfaces), and mesh (uneven or organic surfaces.) 
+
+                        Use the friction slider to adjust the friction coefficient in the simulator. 
+
+                        Checking “Dynamic” enables an object to be moved in the simulator. For example, check “Dynamic” for objects like balls or other game pieces. Do not check “Dynamic” for static objects like the floor and walls.",
+                    ttComponentProperties, "Edit Component Properties");
+
+                cancelExport = controlDefs.AddButtonDefinition("Cancel Export", "BxD:FieldExporter:CancelExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                cancelExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(CancelExporter_OnExecute);
+
                 exportField = controlDefs.AddButtonDefinition("Export Field", "BxD:FieldExporter:ExportField", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, exportFieldIconSmall, exportFieldIconLarge);
-                exportField.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(exportField_OnExecute);
-                toolTip(exportField, "Exports the field for use in the Synthesis simulation.",
+
+                exportField.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(ExportField_OnExecute);
+                ToolTip(exportField, "Exports the field for use in the Synthesis simulation.",
                     "After adding all components of a field, and populating those components with parts or assemblies, export the field. The field will be saved to Documents/Synthesis/Fields and can be accessed through Synthesis.",
                     ttExportField, "Export Field");
 
-                cancelExport = controlDefs.AddButtonDefinition("Cancel Export", "BxD:FieldExporter:CancelExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                cancelExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(cancleExporter_OnExecute);
-                #endregion
+                addPart = controlDefs.AddButtonDefinition(" Add New Part ", "BxD:FieldExporter:AddNewPart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addPartIconSmall, addPartIconLarge);
+                addPart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(AddNewSubAssembly_OnExecute);
+                ToolTip(addPart, "Adds a part to a field component.",
+                    "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click “Add New Part”, and select the part to add to the component. To add multiple part to one component, repeat the process.",
+                    ttAddPart, "Add New Part");
+
+                removeComponent = controlDefs.AddButtonDefinition(" Remove Component ", "BxD:FieldExporter:RemoveComponent", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeComponentIconSmall, removeComponentIconLarge);
+                removeComponent.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(RemoveComponent_OnExecute);
+                ToolTip(removeComponent, "Removes a component from the field components hierarchy.",
+                    "Removing the component will ungroup all parts or assemblies attached to the component.",
+                    ttRemoveComponent, "Remove Component");
+
+                removeSpawnPoint = controlDefs.AddButtonDefinition(" Remove Spawn Point ", "BxD:FieldExporter:RemoveSpawnPoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeSpawnPointIconSmall, removeSpawnPointIconLarge);
+                removeSpawnPoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeSpawn_OnExecute);
+                ToolTip(removeSpawnPoint, "Removes a spawn point from the field.",
+                    "Select a spawn in the Field Components hierarchy. Click \"Remove Spawn Point\"",
+                    ttRemoveSpawnPoint, "Remove Spawn Point");
 
                 ComponentControls.CommandControls.AddButton(addNewComponent, true, true);
                 ComponentControls.CommandControls.AddButton(removeComponent, true, true);
                 ComponentControls.CommandControls.AddButton(editComponent, true, true);
+                SpawnControls.CommandControls.AddButton(createNewRobotSpawnLocation, true, true);
+                SpawnControls.CommandControls.AddButton(editSpawnLocation, true, true);
+                SpawnControls.CommandControls.AddButton(removeSpawnPoint, true, true);
                 AddItems.CommandControls.AddButton(addAssembly, true, true);
                 AddItems.CommandControls.AddButton(addPart, true, true);
                 RemoveItems.CommandControls.AddButton(removeAssembly, true, true);// add buttons to the part panels
-                RemoveItems.CommandControls.AddButton(removePart, true, true);
+                RemoveItems.CommandControls.AddButton(removeSubAssembly, true, true);
                 ExporterControl.CommandControls.AddButton(exportField, true, true);
                 addNewComponent.Enabled = false;
                 editComponent.Enabled = false;
@@ -415,7 +435,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 addNewComponent.Enabled = false;
                 addPart.Enabled = false;
                 removeAssembly.Enabled = false;
-                removePart.Enabled = false;
+                removeSubAssembly.Enabled = false;
                 UserInterfaceEvents UIEvents = m_inventorApplication.UserInterfaceManager.UserInterfaceEvents;
 
                 enviroment_OnChangeEventDelegate = new UserInterfaceEventsSink_OnEnvironmentChangeEventHandler(OnEnvironmentChange);
@@ -431,13 +451,15 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
 
                 // Make the new parallel environment available only within the assembly environment
                 // A ControlDefinition is automatically created when an environment is added to the
-                // parallel environments list. The internal name of the definition is the same as
+                // parallel environments list. The internal name of the definition is the Same as
                 // the internal name of the environment.
                 ControlDefinition oParallelEnvButton = m_inventorApplication.CommandManager.ControlDefinitions["BxD:FieldExporter:Environment"];
 
                 Inventor.Environment oEnv;
                 oEnv = oEnvironments["BxD:FieldExporter:Environment"];
                 oEnv.DisabledCommandList.Add(oParallelEnvButton);
+
+                
             }
             catch (Exception e)
             {
@@ -445,8 +467,29 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
         }
 
+        /// <summary>
+        /// This method sets the icon for the top node of the tree browser.
+        /// </summary>
+        public static void BrowserNodeIcons()
+        {
+            Document oActiveDoc = m_inventorApplication.ActiveDocument;
+            BrowserPane oPane = oActiveDoc.BrowserPanes.ActivePane;
+            BrowserNode oNode = oPane.TopNode;
+           
+            ClientBrowserNodeDefinition oDef = (ClientBrowserNodeDefinition)oNode.BrowserNodeDefinition;
+            
+            stdole.IPictureDisp fieldIcon =
+                PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.FieldIcon16));
+
+            ClientNodeResource fieldResource;
+            fieldResource = oActiveDoc.BrowserPanes.ClientNodeResources.Add("FieldIcon16", 2, fieldIcon);
+
+            oDef.Icon = fieldResource;
+        }
+        
+
         //Sets the tool tips
-        public void toolTip(ButtonDefinition button, String description, String expandedDescription, stdole.IPictureDisp picture, String title)
+        public void ToolTip(ButtonDefinition button, String description, String expandedDescription, stdole.IPictureDisp picture, String title)
         {
             button.ProgressiveToolTip.Description = description;
             button.ProgressiveToolTip.ExpandedDescription = expandedDescription;
@@ -456,7 +499,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
         }
 
         //Sets the tool tips without the picture
-        public void toolTip(ButtonDefinition button, String description, String expandedDescription, String title)
+        public void ToolTip(ButtonDefinition button, String description, String expandedDescription, String title)
         {
             button.ProgressiveToolTip.Description = description;
             button.ProgressiveToolTip.ExpandedDescription = expandedDescription;
@@ -464,8 +507,8 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             button.ProgressiveToolTip.Title = title;
         }
 
-        // reacts to a selection
-        private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
+        private void OUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, 
+            SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
             oSet.Clear();// clear the highlight set to add a new component to the set
             if (SelectionDevice == SelectionDeviceEnum.kGraphicsWindowSelection && inExportView)
@@ -483,7 +526,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                     foreach (BrowserNode n in oPane.TopNode.BrowserNodes)
                                     {// looks at all the browser nodes in the top node
                                         if (n.BrowserNodeDefinition.Equals(Component.node))
-                                        {// if the browsernode is the same as the Components node then react
+                                        {// if the browsernode is the Same as the Components node then react
                                             n.DoSelect();// select the proper node
                                         }
                                     }
@@ -498,7 +541,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                             foreach (BrowserNode n in oPane.TopNode.BrowserNodes)
                             {// looks at all the browser nodes in the top node
                                 if (n.BrowserNodeDefinition.Label.Equals(((UserCoordinateSystem)sel).Name))
-                                {// if the browsernode is the same as the Components node then react
+                                {// if the browsernode is the Same as the Components node then react
                                     n.DoSelect();// select the proper node
                                 }
                             }
@@ -506,6 +549,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     }
                 }
             }
+
             else if (SelectionDevice == SelectionDeviceEnum.kBrowserSelection && inExportView)
             {// if the selection is from the browser and the exporter is active, cool feature is that browsernode.DoSelect() calls this so I do all the reactions in here
                 foreach (Object sel in JustSelectedEntities)
@@ -514,8 +558,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     {// react only if sel is a browsernodedef
                         foreach (FieldDataComponent f in FieldComponents)
                         {// looks at all the components of parts
-                            if (f.same(((BrowserNodeDefinition)sel)))
-                            {// if the browsernode is the same as a the Component's node
+                            if (f.Same(((BrowserNodeDefinition)sel)))
+                            {// if the browsernode is the Same as a the Component's node
+
                                 selectedComponent = f;// set the selected Component for the rest of the code to interact with
                                 foreach (ComponentOccurrence o in selectedComponent.compOcc)
                                 {// looks at the occurences in the selected Component's part list
@@ -526,14 +571,30 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                 addAssembly.Enabled = true;
                                 addPart.Enabled = true;
                                 removeAssembly.Enabled = true;
-                                removePart.Enabled = true;
+                                removeSubAssembly.Enabled = true;
+                                editSpawnLocation.Enabled = false;
+                                removeSpawnPoint.Enabled = false;
                             }
-                        } 
+                        }
+                        foreach (UserCoordinateSystem ucs in SpawnPoints)
+                        {
+                            if (((BrowserNodeDefinition)sel).Label.Equals(ucs.Name))
+                            {
+                                editComponent.Enabled = false;
+                                removeComponent.Enabled = false;
+                                addAssembly.Enabled = false;
+                                addPart.Enabled = false;
+                                removeAssembly.Enabled = false;
+                                removeSubAssembly.Enabled = false;
+                                editSpawnLocation.Enabled = true;
+                                removeSpawnPoint.Enabled = true;
+                                oSet.AddItem(ucs);
+                            }
+                        }
                     }
                 }
             }
         }
-        
         // starts a timer to react to events in the browser/ graphics interface
         static bool rightDoc;
         private void TimerWatch()
@@ -552,18 +613,18 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 MessageBox.Show(e.ToString());
             }
         }
-
-        public static bool checkKeyPressed(Keys key)
+        public static bool CheckKeyPressed(Keys key)
         {
+
             return ((GetKeyState((short)key) & 0x80) == 0x80);
         }
-
         // reacts to the timer elapsed event, this allows us to select and unselect things as needed
         private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             found = false;
-            if (checkKeyPressed(Keys.ShiftKey) || checkKeyPressed(Keys.ControlKey))
+            if (CheckKeyPressed(Keys.ShiftKey) || CheckKeyPressed(Keys.ControlKey))
             {
+
             }
             else
             {
@@ -574,16 +635,16 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     runOnce = true;
                 }
             }
+
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
             {// looks through all the nodes under the top node
                 if (node.Selected)
                 {// if the node is seleted
                     foreach (FieldDataComponent t in FieldComponents)
                     {// looks at all the components in the fieldComponents
-                        if (t.same(node.BrowserNodeDefinition))
+                        if (t.Same(node.BrowserNodeDefinition))
                         {// if t is part of that browser node
                             if (!currentSelected.Equals(t))
-                           
                             {// is the selected node is no longer selected 
                                 found = true;// tell the program it found the node
                                 oSet.Clear();// clear the highlighted set in prep to add new occurrences
@@ -592,6 +653,18 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                     oSet.AddItem(io);// add the occurence to the highlighted set
                                 }
                                 currentSelected = t;// change the selected dataComponent
+                            }
+                        }
+                    }
+                    foreach (UserCoordinateSystem ucs in SpawnPoints)
+                    {
+                        if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))
+                        {// if t is part of that browser node
+                            if (!currentSelected.Equals(ucs))
+                            {// is the selected node is no longer selected 
+                                found = true;// tell the program it found the node
+                                oSet.Clear();// clear the highlighted set in prep to add new occurrences
+                                currentSelected = ucs;// change the selected dataComponent
                             }
                         }
                     }
@@ -605,7 +678,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 addAssembly.Enabled = false;
                 addPart.Enabled = false;
                 removeAssembly.Enabled = false;
-                removePart.Enabled = false;
+                removeSubAssembly.Enabled = false;
+                editSpawnLocation.Enabled = false;
+                removeSpawnPoint.Enabled = false;
             }
             if (!m_inventorApplication.ActiveDocument.InternalName.Equals(nativeDoc.InternalName))
             {
@@ -622,8 +697,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     exportField.Enabled = false;
                     addPart.Enabled = false;
                     removeAssembly.Enabled = false;
-                    removePart.Enabled = false;
-
+                    removeSubAssembly.Enabled = false;
+                    editSpawnLocation.Enabled = false;
+                    removeSpawnPoint.Enabled = false;
 
                     oPane.Visible = false;// Hide the browser pane
                 }
@@ -643,7 +719,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     exportField.Enabled = true;
                     addPart.Enabled = true;
                     removeAssembly.Enabled = true;
-                    removePart.Enabled = true;
+                    removeSubAssembly.Enabled = true;
 
                     oPane.Visible = true;// Hide the browser pane
                     oPane.Activate();
@@ -652,232 +728,134 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
         }
         // adds a new fielddataComponent to the array and to the browser pane
-        public static BrowserNodeDefinition addComponent(String name)
+
+        public static BrowserNodeDefinition AddComponent(String name)
         {
             BrowserNodeDefinition def = null;// creates a browsernodedef to be used when creating a new browsernode, null so if adding the node fails the code doesn't freak out
             try
             {
-                bool same = false;// used to prevent duplicate Component names because they will not save
+                bool Same = false;// used to prevent duplicate Component names because they will not save
                 foreach (FieldDataComponent Component in FieldComponents)
                 {// look at all the fielddata Components in data Components
                     if (Component.Name.Equals(name))
-                    {// check to see if it is the same
-                        same = true;// if it is then tell the code
+                    {// check to see if it is the Same
+                        Same = true;// if it is then tell the code
                     }
                 }
-                if (!same)
+                if (!Same)
                 {// if there is no duplicate name then add the Component
-                    int th = rand.Next();// get the next random number for the browser node's internal id
+                    int rand = StandardAddInServer.rand.Next();// get the next random number for the browser node's internal id
                     ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
                     ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
                     oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
+
+                    stdole.IPictureDisp componentIcon =
+                        PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ComponentBrowserNode16));
+
                     try
                     {
-                        oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                        oRes = oNodeRescs.Add("MYID", 1, componentIcon);// create a new ClientNodeResource to be used when you add the browser node
                     }
                     catch (Exception)
                     {// if the method fails then assume that there is already a ClientNodeResource
                         oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
                     }
-                    def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(name, th, oRes);// creates a new browser node def for the field data
+                    def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(name, rand, oRes);// creates a new browser node def for the field data
                     oPane.TopNode.AddChild(def);// add the browsernode to the topnode
+
                     FieldComponents.Add(new FieldDataComponent(def, fieldID));// add the new field data Component to the array and use the browsernodedef to refence the object to the browser node
+
                     fieldID++; //makes the ID spacing move up a unit
+
                 }
                 else
                 {// if there is already something with the name
                     MessageBox.Show("Please choose a name that hasn't already been used");// tell the user to use a different name
                 }
+
+                
+
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
             return def;// returns the browsernodedef
+
+           
         }
+        // removes an assembly from the arraylist of the Component
 
-        // adds new property Component to the browser pane
-        public static void addNewComponent_OnExecute(Inventor.NameValueMap Context)
-        {
-            // create a new enter name form
-            EnterName form = new EnterName();
-            //show the form to the user
-            System.Windows.Forms.Application.Run(form);
-        }
-
-        //Removes components from the browser pane
-        public void removeComponent_OnExecute(Inventor.NameValueMap Context)
-        {
-            ArrayList selectedNodes = new ArrayList();
-            String names = "";
-            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
-            {// looks through all the nodes under the top node
-                if (node.Selected)
-                {// if the node is seleted
-                    foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-                    {
-                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-                        {
-                            selectedNodes.Add(node);
-                            names += node.BrowserNodeDefinition.Label + " ";
-                        }
-                    }
-                }
-            }
-            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete Component: " + "\n" + names, "Remove Component", MessageBoxButtons.OKCancel);
-            if (dialogResult == DialogResult.OK)
-            {
-                foreach (BrowserNode node in selectedNodes)
-                {
-                    foreach (FieldDataComponent f in FieldComponents)
-                    {
-                        if (f.same(node.BrowserNodeDefinition))
-                        {
-                            FieldComponents.Remove(f);
-                            node.Delete();
-                        }
-                    }
-                }
-            }
-        }
-
-        // edits the properties of the Component
-        public static void editComponentProperites_OnExecute(Inventor.NameValueMap Context)
-        {
-            //read from the temp save the proper field values
-            form.readFromData(selectedComponent);
-            //show a dialog for the user to enter in values
-            form.ShowDialog();
-        }
-
-        //Opens the "Add Assembly(s)" and adds assemblies to a component
-        public void addNewAssemblies_OnExecute(Inventor.NameValueMap Context)
-        {
-            //Create form and show it
-            AddAssembly form = new AddAssembly();
-            form.Show();
-
-            done = false;
-            cancel = false;
-            int componentsAdded = 0; //Tracks how many components are added
-            while (!done)
-            {
-                ComponentOccurrence joint = null;
-                AssemblyDocument asmDoc = (AssemblyDocument)
-                             m_inventorApplication.ActiveDocument;
-                joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select an assembly
-                          (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
-                if (joint != null)
-                {
-                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
-                    {
-                        if (node.Selected)// find the selected node
-                        {
-                            foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-                            {
-                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-                                {
-                                    t.compOcc.Add(joint);// add the assembly occurence to the arraylist
-                                    partSet.AddItem(joint); //add the assembly occurence to a set that is highlighted in purple
-                                    node.DoSelect();
-                                }
-                            }
-                        }
-                    }
-                    componentsAdded++; //Tracks how many components are added
-                }
-            }
-            partSet.Clear(); //Clears the highlighted set
-
-            //If the user clicks "cancel", remove all parts previously added to the list
-            if (cancel == true)
-            {
-                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
-                {
-                    if (node.Selected)// find the selected node
-                    {
-                        foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-                        {
-                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-                            {
-                                for (int i = 0; i < componentsAdded; i++) //for each previously added component
-                                {
-                                    t.compOcc.RemoveAt(t.compOcc.Count - 1); //remove previously added components
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        //Opens the "Add Part(s)" window and adds parts to a component
-        public void addNewPart_OnExecute(Inventor.NameValueMap Context)
-        {
-            //Create form and show it
-            AddPart form = new AddPart();
-            form.Show();
-
-            done = false;
-            cancel = false;
-            int componentsAdded = 0; //Tracks how many components are added
-            while (!done)
-            {
-                ComponentOccurrence joint = null;
-                AssemblyDocument asmDoc = (AssemblyDocument)
-                             m_inventorApplication.ActiveDocument;
-                joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a part
-                          (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
-                if (joint != null)
-                {
-                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
-                    {
-                        if (node.Selected)// find the selected node
-                        {
-                            foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-                            {
-                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-                                {
-                                    t.compOcc.Add(joint);// add the part occurence to the arraylist
-                                    partSet.AddItem(joint); //add the part occurence to a set that is highlighted in purple
-                                    node.DoSelect();
-                                }
-                            }
-                        }
-                    }
-                    componentsAdded++; //Tracks how many components are added
-                }
-            }
-
-            partSet.Clear(); //Clears the highlighted set
-
-            //If the user clicks "cancel", remove all parts previously added to the list
-            if (cancel == true)
-            {
-                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
-                {
-                    if (node.Selected)// find the selected node
-                    {
-                        foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-                        {
-                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-                            {
-                                for (int i = 0; i < componentsAdded; i++) //for each previously added component
-                                {
-                                    t.compOcc.RemoveAt(t.compOcc.Count - 1); //removes the component
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        //Removes an assembly from the arraylist of the Component
-        public void removeAssembly_OnExecute(Inventor.NameValueMap Context)
+        public void AddNewAssembly_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
+
+                runOnce = true;
+                done = false;
+                bool selected = false;
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
+                {
+                    if (node.Selected)
+                    {
+                        foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
+                        {
+                            if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                            {
+                                selected = true;// if one node is selected then we can add the new sub assembly
+                            }
+                        }
+                    }
+                }
+                if (selected)// if there is a selected node then we can add a part to it
+                {
+                    while (!done)
+                    {
+                        ComponentOccurrence joint = null;
+                        AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
+                        if (joint != null)
+                        {
+                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                            {
+                                if (node.Selected)// find the selected node
+                                {
+                                    foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
+                                    {
+                                        if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                                        {
+                                            t.compOcc.Add(joint);// add the occurence to the arraylist
+                                            m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                            node.DoSelect();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        runOnce = false;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a browser node to add a part to");// if the user didn't select a browser node then tell them
+                }
+                runOnce = false;
+            }
+            catch (Exception)
+            {
+
+            }
+            runOnce = true;
+        }
+        // removes an assembly from the arraylist of the Component
+
+        public void RemoveAssembly_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+
                 runOnce = true;
                 bool found = false;
                 bool selected = false;
@@ -887,7 +865,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     {
                         foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                         {
-                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                            if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
                             {
                                 selected = true;// if one node is selected then we can add the new sub assembly
                             }
@@ -912,7 +890,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                 {
                                     foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                                     {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                                        if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
                                         {
                                             if (t.compOcc.Contains(joint))
                                             {// if the occurence is in the list the allow the remove
@@ -945,12 +923,13 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
 
             }
         }
-        
-        //Removes a part from the arraylist of the Component
-        public void removePart_OnExecute(Inventor.NameValueMap Context)
+        // removes a part from the arraylist of the Component
+
+        public void RemoveSubAssembly_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
+
                 runOnce = true;
                 bool found = false;
                 bool selected = false;
@@ -960,7 +939,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     {
                         foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                         {
-                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                            if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
                             {
                                 selected = true;// if one node is selected then we can add the new sub assembly
                             }
@@ -985,7 +964,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                 {
                                     foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                                     {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                                        if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
                                         {
                                             if (t.compOcc.Contains(joint))// if the occurence is in the list the allow the remove
                                             {
@@ -1018,9 +997,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
 
             }
         }
-        
-        //Old Code for adding a single assembly
-        public void addNewAssembly_OnExecute(Inventor.NameValueMap Context)
+        // adds a part to the arraylist of the Component
+
+        public void AddNewSubAssembly_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
@@ -1033,72 +1012,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     {
                         foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                         {
-                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-                            {
-                                selected = true;// if one node is selected then we can add the new sub assembly
-                            }
-                        }
-                    }
-                }
-                if (selected)// if there is a selected node then we can add a part to it
-                {
-                    while (!done)
-                    {
-                        ComponentOccurrence joint = null;
-                        AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
-                        if (joint != null)
-                        {
-                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
-                            {
-                                if (node.Selected)// find the selected node
-                                {
-                                    foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-                                    {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-                                        {
-                                            t.compOcc.Add(joint);// add the occurence to the arraylist
-                                            m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                            node.DoSelect();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        runOnce = false;
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Please select a browser node to add a part to");// if the user didn't select a browser node then tell them
-                }
-                runOnce = false;
-            }
-            catch (Exception)
-            {
-
-            }
-            runOnce = true;
-
-        }
-
-        //Old Code for adding a single part
-        public void addNewSubAssembly_OnExecute(Inventor.NameValueMap Context)
-        {
-            try
-            {
-                runOnce = true;
-                done = false;
-                bool selected = false;
-                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
-                {
-                    if (node.Selected)
-                    {
-                        foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-                        {
-                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                            if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
                             {
                                 selected = true;// if one node is selected then we can add the new sub assembly
 
@@ -1123,7 +1037,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                 {
                                     foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                                     {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                                        if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
                                         {
                                             t.compOcc.Add(joint);// add the occurence to the arraylist
                                             m_inventorApplication.ActiveDocument.SelectSet.Clear();
@@ -1148,42 +1062,243 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
         }
 
-        //Cancels the export
-        public void cancleExporter_OnExecute(Inventor.NameValueMap Context)
+        public void RemoveComponent_OnExecute(Inventor.NameValueMap Context)
+        {
+
+            ArrayList selectedNodes = new ArrayList();
+            String names = "";
+            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+            {// looks through all the nodes under the top node
+                if (node.Selected)
+                {// if the node is seleted
+                    foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
+                    {
+                        if (t.Same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                        {
+                            selectedNodes.Add(node);
+                            names += node.BrowserNodeDefinition.Label + " ";
+                        }
+                    }
+                }
+            }
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete Component: " + "\n" + names, "Remove Component", MessageBoxButtons.OKCancel);
+
+            if (dialogResult == DialogResult.OK)
+            {
+                foreach (BrowserNode node in selectedNodes)
+                {
+                    foreach (FieldDataComponent f in FieldComponents)
+                    {
+                        if (f.Same(node.BrowserNodeDefinition))
+                        {
+                            FieldComponents.Remove(f);
+                            node.Delete();
+                        }
+                    }
+                }
+            }
+        }
+
+        public void removeSpawn_OnExecute(Inventor.NameValueMap Context)
+        {
+            ArrayList selectedNodes = new ArrayList();
+            String names = "";
+            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+            {// looks through all the nodes under the top node
+                if (node.Selected)
+                {// if the node is seleted
+                    foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data Components
+                    {
+                        if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataComponent is from that browsernode then run
+                        {
+                            selectedNodes.Add(node);
+                            names += node.BrowserNodeDefinition.Label + " ";
+                        }
+                    }
+                }
+            }
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete Component: " + "\n" + names, "Remove Component", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
+            {
+                foreach (BrowserNode node in selectedNodes)
+                {
+                    foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data Components
+                    {
+                        if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataComponent is from that browsernode then run
+                        {
+                            SpawnPoints.Remove(ucs);
+                            ucs.Delete();
+                            node.Delete();
+                        }
+                    }
+                }
+            }
+        }
+
+
+        public void EditSpawnLocation_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
-                inExportView = false;// tell the event reactors to not react because we are no longer in export mode
-                writeFieldComponentNames();// write the browser folder names to the property sets so we can read them next time the program is run
-                foreach (FieldDataComponent data in FieldComponents)
-                {// looks at all the components in fieldComponent
-                    writeSaveFieldComponent(data);// writes the saved data to the property set
+
+                coorForm = new EditCoordinate();
+                bool selected = false;
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
+                {
+                    if (node.Selected)
+                    {
+                        foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data Components
+                        {
+                            if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataComponent is from that browsernode then run
+                            {
+                                selected = true;// if one node is selected then we can add the new sub assembly
+                            }
+                        }
+                    }
                 }
-                FieldComponents = new ArrayList();// clear the arraylist of components
-                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
-                {// looks at all the nodes under the top node
-                    node.Delete();// deletes the nodes
+                if (selected)// if there is a selected node then we can add a part to it
+                {
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
+                    {
+                        if (node.Selected)
+                        {
+                            foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data Components
+                            {
+                                if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataComponent is from that browsernode then run
+                                {
+                                    coorForm.ReadData(ucs);
+                                    coorForm.Show();
+                                }
+                            }
+                        }
+                    }
                 }
-                oPane.Visible = false;// hide the browser pane because we aren't exporting anymore
-                addNewComponent.Enabled = false;
-                editComponent.Enabled = false;
-                removeComponent.Enabled = false;
-                addAssembly.Enabled = false;
-                beginExporter.Enabled = true;// sets the correct buttons states
-                cancelExport.Enabled = false;
-                exportField.Enabled = false;
-                addPart.Enabled = false;
-                removeAssembly.Enabled = false;
-                removePart.Enabled = false;
+                else
+                {
+                    UserCoordinateSystem Choose = (UserCoordinateSystem)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                                      (SelectionFilterEnum.kUserCoordinateSystemFilter, "Select a UCS to edit");
+                    coorForm.ReadData(Choose);
+                    coorForm.Show();
+                }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
         }
-        
-        //Read the saved data
-        private void readSaveFieldData()
+        public void CreateNewSpawnLocation_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                AssemblyDocument oDocs;
+                oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+                AssemblyComponentDefinition oCompDef;
+                oCompDef = oDocs.ComponentDefinition;
+                TransientGeometry oTG;
+                oTG = m_inventorApplication.TransientGeometry;
+                Matrix oMatrix;
+                oMatrix = oTG.CreateMatrix();
+                Matrix oTranslationMatrix;
+                oTranslationMatrix = oTG.CreateMatrix();
+                oTranslationMatrix.SetTranslation(oTG.CreateVector(0, 50, 0));
+                oMatrix.TransformBy(oTranslationMatrix);
+                UserCoordinateSystemDefinition oUCSDef;
+                oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
+                oUCSDef.Transformation = oMatrix;
+                UserCoordinateSystem oUCS;
+                oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);
+                try
+                {
+                    oUCS.Name = "Spawn: " + spawnLocationNumber;
+                }
+                catch (Exception)
+                {
+                    spawnLocationNumber++;
+                    oUCS.Name = "Spawn: " + spawnLocationNumber;
+                }
+                spawnLocationNumber++;
+                SpawnPoints.Add(oUCS);
+                BrowserNodeDefinition def;
+                int th = rand.Next();// get the next random number for the browser node's internal id
+                ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
+                ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
+                oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
+                try
+                {
+                    oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                }
+                catch (Exception)
+                {// if the method fails then assume that there is already a ClientNodeResource
+                    oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+                }
+                def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(oUCS.Name, th, oRes);// creates a new browser node def for the field data
+                oPane.TopNode.AddChild(def);// add the browsernode to the topnode
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+        // edits the properties of the Component
+        public static void EditComponentProperites_OnExecute(Inventor.NameValueMap Context)
+        {
+
+            //read from the temp save the proper field values
+            form.ReadFromData(selectedComponent);
+            //show a dialog for the user to enter in values
+            form.ShowDialog();
+        }
+        // adds new property Component to the browser pane
+
+        public static void AddNewComponent_OnExecute(Inventor.NameValueMap Context)
+        {
+
+            // create a new enter name form
+            EnterName form = new EnterName();
+            //show the form to the user
+            System.Windows.Forms.Application.Run(form);
+        }
+        // cancels the export
+
+        public void CancelExporter_OnExecute(Inventor.NameValueMap Context)
+        {
+            if (!ErrorCancel)
+            {
+                try
+                {
+                    inExportView = false;// tell the event reactors to not react because we are no longer in export mode
+                    WriteFieldComponentNames();// write the browser folder names to the property sets so we can read them next time the program is run
+                    foreach (FieldDataComponent data in FieldComponents)
+                    {// looks at all the components in fieldComponent
+                        WriteSaveFieldComponent(data);// writes the saved data to the property set
+
+                    }
+                    FieldComponents = new ArrayList();// clear the arraylist of components
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+                    {// looks at all the nodes under the top node
+                        node.Delete();// deletes the nodes
+                    }
+                    oPane.Visible = false;// hide the browser pane because we aren't exporting anymore
+                    addNewComponent.Enabled = false;
+                    editComponent.Enabled = false;
+                    removeComponent.Enabled = false;
+                    addAssembly.Enabled = false;
+                    beginExporter.Enabled = true;// sets the correct buttons states
+                    cancelExport.Enabled = false;
+                    exportField.Enabled = false;
+                    addPart.Enabled = false;
+                    removeAssembly.Enabled = false;
+                    removeSubAssembly.Enabled = false;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString());
+                } 
+            }
+            ErrorCancel = false;
+        }
+        // read the saved data
+        private void ReadSaveFieldData()
         {
             try
             {
@@ -1200,6 +1315,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     if (s.DisplayName.Equals("Number of Folders"))
                     {// is the name is correct the assume it is what we are looking fos
                         name = (String)s.ItemByPropId[2].Value;// reads the names for the field data Component
+                        spawnLocationNumber = (int)s.ItemByPropId[3].Value;
                     }
                 }
                 String[] names = name.Split(arr);// set names equal to the string of dataComponent without its limits
@@ -1210,7 +1326,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                         foreach (PropertySet set in sets)
                         {// looks at all the sets in the propertysets of the document
                             if (set.Name.Equals(n))
-                            {// if the set name is the same as the name then we assume they are the same
+                            {// if the set name is the Same as the name then we assume they are the Same
                                 String[] keys = ((String)set.ItemByPropId[11].Value).Split(arr);// set names equal to the string of occurences refkeys without its limits
                                 foreach (String m in keys)
                                 {// looks at the strings in names, each one represents a potential occurence
@@ -1229,11 +1345,12 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                         }
                                     }
                                 }
-                                BrowserNodeDefinition selectedFolder = addComponent(((String)set.ItemByPropId[10].Value));// create a new browsernodedef with the name from the old dataComponent
+                                BrowserNodeDefinition selectedFolder = AddComponent(((String)set.ItemByPropId[10].Value));// create a new browsernodedef with the name from the old dataComponent
                                 FieldDataComponent field = null;
+
                                 foreach (FieldDataComponent f in FieldComponents)
                                 {
-                                    if (f.same(selectedFolder))
+                                    if (f.Same(selectedFolder))
                                     {
                                         field = f;
                                     }
@@ -1254,15 +1371,39 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                         }
                     }
                 }
+                for (int i = 0; i < spawnLocationNumber + 1; i++)
+                {
+                    foreach (UserCoordinateSystem ucs in ((AssemblyComponentDefinition)((AssemblyDocument)m_inventorApplication.ActiveDocument).ComponentDefinition).UserCoordinateSystems)
+                    {
+                        if (ucs.Name.Equals("Spawn: " + i))
+                        {
+                            SpawnPoints.Add(ucs);
+                            BrowserNodeDefinition def;
+                            int th = rand.Next();// get the next random number for the browser node's internal id
+                            ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
+                            ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
+                            oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
+                            try
+                            {
+                                oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                            }
+                            catch (Exception)
+                            {// if the method fails then assume that there is already a ClientNodeResource
+                                oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+                            }
+                            def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(ucs.Name, th, oRes);// creates a new browser node def for the field data
+                            oPane.TopNode.AddChild(def);// add the browsernode to the topnode
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
         }
-        
-        //Writes the name of the dataComponents to a property set so we can read them later
-        private void writeFieldComponentNames()
+        // writes the name of the dataComponents to a property set so we can read them later
+        private void WriteFieldComponentNames()
         {
             String g = "";// a string to add the names of the data Components to, we do this so we can read the data at the start of the exporter
             PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;// the property sets of the document
@@ -1281,7 +1422,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 foreach (PropertySet s in sets)
                 {// looks at all the property sets in the propertsets
                     if (s.DisplayName.Equals("Number of Folders"))
-                    {// if the name is the same then we assume that the property set is the same
+                    {// if the name is the Same then we assume that the property set is the Same
                         set = s;// set the property set to the found one
                     }
                 }
@@ -1294,11 +1435,17 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             {// if that fails we assume that there is already that property so we write to it
                 set.ItemByPropId[2].Value = g;// write the value to the property
             }
-            
+            try
+            {
+                set.Add(spawnLocationNumber, "Number of Spawn Locations", 3);// write the value to the property
+            }
+            catch (Exception)
+            {
+                set.ItemByPropId[3].Value = spawnLocationNumber;// write the value to the property
+            }
         }
-        
-        //Writes the data Components to the propery set
-        private void writeSaveFieldComponent(FieldDataComponent f)
+        // writes the data Components to the propery set
+        private void WriteSaveFieldComponent(FieldDataComponent f)
         {
             PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;// the property sets of the document
             PropertySet set = null;// a set to add the data to 
@@ -1310,7 +1457,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             {// if that fails then we assume there is already a property set for this set
                 foreach (PropertySet s in sets)
                 {// looks at the property set in the document's property sets
-                    if (s.DisplayName.Equals(f.Name))// if the name is the same as another property set we assume we want to use this one
+                    if (s.DisplayName.Equals(f.Name))// if the name is the Same as another property set we assume we want to use this one
                     {
                         set = s;//set the property set to the found set
                     }
@@ -1330,6 +1477,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
+
             }
             try
             {// try to write the data to new properties
@@ -1358,20 +1506,16 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 set.ItemByPropId[11].Value = g;
             }
         }
-        
-        //Exports the field
-        public void exportField_OnExecute(Inventor.NameValueMap Context)
+        // exports the field
+        public static void ExportField_OnExecute(Inventor.NameValueMap Context)
         {
-            if(FieldComponents.Count == 0)
-            {
-                MessageBox.Show("ERROR: No Field Components!");
-                return;
-            }
-            envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
             FieldSaver exporter = new FieldSaver(m_inventorApplication, FieldComponents);
+            Thread exportingThread = new Thread(new ThreadStart(exporter.BeginExport));
+            exportingThread.Start();
+            envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
+            exportingThread.Join();
         }
     }
-
     //class that helps with images
     internal class AxHostConverter : AxHost
     {

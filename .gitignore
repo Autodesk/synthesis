@@ -22,3 +22,5 @@ installer/README.pdf
 installer/cygscripts/http*
 *.sdf
 *.VC.db
+
+Replays/

@@ -36,7 +36,7 @@ public class DummyScrollable : ScrollablePanel
     {
         if (mainState == null) mainState = ((MainState)StateMachine.Instance.CurrentState);
     }
-
+    /*
     // Update is called once per frame
     protected override void OnGUI()
     {
@@ -83,5 +83,5 @@ public class DummyScrollable : ScrollablePanel
             //The cause of the bug is unknown, but control is regained when the dummy object makes any sort of collision, which is why changing the velocity helps.
             ((RigidNode)mainState.activeRobot).MainObject.GetComponent<BRigidBody>().GetComponentInChildren<BRigidBody>().velocity = Vector3.up*5;
         }
-    }
+    }*/
 }
