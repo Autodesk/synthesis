@@ -9,7 +9,7 @@ using UnityEngine.UI;
 // Description: Controls the individual player's controls through KeyMapping Lists and Maps
 // Adapted from: https://github.com/Gris87/InputControl
 //=========================================================================================
-public class Player : MonoBehaviour
+public class Player
 {
     public Player()
     {

@@ -619,14 +619,17 @@ public class CreateButton : MonoBehaviour
             case 0:  //Tank Drive slider is OFF
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
                 UpdateActiveButtons();
+                Controls.TankDriveEnabled = false;
                 break;
             case 1:  //Tank Drive slider is ON
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
                 UpdateActiveButtons();
+                Controls.TankDriveEnabled = true;
                 break;
             default: //Defaults to Arcade Drive
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
                 UpdateActiveButtons();
+                Controls.TankDriveEnabled = false;
                 break;
         }
     }
