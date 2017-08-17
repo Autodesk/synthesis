@@ -224,7 +224,7 @@ public class Robot : MonoBehaviour
 
             RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelDirectory + "\\skeleton.bxdj");
 
-            Material[] materials = { new Material("empty") };
+            Material[] materials = new Material[0];
             AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
             {
 

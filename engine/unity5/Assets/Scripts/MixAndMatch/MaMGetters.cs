@@ -65,7 +65,7 @@ public class MaMGetters : MonoBehaviour {
             case 1: //colson wheel
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson");
             case 2: //omni wheel
-                break;
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Omni");
             case 3: //pnemuatic wheel
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Pneumatic");
 
