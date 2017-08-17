@@ -214,6 +214,8 @@ public class Robot : MonoBehaviour
             List<Mesh> meshList = new List<Mesh>();
             List<Material[]> materialList = new List<Material[]>();
 
+            RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelDirectory);
+            
             Material[] materials = { new Material("empty") }; 
             AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
             {
@@ -271,7 +273,7 @@ public class Robot : MonoBehaviour
                 //node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds = b;
 
                 node.CreateJoint(numWheels);
-
+                node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelNode.GetDriverMeta<WheelDriverMeta>().radius;
                 if (node.PhysicalProperties != null)
                     collectiveMass += node.PhysicalProperties.mass;
 
