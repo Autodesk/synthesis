@@ -49,6 +49,27 @@ public class MaMGetters : MonoBehaviour {
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
     }
 
+    ///<summary>
+    ///Returns the string destination path of a wheel
+    /// </summary>
+    public string GetWheel(int wheelID)
+    {
+        switch (wheelID)
+        {
+            case 0: //traction wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Traction\\node_0.bxda");
+            case 1: //colson wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson\\node_0.bxda");
+            case 2: //omni wheel
+                break;
+            case 3: //pnemuatic wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Pneumatic\\node_0.bxda");
+
+        }
+
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson\\node_0.bxda");
+    }
+
     ///<summary> 
     /// Returns the coefficient of friction value associated with a wheel. The coeffecient of friction is taken from VexPro's website. 
     /// These may need to be adjusted.
