@@ -60,12 +60,18 @@ public class Robot : MonoBehaviour
 
     public int robotHasManipulator;
 
+    public float Speed { get; private set; }
+    private float oldSpeed;
+    public float Weight { get; private set; }
+    public float AngularVelocity { get; private set; }
+    public float Acceleration { get; private set; }
+
     /// <summary>
     /// Called when robot is first initialized
     /// </summary>
     void Start()
     {
-        robotHasManipulator  = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
+        robotHasManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
     }
 
     /// <summary>
@@ -132,6 +138,8 @@ public class Robot : MonoBehaviour
         {
             Resetting();
         }
+
+        UpdateStats();
     }
 
     /// <summary>
@@ -186,7 +194,7 @@ public class Robot : MonoBehaviour
         float collectiveMass = 0f;
 
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch");
-        if(isMixAndMatch == 1)
+        if (isMixAndMatch == 1)
         {
             //Load Node_0
             RigidNode node = (RigidNode)nodes[0];
@@ -214,12 +222,12 @@ public class Robot : MonoBehaviour
             List<Mesh> meshList = new List<Mesh>();
             List<Material[]> materialList = new List<Material[]>();
 
-           // RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelDirectory);
-            
-            Material[] materials = { new Material("empty") }; 
+            // RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelDirectory);
+
+            Material[] materials = { new Material("empty") };
             AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
             {
-              
+
                 meshList.Add(meshu);
 
                 materials = new Material[meshu.subMeshCount];
@@ -227,7 +235,7 @@ public class Robot : MonoBehaviour
                 {
                     materials[i] = sub.surfaces[i].AsMaterial(true);
                 }
-                    
+
                 materialList.Add(materials);
                 //meshObject.GetComponent<MeshRenderer>().materials = materials;
             }, true);
@@ -237,7 +245,7 @@ public class Robot : MonoBehaviour
                 node = (RigidNode)nodes[i];
                 node.CreateTransform(transform);
 
-               
+
                 if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
                 {
                     Debug.Log("Robot not loaded!");
@@ -267,20 +275,21 @@ public class Robot : MonoBehaviour
 
                 node.MainObject.GetComponentInChildren<MeshRenderer>().materials = materials;
                 //node.MainObject.transform.GetChild(0).localPosition = -node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds.center;// -node.MainObject.transform.localPosition;
-               //Bounds b = node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds;
-               // Debug.Log(b.center); 
+                //Bounds b = node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds;
+                // Debug.Log(b.center); 
                 //b.center = node.MainObject.transform.position;
                 //node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds = b;
 
                 node.CreateJoint(numWheels);
-               // node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelNode.GetDriverMeta<WheelDriverMeta>().radius;
+                // node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelNode.GetDriverMeta<WheelDriverMeta>().radius;
                 if (node.PhysicalProperties != null)
                     collectiveMass += node.PhysicalProperties.mass;
 
                 if (node.MainObject.GetComponent<BRigidBody>() != null)
                     node.MainObject.AddComponent<Tracker>().Trace = true;
             }
-        } else
+        }
+        else
         {
             //Initializes the nodes
             foreach (RigidNode_Base n in nodes)
@@ -306,7 +315,7 @@ public class Robot : MonoBehaviour
 
         #endregion
 
-     
+
         //Get the offset from the first node to the robot for new robot start position calculation
         //This line is CRITICAL to new reset position accuracy! DON'T DELETE IT!
         nodeToRobotOffset = gameObject.transform.GetChild(0).localPosition - robotStartPosition;
@@ -330,7 +339,7 @@ public class Robot : MonoBehaviour
         //Initializing robot cameras
         bool hasRobotCamera = false;
         //If you are getting an error referencing this line, it is likely that the Game Object "RobotCameraList" in Scene.unity does not have the RobotCameraManager script attached to it.
-        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>(); 
+        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
 
         //Loop through robotCameraList and check if any existing camera should attach to this robot
         foreach (GameObject robotCamera in robotCameraManager.GetRobotCameraList())
@@ -354,7 +363,7 @@ public class Robot : MonoBehaviour
             ////Attached to main frame and face the back
             robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
         }
-        
+
         return true;
     }
 
@@ -377,7 +386,7 @@ public class Robot : MonoBehaviour
         Destroy(manipulatorObject);
     }
 
-     
+
     /// <summary>
     /// Return the robot to robotStartPosition and destroy extra game pieces
     /// </summary>
@@ -426,11 +435,11 @@ public class Robot : MonoBehaviour
             }
 
         }
-        
+
         //Where "save orientation" works
         RotateRobot(robotStartOrientation);
 
-        GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5) ;
+        GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5);
         if (IsResetting)
         {
             Debug.Log("is resetting!");
@@ -469,7 +478,7 @@ public class Robot : MonoBehaviour
         {
             robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
 
-            robotStartPosition = new Vector3(transform.GetChild(0).transform.localPosition.x - nodeToRobotOffset.x, robotStartPosition.y, 
+            robotStartPosition = new Vector3(transform.GetChild(0).transform.localPosition.x - nodeToRobotOffset.x, robotStartPosition.y,
                 transform.GetChild(0).transform.localPosition.z - nodeToRobotOffset.z);
             EndReset();
         }
@@ -773,5 +782,46 @@ public class Robot : MonoBehaviour
 
         RotateRobot(robotStartOrientation);
         return true;
+    }
+
+    /// <summary>
+    /// Update the stats for robot depending on whether it's metric or not
+    /// </summary>
+    public void UpdateStats()
+    {
+        GameObject mainNode = transform.GetChild(0).gameObject;
+        //calculates stats of robot
+        if (mainNode != null)
+        {
+            Speed = (float)Math.Abs(mainNode.GetComponent<BRigidBody>().velocity.magnitude);
+            Weight = GetWeight();
+            AngularVelocity = (float)Math.Abs(mainNode.GetComponent<BRigidBody>().angularVelocity.magnitude);
+            Acceleration = (float)(mainNode.GetComponent<BRigidBody>().velocity.magnitude - oldSpeed) / Time.deltaTime;
+            oldSpeed = Speed;
+            if (!mainState.IsMetric)
+            {
+                Speed = (float)Math.Round(Speed * 3.28084, 1);
+                Acceleration = (float)Math.Round(Acceleration * 3.28084, 1);
+                Weight = (float)Math.Round(Weight * 2.20462, 1);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Get the total weight of the robot
+    /// </summary>
+    /// <returns></returns>
+    public float GetWeight()
+    {
+        float weight = 0;
+
+        foreach(Transform child in gameObject.transform)
+        {
+            if (child.GetComponent<BRigidBody>() != null)
+            {
+                weight += (float)child.GetComponent<BRigidBody>().mass;
+            }
+        }
+        return weight;
     }
 }
