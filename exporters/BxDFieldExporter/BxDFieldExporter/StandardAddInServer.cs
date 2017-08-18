@@ -1160,11 +1160,21 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 SetAllButtons(true);
                 return;
             }
-            UpdateLegacy();
-            Program.ASSEMBLY_DOCUMENT = (AssemblyDocument)InventorApplication.ActiveDocument;
-            Program.INVENTOR_APPLICATION = InventorApplication;
-            LegacyUtilities.exporter.ShowDialog();
-            SetAllButtons(true);
+            DialogResult result = MessageBox.Show("To export correctly, all parts and assemblies should be assigned to components.\nDo you wish to continue?",
+                "Warning", MessageBoxButtons.OKCancel);
+            if(result == DialogResult.Cancel)
+            {
+                SetAllButtons(true);
+                return;
+            }
+            else
+            {
+                UpdateLegacy();
+                Program.ASSEMBLY_DOCUMENT = (AssemblyDocument)InventorApplication.ActiveDocument;
+                Program.INVENTOR_APPLICATION = InventorApplication;
+                LegacyUtilities.exporter.ShowDialog();
+                SetAllButtons(true);
+            }
         }
 
         //Generic function for removing both parts and assemblies
