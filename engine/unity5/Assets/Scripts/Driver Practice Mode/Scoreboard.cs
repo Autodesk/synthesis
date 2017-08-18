@@ -100,37 +100,28 @@ public class Scoreboard : MonoBehaviour
     /// Saves the events of the current game to a file.
     /// </summary>
     /// <returns>The directory of the stat file.</returns>
-   
-    // Opens a file selection dialog for a PNG file and saves a selected texture to the file.
 
+    // Opens a file selection dialog for a file and saves a selected file to the file.
+
+    public static string fileName;
 
 public class EditorUtilitySaveFilePanel : MonoBehaviour
 {
     [MenuItem("Save Database to file")]
     static void NewFile()
     {
-        Texture2D texture = Selection.activeObject as Texture2D;
-        if (texture == null)
-        {
             EditorUtility.DisplayDialog(
-                "Select Texture",
-                "You Must Select a Texture first!",
+                "Create Database",
+                "Please Create a Database",
                 "Ok");
             return;
-        }
+        
 
         var path = EditorUtility.SaveFilePanel(
-                "Save texture as PNG",
+                "Save database as .txt",
                 "",
-                texture.name + ".png",
-                "png");
-
-        if (path.Length != 0)
-        {
-            var pngData = texture.EncodeToPNG();
-            if (pngData != null)
-                File.WriteAllBytes(path, pngData);
-        }
+                fileName + ".txt",
+                "txt");
     }
 }
     public string Save()
@@ -181,19 +172,12 @@ public class EditorUtilitySaveFilePanel : MonoBehaviour
         [MenuItem("Load Database")]
         static void LoadFile()
         {
-            Texture2D texture = Selection.activeObject as Texture2D;
-            if (texture == null)
-            {
-                EditorUtility.DisplayDialog("Select Texture", "You must select a texture first!", "OK");
-                return;
-            }
+            
+            EditorUtility.DisplayDialog("Select Text File", "You must select a text file first!", "OK");
+            return;
 
             string path = EditorUtility.OpenFilePanel("Overwrite with png", "", "png");
-            if (path.Length != 0)
-            {
-                WWW www = new WWW("file:///" + path);
-                www.LoadImageIntoTexture(texture);
-            }
+           
         }
     }
 
