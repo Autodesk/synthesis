@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 
 namespace BxDFieldExporter {
-    public enum ColliderType { Sphere, Box, Mesh };
+    public enum ColliderType { Box, Sphere, Mesh };
     public class FieldDataComponent {
         public ArrayList compOcc;
         public ColliderType colliderType;
@@ -31,7 +31,7 @@ namespace BxDFieldExporter {
             Mass = 0;
             this.ID = ID;
         }
-        public void copyToNewComponent(FieldDataComponent f) {
+        public void CopyToNewComponent(FieldDataComponent f) {
             f.colliderType = colliderType;
             f.X = X;
             f.Y = Y;
@@ -42,7 +42,7 @@ namespace BxDFieldExporter {
             f.Mass = Mass;
             f.ID = ID;
         }
-        public bool same(BrowserNodeDefinition f) {
+        public bool Same(BrowserNodeDefinition f) {
             if (f.Label.Equals(node.Label)) {
                 return true;
             }

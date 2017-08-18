@@ -1,6 +1,8 @@
 ﻿
-namespace BxDFieldExporter {
-    partial class ComponentPropertiesForm {
+namespace BxDFieldExporter
+{
+    partial class ComponentPropertiesForm
+    {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
@@ -10,8 +12,10 @@ namespace BxDFieldExporter {
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing) {
-            if (disposing && (components != null)) {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -23,7 +27,8 @@ namespace BxDFieldExporter {
         /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.physicalPropertiesGroupBox = new System.Windows.Forms.GroupBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.frictionLabelsLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -85,7 +90,7 @@ namespace BxDFieldExporter {
             // 
             // frictionLabelsLayoutPanel
             // 
-            this.frictionLabelsLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.frictionLabelsLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.frictionLabelsLayoutPanel.ColumnCount = 3;
             this.frictionLabelsLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
@@ -132,7 +137,7 @@ namespace BxDFieldExporter {
             // 
             // dynamicCheckBox
             // 
-            this.dynamicCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.dynamicCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dynamicCheckBox.AutoSize = true;
             this.dynamicCheckBox.Location = new System.Drawing.Point(12, 82);
@@ -141,11 +146,11 @@ namespace BxDFieldExporter {
             this.dynamicCheckBox.TabIndex = 8;
             this.dynamicCheckBox.Text = "Dynamic";
             this.dynamicCheckBox.UseVisualStyleBackColor = true;
-            this.dynamicCheckBox.CheckedChanged += new System.EventHandler(this.dynamicCheckBox_CheckedChanged);
+            this.dynamicCheckBox.CheckedChanged += new System.EventHandler(this.DynamicCheckBox_CheckedChanged);
             // 
             // frictionTrackBar
             // 
-            this.frictionTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.frictionTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.frictionTrackBar.Location = new System.Drawing.Point(70, 21);
             this.frictionTrackBar.Maximum = 100;
@@ -154,11 +159,11 @@ namespace BxDFieldExporter {
             this.frictionTrackBar.TabIndex = 2;
             this.frictionTrackBar.TickFrequency = 50;
             this.frictionTrackBar.Value = 50;
-            this.frictionTrackBar.Scroll += new System.EventHandler(this.frictionTrackBar_Scroll);
+            this.frictionTrackBar.Scroll += new System.EventHandler(this.FrictionTrackBar_Scroll);
             // 
             // dynamicGroupBox
             // 
-            this.dynamicGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.dynamicGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dynamicGroupBox.Controls.Add(this.comboBox1);
             this.dynamicGroupBox.Controls.Add(this.massNumericUpDown);
@@ -180,11 +185,11 @@ namespace BxDFieldExporter {
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(53, 24);
             this.comboBox1.TabIndex = 11;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
             // 
             // massNumericUpDown
             // 
-            this.massNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.massNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.massNumericUpDown.DecimalPlaces = 2;
             this.massNumericUpDown.Location = new System.Drawing.Point(89, 21);
@@ -268,7 +273,7 @@ namespace BxDFieldExporter {
             // 
             // colliderTypeCombobox
             // 
-            this.colliderTypeCombobox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.colliderTypeCombobox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.colliderTypeCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.colliderTypeCombobox.Items.AddRange(new object[] {
@@ -297,7 +302,7 @@ namespace BxDFieldExporter {
             // 
             // propertiesLayoutPanel
             // 
-            this.propertiesLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.propertiesLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertiesLayoutPanel.AutoSize = true;
             this.propertiesLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;

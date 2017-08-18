@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Inventor;
 
 namespace BxDFieldExporter {
     public partial class EnterName : Form {
@@ -13,8 +14,9 @@ namespace BxDFieldExporter {
         /// </summary
         /// 
         public EnterName() {
-            InitializeComponent();
 
+            InitializeComponent();
+            nameTextBox.KeyDown += new KeyEventHandler(EnterName_KeyDown);
         }
 
         /// <summary>
@@ -22,22 +24,63 @@ namespace BxDFieldExporter {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void nameTextBox_TextChanged(object sender, EventArgs e) {
+        private void NameTextBox_TextChanged(object sender, EventArgs e) {
             if (nameTextBox.Text.Length > 0) {
                 okButton.Enabled = true;
             }
             else {
                 okButton.Enabled = false;
             }
+            
         }
         private void OKButton_OnClick(object sender, EventArgs e) {
             name = nameTextBox.Text;
+            StandardAddInServer.AddComponent(name);
             this.Close();
             this.Dispose(true);
-            StandardAddInServer.addComponent(name);
+            
         }
         private void CancleButton_OnClick(object sender, EventArgs e) {
             this.Dispose(true);
+        }      
+
+        //private void NameTextBox_OnKeyPress(object sender, KeyPressEventArgs e)
+        //{
+        //    if (e.KeyChar == 13)
+        //    {
+        //        e.Handled = true;
+        //        name = nameTextBox.Text;
+        //        StandardAddInServer.AddComponent(name);
+        //        this.Close();
+        //        this.Dispose(true);
+        //    }
+        //    else if (e. == 27)
+        //    {
+        //        MessageBox.Show("escape works");
+        //    }
+        //}
+
+        private void EnterName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                name = nameTextBox.Text;
+                StandardAddInServer.AddComponent(name);
+                this.Close();
+                this.Dispose(true);
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape && nameTextBox.Focused)
+            {
+                this.Close();
+                this.Dispose(true);
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

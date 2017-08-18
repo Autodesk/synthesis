@@ -47,7 +47,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.buildLabel = new System.Windows.Forms.Label();
-            this.synthesisBulletButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -147,16 +146,19 @@
             resources.ApplyResources(this.liveUpdater, "liveUpdater");
             this.liveUpdater.BackColor = System.Drawing.Color.Transparent;
             this.liveUpdater.Name = "liveUpdater";
+            this.liveUpdater.Click += new System.EventHandler(this.liveUpdater_Click);
             // 
             // label3
             // 
             resources.ApplyResources(this.label3, "label3");
             this.label3.Name = "label3";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4
             // 
             resources.ApplyResources(this.label4, "label4");
             this.label4.Name = "label4";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label5
             // 
@@ -169,18 +171,10 @@
             this.buildLabel.BackColor = System.Drawing.Color.Transparent;
             this.buildLabel.Name = "buildLabel";
             // 
-            // synthesisBulletButton
-            // 
-            resources.ApplyResources(this.synthesisBulletButton, "synthesisBulletButton");
-            this.synthesisBulletButton.Name = "synthesisBulletButton";
-            this.synthesisBulletButton.UseVisualStyleBackColor = true;
-            this.synthesisBulletButton.Click += new System.EventHandler(this.synthesisBulletButton_Click);
-            // 
             // LaunchForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.synthesisBulletButton);
             this.Controls.Add(this.buildLabel);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -196,6 +190,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "LaunchForm";
+            this.Load += new System.EventHandler(this.LaunchForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -223,7 +218,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label buildLabel;
-        private System.Windows.Forms.Button synthesisBulletButton;
     }
 }
 
