@@ -451,8 +451,8 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void ToggleUnitConversion()
     {
+        unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
         int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-
         main.IsMetric = (i == 1 ? true : false);
     }
 
