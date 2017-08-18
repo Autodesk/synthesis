@@ -42,7 +42,7 @@ public class DriverPracticeRobot : MonoBehaviour
     public List<bool> displayTrajectories; //projects gamepiece trajectories if true
     private List<LineRenderer> drawnTrajectory;
 
-    public bool modeEnabled = false;
+    public bool modeEnabled = true;
 
     private int configuringIndex = 0;
     private int processingIndex = 0; //we use this to alternate which index is processed first.
