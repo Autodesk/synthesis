@@ -8,6 +8,7 @@ using System.Collections.Generic;
 public class CreateButton : MonoBehaviour
 {
     public GameObject tankDriveSwitch;
+    public GameObject unitConversionSwitch;
 
     public GameObject keyNamePrefab;
     public GameObject keyButtonsPrefab;
@@ -20,6 +21,10 @@ public class CreateButton : MonoBehaviour
     void Start()
     {
         DestroyList();
+        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
+        //Can change the default measure HERE and also change the default value in the slider game object in main menu
+        PlayerPrefs.SetString("Measure", "Metric");
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         namesTransform = transform.Find("Names");
         keysTransform = transform.Find("Keys");
@@ -611,7 +616,7 @@ public class CreateButton : MonoBehaviour
     /// </summary>
     public void TankSlider()
     {
-        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        //tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
 
         switch (i)
@@ -635,12 +640,32 @@ public class CreateButton : MonoBehaviour
     }
 
     /// <summary>
+    /// Set the player preference for measurement units
+    /// </summary>
+    public void UnitConversionSlider()
+    {
+        int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
+
+        switch (i)
+        {
+            case 0:  //unit conversion slider is OFF
+                PlayerPrefs.SetString("Measure", "Imperial");
+                break;
+            case 1:  //unit conversion slider is ON
+                PlayerPrefs.SetString("Measure", "Metric");
+                break;
+        }
+    }
+    /// <summary>
     /// Updates Tank Drive Slider from MainMenu to the active Scene.
     /// </summary>
     public void OnEnable()
     {
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
+        unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
+        unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 1 : 0;
+    
     }
 
     /// <summary>
@@ -648,7 +673,7 @@ public class CreateButton : MonoBehaviour
     /// </summary>
     public void UpdateTankSlider()
     {
-        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        //tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
     }
 }

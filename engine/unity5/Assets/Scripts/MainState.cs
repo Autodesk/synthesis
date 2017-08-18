@@ -12,6 +12,7 @@ using Assets.Scripts.FSM;
 using System.Linq;
 using Assets.Scripts.BUExtensions;
 using Assets.Scripts;
+using UnityEngine.UI;
 
 /// <summary>
 /// This is the main class of the simulator; it handles all the initialization of robot and field objects within the simulator.
