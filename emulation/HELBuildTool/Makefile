@@ -10,12 +10,16 @@ ifndef SYNTHESIS_INCLUDES
 	SYNTHESIS_INCLUDES := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/include
 endif
 
-CCFLAGS := -m64 -L$(SYNTHESIS_LIBS)/ntcore -L$(SYNTHESIS_LIBS)/cpp -L$(SYNTHESIS_LIBS)/hal \
+CCFLAGS := -m32 -L$(SYNTHESIS_LIBS)/ntcore -L$(SYNTHESIS_LIBS)/cpp -L$(SYNTHESIS_LIBS)/hal \
 	-lwpilib -lntcore-static -lHAL -lWs2_32 \
+	-I$(SYNTHESIS_INCLUDES)/allwpilib/wpilibc/athena/include -I$(SYNTHESIS_INCLUDES)/allwpilib/wpilibc/shared/include \
 	-I$(SYNTHESIS_INCLUDES)/wpilibc/athena/include -I$(SYNTHESIS_INCLUDES)/wpilibc/shared/include \
-	-I$(SYNTHESIS_INCLUDES)/include -I$(SYNTHESIS_INCLUDES)/ni-libraries/include \
+	-I$(SYNTHESIS_INCLUDES)/include \
+	-I$(SYNTHESIS_INCLUDES)/allwpilib/ni-libraries/include \
+	-I$(SYNTHESIS_INCLUDES)/ni-libraries/include \
 	-I$(SYNTHESIS_INCLUDES)/wpiutil/src/main/native/include/ \
-	-I$(SYNTHESIS_INCLUDES)/ntcore/include -std=c++11
+	-I$(SYNTHESIS_INCLUDES)/ntcore/include -std=c++11 \
+	-Iinclude
 ifeq ($(TARGET), debug)
 	CCFLAGS :=	$(CCFLAGS) -O0 -g
 else
@@ -25,9 +29,6 @@ endif
 SRC_FILES = $(shell find ./ -name "*.cpp")
 HEADER_FILES = $(shell find ./ -name "*.h")
 OBJ_FILES =	$(addprefix build/,$(patsubst %.cpp,%.o,$(SRC_FILES)))
-ifndef TEAM_ID_FILE
-	TEAM_ID_FILE := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool/teamID.cpp
-endif
 
 .PHONY: build/FRC_UserProgram
 
@@ -43,4 +44,4 @@ build/teamID.o: /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/Synthesis
 build/%.o: %.cpp | $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC) -c $< -o $@ $(CCFLAGS)
+	@$(CC) $(CCFLAGS) -c $< -o $@
