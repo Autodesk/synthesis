@@ -463,12 +463,30 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (dpmRobot.modeEnabled)
         {
+            // This should be changed to defaut to file set in user preferences.
             string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\";
             string fileName = string.Format("score_log_{0:yyyy-MM-dd_hh-mm-ss-tt}.txt", System.DateTime.Now);
 
             scoreboard.Save(filePath, fileName);
 
             UserMessageManager.Dispatch("Saved to \"" + filePath + "\\" + fileName + "\"", 10);
+        }
+        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
+    }
+
+    /// <summary>
+    /// Allow the user to select a new file to save game stats to.
+    /// </summary>
+    public void SetSaveFile()
+    {
+        if (dpmRobot.modeEnabled)
+        {
+            string filePath;
+            string fileName;
+
+            // GET NEW FILE PATH AND NAME
+
+            // SAVE FILE PATH AND NAME TO PREFERENCES
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }
