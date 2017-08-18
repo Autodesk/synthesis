@@ -20,9 +20,9 @@ namespace BxDFieldExporter
 
         public AddAssembly()
         {
-            this.Location = new System.Drawing.Point(450, 350);
+            Location = new System.Drawing.Point(450, 350);
             InitializeComponent();
-            this.TopMost = true;
+            TopMost = true;
 
             //Used to access StandardAddInServer's exposed API
             try
@@ -53,21 +53,21 @@ namespace BxDFieldExporter
 
         private void OKButton_OnClick(object sender, EventArgs e)
         {
-
-            StandardAddInServer.okButton_Clicked = true;
-            mAddInInterface.SetRunOnce(false);
-            StandardAddInServer.done = true;
+            mAddInInterface.SetDone(true);
             StandardAddInServer.task.TrySetResult(true);
-            this.Close();
+            Close();
         }
 
         private void CancelButton_onClick(object sender, EventArgs e)
         {
             mAddInInterface.SetCancel(true);
-            mAddInInterface.SetRunOnce(false);
             StandardAddInServer.task.TrySetResult(true);
-            mApplication.CommandManager.Pick(SelectionFilterEnum.kAssemblyOccurrenceFilter, "");
-            this.Close();
+            Close();
+        }
+
+        private void ApplyButton_OnClick(object sender, EventArgs e)
+        {
+            StandardAddInServer.task.TrySetResult(true);
         }
 
         private void AddAssembly_Load(object sender, EventArgs e)
@@ -78,19 +78,7 @@ namespace BxDFieldExporter
         private void CancelButton_onClick(object sender, FormClosedEventArgs e)
         {
             mAddInInterface.SetCancel(true);
-            mAddInInterface.SetRunOnce(false);
-        }
-
-        private void CancelButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ApplyButton_Click(object sender, EventArgs e)
-        {
-            mAddInInterface.SetRunOnce(false);
-            StandardAddInServer.applyButton_Clicked = true;
-            StandardAddInServer.task.TrySetResult(true);
+            Close();
         }
 
         ///// <summary>

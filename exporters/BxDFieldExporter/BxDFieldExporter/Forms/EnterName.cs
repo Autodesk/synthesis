@@ -32,12 +32,12 @@ namespace BxDFieldExporter {
         }
         private void OKButton_OnClick(object sender, EventArgs e) {
             name = nameTextBox.Text;
-            this.Close();
-            this.Dispose(true);
+            Close();
+            Dispose(true);
             StandardAddInServer.AddComponent(name);
         }
         private void CancleButton_OnClick(object sender, EventArgs e) {
-            this.Dispose(true);
+            Dispose(true);
         }
 
         private void EnterName_KeyDown(object sender, KeyEventArgs e)
@@ -47,8 +47,8 @@ namespace BxDFieldExporter {
                 e.Handled = true;
                 name = nameTextBox.Text;
                 StandardAddInServer.AddComponent(name);
-                this.Close();
-                this.Dispose(true);
+                Close();
+                Dispose(true);
             }
         }
 
@@ -56,8 +56,8 @@ namespace BxDFieldExporter {
         {
             if (keyData == Keys.Escape && nameTextBox.Focused)
             {
-                this.Close();
-                this.Dispose(true);
+                Close();
+                Dispose(true);
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
