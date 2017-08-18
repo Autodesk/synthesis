@@ -17,7 +17,8 @@ public class BeamBreaker : SensorBase
     public GameObject Receiver;
     private float sensorOffset;
     private bool isChangingOffset;
-    
+    private string state;
+
     private void FixedUpdate()
     {
         if (main != null) IsMetric = main.IsMetric;
@@ -67,11 +68,13 @@ public class BeamBreaker : SensorBase
         if (distanceToCollider < sensorOffset)
         {
             //Something is there
+            state = "Broken";
             return 1;
         }
         else
         {
             //Nothing in between
+            state = "Unbroken";
             return 0;
         }
     }
@@ -109,12 +112,14 @@ public class BeamBreaker : SensorBase
 
     public override void UpdateOutputDisplay()
     {
-        base.UpdateOutputDisplay();
         GameObject outputPanel = GameObject.Find(gameObject.name + "_Panel");
         if (outputPanel != null)
         {
+            GameObject inputField = AuxFunctions.FindObject(outputPanel, "Entry");
+            inputField.GetComponent<InputField>().text = state;
+            Debug.Log(state);
             GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
-            outputText.GetComponent<Text>().text = gameObject.name + " Output (1 closed)";
+            outputText.GetComponent<Text>().text = gameObject.name + " Output";
         }
     }
 }
