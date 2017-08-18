@@ -25,7 +25,8 @@ namespace BulletUnity
 
         private void Awake()
         {
-            GetComponent<BMultiCallbacks>().AddCallback(this);
+            if (GetComponent<BMultiCallbacks>() != null)
+                GetComponent<BMultiCallbacks>().AddCallback(this);
         }
 
         /// <summary>
