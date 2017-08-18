@@ -127,11 +127,11 @@ public class Toolkit : MonoBehaviour
                 });
                 toolkitWindow.SetActive(true);
             }
-            else
-            {
-                ToggleRulerWindow(false);
-                toolkitWindow.SetActive(false);
-            }
+        }
+        else
+        {
+            ToggleRulerWindow(false);
+            toolkitWindow.SetActive(false);
         }
     }
 
