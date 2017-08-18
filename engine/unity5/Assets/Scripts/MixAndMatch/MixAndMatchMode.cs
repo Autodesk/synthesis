@@ -115,7 +115,7 @@ public class MixAndMatchMode : MonoBehaviour
 
         //Find all the scroll buttons
         wheelRightScroll = GameObject.Find("WheelRightScroll");
-        wheelLeftScroll = GameObject.Find("WheelLeftScroll");
+        wheelLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("WheelLeftScroll")).First(); //GameObject.Find("WheelLeftScroll");
         driveBaseRightScroll = GameObject.Find("BaseRightScroll");
         driveBaseLeftScroll = GameObject.Find("BaseLeftScroll");
         manipulatorRightScroll = GameObject.Find("ManipulatorRightScroll");
