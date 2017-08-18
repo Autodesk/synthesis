@@ -9,6 +9,7 @@ using Assets.Scripts.FSM;
 class SensorManagerGUI : MonoBehaviour
 {
     SimUI simUI;
+    Toolkit toolkit;
     GameObject canvas;
     SensorBase currentSensor;
     SensorManager sensorManager;
@@ -111,6 +112,7 @@ class SensorManagerGUI : MonoBehaviour
         simUI = gameObject.GetComponent<SimUI>();
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+        toolkit = GameObject.Find("StateMachine").GetComponent<Toolkit>();
 
         sensorOptionPanel = AuxFunctions.FindObject(canvas, "SensorOptionPanel");
         sensorTypePanel = AuxFunctions.FindObject(canvas, "SensorTypePanel");
@@ -159,7 +161,7 @@ class SensorManagerGUI : MonoBehaviour
         showSensorButton = AuxFunctions.FindObject(canvas, "ShowOutputButton");
         sensorOutputPanel = AuxFunctions.FindObject(canvas, "SensorOutputBorder");
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
-
+        
     }
 
     #region Sensor Option Panel
@@ -170,6 +172,7 @@ class SensorManagerGUI : MonoBehaviour
     {
         //Deal with UI conflicts between robot camera & sensors
         robotCameraGUI.EndProcesses();
+        toolkit.EndProcesses(true);
         isChoosingOption = !isChoosingOption;
         sensorOptionPanel.SetActive(isChoosingOption);
         if (isChoosingOption)

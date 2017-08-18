@@ -609,6 +609,13 @@ public class MainState : SimState
     }
 
     /// <summary>
+    /// Cancels the active robot's unsaved orientation changes
+    /// </summary>
+    public void CancelRobotOrientation()
+    {
+        activeRobot.CancelRobotOrientation();
+    }
+    /// <summary>
     /// Sends the received packets to the active robot
     /// </summary>
     private void SendRobotPackets()
