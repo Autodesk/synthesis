@@ -104,7 +104,6 @@
             this.KeyPreview = true;
             this.Name = "AddAssembly";
             this.Text = "Add Assembly";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CancelButton_onClick);
             this.Load += new System.EventHandler(this.AddAssembly_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

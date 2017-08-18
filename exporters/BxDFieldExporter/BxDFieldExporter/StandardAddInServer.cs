@@ -18,9 +18,8 @@ namespace BxDFieldExporter
     {
         void SetDone(bool isDone);
         bool GetDone();
-        void SetRunOnce(bool run);
-        bool GetRunOnce();
         void SetCancel(bool isCancel);
+        bool GetCancel();
     }
     //TLDR: exports the field
 
@@ -53,8 +52,8 @@ namespace BxDFieldExporter
         static ButtonDefinition removeComponent;
         static ButtonDefinition ContextDelete;
         Inventor.Environment oNewEnv;
-        public static bool done;
-        static bool cancel = false;
+        private static bool done;
+        private static bool cancel = false;
         static Random rand;// random number genator that can create internal ids
         static int InternalID = 0;
         static ArrayList FieldComponents;// arraylist of all the field properties the user has set
@@ -73,8 +72,6 @@ namespace BxDFieldExporter
         Inventor.UserInterfaceEventsSink_OnEnvironmentChangeEventHandler enviroment_OnChangeEventDelegate;
         static bool inExportView;// boolean to help in detecting wether or not to react to an event based on wether or not the application is exporting
         static ComponentPropertiesForm form;// form for inputting different properties of the component
-        public static bool okButton_Clicked = false;//bool to determine if the ok button has been selected in a form 
-        public static bool applyButton_Clicked = false;//bool to determine if the apply button was selected in the AddAssembly form
         static String m_ClientId;// string the is the id of the application
         static Object currentSelected;// the current component that the user is editing, needed for the unselection stuff
         static bool found;// boolean to help in searching for objects and the corrosponding actions
@@ -169,21 +166,15 @@ namespace BxDFieldExporter
             return done;
         }
 
-        public void SetRunOnce(bool run)
-        {
-            runOnce = run;
-        }
-
-        public bool GetRunOnce()
-        {
-            return runOnce;
-        }
-
         public void SetCancel(bool isCancel)
         {
             cancel = isCancel;
         }
 
+        public bool GetCancel()
+        {
+            return cancel;
+        }
         #endregion
 
 
@@ -815,7 +806,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     selectedAssembly = (ComponentOccurrence)InventorApplication.CommandManager.Pick(SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
                     await task.Task;
 
-                    if (!cancel)
+                    if (!GetCancel())
                     {
                         if (selectedAssembly != null)
                         {
@@ -900,10 +891,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             form.Show();
 
             SetAllButtons(false);
-
-            done = false;
-            cancel = false;
+            
             int componentsAdded = 0; //Tracks how many components are added
+            SetCancel(false);
             SetDone(false);
             while (!GetDone())
             {
@@ -916,7 +906,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     selectedPart = (ComponentOccurrence)InventorApplication.CommandManager.Pick// have the user select a part
                               (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
                     await task.Task;
-                    if (!cancel)
+                    if (!GetCancel())
                     {
                         if (selectedPart != null)
                         {

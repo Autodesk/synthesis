@@ -21,9 +21,9 @@ namespace BxDFieldExporter
 
         public AddPart()
         {
-            this.Location = new System.Drawing.Point(450, 350);
+            Location = new System.Drawing.Point(450, 350);
             InitializeComponent();
-            this.TopMost = true;
+            TopMost = true;
 
             //Used to access StandardAddInServer's exposed API
             try
@@ -53,18 +53,14 @@ namespace BxDFieldExporter
 
         private void OKButton_OnClick(object sender, EventArgs e)
         {
-            StandardAddInServer.okButton_Clicked = true;
-            mAddInInterface.SetRunOnce(false);
-            StandardAddInServer.done = true;
+            mAddInInterface.SetDone(true);
             StandardAddInServer.task.TrySetResult(true);
             Close();
         }
 
         private void CancelButton_onClick(object sender, EventArgs e)
         {
-            mApplication.CommandManager.StopActiveCommand();
             mAddInInterface.SetCancel(true);
-            mAddInInterface.SetRunOnce(false);
             StandardAddInServer.task.TrySetResult(true);
             Close();
         }
@@ -72,7 +68,7 @@ namespace BxDFieldExporter
 
         private void SelectPartsLabel_onClick(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
 
@@ -80,12 +76,11 @@ namespace BxDFieldExporter
         {
             if (keyData == Keys.Escape)
             {
-                this.Close();
-
+                Close();
             }
             else if (keyData == Keys.Enter)
             {
-                this.Close();
+                Close();
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
@@ -93,9 +88,12 @@ namespace BxDFieldExporter
 
         private void ApplyButton_Click(object sender, EventArgs e)
         {
-            mAddInInterface.SetRunOnce(false);
-            StandardAddInServer.applyButton_Clicked = true;
             StandardAddInServer.task.TrySetResult(true);
+        }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
