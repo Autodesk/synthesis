@@ -44,17 +44,10 @@ public class MainState : SimState
 
     private SensorManager sensorManager;
     private SensorManagerGUI sensorManagerGUI;
-    //Testing camera location, can be deleted later
-    private Vector3 robotCameraPosition = new Vector3(0f, 0.5f, 0f);
-    private Vector3 robotCameraRotation = new Vector3(0f, 0f, 0f);
-    private Vector3 robotCameraPosition2 = new Vector3(0f, 0f, 0f);
-    private Vector3 robotCameraRotation2 = new Vector3(0f, 0f, 0f);
-    private Vector3 robotCameraPosition3 = new Vector3(0f, 0.5f, 0f);
-    private Vector3 robotCameraRotation3 = new Vector3(0f, 180f, 0f);
-    //Testing camera location, can be deleted later
 
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
+   
 
     public bool IsResetting;
     private const float HOLD_TIME = 0.8f;
@@ -107,7 +100,7 @@ public class MainState : SimState
         //starts a new instance of unity packet which receives packets from the driver station
         unityPacket = new UnityPacket();
         unityPacket.Start();
-
+        
         //loads all the controls
         Controls.Load();
 
@@ -558,6 +551,7 @@ public class MainState : SimState
     public void BeginRobotReset()
     {
         activeRobot.BeginReset();
+        
     }
 
     /// <summary>
