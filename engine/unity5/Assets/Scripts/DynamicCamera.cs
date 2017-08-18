@@ -140,7 +140,7 @@ public class DynamicCamera : MonoBehaviour
 
                 if (MovingEnabled)
                 {
-                    if (Input.GetMouseButton(0))
+                    if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
                     {
                         cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
                         panValue = -Input.GetAxis("Mouse X") / 5f;
