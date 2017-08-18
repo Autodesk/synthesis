@@ -227,7 +227,6 @@ public class Robot : MonoBehaviour
             Material[] materials = new Material[0];
             AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
             {
-
                 meshList.Add(meshu);
 
                 materials = new Material[meshu.subMeshCount];
@@ -244,36 +243,37 @@ public class Robot : MonoBehaviour
             {
                 node = (RigidNode)nodes[i];
                 node.CreateTransform(transform);
-
-
-                if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+                
+                if (node.HasDriverMeta<WheelDriverMeta>())
                 {
-                    Debug.Log("Robot not loaded!");
-                    return false;
+                    if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+                    {
+                        Debug.Log("Robot not loaded!");
+                        return false;
+                    }
+
+                    int chldCount = node.MainObject.transform.childCount;
+                    for (int j = 0; j < chldCount; j++)
+                    {
+                        Destroy(node.MainObject.transform.GetChild(j).gameObject);
+                    }
+
+                    int k = 0;
+                    foreach (Mesh meshObject in meshList)
+                    {
+                        Debug.Log("Mesh Object" + meshObject);
+                        GameObject meshObj = new GameObject(node.MainObject.name + "_mesh");
+                        meshObj.transform.parent = node.MainObject.transform;
+                        meshObj.AddComponent<MeshFilter>().mesh = meshObject;
+                        meshObj.transform.localPosition = -meshObject.bounds.center;
+
+                        //Take out this line if you want some snazzy pink wheels
+                        meshObj.AddComponent<MeshRenderer>().materials = materialList[k];
+                        k++;
+                    }
+                    node.MainObject.GetComponentInChildren<MeshRenderer>().materials = materials;
                 }
 
-                int chldCount = node.MainObject.transform.childCount;
-                for (int j = 0; j < chldCount; j++)
-                {
-                    Destroy(node.MainObject.transform.GetChild(j).gameObject);
-                }
-
-                int k = 0;
-                foreach (Mesh meshObject in meshList)
-                {
-                    Debug.Log("Mesh Object" + meshObject);
-                    GameObject meshObj = new GameObject(node.MainObject.name + "_mesh");
-                    meshObj.transform.parent = node.MainObject.transform;
-                    meshObj.AddComponent<MeshFilter>().mesh = meshObject;
-                    meshObj.transform.localPosition = -meshObject.bounds.center;
-
-                    //Take out this line if you want some snazzy pink wheels
-                    meshObj.AddComponent<MeshRenderer>().materials = materialList[k];
-                    k++;
-                }
-
-
-                node.MainObject.GetComponentInChildren<MeshRenderer>().materials = materials;
                 //node.MainObject.transform.GetChild(0).localPosition = -node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds.center;// -node.MainObject.transform.localPosition;
                 //Bounds b = node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds;
                 // Debug.Log(b.center); 
@@ -282,10 +282,12 @@ public class Robot : MonoBehaviour
 
                 node.CreateJoint(numWheels);
 
-                Debug.Log(wheelNode.HasDriverMeta<WheelDriverMeta>());
-
-                float radius = PlayerPrefs.GetFloat("wheelRadius");
-                node.MainObject.GetComponent<BRaycastWheel>().Radius = radius;
+                if (node.HasDriverMeta<WheelDriverMeta>())
+                {
+                    float radius = PlayerPrefs.GetFloat("wheelRadius");
+                    node.MainObject.GetComponent<BRaycastWheel>().Radius = radius;
+                }
+                   
                 if (node.PhysicalProperties != null)
                     collectiveMass += node.PhysicalProperties.mass;
 
