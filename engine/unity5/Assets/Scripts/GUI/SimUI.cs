@@ -408,20 +408,16 @@ public class SimUI : MonoBehaviour
     public void DefaultOrientation()
     {
         main.ResetRobotOrientation();
-        orientWindow.SetActive(isOrienting = false);
     }
 
     public void SaveOrientation()
     {
         main.SaveRobotOrientation();
-        orientWindow.SetActive(isOrienting = false);
     }
 
-    public void CloseOrientWindow()
+    public void CancelOrientation()
     {
-        isOrienting = false;
-        orientWindow.SetActive(isOrienting);
-        main.EndRobotReset();
+        main.CancelRobotOrientation();
     }
 
     #endregion
@@ -564,7 +560,7 @@ public class SimUI : MonoBehaviour
         mixAndMatchPanel.SetActive(false);
         analyticsPanel.SetActive(false);
 
-        CloseOrientWindow();
+        CancelOrientation();
         main.IsResetting = false;
 
         dpm.EndProcesses();

@@ -658,6 +658,13 @@ public class Robot : MonoBehaviour
     }
 
     /// <summary>
+    /// Cancel current orientation changes
+    /// </summary>
+    public void CancelRobotOrientation()
+    {
+        RotateRobot(robotStartOrientation);
+    }
+    /// <summary>
     /// Returns the driver practice component of this robot
     /// </summary>
     public DriverPracticeRobot GetDriverPractice()

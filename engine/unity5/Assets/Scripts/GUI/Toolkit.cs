@@ -19,6 +19,7 @@ public class Toolkit : MonoBehaviour
     private GameObject canvas;
     private MainState mainState;
     private GameObject toolkitWindow;
+    private SensorManagerGUI sensorManagerGUI;
 
     //ruler variables
     private GameObject rulerWindow;
@@ -63,6 +64,7 @@ public class Toolkit : MonoBehaviour
     {
         canvas = GameObject.Find("Canvas");
         toolkitWindow = AuxFunctions.FindObject(canvas, "ToolkitPanel");
+        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
 
         //Ruler Objects
         rulerStartPoint = GameObject.Find("RulerStartPoint");
@@ -353,6 +355,7 @@ public class Toolkit : MonoBehaviour
         toolkitWindow.SetActive(toolkitWindowOn);
         ToggleStatsWindow(false);
         ToggleStopwatchWindow(false);
+        sensorManagerGUI.EndProcesses();
     }
     /*
     #region Dummy Robot
