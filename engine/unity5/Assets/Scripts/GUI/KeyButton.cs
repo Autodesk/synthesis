@@ -41,7 +41,7 @@ public class KeyButton : MonoBehaviour
                     &&
                     currentInput is KeyboardInput
                     &&
-                    ((KeyboardInput)currentInput).key == KeyCode.Escape
+                    ((KeyboardInput)currentInput).key == KeyCode.Backspace
                    )
                 {
                     SetInput(new KeyboardInput());
