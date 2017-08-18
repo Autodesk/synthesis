@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -99,6 +100,39 @@ public class Scoreboard : MonoBehaviour
     /// Saves the events of the current game to a file.
     /// </summary>
     /// <returns>The directory of the stat file.</returns>
+   
+    // Opens a file selection dialog for a PNG file and saves a selected texture to the file.
+
+
+public class EditorUtilitySaveFilePanel : MonoBehaviour
+{
+    [MenuItem("Save Database to file")]
+    static void NewFile()
+    {
+        Texture2D texture = Selection.activeObject as Texture2D;
+        if (texture == null)
+        {
+            EditorUtility.DisplayDialog(
+                "Select Texture",
+                "You Must Select a Texture first!",
+                "Ok");
+            return;
+        }
+
+        var path = EditorUtility.SaveFilePanel(
+                "Save texture as PNG",
+                "",
+                texture.name + ".png",
+                "png");
+
+        if (path.Length != 0)
+        {
+            var pngData = texture.EncodeToPNG();
+            if (pngData != null)
+                File.WriteAllBytes(path, pngData);
+        }
+    }
+}
     public string Save()
     {
         string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\";
@@ -139,7 +173,28 @@ public class Scoreboard : MonoBehaviour
         }
 
         Debug.Log("Save successful!");
-        
+
         return new DirectoryInfo(filePath).Name + "\\" + fileName;
     }
+    public class OpenFilePanelExample : EditorWindow
+    {
+        [MenuItem("Load Database")]
+        static void LoadFile()
+        {
+            Texture2D texture = Selection.activeObject as Texture2D;
+            if (texture == null)
+            {
+                EditorUtility.DisplayDialog("Select Texture", "You must select a texture first!", "OK");
+                return;
+            }
+
+            string path = EditorUtility.OpenFilePanel("Overwrite with png", "", "png");
+            if (path.Length != 0)
+            {
+                WWW www = new WWW("file:///" + path);
+                www.LoadImageIntoTexture(texture);
+            }
+        }
+    }
+
 }
