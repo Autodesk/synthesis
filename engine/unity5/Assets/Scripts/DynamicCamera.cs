@@ -112,6 +112,7 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class OrbitState : CameraState
     {
+
         Vector3 targetVector;
         Vector3 rotateVector;
         Vector3 lagVector;
@@ -168,6 +169,7 @@ public class DynamicCamera : MonoBehaviour
 
                 mono.transform.position = lagVector;
                 mono.transform.LookAt(targetVector);
+
             }
             else
             {
@@ -187,6 +189,86 @@ public class DynamicCamera : MonoBehaviour
             output.z = Mathf.Sin(theta) * (vector.x) + Mathf.Cos(theta) * (vector.z);
 
             return output.normalized * mag + origin;
+        }
+    }
+
+    /// <summary>
+    /// This state follows the robot from behind assuming the robot is configured correctly during export
+    /// </summary>
+    public class FollowState : CameraState
+    {
+        private Transform target;
+        // The distance in the x-z plane to the target
+        private float distance = 1.5f;
+        // the height we want the camera to be above the target
+        private float height = 1f;
+        private float angleOffset;
+        private float heightDamping = 2.0f;
+        private float rotationDamping = 3.0f;
+
+        public FollowState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+        }
+        public override void Init()
+        {
+
+        }
+
+
+        public override void Update()
+        {
+            //Focus on the node 0
+            target = GameObject.Find("Robot").transform.GetChild(0);
+            
+            // Early out if we don't have a target
+            if (!target)
+                return;
+
+            // Calculate the current rotation angles (+90 actually makes it follows from behind)
+            float wantedRotationAngle = target.eulerAngles.y + angleOffset;
+            float wantedHeight = target.position.y + height;
+            float currentRotationAngle = mono.transform.eulerAngles.y;
+            float currentHeight = mono.transform.position.y;
+
+            if (MovingEnabled)
+            {
+                //Use right mouse to adjust the distance of camera from the robot
+                if (Input.GetMouseButton(1))
+                {
+                    distance = Mathf.Max(Mathf.Min(distance - ((Input.GetAxis("Mouse Y") / 5f) * distance), 12f), 1.5f);
+                }
+                //Use left mouse to adjust the angle the camera is pointing from
+                else if (Input.GetMouseButton(0))
+                {
+                    angleOffset += Input.GetAxis("Mouse X") * 5;
+                }
+            }
+
+            // Damp the rotation around the y-axis
+            currentRotationAngle = Mathf.LerpAngle(currentRotationAngle, wantedRotationAngle, rotationDamping * Time.deltaTime);
+
+            // Damp the height
+            currentHeight = Mathf.Lerp(currentHeight, wantedHeight, heightDamping * Time.deltaTime);
+
+            // Convert the angle into a rotation
+            Quaternion currentRotation = Quaternion.Euler(0, currentRotationAngle, 0);
+
+            // Set the position of the camera on the x-z plane to:
+            // distance meters behind the target
+            mono.transform.position = target.position;
+            mono.transform.position -= currentRotation * Vector3.forward * distance;
+
+            // Set the height of the camera
+            mono.transform.position = new Vector3(mono.transform.position.x, currentHeight, mono.transform.position.z);
+
+            // Always look at the target
+            mono.transform.LookAt(target);
+        }
+
+        public override void End()
+        {
+
         }
     }
 
@@ -259,8 +341,11 @@ public class DynamicCamera : MonoBehaviour
 
     }
 
-    //This state locates directly above the field and looks straight down on the field in order for robot positioning
-    //Not working well with 2016&2017 field because they are not centered
+
+    /// <summary>
+    /// This state locates directly above the field and looks straight down on the field in order for robot positioning
+    /// Not working well with 2016&2017 field because they are not centered
+    /// </summary>
     public class OverviewState : CameraState
     {
         Vector3 positionVector;
@@ -329,6 +414,10 @@ public class DynamicCamera : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This state is made for sensor/robot camera configuration, will focus on whatever target object is, the target is default to the first node
+    /// Works basically the same as orbit view but focus closer
+    /// </summary>
     public class ConfigurationState : CameraState
     {
         Vector3 targetVector;
@@ -393,7 +482,7 @@ public class DynamicCamera : MonoBehaviour
             {
                 target = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>().CurrentCamera;
             }
-        
+
         }
 
         public override void End()
@@ -431,7 +520,8 @@ public class DynamicCamera : MonoBehaviour
             if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
             else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
             else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
-            else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this, false));
+            else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new FollowState(this));
+            else if (currentCameraState.GetType().Equals(typeof(FollowState))) SwitchCameraState(new DriverStationState(this, false));
         }
         if (_cameraState != null) _cameraState.Update();
     }
@@ -496,5 +586,6 @@ public class DynamicCamera : MonoBehaviour
         else if (targetState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
         else if (targetState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new FreeroamState(this));
         else if (targetState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new OverviewState(this));
+        else if (targetState.GetType().Equals(typeof(FollowState))) SwitchCameraState(new FollowState(this));
     }
 }
