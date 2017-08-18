@@ -243,15 +243,15 @@ public class Robot : MonoBehaviour
             {
                 node = (RigidNode)nodes[i];
                 node.CreateTransform(transform);
-                
+
+                if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+                {
+                    Debug.Log("Robot not loaded!");
+                    return false;
+                }
+
                 if (node.HasDriverMeta<WheelDriverMeta>())
                 {
-                    if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
-                    {
-                        Debug.Log("Robot not loaded!");
-                        return false;
-                    }
-
                     int chldCount = node.MainObject.transform.childCount;
                     for (int j = 0; j < chldCount; j++)
                     {
