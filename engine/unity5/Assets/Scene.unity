@@ -6742,7 +6742,7 @@ GameObject:
   - component: {fileID: 257536610}
   - component: {fileID: 257536609}
   m_Layer: 5
-  m_Name: Content
+  m_Name: GoalDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27565,7 +27565,6 @@ GameObject:
   - component: {fileID: 1152904569}
   - component: {fileID: 1152904571}
   - component: {fileID: 1152904570}
-  - component: {fileID: 1152904572}
   m_Layer: 5
   m_Name: GoalConfigPanel
   m_TagString: Untagged
@@ -27627,20 +27626,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1152904568}
---- !u!114 &1152904572
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1152904568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bba568bd24e5bf749924d3c4f712ca98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  goalDisplay: {fileID: 257536609}
-  goalElementPrefab: {fileID: 1707066965860788, guid: 4e60853913c45aa47a5fdb71d568969a,
-    type: 2}
 --- !u!1 &1156714434
 GameObject:
   m_ObjectHideFlags: 0
@@ -27842,7 +27827,7 @@ GameObject:
   - component: {fileID: 1165208526}
   - component: {fileID: 1165208525}
   m_Layer: 5
-  m_Name: Text
+  m_Name: ScoreText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29098,9 +29083,9 @@ RectTransform:
   m_Father: {fileID: 1234831590}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 135, y: 152.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 135, y: -87.5}
   m_SizeDelta: {x: 250, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1211259633
@@ -35294,7 +35279,7 @@ GameObject:
   - component: {fileID: 1498241414}
   - component: {fileID: 1498241413}
   m_Layer: 5
-  m_Name: Text
+  m_Name: ScoreLogText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42347,6 +42332,7 @@ GameObject:
   - component: {fileID: 1741231146}
   - component: {fileID: 1741231147}
   - component: {fileID: 1741231148}
+  - component: {fileID: 1741231154}
   - component: {fileID: 1741231152}
   - component: {fileID: 1741231153}
   - component: {fileID: 1741231149}
@@ -42482,8 +42468,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d4cc6bdc6ecc8b48b342ac0a1b79577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scoreDisplay: {fileID: 1165208525}
-  scoreLog: {fileID: 1498241413}
 --- !u!114 &1741231153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42495,10 +42479,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e51388fd7f99af34a830a2700e0f1145, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerText: {fileID: 228514278}
-  timerBackground: {fileID: 2008261486}
-  scoreBackground: {fileID: 48083291}
+  scoreInactiveColor: {r: 1, g: 1, b: 1, a: 0.19607843}
+  timerStopColor: {r: 0.92156863, g: 0, b: 0, a: 0.19607843}
+  scoreStopColor: {r: 1, g: 0, b: 0, a: 0.49803922}
+  timerStartColor: {r: 0, g: 0.92156863, b: 0, a: 0.49803922}
+  scoreStartColor: {r: 0, g: 1, b: 0, a: 0.49803922}
   timeLimit: 135
+--- !u!114 &1741231154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1741231142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bba568bd24e5bf749924d3c4f712ca98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goalElementPrefab: {fileID: 1707066965860788, guid: 4e60853913c45aa47a5fdb71d568969a,
+    type: 2}
 --- !u!1 &1744877097
 GameObject:
   m_ObjectHideFlags: 0
@@ -47261,7 +47260,7 @@ GameObject:
   - component: {fileID: 2008261487}
   - component: {fileID: 2008261486}
   m_Layer: 5
-  m_Name: TimerTextEntry
+  m_Name: TimerTextField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

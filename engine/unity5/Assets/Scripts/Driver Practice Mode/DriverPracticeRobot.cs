@@ -66,6 +66,7 @@ public class DriverPracticeRobot : MonoBehaviour
     private Color hoverColor = new Color(1, 1, 0, 0.1f);
 
     //for gamepiece spawn and goal customizability
+    private Scoreboard scoreboard; // Given to newly created goals for adding points
     private List<UnityEngine.Vector3> gamepieceSpawn;
     private List<List<UnityEngine.Vector3>> gamepieceGoals;
     private List<List<float>> gamepieceGoalSizes;
@@ -541,10 +542,10 @@ public class DriverPracticeRobot : MonoBehaviour
     }
 
     /// <summary>
-    /// Initialize a goal manager display using goal data of a gamepiece.
+    /// Initialize the goal display to show the descriptions and point values of the gamepiece's goals.
     /// </summary>
     /// <param name="gamepieceIndex">Gamepiece to get goal data from.</param>
-    /// <param name="gm">Goal Manager to initialize display of.</param>
+    /// <param name="gm">Goal Manager to initialize the display of.</param>
     public void InitGoalManagerDisplay(int gamepieceIndex, GoalDisplayManager gm)
     {
         gm.InitializeDisplay(gamepieceGoalDesc[gamepieceIndex].ToArray(), gamepieceGoalPoints[gamepieceIndex].ToArray());
@@ -553,7 +554,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <summary>
     /// Add a new goal to a gamepiece.
     /// </summary>
-    /// <param name="gamepieceIndex">The gamepiece to add a goal to.</param>
+    /// <param name="gamepieceIndex">The index of the gamepiece to add a goal to.</param>
     public void NewGoal(int gamepieceIndex)
     {
         if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
@@ -571,8 +572,8 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <summary>
     /// Delete a goal of a gamepiece.
     /// </summary>
-    /// <param name="gamepieceIndex">The gamepiece to delete a goal from.</param>
-    /// <param name="goalIndex">The goal to delete.</param>
+    /// <param name="gamepieceIndex">The index of the gamepiece that owns the goal.</param>
+    /// <param name="goalIndex">The index of the goal to be deleted.</param>
     public void DeleteGoal(int gamepieceIndex, int goalIndex)
     {
         if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
@@ -592,11 +593,11 @@ public class DriverPracticeRobot : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the description of a goal of a gamepiece.
+    /// Set the description of a gamepiece's goal.
     /// </summary>
-    /// <param name="gamepieceIndex">Gamepiece to select goal from.</param>
-    /// <param name="goalIndex">Goal to set description of.</param>
-    /// <param name="description">Description of goal.</param>
+    /// <param name="gamepieceIndex">The index of the gamepiece that owns the goal.</param>
+    /// <param name="goalIndex">The index of the goal to be configured.</param>
+    /// <param name="description">New description of the goal.</param>
     public void SetGamepieceGoalDescription(int gamepieceIndex, int goalIndex, string description)
     {
         if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
@@ -612,11 +613,11 @@ public class DriverPracticeRobot : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the point value of a goal of a gamepiece.
+    /// Set the point value of a gamepiece's goal.
     /// </summary>
-    /// <param name="gamepieceIndex">Gamepiece to select goal from.</param>
-    /// <param name="goalIndex">Goal to set point value of.</param>
-    /// <param name="points">Point value of goal.</param>
+    /// <param name="gamepieceIndex">The index of the gamepiece that owns the goal.</param>
+    /// <param name="goalIndex">The index of the goal to be configured.</param>
+    /// <param name="points">New point value of the goal.</param>
     public void SetGamepieceGoalPoints(int gamepieceIndex, int goalIndex, int points)
     {
         if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
@@ -632,10 +633,10 @@ public class DriverPracticeRobot : MonoBehaviour
     }
 
     /// <summary>
-    /// Begins the configuration of a specific goal of a gamepiece. (position and size)
+    /// Begin the configuration of the size and position of a gamepiece's goal.
     /// </summary>
-    /// <param name="gamepieceIndex">The index of the gamepiece that owns the goal</param>
-    /// <param name="goalIndex">The index of the goal to be configured</param>
+    /// <param name="gamepieceIndex">The index of the gamepiece that owns the goal.</param>
+    /// <param name="goalIndex">The index of the goal to be configured.</param>
     public void StartGamepieceGoal(int gamepieceIndex, int goalIndex)
     {
         if (definingRelease || definingIntake || addingGamepiece || settingSpawn != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
@@ -755,7 +756,7 @@ public class DriverPracticeRobot : MonoBehaviour
     }
 
     /// <summary>
-    /// Place colliders for all the goals of a gamepiece.
+    /// Create colliders for all the goals of a gamepiece, deleting any existing ones.
     /// </summary>
     /// <param name="index">The gamepiece to create goal colliders for.</param>
     public void GenerateGamepieceGoalColliders(int index)
@@ -781,7 +782,12 @@ public class DriverPracticeRobot : MonoBehaviour
                 goal.description = gamepieceGoalDesc[index][goalIndex];
                 goal.pointValue = gamepieceGoalPoints[index][goalIndex];
 
-                goal.DPRobot = this;
+                goal.dpmRobot = this;
+
+                if (scoreboard == null)
+                    scoreboard = AuxFunctions.FindObject("StateMachine").GetComponent<Scoreboard>();
+
+                goal.scoreboard = scoreboard;
 
                 gamepieceGoalObjects[index].Add(gameobject);
             }
@@ -793,7 +799,7 @@ public class DriverPracticeRobot : MonoBehaviour
     }
 
     /// <summary>
-    /// Remove all goal colliders from the scene.
+    /// Remove all goal colliders of a gamepiece from the scene.
     /// </summary>
     /// <param name="index">The gamepiece to remove all goals from.</param>
     public void DestroyGamepieceGoalColliders(int index)
@@ -1113,6 +1119,7 @@ public class DriverPracticeRobot : MonoBehaviour
 
             while ((line = reader.ReadLine()) != null)
             {
+                // Set the counter to a value representing the variable to be configured next. 
                 if (line.Contains("#Gamepiece"))
                 {
                     counter = 0;
@@ -1125,6 +1132,7 @@ public class DriverPracticeRobot : MonoBehaviour
                     counter = 2;
                 else if (line.Contains("#Goal"))
                 {
+                    counter = 0;
                     goalIndex++;
 
                     gamepieceGoals[index].Add(new UnityEngine.Vector3(0, 4, 0));
@@ -1149,6 +1157,7 @@ public class DriverPracticeRobot : MonoBehaviour
                 else if (line.Equals("#Release Velocity"))
                     counter = 10;
 
+                // Apply the value of the line to the variable that was specified by the previous line.
                 else if (counter == 1)
                     gamepieceNames[index] = line;
                 else if (counter == 2)

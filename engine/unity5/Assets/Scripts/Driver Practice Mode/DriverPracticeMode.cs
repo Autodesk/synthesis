@@ -10,6 +10,7 @@ public class DriverPracticeMode : MonoBehaviour {
     private Scoreboard scoreboard;
     private GameplayTimer timer;
     private SimUI simUI;
+    private GoalDisplayManager goalDisplayManager;
     private MainState mainState;
 
     GameObject canvas;
@@ -35,6 +36,22 @@ public class DriverPracticeMode : MonoBehaviour {
     GameObject releaseSpeedEntry;
     GameObject releaseVerticalEntry;
     GameObject releaseHorizontalEntry;
+
+    Image timerBackground;
+    Image scoreBackground;
+    /// <summary>
+    /// These are the colors applied to the score and timer displays at various points of a game.
+    /// scoreInactiveColor - The color of the score display when no game has started or ended, or when a game has been terminated
+    /// timerStartColor    - The color of the timer display when a game starts.
+    /// scoreStartColor    - The color of the score display when a game starts.
+    /// timerEndColor      - The color of the timer display when a game has ended.
+    /// scoreEndColor      - The color of the score display when a game has ended.
+    /// </summary>
+    public Color scoreInactiveColor = new Color(255 / 255f, 255 / 255f, 255 / 255f, 50 / 255f);
+    public Color timerStartColor = new Color(0 / 255f, 235 / 255f, 0 / 255f, 127 / 255f);
+    public Color scoreStartColor = new Color(0 / 255f, 255 / 255f, 0 / 255f, 127 / 255f);
+    public Color timerEndColor = new Color(235 / 255f, 0 / 255f, 0 / 255f, 50 / 255f);
+    public Color scoreEndColor = new Color(255 / 255f, 0 / 255f, 0 / 255f, 127 / 255f);
 
     Text enableDPMText;
 
@@ -100,8 +117,11 @@ public class DriverPracticeMode : MonoBehaviour {
 
             if (settingControl != 0) ListenControl();
 
-            if (gameStarted && !timer.IsTimerRunning())
+            if (gameStarted && !timer.IsTimerRunning()) // Game is over. Update variables and display colors.
+            {
                 gameEnded = true;
+                SetGameDisplayColors(timerEndColor, scoreEndColor);
+            }
         }
     }
 
@@ -111,6 +131,7 @@ public class DriverPracticeMode : MonoBehaviour {
         scoreboard = GetComponent<Scoreboard>();
         timer = GetComponent<GameplayTimer>();
         simUI = GetComponent<SimUI>();
+        goalDisplayManager = GetComponent<GoalDisplayManager>();
 
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
         scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
@@ -118,6 +139,9 @@ public class DriverPracticeMode : MonoBehaviour {
         timerWindow = AuxFunctions.FindObject(canvas, "GameplayTimerPanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
         goalConfigWindow = AuxFunctions.FindObject(canvas, "GoalConfigPanel");
+        
+        timerBackground = AuxFunctions.FindObject(timerWindow, "TimerTextField").GetComponent<Image>();
+        scoreBackground = AuxFunctions.FindObject(scoreWindow, "Score").GetComponent<Image>();
 
         enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
 
@@ -385,6 +409,9 @@ public class DriverPracticeMode : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Start a new game. Displays the timer and resets the score.
+    /// </summary>
     public void StartGame()
     {
         if (dpmRobot.modeEnabled)
@@ -394,10 +421,14 @@ public class DriverPracticeMode : MonoBehaviour {
             scoreboard.ResetScore();
             gameStarted = true;
             gameEnded = false;
+            SetGameDisplayColors(timerStartColor, scoreStartColor);
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }
 
+    /// <summary>
+    /// Terminate an on-going game. Hides the timer and resets the score.
+    /// </summary>
     public void StopGame()
     {
         if (gameStarted)
@@ -407,16 +438,37 @@ public class DriverPracticeMode : MonoBehaviour {
             scoreboard.ResetScore();
             gameStarted = false;
             gameEnded = true;
+            SetGameDisplayColors(timerEndColor, scoreInactiveColor);
         }
         else UserMessageManager.Dispatch("A game has not been started.", 5);
     }
 
+    /// <summary>
+    /// Set the color of the timer and score backgrounds to signify certain game states (ongoing, ended, etc).
+    /// </summary>
+    /// <param name="timerColor">Color of the timer background.</param>
+    /// <param name="scoreColor">Color of the score background.</param>
+    public void SetGameDisplayColors(Color timerColor, Color scoreColor)
+    {
+        if (timerBackground != null)
+            timerBackground.color = timerColor;
+        if (scoreBackground != null)
+            scoreBackground.color = scoreColor;
+    }
+
+    /// <summary>
+    /// Save the log of the current game to a text file.
+    /// </summary>
     public void SaveGameStats()
     {
         if (dpmRobot.modeEnabled)
         {
-            string directory = scoreboard.Save();
-            UserMessageManager.Dispatch("Saved to \"" + directory + "\"", 10);
+            string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\";
+            string fileName = string.Format("score_log_{0:yyyy-MM-dd_hh-mm-ss-tt}.txt", System.DateTime.Now);
+
+            scoreboard.Save(filePath, fileName);
+
+            UserMessageManager.Dispatch("Saved to \"" + filePath + "\\" + fileName + "\"", 10);
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }
@@ -563,7 +615,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void OpenGamepieceGoalsConfig()
     {
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalDisplayManager);
         goalConfigWindow.SetActive(true);
         goalConfiguring = true;
     }
@@ -578,13 +630,13 @@ public class DriverPracticeMode : MonoBehaviour {
     public void NewGamepieceGoal()
     {
         dpmRobot.NewGoal(configuringIndex);
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalDisplayManager);
     }
 
     public void DeleteGamepieceGoal(int goalIndex)
     {
         dpmRobot.DeleteGoal(configuringIndex, goalIndex);
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalDisplayManager);
     }
 
     public void SetGamepieceGoal(int goalIndex)

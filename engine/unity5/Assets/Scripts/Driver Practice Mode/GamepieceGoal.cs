@@ -9,10 +9,14 @@ using System.Text;
 using BulletUnity.Debugging;
 using System.Linq;
 
-
+/// <summary>
+/// Attached to the cube-shaped trigger colliders that represent goals.
+/// This script is responsible for making gamepieces disappear when they enter a goal, and for adding points to the score.
+/// </summary>
 public class DriverPracticeGoal : BCollisionCallbacksDefault
 {
-    public DriverPracticeRobot DPRobot;
+    public DriverPracticeRobot dpmRobot;
+    public Scoreboard scoreboard;
 
     public string gamepieceKeyword;
 
@@ -27,7 +31,7 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
     /// <param name="manifoldList">List of collision manifolds--this isn't used</param>
     public override void BOnCollisionEnter(CollisionObject other, PersistentManifoldList manifoldList)
     {
-        if (DPRobot.modeEnabled)
+        if (dpmRobot.modeEnabled)
         {
             string gamepiece;
             if (gamepieceKeyword != null)
@@ -38,16 +42,18 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
                 {
                     GameObject gamepieceObject = ((BRigidBody)other.UserObject).gameObject;
 
-                    gamepieceObject.SetActive(false);
-
-                    GameObject stateMachine = AuxFunctions.FindObject("StateMachine");
+                    gamepieceObject.SetActive(false); // Destroying the gamepiece leads to issues if the gamepiece was the original.
                     
-                    stateMachine.GetComponent<Scoreboard>().AddPoints(pointValue, description);
+                    scoreboard.AddPoints(pointValue, description);
                 }
             }
         }
     }
     
+    /// <summary>
+    /// Set the keyword that is used for checking whether an object that enters the collider is or is a clone of this goal's gamepiece.
+    /// </summary>
+    /// <param name="keyword"></param>
     public void SetKeyword(string keyword)
     {
         gamepieceKeyword = keyword;
