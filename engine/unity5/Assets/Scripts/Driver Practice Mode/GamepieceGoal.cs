@@ -9,7 +9,10 @@ using System.Text;
 using BulletUnity.Debugging;
 using System.Linq;
 
-
+/// <summary>
+/// Attached to the cube-shaped trigger colliders that represent goals.
+/// This script is responsible for making gamepieces disappear when they enter a goal, and for adding points to the score.
+/// </summary>
 public class DriverPracticeGoal : BCollisionCallbacksDefault
 {
     public DriverPracticeRobot dpmRobot;
@@ -39,7 +42,7 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
                 {
                     GameObject gamepieceObject = ((BRigidBody)other.UserObject).gameObject;
 
-                    gamepieceObject.SetActive(false);
+                    gamepieceObject.SetActive(false); // Destroying the gamepiece leads to issues if the gamepiece was the original.
                     
                     scoreboard.AddPoints(pointValue, description);
                 }
@@ -47,6 +50,10 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
         }
     }
     
+    /// <summary>
+    /// Set the keyword that is used for checking whether an object that enters the collider is or is a clone of this goal's gamepiece.
+    /// </summary>
+    /// <param name="keyword"></param>
     public void SetKeyword(string keyword)
     {
         gamepieceKeyword = keyword;

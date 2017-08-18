@@ -3,24 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages the starting, stopping, etc. of the game timer, as well as the text of the timer display.
+/// </summary>
 public class GameplayTimer : MonoBehaviour
 {
-    public Color scoreInactiveColor = new Color(255 / 255f, 255 / 255f, 255 / 255f, 50 / 255f);
-    public Color timerStopColor = new Color(235 / 255f, 0 / 255f, 0 / 255f, 50 / 255f);
-    public Color scoreStopColor = new Color(255 / 255f, 0 / 255f, 0 / 255f, 127 / 255f);
-    public Color timerStartColor = new Color(0 / 255f, 235 / 255f, 0 / 255f, 127 / 255f);
-    public Color scoreStartColor = new Color(0 / 255f, 255 / 255f, 0 / 255f, 127 / 255f);
+    public float timeLimit = 135.0f;
 
-    GameObject canvas;
+    private GameObject canvas;
 
     GameObject timerWindow;
-    GameObject scoreWindow;
 
     Text timerText;
-    Image timerBackground;
-    Image scoreBackground;
-
-    public float timeLimit = 135.0f;
 
     bool timerRunning;
     float timeStart;
@@ -35,18 +29,21 @@ public class GameplayTimer : MonoBehaviour
         UpdateTimer();
     }
 
+    /// <summary>
+    /// Find and store the necessary UI elements related to the timer.
+    /// </summary>
     void FindElements()
     {
         canvas = GameObject.Find("Canvas");
 
         timerWindow = AuxFunctions.FindObject(canvas, "GameplayTimerPanel");
-        scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
 
         timerText = AuxFunctions.FindObject(timerWindow, "TimerText").GetComponent<Text>();
-        timerBackground = AuxFunctions.FindObject(timerWindow, "TimerTextField").GetComponent<Image>();
-        scoreBackground = AuxFunctions.FindObject(scoreWindow, "Score").GetComponent<Image>();
     }
 
+    /// <summary>
+    /// Update the timer display and the value of the timerLeft variable.
+    /// </summary>
     private void UpdateTimer()
     {
         if (timerRunning)
@@ -66,53 +63,65 @@ public class GameplayTimer : MonoBehaviour
             timerText.text = Mathf.CeilToInt(timeLeft).ToString();
     }
 
+    /// <summary>
+    /// Whether the timer is currently running or not.
+    /// </summary>
+    /// <returns>True if the timer is running, false otherwise.</returns>
     public bool IsTimerRunning()
     {
         return timerRunning;
     }
 
+    /// <summary>
+    /// Get the amount of time in seconds left on the timer.
+    /// </summary>
+    /// <returns>Time in seconds left on timer.</returns>
     public float GetTimeLeft()
     {
         UpdateTimer();
         return timeLeft;
     }
 
+    /// <summary>
+    /// Get the amount of time in seconds since the timer was started.
+    /// </summary>
+    /// <returns>Time in seconds since timer start.</returns>
     public float GetTimeSinceStart()
     {
         return timeLimit - GetTimeLeft();
     }
 
+    /// <summary>
+    /// Start the timer and reset the time.
+    /// </summary>
     public void StartTimer()
     {
         timeStart = Time.time;
         timerRunning = true;
-        SetColors(timerStartColor, scoreStartColor);
     }
 
+    /// <summary>
+    /// Stop the timer.
+    /// </summary>
     public void StopTimer()
     {
         timerRunning = false;
-        SetColors(timerStopColor, scoreInactiveColor);
     }
 
+    /// <summary>
+    /// Start the timer without resetting the time.
+    /// </summary>
     public void ResumeTimer()
     {
         timeStart = Time.time - (timeStop - timeStart);
         timerRunning = true;
-        SetColors(timerStartColor, scoreStartColor);
     }
 
+    /// <summary>
+    /// Run when the game ends by the timer running out.
+    /// </summary>
     public void EndOfGame()
     {
         timerRunning = false;
-        SetColors(timerStopColor, scoreStopColor);
-    }
-
-    void SetColors(Color timerColor, Color scoreColor)
-    {
-        if (timerBackground != null)
-            timerBackground.color = timerColor;
-        if (scoreBackground != null)
-            scoreBackground.color = scoreColor;
     }
 }

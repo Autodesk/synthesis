@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages the UI display showing all the goals of the gamepiece being configured.
+/// </summary>
 public class GoalDisplayManager : MonoBehaviour
 {
+    // The prefab that is used to create new list items in the goal display.
     public GameObject goalElementPrefab;
 
     GameObject canvas;
@@ -22,6 +26,9 @@ public class GoalDisplayManager : MonoBehaviour
             FindElements();
     }
 
+    /// <summary>
+    /// Find and store the necessary UI elements related to the goal display.
+    /// </summary>
     void FindElements()
     {
         canvas = GameObject.Find("Canvas");
