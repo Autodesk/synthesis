@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using Assets.Scripts.FSM;
 using BulletSharp;
 using BulletUnity;
+using UnityEngine.Analytics;
+
 
 /// <summary>
 /// Helps the user with various helper functions such as stopwatch, and ruler
@@ -13,7 +15,7 @@ public class Toolkit : MonoBehaviour
 {
 
     private bool ignoreClick = true;
-    
+
     private GameObject canvas;
     private MainState mainState;
     private GameObject toolkitWindow;
@@ -60,7 +62,7 @@ public class Toolkit : MonoBehaviour
     void Start()
     {
         canvas = GameObject.Find("Canvas");
-        toolkitWindow = AuxFunctions.FindObject(canvas,"ToolkitPanel");
+        toolkitWindow = AuxFunctions.FindObject(canvas, "ToolkitPanel");
 
         //Ruler Objects
         rulerStartPoint = GameObject.Find("RulerStartPoint");
@@ -118,12 +120,18 @@ public class Toolkit : MonoBehaviour
     {
         if (show)
         {
-            toolkitWindow.SetActive(true);
-        }
-        else
-        {
-            ToggleRulerWindow(false);
-            toolkitWindow.SetActive(false);
+            if (SimUI.changeAnalytics)
+            {
+                Analytics.CustomEvent("Opened Toolkit", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+                toolkitWindow.SetActive(true);
+            }
+            else
+            {
+                ToggleRulerWindow(false);
+                toolkitWindow.SetActive(false);
+            }
         }
     }
 
@@ -198,12 +206,12 @@ public class Toolkit : MonoBehaviour
             {
                 rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
             }
-            else if(!mainState.IsMetric)
+            else if (!mainState.IsMetric)
             {
-                rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f)/100 + "ft";
-                rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f)/100  + "ft";
-                rulerYText.text = Mathf.Round(Mathf.Abs(firstPoint.Y - rayResult.HitPointWorld.Y) * 328.084f)/100 + "ft";
-                rulerZText.text = Mathf.Round(Mathf.Abs(firstPoint.Z - rayResult.HitPointWorld.Z) * 328.084f)/100 + "ft";
+                rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f) / 100 + "ft";
+                rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f) / 100 + "ft";
+                rulerYText.text = Mathf.Round(Mathf.Abs(firstPoint.Y - rayResult.HitPointWorld.Y) * 328.084f) / 100 + "ft";
+                rulerZText.text = Mathf.Round(Mathf.Abs(firstPoint.Z - rayResult.HitPointWorld.Z) * 328.084f) / 100 + "ft";
                 rulerEndPoint.transform.position = rayResult.HitPointWorld.ToUnity();
                 rulerStartPoint.GetComponent<LineRenderer>().SetPosition(1, rulerEndPoint.transform.position);
             }
@@ -265,7 +273,7 @@ public class Toolkit : MonoBehaviour
             stopwatchStartButtonText.text = "Start";
             stopwatchOn = false;
         }
-        
+
     }
 
     public void PauseStopwatch()
@@ -296,7 +304,7 @@ public class Toolkit : MonoBehaviour
         if (stopwatchOn && !stopwatchPaused)
         {
             stopwatchTime += Time.deltaTime;
-            stopwatchText.text = (Mathf.Round( stopwatchTime  * 100) / 100).ToString();
+            stopwatchText.text = (Mathf.Round(stopwatchTime * 100) / 100).ToString();
         }
     }
 
