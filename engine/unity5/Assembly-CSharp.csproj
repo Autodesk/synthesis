@@ -168,7 +168,6 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
     <Compile Include="Assets\DragGameObject.cs" />
-    <Compile Include="Assets\ScoreZonePrefManager.cs" />
     <Compile Include="Assets\ScoreZoneSelectableManager.cs" />
     <Compile Include="Assets\ScoreZoneSettingsContainer.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
@@ -262,6 +261,7 @@
     <Compile Include="Assets\Scripts\ScoreZoneEdit\ArrowDragger.cs" />
     <Compile Include="Assets\Scripts\ScoreZoneEdit\EditScoreZoneState.cs" />
     <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZoneManipulatorManager.cs" />
+    <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZonePrefUIManager.cs" />
     <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZoneSelectible.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />

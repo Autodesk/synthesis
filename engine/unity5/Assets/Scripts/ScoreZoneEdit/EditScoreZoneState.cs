@@ -8,7 +8,7 @@ public class EditScoreZoneState : SimState
 {
     public GameObject mainCam { get; private set; }
 
-    private bool LoadScene = false; // For debugging
+    private bool LoadScene = true; // For debugging
     
     /// <summary>
     /// Called when the SimState is started.

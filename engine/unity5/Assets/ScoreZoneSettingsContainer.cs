@@ -2,28 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScoreZoneBehavior : MonoBehaviour
+public struct ScoreZoneSettingsContainer
 {
-
 	public float Score { get; set; }
 
 	public bool DestroyGamePieceOnScore { get; set; }
 	public bool ReinstantiateGamePieceOnScore { get; set; }
-	
-	
-	// We can't reliably detect what is a gamepiece and what's not, so we're simply going to look for things that
-	// arent fields, aren't robots, and have colliders (no scoring when .
 
-	public Collider collider { get; private set; }
+	public Vector3 Scale { get; set; }
+	public Vector3 Position { get; set; }
+	public Quaternion Rotation { get; set; }
 
-	// Use this for initialization
-	void Start ()
+	public enum Team
 	{
-		collider = GetComponent<Collider>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+		Red,
+		Blue
+	};
+
+	public Team TeamZone { get; set; }
 }
