@@ -604,6 +604,7 @@ public class DriverPracticeRobot : MonoBehaviour
             if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
                 gamepieceGoalDesc[gamepieceIndex][goalIndex] = description;
+                GenerateGamepieceGoalColliders(gamepieceIndex);
             }
             else Debug.LogError("Cannot set goal description, goal does not exist!");
         }
@@ -623,6 +624,7 @@ public class DriverPracticeRobot : MonoBehaviour
             if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
                 gamepieceGoalPoints[gamepieceIndex][goalIndex] = points;
+                GenerateGamepieceGoalColliders(gamepieceIndex);
             }
             else Debug.LogError("Cannot set goal points, goal does not exist!");
         }

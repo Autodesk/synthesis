@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -86,11 +87,59 @@ public class Scoreboard : MonoBehaviour
         UpdateDisplay();
     }
 
-    void UpdateDisplay()
+    public void UpdateDisplay()
     {
         scoreDisplay.text = GetScoreTotal().ToString();
 
         scoreLog.text = string.Join("\n", scoreEvents.Select(x => x.ToString()).ToArray()); // Convert events to strings, place in array, and join into string
         scoreLogScrollbar.value = 0;
+    }
+
+    /// <summary>
+    /// Saves the events of the current game to a file.
+    /// </summary>
+    /// <returns>The directory of the stat file.</returns>
+    public string Save()
+    {
+        string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\";
+        string fileName = string.Format("stats_{0:yyyy-MM-dd_hh-mm-ss-tt}.txt", System.DateTime.Now);
+        if (File.Exists(filePath + fileName))
+        {
+            Debug.Log("Overriding existing file");
+            File.Delete(filePath + fileName);
+        }
+        Debug.Log("Saving to " + filePath + fileName);
+        using (StreamWriter writer = new StreamWriter(filePath + fileName, false))
+        {
+            string fieldName = new DirectoryInfo(PlayerPrefs.GetString("simSelectedField")).Name;
+            writer.WriteLine("Field: " + fieldName);
+
+            bool lastEventGameStarted = false;
+
+            for (int i = 0; i < scoreEvents.Count; i++)
+            {
+                if (scoreEvents[i].timeStamp > 0 && !lastEventGameStarted)
+                {
+                    writer.WriteLine("Game Start");
+                    lastEventGameStarted = true;
+                }
+                else if (scoreEvents[i].timeStamp < 0 && lastEventGameStarted)
+                {
+                    writer.WriteLine("Game End");
+                    lastEventGameStarted = false;
+                }
+
+                writer.WriteLine(scoreEvents[i].ToString());
+            }
+
+            if (lastEventGameStarted)
+                writer.WriteLine("Game End");
+
+            writer.Close();
+        }
+
+        Debug.Log("Save successful!");
+        
+        return new DirectoryInfo(filePath).Name + "\\" + fileName;
     }
 }

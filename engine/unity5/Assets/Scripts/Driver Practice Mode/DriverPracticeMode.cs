@@ -379,8 +379,7 @@ public class DriverPracticeMode : MonoBehaviour {
                 lockPanel.SetActive(true);
                 scoreWindow.SetActive(false);
                 scoreLogWindow.SetActive(false);
-                timer.StopTimer();
-                timerWindow.SetActive(false);
+                StopGame();
             }
 
         }
@@ -388,20 +387,38 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void StartGame()
     {
-        timerWindow.SetActive(true);
-        timer.StartTimer();
-        scoreboard.ResetScore();
-        gameStarted = true;
-        gameEnded = false;
+        if (dpmRobot.modeEnabled)
+        {
+            timerWindow.SetActive(true);
+            timer.StartTimer();
+            scoreboard.ResetScore();
+            gameStarted = true;
+            gameEnded = false;
+        }
+        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }
 
     public void StopGame()
     {
-        timer.StopTimer();
-        timerWindow.SetActive(false);
-        scoreboard.ResetScore();
-        gameStarted = false;
-        gameEnded = true;
+        if (gameStarted)
+        {
+            timer.StopTimer();
+            timerWindow.SetActive(false);
+            scoreboard.ResetScore();
+            gameStarted = false;
+            gameEnded = true;
+        }
+        else UserMessageManager.Dispatch("A game has not been started.", 5);
+    }
+
+    public void SaveGameStats()
+    {
+        if (dpmRobot.modeEnabled)
+        {
+            string directory = scoreboard.Save();
+            UserMessageManager.Dispatch("Saved to \"" + directory + "\"", 10);
+        }
+        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }
 
     /// <summary>
