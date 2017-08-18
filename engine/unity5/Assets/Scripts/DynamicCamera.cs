@@ -241,7 +241,7 @@ public class DynamicCamera : MonoBehaviour
                     distance = Mathf.Max(Mathf.Min(distance - ((Input.GetAxis("Mouse Y") / 5f) * distance), 12f), 1.5f);
                 }
                 //Use left mouse to adjust the angle the camera is pointing from and the height of camera
-                else if (Input.GetMouseButton(0))
+                else if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
                 {
                     angleOffset += Input.GetAxis("Mouse X") * 5;
                     height -= Input.GetAxis("Mouse Y")/2;
