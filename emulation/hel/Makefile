@@ -49,7 +49,7 @@ OUT_NTCORE := build/ntcore/libntcore-static.a
 LIB_JAVA := build/java/wpilibJavaJNI.dll
 LIB_NTCORE_JAVA := build/ntcore/java/ntcore.dll
 OUT_JAVA := build/java/wpilib.jar
-OUT_NTCORE_JAVA := build/ntcore/ntcore.jar
+OUT_NTCORE_JAVA := build/java/ntcore.jar
 
 all: cpp java hal
 	
@@ -128,7 +128,7 @@ java: $(OUT_JAVA)
 
 hal: $(OUT_HAL)
 
-install: $(OUT_CPP)
+install: $(OUT_CPP) $(OUT_JAVA)
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include
 	@cp -rf include ../../installer/SynthesisDrive/include
@@ -159,6 +159,13 @@ install: $(OUT_CPP)
 	@echo -e "\e[1m\e[32mINSTALL\e[39m lib/cpp\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/lib/cpp
 	@cp -rf build/cpp/libwpilib.a ../../installer/SynthesisDrive/lib/cpp/libwpilib.a
+	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/wpilib.jar\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/jars
+	@cp -rf build/java/wpilib.jar ../../installer/SynthesisDrive/jars/wpilib.jar
+	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/ntcore.jar\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/jars
+	@cp -rf build/java/ntcore.jar ../../installer/SynthesisDrive/jars/ntcore.jar
+
 
 clean:
 	rm -r build

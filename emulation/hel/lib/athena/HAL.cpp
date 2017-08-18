@@ -37,6 +37,8 @@ using namespace hal;
 static std::unique_ptr<tGlobal> global;
 static std::unique_ptr<tSysWatchdog> watchdog;
 
+const char* WPILibVersion = "Fake";
+
 static hal::priority_mutex timeMutex;
 static uint32_t timeEpoch = 0;
 static uint32_t prevFPGATime = 0;
