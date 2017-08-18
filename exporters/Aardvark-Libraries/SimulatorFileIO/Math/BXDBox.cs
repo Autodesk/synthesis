@@ -27,7 +27,7 @@ public class BXDBox : System.IComparable<BXDBox>
 
     public int CompareTo(BXDBox other)
     {
-        float thisRadius = this.GetPossibleRadius();
+        float thisRadius = GetPossibleRadius();
         float otherRadius = other.GetPossibleRadius();
 
         if (thisRadius > otherRadius)
