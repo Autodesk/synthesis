@@ -7,10 +7,10 @@ public class PhysicalProperties : BinaryRWObject
 
     public void Add(float addMass, BXDVector3 addCOM)
     {
-        this.centerOfMass.Multiply(mass);
-        this.centerOfMass.Add(addCOM.Copy().Multiply(addMass));
-        this.mass += addMass;
-        this.centerOfMass.Multiply(1.0f / this.mass);
+        centerOfMass.Multiply(mass);
+        centerOfMass.Add(addCOM.Copy().Multiply(addMass));
+        mass += addMass;
+        centerOfMass.Multiply(1.0f / mass);
     }
 
     public void WriteBinaryData(BinaryWriter writer)
