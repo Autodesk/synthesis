@@ -176,7 +176,7 @@ public class DriveJoints
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
         bool IsMecanum = mecanum;
-        int reverse = 1;
+        int reverse = -1;
 
         float[] pwm;
         float[] can;
@@ -193,24 +193,29 @@ public class DriveJoints
         }
 
         if (IsMecanum)
-        {
-
+        {   
             #region Mecanum Drive
-            pwm[0] +=
+            pwm[(int)MecanumPorts.FRONT_RIGHT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * - SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) *  -SPEED_ARROW_PWM);
 
-            pwm[1] +=
+            pwm[(int)MecanumPorts.FRONT_LEFT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * -SPEED_ARROW_PWM);
 
-            pwm[2] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) + 
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+            //For some reason, giving the back wheels 0.25 power instead of 0.5 works for strafing
+            pwm[(int)MecanumPorts.BACK_RIGHT] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * -SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); // * SPEED_ARROW_PWM);
 
-            pwm[3] +=
+            pwm[(int)MecanumPorts.BACK_LEFT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); //SPEED_ARROW_PWM);
+
             pwm[4] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
 

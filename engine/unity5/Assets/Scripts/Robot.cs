@@ -194,7 +194,7 @@ public class Robot : MonoBehaviour
         float collectiveMass = 0f;
 
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch");
-        if (isMixAndMatch == 1)
+        if (isMixAndMatch == 1 && !MixAndMatchMode.isMecanum)
         {
             //Load Node_0
             RigidNode node = (RigidNode)nodes[0];
