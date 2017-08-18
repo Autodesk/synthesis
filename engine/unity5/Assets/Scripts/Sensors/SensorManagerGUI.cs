@@ -24,7 +24,7 @@ class SensorManagerGUI : MonoBehaviour
     GameObject addSensorButton;
     GameObject selectExistingButton;
     GameObject sensorOptionToolTip;
-
+    
     GameObject addUltrasonicButton;
     GameObject addBeamBreakerButton;
     GameObject addGyroButton;
@@ -193,6 +193,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorManager.SelectingNode = isAddingSensor;
         selectExistingButton.SetActive(!isAddingSensor);
         cancelOptionButton.SetActive(isAddingSensor);
+        cancelOptionButton.transform.position = selectExistingButton.transform.position;
         sensorOptionToolTip.SetActive(isAddingSensor);
 
         if (isAddingSensor)
@@ -231,6 +232,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorManager.SelectingSensor = isSelectingSensor;
         addSensorButton.SetActive(!isSelectingSensor);
         cancelOptionButton.SetActive(isSelectingSensor);
+        cancelOptionButton.transform.position = addSensorButton.transform.position;
         sensorOptionToolTip.SetActive(isSelectingSensor);
 
         if (isSelectingSensor)
@@ -333,6 +335,7 @@ class SensorManagerGUI : MonoBehaviour
         addBeamBreakerButton.SetActive(!isAddingUltrasonic);
         addGyroButton.SetActive(!isAddingUltrasonic);
         cancelTypeButton.SetActive(isAddingUltrasonic);
+        cancelTypeButton.transform.position = addBeamBreakerButton.transform.position;
         if (isAddingUltrasonic)
         {
             addUltrasonicButton.GetComponentInChildren<Text>().text = "Confirm";
@@ -358,6 +361,7 @@ class SensorManagerGUI : MonoBehaviour
         addUltrasonicButton.SetActive(!isAddingBeamBreaker);
         addGyroButton.SetActive(!isAddingBeamBreaker);
         cancelTypeButton.SetActive(isAddingBeamBreaker);
+        cancelTypeButton.transform.position = addGyroButton.transform.position;
         if (isAddingBeamBreaker)
         {
             addBeamBreakerButton.GetComponentInChildren<Text>().text = "Confirm";
@@ -381,6 +385,7 @@ class SensorManagerGUI : MonoBehaviour
         addUltrasonicButton.SetActive(!isAddingGyro);
         addBeamBreakerButton.SetActive(!isAddingGyro);
         cancelTypeButton.SetActive(isAddingGyro);
+        cancelTypeButton.transform.position = addBeamBreakerButton.transform.position;
         if (isAddingGyro)
         {
             addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
