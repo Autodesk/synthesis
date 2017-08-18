@@ -143,12 +143,12 @@ public class MainState : SimState
         //Otherwise, reset the robot normally (quick reset feature)
         if (!activeRobot.IsResetting)
         {
-            if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);
-            if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
+            if (Robot.ControlsEnabled && Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);
+            if (Robot.ControlsEnabled && Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
         }
 
         // Toggles between the different camera states if the camera toggle button is pressed
-        if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)))
+        if (Robot.ControlsEnabled && InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
         {
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {

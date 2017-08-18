@@ -1202,66 +1202,69 @@ public class DriverPracticeRobot : MonoBehaviour
 
     private void ProcessControls()
     {
-        if (processingIndex == 0)
+        if (Robot.ControlsEnabled)
         {
-            if ((InputControl.GetButton(Controls.buttons[0].pickupPrimary)))
+            if (processingIndex == 0)
             {
+                if ((InputControl.GetButton(Controls.buttons[0].pickupPrimary)))
+                {
 
-                Intake(0);
-            }
-            if ((InputControl.GetButton(Controls.buttons[0].pickupSecondary)))
-            {
-                Intake(1);
-            }
-            if ((InputControl.GetButtonDown(Controls.buttons[0].releasePrimary)))
-            {
-                ReleaseGamepiece(0);
+                    Intake(0);
+                }
+                if ((InputControl.GetButton(Controls.buttons[0].pickupSecondary)))
+                {
+                    Intake(1);
+                }
+                if ((InputControl.GetButtonDown(Controls.buttons[0].releasePrimary)))
+                {
+                    ReleaseGamepiece(0);
+                }
+                else
+                {
+                    HoldGamepiece(0);
+                }
+                if ((InputControl.GetButtonDown(Controls.buttons[0].releaseSecondary)))
+                {
+                    ReleaseGamepiece(1);
+                }
+                else
+                {
+                    HoldGamepiece(1);
+                }
+                processingIndex = 1;
             }
             else
             {
-                HoldGamepiece(0);
+                if ((InputControl.GetButton(Controls.buttons[0].pickupSecondary)))
+                {
+
+                    Intake(1);
+                }
+                if ((InputControl.GetButton(Controls.buttons[0].pickupPrimary)))
+                {
+                    Intake(0);
+                }
+                if ((InputControl.GetButtonDown(Controls.buttons[0].releaseSecondary)))
+                {
+                    ReleaseGamepiece(1);
+                }
+                else
+                {
+                    HoldGamepiece(1);
+                }
+                if ((InputControl.GetButtonDown(Controls.buttons[0].releasePrimary)))
+                {
+                    ReleaseGamepiece(0);
+                }
+                else
+                {
+                    HoldGamepiece(0);
+                }
+                processingIndex = 0;
             }
-            if ((InputControl.GetButtonDown(Controls.buttons[0].releaseSecondary)))
-            {
-                ReleaseGamepiece(1);
-            }
-            else
-            {
-                HoldGamepiece(1);
-            }
-            processingIndex = 1;
+
+            if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(0);
+            if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(1);
         }
-        else
-        {
-            if ((InputControl.GetButton(Controls.buttons[0].pickupSecondary)))
-            {
-
-                Intake(1);
-            }
-            if ((InputControl.GetButton(Controls.buttons[0].pickupPrimary)))
-            {
-                Intake(0);
-            }
-            if ((InputControl.GetButtonDown(Controls.buttons[0].releaseSecondary)))
-            {
-                ReleaseGamepiece(1);
-            }
-            else
-            {
-                HoldGamepiece(1);
-            }
-            if ((InputControl.GetButtonDown(Controls.buttons[0].releasePrimary)))
-            {
-                ReleaseGamepiece(0);
-            }
-            else
-            {
-                HoldGamepiece(0);
-            }
-            processingIndex = 0;
-        }
-
-        if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(0);
-        if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(1);
     }
 }
