@@ -94,6 +94,11 @@ class FileBrowser : OverlayWindow
 	/// Custom GUIStyle for buttons.
 	/// </summary>
 	private static GUIStyle fileBrowserButton;
+    private Texture2D searchedButtonTexture;
+    /// <summary>
+    /// Custom GUIStyle for the search button after searching the current directory
+    /// </summary>
+    private static GUIStyle searchedButton;
     /// <summary>
 	/// Custom GUIStyle for labels.
 	/// </summary>s
@@ -109,6 +114,7 @@ class FileBrowser : OverlayWindow
     /// </summary>
     private GUIStyle listStyle;
     private GUIStyle highlightStyle;
+    private GUIStyle targetStyle;
     private GUIStyle buttonStyle;
 
     /// <summary>
@@ -143,7 +149,7 @@ class FileBrowser : OverlayWindow
         gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
         russoOne = Resources.Load("Fonts/Russo_One") as Font;
         windowTexture = Resources.Load("Images/greyBackground") as Texture2D;
-
+        searchedButtonTexture = Resources.Load("Images/searchedButton") as Texture2D;
         //Custom style for windows
         fileBrowserWindow = new GUIStyle(GUI.skin.window);
         fileBrowserWindow.normal.background = windowTexture;
@@ -160,17 +166,32 @@ class FileBrowser : OverlayWindow
         fileBrowserButton.onHover.background = buttonSelected;
         fileBrowserButton.onActive.background = buttonSelected;
 
+        //Custom style for the search button after searching
+        searchedButton = new GUIStyle(GUI.skin.button);
+        searchedButton.font = russoOne;
+        searchedButton.normal.background = searchedButtonTexture;
+        searchedButton.hover.background = searchedButtonTexture;
+        searchedButton.active.background = searchedButtonTexture;
+        searchedButton.onNormal.background = searchedButtonTexture;
+        searchedButton.onHover.background = searchedButtonTexture;
+        searchedButton.onActive.background = searchedButtonTexture;
+
         //Custom style for highlighted directory buttons (same theme as seen in the ScrollableList.cs)
         listStyle = new GUIStyle("button");
         listStyle.normal.background = buttonTexture;
         listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
-        listStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
+        listStyle.active.background = Resources.Load("Images/highlightsquaretexture") as Texture2D;
         listStyle.font = russoOne;
 
         //Custome style for highlight feature
         highlightStyle = new GUIStyle(listStyle);
         highlightStyle.normal.background = listStyle.active.background;
         highlightStyle.hover.background = highlightStyle.normal.background;
+
+        //Custom style for target folder buttons
+        targetStyle = new GUIStyle(listStyle);
+        targetStyle.normal.background = Resources.Load("Images/targetsquaretexture") as Texture2D;
+        targetStyle.hover.background = listStyle.active.background;
 
         //Custom style for labels
         fileBrowserLabel = new GUIStyle(GUI.skin.label);
@@ -205,10 +226,19 @@ class FileBrowser : OverlayWindow
         {
             string entry = stringify != null ? stringify(o) : o.ToString(); ;
 
-            //highlight temporary selection or target folders after searching
-            if (tempSelection != null && entry.Equals(tempSelection.Name) || targetName.Contains(entry))
+            //highlight temporary selection
+            if (tempSelection != null && entry.Equals(tempSelection.Name) && !targetName.Contains(entry))
             {
                 if (GUILayout.Button(entry, highlightStyle))
+                {
+                    selected = o;
+                    tempSelection = o as DirectoryInfo;
+                }
+            }
+            //highlight target folders after searching
+            else if (targetName.Contains(entry))
+            {
+                if (GUILayout.Button(entry, targetStyle))
                 {
                     selected = o;
                     tempSelection = o as DirectoryInfo;
@@ -365,23 +395,33 @@ class FileBrowser : OverlayWindow
         GUILayout.EndArea();
         GUILayout.BeginArea(new Rect(12, 360, 480, 25));
         GUILayout.BeginHorizontal();
-        
-        //When this button is clicked, th
-        if (GUILayout.Button("Search for Target Directory", fileBrowserButton, GUILayout.Width(250)))
-        {
-            SearchDirectories(directoryInfo);
 
-            //Notify the user there's nothing related inside the current directory
-            if (targetFolderList.Count == 0)
+        //When this button is clicked, search the directory for target files
+        if (!directorySearched)
+        {
+            if (GUILayout.Button("Search for Target Directory", fileBrowserButton, GUILayout.Width(250)))
             {
-                if (title.Equals("Choose Robot Directory"))
+                SearchDirectories(directoryInfo);
+
+                //Notify the user there's nothing related inside the current directory
+                if (targetFolderList.Count == 0)
                 {
-                    UserMessageManager.Dispatch("No exported robot files found in current directory", 5f);
+                    if (title.Equals("Choose Robot Directory"))
+                    {
+                        UserMessageManager.Dispatch("No exported robot files found in current directory", 5f);
+                    }
+                    else if (title.Equals("Choose Field Directory"))
+                    {
+                        UserMessageManager.Dispatch("No exported robot files found in current directory", 5f);
+                    }
                 }
-                else if (title.Equals("Choose Field Directory"))
-                {
-                    UserMessageManager.Dispatch("No exported robot files found in current directory", 5f);
-                }
+            }
+        }
+        else
+        {
+            if (GUILayout.Button("Search for Target Directory", searchedButton, GUILayout.Width(250)))
+            {
+                UserMessageManager.Dispatch("The current directory has been searched.", 5f);
             }
         }
         if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
