@@ -22,8 +22,13 @@ public struct ScoreEvent
 
 public class Scoreboard : MonoBehaviour
 {
-    public Text scoreDisplay;
-    public Text scoreLog;
+    GameObject canvas;
+
+    GameObject scoreWindow;
+    GameObject scoreLogWindow;
+
+    Text scoreDisplay;
+    Text scoreLog;
 
     Scrollbar scoreLogScrollbar;
     GameplayTimer timer;
@@ -33,14 +38,30 @@ public class Scoreboard : MonoBehaviour
 
     private void Start()
     {
-        // Get scrollbar so that it can be reset when log is updated
-        GameObject verticalScroll = AuxFunctions.FindObject(scoreLog.transform.parent.parent.parent.gameObject, "Scrollbar Vertical");
-        scoreLogScrollbar = verticalScroll.GetComponent<Scrollbar>();
-        
-        timer = GetComponent<GameplayTimer>();
-        dpm = GetComponent<DriverPracticeMode>();
-
         ResetScore();
+    }
+
+    private void Update()
+    {
+        if (timer == null || dpm == null)
+        {
+            timer = GetComponent<GameplayTimer>();
+            dpm = GetComponent<DriverPracticeMode>();
+        }
+        else if (scoreDisplay == null || scoreLog == null)
+            FindElements();
+    }
+
+    void FindElements()
+    {
+        canvas = GameObject.Find("Canvas");
+
+        scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
+        scoreLogWindow = AuxFunctions.FindObject(canvas, "ScoreLogPanel");
+
+        scoreDisplay = AuxFunctions.FindObject(scoreWindow, "ScoreText").GetComponent<Text>();
+        scoreLog = AuxFunctions.FindObject(scoreLogWindow, "ScoreLogText").GetComponent<Text>();
+        scoreLogScrollbar = AuxFunctions.FindObject(scoreLogWindow, "Scrollbar Vertical").GetComponent<Scrollbar>();
     }
 
     public void AddPoints(int points, string description)
@@ -89,10 +110,15 @@ public class Scoreboard : MonoBehaviour
 
     public void UpdateDisplay()
     {
-        scoreDisplay.text = GetScoreTotal().ToString();
+        if (scoreDisplay != null && scoreLog != null)
+        {
+            scoreDisplay.text = GetScoreTotal().ToString();
 
-        scoreLog.text = string.Join("\n", scoreEvents.Select(x => x.ToString()).ToArray()); // Convert events to strings, place in array, and join into string
-        scoreLogScrollbar.value = 0;
+            scoreLog.text = string.Join("\n", scoreEvents.Select(x => x.ToString()).ToArray()); // Convert events to strings, place in array, and join into string
+        }
+
+        if (scoreLogScrollbar != null)
+            scoreLogScrollbar.value = 0;
     }
 
     /// <summary>
@@ -102,7 +128,7 @@ public class Scoreboard : MonoBehaviour
     public string Save()
     {
         string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\";
-        string fileName = string.Format("stats_{0:yyyy-MM-dd_hh-mm-ss-tt}.txt", System.DateTime.Now);
+        string fileName = string.Format("score_log_{0:yyyy-MM-dd_hh-mm-ss-tt}.txt", System.DateTime.Now);
         if (File.Exists(filePath + fileName))
         {
             Debug.Log("Overriding existing file");
@@ -134,6 +160,8 @@ public class Scoreboard : MonoBehaviour
 
             if (lastEventGameStarted)
                 writer.WriteLine("Game End");
+
+            writer.WriteLine("Total Score: " + GetScoreTotal().ToString());
 
             writer.Close();
         }

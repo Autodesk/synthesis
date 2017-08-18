@@ -66,6 +66,7 @@ public class DriverPracticeRobot : MonoBehaviour
     private Color hoverColor = new Color(1, 1, 0, 0.1f);
 
     //for gamepiece spawn and goal customizability
+    private Scoreboard scoreboard; // Given to newly created goals for adding points
     private List<UnityEngine.Vector3> gamepieceSpawn;
     private List<List<UnityEngine.Vector3>> gamepieceGoals;
     private List<List<float>> gamepieceGoalSizes;
@@ -781,7 +782,12 @@ public class DriverPracticeRobot : MonoBehaviour
                 goal.description = gamepieceGoalDesc[index][goalIndex];
                 goal.pointValue = gamepieceGoalPoints[index][goalIndex];
 
-                goal.DPRobot = this;
+                goal.dpmRobot = this;
+
+                if (scoreboard == null)
+                    scoreboard = AuxFunctions.FindObject("StateMachine").GetComponent<Scoreboard>();
+
+                goal.scoreboard = scoreboard;
 
                 gamepieceGoalObjects[index].Add(gameobject);
             }

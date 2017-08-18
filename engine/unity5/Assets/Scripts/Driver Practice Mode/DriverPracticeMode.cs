@@ -10,6 +10,7 @@ public class DriverPracticeMode : MonoBehaviour {
     private Scoreboard scoreboard;
     private GameplayTimer timer;
     private SimUI simUI;
+    private GoalDisplayManager goalDisplayManager;
     private MainState mainState;
 
     GameObject canvas;
@@ -111,6 +112,7 @@ public class DriverPracticeMode : MonoBehaviour {
         scoreboard = GetComponent<Scoreboard>();
         timer = GetComponent<GameplayTimer>();
         simUI = GetComponent<SimUI>();
+        goalDisplayManager = GetComponent<GoalDisplayManager>();
 
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
         scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
@@ -563,7 +565,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void OpenGamepieceGoalsConfig()
     {
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalDisplayManager);
         goalConfigWindow.SetActive(true);
         goalConfiguring = true;
     }
@@ -578,13 +580,13 @@ public class DriverPracticeMode : MonoBehaviour {
     public void NewGamepieceGoal()
     {
         dpmRobot.NewGoal(configuringIndex);
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalDisplayManager);
     }
 
     public void DeleteGamepieceGoal(int goalIndex)
     {
         dpmRobot.DeleteGoal(configuringIndex, goalIndex);
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalDisplayManager);
     }
 
     public void SetGamepieceGoal(int goalIndex)

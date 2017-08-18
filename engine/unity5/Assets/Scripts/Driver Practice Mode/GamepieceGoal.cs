@@ -12,7 +12,8 @@ using System.Linq;
 
 public class DriverPracticeGoal : BCollisionCallbacksDefault
 {
-    public DriverPracticeRobot DPRobot;
+    public DriverPracticeRobot dpmRobot;
+    public Scoreboard scoreboard;
 
     public string gamepieceKeyword;
 
@@ -27,7 +28,7 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
     /// <param name="manifoldList">List of collision manifolds--this isn't used</param>
     public override void BOnCollisionEnter(CollisionObject other, PersistentManifoldList manifoldList)
     {
-        if (DPRobot.modeEnabled)
+        if (dpmRobot.modeEnabled)
         {
             string gamepiece;
             if (gamepieceKeyword != null)
@@ -39,10 +40,8 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
                     GameObject gamepieceObject = ((BRigidBody)other.UserObject).gameObject;
 
                     gamepieceObject.SetActive(false);
-
-                    GameObject stateMachine = AuxFunctions.FindObject("StateMachine");
                     
-                    stateMachine.GetComponent<Scoreboard>().AddPoints(pointValue, description);
+                    scoreboard.AddPoints(pointValue, description);
                 }
             }
         }
