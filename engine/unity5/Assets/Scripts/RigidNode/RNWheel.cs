@@ -11,11 +11,11 @@ public partial class RigidNode : RigidNode_Base
     float WHEEL_MASS_SCALE = 15f;
     float WHEEL_FRICTION = 1f;
 
-    private void OrientWheelNormals()
+    public void OrientWheelNormals()
     {
         if (GetSkeletalJoint() is RotationalJoint_Base)
         {
-            Vector3 com = ((RigidNode)GetParent()).physicalProperties.centerOfMass.AsV3();
+            Vector3 com = ((RigidNode)GetParent()).PhysicalProperties.centerOfMass.AsV3();
             RotationalJoint_Base rJoint = (RotationalJoint_Base)GetSkeletalJoint();
             Vector3 diff = rJoint.basePoint.AsV3() - com;
 
@@ -37,6 +37,15 @@ public partial class RigidNode : RigidNode_Base
     {
         BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
         rigidBody.friction = WHEEL_FRICTION;
+
+        rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
+        rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
+    }
+
+    private void UpdateWheelRigidBody(float friction)
+    {
+        BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
+        rigidBody.friction = friction;
 
         rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
         rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;

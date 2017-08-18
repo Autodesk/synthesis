@@ -21,7 +21,7 @@ namespace Assets.Scripts.FEA
         /// <param name="robotPath"></param>
         /// <param name="trackers"></param>
         /// <param name="contacts"></param>
-        public static void Write(string fileName, string fieldPath, string robotPath, List<Tracker> trackers, List<List<ContactDescriptor>> contacts)
+        public static void Write(string fileName, string fieldPath, List<Tracker> trackers, List<List<ContactDescriptor>> contacts)
         {
             using (XmlWriter writer = XmlWriter.Create(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\" + fileName + ".replay",
@@ -30,12 +30,14 @@ namespace Assets.Scripts.FEA
                 writer.WriteStartElement("replay");
                 writer.WriteAttributeString("length", Tracker.Length.ToString());
 
-                List<Tracker> robotTrackers = trackers.Where(x => x.transform.parent != null && x.transform.parent.name.Equals("Robot")).ToList();
-                List<Tracker> gamePieceTrackers = trackers.Where(x => x.gameObject.name.StartsWith("clone_")).ToList();
-                List<Tracker> fieldTrackers = trackers.Except(robotTrackers).Except(gamePieceTrackers).ToList();
+                List<Tracker> gamePieceTrackers = trackers.Where(x => x.gameObject.name.EndsWith("(Clone)")).ToList();
+                List<Tracker> fieldTrackers = GameObject.Find("Field").GetComponentsInChildren<Tracker>().Except(gamePieceTrackers).ToList();
 
                 WriteField(writer, fieldPath, fieldTrackers);
-                WriteRobot(writer, robotPath, robotTrackers);
+
+                foreach (Robot r in UnityEngine.Object.FindObjectsOfType<Robot>())
+                    WriteRobot(writer, r.RobotDirectory, r.GetComponentsInChildren<Tracker>().ToList());
+
                 WriteGamePieces(writer, gamePieceTrackers);
                 WriteContacts(writer, contacts);
 
@@ -96,7 +98,7 @@ namespace Assets.Scripts.FEA
 
             foreach (Tracker t in trackers)
             {
-                string name = t.gameObject.name.Substring(t.gameObject.name.IndexOf('_') + 1);
+                string name = t.gameObject.name.Remove(t.gameObject.name.IndexOf("(Clone)"));
 
                 if (!sortedTrackers.ContainsKey(name))
                     sortedTrackers[name] = new List<Tracker>();
@@ -183,11 +185,7 @@ namespace Assets.Scripts.FEA
                     {
                         bw.Write(c.AppliedImpulse);
                         formatter.Serialize(bw.BaseStream, c.Position);
-
-                        string name = c.RobotBody.name;
-                        int startIndex = name.IndexOf('_');
-
-                        bw.Write(int.Parse(name.Substring(startIndex + 1, name.Length - startIndex - name.IndexOf('.'))));
+                        bw.Write(c.RobotBody.transform.GetSiblingIndex());
                     }
                 }
 
