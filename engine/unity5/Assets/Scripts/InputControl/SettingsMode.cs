@@ -58,6 +58,8 @@ public class SettingsMode : MonoBehaviour
         {
             Controls.ResetTankDrive();
             Controls.Save();
+            //GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
+            //UpdateAllText();
         }
         else
         {

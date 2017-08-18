@@ -37,6 +37,12 @@ public class Player
     private List<KeyMapping> tankDriveList = new List<KeyMapping>();
     private Dictionary<string, KeyMapping> tankDriveMap = new Dictionary<string, KeyMapping>();
 
+    private List<KeyMapping> resetTankDriveList = new List<KeyMapping>();
+    private Dictionary<string, KeyMapping> resetTankDriveMap = new Dictionary<string, KeyMapping>();
+
+    private List<KeyMapping> resetArcadeDriveList = new List<KeyMapping>();
+    private Dictionary<string, KeyMapping> resetArcadeDriveMap = new Dictionary<string, KeyMapping>();
+
     //Set of arcade drive axes.
     private List<Axis> arcadeAxesList = new List<Axis>();
     private Dictionary<string, Axis> arcadeAxesMap = new Dictionary<string, Axis>();
@@ -85,7 +91,9 @@ public class Player
                 outKey = new KeyMapping(name, primary, secondary);
 
                 arcadeDriveList.Add(outKey);
+                resetArcadeDriveList.Add(outKey);
                 arcadeDriveMap.Add(name, outKey);
+                //resetArcadeDriveMap.Add(name, outKey);
             }
         }
         else
@@ -100,7 +108,9 @@ public class Player
                 outKey = new KeyMapping(name, primary, secondary);
 
                 tankDriveList.Add(outKey);
+                resetArcadeDriveList.Add(outKey);
                 tankDriveMap.Add(name, outKey);
+                //resetArcadeDriveMap.Add(name, outKey);
             }
         }
 
@@ -199,6 +209,16 @@ public class Player
         return arcadeDriveList.AsReadOnly();
     }
 
+    public ReadOnlyCollection<KeyMapping> GetTankDefaults()
+    {
+        return resetTankDriveList.AsReadOnly();
+    }
+
+    public ReadOnlyCollection<KeyMapping> GetArcadeDefaults()
+    {
+        return resetArcadeDriveList.AsReadOnly();
+    }
+
     public ReadOnlyCollection<KeyMapping> GetActiveList()
     {
         return activeList.AsReadOnly();
@@ -221,6 +241,7 @@ public class Player
     {
         isTankDrive = true;
         activeList = tankDriveList;
+        Debug.Log("activeList Tank: " + activeList);
     }
 
     /// <summary>
@@ -230,5 +251,14 @@ public class Player
     {
         isTankDrive = false;
         activeList = arcadeDriveList;
+        Debug.Log("activeList Arcade: " + activeList);
+    }
+
+    public void ResetTank()
+    {
+        isTankDrive = true;
+        //resetTankDriveList = activeList;
+        activeList = resetTankDriveList;
+        Debug.Log("activeList: " + activeList);
     }
 }

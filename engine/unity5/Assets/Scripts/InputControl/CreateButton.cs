@@ -101,7 +101,7 @@ public class CreateButton : MonoBehaviour
     // Each player is specified with a playerIndex and are retrieved by this index.
     //==============================================================================================
 
-    #region UpdateButtons
+    #region Update Active Buttons
     public void UpdateActiveButtons()
     {
         DestroyList();
@@ -609,6 +609,12 @@ public class CreateButton : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+    }
+
+    public void ResetTankDrive()
+    {
+        InputControl.mPlayerList[InputControl.activePlayerIndex].ResetTank();
+        UpdateActiveButtons();
     }
 
     /// <summary>
