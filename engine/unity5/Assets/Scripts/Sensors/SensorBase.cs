@@ -5,7 +5,7 @@ using BulletSharp;
 using BulletUnity;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
-
+using System;
 /// <summary>
 /// This is the template/parent class for all sensors within Synthesis.
 /// </summary>
@@ -108,7 +108,7 @@ public abstract class SensorBase : MonoBehaviour
         if (outputPanel != null)
         {
             GameObject inputField = AuxFunctions.FindObject(outputPanel, "Entry");
-            inputField.GetComponent<InputField>().text = ReturnOutput().ToString();
+            inputField.GetComponent<InputField>().text = Math.Round(ReturnOutput(), 3).ToString();
         }
     }
 

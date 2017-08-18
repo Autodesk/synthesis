@@ -38481,7 +38481,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settingsMode: {fileID: 807203041}
-  tankDriveSwitch: {fileID: 0}
 --- !u!1 &808121560
 GameObject:
   m_ObjectHideFlags: 0
@@ -46560,6 +46559,12 @@ MonoBehaviour:
   wheelPanelOn: 0
   driveBasePanelOn: 0
   manipulatorPanelOn: 0
+--- !u!114 &985043757 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114711769431624156, guid: 4caaf394c96a3b649a08771e151d09a6,
+    type: 2}
+  m_PrefabInternal: {fileID: 531182610}
+  m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
 --- !u!1 &985625856
 GameObject:
   m_ObjectHideFlags: 0
@@ -62641,7 +62646,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 985043757}
         m_MethodName: ChangeMaMClicked
         m_Mode: 1
         m_Arguments:
@@ -80094,7 +80099,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 985043757}
         m_MethodName: AddMaMClicked
         m_Mode: 1
         m_Arguments:
