@@ -168,8 +168,14 @@ public class Scoreboard : MonoBehaviour
     InputField fileName = GameObject.Find("FileNameInput").GetComponent<InputField>();
     public void SaveButtonClicked()
     {
+        if (!Directory.Exists(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves")) ;
+        {
+            //if it doesn't, create it
+            Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves");
+
+        }
         string name = fileName.text;
-        Save((System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//fields"), name);
+        Save((System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves"), name);
     }
     /// <summary>
     /// Saves the scoring events of the current game to a text file.
