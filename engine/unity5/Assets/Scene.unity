@@ -1406,8 +1406,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
-        m_MethodName: ToggleDriverStation
+      - m_Target: {fileID: 1741231152}
+        m_MethodName: SaveButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9605,7 +9605,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0.7843138, g: 0.7843138, b: 0.7843138, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -15909,7 +15909,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &556649836
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22096,7 +22096,7 @@ GameObject:
   - component: {fileID: 841091996}
   - component: {fileID: 841091995}
   m_Layer: 5
-  m_Name: LoadSavePanel
+  m_Name: SetSavePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30930,7 +30930,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Load Game
+  m_Text: Set Save File
 --- !u!222 &1204539911
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31315,7 +31315,7 @@ GameObject:
   - component: {fileID: 1214002356}
   - component: {fileID: 1214002355}
   m_Layer: 5
-  m_Name: LoadGameButton
+  m_Name: SetSaveButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31380,7 +31380,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231145}
-        m_MethodName: ToggleLoadGamePanel
+        m_MethodName: ToggleSetSavePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -35316,7 +35316,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231145}
-        m_MethodName: ToggleCreateSavePanel
+        m_MethodName: ToggleSetSavePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -46928,7 +46928,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Load Save
+  m_Text: Set Save File
 --- !u!222 &1869423151
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -19,7 +19,7 @@ public class SelectSaveScrollable : ScrollablePanel
         listStyle.fontSize = 14;
         highlightStyle.fontSize = 14;
         toScale = false;
-        errorMessage = "No fields found in directory!";
+        errorMessage = "No Saves found in directory!";
     }
 
     void OnEnable()
@@ -35,10 +35,10 @@ public class SelectSaveScrollable : ScrollablePanel
     {
         if (directory != null && items.Count == 0)
         {
-            string[] folders = System.IO.Directory.GetDirectories(directory);
-            foreach (string saves in folders)
+            string[] files = System.IO.Directory.GetFiles(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves", "*.*");
+            foreach (string saves in files)
             {
-                if (File.Exists("\\.txt")) items.Add(new DirectoryInfo(saves).Name);
+                items.Add(new DirectoryInfo(saves).Name);
             }
             if (items.Count > 0) selectedEntry = items[0];
         }
