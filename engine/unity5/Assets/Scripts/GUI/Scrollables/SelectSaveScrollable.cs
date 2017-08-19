@@ -6,23 +6,25 @@ using System.Collections.Generic;
 
 
 /// <summary>
-/// Meant to be used for selecting a robot in the main menu
+/// Meant to be used for selecting a save
 /// </summary>
 public class SelectSaveScrollable : ScrollablePanel
 {
-    private LoadSavePanel saveGame;
+    private string directory;
 
     // Use this for initialization
     protected override void Start()
     {
         base.Start();
-        errorMessage = "No saves found in directory!";
-
-        saveGame = canvas.GetComponent<LoadSavePanel>();
+        listStyle.fontSize = 14;
+        highlightStyle.fontSize = 14;
+        toScale = false;
+        errorMessage = "No fields found in directory!";
     }
 
     void OnEnable()
     {
+        directory = PlayerPrefs.GetString("SaveGameDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves"));
         items = new List<string>();
         items.Clear();
 
@@ -31,17 +33,18 @@ public class SelectSaveScrollable : ScrollablePanel
     // Update is called once per frame
     protected override void OnGUI()
     {
-        if (LoadSavePanel.saveGameDirectory != null && items.Count == 0)
+        if (directory != null && items.Count == 0)
         {
-            string[] folders = System.IO.Directory.GetDirectories(LoadSavePanel.saveGameDirectory);
-            foreach (string save in folders)
+            string[] folders = System.IO.Directory.GetDirectories(directory);
+            foreach (string saves in folders)
             {
-                if (File.Exists(save + "\\definition.csv")) items.Add(new DirectoryInfo(save).Name);
+                if (File.Exists(saves + "\\definition.bxdf")) items.Add(new DirectoryInfo(saves).Name);
             }
             if (items.Count > 0) selectedEntry = items[0];
         }
 
-        position = Camera.main.WorldToScreenPoint(transform.position);
+        position = GetComponent<RectTransform>().position;
+
 
         base.OnGUI();
 

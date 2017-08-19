@@ -30,6 +30,7 @@ public class SimUI : MonoBehaviour
 
 
     GameObject changeRobotPanel;
+    GameObject loadSavePanel;
     GameObject changeFieldPanel;
     GameObject addRobotPanel;
 
@@ -125,6 +126,7 @@ public class SimUI : MonoBehaviour
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
+        loadSavePanel = AuxFunctions.FindObject(canvas, "LoadSavePanel");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
 
@@ -186,6 +188,19 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             changeRobotPanel.SetActive(true);
+        }
+    }
+
+    public void ToggleLoadGamePanel()
+    {
+        if (loadSavePanel.activeSelf)
+        {
+            loadSavePanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            loadSavePanel.SetActive(true);
         }
     }
 

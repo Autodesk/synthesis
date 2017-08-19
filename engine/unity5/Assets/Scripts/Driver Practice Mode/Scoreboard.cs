@@ -165,6 +165,12 @@ public class Scoreboard : MonoBehaviour
             scoreLogScrollbar.value = 0;
     }
 
+    InputField fileName = GameObject.Find("FileNameInput").GetComponent<InputField>();
+    public void SaveButtonClicked()
+    {
+        string name = fileName.text;
+        Save((System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//fields"), name);
+    }
     /// <summary>
     /// Saves the scoring events of the current game to a text file.
     /// </summary>

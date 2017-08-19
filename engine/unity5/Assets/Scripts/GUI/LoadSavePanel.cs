@@ -10,10 +10,11 @@ public class LoadSavePanel : MonoBehaviour {
     private bool customgameon = true; //whether the robot directory browser is on
     public static string saveGameDirectory; //file path for field directory
     private ArrayList gameSaves;
-    private void OnGUI()
+    void OnGUI()
     {
         if (saveGameDirectory != null) InitSaveGameBrowser();
     }
+
     public void InitSaveGameBrowser()
     {
         if (saveGameBrowser == null)
@@ -62,4 +63,5 @@ public class LoadSavePanel : MonoBehaviour {
         gameSaves = new ArrayList();
 
     }
+
 }
