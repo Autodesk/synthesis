@@ -42,7 +42,7 @@ public class DriverPracticeRobot : MonoBehaviour
     public List<bool> displayTrajectories; //projects gamepiece trajectories if true
     private List<LineRenderer> drawnTrajectory;
 
-    public bool modeEnabled = true;
+    public bool modeEnabled = false;
 
     private int configuringIndex = 0;
     private int processingIndex = 0; //we use this to alternate which index is processed first.
@@ -95,7 +95,7 @@ public class DriverPracticeRobot : MonoBehaviour
         intakeNode = new List<GameObject>();
         intakeNode.Add(transform.GetChild(0).gameObject);
         intakeNode.Add(transform.GetChild(0).gameObject);
-
+        
         releaseNode = new List<GameObject>();
         releaseNode.Add(transform.GetChild(0).gameObject);
         releaseNode.Add(transform.GetChild(0).gameObject);
@@ -146,6 +146,8 @@ public class DriverPracticeRobot : MonoBehaviour
 
         //After initializing all the lists and variables, try to load from the robot directory.
         Load(robotDirectory);
+
+        modeEnabled = true;
     }
 
     /// <summary>
@@ -800,12 +802,12 @@ public class DriverPracticeRobot : MonoBehaviour
                 else if (counter == 3)
                 {
                     if (line.Equals("#Release Node")) counter++;
-                    else intakeNode[index] = GameObject.Find(line);
+                    else intakeNode[index] = AuxFunctions.FindObject(gameObject, line);
                 }
                 else if (counter == 4)
                 {
                     if (line.Equals("#Release Position")) counter++;
-                    else releaseNode[index] = GameObject.Find(line);
+                    else releaseNode[index] = AuxFunctions.FindObject(gameObject, line);
                 }
                 else if (counter == 5)
                 {
@@ -930,5 +932,10 @@ public class DriverPracticeRobot : MonoBehaviour
 
         if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(0);
         if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(1);
+    }
+
+    private void OnDestroy()
+    {
+        modeEnabled = false;
     }
 }
