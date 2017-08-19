@@ -38,7 +38,7 @@ public class SelectSaveScrollable : ScrollablePanel
             string[] folders = System.IO.Directory.GetDirectories(directory);
             foreach (string saves in folders)
             {
-                if (File.Exists(saves + "\\definition.bxdf")) items.Add(new DirectoryInfo(saves).Name);
+                if (File.Exists("\\.txt")) items.Add(new DirectoryInfo(saves).Name);
             }
             if (items.Count > 0) selectedEntry = items[0];
         }

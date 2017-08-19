@@ -51,6 +51,8 @@ public class Scoreboard : MonoBehaviour
     Text scoreDisplay;
     Text scoreLog;
 
+    InputField setFileName;
+
     Scrollbar scoreLogScrollbar;
     GameplayTimer timer;
     DriverPracticeMode dpm;
@@ -79,6 +81,8 @@ public class Scoreboard : MonoBehaviour
     void FindElements()
     {
         canvas = GameObject.Find("Canvas");
+
+        setFileName = GameObject.Find("FileNameInput").GetComponent<InputField>();
 
         scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
         scoreLogWindow = AuxFunctions.FindObject(canvas, "ScoreLogPanel");
@@ -165,17 +169,18 @@ public class Scoreboard : MonoBehaviour
             scoreLogScrollbar.value = 0;
     }
 
-    InputField fileName = GameObject.Find("FileNameInput").GetComponent<InputField>();
+    string setName;
     public void SaveButtonClicked()
     {
+        setName = setFileName.text;
+        Debug.Log(setFileName.text);
         if (!Directory.Exists(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves")) ;
         {
             //if it doesn't, create it
             Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves");
 
         }
-        string name = fileName.text;
-        Save((System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves"), name);
+        Save((System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves"), setName);
     }
     /// <summary>
     /// Saves the scoring events of the current game to a text file.
