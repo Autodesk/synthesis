@@ -87,6 +87,10 @@ public class MainMenu : MonoBehaviour
     private bool customroboton = true; //whether the robot directory browser is on
     public string robotDirectory; //file path for robot directory
 
+    private FileBrowser saveGameBrowser = null; //robot directory browser
+    private bool customgameon = true; //whether the robot directory browser is on
+    public string saveGameDirectory; //file path for field directory
+
     public static GameObject inputConflict; //UI object that shows when two inputs conflict with each other
 
     public static bool fullscreen; //true if application is in fullscreen
@@ -134,6 +138,7 @@ public class MainMenu : MonoBehaviour
         //Initializes and renders the Field Browser
         if (fieldDirectory != null) InitFieldBrowser();
         if (robotDirectory != null) InitRobotBrowser();
+        if (saveGameDirectory != null) InitSaveGameBrowser();
 
 
         //Renders the message manager which displays error messages
@@ -615,7 +620,46 @@ public class MainMenu : MonoBehaviour
         customroboton = true;
         currentTab = Tab.RobotDir;
     }
+    public void InitSaveGameBrowser()
+    {
+        if (saveGameBrowser == null)
+        {
+            saveGameBrowser = new FileBrowser("Choose Field Directory", saveGameDirectory, true);
+            saveGameBrowser.Active = true;
+            saveGameBrowser.OnComplete += (object obj) =>
+            {
+                saveGameBrowser.Active = true;
+                string fileLocation = (string)obj;
+                // If dir was selected...
+                DirectoryInfo directory = new DirectoryInfo(fileLocation);
+                if (directory != null && directory.Exists)
+                {
+                    Debug.Log(directory);
+                    saveGameDirectory = (directory.FullName);
+                    currentTab = Tab.Sim;
+                    SwitchTabSim();
+                    customfieldon = false;
+                    PlayerPrefs.SetString("SaveGameDirectory", saveGameDirectory);
+                    PlayerPrefs.Save();
+                }
+                else
+                {
+                    UserMessageManager.Dispatch("Invalid selection!", 10f);
+                }
+            };
+        }
+        if (customfieldon) saveGameBrowser.Render();
+    }
 
+    public void LoadGameDirectory()
+    {
+        if (!saveGameBrowser.Active)
+        {
+            saveGameBrowser.Active = true;
+        }
+        customgameon = true;
+        //currentTab = Tab.GameDir;
+    }
     #endregion
     #region Other Methods
     public void InputDefaultPressed()
@@ -775,6 +819,8 @@ public class MainMenu : MonoBehaviour
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
         fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //if the field directory no longer exists, set it to the default application path.
+        saveGameDirectory = PlayerPrefs.GetString("SaveGameDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves"));
+        saveGameDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //if the Game Save directory no longer exists, set it to the default application path.
 
         simSelectedField = PlayerPrefs.GetString("simSelectedField");
         simSelectedFieldName = (Directory.Exists(simSelectedField)) ? PlayerPrefs.GetString("simSelectedFieldName", "No Field Selected!") : "No Field Selected!";

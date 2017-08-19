@@ -210,40 +210,4 @@ public class Scoreboard : MonoBehaviour
         Debug.Log("Save successful!");
     }
 
-    public static string fileName;
-
-    public class EditorUtilitySaveFilePanel : MonoBehaviour
-    {
-        [MenuItem("Save Database to file")]
-        static void NewFile()
-        {
-                EditorUtility.DisplayDialog(
-                    "Create Database",
-                    "Please Create a Database",
-                    "Ok");
-                return;
-        
-
-            var path = EditorUtility.SaveFilePanel(
-                    "Save database as .txt",
-                    "",
-                    fileName + ".txt",
-                    "txt");
-        }
-    }
-
-    public class OpenFilePanelExample : EditorWindow
-    {
-        [MenuItem("Load Database")]
-        static void LoadFile()
-        {
-            
-            EditorUtility.DisplayDialog("Select Text File", "You must select a text file first!", "OK");
-            return;
-
-            string path = EditorUtility.OpenFilePanel("Overwrite with png", "", "png");
-           
-        }
-    }
-
 }

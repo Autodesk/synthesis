@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
+using UnityEditor;
 
 public class DriverPracticeMode : MonoBehaviour {
 
@@ -477,12 +478,14 @@ public class DriverPracticeMode : MonoBehaviour {
     /// <summary>
     /// Allow the user to select a new file to save game stats to.
     /// </summary>
-    public void SetSaveFile()
+    public void LoadSaveFile()
     {
         if (dpmRobot.modeEnabled)
         {
             string filePath;
             string fileName;
+
+            string path = EditorUtility.OpenFilePanel("Overwrite with csv", "", "csv");
 
             // GET NEW FILE PATH AND NAME
 
@@ -490,6 +493,7 @@ public class DriverPracticeMode : MonoBehaviour {
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }
+
 
     /// <summary>
     /// Clears all the gamepieces sharing the same name as the ones that have been configured from the field.
