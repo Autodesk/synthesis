@@ -180,7 +180,7 @@ public class Scoreboard : MonoBehaviour
             Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves");
 
         }
-        Save((System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves"), setName);
+        Save((System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves//"), setName + ".txt");
     }
     /// <summary>
     /// Saves the scoring events of the current game to a text file.
