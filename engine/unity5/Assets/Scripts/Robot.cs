@@ -328,8 +328,8 @@ public class Robot : MonoBehaviour
 
         foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
         {
-            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
-            r.RaycastRobot.FrictionEffectiveRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+            r.RaycastRobot.OverrideMass = collectiveMass;
+            r.RaycastRobot.RootRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
         }
 
         RotateRobot(robotStartOrientation);
@@ -729,7 +729,7 @@ public class Robot : MonoBehaviour
         }
 
         foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
+            r.RaycastRobot.OverrideMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
         return true;
@@ -790,7 +790,7 @@ public class Robot : MonoBehaviour
         }
 
         foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
+            r.RaycastRobot.OverrideMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
         return true;
