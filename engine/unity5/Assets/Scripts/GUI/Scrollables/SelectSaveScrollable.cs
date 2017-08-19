@@ -8,17 +8,17 @@ using System.Collections.Generic;
 /// <summary>
 /// Meant to be used for selecting a robot in the main menu
 /// </summary>
-public class SelectFieldScrollable : ScrollablePanel
+public class SelectSaveScrollable : ScrollablePanel
 {
-    private MainMenu saveMainMenu;
+    private LoadSavePanel saveGame;
 
     // Use this for initialization
     protected override void Start()
     {
         base.Start();
-        errorMessage = "No fields found in directory!";
+        errorMessage = "No saves found in directory!";
 
-        saveMainMenu = canvas.GetComponent<MainMenu>();
+        saveGame = canvas.GetComponent<LoadSavePanel>();
     }
 
     void OnEnable()
@@ -31,9 +31,9 @@ public class SelectFieldScrollable : ScrollablePanel
     // Update is called once per frame
     protected override void OnGUI()
     {
-        if (saveMainMenu.fieldDirectory != null && items.Count == 0)
+        if (LoadSavePanel.saveGameDirectory != null && items.Count == 0)
         {
-            string[] folders = System.IO.Directory.GetDirectories(mainMenu.fieldDirectory);
+            string[] folders = System.IO.Directory.GetDirectories(LoadSavePanel.saveGameDirectory);
             foreach (string save in folders)
             {
                 if (File.Exists(save + "\\definition.csv")) items.Add(new DirectoryInfo(save).Name);
