@@ -458,7 +458,12 @@ public class DriverPracticeRobot : MonoBehaviour
         {
             try //In case the game piece somehow doens't exist in the scene
             {
+                // Enable original gamepiece for cloning, then return to original state
+                bool originalActiveState = gamepieceOriginals[index].activeSelf;
+                gamepieceOriginals[index].SetActive(true);
                 GameObject gameobject = Instantiate(gamepieceOriginals[index].GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                gamepieceOriginals[index].SetActive(originalActiveState);
+
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
                 spawnedGamepieces[index].Add(gameobject);
