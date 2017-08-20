@@ -8,8 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <ProjectGuid>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -52,265 +51,263 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\BulletUnity\Examples\SceneMenu\BackButton.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\SceneMenu\SceneMenu.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\SceneMenu\ScenesList.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BasicDemo\BasicDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BenchmarkDemo\BenchmarkDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BenchmarkDemo\Taru.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\Box2DDemo\Box2DDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspConverter.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspLoader.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletExampleRunner.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletMultiBodyLinkColliderProxy.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletRigidBodyProxy.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletRopeProxy.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletSoftBodyProxy.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CcdPhysicsDemo\CcdPhysicsDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\BspConverter.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\BspLoader.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\CharacterDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CollisionInterfaceDemo\CollisionInterfaceDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConcaveConvexCastDemo\ConcaveConvexCastDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConcaveRaycastDemo\ConcaveRaycastDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConstraintDemo\ConstraintDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\ConvexDecomposition.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\ConvexDecompositionDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\Wavefront.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DemoFramework\Demo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DemoFramework2UnityInterface.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DistanceDemo\DistanceDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\FeatherStoneDemo\FeatherStoneDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\BunnyMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\GImpactTestDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\TorusMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MeshFactory.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MeshFactory2.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MotorDemo\MotorDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\PendulumDemo\PendulumDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RagdollDemo\Ragdoll.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RagdollDemo\RagdollDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RollingFrictionDemo\RollingFrictionDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SerializeDemo\SerializeDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\Bunny.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\BunnyMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\SoftDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\TorusMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\VehicleDemo\CustomVehicle.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\VehicleDemo\VehicleDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\CharacterController\MoveCharacterController.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\CollisionCallbacks\CustomCollisionCallbackScript.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\Racast\TestRaycast.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\RealtimeSimWithOfflinePrediction\BallThrowTest.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\RealtimeSimWithOfflinePrediction\OfflineBallSimulation.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\BunnyRainTest.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\ExtendedFlycam.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\RBRainTest.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\RopeSticksArray.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\ShootBox.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\TestTeleportJump.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\Triggers\ExampleTriggerCallback.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scripts\AddForcesAndTorques.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scripts\MoveKinematicObject.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scripts\SetAngularAndLinearVelocity.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scripts\SimpleOfflineSimulation.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCamera.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCharacterController.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCollisionCallbacks.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCollisionCallbacksDefault.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCollisionObject.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BGameObjectMotionState.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BGhostObject.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BPairCachingGhostObject.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BPhysicsWorld.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BPhysicsWorldLateHelper.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BRigidBody.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BSExtensionMethods2.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BTerrainCollisionObject.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BUtility.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BBoxShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BBvhTriangleMeshShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCapsuleShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCollisionShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCompoundShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConeShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConvexHullShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConvexTriangleMeshShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCylinderShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BHeightfieldTerrainShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BMultiSphereShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BSphereShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\B6DOFConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BBallSocketConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BConeTwistConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BFixedConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BHingedConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BSliderConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BTypedConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Debug\BDebug.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\DebugDrawUnity.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Extensions\EnumsExtension.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BBox.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCapsule.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCone.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BConvexHull.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BConvexTriMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCylinder.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BPrimitive.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BSphere.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\EnumerationExtensions.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\ProceduralMeshes\PPMeshFactory.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\ProceduralMeshes\ProceduralPrimitives.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBody.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyPartOnSkinnedMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyRope.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
-    <Compile Include="Assets\DragGameObject.cs" />
-    <Compile Include="Assets\ScoreZoneSelectableManager.cs" />
-    <Compile Include="Assets\ScoreZoneSettingsContainer.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BMultiCallbacks.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BRaycastRobot.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BRaycastWheel.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BRobotManager.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BRobotRaycaster.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\ICollisionCallback.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\RaycastRobot.cs" />
-    <Compile Include="Assets\Scripts\DriveJoints.cs" />
-    <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeMode.cs" />
-    <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
-    <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
-    <Compile Include="Assets\Scripts\DynamicCamera.cs" />
-    <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
-    <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
-    <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
-    <Compile Include="Assets\Scripts\FEA\ReplayExporter.cs" />
-    <Compile Include="Assets\Scripts\FEA\ReplayImporter.cs" />
-    <Compile Include="Assets\Scripts\FEA\ReplayState.cs" />
-    <Compile Include="Assets\Scripts\FEA\SaveReplayState.cs" />
-    <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
-    <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
-    <Compile Include="Assets\Scripts\FSM\SimState.cs" />
-    <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
-    <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
-    <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
-    <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
-    <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
-    <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
-    <Compile Include="Assets\Scripts\GUI\Popup.cs" />
-    <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\DummyScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollableList.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\SelectFieldScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\SelectRobotScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
-    <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
-    <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
-    <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
-    <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
-    <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-    <Compile Include="Assets\Scripts\Helpers\auxFunctions.cs" />
-    <Compile Include="Assets\Scripts\Helpers\BXDExtensions.cs" />
-    <Compile Include="Assets\Scripts\Helpers\MathfExt.cs" />
-    <Compile Include="Assets\Scripts\Helpers\UnityExtensions.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Axis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Controls.cs" />
-    <Compile Include="Assets\Scripts\InputControl\CreateButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\InputDevice.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\Joystick.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\JoystickAxis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\JoystickButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\KeyModifier.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\MouseAxis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\MouseButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\InputControl.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\CustomInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\JoystickInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\KeyboardInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\MouseInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
-    <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
-    <Compile Include="Assets\Scripts\InputControl\TankMode.cs" />
-    <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
-    <Compile Include="Assets\Scripts\MainState.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMPresetMono.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMSimUI.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
-    <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />
-    <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
-    <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />
-    <Compile Include="Assets\Scripts\RigidNode\RNWheel.cs" />
-    <Compile Include="Assets\Scripts\Robot Camera\RobotCamera.cs" />
-    <Compile Include="Assets\Scripts\Robot Camera\RobotCameraGUI.cs" />
-    <Compile Include="Assets\Scripts\Robot Camera\RobotCameraManager.cs" />
-    <Compile Include="Assets\Scripts\Robot.cs" />
-    <Compile Include="Assets\Scripts\RobotFieldLoader.cs" />
-    <Compile Include="Assets\Scripts\ScoreZoneEdit\ArrowDragger.cs" />
-    <Compile Include="Assets\Scripts\ScoreZoneEdit\EditScoreZoneState.cs" />
-    <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZoneManipulatorManager.cs" />
-    <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZonePrefUIManager.cs" />
-    <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZoneSelectible.cs" />
-    <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
-    <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
-    <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
-    <Compile Include="Assets\Scripts\Sensors\SensorManager.cs" />
-    <Compile Include="Assets\Scripts\Sensors\SensorManagerGUI.cs" />
-    <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
-    <Compile Include="Assets\Scripts\Settings\Serializer.cs" />
-    <Compile Include="Assets\Scripts\Settings\Settings.cs" />
-    <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
-    <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
-    <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
-    <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
-    <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
-    <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
-    <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
-    <None Include="Assets\BulletUnity\license.txt" />
-    <None Include="Assets\Scripts\InputControl\Documentation\Readme.txt" />
-    <None Include="Assets\item_data.xml" />
-    <Reference Include="UnityEngine.UI">
-      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TestRunner">
-      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/UnityEngine.TestRunner.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Timeline">
-      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Timeline/RuntimeEditor/UnityEngine.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Analytics">
-      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.HoloLens">
-      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
-    </Reference>
-    <Reference Include="SimulatorAPI">
-      <HintPath>C:/Users/solomon/synthesis/give-us-money-autodesk/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
-    </Reference>
+     <Compile Include="Assets\BulletUnity\Examples\SceneMenu\BackButton.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\SceneMenu\SceneMenu.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\SceneMenu\ScenesList.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BasicDemo\BasicDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BenchmarkDemo\BenchmarkDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BenchmarkDemo\Taru.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\Box2DDemo\Box2DDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspConverter.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspLoader.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletExampleRunner.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletMultiBodyLinkColliderProxy.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletRigidBodyProxy.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletRopeProxy.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletSoftBodyProxy.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CcdPhysicsDemo\CcdPhysicsDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\BspConverter.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\BspLoader.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\CharacterDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CollisionInterfaceDemo\CollisionInterfaceDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConcaveConvexCastDemo\ConcaveConvexCastDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConcaveRaycastDemo\ConcaveRaycastDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConstraintDemo\ConstraintDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\ConvexDecomposition.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\ConvexDecompositionDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\Wavefront.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DemoFramework\Demo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DemoFramework2UnityInterface.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DistanceDemo\DistanceDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\FeatherStoneDemo\FeatherStoneDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\BunnyMesh.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\GImpactTestDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\TorusMesh.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MeshFactory.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MeshFactory2.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MotorDemo\MotorDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\PendulumDemo\PendulumDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RagdollDemo\Ragdoll.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RagdollDemo\RagdollDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RollingFrictionDemo\RollingFrictionDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SerializeDemo\SerializeDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\Bunny.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\BunnyMesh.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\SoftDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\TorusMesh.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\VehicleDemo\CustomVehicle.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\VehicleDemo\VehicleDemo.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\CharacterController\MoveCharacterController.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\CollisionCallbacks\CustomCollisionCallbackScript.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\Racast\TestRaycast.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\RealtimeSimWithOfflinePrediction\BallThrowTest.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\RealtimeSimWithOfflinePrediction\OfflineBallSimulation.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\BunnyRainTest.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\ExtendedFlycam.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\RBRainTest.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\RopeSticksArray.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\ShootBox.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\TestTeleportJump.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scenes\Triggers\ExampleTriggerCallback.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scripts\AddForcesAndTorques.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scripts\MoveKinematicObject.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scripts\SetAngularAndLinearVelocity.cs" />
+     <Compile Include="Assets\BulletUnity\Examples\Scripts\SimpleOfflineSimulation.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BCamera.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BCharacterController.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BCollisionCallbacks.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BCollisionCallbacksDefault.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BCollisionObject.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BGameObjectMotionState.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BGhostObject.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BPairCachingGhostObject.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BPhysicsWorld.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BPhysicsWorldLateHelper.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BRigidBody.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BSExtensionMethods2.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BTerrainCollisionObject.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\BUtility.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BBoxShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BBvhTriangleMeshShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCapsuleShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCollisionShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCompoundShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConeShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConvexHullShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConvexTriangleMeshShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCylinderShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BHeightfieldTerrainShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BMultiSphereShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BSphereShape.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Constraints\B6DOFConstraint.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Constraints\BBallSocketConstraint.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Constraints\BConeTwistConstraint.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Constraints\BFixedConstraint.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Constraints\BHingedConstraint.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Constraints\BSliderConstraint.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Constraints\BTypedConstraint.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Debug\BDebug.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\DebugDrawUnity.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Extensions\EnumsExtension.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\BBox.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCapsule.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCone.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\BConvexHull.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\BConvexTriMesh.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCylinder.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\BPrimitive.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\BSphere.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\Primitives\EnumerationExtensions.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\ProceduralMeshes\PPMeshFactory.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\ProceduralMeshes\ProceduralPrimitives.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBody.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyPartOnSkinnedMesh.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyRope.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
+     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
+     <Compile Include="Assets\DragGameObject.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\BMultiCallbacks.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\BRaycastRobot.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\BRaycastWheel.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\BRobotManager.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\BRobotRaycaster.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\ICollisionCallback.cs" />
+     <Compile Include="Assets\Scripts\BUExtensions\RaycastRobot.cs" />
+     <Compile Include="Assets\Scripts\DriveJoints.cs" />
+     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeMode.cs" />
+     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
+     <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
+     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
+     <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
+     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
+     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
+     <Compile Include="Assets\Scripts\FEA\ReplayExporter.cs" />
+     <Compile Include="Assets\Scripts\FEA\ReplayImporter.cs" />
+     <Compile Include="Assets\Scripts\FEA\ReplayState.cs" />
+     <Compile Include="Assets\Scripts\FEA\SaveReplayState.cs" />
+     <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
+     <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
+     <Compile Include="Assets\Scripts\FSM\SimState.cs" />
+     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
+     <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
+     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
+     <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
+     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
+     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
+     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
+     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
+     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
+     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
+     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
+     <Compile Include="Assets\Scripts\GUI\Scrollables\DummyScrollable.cs" />
+     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollableList.cs" />
+     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
+     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectFieldScrollable.cs" />
+     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectRobotScrollable.cs" />
+     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
+     <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
+     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
+     <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
+     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
+     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
+     <Compile Include="Assets\Scripts\Helpers\auxFunctions.cs" />
+     <Compile Include="Assets\Scripts\Helpers\BXDExtensions.cs" />
+     <Compile Include="Assets\Scripts\Helpers\MathfExt.cs" />
+     <Compile Include="Assets\Scripts\Helpers\UnityExtensions.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Axis.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Controls.cs" />
+     <Compile Include="Assets\Scripts\InputControl\CreateButton.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Enums\InputDevice.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Enums\Joystick.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Enums\JoystickAxis.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Enums\JoystickButton.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Enums\KeyModifier.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Enums\MouseAxis.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Enums\MouseButton.cs" />
+     <Compile Include="Assets\Scripts\InputControl\InputControl.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Inputs\CustomInput.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Inputs\JoystickInput.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Inputs\KeyboardInput.cs" />
+     <Compile Include="Assets\Scripts\InputControl\Inputs\MouseInput.cs" />
+     <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
+     <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
+     <Compile Include="Assets\Scripts\InputControl\TankMode.cs" />
+     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
+     <Compile Include="Assets\Scripts\MainState.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\MaMPresetMono.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\MaMSimUI.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
+     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
+     <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />
+     <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
+     <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />
+     <Compile Include="Assets\Scripts\RigidNode\RNWheel.cs" />
+     <Compile Include="Assets\Scripts\Robot Camera\RobotCamera.cs" />
+     <Compile Include="Assets\Scripts\Robot Camera\RobotCameraGUI.cs" />
+     <Compile Include="Assets\Scripts\Robot Camera\RobotCameraManager.cs" />
+     <Compile Include="Assets\Scripts\Robot.cs" />
+     <Compile Include="Assets\Scripts\RobotFieldLoader.cs" />
+     <Compile Include="Assets\Scripts\ScoreZoneEdit\ArrowDragger.cs" />
+     <Compile Include="Assets\Scripts\ScoreZoneEdit\EditScoreZoneState.cs" />
+     <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZoneManipulatorManager.cs" />
+     <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZonePrefUIManager.cs" />
+     <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZoneSelectableManager.cs" />
+     <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZoneSelectible.cs" />
+     <Compile Include="Assets\Scripts\ScoreZoneEdit\ScoreZoneSettingsContainer.cs" />
+     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
+     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
+     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
+     <Compile Include="Assets\Scripts\Sensors\SensorManager.cs" />
+     <Compile Include="Assets\Scripts\Sensors\SensorManagerGUI.cs" />
+     <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
+     <Compile Include="Assets\Scripts\Settings\Serializer.cs" />
+     <Compile Include="Assets\Scripts\Settings\Settings.cs" />
+     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
+     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
+     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
+     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
+     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
+     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
+     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
+     <None Include="Assets\BulletUnity\license.txt" />
+     <None Include="Assets\Scripts\InputControl\Documentation\Readme.txt" />
+     <None Include="Assets\item_data.xml" />
+ <Reference Include="UnityEngine.UI">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Networking">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.TestRunner">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/UnityEngine.TestRunner.dll</HintPath>
+ </Reference>
+ <Reference Include="nunit.framework">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Timeline">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Timeline/RuntimeEditor/UnityEngine.Timeline.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Analytics">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.HoloLens">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
+ </Reference>
+ <Reference Include="SimulatorAPI">
+ <HintPath>C:/Users/Philip/Documents/Git/give-us-money-autodesk/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{7C14F5DB-B04B-B8EC-364F-14F17512EDE5}</Project>
-      <Name>Assembly-CSharp-firstpass</Name>
-    </ProjectReference>
+      <Project>{7C14F5DB-B04B-B8EC-364F-14F17512EDE5}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -320,4 +317,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  
 </Project>

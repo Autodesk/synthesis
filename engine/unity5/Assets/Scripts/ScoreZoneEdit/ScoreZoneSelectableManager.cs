@@ -179,4 +179,16 @@ public class ScoreZoneSelectableManager : MonoBehaviour
             Destroy(scoreZones[i]);
         }
     }
+
+	/*
+	public void IncrementScale(float val, string axis)
+	{
+		if (CurrentlySelected) {
+			float newScale = field.text
+		}
+	}
+	public void DeincrementScale(float val, string axis)
+	{
+	}
+*/
 }

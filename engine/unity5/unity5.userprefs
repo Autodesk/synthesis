@@ -1,10 +1,41 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GUI\MainMenu.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\ScoreZoneEdit\ScoreZonePrefUIManager.cs">
     <Files>
       <File FileName="Assets\Scripts\BUExtensions\RaycastRobot.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\GUI\MainMenu.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ScoreZoneEdit\EditScoreZoneState.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ScoreZoneEdit\ArrowDragger.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ScoreZoneEdit\ScoreZoneSelectible.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ScoreZoneEdit\ScoreZoneSettingsContainer.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ScoreZoneEdit\ScoreZoneManipulatorManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\BulletUnity\Scripts\BPhysicsWorldLateHelper.cs" Line="1" Column="1" />
+      <File FileName="Assets\BulletUnity\Scripts\BPhysicsWorld.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ScoreZoneEdit\ScoreZonePrefUIManager.cs" Line="83" Column="64" />
+      <File FileName="Assets\Scripts\ScoreZoneEdit\ScoreZoneSelectableManager.cs" Line="198" Column="3" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="unity5" expanded="True">
+            <Node name="Assembly-CSharp" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="BUExtensions" expanded="True" />
+                <Node name="ScoreZoneEdit" expanded="True">
+                  <Node name="ScoreZonePrefUIManager.cs" selected="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State name="__root__">
+          <Node name="unity5" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
