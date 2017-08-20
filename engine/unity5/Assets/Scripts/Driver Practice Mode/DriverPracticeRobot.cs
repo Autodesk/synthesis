@@ -495,12 +495,17 @@ public class DriverPracticeRobot : MonoBehaviour
         if (definingRelease || definingIntake || addingGamepiece || settingGamepieceGoal != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
         else if (settingSpawn == 0)
         {
-            if (GameObject.Find(gamepieceNames[index]) != null)
+            if (gamepieceOriginals[index] != null)
             {
                 if (spawnIndicator != null) Destroy(spawnIndicator);
                 if (spawnIndicator == null)
                 {
+                    // Ensure original gamepiece is active before instantiating clone.
+                    bool gamepieceOriginalOldActiveState = gamepieceOriginals[index].activeSelf;
+                    gamepieceOriginals[index].SetActive(true);
                     spawnIndicator = Instantiate(gamepieceOriginals[index].GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                    gamepieceOriginals[index].SetActive(gamepieceOriginalOldActiveState);
+
                     spawnIndicator.name = "SpawnIndicator";
                     Destroy(spawnIndicator.GetComponent<BRigidBody>());
                     if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
@@ -578,7 +583,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="gamepieceIndex">The index of the gamepiece to add a goal to.</param>
     public void NewGoal(int gamepieceIndex)
     {
-        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        if (gamepieceOriginals[gamepieceIndex] != null)
         {
             gamepieceGoals[gamepieceIndex].Add(new UnityEngine.Vector3(0, 4, 0));
             gamepieceGoalSizes[gamepieceIndex].Add(1);
@@ -597,7 +602,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="goalIndex">The index of the goal to be deleted.</param>
     public void DeleteGoal(int gamepieceIndex, int goalIndex)
     {
-        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        if (gamepieceOriginals[gamepieceIndex] != null)
         {
             if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
@@ -621,7 +626,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="description">New description of the goal.</param>
     public void SetGamepieceGoalDescription(int gamepieceIndex, int goalIndex, string description)
     {
-        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        if (gamepieceOriginals[gamepieceIndex] != null)
         {
             if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
@@ -641,7 +646,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="points">New point value of the goal.</param>
     public void SetGamepieceGoalPoints(int gamepieceIndex, int goalIndex, int points)
     {
-        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        if (gamepieceOriginals[gamepieceIndex] != null)
         {
             if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
@@ -663,7 +668,7 @@ public class DriverPracticeRobot : MonoBehaviour
         if (definingRelease || definingIntake || addingGamepiece || settingSpawn != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
         else if (settingGamepieceGoal == 0)
         {
-            if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+            if (gamepieceOriginals[gamepieceIndex] != null)
             {
                 if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
                 {
@@ -782,7 +787,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="index">The gamepiece to create goal colliders for.</param>
     public void GenerateGamepieceGoalColliders(int index)
     {
-        if (gamepieceNames[index] != null && GameObject.Find(gamepieceNames[index]) != null)
+        if (gamepieceNames[index] != null && gamepieceOriginals[index] != null)
         {
             DestroyGamepieceGoalColliders(index);
 
