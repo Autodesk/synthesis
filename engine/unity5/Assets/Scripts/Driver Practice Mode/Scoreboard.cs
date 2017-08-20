@@ -189,9 +189,9 @@ public class Scoreboard : MonoBehaviour
     /// Create a new CSV file for saving game events to.
     /// </summary>
     /// <param name="fileName">The name of the file (no extension).</param>
-    public void CreateNewSaveFile(string fileName)
+    public static void CreateNewSaveFile(string saveName)
     {
-        Debug.Log(fileName);
+        Debug.Log(saveName);
         // If the save directory doesn't exist, create it
         if (!Directory.Exists(SaveDirectory))
         {
@@ -199,11 +199,39 @@ public class Scoreboard : MonoBehaviour
         }
 
         // Create CSV file
-        using (StreamWriter writer = new StreamWriter(SaveDirectory + fileName + ".csv", true))
+        using (StreamWriter writer = new StreamWriter(SaveDirectory + saveName + ".csv", true))
         {
             writer.WriteLine("\"Time\",\"Event Type\",\"Details\""); // Header line
             writer.Close();
         }
+    }
+
+    /// <summary>
+    /// Delete a save file.
+    /// </summary>
+    /// <param name="saveFile">The name of the save file to delete.</param>
+    public static void DeleteSaveFile(string saveFile)
+    {
+        if (File.Exists(SaveDirectory + saveFile + ".csv"))
+        {
+            File.Delete(SaveDirectory + saveFile + ".csv");
+        }
+    }
+
+    /// <summary>
+    /// Export a game log CSV file to a location on the computer.
+    /// </summary>
+    /// <param name="saveFile">The save file to export.</param>
+    /// <param name="exportDirectory">The location to export the CSV to.</param>
+    public static void ExportSaveFile(string saveFile, string exportDirectory)
+    {
+        if (File.Exists(exportDirectory))
+        {
+            File.Delete(exportDirectory);
+        }
+
+        FileUtil.CopyFileOrDirectory(SaveDirectory + saveFile + ".csv", exportDirectory);
+        UserMessageManager.Dispatch("Export successful!", 5);
     }
 
     /// <summary>
