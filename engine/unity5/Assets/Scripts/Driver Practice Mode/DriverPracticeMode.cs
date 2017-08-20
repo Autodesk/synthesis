@@ -16,6 +16,10 @@ public class DriverPracticeMode : MonoBehaviour {
 
     GameObject canvas;
 
+    GameObject setSavePanel;
+    GameObject createSavePanel;
+    GameObject saveGamePanel;
+
     GameObject dpmWindow;
     GameObject scoreWindow;
     GameObject scoreLogWindow;
@@ -140,7 +144,11 @@ public class DriverPracticeMode : MonoBehaviour {
         timerWindow = AuxFunctions.FindObject(canvas, "GameplayTimerPanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
         goalConfigWindow = AuxFunctions.FindObject(canvas, "GoalConfigPanel");
-        
+
+        setSavePanel = AuxFunctions.FindObject(canvas, "SetSavePanel");
+        saveGamePanel = AuxFunctions.FindObject(canvas, "SaveGamePanel");
+        createSavePanel = AuxFunctions.FindObject(canvas, "CreateSavePanel");
+
         timerBackground = AuxFunctions.FindObject(timerWindow, "TimerTextField").GetComponent<Image>();
         scoreBackground = AuxFunctions.FindObject(scoreWindow, "Score").GetComponent<Image>();
 
@@ -381,6 +389,45 @@ public class DriverPracticeMode : MonoBehaviour {
     /// <summary>
     /// Sets the driver practice mode to either be enabled or disabled, depending on what state it was at before.
     /// </summary>
+    /// 
+    public void ToggleSaveGamePanel()
+    {
+        if (saveGamePanel.activeSelf)
+        {
+            saveGamePanel.SetActive(false);
+        }
+        else
+        {
+            simUI.EndOtherProcesses();
+            saveGamePanel.SetActive(true);
+        }
+    }
+
+    public void ToggleSetSavePanel()
+    {
+        if (setSavePanel.activeSelf)
+        {
+            setSavePanel.SetActive(false);
+        }
+        else
+        {
+            simUI.EndOtherProcesses();
+            setSavePanel.SetActive(true);
+        }
+    }
+    public void ToggleCreateSavePanel()
+    {
+        if (createSavePanel.activeSelf)
+        {
+            createSavePanel.SetActive(false);
+        }
+        else
+        {
+            simUI.EndOtherProcesses();
+            createSavePanel.SetActive(true);
+        }
+    }
+
     public void DPMToggle()
     {
         if (!dpmRobot.modeEnabled)

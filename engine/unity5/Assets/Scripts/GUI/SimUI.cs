@@ -30,8 +30,6 @@ public class SimUI : MonoBehaviour
 
 
     GameObject changeRobotPanel;
-    GameObject setSavePanel;
-    GameObject createSavePanel;
     GameObject changeFieldPanel;
     GameObject addRobotPanel;
 
@@ -127,8 +125,7 @@ public class SimUI : MonoBehaviour
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
-        setSavePanel = AuxFunctions.FindObject(canvas, "SetSavePanel");
-        createSavePanel = AuxFunctions.FindObject(canvas, "CreateSavePanel");
+
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
 
@@ -190,31 +187,6 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             changeRobotPanel.SetActive(true);
-        }
-    }
-
-    public void ToggleSetSavePanel()
-    {
-        if (setSavePanel.activeSelf)
-        {
-            setSavePanel.SetActive(false);
-        }
-        else
-        {
-            EndOtherProcesses();
-            setSavePanel.SetActive(true);
-        }
-    }
-    public void ToggleCreateSavePanel()
-    {
-        if (createSavePanel.activeSelf)
-        {
-            createSavePanel.SetActive(false);
-        }
-        else
-        {
-            EndOtherProcesses();
-            createSavePanel.SetActive(true);
         }
     }
 
@@ -285,6 +257,7 @@ public class SimUI : MonoBehaviour
         dpm.EndProcesses();
         toolkit.EndProcesses();
     }
+ 
     #endregion
     #region camera button functions
     //Camera Functions
