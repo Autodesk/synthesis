@@ -126,6 +126,7 @@ public class SimUI : MonoBehaviour
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
+
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
@@ -256,6 +257,7 @@ public class SimUI : MonoBehaviour
         dpm.EndProcesses();
         toolkit.EndProcesses();
     }
+ 
     #endregion
     #region camera button functions
     //Camera Functions

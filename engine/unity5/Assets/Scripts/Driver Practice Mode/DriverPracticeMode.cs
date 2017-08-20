@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
+using UnityEditor;
+using System.IO;
 
 public class DriverPracticeMode : MonoBehaviour {
 
@@ -13,11 +15,16 @@ public class DriverPracticeMode : MonoBehaviour {
     private GoalDisplayManager goalDisplayManager;
     private MainState mainState;
 
+    MainState main;
+
     GameObject canvas;
 
     GameObject dpmWindow;
     GameObject scoreWindow;
     GameObject scoreLogWindow;
+    GameObject saveGameWindow;
+    GameObject setSaveWindow;
+    GameObject createSaveWindow;
     GameObject timerWindow;
     GameObject configWindow;
     GameObject goalConfigWindow;
@@ -70,6 +77,10 @@ public class DriverPracticeMode : MonoBehaviour {
 
     Text primaryCountText;
     Text secondaryCountText;
+
+    Text currentSaveFileText;
+    Dropdown selectedSaveFileDropdown;
+    InputField newSaveFileField;
 
     GameObject lockPanel;
 
@@ -136,10 +147,15 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
         scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
         scoreLogWindow = AuxFunctions.FindObject(canvas, "ScoreLogPanel");
+        scoreLogWindow = AuxFunctions.FindObject(canvas, "CreateSavePanel");
         timerWindow = AuxFunctions.FindObject(canvas, "GameplayTimerPanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
         goalConfigWindow = AuxFunctions.FindObject(canvas, "GoalConfigPanel");
-        
+
+        saveGameWindow = AuxFunctions.FindObject(canvas, "SaveGamePanel");
+        setSaveWindow = AuxFunctions.FindObject(canvas, "SetSavePanel");
+        createSaveWindow = AuxFunctions.FindObject(canvas, "CreateSavePanel");
+
         timerBackground = AuxFunctions.FindObject(timerWindow, "TimerTextField").GetComponent<Image>();
         scoreBackground = AuxFunctions.FindObject(scoreWindow, "Score").GetComponent<Image>();
 
@@ -162,6 +178,10 @@ public class DriverPracticeMode : MonoBehaviour {
 
         releaseMechanismText = AuxFunctions.FindObject(canvas, "ReleaseMechanismText").GetComponent<Text>();
         intakeMechanismText = AuxFunctions.FindObject(canvas, "IntakeMechanismText").GetComponent<Text>();
+
+        currentSaveFileText = AuxFunctions.FindObject(canvas, "CurrentSaveFileText").GetComponent<Text>();
+        selectedSaveFileDropdown = AuxFunctions.FindObject(canvas, "SaveListDropdown").GetComponent<Dropdown>();
+        newSaveFileField = AuxFunctions.FindObject(canvas, "NewSaveNameInput").GetComponent<InputField>();
 
         defineIntakeWindow = AuxFunctions.FindObject(canvas, "DefineIntakePanel");
         defineReleaseWindow = AuxFunctions.FindObject(canvas, "DefineReleasePanel");
@@ -403,9 +423,54 @@ public class DriverPracticeMode : MonoBehaviour {
                 lockPanel.SetActive(true);
                 scoreWindow.SetActive(false);
                 scoreLogWindow.SetActive(false);
+                saveGameWindow.SetActive(false);
+                setSaveWindow.SetActive(false);
+                createSaveWindow.SetActive(false);
                 StopGame();
             }
 
+        }
+    }
+
+    public void ToggleSaveGamePanel()
+    {
+        if (saveGameWindow.activeSelf)
+        {
+            saveGameWindow.SetActive(false);
+            setSaveWindow.SetActive(false);
+            createSaveWindow.SetActive(false);
+        }
+        else
+        {
+            saveGameWindow.SetActive(true);
+            currentSaveFileText.text = PlayerPrefs.GetString("selectedSaveFile", "Statistics");
+        }
+    }
+    
+    public void ToggleSetSavePanel()
+    {
+        if (setSaveWindow.activeSelf)
+        {
+            setSaveWindow.SetActive(false);
+            createSaveWindow.SetActive(false);
+        }
+        else
+        {
+            setSaveWindow.SetActive(true);
+            UpdateSaveFileList();
+        }
+    }
+
+    public void ToggleCreateSavePanel()
+    {
+        if (createSaveWindow.activeSelf)
+        {
+            createSaveWindow.SetActive(false);
+        }
+        else
+        {
+            createSaveWindow.SetActive(true);
+            newSaveFileField.text = "";
         }
     }
 
@@ -457,18 +522,125 @@ public class DriverPracticeMode : MonoBehaviour {
     }
 
     /// <summary>
+    /// Update the save file dropdown with the list of known save files.
+    /// </summary>
+    public void UpdateSaveFileList()
+    {
+        List<string> saveFiles = Scoreboard.GetSaveFileList();
+        string selectedSaveFile = PlayerPrefs.GetString("selectedSaveFile", "Statistics");
+        int selectedSaveFileId = -1;
+
+        selectedSaveFileDropdown.options.Clear();
+
+        for (int i = 0; i < saveFiles.Count; i++)
+        {
+            selectedSaveFileDropdown.options.Add(new Dropdown.OptionData(saveFiles[i]));
+
+            if (saveFiles[i] == selectedSaveFile) // Find option this is the current save file, use to set dropdown value.
+                selectedSaveFileId = i;
+        }
+
+        if (selectedSaveFileId == -1)
+        {
+            Scoreboard.CreateNewSaveFile(selectedSaveFile);
+            selectedSaveFileDropdown.options.Add(new Dropdown.OptionData(selectedSaveFile));
+            selectedSaveFileId = selectedSaveFileDropdown.options.Count - 1;
+        }
+
+        selectedSaveFileDropdown.value = selectedSaveFileId;
+        selectedSaveFileDropdown.captionText.text = selectedSaveFile;
+    }
+
+    /// <summary>
+    /// Change the default save file to the one selected in the save list.
+    /// </summary>
+    public void ChangeSave()
+    {
+        if (dpmRobot.modeEnabled)
+        {
+            string chosenSave = selectedSaveFileDropdown.options[selectedSaveFileDropdown.value].text;
+
+            if (chosenSave != null)
+            {
+                if (setSaveWindow.activeSelf)
+                    ToggleSetSavePanel();
+                PlayerPrefs.SetString("selectedSaveFile", chosenSave);
+                currentSaveFileText.text = chosenSave;
+            }
+            else UserMessageManager.Dispatch("Cannot save to " + chosenSave, 5);
+        }
+        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
+    }
+
+    /// <summary>
+    /// Create a new save file with the name written in the new save file field.
+    /// </summary>
+    public void CreateSaveFile()
+    {
+        if (dpmRobot.modeEnabled)
+        {
+            Scoreboard.CreateNewSaveFile(newSaveFileField.text);
+
+            PlayerPrefs.SetString("selectedSaveFile", newSaveFileField.text);
+            currentSaveFileText.text = newSaveFileField.text;
+            
+            UpdateSaveFileList();
+            createSaveWindow.SetActive(false);
+        }
+        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
+    }
+
+    /// <summary>
+    /// Delete the save file currently selected by the save file dropdown menu.
+    /// </summary>
+    public void DeleteSaveFile()
+    {
+        if (dpmRobot.modeEnabled)
+        {
+            string fileToDelete = selectedSaveFileDropdown.options[selectedSaveFileDropdown.value].text;
+            Scoreboard.DeleteSaveFile(fileToDelete);
+
+            if (PlayerPrefs.GetString("selectedSaveFile", "Statistics") == fileToDelete)
+            {
+                List<string> saveFiles = Scoreboard.GetSaveFileList();
+
+                if (saveFiles.Count > 0)
+                    PlayerPrefs.SetString("selectedSaveFile", saveFiles[0]);
+                else
+                    PlayerPrefs.SetString("selectedSaveFile", "Statistics");
+            }
+
+            currentSaveFileText.text = PlayerPrefs.GetString("selectedSaveFile", "Statistics");
+            UpdateSaveFileList();
+        }
+        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
+    }
+
+    /// <summary>
     /// Save the log of the current game to a text file.
     /// </summary>
     public void SaveGameStats()
     {
         if (dpmRobot.modeEnabled)
         {
-            string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\";
-            string fileName = string.Format("score_log_{0:yyyy-MM-dd_hh-mm-ss-tt}.txt", System.DateTime.Now);
+            scoreboard.Save(Scoreboard.SaveDirectory + PlayerPrefs.GetString("selectedSaveFile", "Statistics") + ".csv");
+            UserMessageManager.Dispatch("Save successful!", 5);
+            if (saveGameWindow.activeSelf)
+                ToggleSaveGamePanel();
+        }
+        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
+    }
 
-            scoreboard.Save(filePath, fileName);
-
-            UserMessageManager.Dispatch("Saved to \"" + filePath + "\\" + fileName + "\"", 10);
+    public void ExportGameStats()
+    {
+        if (dpmRobot.modeEnabled)
+        {
+            string exportLocation = EditorUtility.SaveFilePanel("Choose where to export the game statistics CSV", System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
+                                                                PlayerPrefs.GetString("selectedSaveFile", "Statistics"), "csv");
+            if (exportLocation != "")
+            {
+                Scoreboard.ExportSaveFile(PlayerPrefs.GetString("selectedSaveFile", "Statistics"), exportLocation);
+            }
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }

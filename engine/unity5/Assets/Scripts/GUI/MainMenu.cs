@@ -136,6 +136,7 @@ public class MainMenu : MonoBehaviour
         if (robotDirectory != null) InitRobotBrowser();
 
 
+
         //Renders the message manager which displays error messages
         UserMessageManager.Render();
         UserMessageManager.scale = canvas.scaleFactor;
@@ -615,7 +616,7 @@ public class MainMenu : MonoBehaviour
         customroboton = true;
         currentTab = Tab.RobotDir;
     }
-
+    
     #endregion
     #region Other Methods
     public void InputDefaultPressed()
@@ -775,7 +776,7 @@ public class MainMenu : MonoBehaviour
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
         fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //if the field directory no longer exists, set it to the default application path.
-
+    
         simSelectedField = PlayerPrefs.GetString("simSelectedField");
         simSelectedFieldName = (Directory.Exists(simSelectedField)) ? PlayerPrefs.GetString("simSelectedFieldName", "No Field Selected!") : "No Field Selected!";
         simSelectedRobot = PlayerPrefs.GetString("simSelectedRobot");

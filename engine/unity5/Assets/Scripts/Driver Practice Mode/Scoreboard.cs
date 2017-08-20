@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -49,12 +50,13 @@ public class Scoreboard : MonoBehaviour
 
     Text scoreDisplay;
     Text scoreLog;
-
     Scrollbar scoreLogScrollbar;
     GameplayTimer timer;
     DriverPracticeMode dpm;
 
     List<ScoreEvent> scoreEvents;
+
+    public static string SaveDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\synthesis\\GameSaves\\";
 
     private void Start()
     {
@@ -68,7 +70,7 @@ public class Scoreboard : MonoBehaviour
             timer = GetComponent<GameplayTimer>();
             dpm = GetComponent<DriverPracticeMode>();
         }
-        else if (scoreDisplay == null || scoreLog == null)
+        else if (scoreDisplay == null || scoreLog == null || scoreLogScrollbar == null)
             FindElements();
     }
 
@@ -163,19 +165,87 @@ public class Scoreboard : MonoBehaviour
         if (scoreLogScrollbar != null)
             scoreLogScrollbar.value = 0;
     }
+    
+    /// <summary>
+    /// Get a list of all known save files.
+    /// </summary>
+    /// <returns>A string list of the save file names (no extension).</returns>
+    public static List<string> GetSaveFileList()
+    {
+        DirectoryInfo folder = new DirectoryInfo(SaveDirectory);
+        FileInfo[] saveFiles = folder.GetFiles("*.csv");
+
+        List<string> fileNames = new List<string>();
+
+        foreach (FileInfo file in saveFiles)
+            fileNames.Add(Path.GetFileNameWithoutExtension(file.Name));
+
+        Debug.Log(fileNames);
+
+        return fileNames;
+    }
+
+    /// <summary>
+    /// Create a new CSV file for saving game events to.
+    /// </summary>
+    /// <param name="fileName">The name of the file (no extension).</param>
+    public static void CreateNewSaveFile(string saveName)
+    {
+        Debug.Log(saveName);
+        // If the save directory doesn't exist, create it
+        if (!Directory.Exists(SaveDirectory))
+        {
+            Directory.CreateDirectory(SaveDirectory);
+        }
+
+        // Create CSV file
+        using (StreamWriter writer = new StreamWriter(SaveDirectory + saveName + ".csv", true))
+        {
+            writer.WriteLine("\"Time\",\"Event Type\",\"Details\""); // Header line
+            writer.Close();
+        }
+    }
+
+    /// <summary>
+    /// Delete a save file.
+    /// </summary>
+    /// <param name="saveFile">The name of the save file to delete.</param>
+    public static void DeleteSaveFile(string saveFile)
+    {
+        if (File.Exists(SaveDirectory + saveFile + ".csv"))
+        {
+            File.Delete(SaveDirectory + saveFile + ".csv");
+        }
+    }
+
+    /// <summary>
+    /// Export a game log CSV file to a location on the computer.
+    /// </summary>
+    /// <param name="saveFile">The save file to export.</param>
+    /// <param name="exportDirectory">The location to export the CSV to.</param>
+    public static void ExportSaveFile(string saveFile, string exportDirectory)
+    {
+        if (File.Exists(exportDirectory))
+        {
+            File.Delete(exportDirectory);
+        }
+
+        FileUtil.CopyFileOrDirectory(SaveDirectory + saveFile + ".csv", exportDirectory);
+        UserMessageManager.Dispatch("Export successful!", 5);
+    }
 
     /// <summary>
     /// Saves the scoring events of the current game to a text file.
     /// </summary>
-    public void Save(string filePath, string fileName)
+    public void Save(string filePath)
     {
-        bool newFile = !File.Exists(filePath + fileName);
+        bool newFile = !File.Exists(filePath);
         
-        Debug.Log("Saving to " + filePath + fileName);
-        using (StreamWriter writer = new StreamWriter(filePath + fileName, true))
+        Debug.Log("Saving to " + filePath);
+        using (StreamWriter writer = new StreamWriter(filePath, true))
         {
             if (newFile)
-                writer.WriteLine("\"Time\",\"Event Type\",\"Details\"");
+                writer.WriteLine("\"Time\",\"Event Type\",\"Details\""); // Header line
 
             writer.WriteLine("0,\"New Session\"");
 
