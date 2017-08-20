@@ -19,6 +19,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     GameObject canvas;
 
+    GameObject saveListPanel;
     GameObject setSavePanel;
     GameObject createSavePanel;
     GameObject saveGamePanel;
@@ -104,6 +105,9 @@ public class DriverPracticeMode : MonoBehaviour {
     private float deltaReleaseHorizontal;
     private float deltaReleaseVertical;
 
+    string chosenSave; 
+    string directory;
+
     private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
 
     bool isEditing = false;
@@ -153,6 +157,7 @@ public class DriverPracticeMode : MonoBehaviour {
         setSavePanel = AuxFunctions.FindObject(canvas, "SetSavePanel");
         saveGamePanel = AuxFunctions.FindObject(canvas, "SaveGamePanel");
         createSavePanel = AuxFunctions.FindObject(canvas, "CreateSavePanel");
+        saveListPanel = AuxFunctions.FindObject(canvas, "SaveListPanel");
 
         timerBackground = AuxFunctions.FindObject(timerWindow, "TimerTextField").GetComponent<Image>();
         scoreBackground = AuxFunctions.FindObject(scoreWindow, "Score").GetComponent<Image>();
@@ -463,20 +468,18 @@ public class DriverPracticeMode : MonoBehaviour {
 
         }
     }
-    public void ChangeSave()
+   
+    void ChangeSave()
     {
-        GameObject saveListPanel = GameObject.Find("SaveListPanel");
-        GameObject setSavePanel = GameObject.Find("SetSavePanel");
-
-        string chosenSave = saveListPanel.GetComponent<SelectSaveScrollable>().selectedEntry;
-        string directory = PlayerPrefs.GetString("SaveGameDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves//" + chosenSave));
-       
+        chosenSave = saveListPanel.GetComponent<SelectSaveScrollable>().selectedEntry;
+        directory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves//" + chosenSave;
         if (directory != null)
         {
             setSavePanel.SetActive(false);
             PlayerPrefs.SetString("simSelectedSave", directory);
+            //currentSaveFileText.text = directory;
             currentSaveFileText.text = directory;
-            UserMessageManager.Dispatch("Changed Save File to: " + directory, 5);
+            //UserMessageManager.Dispatch("Changed Save File to: " + directory, 5);
         }
         else
         {
@@ -539,31 +542,9 @@ public class DriverPracticeMode : MonoBehaviour {
         if (dpmRobot.modeEnabled)
         {
             // This should be changed to defaut to file set in user preferences.
-            string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\";
-            string fileName = string.Format("score_log_{0:yyyy-MM-dd_hh-mm-ss-tt}.txt", System.DateTime.Now);
 
-            scoreboard.Save(filePath, fileName);
-
-            UserMessageManager.Dispatch("Saved to \"" + filePath + "\\" + fileName + "\"", 10);
-        }
-        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
-    }
-
-    /// <summary>
-    /// Allow the user to select a new file to save game stats to.
-    /// </summary>
-    public void LoadSaveFile()
-    {
-        if (dpmRobot.modeEnabled)
-        {
-            string filePath;
-            string fileName;
-
-            string path = EditorUtility.OpenFilePanel("Overwrite with csv", "", "csv");
-
-            // GET NEW FILE PATH AND NAME
-
-            // SAVE FILE PATH AND NAME TO PREFERENCES
+            scoreboard.quickSave(directory);
+            // UserMessageManager.Dispatch("Saved to " + filePath, 10);
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }

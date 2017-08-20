@@ -226,5 +226,42 @@ public class Scoreboard : MonoBehaviour
 
         Debug.Log("Save successful!");
     }
+    public void quickSave(string filePath)
+    {
+       
+        Debug.Log("Saving to " + filePath);
+        using (StreamWriter writer = new StreamWriter(filePath, false))
+        {
+            string fieldName = new DirectoryInfo(PlayerPrefs.GetString("simSelectedField")).Name;
+            writer.WriteLine("Field: " + fieldName);
+
+            bool lastEventGameStarted = false;
+
+            for (int i = 0; i < scoreEvents.Count; i++)
+            {
+                if (scoreEvents[i].timeStamp > 0 && !lastEventGameStarted)
+                {
+                    writer.WriteLine("Game Start");
+                    lastEventGameStarted = true;
+                }
+                else if (scoreEvents[i].timeStamp < 0 && lastEventGameStarted)
+                {
+                    writer.WriteLine("Game End");
+                    lastEventGameStarted = false;
+                }
+
+                writer.WriteLine(scoreEvents[i].ToHumanReadable());
+            }
+
+            if (lastEventGameStarted)
+                writer.WriteLine("Game End");
+
+            writer.WriteLine("Total Score: " + GetScoreTotal().ToString());
+
+            writer.Close();
+        }
+
+        Debug.Log("Save successful!");
+    }
 
 }
