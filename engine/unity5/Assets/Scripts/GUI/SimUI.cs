@@ -329,6 +329,7 @@ public class SimUI : MonoBehaviour
                 break;
 
         }
+        oppositeSide = false;
     }
 
     /// <summary>
