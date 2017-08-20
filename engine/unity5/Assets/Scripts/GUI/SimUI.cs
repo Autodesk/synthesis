@@ -312,17 +312,22 @@ public class SimUI : MonoBehaviour
                 DynamicCamera.MovingEnabled = true;
                 break;
             case 2:
-                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
+                camera.SwitchCameraState(new DynamicCamera.StandsState(camera));
                 DynamicCamera.MovingEnabled = true;
                 break;
             case 3:
-                camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
+                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
                 DynamicCamera.MovingEnabled = true;
                 break;
             case 4:
+                camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
+                DynamicCamera.MovingEnabled = true;
+                break;
+            case 5:
                 camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
                 DynamicCamera.MovingEnabled = true;
                 break;
+
         }
     }
 
@@ -333,7 +338,9 @@ public class SimUI : MonoBehaviour
     {
         if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
             camera.GetComponent<Text>().text = "Driver Station";
-        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        else if(camera.cameraState.GetType().Equals(typeof(DynamicCamera.StandsState)))
+            camera.GetComponent<Text>().text = "Stands";
+        else if(camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
             camera.GetComponent<Text>().text = "Freeroam";
         else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
             camera.GetComponent<Text>().text = "Orbit Robot";
@@ -375,7 +382,11 @@ public class SimUI : MonoBehaviour
     /// </summary>
     private void UpdateDriverStationPanel()
     {
-        driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+        //Use for both drive station and in stands
+        System.Type cameraType = camera.cameraState.GetType();
+        if (cameraType.Equals(typeof(DynamicCamera.DriverStationState)) || cameraType.Equals(typeof(DynamicCamera.StandsState)))
+            driverStationPanel.SetActive(true);
+        else driverStationPanel.SetActive(false);
     }
 
     /// <summary>
@@ -384,7 +395,10 @@ public class SimUI : MonoBehaviour
     public void ToggleDriverStation()
     {
         oppositeSide = !oppositeSide;
-        camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
+            camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
+        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.StandsState)))
+            camera.SwitchCameraState(new DynamicCamera.StandsState(camera, oppositeSide));
     }
     #endregion
     #region orient button functions
