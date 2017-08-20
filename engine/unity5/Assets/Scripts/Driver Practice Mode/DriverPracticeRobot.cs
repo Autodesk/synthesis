@@ -33,7 +33,8 @@ public class DriverPracticeRobot : MonoBehaviour
     public List<GameObject> primaryHeld;
     public List<GameObject> secondaryHeld;
 
-    public List<string> gamepieceNames; //list of the identifiers of gamepieces
+    public List<string> gamepieceNames; // list of the identifiers of gamepieces
+    public List<GameObject> gamepieceOriginals; // list of the gameobjects of gamepieces
     public List<List<GameObject>> spawnedGamepieces;
     public List<GameObject> spawnedPrimary;
     public List<GameObject> spawnedSecondary;
@@ -120,11 +121,14 @@ public class DriverPracticeRobot : MonoBehaviour
         secondaryHeld = new List<GameObject>();
         objectsHeld.Add(primaryHeld);
         objectsHeld.Add(secondaryHeld);
-
-
+        
         gamepieceNames = new List<string>();
         gamepieceNames.Add("NOT CONFIGURED");
         gamepieceNames.Add("NOT CONFIGURED");
+
+        gamepieceOriginals = new List<GameObject>();
+        gamepieceOriginals.Add(null);
+        gamepieceOriginals.Add(null);
 
         spawnedGamepieces = new List<List<GameObject>>();
         spawnedPrimary = new List<GameObject>();
@@ -380,6 +384,10 @@ public class DriverPracticeRobot : MonoBehaviour
         //Creates a callback result that will be updated if we do a ray test with it
         ClosestRayResultCallback rayResult = new ClosestRayResultCallback(ref start, ref end);
 
+        //Remove goal colliders to prevent accidentally raycasting to them
+        DestroyGamepieceGoalColliders(0);
+        DestroyGamepieceGoalColliders(1);
+
         //Retrieves the bullet physics world and does a ray test with the given coordinates and updates the callback object
         BPhysicsWorld world = BPhysicsWorld.Get();
         world.world.RayTest(start, end, rayResult);
@@ -396,15 +404,19 @@ public class DriverPracticeRobot : MonoBehaviour
             else if (GameObject.Find(name) == null)
             {
                 Debug.Log("DPM: Game object not found");
-
             }
             else if (GameObject.Find(name).transform.parent == transform)
             {
                 UserMessageManager.Dispatch("You cannot select a robot part as a gamepiece!", 3);
             }
+            else if (name.Contains("Gamepiece") && name.Contains("Goal"))
+            {
+                Debug.Log("DPM: Raycast seems to have hit a goal collider.");
+            }
             else
             {
                 gamepieceNames[index] = name.Replace("(Clone)", ""); //gets rid of the clone tag given to spawned gamepieces 
+                gamepieceOriginals[index] = GameObject.Find(name);
                 intakeInteractor[index].SetKeyword(gamepieceNames[index], index);
                 GameObject gamepiece = GameObject.Find(name);
 
@@ -416,6 +428,10 @@ public class DriverPracticeRobot : MonoBehaviour
         {
 
         }
+        
+        // Regenerate goal colliders
+        GenerateGamepieceGoalColliders(0);
+        GenerateGamepieceGoalColliders(1);
     }
 
     public void DefineGamepiece(int index)
@@ -438,11 +454,16 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="index">0 if primary gamepiece, 1 if secondary gamepiece</param>
     public void SpawnGamepiece(int index)
     {
-        if (gamepieceNames[index] != null)
+        if (gamepieceOriginals[index] != null)
         {
             try //In case the game piece somehow doens't exist in the scene
             {
-                GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                // Enable original gamepiece for cloning, then return to original state
+                bool originalActiveState = gamepieceOriginals[index].activeSelf;
+                gamepieceOriginals[index].SetActive(true);
+                GameObject gameobject = Instantiate(gamepieceOriginals[index].GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                gamepieceOriginals[index].SetActive(originalActiveState);
+
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
                 spawnedGamepieces[index].Add(gameobject);
@@ -474,12 +495,17 @@ public class DriverPracticeRobot : MonoBehaviour
         if (definingRelease || definingIntake || addingGamepiece || settingGamepieceGoal != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
         else if (settingSpawn == 0)
         {
-            if (GameObject.Find(gamepieceNames[index]) != null)
+            if (gamepieceOriginals[index] != null)
             {
                 if (spawnIndicator != null) Destroy(spawnIndicator);
                 if (spawnIndicator == null)
                 {
-                    spawnIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                    // Ensure original gamepiece is active before instantiating clone.
+                    bool gamepieceOriginalOldActiveState = gamepieceOriginals[index].activeSelf;
+                    gamepieceOriginals[index].SetActive(true);
+                    spawnIndicator = Instantiate(gamepieceOriginals[index].GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                    gamepieceOriginals[index].SetActive(gamepieceOriginalOldActiveState);
+
                     spawnIndicator.name = "SpawnIndicator";
                     Destroy(spawnIndicator.GetComponent<BRigidBody>());
                     if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
@@ -557,7 +583,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="gamepieceIndex">The index of the gamepiece to add a goal to.</param>
     public void NewGoal(int gamepieceIndex)
     {
-        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        if (gamepieceOriginals[gamepieceIndex] != null)
         {
             gamepieceGoals[gamepieceIndex].Add(new UnityEngine.Vector3(0, 4, 0));
             gamepieceGoalSizes[gamepieceIndex].Add(1);
@@ -576,7 +602,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="goalIndex">The index of the goal to be deleted.</param>
     public void DeleteGoal(int gamepieceIndex, int goalIndex)
     {
-        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        if (gamepieceOriginals[gamepieceIndex] != null)
         {
             if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
@@ -600,7 +626,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="description">New description of the goal.</param>
     public void SetGamepieceGoalDescription(int gamepieceIndex, int goalIndex, string description)
     {
-        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        if (gamepieceOriginals[gamepieceIndex] != null)
         {
             if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
@@ -620,7 +646,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="points">New point value of the goal.</param>
     public void SetGamepieceGoalPoints(int gamepieceIndex, int goalIndex, int points)
     {
-        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        if (gamepieceOriginals[gamepieceIndex] != null)
         {
             if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
@@ -642,7 +668,7 @@ public class DriverPracticeRobot : MonoBehaviour
         if (definingRelease || definingIntake || addingGamepiece || settingSpawn != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
         else if (settingGamepieceGoal == 0)
         {
-            if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+            if (gamepieceOriginals[gamepieceIndex] != null)
             {
                 if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
                 {
@@ -761,7 +787,7 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="index">The gamepiece to create goal colliders for.</param>
     public void GenerateGamepieceGoalColliders(int index)
     {
-        if (gamepieceNames[index] != null && GameObject.Find(gamepieceNames[index]) != null)
+        if (gamepieceNames[index] != null && gamepieceOriginals[index] != null)
         {
             DestroyGamepieceGoalColliders(index);
 
@@ -1159,25 +1185,33 @@ public class DriverPracticeRobot : MonoBehaviour
 
                 // Apply the value of the line to the variable that was specified by the previous line.
                 else if (counter == 1)
-                    gamepieceNames[index] = line;
-                else if (counter == 2)
-                    gamepieceSpawn[index] = DeserializeVector3Array(line);
-                else if (counter == 3)
-                    gamepieceGoals[index][goalIndex] = DeserializeVector3Array(line);
-                else if (counter == 4)
-                    gamepieceGoalSizes[index][goalIndex] = float.Parse(line);
-                else if (counter == 5)
-                    gamepieceGoalPoints[index][goalIndex] = int.Parse(line);
-                else if (counter == 6)
-                    gamepieceGoalDesc[index][goalIndex] = line;
-                else if (counter == 7)
-                    intakeNode[index] = GameObject.Find(line);
-                else if (counter == 8)
-                    releaseNode[index] = GameObject.Find(line);
-                else if (counter == 9)
-                    positionOffset[index] = DeserializeVector3Array(line);
-                else if (counter == 10)
-                    releaseVelocity[index] = DeserializeArray(line);
+                {
+                    gamepieceOriginals[index] = GameObject.Find(line);
+
+                    if (gamepieceOriginals[index] != null)
+                        gamepieceNames[index] = line;
+                }
+                else if (gamepieceOriginals[index] != null) // If gamepiece doesn't exist, don't import configuration of it.
+                { 
+                    if (counter == 2)
+                        gamepieceSpawn[index] = DeserializeVector3Array(line);
+                    else if (counter == 3)
+                        gamepieceGoals[index][goalIndex] = DeserializeVector3Array(line);
+                    else if (counter == 4)
+                        gamepieceGoalSizes[index][goalIndex] = float.Parse(line);
+                    else if (counter == 5)
+                        gamepieceGoalPoints[index][goalIndex] = int.Parse(line);
+                    else if (counter == 6)
+                        gamepieceGoalDesc[index][goalIndex] = line;
+                    else if (counter == 7)
+                        intakeNode[index] = GameObject.Find(line);
+                    else if (counter == 8)
+                        releaseNode[index] = GameObject.Find(line);
+                    else if (counter == 9)
+                        positionOffset[index] = DeserializeVector3Array(line);
+                    else if (counter == 10)
+                        releaseVelocity[index] = DeserializeArray(line);
+                }
             }
             reader.Close();
 
