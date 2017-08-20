@@ -26,10 +26,10 @@ public class SynthAIManager : MonoBehaviour
     // Reference to tag on Field Game Object.
     public string FieldTag { get { return fieldTag;  } private set { fieldTag = value; } }
 
-    [SerializeField] public float AIMaxSpeed; // Max Speed of an AI controlled robot
-    [SerializeField] public float AILookAhead; // How far ahead AIs should calculate steering
+    [SerializeField] public float AIMaxSpeed = 1f; // Max Speed of an AI controlled robot
+    [SerializeField] public float AILookAhead = 0.75f; // How far ahead AIs should calculate steering
 
-    [SerializeField] private string fieldTag; // Serialization with private setter
+    [SerializeField] private string fieldTag = "Field"; // Serialization with private setter
 
     [SerializeField] private Vector3 spawnPoint;
     public Vector3 SpawnPoint { get { return spawnPoint; } set { spawnPoint = new Vector3(value.x, value.y + 0.5f, value.z); } }
@@ -66,9 +66,9 @@ public class SynthAIManager : MonoBehaviour
     /// <summary>
     /// Initiates NavMesh generator based on a field tag. Currently, the field tag
     /// is set in this class, but that can be changed at any time.
-    /// Also places SynthAITag component on all Game Objects parented to
-    /// the Game Object with the field tag. Any Game Object with a SynthAITag component
-    /// will be calculated in the making of the field NavMesh.
+    /// Also places SynthAITag component on all children Game Objects parented to
+    /// the Game Object with the field tag (any Game Object with a SynthAITag component
+    /// will be calculated in the making of the field NavMesh).
     /// </summary>
     public static void InitiateAI(string fieldTag)
     {

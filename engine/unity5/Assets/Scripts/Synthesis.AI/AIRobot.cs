@@ -253,7 +253,7 @@ public class AIRobot : Robot, IControllable
     }
 
     /// <summary>
-    /// 
+    /// Retrieves forward vector of the root node. For some robots, this may be incorrectly defined.
     /// </summary>
     /// <returns>Returns the forward vector of the robot</returns>
     public Vector3 GetForward()
