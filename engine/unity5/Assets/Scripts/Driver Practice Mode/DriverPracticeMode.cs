@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
 using UnityEditor;
+using System.IO;
 
 public class DriverPracticeMode : MonoBehaviour {
 
@@ -13,6 +14,8 @@ public class DriverPracticeMode : MonoBehaviour {
     private SimUI simUI;
     private GoalDisplayManager goalDisplayManager;
     private MainState mainState;
+
+    MainState main;
 
     GameObject canvas;
 
@@ -454,6 +457,28 @@ public class DriverPracticeMode : MonoBehaviour {
                 StopGame();
             }
 
+        }
+    }
+    public void ChangeSave()
+    {
+        GameObject panel = GameObject.Find("SaveListPanel");
+
+        string chosenSave = panel.GetComponent<SelectSaveScrollable>().selectedEntry;
+        string directory = PlayerPrefs.GetString("SaveGameDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves//" + chosenSave));
+       
+        if (directory != null)
+        {
+            panel.SetActive(false);
+            //changeRobotPanel.SetActive(false);
+            //PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+            PlayerPrefs.SetString("simSelectedSave", directory);
+            Debug.Log("saved to" + directory);
+            //PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            //main.ChangeSave(directory);
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Cannot Save To:" + directory, 5);
         }
     }
 

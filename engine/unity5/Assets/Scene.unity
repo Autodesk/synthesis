@@ -44890,6 +44890,7 @@ GameObject:
   - component: {fileID: 1741231149}
   - component: {fileID: 1741231151}
   - component: {fileID: 1741231150}
+  - component: {fileID: 1741231155}
   m_Layer: 0
   m_Name: StateMachine
   m_TagString: Untagged
@@ -45050,6 +45051,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goalElementPrefab: {fileID: 1707066965860788, guid: 4e60853913c45aa47a5fdb71d568969a,
     type: 2}
+--- !u!114 &1741231155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1741231142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 141a85acf8e9e3c4194e4758bb95a0ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1744877097
 GameObject:
   m_ObjectHideFlags: 0
@@ -46871,7 +46883,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231148}
-        m_MethodName: ToggleSetSavePanel
+        m_MethodName: ChangeSave
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

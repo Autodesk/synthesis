@@ -123,6 +123,5 @@ public class GameplayTimer : MonoBehaviour
     public void EndOfGame()
     {
         timerRunning = false;
-        timerWindow.GetComponent<DriverPracticeMode>().ToggleSetSavePanel();
     }
 }
