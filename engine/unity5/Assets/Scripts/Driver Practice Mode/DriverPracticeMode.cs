@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Assets.Scripts.FSM;
 using UnityEditor;
 using System.IO;
+using System;
 
 public class DriverPracticeMode : MonoBehaviour {
 
@@ -582,28 +583,37 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (dpmRobot.modeEnabled)
         {
-            if (renamingSave == "")
+            try
             {
-                Scoreboard.CreateNewSaveFile(newSaveFileField.text);
-
-                PlayerPrefs.SetString("selectedSaveFile", newSaveFileField.text);
-                currentSaveFileText.text = newSaveFileField.text;
-            }
-            else
-            {
-                Scoreboard.RenameSaveFile(renamingSave, newSaveFileField.text);
-
-                if (PlayerPrefs.GetString("selectedSaveFile", "Statistics") == renamingSave)
+                if (renamingSave == "")
                 {
+
+                    Scoreboard.CreateNewSaveFile(newSaveFileField.text);
+
                     PlayerPrefs.SetString("selectedSaveFile", newSaveFileField.text);
                     currentSaveFileText.text = newSaveFileField.text;
                 }
+                else
+                {
+                    Scoreboard.RenameSaveFile(renamingSave, newSaveFileField.text);
 
-                renamingSave = "";
+                    if (PlayerPrefs.GetString("selectedSaveFile", "Statistics") == renamingSave)
+                    {
+                        PlayerPrefs.SetString("selectedSaveFile", newSaveFileField.text);
+                        currentSaveFileText.text = newSaveFileField.text;
+                    }
+
+                    renamingSave = "";
+                }
+
+                UpdateSaveFileList();
+                createSaveWindow.SetActive(false);
             }
-
-            UpdateSaveFileList();
-            createSaveWindow.SetActive(false);
+            catch
+            {
+                UserMessageManager.Dispatch("An unknown error occured!", 5);
+                throw;
+            }
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }
