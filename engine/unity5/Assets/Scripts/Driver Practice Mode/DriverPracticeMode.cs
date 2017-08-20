@@ -443,7 +443,7 @@ public class DriverPracticeMode : MonoBehaviour {
         else
         {
             saveGameWindow.SetActive(true);
-            currentSaveFileText.text = PlayerPrefs.GetString("selectedSaveFile", "stats");
+            currentSaveFileText.text = PlayerPrefs.GetString("selectedSaveFile", "Statistics");
         }
     }
     
@@ -527,7 +527,7 @@ public class DriverPracticeMode : MonoBehaviour {
     public void UpdateSaveFileList()
     {
         List<string> saveFiles = Scoreboard.GetSaveFileList();
-        string selectedSaveFile = PlayerPrefs.GetString("selectedSaveFile", "stats");
+        string selectedSaveFile = PlayerPrefs.GetString("selectedSaveFile", "Statistics");
         int selectedSaveFileId = -1;
 
         selectedSaveFileDropdown.options.Clear();
@@ -600,17 +600,17 @@ public class DriverPracticeMode : MonoBehaviour {
             string fileToDelete = selectedSaveFileDropdown.options[selectedSaveFileDropdown.value].text;
             Scoreboard.DeleteSaveFile(fileToDelete);
 
-            if (PlayerPrefs.GetString("selectedSaveFile", "stats") == fileToDelete)
+            if (PlayerPrefs.GetString("selectedSaveFile", "Statistics") == fileToDelete)
             {
                 List<string> saveFiles = Scoreboard.GetSaveFileList();
 
                 if (saveFiles.Count > 0)
                     PlayerPrefs.SetString("selectedSaveFile", saveFiles[0]);
                 else
-                    PlayerPrefs.SetString("selectedSaveFile", "stats");
+                    PlayerPrefs.SetString("selectedSaveFile", "Statistics");
             }
 
-            currentSaveFileText.text = PlayerPrefs.GetString("selectedSaveFile", "stats");
+            currentSaveFileText.text = PlayerPrefs.GetString("selectedSaveFile", "Statistics");
             UpdateSaveFileList();
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
@@ -623,7 +623,7 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (dpmRobot.modeEnabled)
         {
-            scoreboard.Save(Scoreboard.SaveDirectory + PlayerPrefs.GetString("selectedSaveFile", "stats") + ".csv");
+            scoreboard.Save(Scoreboard.SaveDirectory + PlayerPrefs.GetString("selectedSaveFile", "Statistics") + ".csv");
             UserMessageManager.Dispatch("Save successful!", 5);
             if (saveGameWindow.activeSelf)
                 ToggleSaveGamePanel();
@@ -636,10 +636,10 @@ public class DriverPracticeMode : MonoBehaviour {
         if (dpmRobot.modeEnabled)
         {
             string exportLocation = EditorUtility.SaveFilePanel("Choose where to export the game statistics CSV", System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
-                                                                PlayerPrefs.GetString("selectedSaveFile", "stats"), "csv");
+                                                                PlayerPrefs.GetString("selectedSaveFile", "Statistics"), "csv");
             if (exportLocation != "")
             {
-                Scoreboard.ExportSaveFile(PlayerPrefs.GetString("selectedSaveFile", "stats"), exportLocation);
+                Scoreboard.ExportSaveFile(PlayerPrefs.GetString("selectedSaveFile", "Statistics"), exportLocation);
             }
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
