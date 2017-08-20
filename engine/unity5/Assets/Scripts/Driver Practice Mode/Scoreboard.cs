@@ -50,14 +50,13 @@ public class Scoreboard : MonoBehaviour
 
     Text scoreDisplay;
     Text scoreLog;
-
-    InputField setFileName;
-
     Scrollbar scoreLogScrollbar;
     GameplayTimer timer;
     DriverPracticeMode dpm;
 
     List<ScoreEvent> scoreEvents;
+
+    public static string SaveDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\synthesis\\GameSaves\\";
 
     private void Start()
     {
@@ -71,7 +70,7 @@ public class Scoreboard : MonoBehaviour
             timer = GetComponent<GameplayTimer>();
             dpm = GetComponent<DriverPracticeMode>();
         }
-        else if (scoreDisplay == null || scoreLog == null)
+        else if (scoreDisplay == null || scoreLog == null || scoreLogScrollbar == null)
             FindElements();
     }
 
@@ -81,8 +80,6 @@ public class Scoreboard : MonoBehaviour
     void FindElements()
     {
         canvas = GameObject.Find("Canvas");
-
-        setFileName = GameObject.Find("FileNameInput").GetComponent<InputField>();
 
         scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
         scoreLogWindow = AuxFunctions.FindObject(canvas, "ScoreLogPanel");
@@ -168,32 +165,59 @@ public class Scoreboard : MonoBehaviour
         if (scoreLogScrollbar != null)
             scoreLogScrollbar.value = 0;
     }
-
-    string setName;
-    public void SaveButtonClicked()
+    
+    /// <summary>
+    /// Get a list of all known save files.
+    /// </summary>
+    /// <returns>A string list of the save file names (no extension).</returns>
+    public static List<string> GetSaveFileList()
     {
-        setName = setFileName.text;
-        Debug.Log(setFileName.text);
-        if (!Directory.Exists(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves")) ;
-        {
-            //if it doesn't, create it
-            Directory.CreateDirectory(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves");
+        DirectoryInfo folder = new DirectoryInfo(SaveDirectory);
+        FileInfo[] saveFiles = folder.GetFiles("*.csv");
 
-        }
-        Save((System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves//"), setName + ".txt");
+        List<string> fileNames = new List<string>();
+
+        foreach (FileInfo file in saveFiles)
+            fileNames.Add(Path.GetFileNameWithoutExtension(file.Name));
+
+        Debug.Log(fileNames);
+
+        return fileNames;
     }
+
+    /// <summary>
+    /// Create a new CSV file for saving game events to.
+    /// </summary>
+    /// <param name="fileName">The name of the file (no extension).</param>
+    public void CreateNewSaveFile(string fileName)
+    {
+        Debug.Log(fileName);
+        // If the save directory doesn't exist, create it
+        if (!Directory.Exists(SaveDirectory))
+        {
+            Directory.CreateDirectory(SaveDirectory);
+        }
+
+        // Create CSV file
+        using (StreamWriter writer = new StreamWriter(SaveDirectory + fileName + ".csv", true))
+        {
+            writer.WriteLine("\"Time\",\"Event Type\",\"Details\""); // Header line
+            writer.Close();
+        }
+    }
+
     /// <summary>
     /// Saves the scoring events of the current game to a text file.
     /// </summary>
-    public void Save(string filePath, string fileName)
+    public void Save(string filePath)
     {
-        bool newFile = !File.Exists(filePath + fileName);
+        bool newFile = !File.Exists(filePath);
         
-        Debug.Log("Saving to " + filePath + fileName);
-        using (StreamWriter writer = new StreamWriter(filePath + fileName, true))
+        Debug.Log("Saving to " + filePath);
+        using (StreamWriter writer = new StreamWriter(filePath, true))
         {
             if (newFile)
-                writer.WriteLine("\"Time\",\"Event Type\",\"Details\"");
+                writer.WriteLine("\"Time\",\"Event Type\",\"Details\""); // Header line
 
             writer.WriteLine("0,\"New Session\"");
 
@@ -234,42 +258,4 @@ public class Scoreboard : MonoBehaviour
 
         Debug.Log("Save successful!");
     }
-    public void quickSave(string filePath)
-    {
-       
-        Debug.Log("Saving to " + filePath);
-        using (StreamWriter writer = new StreamWriter(filePath, false))
-        {
-            string fieldName = new DirectoryInfo(PlayerPrefs.GetString("simSelectedField")).Name;
-            writer.WriteLine("Field: " + fieldName);
-
-            bool lastEventGameStarted = false;
-
-            for (int i = 0; i < scoreEvents.Count; i++)
-            {
-                if (scoreEvents[i].timeStamp > 0 && !lastEventGameStarted)
-                {
-                    writer.WriteLine("Game Start");
-                    lastEventGameStarted = true;
-                }
-                else if (scoreEvents[i].timeStamp < 0 && lastEventGameStarted)
-                {
-                    writer.WriteLine("Game End");
-                    lastEventGameStarted = false;
-                }
-
-                writer.WriteLine(scoreEvents[i].ToHumanReadable());
-            }
-
-            if (lastEventGameStarted)
-                writer.WriteLine("Game End");
-
-            writer.WriteLine("Total Score: " + GetScoreTotal().ToString());
-
-            writer.Close();
-        }
-
-        Debug.Log("Save successful!");
-    }
-
 }
