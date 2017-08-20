@@ -12,9 +12,12 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
     protected bool driveNow = false; // A switch to turn on and off automatic robot steering towards next point.
                                      // Can be set to false if robot should not be controlling its driving.
     protected IControllable robot; // Reference to robot. Used to manipulate robot.
-    protected UnityEngine.AI.NavMeshAgent agent;
+    protected UnityEngine.AI.NavMeshAgent agent; // The NavMesh agent pathfinds around obstacles.
     protected Vector3 LastPosition; // Used to calculate current velocity
     protected float curVelocity;
+    protected float maxSpeed; // Max speed belongs to behaviour so that custom behaviours can use their own Max Speed
+                              // It is recommended that custom behaviours set this max speed 
+                              // to less than AIManager.Instance.AIMaxSpeed
     // Initialization
     void Start()
     {
@@ -29,13 +32,14 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
         LastPosition = this.robot.GetPosition();
         this.agent.speed = 0f;
 
+        maxSpeed = SynthAIManager.Instance.AIMaxSpeed;
         StartCoroutine(this.UpdateAI());
     }
 
     // AI Logic updates happen every quarter second -- this keeps our process lightweight.
     private IEnumerator UpdateAI()
     {
-        while (true)
+        while (enabled)
         {
             AILogic();
             yield return new WaitForSeconds(0.25f);
@@ -69,18 +73,21 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
             Vector3 targetPosition = this.agent.transform.position;
             // Time.deltaTime returns correct fixed update time when used in FixedUpdate()
             curVelocity = Vector3.Dot((robotPosition - LastPosition) / Time.deltaTime, robot.GetForward());
+
             // ######## NavAgent Logic ######## \\
             if (agent.hasPath)
             {
                 float steeringDistance = Vector3.Distance(targetPosition, robotPosition);
-                if (steeringDistance < SynthAIManager.Instance.AILookAhead + Mathf.Abs(curVelocity))
+                if (steeringDistance < SynthAIManager.Instance.AILookAhead)
                 {
                     // The navAgent "drives ahead" of the robot while the robot steers towards it
-                    this.agent.speed = SynthAIManager.Instance.AIMaxSpeed * 1.2f;
+                    this.agent.speed = maxSpeed * 1.1f;
                 }
-                else if (steeringDistance > SynthAIManager.Instance.AILookAhead * 1.75f + Mathf.Abs(curVelocity))
+                else if (steeringDistance > SynthAIManager.Instance.AILookAhead * 1.75f)
                 {
-                    this.agent.transform.position = robotPosition;
+                    // If robot gets too far away from steering agent, reset steering agent's position in front
+                    // of AI robot.
+                    this.agent.transform.position = robotPosition + robot.GetForward() * Mathf.Abs(curVelocity);
                 }
                 else
                 {
@@ -107,9 +114,17 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
             robot.Turn(angle / 5f);
 
             // ######## Velocity Logic ######## \\
-            float targetVelocity = SynthAIManager.Instance.AIMaxSpeed * 5 / (Mathf.Max(angle, 5));
+
+            // Compare current rotation to NavMesh rotation. This will give us an angle difference if the robot
+            // is turning a sharp corner. cornerValue is a number between 0 and 1. A value of 0.5 should require a 
+            // near full stop to turn, while a value of 0.9 should only slow down a little bit.
+            float angleDiff = Vector3.Angle(robotForward, agent.transform.forward);
+            float cornerValue = 1 - Mathf.Min((angleDiff / 180f), 1f);
+
+            // Target velocity is lower if we need to make a sharp turn and if NavMesh agent shows there is a corner
+            float targetVelocity = (maxSpeed * 5 / (Mathf.Max(angle, 5))) * cornerValue;
             float deltaVelocity = targetVelocity - curVelocity;
-            robot.Accelerate(deltaVelocity);
+            robot.Accelerate(deltaVelocity * 2);
             // Set LastPosition so that we can calculate velocity next frame
 
             LastPosition = robotPosition;
@@ -118,9 +133,9 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
 
     private float timeStuck;
     // In update loop, check if robot is stuck, and back up if it is.
-    private void Update()
+    protected virtual void Update()
     {
-        if (Mathf.Abs(curVelocity) < 0.02f && driveNow && timeStuck < STUCK_TIME) // If robot is not moving and is in drive mode, robot is stuck
+        if (Mathf.Abs(curVelocity) < 0.015f && driveNow && timeStuck < STUCK_TIME) // If robot is not moving and is in drive mode, robot is stuck
         {
             timeStuck += Time.deltaTime;
         }
@@ -142,8 +157,13 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
         }
     }
 
+    /// <summary>
+    /// Used to sort behaviours in behaviour list by alphabetical order.
+    /// </summary>
+    /// <param name="other">Another BaseSynthBehaviour to compare.</param>
+    /// <returns></returns>
     public int CompareTo(BaseSynthBehaviour other)
     {
-        return String.Compare(other.ToString(), this.ToString());
+        return String.Compare(this.ToString(), other.ToString());
     }
 }

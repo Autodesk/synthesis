@@ -190,6 +190,12 @@ public class AIRobot : Robot, IControllable
     /// </summary>
     new public void BeginReset()
     {
+        BaseSynthBehaviour b = this.gameObject.GetComponent<BaseSynthBehaviour>();
+        if (b != null) {
+            b.enabled = false; // Disable behaviour so that it does not attempt to run next frame
+                               // (Destroyed game objects are not destroyed until next frame).
+                               // This prevents error on NavMeshAgent.
+        }
         Destroy(this.gameObject);
     }
 

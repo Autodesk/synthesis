@@ -322,6 +322,7 @@
     <Compile Include="Assets\Scripts\Synthesis.AI\NavMeshComponents\Scripts\NavMeshModifier.cs" />
     <Compile Include="Assets\Scripts\Synthesis.AI\NavMeshComponents\Scripts\NavMeshModifierVolume.cs" />
     <Compile Include="Assets\Scripts\Synthesis.AI\NavMeshComponents\Scripts\NavMeshSurface.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\SynthAIBehaviours\DummySynthBehaviour.cs" />
     <Compile Include="Assets\Scripts\Synthesis.AI\SynthAIBehaviours\RoamSynthBehaviour.cs" />
     <Compile Include="Assets\Scripts\Synthesis.AI\SynthAIBehaviours\ChaseSynthBehaviour.cs" />
     <Compile Include="Assets\Scripts\Synthesis.AI\SynthAIManager.cs" />

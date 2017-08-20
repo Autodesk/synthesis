@@ -15,8 +15,6 @@ public class SynthAIManager : MonoBehaviour
     private NavMeshDataInstance NavMeshInstance;
     private List<NavMeshBuildSource> Sources = new List<NavMeshBuildSource>();
 
-    private static MainState main;
-
     private bool isInitialized = false;
     private static List<AIRobot> robots;
 
@@ -26,8 +24,8 @@ public class SynthAIManager : MonoBehaviour
     // Reference to tag on Field Game Object.
     public string FieldTag { get { return fieldTag; } private set { fieldTag = value; } }
 
-    [SerializeField] public float AIMaxSpeed = 1f; // Max Speed of an AI controlled robot
-    [SerializeField] public float AILookAhead = 0.75f; // How far ahead AIs should calculate steering
+    [SerializeField] public float AIMaxSpeed = 0.75f; // Max Speed of an AI controlled robot
+    [SerializeField] public float AILookAhead = 1.25f; // How far ahead AIs should calculate steering
 
     [SerializeField] private string fieldTag = "Field"; // Serialization with private setter
 
@@ -43,7 +41,6 @@ public class SynthAIManager : MonoBehaviour
     // so this should be as small as possible).
     [SerializeField] private Vector3 m_Size;
 
-
     private void Awake()
     {
         // Set Singleton Instance. Only one SynthAIManager should be present
@@ -58,11 +55,6 @@ public class SynthAIManager : MonoBehaviour
 
         // Initialize Robot arraylist
         robots = new List<AIRobot>();
-
-        if (SynthAIManager.main == null)
-        {
-            SynthAIManager.main = Instance.GetComponent<StateMachine>().CurrentState as MainState;
-        }
     }
 
     /// <summary>
@@ -72,7 +64,7 @@ public class SynthAIManager : MonoBehaviour
     /// the Game Object with the field tag (any Game Object with a SynthAITag component
     /// will be calculated in the making of the field NavMesh).
     /// </summary>
-    public static void InitiateAI(string fieldTag)
+    public static void InitiateNavMesh(string fieldTag)
     {
         // Keep track of start and end times
         float start = Time.realtimeSinceStartup;
@@ -84,10 +76,10 @@ public class SynthAIManager : MonoBehaviour
         Transform[] children = field.GetComponentsInChildren<Transform>();
 
         // Get all mesh filters for efficient tracking of child bounds
-        MeshFilter[] meshFilters = new MeshFilter[children.Length];
-        for (int i = 0; i < meshFilters.Length; i++)
+        Renderer[] renderers = new Renderer[children.Length];
+        for (int i = 0; i < renderers.Length; i++)
         {
-            meshFilters[i] = children[i].GetComponent<MeshFilter>();
+            renderers[i] = children[i].GetComponent<Renderer>();
         }
 
         // Calculate center of NavMesh generation
@@ -100,9 +92,9 @@ public class SynthAIManager : MonoBehaviour
             t.gameObject.AddComponent<SynthAITag>();
 
 
-            if (meshFilters[i] != null)
+            if (renderers[i] != null)
             {
-                center += meshFilters[i].mesh.bounds.center;
+                center += renderers[i].bounds.center;
             }
         }
         center /= children.Length; //center is average center of children
@@ -110,16 +102,17 @@ public class SynthAIManager : MonoBehaviour
 
         // Calculate the size of NavMesh generation
         Bounds bounds = new Bounds(center, Vector3.zero);
-        foreach (MeshFilter meshFilter in meshFilters)
+        foreach (Renderer renderer in renderers)
         {
-            if (meshFilter != null)
+            if (renderer != null)
             {
-                bounds.Encapsulate(meshFilter.mesh.bounds);
+                bounds.Encapsulate(renderer.bounds);
             }
         }
 
         Instance.center.position = center; // Set center of NavMesh generation
         Instance.m_Size = bounds.size; // Set size of NavMesh generation
+        Instance.SpawnPoint = center; // Set Spawn Point to center of field.
         Instance.isInitialized = true;
 
         Debug.Log("AI NavMesh initiated in " + (Time.realtimeSinceStartup - start) + "seconds!");
@@ -165,14 +158,10 @@ public class SynthAIManager : MonoBehaviour
             NavMeshBuilder.UpdateNavMeshData(NavMesh, defaultBuildSettings, Sources, bounds);
     }
 
-
-
     public static AIRobot SpawnRobot(string directory, BaseSynthBehaviour chosenBehaviour)
     {
-        if (SynthAIManager.main == null)
-        {
-            SynthAIManager.main = Instance.GetComponent<StateMachine>().CurrentState as MainState;
-        }
+        MainState main = Instance.transform.GetComponent<StateMachine>().CurrentState as MainState;
+
         GameObject obj = new GameObject("AI Robot " + (SynthAIManager.robots.Count + 1));
 
         AIRobot ai = obj.AddComponent<AIRobot>();
@@ -180,7 +169,7 @@ public class SynthAIManager : MonoBehaviour
         if (ai.InitializeRobot(directory, main))
         {
             BaseSynthBehaviour behaviour = ai.gameObject.AddComponent(chosenBehaviour.GetType()) as BaseSynthBehaviour;
-            behaviour.Initialize(SynthAIManager.main);
+            behaviour.Initialize(main);
             return ai;
         }
         else
@@ -191,18 +180,15 @@ public class SynthAIManager : MonoBehaviour
 
     public static void ClearRobots()
     {
-        if (SynthAIManager.main == null)
-        {
-            SynthAIManager.main = Instance.GetComponent<StateMachine>().CurrentState as MainState;
-        }
+        MainState main = Instance.transform.GetComponent<StateMachine>().CurrentState as MainState;
 
         // Going through list backwards allows for simultaneous iteration and destruction of collection
         for (int i = robots.Count - 1; i >= 0; i--)
         {
             AIRobot robot = robots[i];
-            robot.BeginReset();
             main.SpawnedRobots.Remove(robot);
             SynthAIManager.robots.Remove(robot);
+            robot.BeginReset();
         }
     }
 

@@ -113,7 +113,7 @@ public class MainState : SimState
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
             // Initiate AI after field is loaded
-            SynthAIManager.InitiateAI(SynthAIManager.Instance.FieldTag);
+            SynthAIManager.InitiateNavMesh(SynthAIManager.Instance.FieldTag);
 
             int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
             if (isMixAndMatch == 1 && MixAndMatchMode.hasManipulator)

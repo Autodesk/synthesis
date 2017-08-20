@@ -8,13 +8,12 @@ public class ChaseSynthBehaviour : BaseSynthBehaviour
 
     protected override void AILogic()
     {
-        this.agent.SetDestination(player.position);
-        
+        this.agent.SetDestination(player.position);        
     }
 
     public override bool Initialize(MainState main)
     {
-        this.player = main.activeRobot.transform.GetChild(0).GetComponentInChildren<Transform>();
+        this.player = main.activeRobot.transform.GetChild(0);
         this.driveNow = true;
         Debug.Log("Chase behaviour initialized");
         return true;
