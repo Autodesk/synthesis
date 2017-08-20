@@ -795,8 +795,9 @@ public class DriverPracticeMode : MonoBehaviour {
             CancelDefineRelease();
             CancelGamepieceSpawn();
             CancelGamepieceGoal();
-            StopGame();
         }
+        if (gameStarted)
+            StopGame();
     }
 
     public void ChangeActiveRobot(int index)
