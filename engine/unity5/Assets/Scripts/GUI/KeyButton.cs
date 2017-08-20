@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-//Adapted from: https://github.com/Gris87/InputControl
-
 public class KeyButton : MonoBehaviour
 {
     public static KeyButton selectedButton = null;
@@ -41,7 +39,7 @@ public class KeyButton : MonoBehaviour
                     &&
                     currentInput is KeyboardInput
                     &&
-                    ((KeyboardInput)currentInput).key == KeyCode.Backspace
+                    ((KeyboardInput)currentInput).key == KeyCode.Escape
                    )
                 {
                     SetInput(new KeyboardInput());
@@ -113,8 +111,6 @@ public class KeyButton : MonoBehaviour
         }
 
         UpdateText();
-
-        //Enable this for auto-saving. To complete auto-saving, enable the comments in SettingsMode.cs > OnLoadClick().
         Controls.Save();
 
         selectedButton = null;

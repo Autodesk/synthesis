@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
 using System.Linq;
-using UnityEngine.Analytics;
 
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer
@@ -104,12 +103,6 @@ public class LocalMultiplayer : MonoBehaviour {
     /// </summary>
     public void AddRobot()
     {
-        if (SimUI.changeAnalytics)
-        {
-            Analytics.CustomEvent("Added Robot", new Dictionary<string, object>
-            {
-            });
-        }
         GameObject panel = GameObject.Find("RobotListPanel");
         string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
         if (Directory.Exists(directory))

@@ -21,9 +21,9 @@ namespace BxDFieldExporter
 
         public AddPart()
         {
-            Location = new System.Drawing.Point(450, 350);
+            this.Location = new System.Drawing.Point(450, 350);
             InitializeComponent();
-            TopMost = true;
+            this.TopMost = true;
 
             //Used to access StandardAddInServer's exposed API
             try
@@ -44,7 +44,7 @@ namespace BxDFieldExporter
                 //Looks for our DemoAddin CLSID;
                 if (oAddIn.ClassIdString == "{E50BE244-9F7B-4B94-8F87-8224FABA8CA1}")
                 {
-
+                    
                     //Calls Automation property    
                     mAddInInterface = (IAutomationInterface)oAddIn.Automation;
                 }
@@ -53,47 +53,49 @@ namespace BxDFieldExporter
 
         private void OKButton_OnClick(object sender, EventArgs e)
         {
+            mAddInInterface.SetRunOnce(false);
             mAddInInterface.SetDone(true);
-            StandardAddInServer.task.TrySetResult(true);
-            Close();
+            this.Close();
         }
 
         private void CancelButton_onClick(object sender, EventArgs e)
         {
             mAddInInterface.SetCancel(true);
-            StandardAddInServer.task.TrySetResult(true);
-            Close();
+            mAddInInterface.SetRunOnce(false);
+            this.Close();
         }
-
 
         private void SelectPartsLabel_onClick(object sender, EventArgs e)
         {
-            Close();
+            this.Close();
         }
 
+        private void CancelButton_onClick(object sender, MouseEventArgs e)
+        {
+            mAddInInterface.SetCancel(true);
+            mAddInInterface.SetRunOnce(false);
+            this.Close();
+        }
+
+        private void CancelButton_onClick(object sender, FormClosedEventArgs e)
+        {
+            mAddInInterface.SetCancel(true);
+            mAddInInterface.SetRunOnce(false);
+        }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Escape)
             {
-                Close();
+                this.Close();
+
             }
             else if (keyData == Keys.Enter)
             {
-                Close();
+                this.Close();
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
-        }
-
-        private void ApplyButton_Click(object sender, EventArgs e)
-        {
-            StandardAddInServer.task.TrySetResult(true);
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

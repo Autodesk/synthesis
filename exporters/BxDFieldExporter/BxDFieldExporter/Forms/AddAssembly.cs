@@ -20,9 +20,9 @@ namespace BxDFieldExporter
 
         public AddAssembly()
         {
-            Location = new System.Drawing.Point(450, 350);
+            this.Location = new System.Drawing.Point(450, 350);
             InitializeComponent();
-            TopMost = true;
+            this.TopMost = true;
 
             //Used to access StandardAddInServer's exposed API
             try
@@ -53,21 +53,23 @@ namespace BxDFieldExporter
 
         private void OKButton_OnClick(object sender, EventArgs e)
         {
-            mAddInInterface.SetDone(true);
-            StandardAddInServer.task.TrySetResult(true);
-            Close();
+            StandardAddInServer.okButton_Clicked = true;
+            mAddInInterface.SetRunOnce(false);
+            StandardAddInServer.done = true;
+            this.Close();
         }
 
         private void CancelButton_onClick(object sender, EventArgs e)
         {
             mAddInInterface.SetCancel(true);
-            StandardAddInServer.task.TrySetResult(true);
-            Close();
+            mAddInInterface.SetRunOnce(false);
+            this.Close();
         }
 
         private void ApplyButton_OnClick(object sender, EventArgs e)
         {
-            StandardAddInServer.task.TrySetResult(true);
+            mAddInInterface.SetRunOnce(false);
+            StandardAddInServer.applyButton_Clicked = true;
         }
 
         private void AddAssembly_Load(object sender, EventArgs e)
@@ -78,7 +80,7 @@ namespace BxDFieldExporter
         private void CancelButton_onClick(object sender, FormClosedEventArgs e)
         {
             mAddInInterface.SetCancel(true);
-            Close();
+            mAddInInterface.SetRunOnce(false);
         }
 
         ///// <summary>

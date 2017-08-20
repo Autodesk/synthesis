@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
+    private Text enableTankDriveText;
 
     // Update is called once per frame
     void Update()
@@ -44,9 +45,7 @@ public class SettingsMode : MonoBehaviour
     public void OnLoadClick()
     {
         Controls.Load();
-
-        //Enable this for auto-saving. To complete auto-saving, enable the comments in KeyButton.cs > SetInput().
-        //UpdateAllText();
+        UpdateAllText();
     }
 
     /// <summary>
@@ -66,48 +65,82 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Enables tank drive.
+    /// </summary>
+    public void OnEnableTankDrive()
+    {
+        //TankDriveEnabled is true
+        if (!Controls.TankDriveEnabled)
+        {
+            Controls.TankDriveEnabled = true;
+            Controls.CheckForKeyRemoval = false;
+            Controls.SwitchControls();
+            Controls.Save();
+            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+            enableTankDriveText.text = "Switch Arcade Drive";
+        }
+        else
+        {
+            //TankDriveEnabled is false
+            Controls.TankDriveEnabled = false;
+            Controls.CheckForKeyRemoval = true;
+            Controls.SwitchControls();
+            Controls.Save();
+            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+            enableTankDriveText.text = "Switch Tank Drive";
+        }
+    }
+
+    void OnEnable()
+    {
+        if (GameObject.Find("SettingsMode") != null)
+        {
+            if (!Controls.TankDriveEnabled)
+            {
+                enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+                enableTankDriveText.text = "Switch Tank Drive";
+            }
+            else
+            {
+                enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+                enableTankDriveText.text = "Switch Arcade Drive";
+            }
+        }
+        
+    }
+
     #region Player Buttons
     public void OnPlayerOne()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOne();
     }
 
     public void OnPlayerTwo()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwoButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwo();
     }
 
     public void OnPlayerThree()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThreeButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThree();
     }
 
     public void OnPlayerFour()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFourButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFour();
     }
 
     public void OnPlayerFive()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFiveButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFive();
     }
 
     public void OnPlayerSix()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSixButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSix();
     }
     #endregion
-
-    public void OnTankToggle()
-    {
-        GameObject.Find("Content").GetComponent<CreateButton>().TankSlider();
-    }
 
     /// <summary>
     /// Updates all the key buttons.

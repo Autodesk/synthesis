@@ -558,14 +558,12 @@ namespace Assets.Scripts.FEA
         public override void End()
         {
             SelectedBody = null;
-            //(SimUI.changeAnalytics.ToString());
-            if (SimUI.changeAnalytics)
-            {
-                Analytics.CustomEvent("Replay Mode", new Dictionary<string, object>
+
+            Analytics.CustomEvent("Replay Mode", new Dictionary<string, object>
                 {
                     { "time", Time.time - tStart},
                 });
-            }
+
 
             foreach (Tracker t in trackers)
             {

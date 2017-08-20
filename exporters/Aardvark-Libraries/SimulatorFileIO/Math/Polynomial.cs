@@ -9,7 +9,7 @@ public class Polynomial : BinaryRWObject
 
     public Polynomial()
     {
-        coeff = new float[0];
+        this.coeff = new float[0];
     }
 
     /// <summary>

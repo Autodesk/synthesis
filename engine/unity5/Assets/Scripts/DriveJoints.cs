@@ -102,13 +102,16 @@ public class DriveJoints
         }
 
             pwm[4] +=
-                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Neg)) ? -SPEED_ARROW_PWM : 0f;
         Debug.Log("PWM 4: " + pwm[4].ToString());
             pwm[5] +=
-                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm5Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Neg)) ? -SPEED_ARROW_PWM : 0f;
 
-        pwm[6] +=
-                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
+            pwm[6] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
 
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
@@ -175,6 +178,8 @@ public class DriveJoints
     }
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
+        
+
         bool IsMecanum = mecanum;
         int reverse = -1;
 
@@ -193,71 +198,80 @@ public class DriveJoints
         }
 
         if (IsMecanum)
-        {   
+        {
             #region Mecanum Drive
             pwm[(int)MecanumPorts.FRONT_RIGHT] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * - SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) *  -SPEED_ARROW_PWM);
-
-            pwm[(int)MecanumPorts.FRONT_LEFT] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * -SPEED_ARROW_PWM);
-
-            //For some reason, giving the back wheels 0.25 power instead of 0.5 works for strafing
-            pwm[(int)MecanumPorts.BACK_RIGHT] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * -SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); // * SPEED_ARROW_PWM);
+            (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? reverse * SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].right) ? reverse * SPEED_ARROW_PWM : 0.0f) +
+            (Input.GetKey(KeyCode.O) ? reverse * SPEED_ARROW_PWM : 0.0f) + //Left Rotate
+            (Input.GetKey(KeyCode.P) ? reverse * -SPEED_ARROW_PWM : 0.0f); //Right Rotate
 
             pwm[(int)MecanumPorts.BACK_LEFT] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); //SPEED_ARROW_PWM);
+            (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f) +
+            (Input.GetKey(KeyCode.O) ? -SPEED_ARROW_PWM : 0.0f) + //Left Rotate
+            (Input.GetKey(KeyCode.P) ? SPEED_ARROW_PWM : 0.0f); //Right Rotate
 
-            pwm[4] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
+            pwm[(int)MecanumPorts.FRONT_LEFT] +=
+            (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].left) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].right) ? -SPEED_ARROW_PWM : 0.0f) +
+            (Input.GetKey(KeyCode.O) ? -SPEED_ARROW_PWM : 0.0f) + //Left Rotate
+            (Input.GetKey(KeyCode.P) ? SPEED_ARROW_PWM : 0.0f); //Right Rotate
 
-            pwm[5] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm5Axes) * SPEED_ARROW_PWM);
-
-            pwm[6] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
+            pwm[(int)MecanumPorts.BACK_RIGHT] +=
+            (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? reverse * SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].right) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
+            (Input.GetKey(KeyCode.O) ? reverse * SPEED_ARROW_PWM : 0.0f) + //Left Rotate
+            (Input.GetKey(KeyCode.P) ? reverse * -SPEED_ARROW_PWM : 0.0f); //Right Rotate
             #endregion
         }
 
         if (Controls.TankDriveEnabled)
         {
             #region Tank Drive
+            ////Left motor
             //pwm[0] +=
             //   (InputControl.GetButton(Controls.buttons[controlIndex].tankFrontLeft) ? SPEED_ARROW_PWM : 0.0f) +
             //   (InputControl.GetButton(Controls.buttons[controlIndex].tankBackLeft) ? -SPEED_ARROW_PWM : 0.0f);
 
+            ////Right motor
             //pwm[1] +=
             //   (InputControl.GetButton(Controls.buttons[controlIndex].tankFrontRight) ? -SPEED_ARROW_PWM : 0.0f) +
             //   (InputControl.GetButton(Controls.buttons[controlIndex].tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
 
             pwm[0] +=
-               (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxes) * SPEED_ARROW_PWM);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankLeftAxis) * SPEED_ARROW_PWM);
 
             pwm[1] +=
-               (InputControl.GetAxis(Controls.axes[controlIndex].tankLeftAxes) * SPEED_ARROW_PWM);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxis) * SPEED_ARROW_PWM);
 
             pwm[2] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[3] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm3Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm3Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm3Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[4] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[5] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm5Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[6] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
             #endregion
         }
         else
@@ -276,27 +290,32 @@ public class DriveJoints
             //    (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
 
             pwm[0] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
-
-            pwm[1] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
 
+            pwm[1] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+
             pwm[2] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[3] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm3Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm3Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm3Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[4] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[5] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm5Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[6] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
             #endregion
         }
 

@@ -13,7 +13,7 @@ namespace Assets.Scripts.BUExtensions
         private const float SuspensionToleranceCm = 5f;
         private const float SuspensionCompressionRatio = 10f;
         private const float SuspensionStiffnessRatio = 2000f;
-        private const float RollingFriction = 0.01f;
+        private const float RollingFriction = 0.0025f;
         private const int DefaultNumWheels = 4;
 
         private VehicleTuning vehicleTuning;
@@ -77,7 +77,7 @@ namespace Assets.Scripts.BUExtensions
                 radius, vehicleTuning, false);
 
             w.RollInfluence = 0.25f;
-            w.Brake = (RollingFriction / radius) * RaycastRobot.OverrideMass * BRaycastWheel.MassTorqueScalar;
+            w.Brake = RollingFriction / radius;
 
             return RaycastRobot.NumWheels - 1;
         }

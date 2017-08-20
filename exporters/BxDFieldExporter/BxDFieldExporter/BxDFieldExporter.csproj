@@ -203,6 +203,12 @@
     <EmbeddedResource Include="Forms\ComponentPropertiesForm.resx">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditCoordinate.resx">
+      <DependentUpon>EditCoordinate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EnterName.resx">
+      <DependentUpon>EnterName.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetPath.resx">
       <DependentUpon>GetPath.cs</DependentUpon>
     </EmbeddedResource>
@@ -275,9 +281,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FieldIcon16.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

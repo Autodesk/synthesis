@@ -37,7 +37,7 @@ namespace BxDFieldExporter {
 
                 internal Icon(System.Drawing.Icon icon)
                 {
-                    hicon = icon.ToBitmap().GetHicon();
+                    this.hicon = icon.ToBitmap().GetHicon();
                 }
             }
 
@@ -52,7 +52,7 @@ namespace BxDFieldExporter {
 
                 internal Bitmap(System.Drawing.Bitmap bitmap)
                 {
-                    hbitmap = bitmap.GetHbitmap();
+                    this.hbitmap = bitmap.GetHbitmap();
                 }
             }
         }

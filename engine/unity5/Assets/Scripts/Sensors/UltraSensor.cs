@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
+using Assets.Scripts.FSM;
 using UnityEngine.UI;
 
 /// <summary>
@@ -18,6 +19,7 @@ public class UltraSensor : SensorBase
     private UnityEngine.Vector3 offset = Vector3.zero; //offset from node in world coordinates
     private UnityEngine.Vector3 rotation = Vector3.forward; //rotation difference from the node rotation
     private bool isChangingRange;
+    private MainState main;
     private bool isMetric;
     //Initialization
     void Start()
@@ -41,7 +43,14 @@ public class UltraSensor : SensorBase
 
         //var as the type (lambda function)
         //these variables can only live INSIDE a function. 
-        if(main != null) isMetric = main.IsMetric;
+        if (main == null)
+        {
+            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+        }
+        else
+        {
+            isMetric = main.IsMetric;
+        }
         UpdateOutputDisplay();
         //Debug.Log(ReturnOutput());
     }
@@ -68,49 +77,42 @@ public class UltraSensor : SensorBase
         BulletSharp.Math.Vector3 colliderPosition = BulletSharp.Math.Vector3.Zero;
 
         float distanceToCollider = MaxRange;
-
-        if (main != null && main.IsMetric)
+        //Loop through all hit points and get the shortest distance, exclude the origin since it is also counted as a hit point
+        foreach (BulletSharp.Math.Vector3 pos in colliderPositions)
         {
-            distanceToCollider = MaxRange;
-            foreach (BulletSharp.Math.Vector3 pos in colliderPositions)
+            if ((pos - fromUltra).Length <= MaxRange && (pos - fromUltra).Length < distanceToCollider && !pos.Equals(BulletSharp.Math.Vector3.Zero))
             {
-                if ((pos - fromUltra).Length < MaxRange && !pos.Equals(BulletSharp.Math.Vector3.Zero))
-                {
-                    distanceToCollider = (pos - fromUltra).Length;
-                    colliderPosition = pos;
-                }
+                distanceToCollider = (pos - fromUltra).Length;
+                colliderPosition = pos;
             }
         }
-        else
-        {
-            distanceToCollider = AuxFunctions.ToFeet(MaxRange);
-            foreach (BulletSharp.Math.Vector3 pos in colliderPositions)
-            {
-                if (AuxFunctions.ToFeet((pos - fromUltra).Length) < distanceToCollider && !pos.Equals(BulletSharp.Math.Vector3.Zero))
-                {
-                    distanceToCollider = AuxFunctions.ToFeet((pos - fromUltra).Length);
-                    colliderPosition = pos;
-                }
-            }
-        }
-            
-            //Draw a line to view the ray action
-            //When the ray links to the middle of the field, it means the sensor is out of range
-            Debug.DrawLine(fromUltra.ToUnity(), colliderPosition.ToUnity(), Color.green, 5f);
 
-            return distanceToCollider;
+        //Draw a line to view the ray action
+        //When the ray links to the middle of the field, it means the sensor is out of range
+        Debug.DrawLine(fromUltra.ToUnity(), colliderPosition.ToUnity(), Color.green, 5f);
+
+        
+        //setting shortest distance of a collider to the maxRange, then if any colliders are closer to the sensor, 
+        //their distanceToCollider value becomes the new shortest distance
+        float shortestDistance = MaxRange;
+        if (!isMetric) distanceToCollider = AuxFunctions.ToFeet(distanceToCollider);
+        //A check that might be useful in the future if use a bundle of rays instead of a single ray
+        if (distanceToCollider < shortestDistance)
+        {
+            shortestDistance = distanceToCollider;
+        }
+        
+        return shortestDistance;
     }
 
-    public override void SetSensorRange(float distance, bool isEditing)
+    public override void SetSensorRange(float range)
     {
-        if (isEditing && !main.IsMetric) distance = AuxFunctions.ToMeter(distance);
-        MaxRange = distance;
+        MaxRange = range;
     }
 
     public override float GetSensorRange()
     {
-        if (main.IsMetric) return MaxRange;
-        else return AuxFunctions.ToFeet(MaxRange);
+        return MaxRange;
     }
 
     /// <summary>

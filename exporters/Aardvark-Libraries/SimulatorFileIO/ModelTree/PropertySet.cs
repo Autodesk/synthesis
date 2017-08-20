@@ -144,9 +144,9 @@ public struct PropertySet
     /// <param name="frictionValue"></param>
     public PropertySet(string physicsGroupID, PropertySetCollider collider, int friction, float mass = 0.0f)
     {
-        PropertySetID = physicsGroupID;
-        Collider = collider;
-        Friction = friction;
-        Mass = mass;
+        this.PropertySetID = physicsGroupID;
+        this.Collider = collider;
+        this.Friction = friction;
+        this.Mass = mass;
     }
 }

@@ -28,17 +28,17 @@ namespace BxDFieldExporter {
                 case 0: // Box
                     field.colliderType = ColliderType.Box;
                     selectedType = typeof(BoxColliderPropertiesForm);// sets the type to the correct form
-                    Height = 400;
+                    this.Height = 400;
                     break;
                 case 1: // Sphere
                     field.colliderType = ColliderType.Sphere;
                     selectedType = typeof(SphereColliderPropertiesForm);
-                    Height = 325;
+                    this.Height = 325;
                     break;
                 case 2: // Mesh
                     field.colliderType = ColliderType.Mesh;
                     selectedType = typeof(MeshColliderPropertiesForm);
-                    Height = 325;
+                    this.Height = 325;
                     break;
             }
 
@@ -140,7 +140,7 @@ namespace BxDFieldExporter {
         }
 
         private void btnSave_Click(object sender, EventArgs e) {
-            Close();
+            this.Close();
         }
 
         /// <summary>
@@ -153,12 +153,12 @@ namespace BxDFieldExporter {
         {
             if (keyData == Keys.Escape)
             {
-                Close();
+                this.Close();
 
             }
             else if (keyData == Keys.Enter)
             {
-                Close();
+                this.Close();
             }
 
             return base.ProcessCmdKey(ref msg, keyData);

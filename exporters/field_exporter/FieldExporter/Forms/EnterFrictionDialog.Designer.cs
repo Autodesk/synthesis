@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EnterFrictionDialog));
             this.frictionLabel = new System.Windows.Forms.Label();
             this.frictionNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.okButton = new System.Windows.Forms.Button();
@@ -41,7 +40,7 @@
             this.frictionLabel.AutoSize = true;
             this.frictionLabel.Location = new System.Drawing.Point(12, 14);
             this.frictionLabel.Name = "frictionLabel";
-            this.frictionLabel.Size = new System.Drawing.Size(44, 13);
+            this.frictionLabel.Size = new System.Drawing.Size(58, 17);
             this.frictionLabel.TabIndex = 0;
             this.frictionLabel.Text = "Friction:";
             // 
@@ -54,7 +53,7 @@
             0});
             this.frictionNumericUpDown.Location = new System.Drawing.Point(76, 12);
             this.frictionNumericUpDown.Name = "frictionNumericUpDown";
-            this.frictionNumericUpDown.Size = new System.Drawing.Size(257, 20);
+            this.frictionNumericUpDown.Size = new System.Drawing.Size(257, 22);
             this.frictionNumericUpDown.TabIndex = 1;
             // 
             // okButton
@@ -88,7 +87,6 @@
             this.Controls.Add(this.frictionNumericUpDown);
             this.Controls.Add(this.frictionLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EnterFrictionDialog";

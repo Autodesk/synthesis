@@ -4,7 +4,7 @@ using System.Collections;
 using System.IO;
 using System;
 using UnityEngine.SceneManagement;
-using Assets.Scripts;
+
 
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
 {
 
     //This refers to what tab the main menu is currently in.
-    public enum Tab { Main, Sim, Options, FieldDir, RobotDir, ErrorScreen };
+    public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
     public static bool isMixAndMatch = false;
@@ -38,14 +38,12 @@ public class MainMenu : MonoBehaviour
 
     //These are necessary references to specific UI parent objects.
     //We disable and enable these when the state of the main menu changes to reflect the user's selection.
-    private GameObject navigationPanel;
     private GameObject selectionPanel;
     private GameObject defaultSimulator;
     private GameObject mixAndMatchMode;
     private GameObject simLoadField;
     private GameObject simLoadRobot;
     private GameObject simLoadReplay;
-    private GameObject errorScreen;
 
     //We alter these to reflect the user's selected fields and robots.
     private GameObject simRobotSelectText;
@@ -60,7 +58,6 @@ public class MainMenu : MonoBehaviour
     private GameObject settingsMode; //The InputManager Objects
     //private GameObject tankMode;     //Tank Mode InputManager
     private Text enableTankDriveText; //Enable + Disable tank drive text
-    private Text errorText; // The text of the error message
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
@@ -142,30 +139,11 @@ public class MainMenu : MonoBehaviour
         {
             currentTab = Tab.Main;
 
-            errorScreen.SetActive(false);
             simTab.SetActive(false);
             optionsTab.SetActive(false);
-            navigationPanel.SetActive(true);
             homeTab.SetActive(true);
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
-    }
-
-    /// <summary>
-    /// Switches to the error screen and its respective UI elements.
-    /// </summary>
-    public void SwitchErrorScreen()
-    {
-        currentTab = Tab.ErrorScreen;
-
-        navigationPanel.SetActive(false);
-        homeTab.SetActive(false);
-        optionsTab.SetActive(false);
-        simTab.SetActive(false);
-        errorText.text = AppModel.ErrorMessage;
-        errorScreen.SetActive(true);
-
-        AppModel.ClearError();
     }
 
     /// <summary>
@@ -686,11 +664,7 @@ public class MainMenu : MonoBehaviour
         //This makes it so that if the user exits from the simulator, 
         //they are put into the panel where they can select a robot/field
         //In all other cases, users are welcomed with the main menu screen.
-        if (!string.IsNullOrEmpty(AppModel.ErrorMessage))
-        {
-            SwitchErrorScreen();
-        }
-        else if (currentSim == Sim.DefaultSimulator)
+        if (currentSim == Sim.DefaultSimulator)
         {
             SwitchTabSim();
             SwitchSimSelection();
@@ -701,6 +675,8 @@ public class MainMenu : MonoBehaviour
             SwitchSimSelection();
             SwitchTabHome();
         }
+
+
     }
 
     /// <summary>
@@ -710,7 +686,6 @@ public class MainMenu : MonoBehaviour
     {
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
-        navigationPanel = AuxFunctions.FindObject(gameObject, "NavigationPanel");
         selectionPanel = AuxFunctions.FindObject(gameObject, "SelectionPanel"); //The Mode Selection Tab GUI Objects
         defaultSimulator = AuxFunctions.FindObject(gameObject, "DefaultSimulator");
         mixAndMatchMode = AuxFunctions.FindObject(gameObject, "MixAndMatchMode");
@@ -718,14 +693,12 @@ public class MainMenu : MonoBehaviour
         simLoadRobot = AuxFunctions.FindObject(gameObject, "SimLoadRobot");
         simLoadReplay = AuxFunctions.FindObject(gameObject, "SimLoadReplay");
         splashScreen = AuxFunctions.FindObject(gameObject, "LoadSplash");
-        errorScreen = AuxFunctions.FindObject(gameObject, "ErrorScreen");
 
         graphics = AuxFunctions.FindObject(gameObject, "Graphics");
         input = AuxFunctions.FindObject(gameObject, "Input");
 
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
         enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-        errorText = AuxFunctions.FindObject(errorScreen, "ErrorText").GetComponent<Text>();
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");

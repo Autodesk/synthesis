@@ -39,6 +39,7 @@
             // 
             this.assemblyListBox.FormattingEnabled = true;
             this.assemblyListBox.IntegralHeight = false;
+            this.assemblyListBox.ItemHeight = 16;
             this.assemblyListBox.Location = new System.Drawing.Point(12, 29);
             this.assemblyListBox.Name = "assemblyListBox";
             this.assemblyListBox.Size = new System.Drawing.Size(214, 132);
@@ -50,7 +51,7 @@
             this.assemblySelectLabel.AutoSize = true;
             this.assemblySelectLabel.Location = new System.Drawing.Point(12, 9);
             this.assemblySelectLabel.Name = "assemblySelectLabel";
-            this.assemblySelectLabel.Size = new System.Drawing.Size(118, 13);
+            this.assemblySelectLabel.Size = new System.Drawing.Size(157, 17);
             this.assemblySelectLabel.TabIndex = 1;
             this.assemblySelectLabel.Text = "Select a field Assembly:";
             // 

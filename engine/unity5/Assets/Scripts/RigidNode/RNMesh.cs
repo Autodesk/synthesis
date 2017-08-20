@@ -12,16 +12,11 @@ public partial class RigidNode : RigidNode_Base
 {
     public bool CreateMesh(string filePath)
     {
-        Debug.Log(filePath);
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(filePath);
 
-        //if (!mesh.GUID.Equals(GUID))
-        //{
-        //    Debug.Log("Returning false");
-        //    return false;
-        //}
-
+        if (!mesh.GUID.Equals(GUID))
+            return false;
 
         List<GameObject> meshObjects = new List<GameObject>();
 
@@ -42,13 +37,9 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.position = root.position;
             meshObject.transform.rotation = root.rotation;
 
-            Debug.Log("Mesh Objects count " + meshObjects.Count);
+            ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
 
         }, true);
-
-        Vector3 com = mesh.physics.centerOfMass.AsV3();
-        com.x *= -1;
-        ComOffset = com;
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];
 
@@ -74,10 +65,7 @@ public partial class RigidNode : RigidNode_Base
                 hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
             }
 
-            MainObject.AddComponent<MeshRenderer>();
-
             PhysicalProperties = mesh.physics;
-            Debug.Log(PhysicalProperties.centerOfMass);
 
             BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
             rigidBody.mass = mesh.physics.mass;

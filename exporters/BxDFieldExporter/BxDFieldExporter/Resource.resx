@@ -152,7 +152,7 @@
     <value>Images\ChangeSpawnLocation32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ComponentBrowserNode16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\ComponentBrowserNode16 (2).bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\ComponentBrowserNode16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="EditType16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Images\EditType16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

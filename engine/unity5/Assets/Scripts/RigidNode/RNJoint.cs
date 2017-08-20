@@ -57,7 +57,6 @@ public partial class RigidNode : RigidNode_Base
 
                     BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
                     Vector3 rAxis = rNode.axis.AsV3().normalized;
-                    rAxis.x *= -1f;
 
                     hc.axisInA = rAxis;
                     hc.axisInB = rAxis;

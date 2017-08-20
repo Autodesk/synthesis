@@ -21,23 +21,6 @@ namespace Assets.Scripts.BUExtensions
         private const float VerticalOffset = 0.1f;
         private const float SimTorque = 2.42f;
 
-        public const float MassTorqueScalar = 0.05f;
-
-        /// <summary>
-        /// Sets or gets the radius of the wheel.
-        /// </summary>
-        public float Radius
-        {
-            get
-            {
-                return robot.RaycastRobot.GetWheelInfo(wheelIndex).WheelsRadius;
-            }
-            set
-            {
-                robot.RaycastRobot.GetWheelInfo(wheelIndex).WheelsRadius = value;
-            }
-        }
-
         /// <summary>
         /// Creates a wheel and attaches it to the parent BRaycastVehicle.
         /// </summary>
@@ -79,7 +62,7 @@ namespace Assets.Scripts.BUExtensions
         /// <param name="force"></param>
         public void ApplyForce(float force)
         {
-            robot.RaycastRobot.ApplyEngineForce(-force * (SimTorque / radius) * robot.RaycastRobot.OverrideMass * MassTorqueScalar, wheelIndex);
+            robot.RaycastRobot.ApplyEngineForce(-force * (SimTorque / radius), wheelIndex);
         }
 
         /// <summary>

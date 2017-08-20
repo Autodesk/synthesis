@@ -11,7 +11,6 @@ public class UnityFieldDefinition : FieldDefinition
     public GameObject unityObject;
     //private const float COLLISION_MARGIN = 0.1f;
     private const float FRICTION_SCALE = 0.02f;
-    private const float ROLLING_FRICTION_SCALE = 0.0025f;
 
     public UnityFieldDefinition(Guid guid, string name)
         : base(guid, name)
@@ -154,7 +153,6 @@ public class UnityFieldDefinition : FieldDefinition
 
                 BRigidBody rb = subObject.AddComponent<BRigidBody>();
                 rb.friction = currentPropertySet.Friction * FRICTION_SCALE;
-                rb.rollingFriction = currentPropertySet.Friction * ROLLING_FRICTION_SCALE;
                 rb.mass = currentPropertySet.Mass;
 
                 if (currentPropertySet.Mass == 0)

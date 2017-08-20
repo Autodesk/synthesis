@@ -235,11 +235,11 @@ class RobotCameraGUI : MonoBehaviour
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, robotCameraManager.CurrentCamera));
             //Update the node where current camera is attached to
             cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
-            configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "End Configuration";
         }
         else
         {
-            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
             ResetConfigurationWindow();
             dynamicCamera.SwitchToState(preConfigCamState);
         }

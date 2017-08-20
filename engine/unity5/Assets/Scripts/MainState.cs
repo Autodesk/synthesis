@@ -11,8 +11,6 @@ using Assets.Scripts.FEA;
 using Assets.Scripts.FSM;
 using System.Linq;
 using Assets.Scripts.BUExtensions;
-using Assets.Scripts;
-using UnityEngine.UI;
 
 /// <summary>
 /// This is the main class of the simulator; it handles all the initialization of robot and field objects within the simulator.
@@ -44,10 +42,17 @@ public class MainState : SimState
 
     private SensorManager sensorManager;
     private SensorManagerGUI sensorManagerGUI;
+    //Testing camera location, can be deleted later
+    private Vector3 robotCameraPosition = new Vector3(0f, 0.5f, 0f);
+    private Vector3 robotCameraRotation = new Vector3(0f, 0f, 0f);
+    private Vector3 robotCameraPosition2 = new Vector3(0f, 0f, 0f);
+    private Vector3 robotCameraRotation2 = new Vector3(0f, 0f, 0f);
+    private Vector3 robotCameraPosition3 = new Vector3(0f, 0.5f, 0f);
+    private Vector3 robotCameraRotation3 = new Vector3(0f, 180f, 0f);
+    //Testing camera location, can be deleted later
 
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
-   
 
     public bool IsResetting;
     private const float HOLD_TIME = 0.8f;
@@ -84,8 +89,6 @@ public class MainState : SimState
     /// </summary>
     public override void Start()
     {
-        AppModel.ClearError();
-
         //getting bullet physics information
         physicsWorld = BPhysicsWorld.Get();
         ((DynamicsWorld)physicsWorld.world).SetInternalTickCallback(BPhysicsTickListener.Instance.PhysicsTick);
@@ -100,7 +103,7 @@ public class MainState : SimState
         //starts a new instance of unity packet which receives packets from the driver station
         unityPacket = new UnityPacket();
         unityPacket.Start();
-        
+
         //loads all the controls
         Controls.Load();
 
@@ -112,18 +115,8 @@ public class MainState : SimState
         if (string.IsNullOrEmpty(selectedReplay))
         {
             Tracking = true;
-            
-            if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
-            {
-                AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
-                return;
-            }
-
-            if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot")))
-            {
-                AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
-                return;
-            }
+            Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
+            Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
             int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); // 0 is false, 1 is true
             int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
@@ -154,11 +147,6 @@ public class MainState : SimState
     /// </summary>
     public override void Update()
     {
-        if (activeRobot == null)
-        {
-            AppModel.ErrorToMenu("Robot instance not valid.");
-            return;
-        }
 
         //If the reset button is held down after a certain amount of time, then go into change spawnpoint mode (reset spawnpoint feature)
         //Otherwise, reset the robot normally (quick reset feature)
@@ -189,11 +177,6 @@ public class MainState : SimState
     {
         //This line is essential for the reset to work accurately
         //robotCameraObject.transform.position = activeRobot.transform.GetChild(0).transform.position;
-        if (activeRobot == null)
-        {
-            AppModel.ErrorToMenu("Robot instance not valid.");
-            return;
-        }
 
         SendRobotPackets();
     }
@@ -225,9 +208,6 @@ public class MainState : SimState
         {
             return new UnityFieldDefinition(guid, name);
         };
-
-        if (!File.Exists(directory + "\\definition.bxdf"))
-            return false;
 
         string loadResult;
         fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
@@ -364,10 +344,6 @@ public class MainState : SimState
 
 
     #region Replay Functions
-    /// <summary>
-    /// Loads the replay from the given replay file name.
-    /// </summary>
-    /// <param name="name"></param>
     void LoadReplay(string name)
     {
         List<FixedQueue<StateDescriptor>> fieldStates;
@@ -379,19 +355,11 @@ public class MainState : SimState
 
         ReplayImporter.Read(name, out fieldDirectory, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
-        if (!LoadField(fieldDirectory))
-        {
-            AppModel.ErrorToMenu("Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
-            return;
-        }
+        LoadField(fieldDirectory);
 
         foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> rs in robotStates)
         {
-            if (!LoadRobot(rs.Key))
-            {
-                AppModel.ErrorToMenu("Could not load robot: " + rs.Key + "\nHas it been moved or deleted?");
-                return;
-            }
+            LoadRobot(rs.Key);
 
             int j = 0;
 
@@ -503,6 +471,15 @@ public class MainState : SimState
         return false;
     }
 
+    public void StartReplay()
+    {
+        if (!activeRobot.IsResetting)
+        {
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
+        }
+    }
+
     /// <summary>
     /// Resumes the normal simulation and exits the replay mode, showing all UI elements again
     /// </summary>
@@ -551,7 +528,6 @@ public class MainState : SimState
     public void BeginRobotReset()
     {
         activeRobot.BeginReset();
-        
     }
 
     /// <summary>
@@ -608,13 +584,6 @@ public class MainState : SimState
         activeRobot.SaveRobotOrientation();
     }
 
-    /// <summary>
-    /// Cancels the active robot's unsaved orientation changes
-    /// </summary>
-    public void CancelRobotOrientation()
-    {
-        activeRobot.CancelRobotOrientation();
-    }
     /// <summary>
     /// Sends the received packets to the active robot
     /// </summary>

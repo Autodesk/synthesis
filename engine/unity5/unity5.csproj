@@ -17,8 +17,7 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -76,9 +75,6 @@
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>Assets\Scripts\SimulatorAPI.dll</HintPath>
@@ -206,8 +202,6 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyRope.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
-    <Compile Include="Assets\Scripts\AppModel.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BBallSocketConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiCallbacks.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
@@ -235,7 +229,6 @@
     <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
     <Compile Include="Assets\Scripts\FSM\SimState.cs" />
     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
-    <Compile Include="Assets\Scripts\GodMode.cs" />
     <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
@@ -276,7 +269,6 @@
     <Compile Include="Assets\Scripts\InputControl\Inputs\KeyboardInput.cs" />
     <Compile Include="Assets\Scripts\InputControl\Inputs\MouseInput.cs" />
     <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Player.cs" />
     <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
