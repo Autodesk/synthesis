@@ -33,7 +33,7 @@ public struct ScoreEvent
     /// <returns>A line of CSV.</returns>
     public string ToCSV()
     {
-        return timeStamp.ToString() + "," + pointValue.ToString() + "," + description.ToString();
+        return timeStamp.ToString() + ",\"" + description.ToString() + "\"," + pointValue.ToString();
     }
 }
 
@@ -177,7 +177,7 @@ public class Scoreboard : MonoBehaviour
             if (newFile)
                 writer.WriteLine("\"Time\",\"Event Type\",\"Details\"");
 
-            writer.WriteLine("0,\"New Game\"");
+            writer.WriteLine("0,\"New Session\"");
 
             string fieldName = new DirectoryInfo(PlayerPrefs.GetString("simSelectedField")).Name;
             writer.WriteLine("0,\"Field\",\"" + fieldName + "\"");
@@ -209,7 +209,7 @@ public class Scoreboard : MonoBehaviour
                 writer.WriteLine(lastTime.ToString() + ",\"Game End\"");
 
             writer.WriteLine(lastTime.ToString() + ",\"Total Score\"," + GetScoreTotal().ToString());
-            writer.WriteLine(lastTime.ToString() + ",\"End Game\"");
+            writer.WriteLine(lastTime.ToString() + ",\"End Session\"");
 
             writer.Close();
         }
