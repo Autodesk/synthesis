@@ -16,6 +16,7 @@ public class ChaseSynthBehaviour : BaseSynthBehaviour
     {
         this.player = main.activeRobot.transform.GetChild(0).GetComponentInChildren<Transform>();
         this.driveNow = true;
+        Debug.Log("Chase behaviour initialized");
         return true;
     }
 

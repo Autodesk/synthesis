@@ -171,9 +171,10 @@ public class SimUI : MonoBehaviour
 
     public void SpawnAIRobot()
     {
-        GameObject panel = GameObject.Find("AIRobotListPanel");
-        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
-        if (!main.LoadAIRobot(directory))
+        GameObject robotPanel = GameObject.Find("AIRobotListPanel");
+        GameObject behaviourPanel = GameObject.Find("BehaviourPanel");
+        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + robotPanel.GetComponent<ChangeRobotScrollable>().selectedEntry;
+        if (!main.LoadAIRobot(directory, behaviourPanel.GetComponent<ChangeBehaviourScrollable>().GetSelectedBehaviour()))
         {
             UserMessageManager.Dispatch("Robot not spawned!", 5);
         }

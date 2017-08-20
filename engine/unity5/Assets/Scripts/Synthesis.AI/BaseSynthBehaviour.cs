@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 using BulletUnity;
+using System;
+
 [RequireComponent(typeof(IControllable))]
-public abstract class BaseSynthBehaviour : MonoBehaviour
+// We make this an IComparable so we can sort them by name in our ChangeBehaviourScrollable class
+public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthBehaviour>
 {
     private static readonly float STUCK_TIME = 2.25f;
     private static readonly float BACKUP_TIME = 1.25f;
     protected bool driveNow = false; // A switch to turn on and off automatic robot steering towards next point.
                                      // Can be set to false if robot should not be controlling its driving.
-    protected IControllable robot;
+    protected IControllable robot; // Reference to robot. Used to manipulate robot.
     protected UnityEngine.AI.NavMeshAgent agent;
     protected Vector3 LastPosition; // Used to calculate current velocity
     protected float curVelocity;
@@ -16,6 +19,8 @@ public abstract class BaseSynthBehaviour : MonoBehaviour
     void Start()
     {
         this.robot = GetComponent<IControllable>();
+
+        // Setup NavMesh agent to pathfind in front of robot, avoiding obstacles.
         this.agent = new GameObject("AIPathfindingAgent").AddComponent<UnityEngine.AI.NavMeshAgent>();
         this.agent.transform.parent = this.transform;
         UnityEngine.AI.NavMeshHit hit;
@@ -23,10 +28,11 @@ public abstract class BaseSynthBehaviour : MonoBehaviour
         this.agent.Warp(hit.position);
         LastPosition = this.robot.GetPosition();
         this.agent.speed = 0f;
+
         StartCoroutine(this.UpdateAI());
     }
 
-    // AI Logic updates happen every quarter second
+    // AI Logic updates happen every quarter second -- this keeps our process lightweight.
     private IEnumerator UpdateAI()
     {
         while (true)
@@ -53,15 +59,16 @@ public abstract class BaseSynthBehaviour : MonoBehaviour
     /// <returns>The name of this behaviour.</returns>
     public override abstract string ToString();
 
-    // This is a default updating behaviour for simple behaviours. More complicated behaviours may override this method.
-    // Uses FixedUpdate to get accurate velocity readings for simple 
+    // This is a default steering behaviour for simple behaviours. More complicated behaviours may override this method.
+    // Uses FixedUpdate to get accurate velocity readings
     protected virtual void FixedUpdate()
     {
         if (driveNow)
         {
             Vector3 robotPosition = robot.GetPosition();
             Vector3 targetPosition = this.agent.transform.position;
-            curVelocity = Vector3.Dot((robotPosition - LastPosition) / Time.fixedDeltaTime, robot.GetForward());
+            // Time.deltaTime returns correct fixed update time when used in FixedUpdate()
+            curVelocity = Vector3.Dot((robotPosition - LastPosition) / Time.deltaTime, robot.GetForward());
             // ######## NavAgent Logic ######## \\
             if (agent.hasPath)
             {
@@ -133,5 +140,10 @@ public abstract class BaseSynthBehaviour : MonoBehaviour
             driveNow = true;
             timeStuck = 0f;
         }
+    }
+
+    public int CompareTo(BaseSynthBehaviour other)
+    {
+        return String.Compare(other.ToString(), this.ToString());
     }
 }

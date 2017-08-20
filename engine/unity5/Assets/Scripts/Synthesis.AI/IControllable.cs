@@ -16,7 +16,7 @@ public interface IControllable
     void Accelerate(float acceleration);
 
     /// <summary>
-    /// Moves the robot's wheels to turn left or right
+    /// Moves the robot's wheels to turn left or right. Magnitude matters. Higher numbers will turn sharper.
     /// </summary>
     /// <param name="direction">A number from -1 to 1, to turn by. -1 is Left, 1 is Right</param>
     void Turn(float direction);

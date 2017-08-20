@@ -258,11 +258,11 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory">robot directory</param>
     /// <returns>whether the process was successful</returns>
-    public bool LoadAIRobot(string directory)
+    public bool LoadAIRobot(string directory, BaseSynthBehaviour chosenBehaviour)
     {
         if (SpawnedRobots.Count < MAX_ROBOTS)
         {
-            AIRobot robot = SynthAIManager.SpawnRobot(directory);
+            AIRobot robot = SynthAIManager.SpawnRobot(directory, chosenBehaviour);
             if(robot == null)
             {
                 return false;
