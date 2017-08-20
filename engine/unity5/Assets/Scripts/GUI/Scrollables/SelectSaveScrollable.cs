@@ -49,10 +49,5 @@ public class SelectSaveScrollable : ScrollablePanel
         base.OnGUI();
 
     }
-    public void confirmButtonOnClick()
-    {
-        string currentDir = selectedEntry;
-        Debug.Log("you chose:" + " " + currentDir);
-
-    }
+    
 }

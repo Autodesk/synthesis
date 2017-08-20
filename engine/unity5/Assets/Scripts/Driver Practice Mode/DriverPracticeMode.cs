@@ -79,6 +79,8 @@ public class DriverPracticeMode : MonoBehaviour {
     Text primaryCountText;
     Text secondaryCountText;
 
+    Text currentSaveFileText;
+
     GameObject lockPanel;
 
     public bool dpmWindowOn = false; //if the driver practice mode window is active
@@ -174,6 +176,8 @@ public class DriverPracticeMode : MonoBehaviour {
 
         releaseMechanismText = AuxFunctions.FindObject(canvas, "ReleaseMechanismText").GetComponent<Text>();
         intakeMechanismText = AuxFunctions.FindObject(canvas, "IntakeMechanismText").GetComponent<Text>();
+
+        currentSaveFileText = AuxFunctions.FindObject(canvas, "CurrentSaveFileText").GetComponent<Text>();
 
         defineIntakeWindow = AuxFunctions.FindObject(canvas, "DefineIntakePanel");
         defineReleaseWindow = AuxFunctions.FindObject(canvas, "DefineReleasePanel");
@@ -461,20 +465,18 @@ public class DriverPracticeMode : MonoBehaviour {
     }
     public void ChangeSave()
     {
-        GameObject panel = GameObject.Find("SaveListPanel");
+        GameObject saveListPanel = GameObject.Find("SaveListPanel");
+        GameObject setSavePanel = GameObject.Find("SetSavePanel");
 
-        string chosenSave = panel.GetComponent<SelectSaveScrollable>().selectedEntry;
+        string chosenSave = saveListPanel.GetComponent<SelectSaveScrollable>().selectedEntry;
         string directory = PlayerPrefs.GetString("SaveGameDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//GameSaves//" + chosenSave));
        
         if (directory != null)
         {
-            panel.SetActive(false);
-            //changeRobotPanel.SetActive(false);
-            //PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+            setSavePanel.SetActive(false);
             PlayerPrefs.SetString("simSelectedSave", directory);
-            Debug.Log("saved to" + directory);
-            //PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
-            //main.ChangeSave(directory);
+            currentSaveFileText.text = directory;
+            UserMessageManager.Dispatch("Changed Save File to: " + directory, 5);
         }
         else
         {
