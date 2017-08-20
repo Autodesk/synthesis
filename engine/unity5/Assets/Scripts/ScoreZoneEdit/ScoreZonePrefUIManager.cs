@@ -79,6 +79,11 @@ public class ScoreZonePrefUIManager : MonoBehaviour
 	    yValue.onEndEdit.AddListener(delegate { UpdateScale(); });
 	    zValue.onEndEdit.AddListener(delegate { UpdateScale(); });
 
+		xValue.contentType = InputField.ContentType.DecimalNumber;
+		yValue.contentType = InputField.ContentType.DecimalNumber;
+		zValue.contentType = InputField.ContentType.DecimalNumber;
+		ScoreInput.contentType = InputField.ContentType.DecimalNumber;
+
 		xAdd.onClick.AddListener (delegate
 		{
 			//xValue.text = (double.Parse(xValue.text, CultureInfo.InvariantCulture) + .1f).ToString();
