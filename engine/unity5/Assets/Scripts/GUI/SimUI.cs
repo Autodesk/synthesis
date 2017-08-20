@@ -6,7 +6,6 @@ using BulletUnity;
 using Assets.Scripts.FSM;
 using System.IO;
 using UnityEngine.SceneManagement;
-using UnityEngine.Analytics;
 
 /// <summary>
 /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
@@ -43,13 +42,10 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
-    GameObject unitConversionSwitch;
-
-    GameObject analyticsPanel;
+    GameObject unitConversionButton;
 
     GameObject mixAndMatchPanel;
 
-    public static bool changeAnalytics = true;
     public bool swapWindowOn = false; //if the swap window is active
     public bool wheelPanelOn = false; //if the wheel panel is active
     public bool driveBasePanelOn = false; //if the drive base panel is active
@@ -133,7 +129,7 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
-        unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
+        unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
@@ -141,14 +137,12 @@ public class SimUI : MonoBehaviour
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
         loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
 
-        analyticsPanel = AuxFunctions.FindObject(canvas, "AnalyticsPanel");
-
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
     }
-
+    
     private void UpdateWindows()
     {
         if (main != null)
@@ -156,16 +150,15 @@ public class SimUI : MonoBehaviour
         UpdateSpawnpointWindow();
         UpdateDriverStationPanel();
     }
-
+    
     #region change robot/field functions
 
-    public void SetIsMixAndMatch(bool isMixAndMatch)
+    public void SetIsMixAndMatch (bool isMixAndMatch)
     {
         if (isMixAndMatch)
         {
             PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
-        }
-        else
+        } else
         {
             PlayerPrefs.SetInt("mixAndMatch", 0);
         }
@@ -182,13 +175,6 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
             PlayerPrefs.Save();
-
-            if (changeAnalytics) //for analytics tracking
-            {
-                Analytics.CustomEvent("Changed Robot", new Dictionary<string, object>
-                {
-                });
-            }
 
             robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
             sensorManager.RemoveSensorsFromRobot(main.activeRobot);
@@ -223,10 +209,9 @@ public class SimUI : MonoBehaviour
         if (newRobotHasManipulator == 1) //0 is false, 1 is true
         {
             main.LoadManipulator(manipulatorDirectory, main.activeRobot.gameObject);
-        }
-        else
+        } else
         {
-            main.activeRobot.robotHasManipulator = 0;
+            main.activeRobot.robotHasManipulator = 0; 
         }
     }
 
@@ -258,27 +243,19 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
             PlayerPrefs.Save();
 
-            if (changeAnalytics) //for analytics tracking
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
+            if (isMixAndMatch == 1)
             {
-                Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
-                {
-                });
-
-                int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
-                if (isMixAndMatch == 1)
-                {
-                    SceneManager.LoadScene("MixAndMatch");
-                }
-                else
-                {
-                    SceneManager.LoadScene("Scene");
-                }
-
-            }
-            else
+                SceneManager.LoadScene("MixAndMatch");
+            } else
             {
-                UserMessageManager.Dispatch("Field directory not found!", 5);
+                SceneManager.LoadScene("Scene");
             }
+            
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Field directory not found!", 5);
         }
     }
 
@@ -295,7 +272,7 @@ public class SimUI : MonoBehaviour
         }
 
     }
-
+    
     #endregion
     #region camera button functions
     /// <summary>
@@ -304,7 +281,7 @@ public class SimUI : MonoBehaviour
     /// <param name="joe"></param>
     public void SwitchCameraView(int joe)
     {
-        //Debug.Log(joe);
+        Debug.Log(joe);
         switch (joe)
         {
             case 1:
@@ -312,17 +289,22 @@ public class SimUI : MonoBehaviour
                 DynamicCamera.MovingEnabled = true;
                 break;
             case 2:
-                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
+                camera.SwitchCameraState(new DynamicCamera.StandsState(camera));
                 DynamicCamera.MovingEnabled = true;
                 break;
             case 3:
-                camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
+                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
                 DynamicCamera.MovingEnabled = true;
                 break;
             case 4:
+                camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
+                DynamicCamera.MovingEnabled = true;
+                break;
+            case 5:
                 camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
                 DynamicCamera.MovingEnabled = true;
                 break;
+            
         }
     }
 
@@ -333,7 +315,9 @@ public class SimUI : MonoBehaviour
     {
         if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
             camera.GetComponent<Text>().text = "Driver Station";
-        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.StandsState)))
+            camera.GetComponent<Text>().text = "Stands";
+        else if(camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
             camera.GetComponent<Text>().text = "Freeroam";
         else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
             camera.GetComponent<Text>().text = "Orbit Robot";
@@ -375,7 +359,11 @@ public class SimUI : MonoBehaviour
     /// </summary>
     private void UpdateDriverStationPanel()
     {
-        driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+        //Use for both drive station and in stands
+        System.Type cameraType = camera.cameraState.GetType();
+        if(cameraType.Equals(typeof(DynamicCamera.DriverStationState)) || cameraType.Equals(typeof(DynamicCamera.StandsState)))
+            driverStationPanel.SetActive(true);
+        else driverStationPanel.SetActive(false);
     }
 
     /// <summary>
@@ -384,10 +372,30 @@ public class SimUI : MonoBehaviour
     public void ToggleDriverStation()
     {
         oppositeSide = !oppositeSide;
-        camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
+        if(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
+            camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
+        else if(camera.cameraState.GetType().Equals(typeof(DynamicCamera.StandsState)))
+            camera.SwitchCameraState(new DynamicCamera.StandsState(camera, oppositeSide));
     }
     #endregion
     #region orient button functions
+
+    public void ToggleOrientWindow()
+    {
+        if (isOrienting)
+        {
+            isOrienting = false;
+            main.EndRobotReset();
+        }
+        else
+        {
+            EndOtherProcesses();
+            isOrienting = true;
+            main.BeginRobotReset();
+        }
+        orientWindow.SetActive(isOrienting);
+    }
+
     public void OrientLeft()
     {
         main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
@@ -408,16 +416,20 @@ public class SimUI : MonoBehaviour
     public void DefaultOrientation()
     {
         main.ResetRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
     }
 
     public void SaveOrientation()
     {
         main.SaveRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
     }
 
-    public void CancelOrientation()
+    public void CloseOrientWindow()
     {
-        main.CancelRobotOrientation();
+        isOrienting = false;
+        orientWindow.SetActive(isOrienting);
+        main.EndRobotReset();
     }
 
     #endregion
@@ -446,27 +458,6 @@ public class SimUI : MonoBehaviour
     public void OpenTutorialLink()
     {
         Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
-        if (changeAnalytics) //for analytics tracking
-        {
-            Analytics.CustomEvent("Clicked Tutorial Link", new Dictionary<string, object>
-            {
-            });
-        }
-    }
-    /// <summary>
-    /// Activates analytics panel
-    /// </summary>
-    public void ToggleAnalyticsPanel()
-    {
-        if (analyticsPanel.activeSelf)
-        {
-            analyticsPanel.SetActive(false);
-        }
-        else
-        {
-            EndOtherProcesses();
-            analyticsPanel.SetActive(true);
-        }
     }
 
     /// <summary>
@@ -474,32 +465,31 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void ToggleUnitConversion()
     {
-        if (canvas != null)
+        main.IsMetric = !main.IsMetric;
+        if (main.IsMetric)
         {
-
-
-            unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
-            int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-            main.IsMetric = (i == 1 ? true : false);
+            unitConversionButton.GetComponentInChildren<Text>().text = "To Feet";
+        }
+        else
+        {
+            unitConversionButton.GetComponentInChildren<Text>().text = "To Meters";
         }
     }
 
     #endregion
     #region reset functions
     /// <summary>
-    /// Pop reset instructions when main is in reset spawnpoint mode, enable orient robot at the same time
+    /// Pop reset instructions when main is in reset spawnpoint mode
     /// </summary>
     private void UpdateSpawnpointWindow()
     {
         if (main.activeRobot.IsResetting)
         {
             spawnpointWindow.SetActive(true);
-            orientWindow.SetActive(true);
         }
         else
         {
             spawnpointWindow.SetActive(false);
-            orientWindow.SetActive(false);
         }
     }
 
@@ -558,9 +548,8 @@ public class SimUI : MonoBehaviour
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         mixAndMatchPanel.SetActive(false);
-        analyticsPanel.SetActive(false);
 
-        CancelOrientation();
+        CloseOrientWindow();
         main.IsResetting = false;
 
         dpm.EndProcesses();
@@ -568,13 +557,6 @@ public class SimUI : MonoBehaviour
         multiplayer.EndProcesses();
         sensorManagerGUI.EndProcesses();
         robotCameraGUI.EndProcesses();
-    }
-    /// <summary>
-    /// Toggle for analytics
-    /// </summary>
-    public void ToggleAnalytics(bool tAnalytics)
-    {
-        changeAnalytics = !changeAnalytics;
     }
 
     /// <summary>
