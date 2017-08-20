@@ -47,6 +47,7 @@ public class MixAndMatchMode : MonoBehaviour
     private GameObject noManipulator;
     private GameObject syntheClaw;
     private GameObject syntheShot;
+    private GameObject lift;
     [HideInInspector] public List<GameObject> manipulators;
     int selectedManipulator;
     public static bool hasManipulator = true;
@@ -56,6 +57,8 @@ public class MixAndMatchMode : MonoBehaviour
     private GameObject wheelLeftScroll;
     private GameObject driveBaseRightScroll;
     private GameObject driveBaseLeftScroll;
+    private GameObject manipulatorRightScroll;
+    private GameObject manipulatorLeftScroll;
     private GameObject presetRightScroll;
     private GameObject presetLeftScroll;
 #endregion
@@ -90,8 +93,6 @@ public class MixAndMatchMode : MonoBehaviour
         colsonWheel = GameObject.Find("ColsonWheel");
         omniWheel = GameObject.Find("OmniWheel");
         pneumaticWheel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PneumaticWheel")).First();
-
-
         //Put all the wheels in the wheels list
         wheels = new List<GameObject> { tractionWheel, colsonWheel, omniWheel, pneumaticWheel };
 
@@ -108,17 +109,20 @@ public class MixAndMatchMode : MonoBehaviour
         noManipulator = GameObject.Find("NoManipulator");
         syntheClaw = GameObject.Find("SyntheClaw");
         syntheShot = GameObject.Find("SyntheShot");
+        lift = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("Lift")).First();
         //Put all the manipulators in the manipulators list
-        manipulators = new List<GameObject> { noManipulator, syntheClaw, syntheShot };
+        manipulators = new List<GameObject> { noManipulator, syntheClaw, syntheShot, lift };
 
         //Find all the scroll buttons
         wheelRightScroll = GameObject.Find("WheelRightScroll");
-        wheelLeftScroll = GameObject.Find("WheelLeftScroll");
+        wheelLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("WheelLeftScroll")).First(); //GameObject.Find("WheelLeftScroll");
         driveBaseRightScroll = GameObject.Find("BaseRightScroll");
         driveBaseLeftScroll = GameObject.Find("BaseLeftScroll");
+        manipulatorRightScroll = GameObject.Find("ManipulatorRightScroll");
+        manipulatorLeftScroll = GameObject.Find("ManipulatorLeftScroll");
         presetRightScroll = GameObject.Find("PresetRightScroll");
         presetLeftScroll = GameObject.Find("PresetLeftScroll");
-
+        
         if (this.gameObject.name == "MixAndMatchModeScript")
         {
             this.gameObject.GetComponent<MaMScroller>().FindAllGameObjects();
@@ -135,6 +139,7 @@ public class MixAndMatchMode : MonoBehaviour
         {
             wheelLeftScroll.SetActive(false);
             driveBaseLeftScroll.SetActive(false);
+            manipulatorLeftScroll.SetActive(false);
             presetLeftScroll.SetActive(false);
             presetRightScroll.SetActive(false);
 
@@ -159,7 +164,8 @@ public class MixAndMatchMode : MonoBehaviour
             SelectManipulator(0);
 
             this.gameObject.GetComponent<MaMScroller>().ResetFirsts();
-
+            this.gameObject.GetComponent<MaMScroller>().FindAllGameObjects();
+            this.gameObject.GetComponent<MaMInfoText>().FindAllGameObjects();
             // Sets info panel to blank
             Text txt = infoText.GetComponent<Text>();
             txt.text = "";
@@ -174,8 +180,10 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
         PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
+        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
+        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(selectedWheel));
         PlayerPrefs.Save();
         isMixAndMatchMode = true;
         SceneManager.LoadScene("mixAndMatch");
@@ -221,8 +229,10 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
         PlayerPrefs.SetString("simSelectedRobot", baseDirectory);
         PlayerPrefs.SetString("simSelectedManipulator", manipulatorDirectory);
+        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
+        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(selectedWheel));
 
         GameObject stateMachine = GameObject.Find("StateMachine");
 
@@ -240,8 +250,10 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
         PlayerPrefs.SetString("simSelectedRobot", baseDirectory);
         PlayerPrefs.SetString("simSelectedManipulator", manipulatorDirectory);
+        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
+        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(selectedWheel));
         int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
         GameObject stateMachine = GameObject.Find("StateMachine");
 

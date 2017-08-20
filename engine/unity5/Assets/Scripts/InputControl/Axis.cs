@@ -1,6 +1,6 @@
 using UnityEngine;
 
-
+//Source: https://github.com/Gris87/InputControl
 
 /// <summary>
 /// <see cref="Axis"/> is a named handler for negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.

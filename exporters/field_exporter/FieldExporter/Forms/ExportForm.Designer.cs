@@ -37,6 +37,8 @@
             this.exportProgressBar = new System.Windows.Forms.ProgressBar();
             this.statusLabel = new System.Windows.Forms.Label();
             this.exporter = new System.ComponentModel.BackgroundWorker();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // browseButton
@@ -56,7 +58,7 @@
             this.filePathTextBox.Location = new System.Drawing.Point(192, 6);
             this.filePathTextBox.Name = "filePathTextBox";
             this.filePathTextBox.ReadOnly = true;
-            this.filePathTextBox.Size = new System.Drawing.Size(402, 22);
+            this.filePathTextBox.Size = new System.Drawing.Size(402, 20);
             this.filePathTextBox.TabIndex = 9;
             // 
             // exportLocationLabel
@@ -64,7 +66,7 @@
             this.exportLocationLabel.AutoSize = true;
             this.exportLocationLabel.Location = new System.Drawing.Point(6, 10);
             this.exportLocationLabel.Name = "exportLocationLabel";
-            this.exportLocationLabel.Size = new System.Drawing.Size(110, 17);
+            this.exportLocationLabel.Size = new System.Drawing.Size(84, 13);
             this.exportLocationLabel.TabIndex = 8;
             this.exportLocationLabel.Text = "Export Location:";
             // 
@@ -101,7 +103,7 @@
             this.statusLabel.AutoSize = true;
             this.statusLabel.Location = new System.Drawing.Point(143, 275);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(212, 17);
+            this.statusLabel.Size = new System.Drawing.Size(160, 13);
             this.statusLabel.TabIndex = 12;
             this.statusLabel.Text = "Please select an export location.";
             // 
@@ -113,13 +115,23 @@
             this.exporter.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.exporter_ProgressChanged);
             this.exporter.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.exporter_RunWorkerCompleted);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
+            this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
+            this.pictureBox1.Location = new System.Drawing.Point(9, 40);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(532, 221);
+            this.pictureBox1.TabIndex = 13;
+            this.pictureBox1.TabStop = false;
+            // 
             // ExportForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
-            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(582, 352);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.exportProgressBar);
             this.Controls.Add(this.browseButton);
@@ -128,9 +140,11 @@
             this.Controls.Add(this.exportButton);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExportForm";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Load += new System.EventHandler(this.ExportForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -146,5 +160,6 @@
         private System.Windows.Forms.ProgressBar exportProgressBar;
         private System.Windows.Forms.Label statusLabel;
         private System.ComponentModel.BackgroundWorker exporter;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

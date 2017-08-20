@@ -4,7 +4,8 @@ using UnityEngine;
 using BulletSharp;
 using BulletUnity;
 using UnityEngine.UI;
-
+using Assets.Scripts.FSM;
+using System;
 /// <summary>
 /// This is the template/parent class for all sensors within Synthesis.
 /// </summary>
@@ -18,7 +19,8 @@ public abstract class SensorBase : MonoBehaviour
     private static float positionSpeed = 0.5f;
     private static float rotationSpeed = 25;
     public bool IsVisible = true;
-    
+    protected bool IsMetric = false;
+    protected MainState main;
     public Robot Robot { get; set; }
 
     // Use this for initialization
@@ -30,7 +32,10 @@ public abstract class SensorBase : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(main == null)
+        {
+            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+        }
     }
 
     public abstract float ReturnOutput();
@@ -72,7 +77,7 @@ public abstract class SensorBase : MonoBehaviour
     /// Set the range of sensor
     /// </summary>
     /// <param name="range"></param>
-    public virtual void SetSensorRange(float range)
+    public virtual void SetSensorRange(float range, bool isEditing = false)
     {
 
     }
@@ -103,7 +108,7 @@ public abstract class SensorBase : MonoBehaviour
         if (outputPanel != null)
         {
             GameObject inputField = AuxFunctions.FindObject(outputPanel, "Entry");
-            inputField.GetComponent<InputField>().text = ReturnOutput().ToString();
+            inputField.GetComponent<InputField>().text = Math.Round(ReturnOutput(), 3).ToString();
         }
     }
 

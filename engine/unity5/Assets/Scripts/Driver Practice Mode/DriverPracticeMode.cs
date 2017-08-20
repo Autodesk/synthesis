@@ -135,8 +135,6 @@ public class DriverPracticeMode : MonoBehaviour {
 
         primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
         secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
-
-        lockPanel = AuxFunctions.FindObject(canvas, "DPMLockPanel");
     }
 
     /// <summary>
@@ -289,33 +287,6 @@ public class DriverPracticeMode : MonoBehaviour {
             dpmWindowOn = true;
         }
         dpmWindow.SetActive(dpmWindowOn);
-    }
-
-    /// <summary>
-    /// Sets the driver practice mode to either be enabled or disabled, depending on what state it was at before.
-    /// </summary>
-    public void DPMToggle()
-    {
-        if (!dpmRobot.modeEnabled)
-        {
-            dpmRobot.modeEnabled = true;
-            enableDPMText.text = "Disable Driver Practice Mode";
-            lockPanel.SetActive(false);
-
-        }
-        else
-        {
-            if (configuring) UserMessageManager.Dispatch("You must close the configuration window first!", 5);
-            else
-            {
-                enableDPMText.text = "Enable Driver Practice Mode";
-                dpmRobot.displayTrajectories[0] = false;
-                dpmRobot.displayTrajectories[1] = false;
-                dpmRobot.modeEnabled = false;
-                lockPanel.SetActive(true);
-            }
-
-        }
     }
 
     /// <summary>
@@ -613,18 +584,6 @@ public class DriverPracticeMode : MonoBehaviour {
         DriverPracticeRobot newRobot = mainState.SpawnedRobots[index].GetComponent<DriverPracticeRobot>();
         dpmRobot.displayTrajectories[0] = false;
         dpmRobot.displayTrajectories[1] = false;
-
-        if (newRobot.modeEnabled)
-        {
-            enableDPMText.text = "Disable Driver Practice Mode";
-            lockPanel.SetActive(false);
-
-        }
-        else
-        { 
-            enableDPMText.text = "Enable Driver Practice Mode";
-            lockPanel.SetActive(true);
-        }
 
         UpdateDPMValues();
         dpmRobot = newRobot;
