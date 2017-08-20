@@ -112,6 +112,9 @@ public class MainState : SimState
             Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
+            // Initiate AI after field is loaded
+            SynthAIManager.InitiateAI(SynthAIManager.Instance.FieldTag);
+
             int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
             if (isMixAndMatch == 1 && MixAndMatchMode.hasManipulator)
             {
@@ -209,8 +212,12 @@ public class MainState : SimState
 
         string loadResult;
         fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
-        Debug.Log(loadResult);
+        Debug.Log(loadResult);        
         fieldDefinition.CreateTransform(fieldObject.transform);
+
+        // Create tag for field so that it can be identified later
+        fieldDefinition.unityObject.tag = SynthAIManager.Instance.FieldTag;
+
         return fieldDefinition.CreateMesh(directory + "\\mesh.bxda");
     }
 
@@ -239,6 +246,29 @@ public class MainState : SimState
                 activeRobot = robot;
             }
 
+            robot.controlIndex = SpawnedRobots.Count;
+            SpawnedRobots.Add(robot);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Loads AI robot from a given directory
+    /// </summary>
+    /// <param name="directory">robot directory</param>
+    /// <returns>whether the process was successful</returns>
+    public bool LoadAIRobot(string directory)
+    {
+        if (SpawnedRobots.Count < MAX_ROBOTS)
+        {
+            AIRobot robot = SynthAIManager.SpawnRobot(directory);
+            if(robot == null)
+            {
+                return false;
+            }
+
+            // Set our control index
             robot.controlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
             return true;
@@ -517,10 +547,10 @@ public class MainState : SimState
     private void SendRobotPackets()
     {
         activeRobot.Packet = unityPacket.GetLastPacket();
-        foreach (Robot robot in SpawnedRobots)
+        /*foreach (Robot robot in SpawnedRobots)
         {
             if (robot != activeRobot) robot.Packet = new UnityPacket.OutputStatePacket();
-        }
+        }*/
     }
     #endregion
 }

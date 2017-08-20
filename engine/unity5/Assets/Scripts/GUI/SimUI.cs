@@ -36,6 +36,7 @@ public class SimUI : MonoBehaviour
     GameObject robotListPanel;
     GameObject changeFieldPanel;
     GameObject addRobotPanel;
+    GameObject AIPanel;
 
     GameObject driverStationPanel;
 
@@ -129,6 +130,7 @@ public class SimUI : MonoBehaviour
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
+        AIPanel = AuxFunctions.FindObject(canvas, "AI Panel");
         robotListPanel = AuxFunctions.FindObject(changeRobotPanel, "RobotListPanel");
 
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
@@ -166,6 +168,22 @@ public class SimUI : MonoBehaviour
     //{
     //    main.ResetRobot();
     //}
+
+    public void SpawnAIRobot()
+    {
+        GameObject panel = GameObject.Find("AIRobotListPanel");
+        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
+        if (!main.LoadAIRobot(directory))
+        {
+            UserMessageManager.Dispatch("Robot not spawned!", 5);
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Robot spawned successfully!", 5);
+        }
+
+    }
+
     public void ChangeRobot()
     {
         GameObject panel = GameObject.Find("RobotListPanel");
@@ -174,6 +192,7 @@ public class SimUI : MonoBehaviour
         {
             panel.SetActive(false);
             changeRobotPanel.SetActive(false);
+            AIPanel.SetActive(false);
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
@@ -275,6 +294,7 @@ public class SimUI : MonoBehaviour
     {
         changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(false);
+        AIPanel.SetActive(false);
         exitPanel.SetActive(false);
         CloseOrientWindow();
         main.IsResetting = false;
@@ -449,6 +469,44 @@ public class SimUI : MonoBehaviour
                 exitPanel.SetActive(false);
                 break;
         }
+    }
+
+    public void ToggleAIPanel()
+    {
+        if (AIPanel.activeSelf)
+        {
+            AIPanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            AIPanel.SetActive(true);
+        }
+    }
+
+    // Sets AI Spawn point to average of robot children's positions
+    public void SetAISpawnPoint()
+    {
+        Vector3 position = Vector3.zero;
+        Transform robot = main.activeRobot.transform;
+        if(robot != null)
+        {
+            foreach (Transform t in robot)
+            {
+                position += t.position;
+            }
+            position /= robot.childCount;
+        } else
+        {
+            Debug.Log("Current controlled robot does not exist -- did not set spawn point");
+        }
+
+        SynthAIManager.Instance.SpawnPoint = position;
+    }
+
+    public void ClearAIRobots()
+    {
+        SynthAIManager.ClearRobots();
     }
 
     /// <summary>

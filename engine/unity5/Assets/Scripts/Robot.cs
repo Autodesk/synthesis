@@ -62,11 +62,10 @@ public class Robot : MonoBehaviour
     }
 
     /// <summary>
-    /// Called once per frame to ensure all rigid bodie components are activated
+    /// Called once per frame to ensure all rigid body components are activated
     /// </summary>
     void Update()
-    {
-
+    {        
         BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
 
         if (!rigidBody.GetCollisionObject().IsActive)
@@ -107,7 +106,7 @@ public class Robot : MonoBehaviour
             int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0);
            
             int isManipulator = PlayerPrefs.GetInt("HasManipulator", 0); //0 is false, 1 is true
-            Debug.Log("Has Manipulator: " + isManipulator);
+            //Debug.Log("Has Manipulator: " + isManipulator);
             if (isManipulator == 1 && isMixAndMatch == 1)
             {
                 Debug.Log("should be moving manipulator!");

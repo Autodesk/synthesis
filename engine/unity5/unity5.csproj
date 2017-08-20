@@ -77,8 +77,14 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
+    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
+      <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions.Common">
+      <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Facebook.Unity.Settings">
+      <HintPath>Library\FacebookSDK\Facebook.Unity.Settings.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>Assets\Scripts\SimulatorAPI.dll</HintPath>
@@ -309,6 +315,16 @@
     <Compile Include="Assets\Scripts\Settings\Settings.cs" />
     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\IControllable.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\AIRobot.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\NavMeshComponents\Scripts\NavMeshLink.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\NavMeshComponents\Scripts\NavMeshModifier.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\NavMeshComponents\Scripts\NavMeshModifierVolume.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\NavMeshComponents\Scripts\NavMeshSurface.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\BaseSynthBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\SynthAIBehaviours\ChaseSynthBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\SynthAIManager.cs" />
+    <Compile Include="Assets\Scripts\Synthesis.AI\SynthAITag.cs" />
     <Compile Include="Assets\Scripts\Toolkit.cs" />
     <Compile Include="Assets\Scripts\UnityExtensions.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
