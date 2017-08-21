@@ -77,6 +77,13 @@ class SensorManagerGUI : MonoBehaviour
     //A list of all output panels instantiated
     private List<GameObject> sensorOutputPanels = new List<GameObject>();
 
+    /// <summary>
+    /// Link the sensor GUI to main state
+    /// </summary>
+    private void Awake()
+    {
+        StateMachine.Instance.LinkBehaviour<MainState>(this);
+    }
     private void Start()
     {
         FindElements();
