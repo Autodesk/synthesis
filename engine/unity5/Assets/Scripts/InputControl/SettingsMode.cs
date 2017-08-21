@@ -5,11 +5,44 @@ public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
 
+    //public Button button;
+    public Sprite Image1;
+    public Sprite Image2;
+
     // Update is called once per frame
     void Update()
     {
 
     }
+
+    public void UpdateButtonStyle(bool on)
+    {
+        if (on)
+        {
+            switch (InputControl.activePlayerIndex)
+            {
+                case 0:
+                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = Image2;
+                    break;
+                case 1:
+                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = Image2;
+                    break;
+            }
+        }
+        else
+        {
+            switch(InputControl.activePlayerIndex)
+            {
+                case 0:
+                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = Image1;
+                    break;
+                case 1:
+                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = Image1;
+                    break;
+            }
+        }
+    }
+
 
     /// <summary>
     /// Ignore mouse movement toggle.
@@ -68,12 +101,16 @@ public class SettingsMode : MonoBehaviour
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+
+        UpdateButtonStyle(true);
     }
 
     public void OnPlayerTwo()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwoButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+
+        UpdateButtonStyle(true);
     }
 
     public void OnPlayerThree()
