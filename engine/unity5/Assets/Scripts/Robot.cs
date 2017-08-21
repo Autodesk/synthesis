@@ -194,7 +194,7 @@ public class Robot : MonoBehaviour
         float collectiveMass = 0f;
 
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch");
-        if (isMixAndMatch == 1)
+        if (isMixAndMatch == 1 && !MixAndMatchMode.isMecanum)
         {
             //Load Node_0
             RigidNode node = (RigidNode)nodes[0];
@@ -328,8 +328,8 @@ public class Robot : MonoBehaviour
 
         foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
         {
-            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
-            r.RaycastRobot.FrictionEffectiveRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+            r.RaycastRobot.OverrideMass = collectiveMass;
+            r.RaycastRobot.RootRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
         }
 
         RotateRobot(robotStartOrientation);
@@ -461,7 +461,7 @@ public class Robot : MonoBehaviour
         {
             //Transform rotation along the horizontal plane
             Vector3 rotation = new Vector3(0f,
-                Input.GetKey(KeyCode.RightArrow) ? ResetVelocity : Input.GetKey(KeyCode.LeftArrow) ? -ResetVelocity : 0f,
+                Input.GetKey(KeyCode.D) ? ResetVelocity : Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
                 0f);
             if (!rotation.Equals(Vector3.zero))
                 RotateRobot(rotation);
@@ -471,9 +471,9 @@ public class Robot : MonoBehaviour
         {
             //Transform position
             Vector3 transposition = new Vector3(
-                Input.GetKey(KeyCode.RightArrow) ? ResetVelocity : Input.GetKey(KeyCode.LeftArrow) ? -ResetVelocity : 0f,
+                Input.GetKey(KeyCode.D) ? ResetVelocity : Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
                 0f,
-                Input.GetKey(KeyCode.UpArrow) ? ResetVelocity : Input.GetKey(KeyCode.DownArrow) ? -ResetVelocity : 0f);
+                Input.GetKey(KeyCode.W) ? ResetVelocity : Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f);
 
             if (!transposition.Equals(Vector3.zero))
                 TransposeRobot(transposition);
@@ -655,9 +655,15 @@ public class Robot : MonoBehaviour
     {
         robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
         robotStartOrientation.ToUnity();
-        EndReset();
     }
 
+    /// <summary>
+    /// Cancel current orientation changes
+    /// </summary>
+    public void CancelRobotOrientation()
+    {
+        EndReset();
+    }
     /// <summary>
     /// Returns the driver practice component of this robot
     /// </summary>
@@ -723,7 +729,7 @@ public class Robot : MonoBehaviour
         }
 
         foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
+            r.RaycastRobot.OverrideMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
         return true;
@@ -784,7 +790,7 @@ public class Robot : MonoBehaviour
         }
 
         foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
+            r.RaycastRobot.OverrideMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
         return true;

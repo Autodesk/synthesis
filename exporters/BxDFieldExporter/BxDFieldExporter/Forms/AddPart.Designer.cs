@@ -39,24 +39,26 @@
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(11, 86);
-            this.okButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.okButton.Location = new System.Drawing.Point(13, 86);
+            this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(70, 28);
+            this.okButton.Size = new System.Drawing.Size(79, 28);
             this.okButton.TabIndex = 0;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.OKButton_OnClick);
             this.okButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OKButton_OnClick);
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(89, 86);
-            this.cancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cancelButton.Location = new System.Drawing.Point(100, 86);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(76, 28);
+            this.cancelButton.Size = new System.Drawing.Size(79, 28);
             this.cancelButton.TabIndex = 1;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.CancelButton_onClick);
             this.cancelButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.CancelButton_onClick);
             // 
             // Label
@@ -74,7 +76,7 @@
             this.pictureBox1.Image = global::BxDFieldExporter.Resource.Pointer;
             this.pictureBox1.InitialImage = global::BxDFieldExporter.Resource.Pointer;
             this.pictureBox1.Location = new System.Drawing.Point(67, 31);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(32, 30);
             this.pictureBox1.TabIndex = 3;
@@ -82,9 +84,9 @@
             // 
             // ApplyButton
             // 
-            this.ApplyButton.Location = new System.Drawing.Point(172, 86);
+            this.ApplyButton.Location = new System.Drawing.Point(186, 86);
             this.ApplyButton.Name = "ApplyButton";
-            this.ApplyButton.Size = new System.Drawing.Size(69, 28);
+            this.ApplyButton.Size = new System.Drawing.Size(80, 28);
             this.ApplyButton.TabIndex = 4;
             this.ApplyButton.Text = "Apply";
             this.ApplyButton.UseVisualStyleBackColor = true;
@@ -94,17 +96,16 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(254, 137);
+            this.ClientSize = new System.Drawing.Size(272, 137);
             this.Controls.Add(this.ApplyButton);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.Label);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "AddPart";
             this.Text = "Add Part";
-            
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

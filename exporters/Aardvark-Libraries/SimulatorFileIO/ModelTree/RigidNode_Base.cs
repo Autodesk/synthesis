@@ -78,7 +78,7 @@ public class RigidNode_Base
         Children.Add(joint, child);
         child.parentConnection = joint;
         child.parent = this;
-        child.level = this.level + 1;
+        child.level = level + 1;
     }
 
     /// <summary>
