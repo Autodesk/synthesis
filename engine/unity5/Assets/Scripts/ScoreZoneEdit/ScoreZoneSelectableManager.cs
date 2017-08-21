@@ -232,8 +232,22 @@ public class ScoreZoneSelectableManager : MonoBehaviour
         }
     }
 
+<<<<<<< HEAD
     public void LoadMainLevel()
     {
         SceneManager.LoadScene("MainMenu");
     }
+=======
+	/*
+	public void IncrementScale(float val, string axis)
+	{
+		if (CurrentlySelected) {
+			float newScale = field.text
+		}
+	}
+	public void DeincrementScale(float val, string axis)
+	{
+	}
+*/
+>>>>>>> eba90960a72490835e7e4beecf682598f4707bd4
 }

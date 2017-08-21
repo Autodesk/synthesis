@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SocialPlatforms.Impl;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 struct MinMax
 {
@@ -17,7 +18,10 @@ struct MinMax
 
 public class ScoreZonePrefUIManager : MonoBehaviour
 {
-    public Slider xSlider, ySlider, zSlider;
+	public InputField xValue, yValue, zValue;
+
+	
+	public Button xAdd, xSubtract, yAdd, ySubtract, zAdd, zSubtract;
     private Text xMinT, xMaxT, yMinT, yMaxT, zMinT, zMaxT;
 
     public Toggle DestroyOnScoreToggle;
@@ -40,16 +44,6 @@ public class ScoreZonePrefUIManager : MonoBehaviour
     {
         scoreZoneSelectableManager = GameObject.Find("EditScoreZoneManager").GetComponent<ScoreZoneSelectableManager>();
 
-        // xSlider = transform.Find("xSize").gameObject.GetComponent<Slider>();
-	    
-
-        xMinT = xSlider.transform.Find("xMin").GetComponent<Text>();
-        xMaxT = xSlider.transform.Find("xMax").GetComponent<Text>();
-        yMinT = ySlider.transform.Find("yMin").GetComponent<Text>();
-        yMaxT = ySlider.transform.Find("yMax").GetComponent<Text>();
-        zMinT = zSlider.transform.Find("zMin").GetComponent<Text>();
-        zMaxT = zSlider.transform.Find("zMax").GetComponent<Text>();
-	    
         ScoreInput.onEndEdit.AddListener(delegate
         {
             float scoreVal;
@@ -74,7 +68,67 @@ public class ScoreZonePrefUIManager : MonoBehaviour
         {
             scoreZoneSelectableManager.SetReinstantationPref(InstantiateOnScoreToggle.isOn);
         });
+
+
+	    xValue.text = 1.ToString();
+	    yValue.text = 1.ToString();
+	    zValue.text = 1.ToString();
+	    
+	    
+	    xValue.onEndEdit.AddListener(delegate { UpdateScale(); });
+	    yValue.onEndEdit.AddListener(delegate { UpdateScale(); });
+	    zValue.onEndEdit.AddListener(delegate { UpdateScale(); });
+
+		xValue.contentType = InputField.ContentType.DecimalNumber;
+		yValue.contentType = InputField.ContentType.DecimalNumber;
+		zValue.contentType = InputField.ContentType.DecimalNumber;
+		ScoreInput.contentType = InputField.ContentType.DecimalNumber;
+
+		xAdd.onClick.AddListener (delegate
+		{
+			//xValue.text = (double.Parse(xValue.text, CultureInfo.InvariantCulture) + .1f).ToString();
+			xValue.text = (float.Parse(xValue.text) + .1F).ToString();
+			UpdateScale();
+		});
+
+		yAdd.onClick.AddListener (delegate
+		{
+			yValue.text = (float.Parse(yValue.text) + .1F).ToString();
+			UpdateScale();
+		});
+
+		zAdd.onClick.AddListener (delegate
+		{
+			zValue.text = (float.Parse(zValue.text) + .1F).ToString();
+			UpdateScale();
+		});
+
+		xSubtract.onClick.AddListener (delegate
+		{
+			xValue.text = (float.Parse(xValue.text) - .1F).ToString();
+			UpdateScale();
+		});
+
+		ySubtract.onClick.AddListener (delegate
+		{
+			yValue.text = (float.Parse(yValue.text) - .1F).ToString();
+			UpdateScale();
+		});
+
+		zSubtract.onClick.AddListener (delegate
+		{
+			zValue.text = (float.Parse(zValue.text) - .1F).ToString();
+			UpdateScale();
+		});
+
     }
+
+	void UpdateScale()
+	{
+		scoreZoneSelectableManager.SetScale(new Vector3(
+			float.Parse(xValue.text), float.Parse(yValue.text), float.Parse(zValue.text)
+		));
+	}
 	
     // Update is called once per frame
     void Update ()
@@ -88,23 +142,16 @@ public class ScoreZonePrefUIManager : MonoBehaviour
         UIEnableDisable();
     }
 
-    public void LoadPrefs(ScoreZoneSettingsContainer container)
+	public void LoadPrefs(ScoreZoneSettingsContainer container)
     {
-        calculateMinMax(container.Scale.x, ref xMM);
-        calculateMinMax(container.Scale.y, ref yMM);
-        calculateMinMax(container.Scale.z, ref zMM);
+        // calculateMinMax(container.Scale.x, ref xMM);
+        // calculateMinMax(container.Scale.y, ref yMM);
+        // calculateMinMax(container.Scale.z, ref zMM);
 
-        xSlider.value = 0.5f;
-        ySlider.value = 0.5f;
-        zSlider.value = 0.5f;
+		xValue.text = container.Scale.x.ToString();
+		yValue.text = container.Scale.y.ToString();
+		zValue.text = container.Scale.z.ToString();
 		
-        xMinT.text = xMM.min.ToString();
-        xMaxT.text = xMM.max.ToString();
-        yMinT.text = yMM.min.ToString();
-        yMaxT.text = yMM.max.ToString();
-        zMinT.text = zMM.min.ToString();
-        zMaxT.text = zMM.max.ToString();
-
         // Set button and score to correct values from object
         DestroyOnScoreToggle.isOn = container.DestroyGamePieceOnScore;
         InstantiateOnScoreToggle.isOn = container.ReinstantiateGamePieceOnScore;
@@ -123,23 +170,7 @@ public class ScoreZonePrefUIManager : MonoBehaviour
         calculateMinMax(currentlySelected.transform.localScale.x, ref xMM);
         calculateMinMax(currentlySelected.transform.localScale.y, ref yMM);
         calculateMinMax(currentlySelected.transform.localScale.z, ref zMM);
-
-        float xSliderVal = xSlider.value;
-        float ySliderVal = ySlider.value;
-        float zSliderVal = zSlider.value;
-
-        xSlider.value = 0.5f;
-        ySlider.value = 0.5f;
-        zSlider.value = 0.5f;
-	    
-
-        xSlider.minValue = xMM.min;
-        xSlider.maxValue = xMM.max;
-        ySlider.minValue = yMM.min;
-        ySlider.maxValue = yMM.max;
-        zSlider.minValue = zMM.min;
-        zSlider.maxValue = zMM.max;
-    	
+		    	
         // scoreZoneSelectableManager.SetScale(
         //  /    new Vector3(
         //  /	xSliderVal + currentlySelected.transform.localScale.x, 
@@ -147,14 +178,6 @@ public class ScoreZonePrefUIManager : MonoBehaviour
         //  /	zSliderVal + currentlySelected.transform.localScale.z)
         //  /);
 
-        xMinT.text = xSlider.minValue.ToString();
-        xMaxT.text = xSlider.maxValue.ToString();
-        yMinT.text = ySlider.minValue.ToString();
-        yMaxT.text = ySlider.maxValue.ToString();
-        zMinT.text = zSlider.minValue.ToString();
-        zMaxT.text = zSlider.maxValue.ToString();
-	    
-        xSlider.value = ySlider.value = zSlider.value = 0.5f;
     }
 
     public void OnPointerDown()
@@ -171,10 +194,17 @@ public class ScoreZonePrefUIManager : MonoBehaviour
     private void UIEnableDisable()
     {
         bool enable = (currentlySelected != null);
-		
-        xSlider.interactable = enable;
-        ySlider.interactable = enable;
-        zSlider.interactable = enable;
+
+		xValue.interactable = enable;
+		yValue.interactable = enable;
+		zValue.interactable = enable;
+		xAdd.interactable = enable;
+		xSubtract.interactable = enable;
+		yAdd.interactable = enable;
+		ySubtract.interactable = enable;
+		zAdd.interactable = enable;
+		zSubtract.interactable = enable;
+
         DestroyButton.interactable = enable;
         DestroyOnScoreToggle.interactable = enable;
         InstantiateOnScoreToggle.interactable = enable;
