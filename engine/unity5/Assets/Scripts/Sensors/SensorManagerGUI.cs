@@ -8,7 +8,6 @@ using Assets.Scripts.FSM;
 /// </summary>
 class SensorManagerGUI : MonoBehaviour
 {
-    SimUI simUI;
     Toolkit toolkit;
     GameObject canvas;
     SensorBase currentSensor;
@@ -18,7 +17,6 @@ class SensorManagerGUI : MonoBehaviour
     RobotCameraGUI robotCameraGUI;
     MainState main;
 
-    GameObject configureSensorButton;
     GameObject sensorOptionPanel;
     GameObject sensorTypePanel;
     GameObject cancelOptionButton;
@@ -116,14 +114,12 @@ class SensorManagerGUI : MonoBehaviour
     private void FindElements()
     {
         canvas = GameObject.Find("Canvas");
-        simUI = gameObject.GetComponent<SimUI>();
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         toolkit = GameObject.Find("StateMachine").GetComponent<Toolkit>();
 
         sensorOptionPanel = AuxFunctions.FindObject(canvas, "SensorOptionPanel");
         sensorTypePanel = AuxFunctions.FindObject(canvas, "SensorTypePanel");
-        configureSensorButton = AuxFunctions.FindObject(canvas, "ConfigureSensorButton");
 
         //For sensor option panel
         addSensorButton = AuxFunctions.FindObject(sensorOptionPanel, "AddNewSensor");
@@ -841,6 +837,7 @@ class SensorManagerGUI : MonoBehaviour
     }
     #endregion
 
+    #region Sensor Display
     /// <summary>
     /// Show all sensors temporarily
     /// </summary>
@@ -862,6 +859,8 @@ class SensorManagerGUI : MonoBehaviour
             sensor.GetComponent<SensorBase>().SyncVisibility();
         }
     }
+    #endregion
+
     /// <summary>
     /// Close all window related to adding/configuring sensor, also called in SimUI
     /// </summary>
@@ -879,9 +878,9 @@ class SensorManagerGUI : MonoBehaviour
         CancelTypeSelection();
         ResetConfigurationWindow();
         HideSensorOutput();
-        //configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         selectedNode = null;
 
+        //Switch back to the original camera state
         if (preConfigState != null)
         {
             dynamicCamera.SwitchToState(preConfigState);

@@ -83,7 +83,7 @@ public class DriverPracticeMode : MonoBehaviour {
         }
         else if (dpmRobot == null)
         {
-            dpmRobot = mainState.activeRobot.GetDriverPractice();
+            dpmRobot = mainState.ActiveRobot.GetDriverPractice();
             FindElements();
         }
         else
@@ -104,7 +104,7 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
 
-        enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
+        //enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
 
         primaryGamepieceText = AuxFunctions.FindObject(canvas, "PrimaryGamepieceText").GetComponent<Text>();
         secondaryGamepieceText = AuxFunctions.FindObject(canvas, "SecondaryGamepieceText").GetComponent<Text>();
@@ -533,7 +533,7 @@ public class DriverPracticeMode : MonoBehaviour {
         {
             if (Input.GetKeyDown(vKey))
             {
-                int index = mainState.activeRobot.controlIndex;
+                int index = mainState.ActiveRobot.controlIndex;
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)

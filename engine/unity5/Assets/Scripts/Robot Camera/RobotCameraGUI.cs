@@ -14,7 +14,6 @@ class RobotCameraGUI : MonoBehaviour
     DynamicCamera.CameraState preConfigCamState;
     GameObject robotCameraListObject;
     RobotCameraManager robotCameraManager;
-    SimUI simUI;
     SensorManagerGUI sensorManagerGUI;
 
     //Angle panel
@@ -36,7 +35,6 @@ class RobotCameraGUI : MonoBehaviour
 
     //The indicator object is originally under robot camera list in unity scene
     public GameObject CameraIndicator;
-    GameObject robotCameraIndicator;
     GameObject showCameraButton;
 
     //Camera configuration
@@ -77,7 +75,7 @@ class RobotCameraGUI : MonoBehaviour
         if (main == null)
         {
             main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
-            dynamicCamera = main.dynamicCameraObject.GetComponent<DynamicCamera>();
+            dynamicCamera = main.DynamicCameraObject.GetComponent<DynamicCamera>();
         }
         //Update gui about robot camera once main and dynamic camera is ready
         else if (main != null && dynamicCamera != null)
@@ -98,7 +96,6 @@ class RobotCameraGUI : MonoBehaviour
     public void FindGUIElements()
     {
         canvas = GameObject.Find("Canvas");
-        simUI = GameObject.Find("StateMachine").GetComponent<SimUI>();
         sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
 
         //For robot camera view window
@@ -148,7 +145,7 @@ class RobotCameraGUI : MonoBehaviour
     private void UpdateCameraWindow()
     {
         //Can use robot view when dynamicCamera is active
-        if (usingRobotView && main.dynamicCameraObject.activeSelf)
+        if (usingRobotView && main.DynamicCameraObject.activeSelf)
         {
             //Make sure there is camera on robot
             if (robotCameraManager.CurrentCamera != null)
@@ -166,7 +163,7 @@ class RobotCameraGUI : MonoBehaviour
             }
         }
         //Don't allow using robot view window when users are currently using one of the robot view
-        else if (usingRobotView && !main.dynamicCameraObject.activeSelf)
+        else if (usingRobotView && !main.DynamicCameraObject.activeSelf)
         {
             UserMessageManager.Dispatch("You can only use robot view window when you are not in robot view mode!", 2f);
             usingRobotView = false;
