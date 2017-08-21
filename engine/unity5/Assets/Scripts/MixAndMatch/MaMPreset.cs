@@ -5,10 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public class MaMPreset {
 
-    string name = "Default";
-    int wheelIndex = 0;
-    int driveBaseIndex = 0;
-    int manipulatorIndex = 0;
+    public string name = "Default";
+    public int wheelIndex = 0;
+    public int driveBaseIndex = 0;
+    public int manipulatorIndex = 0;
 
     public MaMPreset (int wheel, int driveBase, int manipulator, string name)
     {

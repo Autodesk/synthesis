@@ -25,8 +25,7 @@ namespace BulletUnity
 
         private void Awake()
         {
-            if (GetComponent<BMultiCallbacks>() != null)
-                GetComponent<BMultiCallbacks>().AddCallback(this);
+            GetComponent<BMultiCallbacks>().AddCallback(this);
         }
 
         /// <summary>
@@ -54,10 +53,10 @@ namespace BulletUnity
                         }
                         if (!skip)
                         {
-                            //Debug.Log("does this happen");
+                            Debug.Log("does this happen");
                             collisionObject[i] = tempGamepiece;
                             collisionDetected[i] = true;
-                            //Debug.Log(collisionObject[i].ToString() + i.ToString());
+                            Debug.Log(collisionObject[i].ToString() + i.ToString());
                         }
                     }
                 }

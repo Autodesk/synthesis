@@ -19,7 +19,6 @@ public class Toolkit : MonoBehaviour
     private GameObject canvas;
     private MainState mainState;
     private GameObject toolkitWindow;
-    private SensorManagerGUI sensorManagerGUI;
 
     //ruler variables
     private GameObject rulerWindow;
@@ -59,20 +58,11 @@ public class Toolkit : MonoBehaviour
     bool controllingDummy = false;
     private GameObject dummyIndicator;
 
-    /// <summary>
-    /// Link the toolkit to main state
-    /// </summary>
-    private void Awake()
-    {
-        StateMachine.Instance.LinkBehaviour<MainState>(this);
-    }
-
     // Use this for initialization
     void Start()
     {
         canvas = GameObject.Find("Canvas");
         toolkitWindow = AuxFunctions.FindObject(canvas, "ToolkitPanel");
-        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
 
         //Ruler Objects
         rulerStartPoint = GameObject.Find("RulerStartPoint");
@@ -126,10 +116,6 @@ public class Toolkit : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// Toggle the tookit window on/off according to the show boolean passed in
-    /// </summary>
-    /// <param name="show"></param>
     public void ToggleToolkitWindow(bool show)
     {
         if (show)
@@ -139,20 +125,16 @@ public class Toolkit : MonoBehaviour
                 Analytics.CustomEvent("Opened Toolkit", new Dictionary<string, object> //for analytics tracking
                 {
                 });
+                toolkitWindow.SetActive(true);
             }
-            toolkitWindow.SetActive(true);
         }
         else
         {
             ToggleRulerWindow(false);
-            ToggleStopwatchWindow(false);
             toolkitWindow.SetActive(false);
         }
     }
 
-    /// <summary>
-    /// Toggle the toolkit window on/off according to its current state
-    /// </summary>
     public void ToggleToolkitWindow()
     {
         ToggleToolkitWindow(!toolkitWindow.activeSelf);
@@ -161,10 +143,6 @@ public class Toolkit : MonoBehaviour
 
 
     #region Ruler Functions
-    /// <summary>
-    /// Toggle the ruler window on/off according to the show boolean passed in
-    /// </summary>
-    /// <param name="show"></param>
     public void ToggleRulerWindow(bool show)
     {
         if (show)
@@ -179,17 +157,11 @@ public class Toolkit : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Toggle the ruler window on/off according to its current state
-    /// </summary>
     public void ToggleRulerWindow()
     {
         ToggleRulerWindow(!rulerWindow.activeSelf);
     }
 
-    /// <summary>
-    /// Initiate ruler
-    /// </summary>
     public void StartRuler()
     {
         usingRuler = true;
@@ -198,9 +170,6 @@ public class Toolkit : MonoBehaviour
         AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(true);
     }
 
-    /// <summary>
-    /// Handles the ruler animation and display values
-    /// </summary>
     private void ClickRuler()
     {
         //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
@@ -237,7 +206,6 @@ public class Toolkit : MonoBehaviour
             {
                 rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
             }
-            //Display different values based on the measure system it's currently using
             else if (!mainState.IsMetric)
             {
                 rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f) / 100 + "ft";
@@ -259,9 +227,6 @@ public class Toolkit : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Disable the ruler
-    /// </summary>
     private void DisableRuler()
     {
         ignoreClick = true;
@@ -275,10 +240,6 @@ public class Toolkit : MonoBehaviour
     }
     #endregion
     #region Stopwatch Functions
-    /// <summary>
-    /// Toggle the stopwatch window on/off according to the show boolean passed in
-    /// </summary>
-    /// <param name="show"></param>
     public void ToggleStopwatchWindow(bool show)
     {
         if (show)
@@ -292,17 +253,11 @@ public class Toolkit : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Toggle the stopwatch window on/off according to its current state
-    /// </summary>
     public void ToggleStopwatchWindow()
     {
         ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
     }
 
-    /// <summary>
-    /// Start/stop the stopwatch
-    /// </summary>
     public void ToggleStopwatch()
     {
         if (!stopwatchOn)
@@ -356,10 +311,6 @@ public class Toolkit : MonoBehaviour
 
     #endregion
     #region Stats Functions
-    /// <summary>
-    /// Toggle the tookit window on/off according to the show boolean passed in
-    /// </summary>
-    /// <param name="show"></param>
     public void ToggleStatsWindow(bool show)
     {
         if (show) EndProcesses(true);
@@ -367,9 +318,6 @@ public class Toolkit : MonoBehaviour
         statsWindow.SetActive(show);
     }
 
-    /// <summary>
-    /// Toggle the toolkit window on/off according to its current state
-    /// </summary>
     public void ToggleStatsWindow()
     {
         ToggleStatsWindow(!statsWindow.activeSelf);
@@ -380,11 +328,10 @@ public class Toolkit : MonoBehaviour
     /// </summary>
     public void UpdateStatsWindow()
     {
-        speedEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Speed.ToString();
-        accelerationEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Acceleration.ToString();
-        angularVelocityEntry.GetComponent<InputField>().text = mainState.ActiveRobot.AngularVelocity.ToString();
-        weightEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Weight.ToString();
-        //Use correct units depending on the measure system used
+        speedEntry.GetComponent<InputField>().text = mainState.activeRobot.Speed.ToString();
+        accelerationEntry.GetComponent<InputField>().text = mainState.activeRobot.Acceleration.ToString();
+        angularVelocityEntry.GetComponent<InputField>().text = mainState.activeRobot.AngularVelocity.ToString();
+        weightEntry.GetComponent<InputField>().text = mainState.activeRobot.Weight.ToString();
         if (mainState.IsMetric)
         {
             speedUnit.text = "m/s";
@@ -406,12 +353,11 @@ public class Toolkit : MonoBehaviour
         toolkitWindow.SetActive(toolkitWindowOn);
         ToggleStatsWindow(false);
         ToggleStopwatchWindow(false);
-        sensorManagerGUI.EndProcesses();
     }
-    
+    /*
     #region Dummy Robot
 
-    /*public void SpawnDummyRobot()
+    public void SpawnDummyRobot()
     {
         dummyList.AddDummy();
     }
@@ -442,6 +388,6 @@ public class Toolkit : MonoBehaviour
             dummyIndicator.transform.position = ((RigidNode)mainState.activeRobot).MainObject.transform.position + new Vector3(0, 1f) ;
         }
     }
-    */
-    #endregion
+
+    #endregion*/
 }

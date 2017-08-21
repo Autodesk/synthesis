@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using UnityEngine.UI;
 
 //=========================================================================================
-//                                      Player Class
+//                          Player Class
 // Description: Controls the individual player's controls through KeyMapping Lists and Maps
 // Adapted from: https://github.com/Gris87/InputControl
 //=========================================================================================
@@ -36,12 +36,6 @@ public class Player
     //Set of Tank Drive keys
     private List<KeyMapping> tankDriveList = new List<KeyMapping>();
     private Dictionary<string, KeyMapping> tankDriveMap = new Dictionary<string, KeyMapping>();
-
-    private List<KeyMapping> resetTankDriveList = new List<KeyMapping>();
-    private Dictionary<string, KeyMapping> resetTankDriveMap = new Dictionary<string, KeyMapping>();
-
-    private List<KeyMapping> resetArcadeDriveList = new List<KeyMapping>();
-    private Dictionary<string, KeyMapping> resetArcadeDriveMap = new Dictionary<string, KeyMapping>();
 
     //Set of arcade drive axes.
     private List<Axis> arcadeAxesList = new List<Axis>();
@@ -78,11 +72,10 @@ public class Player
     public KeyMapping setKey(string name, CustomInput primary = null, CustomInput secondary = null, bool isTankDrive = false)
     {
         KeyMapping outKey = null;
-        KeyMapping defaultKey = null;
 
         if (!isTankDrive)
         {
-            if (arcadeDriveMap.TryGetValue(name, out outKey) && resetArcadeDriveMap.TryGetValue(name, out outKey))
+            if (arcadeDriveMap.TryGetValue(name, out outKey))
             {
                 outKey.primaryInput = primary;
                 outKey.secondaryInput = secondary;
@@ -90,17 +83,14 @@ public class Player
             else
             {
                 outKey = new KeyMapping(name, primary, secondary);
-                defaultKey = new KeyMapping(name, primary, secondary);
 
                 arcadeDriveList.Add(outKey);
-                resetArcadeDriveList.Add(defaultKey);
                 arcadeDriveMap.Add(name, outKey);
-                resetArcadeDriveMap.Add(name, defaultKey);
             }
         }
         else
         {
-            if (tankDriveMap.TryGetValue(name, out outKey) && resetTankDriveMap.TryGetValue(name, out outKey))
+            if (tankDriveMap.TryGetValue(name, out outKey))
             {
                 outKey.primaryInput = primary;
                 outKey.secondaryInput = secondary;
@@ -108,12 +98,9 @@ public class Player
             else
             {
                 outKey = new KeyMapping(name, primary, secondary);
-                defaultKey = new KeyMapping(name, primary, secondary);
 
                 tankDriveList.Add(outKey);
-                resetTankDriveList.Add(defaultKey);
                 tankDriveMap.Add(name, outKey);
-                resetTankDriveMap.Add(name, defaultKey);
             }
         }
 
@@ -212,16 +199,6 @@ public class Player
         return arcadeDriveList.AsReadOnly();
     }
 
-    public ReadOnlyCollection<KeyMapping> GetTankDefaults()
-    {
-        return resetTankDriveList.AsReadOnly();
-    }
-
-    public ReadOnlyCollection<KeyMapping> GetArcadeDefaults()
-    {
-        return resetArcadeDriveList.AsReadOnly();
-    }
-
     public ReadOnlyCollection<KeyMapping> GetActiveList()
     {
         return activeList.AsReadOnly();
@@ -252,33 +229,6 @@ public class Player
     public void SetArcadeDrive()
     {
         isTankDrive = false;
-        activeList = arcadeDriveList;
-    }
-
-    public void ResetTank()
-    {
-        tankDriveList.Clear();
-        foreach(KeyMapping key in resetTankDriveList)
-        {
-            KeyMapping defaultKey = new KeyMapping(key.name, key.primaryInput, key.secondaryInput);
-            tankDriveList.Add(defaultKey);
-        }
-        isTankDrive = true;
-        Controls.TankDriveEnabled = true;
-        activeList = tankDriveList;
-
-    }
-
-    public void ResetArcade()
-    {
-        arcadeDriveList.Clear();
-        foreach (KeyMapping key in resetArcadeDriveList)
-        {
-            KeyMapping defaultKey = new KeyMapping(key.name, key.primaryInput, key.secondaryInput);
-            arcadeDriveList.Add(defaultKey);
-        }
-        isTankDrive = false;
-        Controls.TankDriveEnabled = false;
         activeList = arcadeDriveList;
     }
 }
