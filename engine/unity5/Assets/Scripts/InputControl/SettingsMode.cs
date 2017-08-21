@@ -187,8 +187,9 @@ public class SettingsMode : MonoBehaviour
                 GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultImage;
                 break;
         }
+    }
 
-        public void OnTankToggle()
+    public void OnTankToggle()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().TankSlider();
     }
