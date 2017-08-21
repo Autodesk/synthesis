@@ -453,7 +453,7 @@ public class Robot : MonoBehaviour
     }
 
     /// <summary>
-    /// Can move robot around in this state, update robotStartPosition if hit enter
+    /// Can move robot around in this state using WASD, update robotStartPosition if hit enter
     /// </summary>
     void Resetting()
     {
@@ -658,10 +658,11 @@ public class Robot : MonoBehaviour
     }
 
     /// <summary>
-    /// Cancel current orientation changes
+    /// Cancel current orientation & spawnpoint changes
     /// </summary>
     public void CancelRobotOrientation()
     {
+        BeginReset();
         EndReset();
     }
     /// <summary>

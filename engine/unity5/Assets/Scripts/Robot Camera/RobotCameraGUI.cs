@@ -58,6 +58,13 @@ class RobotCameraGUI : MonoBehaviour
     private bool isEditingAngle;
     private bool isEditingFOV;
 
+    /// <summary>
+    /// Link the robot camera GUI to main state
+    /// </summary>
+    private void Awake()
+    {
+        StateMachine.Instance.LinkBehaviour<MainState>(this);
+    }
 
     private void Start()
     {
@@ -93,15 +100,16 @@ class RobotCameraGUI : MonoBehaviour
         canvas = GameObject.Find("Canvas");
         simUI = GameObject.Find("StateMachine").GetComponent<SimUI>();
         sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
+
         //For robot camera view window
         robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
-        robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanel");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
 
-        //For camera indicator
+        //For robot camera manager
         robotCameraListObject = GameObject.Find("RobotCameraList");
         robotCameraManager = robotCameraListObject.GetComponent<RobotCameraManager>();
 
+        //For camera indicator
         if (CameraIndicator == null)
         {
             CameraIndicator = AuxFunctions.FindObject(robotCameraListObject, "CameraIndicator");
@@ -109,12 +117,12 @@ class RobotCameraGUI : MonoBehaviour
         showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
 
         //For camera position and attachment configuration
-        configureRobotCameraButton = AuxFunctions.FindObject(canvas, "CameraConfigurationButton");
-        changeCameraNodeButton = AuxFunctions.FindObject(canvas, "ChangeNodeButton");
         configureCameraPanel = AuxFunctions.FindObject(canvas, "CameraConfigurationPanel");
-        cameraConfigurationModeButton = AuxFunctions.FindObject(canvas, "ConfigurationMode");
-        cameraNodeText = AuxFunctions.FindObject(canvas, "NodeText").GetComponent<Text>();
-        cancelNodeSelectionButton = AuxFunctions.FindObject(canvas, "CancelNodeSelectionButton");
+        configureRobotCameraButton = AuxFunctions.FindObject(canvas, "CameraConfigurationButton");
+        changeCameraNodeButton = AuxFunctions.FindObject(configureCameraPanel, "ChangeNodeButton");
+        cameraConfigurationModeButton = AuxFunctions.FindObject(configureCameraPanel, "ConfigurationMode");
+        cameraNodeText = AuxFunctions.FindObject(configureCameraPanel, "NodeText").GetComponent<Text>();
+        cancelNodeSelectionButton = AuxFunctions.FindObject(configureCameraPanel, "CancelNodeSelectionButton");
 
         //For camera angle configuration
         cameraAnglePanel = AuxFunctions.FindObject(canvas, "CameraAnglePanel");
@@ -129,7 +137,7 @@ class RobotCameraGUI : MonoBehaviour
         FOVEntry = AuxFunctions.FindObject(cameraFOVPanel, "FOVEntry");
         showFOVButton = AuxFunctions.FindObject(configureCameraPanel, "ShowCameraFOVButton");
         editFOVButton = AuxFunctions.FindObject(cameraFOVPanel, "EditButton");
-
+        
         lockPositionButton = AuxFunctions.FindObject(configureCameraPanel, "LockPositionButton");
         lockAngleButton = AuxFunctions.FindObject(configureCameraPanel, "LockAngleButton");
         lockFOVButton = AuxFunctions.FindObject(configureCameraPanel, "LockFOVButton");

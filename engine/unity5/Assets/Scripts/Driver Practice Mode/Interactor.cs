@@ -54,10 +54,10 @@ namespace BulletUnity
                         }
                         if (!skip)
                         {
-                            Debug.Log("does this happen");
+                            //Debug.Log("does this happen");
                             collisionObject[i] = tempGamepiece;
                             collisionDetected[i] = true;
-                            Debug.Log(collisionObject[i].ToString() + i.ToString());
+                            //Debug.Log(collisionObject[i].ToString() + i.ToString());
                         }
                     }
                 }
