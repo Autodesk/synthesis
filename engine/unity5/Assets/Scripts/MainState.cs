@@ -463,7 +463,7 @@ public class MainState : SimState
     /// <returns></returns>
     public bool LoadManipulator(string directory)
     {
-        return activeRobot.LoadManipulator(directory);
+        return activeRobot.LoadManipulator(directory, null);
     }
 
     /// <summary>
