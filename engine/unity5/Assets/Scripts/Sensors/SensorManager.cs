@@ -67,7 +67,7 @@ class SensorManager : MonoBehaviour
         ultrasonic.transform.localPosition = position;
         ultrasonic.transform.localRotation = Quaternion.Euler(rotation);
         ultrasonic.name = "Ultrasonic_" + sensorList.Count;
-        ultrasonic.GetComponent<SensorBase>().Robot = main.activeRobot;
+        ultrasonic.GetComponent<SensorBase>().Robot = main.ActiveRobot;
         sensorList.Add(ultrasonic);
         activeSensorList.Add(ultrasonic);
         return ultrasonic.GetComponent<UltraSensor>();
@@ -87,7 +87,7 @@ class SensorManager : MonoBehaviour
         beamBreaker.transform.localPosition = position;
         beamBreaker.transform.localRotation = Quaternion.Euler(rotation);
         beamBreaker.name = "BeamBreaker_" + sensorList.Count;
-        beamBreaker.GetComponent<SensorBase>().Robot = main.activeRobot;
+        beamBreaker.GetComponent<SensorBase>().Robot = main.ActiveRobot;
         sensorList.Add(beamBreaker);
         activeSensorList.Add(beamBreaker);
         BeamBreaker sensor = beamBreaker.GetComponent<BeamBreaker>();
@@ -108,7 +108,7 @@ class SensorManager : MonoBehaviour
         gyro.transform.localPosition = position;
         gyro.transform.localRotation = Quaternion.Euler(rotation);
         gyro.name = "Gyro_" + sensorList.Count;
-        gyro.GetComponent<SensorBase>().Robot = main.activeRobot;
+        gyro.GetComponent<SensorBase>().Robot = main.ActiveRobot;
         sensorList.Add(gyro);
         activeSensorList.Add(gyro);
 

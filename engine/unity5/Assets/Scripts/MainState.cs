@@ -22,7 +22,6 @@ using UnityEngine.UI;
 public class MainState : SimState
 {
 
-    public static bool draggingWindow = false;
     private const int SolverIterations = 100;
 
     private BPhysicsWorld physicsWorld;
@@ -34,13 +33,12 @@ public class MainState : SimState
     private UnityPacket unityPacket;
 
     private List<Robot> robots;
-    public Robot activeRobot { get; private set; }
+    public Robot ActiveRobot { get; private set; }
 
     private DynamicCamera dynamicCamera;
-    public GameObject dynamicCameraObject;
+    public GameObject DynamicCameraObject;
 
     private RobotCameraManager robotCameraManager;
-    public GameObject robotCameraObject;
 
     private SensorManager sensorManager;
     private SensorManagerGUI sensorManagerGUI;
@@ -49,7 +47,6 @@ public class MainState : SimState
     private UnityFieldDefinition fieldDefinition;
    
 
-    public bool IsResetting;
     private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
 
@@ -139,14 +136,16 @@ public class MainState : SimState
         }
 
         //initializes the dynamic camera
-        dynamicCameraObject = GameObject.Find("Main Camera");
-        dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
+        DynamicCameraObject = GameObject.Find("Main Camera");
+        dynamicCamera = DynamicCameraObject.AddComponent<DynamicCamera>();
         DynamicCamera.MovingEnabled = true;
 
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
 
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+
+        IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
     }
 
     /// <summary>
@@ -154,7 +153,7 @@ public class MainState : SimState
     /// </summary>
     public override void Update()
     {
-        if (activeRobot == null)
+        if (ActiveRobot == null)
         {
             AppModel.ErrorToMenu("Robot instance not valid.");
             return;
@@ -162,7 +161,7 @@ public class MainState : SimState
 
         //If the reset button is held down after a certain amount of time, then go into change spawnpoint mode (reset spawnpoint feature)
         //Otherwise, reset the robot normally (quick reset feature)
-        if (!activeRobot.IsResetting)
+        if (!ActiveRobot.IsResetting)
         {
             if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
@@ -171,14 +170,14 @@ public class MainState : SimState
         // Toggles between the different camera states if the camera toggle button is pressed
         if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)))
         {
-            if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
+            if (DynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
             }
         }
 
         // Switches to replay mode
-        if (!activeRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
+        if (!ActiveRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
         {
             CollisionTracker.ContactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -189,7 +188,7 @@ public class MainState : SimState
     {
         //This line is essential for the reset to work accurately
         //robotCameraObject.transform.position = activeRobot.transform.GetChild(0).transform.position;
-        if (activeRobot == null)
+        if (ActiveRobot == null)
         {
             AppModel.ErrorToMenu("Robot instance not valid.");
             return;
@@ -254,12 +253,12 @@ public class MainState : SimState
             if (!robot.InitializeRobot(directory, this)) return false;
 
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
-            if (activeRobot == null)
+            if (ActiveRobot == null)
             {
-                activeRobot = robot;
+                ActiveRobot = robot;
             }
 
-            robot.controlIndex = SpawnedRobots.Count;
+            robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
             return true;
         }
@@ -273,10 +272,10 @@ public class MainState : SimState
     /// <returns>whether the process was successful</returns>
     public bool ChangeRobot(string directory)
     {
-        sensorManager.RemoveSensorsFromRobot(activeRobot);
+        sensorManager.RemoveSensorsFromRobot(ActiveRobot);
         sensorManagerGUI.ShiftOutputPanels();
         sensorManagerGUI.EndProcesses();
-        return activeRobot.InitializeRobot(directory, this);
+        return ActiveRobot.InitializeRobot(directory, this);
     }
 
     /// <summary>
@@ -284,7 +283,7 @@ public class MainState : SimState
     /// </summary>
     public void DeleteManipulatorNodes()
     {
-        activeRobot.DeleteManipulatorNodes();
+        ActiveRobot.DeleteManipulatorNodes();
     }
 
     /// <summary>
@@ -295,20 +294,20 @@ public class MainState : SimState
         if (SpawnedRobots.Count >= 1)
         {
 
-            if (activeRobot != null)
+            if (ActiveRobot != null)
             {
-                int index = SpawnedRobots.IndexOf(activeRobot);
+                int index = SpawnedRobots.IndexOf(ActiveRobot);
                 if (index < SpawnedRobots.Count - 1)
                 {
-                    activeRobot = SpawnedRobots[index + 1];
+                    ActiveRobot = SpawnedRobots[index + 1];
                 }
                 else
                 {
-                    activeRobot = SpawnedRobots[0];
+                    ActiveRobot = SpawnedRobots[0];
                 }
             }
-            else activeRobot = SpawnedRobots[0];
-            dynamicCamera.cameraState.robot = activeRobot.gameObject;
+            else ActiveRobot = SpawnedRobots[0];
+            dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
         }
     }
 
@@ -319,8 +318,8 @@ public class MainState : SimState
     {
         if (index < SpawnedRobots.Count)
         {
-            activeRobot = SpawnedRobots[index];
-            dynamicCamera.cameraState.robot = activeRobot.gameObject;
+            ActiveRobot = SpawnedRobots[index];
+            dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
         }
     }
 
@@ -329,7 +328,7 @@ public class MainState : SimState
     /// </summary>
     public void ChangeControlIndex(int index)
     {
-        activeRobot.controlIndex = index;
+        ActiveRobot.ControlIndex = index;
     }
 
     /// <summary>
@@ -343,20 +342,20 @@ public class MainState : SimState
             sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
 
             int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
-            if (isMixAndMatch == 1 && SpawnedRobots[index].robotHasManipulator == 1)
+            if (isMixAndMatch == 1 && SpawnedRobots[index].RobotHasManipulator == 1)
             {
-                GameObject.Destroy(SpawnedRobots[index].manipulatorObject);
+                GameObject.Destroy(SpawnedRobots[index].ManipulatorObject);
             }
 
             GameObject.Destroy(SpawnedRobots[index].gameObject);
             SpawnedRobots.RemoveAt(index);
-            activeRobot = null;
+            ActiveRobot = null;
             SwitchActiveRobot();
 
             int i = 0;
             foreach (Robot robot in SpawnedRobots)
             {
-                robot.controlIndex = i;
+                robot.ControlIndex = i;
                 i++;
             }
         }
@@ -436,7 +435,7 @@ public class MainState : SimState
                 foreach (var d in c)
                 {
                     ContactDescriptor currentContact = d.Key;
-                    currentContact.RobotBody = activeRobot.transform.GetChild(d.Value).GetComponent<BRigidBody>();
+                    currentContact.RobotBody = ActiveRobot.transform.GetChild(d.Value).GetComponent<BRigidBody>();
                     currentContacts.Add(currentContact);
                 }
 
@@ -456,7 +455,7 @@ public class MainState : SimState
     /// <returns></returns>
     public bool LoadManipulator(string directory)
     {
-        return activeRobot.LoadManipulator(directory);
+        return ActiveRobot.LoadManipulator(directory);
     }
 
     /// <summary>
@@ -466,7 +465,7 @@ public class MainState : SimState
     /// <returns></returns>
     public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
-        return activeRobot.LoadManipulator(directory, robotGameObject);
+        return ActiveRobot.LoadManipulator(directory, robotGameObject);
     }
 
     /// <summary>
@@ -489,12 +488,12 @@ public class MainState : SimState
             robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
 
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
-            if (activeRobot == null)
+            if (ActiveRobot == null)
             {
-                activeRobot = robot;
+                ActiveRobot = robot;
             }
 
-            robot.controlIndex = SpawnedRobots.Count;
+            robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
             robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
@@ -530,7 +529,7 @@ public class MainState : SimState
 
     public void EnterReplayState()
     {
-        if (!activeRobot.IsResetting)
+        if (!ActiveRobot.IsResetting)
         {
             CollisionTracker.ContactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -550,7 +549,7 @@ public class MainState : SimState
     /// </summary>
     public void BeginRobotReset()
     {
-        activeRobot.BeginReset();
+        ActiveRobot.BeginReset();
         
     }
 
@@ -559,7 +558,7 @@ public class MainState : SimState
     /// </summary>
     public void EndRobotReset()
     {
-        activeRobot.EndReset();
+        ActiveRobot.EndReset();
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
         {
             t.Clear();
@@ -573,7 +572,7 @@ public class MainState : SimState
     /// </summary>
     public void TransposeRobot(Vector3 transposition)
     {
-        activeRobot.TransposeRobot(transposition);
+        ActiveRobot.TransposeRobot(transposition);
     }
 
     /// <summary>
@@ -581,7 +580,7 @@ public class MainState : SimState
     /// </summary>
     public void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
     {
-        activeRobot.RotateRobot(rotationMatrix);
+        ActiveRobot.RotateRobot(rotationMatrix);
     }
 
     /// <summary>
@@ -589,7 +588,7 @@ public class MainState : SimState
     /// </summary>
     public void RotateRobot(Vector3 rotation)
     {
-        activeRobot.RotateRobot(rotation);
+        ActiveRobot.RotateRobot(rotation);
     }
 
     /// <summary>
@@ -597,7 +596,7 @@ public class MainState : SimState
     /// </summary>
     public void ResetRobotOrientation()
     {
-        activeRobot.ResetRobotOrientation();
+        ActiveRobot.ResetRobotOrientation();
     }
 
     /// <summary>
@@ -605,7 +604,7 @@ public class MainState : SimState
     /// </summary>
     public void SaveRobotOrientation()
     {
-        activeRobot.SaveRobotOrientation();
+        ActiveRobot.SaveRobotOrientation();
     }
 
     /// <summary>
@@ -613,17 +612,17 @@ public class MainState : SimState
     /// </summary>
     public void CancelRobotOrientation()
     {
-        activeRobot.CancelRobotOrientation();
+        ActiveRobot.CancelRobotOrientation();
     }
     /// <summary>
     /// Sends the received packets to the active robot
     /// </summary>
     private void SendRobotPackets()
     {
-        activeRobot.Packet = unityPacket.GetLastPacket();
+        ActiveRobot.Packet = unityPacket.GetLastPacket();
         foreach (Robot robot in SpawnedRobots)
         {
-            if (robot != activeRobot) robot.Packet = null;
+            if (robot != ActiveRobot) robot.Packet = null;
         }
     }
     #endregion

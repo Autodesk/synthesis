@@ -380,10 +380,10 @@ public class Toolkit : MonoBehaviour
     /// </summary>
     public void UpdateStatsWindow()
     {
-        speedEntry.GetComponent<InputField>().text = mainState.activeRobot.Speed.ToString();
-        accelerationEntry.GetComponent<InputField>().text = mainState.activeRobot.Acceleration.ToString();
-        angularVelocityEntry.GetComponent<InputField>().text = mainState.activeRobot.AngularVelocity.ToString();
-        weightEntry.GetComponent<InputField>().text = mainState.activeRobot.Weight.ToString();
+        speedEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Speed.ToString();
+        accelerationEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Acceleration.ToString();
+        angularVelocityEntry.GetComponent<InputField>().text = mainState.ActiveRobot.AngularVelocity.ToString();
+        weightEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Weight.ToString();
         //Use correct units depending on the measure system used
         if (mainState.IsMetric)
         {

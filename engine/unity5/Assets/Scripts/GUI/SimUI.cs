@@ -134,7 +134,7 @@ public class SimUI : MonoBehaviour
         driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
         manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
 
-        addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
+        addRobotPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
@@ -202,8 +202,8 @@ public class SimUI : MonoBehaviour
                 });
             }
 
-            robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
-            sensorManager.RemoveSensorsFromRobot(main.activeRobot);
+            robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
+            sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
             main.ChangeRobot(directory);
         }
@@ -218,8 +218,8 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void MaMChangeRobot(string robotDirectory, string manipulatorDirectory, int robotHasManipulator)
     {
-        robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
-        sensorManager.RemoveSensorsFromRobot(main.activeRobot);
+        robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
+        sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
         main.ChangeRobot(robotDirectory);
 
@@ -234,11 +234,11 @@ public class SimUI : MonoBehaviour
         int newRobotHasManipulator = PlayerPrefs.GetInt("hasManipulator");
         if (newRobotHasManipulator == 1) //0 is false, 1 is true
         {
-            main.LoadManipulator(manipulatorDirectory, main.activeRobot.gameObject);
+            main.LoadManipulator(manipulatorDirectory, main.ActiveRobot.gameObject);
         }
         else
         {
-            main.activeRobot.robotHasManipulator = 0;
+            main.ActiveRobot.RobotHasManipulator = 0;
         }
     }
 
@@ -493,6 +493,8 @@ public class SimUI : MonoBehaviour
             unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
             int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
             main.IsMetric = (i == 1 ? true : false);
+            PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
+            Debug.Log("Metric: " + main.IsMetric);
         }
     }
 
@@ -527,7 +529,7 @@ public class SimUI : MonoBehaviour
     /// </summary>
     private void UpdateSpawnpointWindow()
     {
-        if (main.activeRobot.IsResetting)
+        if (main.ActiveRobot.IsResetting)
         {
             spawnpointWindow.SetActive(true);
             orientWindow.SetActive(true);
@@ -554,7 +556,6 @@ public class SimUI : MonoBehaviour
                 break;
             case 2:
                 EndOtherProcesses();
-                main.IsResetting = true;
                 main.BeginRobotReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
@@ -599,7 +600,6 @@ public class SimUI : MonoBehaviour
         ToggleHotKeys(false);
 
         CancelOrientation();
-        main.IsResetting = false;
 
         dpm.EndProcesses();
         toolkit.EndProcesses();
