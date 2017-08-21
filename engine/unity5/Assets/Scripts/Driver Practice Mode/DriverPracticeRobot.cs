@@ -68,6 +68,10 @@ public class DriverPracticeRobot : MonoBehaviour
     public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
     private DynamicCamera.CameraState lastCameraState;
 
+    private void Awake()
+    {
+        StateMachine.Instance.Link<MainState>(this);
+    }
 
     /// <summary>
     /// If configuration file exists, loads information and auto-configures robot.
@@ -176,7 +180,7 @@ public class DriverPracticeRobot : MonoBehaviour
 
         for (int i = 0; i < 2; i++)
         {
-            if (displayTrajectories[i] && StateMachine.Instance.CurrentState is MainState)
+            if (displayTrajectories[i])
             {
                 releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
                 if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
