@@ -54,18 +54,22 @@ public class SettingsMode : MonoBehaviour
     /// </summary>
     public void OnReset()
     {
-        if (Controls.TankDriveEnabled)
-        {
-            Controls.ResetTankDrive();
-            Controls.Save();
-            //GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
-            //UpdateAllText();
-        }
-        else
-        {
-            Controls.ResetArcadeDrive();
-            Controls.Save();
-        }
+        GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
+        //if (Controls.TankDriveEnabled)
+        //{
+        //    //Controls.ResetTankDrive();
+        //    //Controls.Save();
+        //    GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
+        //    //Controls.Save();
+        //    Debug.Log("Reset");
+        //    //UpdateAllText();
+        //}
+        //else
+        //{
+        //    //Controls.ResetArcadeDrive();
+        //    //Controls.Save();
+        //    Debug.Log("Reset Arcade");
+        //}
     }
 
     #region Player Buttons

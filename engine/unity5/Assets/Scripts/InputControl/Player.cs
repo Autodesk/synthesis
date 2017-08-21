@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using UnityEngine.UI;
 
 //=========================================================================================
-//                          Player Class
+//                                      Player Class
 // Description: Controls the individual player's controls through KeyMapping Lists and Maps
 // Adapted from: https://github.com/Gris87/InputControl
 //=========================================================================================
@@ -81,7 +81,7 @@ public class Player
 
         if (!isTankDrive)
         {
-            if (arcadeDriveMap.TryGetValue(name, out outKey))
+            if (arcadeDriveMap.TryGetValue(name, out outKey) && resetArcadeDriveMap.TryGetValue(name, out outKey))
             {
                 outKey.primaryInput = primary;
                 outKey.secondaryInput = secondary;
@@ -93,12 +93,12 @@ public class Player
                 arcadeDriveList.Add(outKey);
                 resetArcadeDriveList.Add(outKey);
                 arcadeDriveMap.Add(name, outKey);
-                //resetArcadeDriveMap.Add(name, outKey);
+                resetArcadeDriveMap.Add(name, outKey);
             }
         }
         else
         {
-            if (tankDriveMap.TryGetValue(name, out outKey))
+            if (tankDriveMap.TryGetValue(name, out outKey) && resetTankDriveMap.TryGetValue(name, out outKey))
             {
                 outKey.primaryInput = primary;
                 outKey.secondaryInput = secondary;
@@ -108,9 +108,9 @@ public class Player
                 outKey = new KeyMapping(name, primary, secondary);
 
                 tankDriveList.Add(outKey);
-                resetArcadeDriveList.Add(outKey);
+                resetTankDriveList.Add(outKey);
                 tankDriveMap.Add(name, outKey);
-                //resetArcadeDriveMap.Add(name, outKey);
+                resetTankDriveMap.Add(name, outKey);
             }
         }
 
@@ -241,7 +241,6 @@ public class Player
     {
         isTankDrive = true;
         activeList = tankDriveList;
-        Debug.Log("activeList Tank: " + activeList);
     }
 
     /// <summary>
@@ -251,14 +250,20 @@ public class Player
     {
         isTankDrive = false;
         activeList = arcadeDriveList;
-        Debug.Log("activeList Arcade: " + activeList);
     }
 
     public void ResetTank()
     {
         isTankDrive = true;
-        //resetTankDriveList = activeList;
+        Controls.TankDriveEnabled = true;
         activeList = resetTankDriveList;
-        Debug.Log("activeList: " + activeList);
+
+    }
+
+    public void ResetArcade()
+    {
+        isTankDrive = false;
+        Controls.TankDriveEnabled = false;
+        activeList = resetArcadeDriveList;
     }
 }
