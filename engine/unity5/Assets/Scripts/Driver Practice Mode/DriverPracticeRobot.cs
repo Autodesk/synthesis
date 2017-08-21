@@ -840,7 +840,7 @@ public class DriverPracticeRobot : MonoBehaviour
     {
         UnityEngine.Vector3 result = new UnityEngine.Vector3(0, 0, 0);
         string[] values = aData.Split('|');
-        Debug.Log(values[0]);
+        //Debug.Log(values[0]);
         if (values.Length != 3)
             throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
         result = new UnityEngine.Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
