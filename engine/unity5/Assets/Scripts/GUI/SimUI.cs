@@ -44,6 +44,8 @@ public class SimUI : MonoBehaviour
 
     GameObject inputManagerPanel;
     GameObject unitConversionSwitch;
+    GameObject hotKeyButton;
+    GameObject hotKeyPanel;
 
     GameObject analyticsPanel;
 
@@ -66,6 +68,14 @@ public class SimUI : MonoBehaviour
     private bool freeroamWindowClosed = false;
 
     private bool oppositeSide = false;
+
+    /// <summary>
+    /// Link the SimUI to main state
+    /// </summary>
+    private void Awake()
+    {
+        StateMachine.Instance.LinkBehaviour<MainState>(this);
+    }
 
     private void Update()
     {
@@ -124,7 +134,7 @@ public class SimUI : MonoBehaviour
         driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
         manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
 
-        addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
+        addRobotPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
@@ -134,6 +144,8 @@ public class SimUI : MonoBehaviour
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
         unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
+        hotKeyPanel = AuxFunctions.FindObject(canvas, "HotKeyPanel");
+        hotKeyButton = AuxFunctions.FindObject(canvas, "DisplayHotKeyButton");
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
@@ -190,8 +202,8 @@ public class SimUI : MonoBehaviour
                 });
             }
 
-            robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
-            sensorManager.RemoveSensorsFromRobot(main.activeRobot);
+            robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
+            sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
             main.ChangeRobot(directory);
         }
@@ -206,8 +218,8 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void MaMChangeRobot(string robotDirectory, string manipulatorDirectory, int robotHasManipulator)
     {
-        robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
-        sensorManager.RemoveSensorsFromRobot(main.activeRobot);
+        robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
+        sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
         main.ChangeRobot(robotDirectory);
 
@@ -222,11 +234,11 @@ public class SimUI : MonoBehaviour
         int newRobotHasManipulator = PlayerPrefs.GetInt("hasManipulator");
         if (newRobotHasManipulator == 1) //0 is false, 1 is true
         {
-            main.LoadManipulator(manipulatorDirectory, main.activeRobot.gameObject);
+            main.LoadManipulator(manipulatorDirectory, main.ActiveRobot.gameObject);
         }
         else
         {
-            main.activeRobot.robotHasManipulator = 0;
+            main.ActiveRobot.RobotHasManipulator = 0;
         }
     }
 
@@ -282,381 +294,382 @@ public class SimUI : MonoBehaviour
         }
     }
 
-        public void ToggleChangeFieldPanel()
-        {
-            if (changeFieldPanel.activeSelf)
-            {
-                changeFieldPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                changeFieldPanel.SetActive(true);
-            }
-
-        }
-
-        #endregion
-        #region camera button functions
-        /// <summary>
-        /// Toggles between different dynamic camera states
-        /// </summary>
-        /// <param name="joe"></param>
-        public void SwitchCameraView(int joe)
-        {
-            //Debug.Log(joe);
-            switch (joe)
-            {
-                case 1:
-                    camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
-                    DynamicCamera.MovingEnabled = true;
-                    break;
-                case 2:
-                    camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    DynamicCamera.MovingEnabled = true;
-                    break;
-                case 3:
-                    camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
-                    DynamicCamera.MovingEnabled = true;
-                    break;
-                case 4:
-                    camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
-                    DynamicCamera.MovingEnabled = true;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Change camera tool tips
-        /// </summary>
-        public void CameraToolTips()
-        {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
-                camera.GetComponent<Text>().text = "Driver Station";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
-                camera.GetComponent<Text>().text = "Freeroam";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
-                camera.GetComponent<Text>().text = "Orbit Robot";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
-                camera.GetComponent<Text>().text = "Overview";
-        }
-
-        /// <summary>
-        /// Pop freeroam instructions when using freeroam camera, won't show up again if the user closes it
-        /// </summary>
-        private void UpdateFreeroamWindow()
-        {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
-            {
-                if (!freeroamWindowClosed)
-                {
-                    freeroamCameraWindow.SetActive(true);
-                }
-
-            }
-            else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
-            {
-                freeroamCameraWindow.SetActive(false);
-            }
-        }
-
-        /// <summary>
-        /// Close freeroam camera tool tip
-        /// </summary>
-        public void CloseFreeroamWindow()
-        {
-            freeroamCameraWindow.SetActive(false);
-            freeroamWindowClosed = true;
-        }
-
-
-        /// <summary>
-        /// Activate driver station tool tips if the main camera is in driver station state
-        /// </summary>
-        private void UpdateDriverStationPanel()
-        {
-            driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
-        }
-
-        /// <summary>
-        /// Change to driver station view to the opposite side
-        /// </summary>
-        public void ToggleDriverStation()
-        {
-            oppositeSide = !oppositeSide;
-            camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
-        }
-        #endregion
-        #region orient button functions
-
-        public void ToggleOrientWindow()
-        {
-            if (isOrienting)
-            {
-                isOrienting = false;
-                main.EndRobotReset();
-            }
-            else
-            {
-                EndOtherProcesses();
-                isOrienting = true;
-                main.BeginRobotReset();
-                if (changeAnalytics) //for analytics tracking
-                {
-                    Analytics.CustomEvent("Changed Orientation", new Dictionary<string, object>
-                    {
-                    });
-                }
-            }
-            orientWindow.SetActive(isOrienting);
-        }
-
-        public void OrientLeft()
-        {
-            main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-        }
-        public void OrientRight()
-        {
-            main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-        }
-        public void OrientForward()
-        {
-            main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-        }
-        public void OrientBackward()
-        {
-            main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-        }
-
-        public void DefaultOrientation()
-        {
-            main.ResetRobotOrientation();
-            orientWindow.SetActive(isOrienting = false);
-        }
-
-        public void SaveOrientation()
-        {
-            main.SaveRobotOrientation();
-            orientWindow.SetActive(isOrienting = false);
-        }
-
-        public void CloseOrientWindow()
-        {
-            isOrienting = false;
-            orientWindow.SetActive(isOrienting);
-            main.EndRobotReset();
-        }
-
-        #endregion
-        #region control panel functions
-        public void ShowControlPanel(bool show)
-        {
-            if (show)
-            {
-                EndOtherProcesses();
-                inputManagerPanel.SetActive(true);
-            }
-            else
-            {
-                inputManagerPanel.SetActive(false);
-            }
-        }
-
-        public void ShowControlPanel()
-        {
-            ShowControlPanel(!inputManagerPanel.activeSelf);
-        }
-
-        /// <summary>
-        /// Open totorial link
-        /// </summary>
-        public void OpenTutorialLink()
-        {
-            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
-            if (changeAnalytics) //for analytics tracking
-            {
-                Analytics.CustomEvent("Clicked Tutorial Link", new Dictionary<string, object>
-                {
-                });
-            }
-        }
-        /// <summary>
-        /// Activates analytics panel
-        /// </summary>
-        public void ToggleAnalyticsPanel()
-        {
-            if (analyticsPanel.activeSelf)
-            {
-                analyticsPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                analyticsPanel.SetActive(true);
-            }
-        }
-
-        /// <summary>
-        /// Toggles between meter and feet measurements
-        /// </summary>
-        public void ToggleUnitConversion()
-        {
-            if (canvas != null)
-            {
-
-
-                unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
-                int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-                main.IsMetric = (i == 1 ? true : false);
-            }
-        }
-
-        #endregion
-        #region reset functions
-        /// <summary>
-        /// Pop reset instructions when main is in reset spawnpoint mode
-        /// </summary>
-        private void UpdateSpawnpointWindow()
-        {
-            if (main.activeRobot.IsResetting)
-            {
-                spawnpointWindow.SetActive(true);
-            }
-            else
-            {
-                spawnpointWindow.SetActive(false);
-            }
-        }
-
-        /// <summary>
-        /// Toggles between quick reset and reset spawnpoint
-        /// </summary>
-        /// <param name="i"></param>
-        public void ChooseResetMode(int i)
-        {
-            switch (i)
-            {
-                case 1:
-                    main.BeginRobotReset();
-                    main.EndRobotReset();
-                    resetDropdown.GetComponent<Dropdown>().value = 0;
-                    break;
-                case 2:
-                    EndOtherProcesses();
-                    main.IsResetting = true;
-                    main.BeginRobotReset();
-                    resetDropdown.GetComponent<Dropdown>().value = 0;
-                    break;
-            }
-        }
-        #endregion
-
-        /// <summary>
-        /// Exit to main menu window
-        /// </summary>
-        /// <param name="option"></param>
-        public void MainMenuExit(string option)
-        {
-            EndOtherProcesses();
-            switch (option)
-            {
-                case "open":
-                    exitPanel.SetActive(true);
-                    break;
-                case "exit":
-                    Application.LoadLevel("MainMenu");
-                    break;
-
-                case "cancel":
-                    exitPanel.SetActive(false);
-                    break;
-            }
-        }
-
-
-        /// <summary>
-        /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
-        /// </summary>
-        public void EndOtherProcesses()
+    public void ToggleChangeFieldPanel()
+    {
+        if (changeFieldPanel.activeSelf)
         {
             changeFieldPanel.SetActive(false);
-            changeRobotPanel.SetActive(false);
-            exitPanel.SetActive(false);
-            mixAndMatchPanel.SetActive(false);
-            analyticsPanel.SetActive(false);
-
-            CloseOrientWindow();
-            main.IsResetting = false;
-
-            dpm.EndProcesses();
-            toolkit.EndProcesses();
-            multiplayer.EndProcesses();
-            sensorManagerGUI.EndProcesses();
-            robotCameraGUI.EndProcesses();
         }
-        /// <summary>
-        /// Toggle for analytics
-        /// </summary>
-        public void ToggleAnalytics(bool tAnalytics)
+        else
         {
-            changeAnalytics = !changeAnalytics;
+            EndOtherProcesses();
+            changeFieldPanel.SetActive(true);
         }
 
-        /// <summary>
-        /// Enters replay mode
-        /// </summary>
-        public void EnterReplayMode()
-        {
-            main.EnterReplayState();
-        }
-        #region swap part
-        /// <summary>
-        /// Toggles the Driver Practice Mode window
-        /// </summary>
-        public void SwapToggleWindow()
-        {
-            swapWindowOn = !swapWindowOn;
-            swapWindow.SetActive(swapWindowOn);
-        }
-
-        public void TogglePanel(GameObject panel)
-        {
-            if (panel.activeSelf == true)
-            {
-                panel.SetActive(false);
-            }
-            else
-            {
-                panel.SetActive(true);
-            }
-        }
-
-        public void PartToggleWindow(string Window)
-        {
-            List<GameObject> swapPanels = new List<GameObject> { wheelPanel, driveBasePanel, manipulatorPanel };
-            switch (Window)
-            {
-                case "wheel":
-                    TogglePanel(wheelPanel);
-                    driveBasePanel.SetActive(false);
-                    manipulatorPanel.SetActive(false);
-                    break;
-                case "driveBase":
-                    TogglePanel(driveBasePanel);
-                    wheelPanel.SetActive(false);
-                    manipulatorPanel.SetActive(false);
-                    break;
-                case "manipulator":
-                    TogglePanel(manipulatorPanel);
-                    driveBasePanel.SetActive(false);
-                    wheelPanel.SetActive(false);
-                    break;
-                default:
-                    wheelPanel.SetActive(false);
-                    driveBasePanel.SetActive(false);
-                    manipulatorPanel.SetActive(false);
-                    break;
-            }
-        }
-        #endregion
     }
+
+    #endregion
+    #region camera button functions
+    /// <summary>
+    /// Toggles between different dynamic camera states
+    /// </summary>
+    /// <param name="joe"></param>
+    public void SwitchCameraView(int joe)
+    {
+        //Debug.Log(joe);
+        switch (joe)
+        {
+            case 1:
+                camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
+                DynamicCamera.MovingEnabled = true;
+                break;
+            case 2:
+                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
+                DynamicCamera.MovingEnabled = true;
+                break;
+            case 3:
+                camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
+                DynamicCamera.MovingEnabled = true;
+                break;
+            case 4:
+                camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
+                DynamicCamera.MovingEnabled = true;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Change camera tool tips
+    /// </summary>
+    public void CameraToolTips()
+    {
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
+            camera.GetComponent<Text>().text = "Driver Station";
+        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            camera.GetComponent<Text>().text = "Freeroam";
+        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
+            camera.GetComponent<Text>().text = "Orbit Robot";
+        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            camera.GetComponent<Text>().text = "Overview";
+    }
+
+    /// <summary>
+    /// Pop freeroam instructions when using freeroam camera, won't show up again if the user closes it
+    /// </summary>
+    private void UpdateFreeroamWindow()
+    {
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
+        {
+            if (!freeroamWindowClosed)
+            {
+                freeroamCameraWindow.SetActive(true);
+            }
+
+        }
+        else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        {
+            freeroamCameraWindow.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Close freeroam camera tool tip
+    /// </summary>
+    public void CloseFreeroamWindow()
+    {
+        freeroamCameraWindow.SetActive(false);
+        freeroamWindowClosed = true;
+    }
+
+
+    /// <summary>
+    /// Activate driver station tool tips if the main camera is in driver station state
+    /// </summary>
+    private void UpdateDriverStationPanel()
+    {
+        driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+    }
+
+    /// <summary>
+    /// Change to driver station view to the opposite side
+    /// </summary>
+    public void ToggleDriverStation()
+    {
+        oppositeSide = !oppositeSide;
+        camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
+    }
+    #endregion
+    #region orient button functions
+    public void OrientLeft()
+    {
+        main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientRight()
+    {
+        main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientForward()
+    {
+        main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
+    }
+    public void OrientBackward()
+    {
+        main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
+    }
+
+    public void DefaultOrientation()
+    {
+        main.ResetRobotOrientation();
+    }
+
+    public void SaveOrientation()
+    {
+        main.SaveRobotOrientation();
+    }
+
+    public void CancelOrientation()
+    {
+        main.CancelRobotOrientation();
+    }
+
+    #endregion
+    #region control panel functions
+    public void ShowControlPanel(bool show)
+    {
+        if (show)
+        {
+            EndOtherProcesses();
+            inputManagerPanel.SetActive(true);
+        }
+        else
+        {
+            inputManagerPanel.SetActive(false);
+            ToggleHotKeys(false);
+        }
+    }
+
+    public void ShowControlPanel()
+    {
+        ShowControlPanel(!inputManagerPanel.activeSelf);
+    }
+
+    
+    /// <summary>
+    /// Open totorial link
+    /// </summary>
+    public void OpenTutorialLink()
+    {
+        Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+        if (changeAnalytics) //for analytics tracking
+        {
+            Analytics.CustomEvent("Clicked Tutorial Link", new Dictionary<string, object>
+            {
+            });
+        }
+    }
+    /// <summary>
+    /// Activates analytics panel
+    /// </summary>
+    public void ToggleAnalyticsPanel()
+    {
+        if (analyticsPanel.activeSelf)
+        {
+            analyticsPanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            analyticsPanel.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// Toggles between meter and feet measurements
+    /// </summary>
+    public void ToggleUnitConversion()
+    {
+        if (canvas != null)
+        {
+            unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
+            int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
+            main.IsMetric = (i == 1 ? true : false);
+            PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
+            Debug.Log("Metric: " + main.IsMetric);
+        }
+    }
+
+    /// <summary>
+    /// Toggle the hot key tool tips on/off based on the boolean passed in
+    /// </summary>
+    /// <param name="show"></param>
+    public void ToggleHotKeys(bool show)
+    {
+        hotKeyPanel.SetActive(show);
+        if (show)
+        {
+            hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Key";
+        }
+        else
+        {
+            hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Key";
+        }
+    }
+
+    /// <summary>
+    ///Toggle the hot key tool tips on/off based on its current state
+    /// </summary>
+    public void ToggleHotKeys()
+    {
+        ToggleHotKeys(!hotKeyPanel.activeSelf);
+    }
+    #endregion
+    #region reset functions
+    /// <summary>
+    /// Pop reset instructions when main is in reset spawnpoint mode, enable orient robot at the same time
+    /// </summary>
+    private void UpdateSpawnpointWindow()
+    {
+        if (main.ActiveRobot.IsResetting)
+        {
+            spawnpointWindow.SetActive(true);
+            orientWindow.SetActive(true);
+        }
+        else
+        {
+            spawnpointWindow.SetActive(false);
+            orientWindow.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Toggles between quick reset and reset spawnpoint
+    /// </summary>
+    /// <param name="i"></param>
+    public void ChooseResetMode(int i)
+    {
+        switch (i)
+        {
+            case 1:
+                main.BeginRobotReset();
+                main.EndRobotReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+            case 2:
+                EndOtherProcesses();
+                main.BeginRobotReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+        }
+    }
+    #endregion
+
+    /// <summary>
+    /// Exit to main menu window
+    /// </summary>
+    /// <param name="option"></param>
+    public void MainMenuExit(string option)
+    {
+        EndOtherProcesses();
+        switch (option)
+        {
+            case "open":
+                exitPanel.SetActive(true);
+                break;
+            case "exit":
+                Application.LoadLevel("MainMenu");
+                break;
+
+            case "cancel":
+                exitPanel.SetActive(false);
+                break;
+        }
+    }
+
+
+    /// <summary>
+    /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
+    /// </summary>
+    public void EndOtherProcesses()
+    {
+        changeFieldPanel.SetActive(false);
+        changeRobotPanel.SetActive(false);
+        exitPanel.SetActive(false);
+        mixAndMatchPanel.SetActive(false);
+        analyticsPanel.SetActive(false);
+        inputManagerPanel.SetActive(false);
+        ToggleHotKeys(false);
+
+        CancelOrientation();
+
+        dpm.EndProcesses();
+        toolkit.EndProcesses();
+        multiplayer.EndProcesses();
+        sensorManagerGUI.EndProcesses();
+        robotCameraGUI.EndProcesses();
+    }
+    /// <summary>
+    /// Toggle for analytics
+    /// </summary>
+    public void ToggleAnalytics(bool tAnalytics)
+    {
+        changeAnalytics = !changeAnalytics;
+    }
+
+    /// <summary>
+    /// Enters replay mode
+    /// </summary>
+    public void EnterReplayMode()
+    {
+        main.EnterReplayState();
+    }
+    #region swap part
+    /// <summary>
+    /// Toggles the Driver Practice Mode window
+    /// </summary>
+    public void SwapToggleWindow()
+    {
+        swapWindowOn = !swapWindowOn;
+        swapWindow.SetActive(swapWindowOn);
+    }
+
+    public void TogglePanel(GameObject panel)
+    {
+        if (panel.activeSelf == true)
+        {
+            panel.SetActive(false);
+        }
+        else
+        {
+            panel.SetActive(true);
+        }
+    }
+
+    public void PartToggleWindow(string Window)
+    {
+        List<GameObject> swapPanels = new List<GameObject> { wheelPanel, driveBasePanel, manipulatorPanel };
+        switch (Window)
+        {
+            case "wheel":
+                TogglePanel(wheelPanel);
+                driveBasePanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+            case "driveBase":
+                TogglePanel(driveBasePanel);
+                wheelPanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+            case "manipulator":
+                TogglePanel(manipulatorPanel);
+                driveBasePanel.SetActive(false);
+                wheelPanel.SetActive(false);
+                break;
+            default:
+                wheelPanel.SetActive(false);
+                driveBasePanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+        }
+    }
+    #endregion
+}

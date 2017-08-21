@@ -70,9 +70,9 @@ namespace Assets.Scripts.BUExtensions
             get { return chassisBody; }
         }
 
-        public float SuspensionEffectiveMass { get; set; }
+        public float OverrideMass { get; set; }
 
-        public RigidBody FrictionEffectiveRigidBody { get; set; }
+        public RigidBody RootRigidBody { get; set; }
 
         IVehicleRaycaster vehicleRaycaster;
 
@@ -122,11 +122,11 @@ namespace Assets.Scripts.BUExtensions
         public RaycastRobot(VehicleTuning tuning, RigidBody chassis, IVehicleRaycaster raycaster)
         {
             chassisBody = chassis;
-            FrictionEffectiveRigidBody = chassis;
+            RootRigidBody = chassis;
             vehicleRaycaster = raycaster;
 
             SlidingFriction = 1.0f;
-            SuspensionEffectiveMass = 1.0f / chassis.InvMass;
+            OverrideMass = 1.0f / chassis.InvMass;
         }
 
         public WheelInfo AddWheel(Vector3 connectionPointCS, Vector3 wheelDirectionCS0, Vector3 wheelAxleCS, float suspensionRestLength, float wheelRadius, VehicleTuning tuning, bool isFrontWheel)
@@ -413,7 +413,7 @@ namespace Assets.Scripts.BUExtensions
                     Vector3.Cross(ref surfNormalWS, ref axle[i], out forwardWS[i]);
                     forwardWS[i].Normalize();
 
-                    ResolveSingleBilateral(FrictionEffectiveRigidBody, wheel.RaycastInfo.ContactPointWS,
+                    ResolveSingleBilateral(RootRigidBody, wheel.RaycastInfo.ContactPointWS,
                               groundObject, wheel.RaycastInfo.ContactPointWS,
                               0, axle[i], ref sideImpulse[i], timeStep);
 
@@ -573,7 +573,7 @@ namespace Assets.Scripts.BUExtensions
                     }
 
                     // RESULT
-                    wheel_info.WheelsSuspensionForce = force * SuspensionEffectiveMass;
+                    wheel_info.WheelsSuspensionForce = force * OverrideMass;
                     if (wheel_info.WheelsSuspensionForce < 0)
                     {
                         wheel_info.WheelsSuspensionForce = 0;
