@@ -198,7 +198,7 @@ public class Robot : MonoBehaviour
         //Initializes the nodes and creates joints for the robot
         if (isMixAndMatch == 1 && !MixAndMatchMode.isMecanum)
         {
-            //Load Node_0, the base of the robot
+            //Load Node_0
             RigidNode node = (RigidNode)nodes[0];
             node.CreateTransform(transform);
 
@@ -238,6 +238,7 @@ public class Robot : MonoBehaviour
                 }
 
                 materialList.Add(materials);
+                //meshObject.GetComponent<MeshRenderer>().materials = materials;
             }, true);
 
             //Loads the other nodes from the original robot
@@ -277,10 +278,14 @@ public class Robot : MonoBehaviour
                     node.MainObject.GetComponentInChildren<MeshRenderer>().materials = materials;
                 }
 
-                //Create the joints that interact with physics
+                //node.MainObject.transform.GetChild(0).localPosition = -node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds.center;// -node.MainObject.transform.localPosition;
+                //Bounds b = node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds;
+                // Debug.Log(b.center); 
+                //b.center = node.MainObject.transform.position;
+                //node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds = b;
+
                 node.CreateJoint(numWheels);
 
-                //If the node is a wheel, set its radius to that of the MaM selected wheel
                 if (node.HasDriverMeta<WheelDriverMeta>())
                 {
                     float radius = PlayerPrefs.GetFloat("wheelRadius");
@@ -294,7 +299,7 @@ public class Robot : MonoBehaviour
                     node.MainObject.AddComponent<Tracker>().Trace = true;
             }
         }
-        else //Initialize the robot as normal
+        else
         {
             //Initializes the nodes
             foreach (RigidNode_Base n in nodes)
@@ -319,6 +324,7 @@ public class Robot : MonoBehaviour
         }
 
         #endregion
+
 
         //Get the offset from the first node to the robot for new robot start position calculation
         //This line is CRITICAL to new reset position accuracy! DON'T DELETE IT!
@@ -372,7 +378,7 @@ public class Robot : MonoBehaviour
     }
 
     /// <summary>
-    /// Deletes robot manipulator (used for Mix and Match mode)
+    /// Deletes robot manipulator (meant only for use in Mix and Match mode)
     /// </summary>
     public void DeleteManipulatorNodes()
     {
