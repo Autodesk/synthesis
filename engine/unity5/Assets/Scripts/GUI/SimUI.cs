@@ -49,6 +49,7 @@ public class SimUI : MonoBehaviour
 
     GameObject mixAndMatchPanel;
 
+    GameObject scoreBoardPanel;
     public static bool changeAnalytics = true;
     public bool swapWindowOn = false; //if the swap window is active
     public bool wheelPanelOn = false; //if the wheel panel is active
@@ -147,6 +148,8 @@ public class SimUI : MonoBehaviour
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
+
+        scoreBoardPanel = AuxFunctions.FindObject(canvas, "ScoreBoard");
     }
 
     private void UpdateWindows()
