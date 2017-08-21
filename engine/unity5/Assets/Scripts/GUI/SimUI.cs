@@ -67,6 +67,14 @@ public class SimUI : MonoBehaviour
 
     private bool oppositeSide = false;
 
+    /// <summary>
+    /// Link the SimUI to main state
+    /// </summary>
+    private void Awake()
+    {
+        StateMachine.Instance.LinkBehaviour<MainState>(this);
+    }
+
     private void Update()
     {
         if (main == null)
