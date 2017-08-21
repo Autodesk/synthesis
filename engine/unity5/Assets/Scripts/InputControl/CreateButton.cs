@@ -613,7 +613,15 @@ public class CreateButton : MonoBehaviour
 
     public void ResetTankDrive()
     {
+        DestroyList();
         InputControl.mPlayerList[InputControl.activePlayerIndex].ResetTank();
+        UpdateActiveButtons();
+    }
+
+    public void ResetArcadeDrive()
+    {
+        DestroyList();
+        InputControl.mPlayerList[InputControl.activePlayerIndex].ResetArcade();
         UpdateActiveButtons();
     }
 
@@ -671,7 +679,6 @@ public class CreateButton : MonoBehaviour
         tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
         unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
         unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 1 : 0;
-    
     }
 
     /// <summary>
