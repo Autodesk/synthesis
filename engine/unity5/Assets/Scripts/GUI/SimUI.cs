@@ -238,7 +238,7 @@ public class SimUI : MonoBehaviour
         }
         else
         {
-            main.ActiveRobot.robotHasManipulator = 0;
+            main.ActiveRobot.RobotHasManipulator = 0;
         }
     }
 
