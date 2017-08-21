@@ -493,6 +493,8 @@ public class SimUI : MonoBehaviour
             unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
             int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
             main.IsMetric = (i == 1 ? true : false);
+            PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
+            Debug.Log("Metric: " + main.IsMetric);
         }
     }
 
