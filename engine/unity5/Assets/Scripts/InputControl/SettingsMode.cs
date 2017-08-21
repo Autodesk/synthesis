@@ -44,9 +44,6 @@ public class SettingsMode : MonoBehaviour
     public void OnLoadClick()
     {
         Controls.Load();
-
-        //Enable this for auto-saving. To complete auto-saving, enable the comments in KeyButton.cs > SetInput().
-        //UpdateAllText();
     }
 
     /// <summary>
@@ -54,22 +51,16 @@ public class SettingsMode : MonoBehaviour
     /// </summary>
     public void OnReset()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
-        //if (Controls.TankDriveEnabled)
-        //{
-        //    //Controls.ResetTankDrive();
-        //    //Controls.Save();
-        //    GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
-        //    //Controls.Save();
-        //    Debug.Log("Reset");
-        //    //UpdateAllText();
-        //}
-        //else
-        //{
-        //    //Controls.ResetArcadeDrive();
-        //    //Controls.Save();
-        //    Debug.Log("Reset Arcade");
-        //}
+        if (Controls.TankDriveEnabled)
+        {
+            GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
+            Controls.Save();
+        }
+        else
+        {
+            GameObject.Find("Content").GetComponent<CreateButton>().ResetArcadeDrive();
+            Controls.Save();
+        }
     }
 
     #region Player Buttons

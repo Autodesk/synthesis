@@ -79,6 +79,7 @@ public class Player
     {
         KeyMapping outKey = null;
         KeyMapping defaultKey = null;
+
         if (!isTankDrive)
         {
             if (arcadeDriveMap.TryGetValue(name, out outKey) && resetArcadeDriveMap.TryGetValue(name, out outKey))
@@ -263,6 +264,7 @@ public class Player
             tankDriveList.Add(defaultKey);
         }
         isTankDrive = true;
+        Controls.TankDriveEnabled = true;
         activeList = tankDriveList;
 
     }
@@ -276,6 +278,7 @@ public class Player
             arcadeDriveList.Add(defaultKey);
         }
         isTankDrive = false;
+        Controls.TankDriveEnabled = false;
         activeList = arcadeDriveList;
     }
 }
