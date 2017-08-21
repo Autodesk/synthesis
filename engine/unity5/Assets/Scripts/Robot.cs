@@ -662,8 +662,11 @@ public class Robot : MonoBehaviour
     /// </summary>
     public void CancelRobotOrientation()
     {
-        BeginReset();
-        EndReset();
+        if (IsResetting)
+        {
+            BeginReset();
+            EndReset();
+        }
     }
     /// <summary>
     /// Returns the driver practice component of this robot
