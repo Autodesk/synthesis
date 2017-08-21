@@ -43,7 +43,7 @@ public class Robot : MonoBehaviour
 
     public UnityPacket.OutputStatePacket Packet;
 
-    public int controlIndex = 0;
+    public int ControlIndex = 0;
 
     private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
@@ -53,13 +53,14 @@ public class Robot : MonoBehaviour
 
     private RobotCameraManager robotCameraManager;
 
-    public GameObject manipulatorObject;
+    public GameObject ManipulatorObject;
     private RigidNode_Base manipulatorNode;
 
     UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
 
-    public int robotHasManipulator;
+    public int RobotHasManipulator;
 
+    //Robot statistics output
     public float Speed { get; private set; }
     private float oldSpeed;
     public float Weight { get; private set; }
@@ -71,7 +72,7 @@ public class Robot : MonoBehaviour
     /// </summary>
     void Start()
     {
-        robotHasManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
+        RobotHasManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
     }
 
     /// <summary>
@@ -91,12 +92,12 @@ public class Robot : MonoBehaviour
             rigidBody.GetCollisionObject().Activate();
         if (!IsResetting && StateMachine.Instance.CurrentState is MainState)
         {
-            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].resetRobot))
+            if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
             {
                 keyDownTime = Time.time;
             }
 
-            else if (InputControl.GetButton(Controls.buttons[controlIndex].resetRobot))
+            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot))
             {
                 if (Time.time - keyDownTime > HOLD_TIME)
                 {
@@ -105,7 +106,7 @@ public class Robot : MonoBehaviour
                 }
             }
 
-            else if (InputControl.GetButtonUp(Controls.buttons[controlIndex].resetRobot))
+            else if (InputControl.GetButtonUp(Controls.buttons[ControlIndex].resetRobot))
             {
                 BeginReset();
                 EndReset();
@@ -122,15 +123,15 @@ public class Robot : MonoBehaviour
         if (rootNode != null && ControlsEnabled)
         {
 
-            if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
-            else DriveJoints.UpdateAllMotors(rootNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
+            if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, ControlIndex, MixAndMatchMode.GetMecanum());
+            else DriveJoints.UpdateAllMotors(rootNode, emptyDIO, ControlIndex, MixAndMatchMode.GetMecanum());
             int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); //0 is false, 1 is true
 
             //If the robot is in Mix and Match mode and has a manipulator, update the manipulator motors
-            if (robotHasManipulator == 1 && isMixAndMatch == 1)
+            if (RobotHasManipulator == 1 && isMixAndMatch == 1)
             {
                 Debug.Log("Manipulator should be moving");
-                DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
+                DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, ControlIndex, MixAndMatchMode.GetMecanum());
             }
         }
 
@@ -193,11 +194,9 @@ public class Robot : MonoBehaviour
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
 
-       
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch");
-
         //Initializes the nodes and creates joints for the robot
-        if (isMixAndMatch == 1 && !MixAndMatchMode.isMecanum)  //If the user is in MaM and the robot they select is not mecanum, create the nodes and replace the wheel meshes to match those selected
+        if (isMixAndMatch == 1 && !MixAndMatchMode.isMecanum)
         {
             //Load Node_0, the base of the robot
             RigidNode node = (RigidNode)nodes[0];
@@ -217,7 +216,7 @@ public class Robot : MonoBehaviour
             if (node.MainObject.GetComponent<BRigidBody>() != null)
                 node.MainObject.AddComponent<Tracker>().Trace = true;
 
-            //Get the wheel mesh data from the file they are stored in. They are stored as .bxda files. This may need to update if exporters/file types change.      
+            //Get the wheel mesh data from the file they are stored in. They are currently stored as .bxda files. This may need to update if exporters/file types are changed.
             string wheelDirectory = PlayerPrefs.GetString("simSelectedWheel");
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(wheelDirectory + "\\node_0.bxda");
@@ -241,7 +240,7 @@ public class Robot : MonoBehaviour
                 materialList.Add(materials);
             }, true);
 
-            //Loads the others nodes from the original robot
+            //Loads the other nodes from the original robot
             for (int i = 1; i < nodes.Count; i++)
             {
                 node = (RigidNode)nodes[i];
@@ -253,7 +252,7 @@ public class Robot : MonoBehaviour
                     return false;
                 }
 
-                //If the node is a wheel, destroy the original wheel mesh and replace it with the wheels selected in MaM
+                //If the node is a wheel, destory the original wheel mesh and replace it with the wheels selected in MaM
                 if (node.HasDriverMeta<WheelDriverMeta>())
                 {
                     int chldCount = node.MainObject.transform.childCount;
@@ -271,9 +270,8 @@ public class Robot : MonoBehaviour
                         meshObj.AddComponent<MeshFilter>().mesh = meshObject;
                         meshObj.transform.localPosition = -meshObject.bounds.center;
 
-                        //Take out this line if you want some snazzy pink wheels :P
+                        //Take out this line if you want some snazzy pink wheels
                         meshObj.AddComponent<MeshRenderer>().materials = materialList[k];
-
                         k++;
                     }
                     node.MainObject.GetComponentInChildren<MeshRenderer>().materials = materials;
@@ -288,7 +286,7 @@ public class Robot : MonoBehaviour
                     float radius = PlayerPrefs.GetFloat("wheelRadius");
                     node.MainObject.GetComponent<BRaycastWheel>().Radius = radius;
                 }
-                   
+
                 if (node.PhysicalProperties != null)
                     collectiveMass += node.PhysicalProperties.mass;
 
@@ -328,8 +326,8 @@ public class Robot : MonoBehaviour
 
         foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
         {
-            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
-            r.RaycastRobot.FrictionEffectiveRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+            r.RaycastRobot.OverrideMass = collectiveMass;
+            r.RaycastRobot.RootRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
         }
 
         RotateRobot(robotStartOrientation);
@@ -379,17 +377,17 @@ public class Robot : MonoBehaviour
     public void DeleteManipulatorNodes()
     {
         //Deletes all nodes if any exist, take the old node transforms out from the robot object
-        int childCount = manipulatorObject.transform.childCount;
+        int childCount = ManipulatorObject.transform.childCount;
         for (int i = childCount - 1; i >= 0; i--)
         {
-            Transform child = manipulatorObject.transform.GetChild(i);
+            Transform child = ManipulatorObject.transform.GetChild(i);
 
             //If this isn't done, the game object is destroyed but the parent-child transform relationship remains!
             child.parent = null;
             Destroy(child.gameObject);
         }
 
-        Destroy(manipulatorObject);
+        Destroy(ManipulatorObject);
     }
 
 
@@ -420,7 +418,7 @@ public class Robot : MonoBehaviour
         }
 
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-        if (robotHasManipulator == 1 && isMixAndMatch == 1)
+        if (RobotHasManipulator == 1 && isMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
@@ -453,7 +451,7 @@ public class Robot : MonoBehaviour
     }
 
     /// <summary>
-    /// Can move robot around in this state, update robotStartPosition if hit enter
+    /// Can move robot around in this state using WASD, update robotStartPosition if hit enter
     /// </summary>
     void Resetting()
     {
@@ -461,7 +459,7 @@ public class Robot : MonoBehaviour
         {
             //Transform rotation along the horizontal plane
             Vector3 rotation = new Vector3(0f,
-                Input.GetKey(KeyCode.RightArrow) ? ResetVelocity : Input.GetKey(KeyCode.LeftArrow) ? -ResetVelocity : 0f,
+                Input.GetKey(KeyCode.D) ? ResetVelocity : Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
                 0f);
             if (!rotation.Equals(Vector3.zero))
                 RotateRobot(rotation);
@@ -471,9 +469,9 @@ public class Robot : MonoBehaviour
         {
             //Transform position
             Vector3 transposition = new Vector3(
-                Input.GetKey(KeyCode.RightArrow) ? ResetVelocity : Input.GetKey(KeyCode.LeftArrow) ? -ResetVelocity : 0f,
+                Input.GetKey(KeyCode.D) ? ResetVelocity : Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
                 0f,
-                Input.GetKey(KeyCode.UpArrow) ? ResetVelocity : Input.GetKey(KeyCode.DownArrow) ? -ResetVelocity : 0f);
+                Input.GetKey(KeyCode.W) ? ResetVelocity : Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f);
 
             if (!transposition.Equals(Vector3.zero))
                 TransposeRobot(transposition);
@@ -511,7 +509,7 @@ public class Robot : MonoBehaviour
         }
 
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-        if (robotHasManipulator == 1 && isMixAndMatch == 1)
+        if (RobotHasManipulator == 1 && isMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
@@ -550,7 +548,7 @@ public class Robot : MonoBehaviour
         }
 
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-        if (robotHasManipulator == 1 && isMixAndMatch == 1)
+        if (RobotHasManipulator == 1 && isMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
@@ -601,7 +599,7 @@ public class Robot : MonoBehaviour
         }
 
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-        if (robotHasManipulator == 1 && isMixAndMatch == 1)
+        if (RobotHasManipulator == 1 && isMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
@@ -655,9 +653,19 @@ public class Robot : MonoBehaviour
     {
         robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
         robotStartOrientation.ToUnity();
-        EndReset();
     }
 
+    /// <summary>
+    /// Cancel current orientation & spawnpoint changes
+    /// </summary>
+    public void CancelRobotOrientation()
+    {
+        if (IsResetting)
+        {
+            BeginReset();
+            EndReset();
+        }
+    }
     /// <summary>
     /// Returns the driver practice component of this robot
     /// </summary>
@@ -666,19 +674,24 @@ public class Robot : MonoBehaviour
         return GetComponent<DriverPracticeRobot>();
     }
 
+
     /// <summary>
-    /// Loads and initializes the manipulator object (for Mix and Match mode)
+    /// Loads the manipulator and attaches it to Node 0 of the robot for MixAndMatch Mode
     /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="robotGameObject"></param>
+    /// <returns></returns>
     public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
+        ManipulatorObject = new GameObject("Manipulator");
+
         if (robotGameObject == null)
         {
-           robotGameObject =  GameObject.Find("Robot");
+            robotGameObject = GameObject.Find("Robot");
         }
-        manipulatorObject = new GameObject("Manipulator");
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
-        manipulatorObject.transform.position = robotGameObject.transform.GetChild(0).transform.position;
+        ManipulatorObject.transform.position = robotGameObject.transform.GetChild(0).transform.position;
 
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
@@ -693,13 +706,13 @@ public class Robot : MonoBehaviour
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
 
-        //Load node_0 for attaching manipulator to robot
+        //Load node_0 for attaching manipulator to robot. Create a joint between it and node_0 of the robot.
         RigidNode node = (RigidNode)nodes[0];
-        node.CreateTransform(manipulatorObject.transform);
+        node.CreateTransform(ManipulatorObject.transform);
         if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
         {
             Debug.Log("Robot not loaded!");
-            UnityEngine.Object.Destroy(manipulatorObject);
+            UnityEngine.Object.Destroy(ManipulatorObject);
             return false;
         }
         GameObject robot = robotGameObject;
@@ -712,11 +725,11 @@ public class Robot : MonoBehaviour
         for (int i = 1; i < nodes.Count; i++)
         {
             RigidNode otherNode = (RigidNode)nodes[i];
-            otherNode.CreateTransform(manipulatorObject.transform);
+            otherNode.CreateTransform(ManipulatorObject.transform);
             if (!otherNode.CreateMesh(directory + "\\" + otherNode.ModelFileName))
             {
                 Debug.Log("Robot not loaded!");
-                UnityEngine.Object.Destroy(manipulatorObject);
+                UnityEngine.Object.Destroy(ManipulatorObject);
                 return false;
             }
             otherNode.CreateJoint(numWheels);
@@ -725,8 +738,8 @@ public class Robot : MonoBehaviour
             Debug.Log(t);
         }
 
-        foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
+        foreach (BRaycastRobot r in ManipulatorObject.GetComponentsInChildren<BRaycastRobot>())
+            r.RaycastRobot.OverrideMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
         return true;
@@ -741,11 +754,13 @@ public class Robot : MonoBehaviour
         //calculates stats of robot
         if (mainNode != null)
         {
-            Speed = (float)Math.Round(Math.Abs(mainNode.GetComponent<BRigidBody>().velocity.magnitude), 3);
+            float currentSpeed = mainNode.GetComponent<BRigidBody>().GetCollisionObject().InterpolationLinearVelocity.Length;
+
+            Speed = (float)Math.Round(Math.Abs(currentSpeed), 3);
             Weight = (float)Math.Round(GetWeight(), 3);
             AngularVelocity = (float)Math.Round(Math.Abs(mainNode.GetComponent<BRigidBody>().angularVelocity.magnitude), 3);
-            Acceleration = (float)Math.Round((mainNode.GetComponent<BRigidBody>().velocity.magnitude - oldSpeed) / Time.deltaTime, 3);
-            oldSpeed = Speed;
+            Acceleration = (float)Math.Round((currentSpeed - oldSpeed) / Time.deltaTime, 3);
+            oldSpeed = currentSpeed;
             if (!mainState.IsMetric)
             {
                 Speed = (float)Math.Round(Speed * 3.28084, 3);
@@ -763,7 +778,7 @@ public class Robot : MonoBehaviour
     {
         float weight = 0;
 
-        foreach(Transform child in gameObject.transform)
+        foreach (Transform child in gameObject.transform)
         {
             if (child.GetComponent<BRigidBody>() != null)
             {
