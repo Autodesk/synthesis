@@ -5,10 +5,12 @@ using UnityEngine.UI;
 
 public class MaMInfoText : MonoBehaviour {
     private GameObject infoText;
+
     public void FindAllGameObjects()
     {
         infoText = GameObject.Find("PartDescription");
     }
+
     public void SetWheelInfoText(int wheel)
     {
         Text txt = infoText.GetComponent<Text>();
