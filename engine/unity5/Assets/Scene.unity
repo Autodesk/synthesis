@@ -4160,7 +4160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 193.04999, y: -181.50002}
+  m_AnchoredPosition: {x: 193.04999, y: -181.5}
   m_SizeDelta: {x: 64.3, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &148113185
@@ -9487,7 +9487,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 349.6, y: -2.9999008}
+  m_AnchoredPosition: {x: 349.60004, y: -2.9999008}
   m_SizeDelta: {x: 61, y: 36}
   m_Pivot: {x: 0.35666856, y: 0.5}
 --- !u!114 &367838684
@@ -12852,7 +12852,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 111.9, y: -127.50012}
+  m_AnchoredPosition: {x: 111.9, y: -127.500114}
   m_SizeDelta: {x: 200.6, y: 56.100006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &460448624
@@ -14265,7 +14265,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 190, y: 316.39996}
+  m_AnchoredPosition: {x: 190, y: 316.39993}
   m_SizeDelta: {x: 380, y: 227.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &502832528
@@ -16574,7 +16574,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 42.049973, y: -181.50002}
+  m_AnchoredPosition: {x: 42.049973, y: -181.5}
   m_SizeDelta: {x: 64.3, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &569592570
@@ -19558,7 +19558,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 246.39989, y: -0.95007324}
+  m_AnchoredPosition: {x: 246.3999, y: -0.95007324}
   m_SizeDelta: {x: 70, y: -74.20001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &702061398
@@ -19697,7 +19697,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 190, y: 316.40002}
+  m_AnchoredPosition: {x: 190, y: 316.4}
   m_SizeDelta: {x: 380, y: 227.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &706397236
@@ -20974,7 +20974,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 33.3, y: -1.5}
+  m_AnchoredPosition: {x: 33.300003, y: -1.5}
   m_SizeDelta: {x: -5.4, y: -7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &753436388
@@ -21339,7 +21339,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 39.999695, y: -51.599834}
+  m_AnchoredPosition: {x: 39.999695, y: -51.59983}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &762637790
@@ -35791,7 +35791,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 451.33002, y: 3}
+  m_AnchoredPosition: {x: 451.33, y: 3}
   m_SizeDelta: {x: 61, y: -84}
   m_Pivot: {x: 0.36604086, y: 0.5}
 --- !u!114 &1278068988
@@ -36555,7 +36555,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 111.9, y: -127.50012}
+  m_AnchoredPosition: {x: 111.9, y: -127.500114}
   m_SizeDelta: {x: 200.6, y: 56.100006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1307874511
@@ -57518,7 +57518,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeOffsetZ
           m_Mode: 3
           m_Arguments:
@@ -57535,7 +57535,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
