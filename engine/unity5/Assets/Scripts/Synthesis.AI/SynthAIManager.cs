@@ -10,12 +10,12 @@ using Assets.Scripts.FSM;
 // Tagging the field Game Object with the field tag and calling InitiateAI() will automatically tag all field elements
 public class SynthAIManager : MonoBehaviour
 {
-    private NavMeshData NavMesh;
+    private NavMeshData NavMesh; // The NavMesh that the robot pathfinding agents use to calculate their path.
     private AsyncOperation Operation;
     private NavMeshDataInstance NavMeshInstance;
     private List<NavMeshBuildSource> Sources = new List<NavMeshBuildSource>();
 
-    private bool isInitialized = false;
+    private bool isInitialized = false; // Whether or not the AI Manager has been initialized.
     private static List<AIRobot> robots;
 
     // Singleton Instance
@@ -55,6 +55,19 @@ public class SynthAIManager : MonoBehaviour
 
         // Initialize Robot arraylist
         robots = new List<AIRobot>();
+    }
+
+    // Update NavMesh as terrain changes
+    IEnumerator Start()
+    {
+        while (true)
+        {
+            if (isInitialized) // Only update NavMesh if the AI Manager has been initialized
+            {
+                UpdateNavMesh(true);
+            }
+            yield return Operation; // Wait for change in field before updating NavMesh
+        }
     }
 
     /// <summary>
@@ -118,19 +131,6 @@ public class SynthAIManager : MonoBehaviour
         Debug.Log("AI NavMesh initiated in " + (Time.realtimeSinceStartup - start) + "seconds!");
     }
 
-    // Update NavMesh as terrain changes
-    IEnumerator Start()
-    {
-        while (true)
-        {
-            if (isInitialized) // Only update NavMesh if the AI Manager has been initialized
-            {
-                UpdateNavMesh(true);
-            }
-            yield return Operation;
-        }
-    }
-
     void OnEnable()
     {
         // Construct and add navmesh
@@ -146,6 +146,10 @@ public class SynthAIManager : MonoBehaviour
         NavMeshInstance.Remove();
     }
 
+    /// <summary>
+    /// Updates Nav Mesh to new field state. Any object with SynthAITag is processed in this update.
+    /// </summary>
+    /// <param name="asyncUpdate">Whether to update asynchronously or not.</param>
     private void UpdateNavMesh(bool asyncUpdate = false)
     {
         SynthAITag.Collect(ref Sources);
@@ -158,6 +162,12 @@ public class SynthAIManager : MonoBehaviour
             NavMeshBuilder.UpdateNavMeshData(NavMesh, defaultBuildSettings, Sources, bounds);
     }
 
+    /// <summary>
+    /// Spawns an AI robot with the chosen behaviour.
+    /// </summary>
+    /// <param name="directory">Directory of robot to spawn.</param>
+    /// <param name="chosenBehaviour">Behaviour to spawn the robot with.</param>
+    /// <returns></returns>
     public static AIRobot SpawnRobot(string directory, BaseSynthBehaviour chosenBehaviour)
     {
         MainState main = Instance.transform.GetComponent<StateMachine>().CurrentState as MainState;
@@ -178,6 +188,9 @@ public class SynthAIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Destroys all AI robots on field.
+    /// </summary>
     public static void ClearRobots()
     {
         MainState main = Instance.transform.GetComponent<StateMachine>().CurrentState as MainState;

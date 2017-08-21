@@ -41,6 +41,11 @@ public class ChangeBehaviourScrollable : ScrollablePanel
         }
     }
 
+    /// <summary>
+    /// Gets the selected behaviour in the behaviour select panel on the AI UI panel. All classes must have the 
+    /// same constructor (no Unity component should have a constructor other than an empty constructor).
+    /// </summary>
+    /// <returns>The selected SynthAIBehaviour</returns>
     public BaseSynthBehaviour GetSelectedBehaviour()
     {
         foreach(BaseSynthBehaviour behaviour in behaviours)
@@ -60,6 +65,13 @@ public class ChangeBehaviourScrollable : ScrollablePanel
         base.OnGUI();
     }
 
+
+    /// <summary>
+    /// Uses reflection to retrieve all classes that are of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The base type to collect.</typeparam>
+    /// <param name="constructorArgs">The constructor of the object type.</param>
+    /// <returns>A list containing all objects of type <typeparamref name="T"/>.</returns>
     private static List<T> GetEnumerableOfType<T>(params object[] constructorArgs) where T : class, IComparable<T>
     {
         List<T> objects = new List<T>();

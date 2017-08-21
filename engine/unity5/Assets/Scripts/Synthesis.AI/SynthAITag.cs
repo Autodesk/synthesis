@@ -40,7 +40,9 @@ public class SynthAITag : MonoBehaviour
         }
     }
 
-    // Collection of all game objects tagged by this component
+    /// <summary>
+    /// Collects all objects with a SynthAI tag.
+    /// </summary>
     public static void Collect(ref List<NavMeshBuildSource> sources)
     {
         sources.Clear();

@@ -7,10 +7,12 @@ using System;
 // We make this an IComparable so we can sort them by name in our ChangeBehaviourScrollable class
 public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthBehaviour>
 {
-    private static readonly float STUCK_TIME = 2.25f;
-    private static readonly float BACKUP_TIME = 1.25f;
+    private static readonly float STUCK_TIME = 2.25f; // How long the robot must be stuck for before backing up, in seconds.
+    private static readonly float BACKUP_TIME = 1.25f; // How long the robot should back up for, in seconds.
+
     protected bool driveNow = false; // A switch to turn on and off automatic robot steering towards next point.
                                      // Can be set to false if robot should not be controlling its driving.
+
     protected IControllable robot; // Reference to robot. Used to manipulate robot.
     protected UnityEngine.AI.NavMeshAgent agent; // The NavMesh agent pathfinds around obstacles.
     protected Vector3 LastPosition; // Used to calculate current velocity
@@ -18,6 +20,7 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
     protected float maxSpeed; // Max speed belongs to behaviour so that custom behaviours can use their own Max Speed
                               // It is recommended that custom behaviours set this max speed 
                               // to less than AIManager.Instance.AIMaxSpeed
+
     // Initialization
     void Start()
     {
@@ -26,9 +29,13 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
         // Setup NavMesh agent to pathfind in front of robot, avoiding obstacles.
         this.agent = new GameObject("AIPathfindingAgent").AddComponent<UnityEngine.AI.NavMeshAgent>();
         this.agent.transform.parent = this.transform;
+
+        // Place NavMesh agent on the NavMesh. NavMesh.SamplePosition will always return a point on the NavMesh.
         UnityEngine.AI.NavMeshHit hit;
         UnityEngine.AI.NavMesh.SamplePosition(robot.GetPosition(), out hit, 50, UnityEngine.AI.NavMesh.AllAreas);
         this.agent.Warp(hit.position);
+
+        // LastPosition is used to calculate curVelocity of robot.
         LastPosition = this.robot.GetPosition();
         this.agent.speed = 0f;
 
@@ -47,7 +54,6 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
     }
 
     // The AI Logic method is inherited and implemented in behaviour classes to control robot's pathfinding destination
-    // Later, this may also include robot manipulators and other things
     protected abstract void AILogic();
 
     /// <summary>
@@ -117,7 +123,7 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
 
             // Compare current rotation to NavMesh rotation. This will give us an angle difference if the robot
             // is turning a sharp corner. cornerValue is a number between 0 and 1. A value of 0.5 should require a 
-            // near full stop to turn, while a value of 0.9 should only slow down a little bit.
+            // lots of slowing down to turn, while a value of 0.9 should only slow down a little bit.
             float angleDiff = Vector3.Angle(robotForward, agent.transform.forward);
             float cornerValue = 1 - Mathf.Min((angleDiff / 180f), 1f);
 
@@ -135,7 +141,8 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
     // In update loop, check if robot is stuck, and back up if it is.
     protected virtual void Update()
     {
-        if (Mathf.Abs(curVelocity) < 0.015f && driveNow && timeStuck < STUCK_TIME) // If robot is not moving and is in drive mode, robot is stuck
+        // If robot is not moving and is in drive mode, robot is stuck
+        if (Mathf.Abs(curVelocity) < 0.015f && driveNow && timeStuck < STUCK_TIME)
         {
             timeStuck += Time.deltaTime;
         }
@@ -161,7 +168,7 @@ public abstract class BaseSynthBehaviour : MonoBehaviour, IComparable<BaseSynthB
     /// Used to sort behaviours in behaviour list by alphabetical order.
     /// </summary>
     /// <param name="other">Another BaseSynthBehaviour to compare.</param>
-    /// <returns></returns>
+    /// <returns>An integer that indicates the strings' relative position in the sort order.</returns>
     public int CompareTo(BaseSynthBehaviour other)
     {
         return String.Compare(this.ToString(), other.ToString());
