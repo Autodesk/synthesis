@@ -15,13 +15,11 @@ namespace Assets.Scripts.BUExtensions
         private BRaycastRobot robot;
         private BulletSharp.Math.Vector3 basePoint;
         private float radius;
+
         private int wheelIndex;
 
         private const float VerticalOffset = 0.1f;
         private const float SimTorque = 2.42f;
-        private const float MaxAngularSpeed = 40f;
-
-        public const float MassTorqueScalar = 0.05f;
 
         /// <summary>
         /// Sets or gets the radius of the wheel.
@@ -35,23 +33,6 @@ namespace Assets.Scripts.BUExtensions
             set
             {
                 robot.RaycastRobot.GetWheelInfo(wheelIndex).WheelsRadius = value;
-            }
-        }
-
-        /// <summary>
-        /// Returns the angular speed of the wheel.
-        /// </summary>
-        private float Speed
-        {
-            get
-            {
-                Vector3 velocity = ((RigidBody)transform.parent.GetComponent<BRigidBody>().GetCollisionObject()).GetVelocityInLocalPoint(basePoint).ToUnity();
-                Vector3 localVelocity = transform.parent.InverseTransformDirection(velocity);
-
-                WheelInfo wheelInfo = robot.RaycastRobot.GetWheelInfo(wheelIndex);
-                Vector3 wheelAxle = wheelInfo.WheelAxleCS.ToUnity();
-
-                return -Vector3.Dot(localVelocity, Quaternion.AngleAxis(90f, Vector3.up) * wheelAxle / (Mathf.PI * radius));
             }
         }
 
@@ -96,13 +77,7 @@ namespace Assets.Scripts.BUExtensions
         /// <param name="force"></param>
         public void ApplyForce(float force)
         {
-            float speed = Speed;
-            float appliedForce = -force * (SimTorque / radius) * robot.RaycastRobot.OverrideMass * MassTorqueScalar;
-
-            if (speed * force > 0)
-                appliedForce *= 1 - (Math.Abs(speed) / MaxAngularSpeed);
-
-            robot.RaycastRobot.ApplyEngineForce(appliedForce, wheelIndex);
+            robot.RaycastRobot.ApplyEngineForce(-force * (SimTorque / radius), wheelIndex);
         }
 
         /// <summary>
@@ -121,7 +96,17 @@ namespace Assets.Scripts.BUExtensions
             if (robot == null)
                 return;
 
-            transform.localRotation *= Quaternion.AngleAxis(Speed, axis);
+            Vector3 velocity = ((RigidBody)transform.parent.GetComponent<BRigidBody>().GetCollisionObject()).GetVelocityInLocalPoint(basePoint).ToUnity();
+            Vector3 localVelocity = transform.parent.InverseTransformDirection(velocity);
+
+            WheelInfo wheelInfo = robot.RaycastRobot.GetWheelInfo(wheelIndex);
+            Vector3 wheelAxle = wheelInfo.WheelAxleCS.ToUnity();
+
+            transform.position = wheelInfo.WorldTransform.Origin.ToUnity();
+            transform.localRotation *= Quaternion.AngleAxis(-Vector3.Dot(localVelocity,
+                Quaternion.AngleAxis(90f, Vector3.up) * wheelAxle / (Mathf.PI * radius)), axis);
+
+            Debug.DrawLine(transform.position, transform.position + transform.parent.TransformDirection(wheelInfo.WheelAxleCS.ToUnity()) * 0.1f, Color.red);
         }
     }
 }

@@ -95,7 +95,7 @@ public class DriverPracticeRobot : MonoBehaviour
         intakeNode = new List<GameObject>();
         intakeNode.Add(transform.GetChild(0).gameObject);
         intakeNode.Add(transform.GetChild(0).gameObject);
-        
+
         releaseNode = new List<GameObject>();
         releaseNode.Add(transform.GetChild(0).gameObject);
         releaseNode.Add(transform.GetChild(0).gameObject);
@@ -146,8 +146,6 @@ public class DriverPracticeRobot : MonoBehaviour
 
         //After initializing all the lists and variables, try to load from the robot directory.
         Load(robotDirectory);
-
-        modeEnabled = true;
     }
 
     /// <summary>
@@ -802,12 +800,12 @@ public class DriverPracticeRobot : MonoBehaviour
                 else if (counter == 3)
                 {
                     if (line.Equals("#Release Node")) counter++;
-                    else intakeNode[index] = AuxFunctions.FindObject(gameObject, line);
+                    else intakeNode[index] = GameObject.Find(line);
                 }
                 else if (counter == 4)
                 {
                     if (line.Equals("#Release Position")) counter++;
-                    else releaseNode[index] = AuxFunctions.FindObject(gameObject, line);
+                    else releaseNode[index] = GameObject.Find(line);
                 }
                 else if (counter == 5)
                 {
@@ -840,7 +838,7 @@ public class DriverPracticeRobot : MonoBehaviour
     {
         UnityEngine.Vector3 result = new UnityEngine.Vector3(0, 0, 0);
         string[] values = aData.Split('|');
-        //Debug.Log(values[0]);
+        Debug.Log(values[0]);
         if (values.Length != 3)
             throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
         result = new UnityEngine.Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
@@ -932,10 +930,5 @@ public class DriverPracticeRobot : MonoBehaviour
 
         if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(0);
         if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(1);
-    }
-
-    private void OnDestroy()
-    {
-        modeEnabled = false;
     }
 }

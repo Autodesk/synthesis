@@ -153,7 +153,7 @@ public class LocalMultiplayer : MonoBehaviour {
     public void RemoveRobot()
     {
         mainState.RemoveRobot(activeIndex);
-        activeIndex = mainState.SpawnedRobots.IndexOf(mainState.ActiveRobot);
+        activeIndex = mainState.SpawnedRobots.IndexOf(mainState.activeRobot);
         GetComponent<DriverPracticeMode>().ChangeActiveRobot(activeIndex);
         UpdateUI();
     }
@@ -197,7 +197,7 @@ public class LocalMultiplayer : MonoBehaviour {
         highlight.transform.position = robotButtons[activeIndex].transform.position;
 
         Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ActiveRobotText")).First().GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
-        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ControlIndexDropdown")).First().GetComponent<Dropdown>().value = mainState.ActiveRobot.ControlIndex;
+        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ControlIndexDropdown")).First().GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
         // GameObject.Find("ActiveRobotText").GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
         //GameObject.Find("ControlIndexDropdown").GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
     }

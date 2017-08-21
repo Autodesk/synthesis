@@ -11,6 +11,7 @@ public class UIDrag : MonoBehaviour
         offsetX = transform.parent.position.x - Input.mousePosition.x;
         offsetY = transform.parent.position.y - Input.mousePosition.y;
 
+        MainState.draggingWindow = true;
         DynamicCamera.MovingEnabled = false;
     }
 
@@ -34,5 +35,6 @@ public class UIDrag : MonoBehaviour
     public void EndDrag()
     {
         DynamicCamera.MovingEnabled = true;
+        MainState.draggingWindow = false;
     }
 }

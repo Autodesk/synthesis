@@ -10,9 +10,6 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    /// <summary>
-    /// This script is used for controlling objects in a scene by dragging them around with the mouse.
-    /// </summary>
     public class GodMode : MonoBehaviour
     {
         BBallSocketConstraintEx constraint;
@@ -20,17 +17,11 @@ namespace Assets.Scripts
         float initialDamping;
         float rayDistance;
 
-        /// <summary>
-        /// Links this MonoBehaviour to the MainState.
-        /// </summary>
         private void Awake()
         {
             StateMachine.Instance.LinkBehaviour<MainState>(this);
         }
 
-        /// <summary>
-        /// Updates constraint information for the active object, if applicable.
-        /// </summary>
         private void Update()
         {
             if (Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && constraint == null)

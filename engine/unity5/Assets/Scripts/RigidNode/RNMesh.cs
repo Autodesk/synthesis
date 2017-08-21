@@ -12,7 +12,7 @@ public partial class RigidNode : RigidNode_Base
 {
     public bool CreateMesh(string filePath)
     {
-        //Debug.Log(filePath);
+        Debug.Log(filePath);
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(filePath);
 
