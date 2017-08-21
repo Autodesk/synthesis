@@ -63,13 +63,10 @@ public class MaMInfoText : MonoBehaviour {
                 txt.text = "No Manipulator";
                 break;
             case 1: //syntheclaw      
-                txt.text = "Syntheclaw \n\nIdeal for handling Yoga Balls. Use controls for PWM 5.";
+                txt.text = "Syntheclaw \n\nIdeal for handling Yoga Balls";
                 break;
             case 2: //syntheshot
-                txt.text = "Syntheshot \n\nIdeal for shooting projectiles. Use controls for PWM 5 and 6.";
-                break;
-            case 3: //syntheshot
-                txt.text = "Lift \n\nIdeal for lifting objects. Use controls for PWM 5 and 6.";
+                txt.text = "Syntheshot \n\nIdeal for shooting projectiles";
                 break;
         }
 
