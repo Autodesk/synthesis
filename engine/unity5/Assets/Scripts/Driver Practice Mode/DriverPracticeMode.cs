@@ -73,6 +73,7 @@ public class DriverPracticeMode : MonoBehaviour {
     private void Awake()
     {
         InitializeTrajectories();
+        StateMachine.Instance.Link<MainState>(this);
     }
 
     private void Update()
@@ -593,8 +594,15 @@ public class DriverPracticeMode : MonoBehaviour {
     private void InitializeTrajectories()
     {
         LineRenderer[] drawnTrajectory = new LineRenderer[2];
-        drawnTrajectory[0] = new GameObject("DrawnTrajectory1").AddComponent<LineRenderer>();
-        drawnTrajectory[1] = new GameObject("DrawnTrajectory2").AddComponent<LineRenderer>();
+
+        GameObject trajectory1 = new GameObject("DrawnTrajectory1");
+        GameObject trajectory2 = new GameObject("DrawnTrajectory2");
+
+        StateMachine.Instance.Link<MainState>(trajectory1);
+        StateMachine.Instance.Link<MainState>(trajectory2);
+
+        drawnTrajectory[0] = trajectory1.AddComponent<LineRenderer>();
+        drawnTrajectory[1] = trajectory2.AddComponent<LineRenderer>();
         foreach (LineRenderer line in drawnTrajectory)
         {
             line.startWidth = 0.2f;

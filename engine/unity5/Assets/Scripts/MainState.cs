@@ -146,6 +146,8 @@ public class MainState : SimState
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
 
         IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
+
+        StateMachine.Instance.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
     }
 
     /// <summary>
@@ -510,9 +512,6 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
         Tracking = true;
 
-        foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
-            c.enabled = true;
-
         CollisionTracker.Reset();
     }
 
@@ -522,9 +521,6 @@ public class MainState : SimState
     public override void Pause()
     {
         Tracking = false;
-
-        foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
-            c.enabled = false;
     }
 
     public void EnterReplayState()
