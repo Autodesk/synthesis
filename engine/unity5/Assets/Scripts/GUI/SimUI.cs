@@ -44,6 +44,8 @@ public class SimUI : MonoBehaviour
 
     GameObject inputManagerPanel;
     GameObject unitConversionSwitch;
+    GameObject hotKeyButton;
+    GameObject hotKeyPanel;
 
     GameObject analyticsPanel;
 
@@ -142,6 +144,8 @@ public class SimUI : MonoBehaviour
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
         unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
+        hotKeyPanel = AuxFunctions.FindObject(canvas, "HotKeyPanel");
+        hotKeyButton = AuxFunctions.FindObject(canvas, "DisplayHotKeyButton");
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
@@ -440,6 +444,7 @@ public class SimUI : MonoBehaviour
         else
         {
             inputManagerPanel.SetActive(false);
+            ToggleHotKeys(false);
         }
     }
 
@@ -448,6 +453,7 @@ public class SimUI : MonoBehaviour
         ShowControlPanel(!inputManagerPanel.activeSelf);
     }
 
+    
     /// <summary>
     /// Open totorial link
     /// </summary>
@@ -484,14 +490,36 @@ public class SimUI : MonoBehaviour
     {
         if (canvas != null)
         {
-
-
             unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
             int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
             main.IsMetric = (i == 1 ? true : false);
         }
     }
 
+    /// <summary>
+    /// Toggle the hot key tool tips on/off based on the boolean passed in
+    /// </summary>
+    /// <param name="show"></param>
+    public void ToggleHotKeys(bool show)
+    {
+        hotKeyPanel.SetActive(show);
+        if (show)
+        {
+            hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Key";
+        }
+        else
+        {
+            hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Key";
+        }
+    }
+
+    /// <summary>
+    ///Toggle the hot key tool tips on/off based on its current state
+    /// </summary>
+    public void ToggleHotKeys()
+    {
+        ToggleHotKeys(!hotKeyPanel.activeSelf);
+    }
     #endregion
     #region reset functions
     /// <summary>
@@ -567,6 +595,8 @@ public class SimUI : MonoBehaviour
         exitPanel.SetActive(false);
         mixAndMatchPanel.SetActive(false);
         analyticsPanel.SetActive(false);
+        inputManagerPanel.SetActive(false);
+        ToggleHotKeys(false);
 
         CancelOrientation();
         main.IsResetting = false;
