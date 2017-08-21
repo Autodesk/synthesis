@@ -61,7 +61,7 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        StateMachine.Instance.LinkBehaviour<MainState>(this);
+        StateMachine.Instance.Link<MainState>(this);
     }
 
     private void Start()

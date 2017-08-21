@@ -25,7 +25,7 @@ namespace Assets.Scripts
         /// </summary>
         private void Awake()
         {
-            StateMachine.Instance.LinkBehaviour<MainState>(this);
+            StateMachine.Instance.Link<MainState>(this);
         }
 
         /// <summary>
