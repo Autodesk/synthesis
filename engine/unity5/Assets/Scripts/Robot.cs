@@ -60,6 +60,7 @@ public class Robot : MonoBehaviour
 
     public int robotHasManipulator;
 
+    //Robot statistics output
     public float Speed { get; private set; }
     private float oldSpeed;
     public float Weight { get; private set; }
