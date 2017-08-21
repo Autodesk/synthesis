@@ -256,7 +256,7 @@ public class MainState : SimState
                 ActiveRobot = robot;
             }
 
-            robot.controlIndex = SpawnedRobots.Count;
+            robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
             return true;
         }
@@ -326,7 +326,7 @@ public class MainState : SimState
     /// </summary>
     public void ChangeControlIndex(int index)
     {
-        ActiveRobot.controlIndex = index;
+        ActiveRobot.ControlIndex = index;
     }
 
     /// <summary>
@@ -340,9 +340,9 @@ public class MainState : SimState
             sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
 
             int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
-            if (isMixAndMatch == 1 && SpawnedRobots[index].robotHasManipulator == 1)
+            if (isMixAndMatch == 1 && SpawnedRobots[index].RobotHasManipulator == 1)
             {
-                GameObject.Destroy(SpawnedRobots[index].manipulatorObject);
+                GameObject.Destroy(SpawnedRobots[index].ManipulatorObject);
             }
 
             GameObject.Destroy(SpawnedRobots[index].gameObject);
@@ -353,7 +353,7 @@ public class MainState : SimState
             int i = 0;
             foreach (Robot robot in SpawnedRobots)
             {
-                robot.controlIndex = i;
+                robot.ControlIndex = i;
                 i++;
             }
         }
@@ -491,7 +491,7 @@ public class MainState : SimState
                 ActiveRobot = robot;
             }
 
-            robot.controlIndex = SpawnedRobots.Count;
+            robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
             robot.LoadManipulator(manipulatorDirectory, robot.gameObject);

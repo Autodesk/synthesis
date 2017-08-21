@@ -533,7 +533,7 @@ public class DriverPracticeMode : MonoBehaviour {
         {
             if (Input.GetKeyDown(vKey))
             {
-                int index = mainState.ActiveRobot.controlIndex;
+                int index = mainState.ActiveRobot.ControlIndex;
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
