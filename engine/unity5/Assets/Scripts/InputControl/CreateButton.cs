@@ -93,6 +93,7 @@ public class CreateButton : MonoBehaviour
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
         rectTransform.offsetMin = new Vector2(0, -contentHeight);
 
+        //Updates the landing page player (player one) with the active button style
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
 
@@ -615,6 +616,9 @@ public class CreateButton : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calls the active player's reset tank drive controls.
+    /// </summary>
     public void ResetTankDrive()
     {
         DestroyList();
@@ -622,6 +626,9 @@ public class CreateButton : MonoBehaviour
         UpdateActiveButtons();
     }
 
+    /// <summary>
+    /// Calls the active player's reset arcade drive controls.
+    /// </summary>
     public void ResetArcadeDrive()
     {
         DestroyList();

@@ -69,6 +69,9 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates and creates the appropriate list for each player when the coordinated button is clicked.
+    /// </summary>
     #region Player Buttons
     public void OnPlayerOne()
     {
@@ -117,7 +120,12 @@ public class SettingsMode : MonoBehaviour
 
         UpdateButtonStyle();
     }
+    #endregion
 
+    /// <summary>
+    /// Updates the active player button to the active player style. This makes the button
+    /// appear highlighted (and stay highlighted) when the player clicks on a specific button.
+    /// </summary>
     public void UpdateButtonStyle()
     {
         switch (InputControl.activePlayerIndex)
@@ -179,10 +187,8 @@ public class SettingsMode : MonoBehaviour
                 GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultImage;
                 break;
         }
-    }
-    #endregion
 
-    public void OnTankToggle()
+        public void OnTankToggle()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().TankSlider();
     }
