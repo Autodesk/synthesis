@@ -442,8 +442,6 @@ namespace Assets.Scripts.FEA
 
             if (!circleHovered)
                 SelectedBody = null;
-
-            Rect saveRect = new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight);
         }
 
         /// <summary>
