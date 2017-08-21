@@ -97,8 +97,6 @@ namespace Assets.Scripts.FEA
         private GUIStyle playStyle;
         private GUIStyle collisionStyle;
         private GUIStyle consolidateStyle;
-        private GUIStyle returnStyle;
-        private GUIStyle saveStyle;
 
         private BRigidBody _selectedBody;
 
@@ -233,8 +231,6 @@ namespace Assets.Scripts.FEA
             playStyle = CreateButtonStyle("play");
             collisionStyle = CreateButtonStyle("collision");
             consolidateStyle = CreateButtonStyle("consolidate");
-            returnStyle = CreateButtonStyle("return");
-            saveStyle = CreateButtonStyle("save");
         }
 
         /// <summary>
@@ -263,6 +259,14 @@ namespace Assets.Scripts.FEA
 
             rewindTime = 0.0f;
             playbackSpeed = 1.0f;
+
+            Button returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
+            returnButton.onClick.RemoveAllListeners();
+            returnButton.onClick.AddListener(ReturnToMainState);
+
+            Button saveButton = GameObject.Find("SaveButton").GetComponent<Button>();
+            saveButton.onClick.RemoveAllListeners();
+            saveButton.onClick.AddListener(PushSaveReplayState);        
         }
 
         /// <summary>
@@ -440,12 +444,22 @@ namespace Assets.Scripts.FEA
                 SelectedBody = null;
 
             Rect saveRect = new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight);
+        }
 
-            if (GUI.Button(saveRect, string.Empty, saveStyle))
-                StateMachine.Instance.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
+        /// <summary>
+        /// Returns to the main state.
+        /// </summary>
+        private void ReturnToMainState()
+        {
+            StateMachine.Instance.PopState();
+        }
 
-            if (GUI.Button(new Rect(ReturnMargin, ReturnMargin, ReturnWidth, ReturnHeight), string.Empty, returnStyle))
-                StateMachine.Instance.PopState();
+        /// <summary>
+        /// Pushes the save replay state.
+        /// </summary>
+        private void PushSaveReplayState()
+        {
+            StateMachine.Instance.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
         }
 
         /// <summary>
