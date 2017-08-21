@@ -9,6 +9,8 @@ public class SettingsMode : MonoBehaviour
     public Sprite Image1;
     public Sprite Image2;
 
+    private GameObject lastButton;
+
     // Update is called once per frame
     void Update()
     {
@@ -17,6 +19,8 @@ public class SettingsMode : MonoBehaviour
 
     public void UpdateButtonStyle(bool on)
     {
+        //Change the last button back
+        lastButton.GetComponent<Image>().sprite = Image1;
         if (on)
         {
             switch (InputControl.activePlayerIndex)
@@ -101,8 +105,11 @@ public class SettingsMode : MonoBehaviour
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-
+        
         UpdateButtonStyle(true);
+
+        //Store the pressed button in lastButton
+        lastButton = GameObject.Find("PlayerOne Button");
     }
 
     public void OnPlayerTwo()
@@ -111,6 +118,9 @@ public class SettingsMode : MonoBehaviour
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
 
         UpdateButtonStyle(true);
+
+        //Store the pressed button in lastButton
+        lastButton = GameObject.Find("PlayerTwo Button");
     }
 
     public void OnPlayerThree()
