@@ -90,24 +90,32 @@ public class SettingsMode : MonoBehaviour
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThreeButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+
+        UpdateButtonStyle();
     }
 
     public void OnPlayerFour()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFourButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+
+        UpdateButtonStyle();
     }
 
     public void OnPlayerFive()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFiveButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+
+        UpdateButtonStyle();
     }
 
     public void OnPlayerSix()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSixButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
+
+        UpdateButtonStyle();
     }
 
     public void UpdateButtonStyle()
@@ -132,7 +140,39 @@ public class SettingsMode : MonoBehaviour
                 break;
             case 2:
                 GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultImage;
-                GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = HighlightedImage;
+                GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = HighlightedImage;
+                GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultImage;
+                break;
+            case 3:
+                GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = HighlightedImage;
+                GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultImage;
+                break;
+            case 4:
+                GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = HighlightedImage;
+                GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultImage;
+                break;
+            case 5:
+                GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = HighlightedImage;
+                break;
+            default:
+                GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultImage;
+                GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultImage;

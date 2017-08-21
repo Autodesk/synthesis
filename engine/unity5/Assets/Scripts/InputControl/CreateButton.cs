@@ -169,6 +169,8 @@ public class CreateButton : MonoBehaviour
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
         rectTransform.offsetMin = new Vector2(0, -contentHeight);
+
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
     #endregion
 
