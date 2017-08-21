@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Sensor
   - ScoreZone
+  - Gamepiece
   layers:
   - Default
   - TransparentFX

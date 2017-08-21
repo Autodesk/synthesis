@@ -13,10 +13,10 @@ public class ScoreZoneManipulatorManager : MonoBehaviour
 
     private ScoreZoneSelectible selectable;
     
-    Color blueSelectColor = new Color(127/255f, 127/255f, 255/255f, 255/255f);
-    Color blueDeselectColor = new Color(127/255f, 127/255f, 255/255f, 127/255f);
-    Color redSelectColor = new Color(255/255f, 127/255f, 127/255f, 255/255f);
-    Color redDeselectColor = new Color(255/255f, 127/255f, 127/255f, 127/255f);
+    public static Color blueSelectColor = new Color(127/255f, 127/255f, 255/255f, 255/255f);
+    public static Color blueDeselectColor = new Color(127/255f, 127/255f, 255/255f, 127/255f);
+    public static Color redSelectColor = new Color(255/255f, 127/255f, 127/255f, 255/255f);
+    public static Color redDeselectColor = new Color(255/255f, 127/255f, 127/255f, 127/255f);
     
     // GameObject 
 

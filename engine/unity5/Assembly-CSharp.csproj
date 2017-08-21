@@ -168,8 +168,10 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
     <Compile Include="Assets\DragGameObject.cs" />
+    <Compile Include="Assets\ScoreZoneActive.cs" />
     <Compile Include="Assets\ScoreZoneSelectableManager.cs" />
     <Compile Include="Assets\ScoreZoneSettingsContainer.cs" />
+    <Compile Include="Assets\ScoreZoneSimSceneManager.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiCallbacks.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
@@ -182,6 +184,7 @@
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeMode.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
+    <Compile Include="Assets\Scripts\Driver Practice Mode\GamePieceRememberSpawnParams.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
     <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />

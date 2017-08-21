@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.IO;
+using System.Xml.Serialization;
+using UnityEngine.SceneManagement;
 
 public class ScoreZoneSelectableManager : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class ScoreZoneSelectableManager : MonoBehaviour
     
     public bool ObjectSelected { get; private set; }
 
-    public GameObject ScoreZonePrefab;
+    public GameObject CubeScoreZonePrefab;
 
     // Use this for initialization
     void Start ()
@@ -106,15 +107,22 @@ public class ScoreZoneSelectableManager : MonoBehaviour
 
     public void InstantiateZone(Dropdown zoneType)
     {
+        InstantiateZone(zoneType.value);
+    }
+
+    public GameObject InstantiateZone(int zoneType)
+    {
         Vector3 instantiateSpot = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, ObjInstantiationDistance));
         // 0 is cube
         // 1 is cone
-        if (zoneType.value == 0)
+        if (zoneType== 0)
         {
-            GameObject zone = (GameObject) Instantiate(ScoreZonePrefab, instantiateSpot, Quaternion.identity);
+            GameObject zone = (GameObject) Instantiate(CubeScoreZonePrefab, instantiateSpot, Quaternion.identity);
             scoreZones.Add(zone);
             CurrentlySelected = zone;
+            return zone;
         }
+        else return null; // We realistically never will be returning null since only cube is implimented rn 
     }
 
     public GameObject GetCurrentSelected()
@@ -131,13 +139,13 @@ public class ScoreZoneSelectableManager : MonoBehaviour
 
     public void SetReinstantationPref(bool val)
     {
-		Debug.Log("Got updated reinstantiation pref of " + val);
+        Debug.Log("Got upxmled reinstantiation pref of " + val);
         CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetReinstantiationPref(val);
     }
     
     public void SetDestroyPref(bool val)
     {
-		Debug.Log("Got updated destroy pref of " + val);
+        Debug.Log("Got upxmled destroy pref of " + val);
         CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetDestroyPref(val);
     }
     
@@ -149,34 +157,83 @@ public class ScoreZoneSelectableManager : MonoBehaviour
 
     public void SetScore(float score)
     {
-		Debug.Log("Got updated score of " + score);
+        Debug.Log("Got upxmled score of " + score);
         CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetScore(score);
     }
     
     public void SetTeam (ScoreZoneSettingsContainer.Team team)
     {
-		Debug.Log("Got updated team of " + team.ToString());
+        Debug.Log("Got upxmled team of " + team.ToString());
         CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetTeam(team);
     }
 
+    // Saves all scoring zones to a file (ScoreZones.xml) in the directory of the current loaded field
     public void SaveZones()
     {
+        
+        List<ScoreZoneSettingsContainer> containerList = new List<ScoreZoneSettingsContainer>();
+        foreach (GameObject i in scoreZones)
+            containerList.Add(i.GetComponent<ScoreZoneSelectible>().SettingsContainer);
+        
+        
         string directory = PlayerPrefs.GetString("simSelectedField");
+
+        
+        var xmlSeralizer = new XmlSerializer(typeof(List<ScoreZoneSettingsContainer>));
+
+        using (Stream stream = new FileStream(
+            directory + "\\ScoreZones.xml",
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None)
+        )
+            xmlSeralizer.Serialize(stream, containerList);
+        
+        Debug.Log("Saved zones to " + directory + "\\ScoreZones.xml");
     }
 
+    // Loads all scoring zones from a file (ScoreZones.xml) in the directory of the current loaded field
     public void LoadZones()
     {
-        DestroyAllZones();
         string directory = PlayerPrefs.GetString("simSelectedField");
+        if (!File.Exists(directory + "\\ScoreZones.xml")) return; // File does not exist, so we don't do anything
+        
+        DestroyAllZones();
+
+        List<ScoreZoneSettingsContainer> containerList = new List<ScoreZoneSettingsContainer>();
+        
+        var xmlSeralizer = new XmlSerializer(typeof(List<ScoreZoneSettingsContainer>));
+        Stream stream = new FileStream(directory + "\\ScoreZones.xml", FileMode.Open, FileAccess.Read);
+        containerList = (List<ScoreZoneSettingsContainer>) xmlSeralizer.Deserialize(stream);
+
+        foreach (ScoreZoneSettingsContainer i in containerList)
+        {
+            GameObject newZone = InstantiateZone(i.ZoneType);
+            newZone.transform.position = i.Position;
+            newZone.transform.rotation = i.Rotation;
+            newZone.GetComponent<ScoreZoneSelectible>().SetContainer(i);
+            
+            scoreZones.Add(newZone);
+        }
+        
+        Debug.Log("Loaded zones from " + directory + "\\ScoreZones.xml");
     }
 
     public void DestroyAllZones()
     {
         if (scoreZones.Count == 0) return;
         CurrentlySelected = null;
-        for (int i=0; i<scoreZones.Count; i++)
+        // while (scoreZones.Count > 0)
+        while (scoreZones.Count > 0)
         {
-            Destroy(scoreZones[i]);
+            Destroy(scoreZones[0]);
+            scoreZones.RemoveAt(0);
+            Debug.Log("Removed. New count: " + scoreZones.Count);
         }
+    }
+
+    public void LoadMainLevel()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 }

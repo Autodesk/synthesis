@@ -6,7 +6,7 @@ using Assets.Scripts.FSM;
 
 public class DriverPracticeMode : MonoBehaviour {
 
-    private DriverPracticeRobot dpmRobot;
+    public DriverPracticeRobot dpmRobot { get; private set; } // need direct access for low-level instantiation w/ scoring
     private SimUI simUI;
     private MainState mainState;
 

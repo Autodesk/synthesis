@@ -120,6 +120,7 @@ public class MainState : SimState
             {
                 Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
             }
+            
         }
         else
         {
@@ -136,6 +137,9 @@ public class MainState : SimState
         sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
 
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+
+        ScoreZoneSimSceneManager scoreZoneSimSceneManager = GameObject.Find("StateMachine").GetComponent<ScoreZoneSimSceneManager>();
+        scoreZoneSimSceneManager.LoadScoreZones();
     }
 
     /// <summary>

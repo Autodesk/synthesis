@@ -63,7 +63,7 @@ public class DriverPracticeRobot : MonoBehaviour
     private Color hoverColor = new Color(1, 1, 0, 0.1f);
 
     //for gamepiece spawning customizability
-    private List<UnityEngine.Vector3> gamepieceSpawn;
+    public List<UnityEngine.Vector3> gamepieceSpawn { get; private set; } // Need outside access for scoring
     private GameObject spawnIndicator;
     public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
     private DynamicCamera.CameraState lastCameraState;
@@ -411,6 +411,9 @@ public class DriverPracticeRobot : MonoBehaviour
                 GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
+                gameobject.tag = "Gamepiece_" + ((index == 0) ? "Primary" : "Secondary"); // Tagging so we can use it with the scoring area
+                gameobject.AddComponent<GamePieceRememberSpawnParams>(); // allow us to easily reinstantiate from other scripts
+                gameobject.GetComponent<GamePieceRememberSpawnParams>().PieceType = index; // allow us to easily reinstantiate from other scripts
                 spawnedGamepieces[index].Add(gameobject);
             }
             catch
@@ -432,6 +435,14 @@ public class DriverPracticeRobot : MonoBehaviour
             {
                 Destroy(g);
             }
+        }
+    }
+
+    public void RemoveGamepiece(GameObject g)
+    {
+        for (int i = 0; i < spawnedGamepieces.Count; i++)
+        {
+            if (spawnedGamepieces[i].Contains(g)) spawnedGamepieces[i].Remove(g);
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.Runtime.CompilerServices;
 using BulletSharp;
 using UnityEngine;
@@ -15,7 +16,8 @@ public class ScoreZoneSelectible : MonoBehaviour
             Score = 0f,
             DestroyGamePieceOnScore = true,
             ReinstantiateGamePieceOnScore = true,
-            TeamZone = ScoreZoneSettingsContainer.Team.Blue
+            TeamZone = ScoreZoneSettingsContainer.Team.Blue,
+            ZoneType = 0
         };
 	
     // Use this for initialization
@@ -66,5 +68,10 @@ public class ScoreZoneSelectible : MonoBehaviour
     {
         SettingsContainer.TeamZone = team;
         // manipManager.SetTeam(team);
+    }
+
+    public void SetContainer(ScoreZoneSettingsContainer container)
+    {
+        SettingsContainer = container;
     }
 }

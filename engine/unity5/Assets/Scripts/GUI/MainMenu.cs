@@ -306,6 +306,17 @@ public class MainMenu : MonoBehaviour
         fieldBrowser.Active = true;
     }
 
+    public void SwitchScoreZoneEditor()
+    {
+        SelectSimField();
+        customfieldon = true;
+        homeTab.SetActive(false);
+        simTab.SetActive(false);
+        optionsTab.SetActive(false);
+        fieldBrowser.Active = false;
+        SceneManager.LoadScene("EditScoreZones");
+    }
+
     public void SwitchRobotDir()
     {
         currentTab = Tab.RobotDir;
