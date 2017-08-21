@@ -144,6 +144,8 @@ public class MainState : SimState
         sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
 
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+
+        IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
     }
 
     /// <summary>
