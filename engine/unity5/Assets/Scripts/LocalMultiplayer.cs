@@ -4,6 +4,8 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
+using System.Linq;
+using UnityEngine.Analytics;
 
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer
@@ -102,6 +104,12 @@ public class LocalMultiplayer : MonoBehaviour {
     /// </summary>
     public void AddRobot()
     {
+        if (SimUI.changeAnalytics)
+        {
+            Analytics.CustomEvent("Added Robot", new Dictionary<string, object>
+            {
+            });
+        }
         GameObject panel = GameObject.Find("RobotListPanel");
         string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
         if (Directory.Exists(directory))
@@ -188,8 +196,10 @@ public class LocalMultiplayer : MonoBehaviour {
 
         highlight.transform.position = robotButtons[activeIndex].transform.position;
 
-        GameObject.Find("ActiveRobotText").GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
-        GameObject.Find("ControlIndexDropdown").GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
+        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ActiveRobotText")).First().GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
+        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ControlIndexDropdown")).First().GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
+        // GameObject.Find("ActiveRobotText").GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
+        //GameObject.Find("ControlIndexDropdown").GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
     }
 
     /// <summary>

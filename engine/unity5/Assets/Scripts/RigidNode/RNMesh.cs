@@ -12,11 +12,16 @@ public partial class RigidNode : RigidNode_Base
 {
     public bool CreateMesh(string filePath)
     {
+        Debug.Log(filePath);
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(filePath);
 
-        if (!mesh.GUID.Equals(GUID))
-            return false;
+        //if (!mesh.GUID.Equals(GUID))
+        //{
+        //    Debug.Log("Returning false");
+        //    return false;
+        //}
+
 
         List<GameObject> meshObjects = new List<GameObject>();
 
@@ -37,16 +42,20 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.position = root.position;
             meshObject.transform.rotation = root.rotation;
 
-            ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
+            Debug.Log("Mesh Objects count " + meshObjects.Count);
 
-        });
+        }, true);
+
+        Vector3 com = mesh.physics.centerOfMass.AsV3();
+        com.x *= -1;
+        ComOffset = com;
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];
 
         AuxFunctions.ReadMeshSet(mesh.colliders, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             colliders[id] = meshu;
-        });
+        }, true);
 
         MainObject.transform.position = root.position + ComOffset;
         MainObject.transform.rotation = root.rotation;
@@ -65,7 +74,10 @@ public partial class RigidNode : RigidNode_Base
                 hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
             }
 
+            MainObject.AddComponent<MeshRenderer>();
+
             PhysicalProperties = mesh.physics;
+            Debug.Log(PhysicalProperties.centerOfMass);
 
             BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
             rigidBody.mass = mesh.physics.mass;
@@ -81,8 +93,6 @@ public partial class RigidNode : RigidNode_Base
 
         if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)
         {
-
-
             BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
             if (MixAndMatchMode.isMixAndMatchMode)
             {

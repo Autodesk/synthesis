@@ -2,16 +2,22 @@
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
 
+/// <summary>
+/// This class handles all GUI elements related to robot camera in Unity
+/// </summary>
 class RobotCameraGUI : MonoBehaviour
 {
-    //GUI stuff
+    //Stuff needed to make gui work
     MainState main;
     GameObject canvas;
     DynamicCamera dynamicCamera;
     DynamicCamera.CameraState preConfigCamState;
     GameObject robotCameraListObject;
-    public GameObject CameraIndicator;
+    RobotCameraManager robotCameraManager;
+    SimUI simUI;
+    SensorManagerGUI sensorManagerGUI;
 
+    //Angle panel
     GameObject cameraAnglePanel;
     GameObject xAngleEntry;
     GameObject yAngleEntry;
@@ -19,6 +25,7 @@ class RobotCameraGUI : MonoBehaviour
     GameObject showAngleButton;
     GameObject editAngleButton;
 
+    //FOV panel
     GameObject cameraFOVPanel;
     GameObject editFOVButton;
     GameObject showFOVButton;
@@ -26,22 +33,26 @@ class RobotCameraGUI : MonoBehaviour
 
     GameObject robotCameraViewWindow;
     RenderTexture robotCameraView;
-    RobotCameraManager robotCamera;
 
+    //The indicator object is originally under robot camera list in unity scene
+    public GameObject CameraIndicator;
     GameObject robotCameraIndicator;
     GameObject showCameraButton;
+
+    //Camera configuration
     GameObject configureRobotCameraButton;
+    GameObject configureCameraPanel;
+    //Toggle between horizontal plane and height
     GameObject cameraConfigurationModeButton;
     GameObject changeCameraNodeButton;
-    GameObject configureCameraPanel;
+    Text cameraNodeText;
     GameObject cancelNodeSelectionButton;
 
+    //Dark buttons that lock the corresponding button so users can't do different configuration options at the same time
     GameObject lockPositionButton;
     GameObject lockAngleButton;
     GameObject lockFOVButton;
-
-    Text cameraNodeText;
-
+    
     private bool usingRobotView = false;
     private bool indicatorActive = false;
     private bool isEditingAngle;
@@ -55,28 +66,21 @@ class RobotCameraGUI : MonoBehaviour
 
     private void Update()
     {
+        //Make sure main state and dynamic camera get initialized
         if (main == null)
         {
             main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
-        }
-        else if (dynamicCamera == null && main.dynamicCameraObject != null)
-        {
             dynamicCamera = main.dynamicCameraObject.GetComponent<DynamicCamera>();
         }
+        //Update gui about robot camera once main and dynamic camera is ready
         else if (main != null && dynamicCamera != null)
         {
             UpdateCameraWindow();
             UpdateCameraAnglePanel();
             UpdateCameraFOVPanel();
             UpdateNodeAttachment();
+            UpdateIndicatorTransform();
         }
-
-        
-            CameraIndicator.transform.position = robotCamera.CurrentCamera.transform.position;
-            CameraIndicator.transform.rotation = robotCamera.CurrentCamera.transform.rotation;
-
-            CameraIndicator.transform.parent = robotCamera.CurrentCamera.transform;
-        
     }
 
     #region robot camera GUI functions
@@ -87,7 +91,8 @@ class RobotCameraGUI : MonoBehaviour
     public void FindGUIElements()
     {
         canvas = GameObject.Find("Canvas");
-
+        simUI = GameObject.Find("StateMachine").GetComponent<SimUI>();
+        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
         //For robot camera view window
         robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanel");
@@ -95,7 +100,7 @@ class RobotCameraGUI : MonoBehaviour
 
         //For camera indicator
         robotCameraListObject = GameObject.Find("RobotCameraList");
-        robotCamera = robotCameraListObject.GetComponent<RobotCameraManager>();
+        robotCameraManager = robotCameraListObject.GetComponent<RobotCameraManager>();
 
         if (CameraIndicator == null)
         {
@@ -137,23 +142,19 @@ class RobotCameraGUI : MonoBehaviour
         //Can use robot view when dynamicCamera is active
         if (usingRobotView && main.dynamicCameraObject.activeSelf)
         {
-            //Debug.Log(robotCamera.CurrentCamera);
-
             //Make sure there is camera on robot
-            if (robotCamera.CurrentCamera != null)
+            if (robotCameraManager.CurrentCamera != null)
             {
-                robotCamera.CurrentCamera.SetActive(true);
-                robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+                robotCameraManager.CurrentCamera.SetActive(true);
+                robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
                 //Toggle the robot camera using Q (should be changed later)
                 if (Input.GetKeyDown(KeyCode.Q))
                 {
-                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
-                    robotCamera.ToggleCamera();
-                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
-
+                    //Reset the targetTexture of current camera or they will conflict
+                    robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+                    robotCameraManager.ToggleCamera();
+                    robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
                 }
-                //Debug.Log("Robot camera view is " + robotCameraView.name);
-                //Debug.Log(robotCamera.CurrentCamera);
             }
         }
         //Don't allow using robot view window when users are currently using one of the robot view
@@ -166,10 +167,9 @@ class RobotCameraGUI : MonoBehaviour
         //Free the target texture of the current camera when the window is closed (for normal toggle camera function)
         else
         {
-            if (robotCamera.CurrentCamera != null)
-                robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+            if (robotCameraManager.CurrentCamera != null)
+                robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
         }
-
     }
 
     /// <summary>
@@ -177,24 +177,23 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void ToggleCameraWindow()
     {
+        //Deal with UI conflicts between robot camera & sensors
+        sensorManagerGUI.EndProcesses();
         usingRobotView = !usingRobotView;
         robotCameraViewWindow.SetActive(usingRobotView);
         if (usingRobotView)
         {
-            robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+            robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
         }
         else
         {
             //Free the target texture and disable the camera since robot camera has more depth than main camera
-            robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
-            robotCamera.CurrentCamera.SetActive(false);
+            robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+            robotCameraManager.CurrentCamera.SetActive(false);
             //Close the panel when indicator is not active and stop all configuration
             configureCameraPanel.SetActive(false);
-            if (robotCamera.ChangingCameraPosition) dynamicCamera.SwitchToState(preConfigCamState);
-            robotCamera.IsChangingHeight = robotCamera.SelectingNode = robotCamera.ChangingCameraPosition = false;
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
-            robotCamera.SelectingNode = false;
-            robotCamera.SelectedNode = null;
+            EndProcesses();
         }
     }
 
@@ -204,45 +203,44 @@ class RobotCameraGUI : MonoBehaviour
     public void ToggleCameraIndicator()
     {
         indicatorActive = !indicatorActive;
+        configureRobotCameraButton.SetActive(indicatorActive);
+
         if (indicatorActive)
         {
             //Only allow the camera configuration when the indicator is active
             showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
-            configureRobotCameraButton.SetActive(true);
         }
         else
         {
             showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
-            configureRobotCameraButton.SetActive(false);
             //Close the panel when indicator is not active and stop all configuration
-            configureCameraPanel.SetActive(false);
-            if (robotCamera.ChangingCameraPosition) dynamicCamera.SwitchToState(preConfigCamState);
-            robotCamera.IsChangingHeight = robotCamera.SelectingNode = robotCamera.ChangingCameraPosition = false;
+            ResetConfigurationWindow();
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
-            robotCamera.SelectingNode = false;
-            robotCamera.SelectedNode = null;
+            configureRobotCameraButton.SetActive(false);
+
         }
         CameraIndicator.SetActive(indicatorActive);
     }
 
     /// <summary>
-    /// Activate the configure camera panel and start position configuration
+    /// Activate the configure camera panel and start position configuration (which is the main configuration state for robot camera)
     /// </summary>
-    public void ConfigureCameraPosition()
+    public void ToggleCameraConfiguration()
     {
-        robotCamera.ChangingCameraPosition = !robotCamera.ChangingCameraPosition;
-        configureCameraPanel.SetActive(robotCamera.ChangingCameraPosition);
-        if (robotCamera.ChangingCameraPosition)
+        robotCameraManager.ChangingCameraPosition = !robotCameraManager.ChangingCameraPosition;
+        configureCameraPanel.SetActive(robotCameraManager.ChangingCameraPosition);
+        if (robotCameraManager.ChangingCameraPosition)
         {
             preConfigCamState = dynamicCamera.cameraState;
-            dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, robotCamera.CurrentCamera));
+            dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, robotCameraManager.CurrentCamera));
             //Update the node where current camera is attached to
-            cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
-            configureRobotCameraButton.GetComponentInChildren<Text>().text = "End Configuration";
+            cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
         }
         else
         {
-            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
+            ResetConfigurationWindow();
             dynamicCamera.SwitchToState(preConfigCamState);
         }
     }
@@ -252,8 +250,8 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void ToggleConfigurationMode()
     {
-        robotCamera.IsChangingHeight = !robotCamera.IsChangingHeight;
-        if (robotCamera.IsChangingHeight)
+        robotCameraManager.IsChangingHeight = !robotCameraManager.IsChangingHeight;
+        if (robotCameraManager.IsChangingHeight)
         {
             cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Horizontal Plane";
         }
@@ -268,17 +266,17 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void ToggleChangeNode()
     {
-        if (!robotCamera.SelectingNode && robotCamera.SelectedNode == null)
+        if (!robotCameraManager.SelectingNode && robotCameraManager.SelectedNode == null)
         {
-            robotCamera.DefineNode(); //Start selecting a new node
+            robotCameraManager.DefineNode(); //Start selecting a new node, set SelectingNode to true
             changeCameraNodeButton.GetComponentInChildren<Text>().text = "Confirm";
             cancelNodeSelectionButton.SetActive(true);
         }
-        else if (robotCamera.SelectingNode && robotCamera.SelectedNode != null)
+        else if (robotCameraManager.SelectingNode && robotCameraManager.SelectedNode != null)
         {
             //Change the node where camera is attached to, clear selected node, and update name of current node
-            robotCamera.ChangeNodeAttachment();
-            cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
+            robotCameraManager.ChangeNodeAttachment();
+            cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
             changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
             cancelNodeSelectionButton.SetActive(false);
 
@@ -290,9 +288,10 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void CancelNodeSelection()
     {
-        robotCamera.SelectedNode = null;
-        robotCamera.SelectingNode = false;
-        cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
+        robotCameraManager.ResetNodeColors();
+        robotCameraManager.SelectedNode = null;
+        robotCameraManager.SelectingNode = false;
+        cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
         changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
         cancelNodeSelectionButton.SetActive(false);
     }
@@ -302,11 +301,11 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void UpdateCameraAnglePanel()
     {
-        if (!isEditingAngle && robotCamera.CurrentCamera != null)
+        if (!isEditingAngle && robotCameraManager.CurrentCamera != null)
         {
-            xAngleEntry.GetComponent<InputField>().text = robotCamera.CurrentCamera.transform.localEulerAngles.x.ToString();
-            yAngleEntry.GetComponent<InputField>().text = robotCamera.CurrentCamera.transform.localEulerAngles.y.ToString();
-            zAngleEntry.GetComponent<InputField>().text = robotCamera.CurrentCamera.transform.localEulerAngles.z.ToString();
+            xAngleEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.transform.localEulerAngles.x.ToString();
+            yAngleEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.transform.localEulerAngles.y.ToString();
+            zAngleEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.transform.localEulerAngles.z.ToString();
         }
     }
 
@@ -323,7 +322,7 @@ class RobotCameraGUI : MonoBehaviour
             float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp))
         {
             //Debug.Log("Sync angle!");
-            robotCamera.CurrentCamera.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
+            robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
         }
 
     }
@@ -333,13 +332,13 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void ToggleCameraAnglePanel()
     {
-        robotCamera.IsShowingAngle = !robotCamera.IsShowingAngle;
-        cameraAnglePanel.SetActive(robotCamera.IsShowingAngle);
+        robotCameraManager.IsShowingAngle = !robotCameraManager.IsShowingAngle;
+        cameraAnglePanel.SetActive(robotCameraManager.IsShowingAngle);
 
-        lockPositionButton.SetActive(robotCamera.IsShowingAngle);
-        lockFOVButton.SetActive(robotCamera.IsShowingAngle);
+        lockPositionButton.SetActive(robotCameraManager.IsShowingAngle);
+        lockFOVButton.SetActive(robotCameraManager.IsShowingAngle);
 
-        if (robotCamera.IsShowingAngle)
+        if (robotCameraManager.IsShowingAngle)
         {
             showAngleButton.GetComponentInChildren<Text>().text = "Hide Camera Angle";
         }
@@ -372,9 +371,9 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void UpdateCameraFOVPanel()
     {
-        if (!isEditingFOV && robotCamera.CurrentCamera != null)
+        if (!isEditingFOV && robotCameraManager.CurrentCamera != null)
         {
-            FOVEntry.GetComponent<InputField>().text = robotCamera.CurrentCamera.GetComponent<Camera>().fieldOfView.ToString();
+            FOVEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.GetComponent<Camera>().fieldOfView.ToString();
         }
     }
 
@@ -386,11 +385,11 @@ class RobotCameraGUI : MonoBehaviour
         float temp = 0;
         if ((float.TryParse(FOVEntry.GetComponent<InputField>().text, out temp) && temp >= 0))
         {
-            robotCamera.CurrentCamera.GetComponent<Camera>().fieldOfView = temp;
+            robotCameraManager.CurrentCamera.GetComponent<Camera>().fieldOfView = temp;
         }
         else
         {
-            robotCamera.CurrentCamera.GetComponent<Camera>().fieldOfView = temp;
+            robotCameraManager.CurrentCamera.GetComponent<Camera>().fieldOfView = temp;
         }
 
     }
@@ -400,13 +399,13 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void ToggleCameraFOVPanel()
     {
-        robotCamera.IsChangingFOV = !robotCamera.IsChangingFOV;
-        cameraFOVPanel.SetActive(robotCamera.IsChangingFOV);
+        robotCameraManager.IsChangingFOV = !robotCameraManager.IsChangingFOV;
+        cameraFOVPanel.SetActive(robotCameraManager.IsChangingFOV);
 
-        lockPositionButton.SetActive(robotCamera.IsChangingFOV);
-        lockAngleButton.SetActive(robotCamera.IsChangingFOV);
+        lockPositionButton.SetActive(robotCameraManager.IsChangingFOV);
+        lockAngleButton.SetActive(robotCameraManager.IsChangingFOV);
 
-        if (robotCamera.IsChangingFOV)
+        if (robotCameraManager.IsChangingFOV)
         {
             showFOVButton.GetComponentInChildren<Text>().text = "Hide Camera FOV";
         }
@@ -434,15 +433,58 @@ class RobotCameraGUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the text indicating attachment node for current camera
+    /// </summary>
     public void UpdateNodeAttachment()
     {
-        if(robotCamera.CurrentCamera != null)
-        cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
+        if (robotCameraManager.CurrentCamera != null)
+            cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
     }
 
+    /// <summary>
+    /// Update transform of robot camera indicator to follow the current camera
+    /// </summary>
+    public void UpdateIndicatorTransform()
+    {
+        CameraIndicator.transform.position = robotCameraManager.CurrentCamera.transform.position;
+        CameraIndicator.transform.rotation = robotCameraManager.CurrentCamera.transform.rotation;
+        CameraIndicator.transform.parent = robotCameraManager.CurrentCamera.transform;
+    }
+
+    /// <summary>
+    /// Reset configuration window and configuration settings to its default state (nothing is changing), change the camera back
+    /// </summary>
+    public void ResetConfigurationWindow()
+    {
+        //Change the dynamic camera back to its original state
+        if (robotCameraManager.ChangingCameraPosition) dynamicCamera.SwitchToState(preConfigCamState);
+
+        //Cancel configuration changes and node selection process
+        CancelNodeSelection();
+        robotCameraManager.ResetConfigurationState();
+
+        //Reset all gui stuff
+        lockPositionButton.SetActive(false);
+        lockAngleButton.SetActive(false);
+        lockFOVButton.SetActive(false);
+
+        showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
+        showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Range";
+        cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+
+        cameraAnglePanel.SetActive(false);
+        cameraFOVPanel.SetActive(false);
+        configureCameraPanel.SetActive(false);
+
+    }
+    
+    /// <summary>
+    /// Ends all processes related to robot camera
+    /// </summary>
     public void EndProcesses()
     {
-        cameraAnglePanel.SetActive(false);
+        ResetConfigurationWindow();
         if (indicatorActive)
         {
             ToggleCameraIndicator();
@@ -451,6 +493,8 @@ class RobotCameraGUI : MonoBehaviour
         {
             ToggleCameraWindow();
         }
+        robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+        robotCameraManager.CurrentCamera.SetActive(false);
     }
     #endregion
 

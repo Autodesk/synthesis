@@ -175,8 +175,8 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// <param name="upper">Upper limit</param>
     public void SetLimits(float lower, float upper)
     {
-        this.lowerLimit = lower;
-        this.upperLimit = upper;
+        lowerLimit = lower;
+        upperLimit = upper;
     }
 
     public override string ToString()

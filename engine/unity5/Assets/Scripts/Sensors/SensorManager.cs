@@ -81,7 +81,7 @@ class SensorManager : MonoBehaviour
     /// <param name="position"></param> local position of the sensor
     /// <param name="rotation"></param> local rotation of the sensor
     /// <param name="distance"></param> the distance offset between the emitter and receiver
-    public SensorBase AddBeamBreaker(GameObject parent, Vector3 position, Vector3 rotation, float distance = 0)
+    public SensorBase AddBeamBreaker(GameObject parent, Vector3 position, Vector3 rotation, float distance = 0.4f)
     {
         GameObject beamBreaker = GameObject.Instantiate(BeamBreaker, parent.transform);
         beamBreaker.transform.localPosition = position;
@@ -141,7 +141,6 @@ class SensorManager : MonoBehaviour
         BPhysicsWorld world = BPhysicsWorld.Get();
         world.world.RayTest(start, end, rayResult);
 
-        Debug.Log("Selected:" + rayResult.CollisionObject);
         //If there is a collision object and it is a robot part, set that to be new attachment point
         if (rayResult.CollisionObject != null)
         {
@@ -357,14 +356,17 @@ class SensorManager : MonoBehaviour
     {
         if (node != null && storedColors.Count != 0)
         {
+
             int counter = 0;
             foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
             {
-
                 foreach (Material m in renderers.materials)
                 {
-                    m.color = storedColors[counter];
-                    counter++;
+                    if (counter <= storedColors.Count - 1)
+                    {
+                        m.color = storedColors[counter];
+                        counter++;
+                    }
                 }
             }
             storedColors.Clear();

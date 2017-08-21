@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using Assets.Scripts.FSM;
 using BulletSharp;
 using BulletUnity;
+using UnityEngine.Analytics;
+
 
 /// <summary>
 /// Helps the user with various helper functions such as stopwatch, and ruler
@@ -14,11 +16,10 @@ public class Toolkit : MonoBehaviour
 
     private bool ignoreClick = true;
 
-
-
     private GameObject canvas;
     private MainState mainState;
     private GameObject toolkitWindow;
+    private SensorManagerGUI sensorManagerGUI;
 
     //ruler variables
     private GameObject rulerWindow;
@@ -42,6 +43,16 @@ public class Toolkit : MonoBehaviour
     private bool stopwatchPaused;
     private float stopwatchTime;
 
+    private GameObject statsWindow;
+    private GameObject speedEntry;
+    private GameObject accelerationEntry;
+    private GameObject angularVelocityEntry;
+    private GameObject weightEntry;
+    private Text speedUnit;
+    private Text accelerationUnit;
+    private Text weightUnit;
+    private bool statsOn;
+
     //dummy robot variables
     private GameObject dummyWindow;
     private DummyScrollable dummyList;
@@ -52,7 +63,8 @@ public class Toolkit : MonoBehaviour
     void Start()
     {
         canvas = GameObject.Find("Canvas");
-        toolkitWindow = AuxFunctions.FindObject(canvas,"ToolkitPanel");
+        toolkitWindow = AuxFunctions.FindObject(canvas, "ToolkitPanel");
+        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
 
         //Ruler Objects
         rulerStartPoint = GameObject.Find("RulerStartPoint");
@@ -74,6 +86,16 @@ public class Toolkit : MonoBehaviour
         dummyList = AuxFunctions.FindObject(canvas, "DummyList").GetComponent<DummyScrollable>();
         dummyIndicator = GameObject.Find("DummyIndicator");
         dummyIndicator.SetActive(false);
+
+        //Stats Objects
+        statsWindow = AuxFunctions.FindObject(canvas, "StatsPanel");
+        speedEntry = AuxFunctions.FindObject(statsWindow, "SpeedEntry");
+        speedUnit = AuxFunctions.FindObject(speedEntry, "Unit").GetComponent<Text>();
+        accelerationEntry = AuxFunctions.FindObject(statsWindow, "AccelerationEntry");
+        accelerationUnit = AuxFunctions.FindObject(accelerationEntry, "Unit").GetComponent<Text>();
+        angularVelocityEntry = AuxFunctions.FindObject(statsWindow, "AngularVelocityEntry");
+        weightEntry = AuxFunctions.FindObject(statsWindow, "WeightEntry");
+        weightUnit = AuxFunctions.FindObject(weightEntry, "Unit").GetComponent<Text>();
     }
 
     // Update is called once per frame
@@ -88,6 +110,10 @@ public class Toolkit : MonoBehaviour
 
         UpdateStopwatch();
 
+        if (statsOn)
+        {
+            UpdateStatsWindow();
+        }
         //UpdateControlIndicator();
 
     }
@@ -96,7 +122,13 @@ public class Toolkit : MonoBehaviour
     {
         if (show)
         {
-            toolkitWindow.SetActive(true);
+            if (SimUI.changeAnalytics)
+            {
+                Analytics.CustomEvent("Opened Toolkit", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+                toolkitWindow.SetActive(true);
+            }
         }
         else
         {
@@ -117,14 +149,19 @@ public class Toolkit : MonoBehaviour
     {
         if (show)
         {
+            EndProcesses(true);
             rulerWindow.SetActive(true);
-            ToggleStopwatchWindow(false);
         }
         else
         {
             rulerWindow.SetActive(false);
             DisableRuler();
         }
+    }
+
+    public void ToggleRulerWindow()
+    {
+        ToggleRulerWindow(!rulerWindow.activeSelf);
     }
 
     public void StartRuler()
@@ -171,12 +208,12 @@ public class Toolkit : MonoBehaviour
             {
                 rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
             }
-            else if(!mainState.IsMetric)
+            else if (!mainState.IsMetric)
             {
-                rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f)/100 + "ft";
-                rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f)/100  + "ft";
-                rulerYText.text = Mathf.Round(Mathf.Abs(firstPoint.Y - rayResult.HitPointWorld.Y) * 328.084f)/100 + "ft";
-                rulerZText.text = Mathf.Round(Mathf.Abs(firstPoint.Z - rayResult.HitPointWorld.Z) * 328.084f)/100 + "ft";
+                rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f) / 100 + "ft";
+                rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f) / 100 + "ft";
+                rulerYText.text = Mathf.Round(Mathf.Abs(firstPoint.Y - rayResult.HitPointWorld.Y) * 328.084f) / 100 + "ft";
+                rulerZText.text = Mathf.Round(Mathf.Abs(firstPoint.Z - rayResult.HitPointWorld.Z) * 328.084f) / 100 + "ft";
                 rulerEndPoint.transform.position = rayResult.HitPointWorld.ToUnity();
                 rulerStartPoint.GetComponent<LineRenderer>().SetPosition(1, rulerEndPoint.transform.position);
             }
@@ -209,14 +246,18 @@ public class Toolkit : MonoBehaviour
     {
         if (show)
         {
-            ToggleRulerWindow(false);
+            EndProcesses(true);
             stopwatchWindow.SetActive(true);
         }
         else
         {
             stopwatchWindow.SetActive(false);
         }
+    }
 
+    public void ToggleStopwatchWindow()
+    {
+        ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
     }
 
     public void ToggleStopwatch()
@@ -234,7 +275,7 @@ public class Toolkit : MonoBehaviour
             stopwatchStartButtonText.text = "Start";
             stopwatchOn = false;
         }
-        
+
     }
 
     public void PauseStopwatch()
@@ -265,17 +306,56 @@ public class Toolkit : MonoBehaviour
         if (stopwatchOn && !stopwatchPaused)
         {
             stopwatchTime += Time.deltaTime;
-            stopwatchText.text = (Mathf.Round( stopwatchTime  * 100) / 100).ToString();
+            stopwatchText.text = (Mathf.Round(stopwatchTime * 100) / 100).ToString();
         }
     }
 
 
     #endregion
+    #region Stats Functions
+    public void ToggleStatsWindow(bool show)
+    {
+        if (show) EndProcesses(true);
+        statsOn = show;
+        statsWindow.SetActive(show);
+    }
 
-    public void EndProcesses()
+    public void ToggleStatsWindow()
+    {
+        ToggleStatsWindow(!statsWindow.activeSelf);
+    }
+
+    /// <summary>
+    /// Update the stats window and give it correct units when statsOn
+    /// </summary>
+    public void UpdateStatsWindow()
+    {
+        speedEntry.GetComponent<InputField>().text = mainState.activeRobot.Speed.ToString();
+        accelerationEntry.GetComponent<InputField>().text = mainState.activeRobot.Acceleration.ToString();
+        angularVelocityEntry.GetComponent<InputField>().text = mainState.activeRobot.AngularVelocity.ToString();
+        weightEntry.GetComponent<InputField>().text = mainState.activeRobot.Weight.ToString();
+        if (mainState.IsMetric)
+        {
+            speedUnit.text = "m/s";
+            accelerationUnit.text = "m/s^2";
+            weightUnit.text = "kg";
+        }
+        else
+        {
+            speedUnit.text = "ft/s";
+            accelerationUnit.text = "ft/s^2";
+            weightUnit.text = "lbs";
+        }
+    }
+    #endregion
+
+    public void EndProcesses(bool toolkitWindowOn = false)
     {
         ToggleRulerWindow(false);
-        toolkitWindow.SetActive(false);
+        toolkitWindow.SetActive(toolkitWindowOn);
+        ToggleStatsWindow(false);
+        ToggleStopwatchWindow(false);
+        sensorManagerGUI.EndProcesses();
     }
     /*
     #region Dummy Robot

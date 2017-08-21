@@ -14,11 +14,6 @@ public class RobotCamera : MonoBehaviour {
     float FOV;
     public Robot robot;
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
     /// <summary>
     /// Update the configuration info of robot camera, called in RobotCameraManager after each configuration update
     /// </summary>
@@ -61,6 +56,7 @@ public class RobotCamera : MonoBehaviour {
     /// </summary>
     public void RecoverConfiguration()
     {
+        //If the new robot does not have a matching parent node
         if(parentNodeIndex > robot.gameObject.transform.childCount - 1)
         {
             UserMessageManager.Dispatch(gameObject.name + " attachment reset to node 0 for an absence of corresponding node.", 5f);
@@ -86,6 +82,10 @@ public class RobotCamera : MonoBehaviour {
         transform.parent = GameObject.Find("RobotCameraList").transform;
     }
 
+    /// <summary>
+    /// Attach the robot camera to a specific parent (robot node)
+    /// </summary>
+    /// <param name="parent"></param>
     public void AttachCamera(Transform parent)
     {
         transform.parent = parent;

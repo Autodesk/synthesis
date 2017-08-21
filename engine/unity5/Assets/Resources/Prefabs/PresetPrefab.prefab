@@ -43,9 +43,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   presetClones: []
   presetsList: []
-  wheels: []
-  bases: []
-  manipulators: []
+  wheels:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  bases:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  manipulators:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &114675834448813122
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -141,8 +152,8 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 513, y: 0}
-  m_SizeDelta: {x: 230, y: 60}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 32, y: 0}
+  m_SizeDelta: {x: 185, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}

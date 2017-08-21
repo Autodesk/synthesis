@@ -7,6 +7,9 @@ using BulletUnity;
 using BulletSharp;
 using UnityEngine.UI;
 
+/// <summary>
+/// Gyroscope sensor class, must be attached to a prefab gameobject
+/// </summary>
 public class BeamBreaker : SensorBase
 {
     public bool IsEmitter;
@@ -14,13 +17,15 @@ public class BeamBreaker : SensorBase
     public GameObject Receiver;
     private float sensorOffset;
     private bool isChangingOffset;
-    
+    private string state;
+
     private void FixedUpdate()
     {
+        if (main != null) IsMetric = main.IsMetric;
         UpdateOutputDisplay();
         float output = ReturnOutput();
 
-        Debug.Log(ReturnOutput());
+        //Debug.Log(ReturnOutput());
     }
 
     public override float ReturnOutput()
@@ -41,8 +46,12 @@ public class BeamBreaker : SensorBase
         List<BulletSharp.Math.Vector3> colliderPositions = raysCallback.HitPointWorld;
         BulletSharp.Math.Vector3 colliderPosition = BulletSharp.Math.Vector3.Zero;
 
+        float distanceToCollider = 0;
+
         //Set the initial distance as the distance between emitter and receiver
-        float distanceToCollider = sensorOffset;
+        if (main != null && main.IsMetric) distanceToCollider = sensorOffset;
+        else distanceToCollider = AuxFunctions.ToFeet(sensorOffset);
+
         //Loop through all hitpoints (exclude the origin), if there is at least one hitpoint less than the distance between two sensors, 
         //something should block the beam between emitter and receiver
         foreach (BulletSharp.Math.Vector3 pos in colliderPositions)
@@ -59,22 +68,36 @@ public class BeamBreaker : SensorBase
         if (distanceToCollider < sensorOffset)
         {
             //Something is there
+            state = "Broken";
             return 1;
         }
         else
         {
             //Nothing in between
+            state = "Unbroken";
             return 0;
         }
     }
 
+    /// <summary>
+    /// Get the offset between emitter & receiver
+    /// </summary>
+    /// <returns></returns>
     public override float GetSensorRange()
     {
-        return sensorOffset;
+        if (main.IsMetric) return sensorOffset;
+        else return AuxFunctions.ToFeet(sensorOffset);
     }
 
-    public override void SetSensorRange(float distance)
+    /// <summary>
+    /// Set the offset between emitter & receiver
+    /// </summary>
+    /// <param name="distance"></param>
+    /// <param name="isEditing"></param>
+    public override void SetSensorRange(float distance, bool isEditing = false)
     {
+        //Convert the distance pass in as meter so the position of emitter & transmitter will be set properly
+        if (isEditing && !main.IsMetric) distance = AuxFunctions.ToMeter(distance);
         Emitter.transform.localPosition = new Vector3(0, 0, -distance / 2);
         Receiver.transform.localPosition = new Vector3(0, 0, distance / 2);
         sensorOffset = distance;
@@ -83,18 +106,20 @@ public class BeamBreaker : SensorBase
     public override void UpdateRangeTransform()
     {
         //Lower the transform speed
-        sensorOffset += Input.GetAxis("CameraVertical") * 0.2f;
+        sensorOffset += Input.GetAxis("CameraVertical") * 0.02f;
         SetSensorRange(sensorOffset);
     }
 
     public override void UpdateOutputDisplay()
     {
-        base.UpdateOutputDisplay();
         GameObject outputPanel = GameObject.Find(gameObject.name + "_Panel");
         if (outputPanel != null)
         {
+            GameObject inputField = AuxFunctions.FindObject(outputPanel, "Entry");
+            inputField.GetComponent<InputField>().text = state;
+            Debug.Log(state);
             GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
-            outputText.GetComponent<Text>().text = gameObject.name + " Output (1 closed)";
+            outputText.GetComponent<Text>().text = gameObject.name + " Output";
         }
     }
 }

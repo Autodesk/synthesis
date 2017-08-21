@@ -11,6 +11,30 @@ namespace Assets.Scripts.FSM
     public class StateMachine : MonoBehaviour
     {
         private Stack<SimState> activeStates;
+        private Dictionary<Type, List<MonoBehaviour>> stateBehaviours;
+
+        /// <summary>
+        /// Used to enable and disable behaviours associated with the current state.
+        /// </summary>
+        private bool CurrentBehavioursEnabled
+        {
+            set
+            {
+                if (CurrentState == null)
+                    return;
+
+                Type currentType = CurrentState.GetType();
+
+                if (!stateBehaviours.ContainsKey(currentType))
+                    return;
+
+                List<MonoBehaviour> currentBehaviours = stateBehaviours[CurrentState.GetType()];
+
+                if (currentBehaviours != null)
+                    foreach (MonoBehaviour behaviour in currentBehaviours)
+                        behaviour.enabled = value;
+            }
+        }
 
         /// <summary>
         /// The current state in the StateMachine.
@@ -40,7 +64,22 @@ namespace Assets.Scripts.FSM
         private StateMachine()
         {
             activeStates = new Stack<SimState>();
-            
+            stateBehaviours = new Dictionary<Type, List<MonoBehaviour>>();
+        }
+
+        /// <summary>
+        /// Links the given MonoBehaviour script to the provided state type.
+        /// </summary>
+        /// <typeparam name="T">The type of state with which to link the MonoBehaviour</typeparam>
+        /// <param name="behaviour">The MonoBehaviour to link</param>
+        public void LinkBehaviour<T>(MonoBehaviour behaviour) where T : SimState
+        {
+            if (!stateBehaviours.ContainsKey(typeof(T)))
+                stateBehaviours[typeof(T)] = new List<MonoBehaviour>();
+            else if (stateBehaviours[typeof(T)].Contains(behaviour))
+                return;
+
+            stateBehaviours[typeof(T)].Add(behaviour);
         }
 
         /// <summary>
@@ -52,10 +91,14 @@ namespace Assets.Scripts.FSM
             if (CurrentState != null)
                 CurrentState.Pause();
 
+            CurrentBehavioursEnabled = false;
+
             if (!activeStates.Contains(state))
                 activeStates.Push(state);
 
             CurrentState = state;
+
+            CurrentBehavioursEnabled = true;
 
             CurrentState.Start();
         }
@@ -71,11 +114,15 @@ namespace Assets.Scripts.FSM
             CurrentState.Pause();
             CurrentState.End();
 
+            CurrentBehavioursEnabled = false;
+
             activeStates.Pop();
 
             if (activeStates.Count > 0)
             {
                 CurrentState = activeStates.First();
+
+                CurrentBehavioursEnabled = true;
 
                 CurrentState.Resume();
             }

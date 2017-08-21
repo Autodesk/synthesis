@@ -19,18 +19,23 @@ using UnityEngine.UI;
     public void SetTargetPostion(Vector2 targetPosition)
     {
         TargetPosition = targetPosition;
+        if (gameObject.name == "PneumaticWheel")
+        {
+            Debug.Log("Pneumatic wheel target position: " + targetPosition);
+        }
 
     }
     void Update()
         {
+            float distance = gameObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x;
 
-            if (gameObject.activeSelf == true && Math.Abs(gameObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x) > 3)
+            if (gameObject.activeSelf == true && Math.Abs(distance) > 3)
             {
                 gameObject.GetComponent<RectTransform>().anchoredPosition = (gameObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x > 0) ? (Vector3)gameObject.GetComponent<RectTransform>().anchoredPosition + new Vector3(-3f, 0f, 0f) : (Vector3)gameObject.GetComponent<RectTransform>().anchoredPosition + new Vector3(3f, 0f, 0f);
             } else
-        {
+            {
             Destroy(this);
-        }
+            }
         }
 
     }
