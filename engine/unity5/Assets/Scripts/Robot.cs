@@ -73,6 +73,7 @@ public class Robot : MonoBehaviour
     void Start()
     {
         RobotHasManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
+        StateMachine.Instance.Link<MainState>(this);
     }
 
     /// <summary>
@@ -90,7 +91,7 @@ public class Robot : MonoBehaviour
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
-        if (!IsResetting && StateMachine.Instance.CurrentState is MainState)
+        if (!IsResetting)
         {
             if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
             {

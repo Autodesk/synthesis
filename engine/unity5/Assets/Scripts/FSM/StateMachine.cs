@@ -9,12 +9,13 @@ namespace Assets.Scripts.FSM
     public class StateMachine : MonoBehaviour
     {
         private Stack<SimState> activeStates;
-        private Dictionary<Type, List<MonoBehaviour>> stateBehaviours;
+        private Dictionary<Type, List<Behaviour>> stateBehaviours;
+        private Dictionary<Type, List<GameObject>> stateGameObjects;
 
         /// <summary>
-        /// Used to enable and disable behaviours associated with the current state.
+        /// Used to enable and disable objects associated with the current state.
         /// </summary>
-        private bool CurrentBehavioursEnabled
+        private bool CurrentObjectsEnabled
         {
             set
             {
@@ -23,14 +24,25 @@ namespace Assets.Scripts.FSM
 
                 Type currentType = CurrentState.GetType();
 
-                if (!stateBehaviours.ContainsKey(currentType))
-                    return;
+                if (stateBehaviours.ContainsKey(currentType))
+                {
+                    List<Behaviour> currentBehaviours = stateBehaviours[CurrentState.GetType()];
 
-                List<MonoBehaviour> currentBehaviours = stateBehaviours[CurrentState.GetType()];
+                    if (currentBehaviours != null)
+                        foreach (Behaviour behaviour in currentBehaviours)
+                            if (behaviour != null)
+                                behaviour.enabled = value;
+                }
 
-                if (currentBehaviours != null)
-                    foreach (MonoBehaviour behaviour in currentBehaviours)
-                        behaviour.enabled = value;
+                if (stateGameObjects.ContainsKey(currentType))
+                {
+                    List<GameObject> currentGameObjects = stateGameObjects[CurrentState.GetType()];
+
+                    if (currentGameObjects != null)
+                        foreach (GameObject gameObect in currentGameObjects)
+                            if (gameObect != null)
+                                gameObect.SetActive(value);
+                }
             }
         }
 
@@ -56,7 +68,8 @@ namespace Assets.Scripts.FSM
         private StateMachine()
         {
             activeStates = new Stack<SimState>();
-            stateBehaviours = new Dictionary<Type, List<MonoBehaviour>>();
+            stateBehaviours = new Dictionary<Type, List<Behaviour>>();
+            stateGameObjects = new Dictionary<Type, List<GameObject>>();
         }
 
         /// <summary>
@@ -64,14 +77,29 @@ namespace Assets.Scripts.FSM
         /// </summary>
         /// <typeparam name="T">The type of state with which to link the MonoBehaviour</typeparam>
         /// <param name="behaviour">The MonoBehaviour to link</param>
-        public void LinkBehaviour<T>(MonoBehaviour behaviour) where T : SimState
+        public void Link<T>(MonoBehaviour behaviour) where T : SimState
         {
             if (!stateBehaviours.ContainsKey(typeof(T)))
-                stateBehaviours[typeof(T)] = new List<MonoBehaviour>();
+                stateBehaviours[typeof(T)] = new List<Behaviour>();
             else if (stateBehaviours[typeof(T)].Contains(behaviour))
                 return;
-
+            
             stateBehaviours[typeof(T)].Add(behaviour);
+        }
+
+        /// <summary>
+        /// Links the given GameObject to the provided state type.
+        /// </summary>
+        /// <typeparam name="T">The type of state with which to link the GameObject</typeparam>
+        /// <param name="gameObject">The GameObject to link</param>
+        public void Link<T>(GameObject gameObject) where T : SimState
+        {
+            if (!stateGameObjects.ContainsKey(typeof(T)))
+                stateGameObjects[typeof(T)] = new List<GameObject>();
+            else if (stateGameObjects[typeof(T)].Contains(gameObject))
+                return;
+
+            stateGameObjects[typeof(T)].Add(gameObject);
         }
 
         /// <summary>
@@ -83,14 +111,14 @@ namespace Assets.Scripts.FSM
             if (CurrentState != null)
                 CurrentState.Pause();
 
-            CurrentBehavioursEnabled = false;
+            CurrentObjectsEnabled = false;
 
             if (!activeStates.Contains(state))
                 activeStates.Push(state);
 
             CurrentState = state;
 
-            CurrentBehavioursEnabled = true;
+            CurrentObjectsEnabled = true;
 
             CurrentState.Start();
         }
@@ -106,7 +134,7 @@ namespace Assets.Scripts.FSM
             CurrentState.Pause();
             CurrentState.End();
 
-            CurrentBehavioursEnabled = false;
+            CurrentObjectsEnabled = false;
 
             activeStates.Pop();
 
@@ -114,7 +142,7 @@ namespace Assets.Scripts.FSM
             {
                 CurrentState = activeStates.First();
 
-                CurrentBehavioursEnabled = true;
+                CurrentObjectsEnabled = true;
 
                 CurrentState.Resume();
             }
