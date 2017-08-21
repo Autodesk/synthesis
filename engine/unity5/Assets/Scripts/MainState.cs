@@ -223,8 +223,8 @@ public class MainState : SimState
     //     //     return new UnityFieldDefinition(guid, name);
     //     // };
 
-        if (!File.Exists(directory + "\\definition.bxdf"))
-            return false;
+        //if (!File.Exists(directory + "\\definition.bxdf"))
+            //return false;
 
     //     // string loadResult;
     //     // fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
@@ -376,8 +376,8 @@ public class MainState : SimState
 
         ReplayImporter.Read(name, out fieldDirectory, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
-        RobotFieldLoader.LoadField(simSelectedField);
-        LoadRobot(simSelectedRobot);
+        RobotFieldLoader.LoadField(PlayerPrefs.GetString("simSelectedField"));
+        LoadRobot(PlayerPrefs.GetString("simSelectedRobot"));
 
         foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> rs in robotStates)
         {

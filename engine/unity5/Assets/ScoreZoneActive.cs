@@ -31,6 +31,8 @@ public class ScoreZoneActive : MonoBehaviour {
         m_scoreZoneSimSceneManager = GameObject.Find("StateMachine").GetComponent<ScoreZoneSimSceneManager>();
         m_dpmRobot = GameObject.Find("StateMachine").GetComponent<DriverPracticeMode>().dpmRobot;
         m_dpm = GameObject.Find("StateMachine").GetComponent<DriverPracticeMode>();
+
+        this.GetComponent<BBoxShape>().Extents = transform.localScale * 0.5f;
     }
 
 
