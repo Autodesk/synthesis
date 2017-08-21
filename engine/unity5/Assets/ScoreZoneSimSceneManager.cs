@@ -23,6 +23,7 @@ public class ScoreZoneSimSceneManager : MonoBehaviour
 	void Start ()
 	{
 		m_simUI = GameObject.Find("StateMachine").GetComponent<SimUI>();
+		BluePrimaryScore = BlueSecondaryScore = RedPrimaryScore = RedSecondaryScore = 0.0f
 	}
 	
 	// Update is called once per frame
@@ -41,11 +42,9 @@ public class ScoreZoneSimSceneManager : MonoBehaviour
 		
 	}
 
-	private GameObject InstantiateZone(int zoneType)
+	private GameObject InstantiateZone(ScoreZoneSettingsContainer.Shapes zoneType)
 	{
-		// 0 is cube
-		// 1 is cylinder
-		if (zoneType == 0)
+		if (zoneType == ScoreZoneSettingsContainer.Shapes.Cube)
 			return (GameObject) Instantiate(CubeScoreZonePrefab);
 		else return null;
 	}

@@ -107,15 +107,19 @@ public class ScoreZoneSelectableManager : MonoBehaviour
 
     public void InstantiateZone(Dropdown zoneType)
     {
-        InstantiateZone(zoneType.value);
+        // Mappings:
+        if (zoneType.value == 0)
+            InstantiateZone(ScoreZoneSettingsContainer.Shapes.Cube);
+        if (zoneType.value == 1)
+            InstantiateZone(ScoreZoneSettingsContainer.Shapes.Cylinder);
     }
 
-    public GameObject InstantiateZone(int zoneType)
+    public GameObject InstantiateZone(ScoreZoneSettingsContainer.Shapes zoneType)
     {
         Vector3 instantiateSpot = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, ObjInstantiationDistance));
         // 0 is cube
         // 1 is cone
-        if (zoneType== 0)
+        if (zoneType == ScoreZoneSettingsContainer.Shapes.Cube)
         {
             GameObject zone = (GameObject) Instantiate(CubeScoreZonePrefab, instantiateSpot, Quaternion.identity);
             scoreZones.Add(zone);
