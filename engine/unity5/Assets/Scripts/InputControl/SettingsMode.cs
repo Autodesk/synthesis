@@ -44,9 +44,6 @@ public class SettingsMode : MonoBehaviour
     public void OnLoadClick()
     {
         Controls.Load();
-
-        //Enable this for auto-saving. To complete auto-saving, enable the comments in KeyButton.cs > SetInput().
-        //UpdateAllText();
     }
 
     /// <summary>
@@ -56,12 +53,12 @@ public class SettingsMode : MonoBehaviour
     {
         if (Controls.TankDriveEnabled)
         {
-            Controls.ResetTankDrive();
+            GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
             Controls.Save();
         }
         else
         {
-            Controls.ResetArcadeDrive();
+            GameObject.Find("Content").GetComponent<CreateButton>().ResetArcadeDrive();
             Controls.Save();
         }
     }

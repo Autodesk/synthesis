@@ -8,7 +8,7 @@ using Assets.Scripts.FSM;
 /// </summary>
 class SensorManagerGUI : MonoBehaviour
 {
-    SimUI simUI;
+    Toolkit toolkit;
     GameObject canvas;
     SensorBase currentSensor;
     SensorManager sensorManager;
@@ -17,14 +17,13 @@ class SensorManagerGUI : MonoBehaviour
     RobotCameraGUI robotCameraGUI;
     MainState main;
 
-    GameObject configureSensorButton;
     GameObject sensorOptionPanel;
     GameObject sensorTypePanel;
     GameObject cancelOptionButton;
     GameObject addSensorButton;
     GameObject selectExistingButton;
     GameObject sensorOptionToolTip;
-
+    
     GameObject addUltrasonicButton;
     GameObject addBeamBreakerButton;
     GameObject addGyroButton;
@@ -76,6 +75,13 @@ class SensorManagerGUI : MonoBehaviour
     //A list of all output panels instantiated
     private List<GameObject> sensorOutputPanels = new List<GameObject>();
 
+    /// <summary>
+    /// Link the sensor GUI to main state
+    /// </summary>
+    private void Awake()
+    {
+        StateMachine.Instance.LinkBehaviour<MainState>(this);
+    }
     private void Start()
     {
         FindElements();
@@ -108,13 +114,12 @@ class SensorManagerGUI : MonoBehaviour
     private void FindElements()
     {
         canvas = GameObject.Find("Canvas");
-        simUI = gameObject.GetComponent<SimUI>();
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+        toolkit = GameObject.Find("StateMachine").GetComponent<Toolkit>();
 
         sensorOptionPanel = AuxFunctions.FindObject(canvas, "SensorOptionPanel");
         sensorTypePanel = AuxFunctions.FindObject(canvas, "SensorTypePanel");
-        configureSensorButton = AuxFunctions.FindObject(canvas, "ConfigureSensorButton");
 
         //For sensor option panel
         addSensorButton = AuxFunctions.FindObject(sensorOptionPanel, "AddNewSensor");
@@ -159,7 +164,7 @@ class SensorManagerGUI : MonoBehaviour
         showSensorButton = AuxFunctions.FindObject(canvas, "ShowOutputButton");
         sensorOutputPanel = AuxFunctions.FindObject(canvas, "SensorOutputBorder");
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
-
+        
     }
 
     #region Sensor Option Panel
@@ -170,6 +175,7 @@ class SensorManagerGUI : MonoBehaviour
     {
         //Deal with UI conflicts between robot camera & sensors
         robotCameraGUI.EndProcesses();
+        toolkit.EndProcesses(true);
         isChoosingOption = !isChoosingOption;
         sensorOptionPanel.SetActive(isChoosingOption);
         if (isChoosingOption)
@@ -193,6 +199,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorManager.SelectingNode = isAddingSensor;
         selectExistingButton.SetActive(!isAddingSensor);
         cancelOptionButton.SetActive(isAddingSensor);
+        cancelOptionButton.transform.position = selectExistingButton.transform.position;
         sensorOptionToolTip.SetActive(isAddingSensor);
 
         if (isAddingSensor)
@@ -231,6 +238,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorManager.SelectingSensor = isSelectingSensor;
         addSensorButton.SetActive(!isSelectingSensor);
         cancelOptionButton.SetActive(isSelectingSensor);
+        cancelOptionButton.transform.position = addSensorButton.transform.position;
         sensorOptionToolTip.SetActive(isSelectingSensor);
 
         if (isSelectingSensor)
@@ -333,6 +341,7 @@ class SensorManagerGUI : MonoBehaviour
         addBeamBreakerButton.SetActive(!isAddingUltrasonic);
         addGyroButton.SetActive(!isAddingUltrasonic);
         cancelTypeButton.SetActive(isAddingUltrasonic);
+        cancelTypeButton.transform.position = addBeamBreakerButton.transform.position;
         if (isAddingUltrasonic)
         {
             addUltrasonicButton.GetComponentInChildren<Text>().text = "Confirm";
@@ -358,6 +367,7 @@ class SensorManagerGUI : MonoBehaviour
         addUltrasonicButton.SetActive(!isAddingBeamBreaker);
         addGyroButton.SetActive(!isAddingBeamBreaker);
         cancelTypeButton.SetActive(isAddingBeamBreaker);
+        cancelTypeButton.transform.position = addGyroButton.transform.position;
         if (isAddingBeamBreaker)
         {
             addBeamBreakerButton.GetComponentInChildren<Text>().text = "Confirm";
@@ -381,6 +391,7 @@ class SensorManagerGUI : MonoBehaviour
         addUltrasonicButton.SetActive(!isAddingGyro);
         addBeamBreakerButton.SetActive(!isAddingGyro);
         cancelTypeButton.SetActive(isAddingGyro);
+        cancelTypeButton.transform.position = addBeamBreakerButton.transform.position;
         if (isAddingGyro)
         {
             addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
@@ -826,6 +837,7 @@ class SensorManagerGUI : MonoBehaviour
     }
     #endregion
 
+    #region Sensor Display
     /// <summary>
     /// Show all sensors temporarily
     /// </summary>
@@ -847,6 +859,8 @@ class SensorManagerGUI : MonoBehaviour
             sensor.GetComponent<SensorBase>().SyncVisibility();
         }
     }
+    #endregion
+
     /// <summary>
     /// Close all window related to adding/configuring sensor, also called in SimUI
     /// </summary>
@@ -864,9 +878,9 @@ class SensorManagerGUI : MonoBehaviour
         CancelTypeSelection();
         ResetConfigurationWindow();
         HideSensorOutput();
-        //configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         selectedNode = null;
 
+        //Switch back to the original camera state
         if (preConfigState != null)
         {
             dynamicCamera.SwitchToState(preConfigState);

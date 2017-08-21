@@ -101,7 +101,7 @@ public class CreateButton : MonoBehaviour
     // Each player is specified with a playerIndex and are retrieved by this index.
     //==============================================================================================
 
-    #region UpdateButtons
+    #region Update Active Buttons
     public void UpdateActiveButtons()
     {
         DestroyList();
@@ -611,6 +611,20 @@ public class CreateButton : MonoBehaviour
         }
     }
 
+    public void ResetTankDrive()
+    {
+        DestroyList();
+        InputControl.mPlayerList[InputControl.activePlayerIndex].ResetTank();
+        UpdateActiveButtons();
+    }
+
+    public void ResetArcadeDrive()
+    {
+        DestroyList();
+        InputControl.mPlayerList[InputControl.activePlayerIndex].ResetArcade();
+        UpdateActiveButtons();
+    }
+
     /// <summary>
     /// Toggles the Tank slider between on/off for each player.
     /// </summary>
@@ -665,7 +679,6 @@ public class CreateButton : MonoBehaviour
         tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
         unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
         unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 1 : 0;
-    
     }
 
     /// <summary>
