@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Assets.Scripts.FSM;
 using UnityEditor;
 using System.IO;
+using System;
 
 public class DriverPracticeMode : MonoBehaviour {
 
@@ -104,6 +105,8 @@ public class DriverPracticeMode : MonoBehaviour {
     private float deltaReleaseSpeed;
     private float deltaReleaseHorizontal;
     private float deltaReleaseVertical;
+
+    private string renamingSave = "";
 
     private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
 
@@ -432,7 +435,7 @@ public class DriverPracticeMode : MonoBehaviour {
         }
     }
 
-    public void ToggleSaveGamePanel()
+    public void ToggleSaveGameWindow()
     {
         if (saveGameWindow.activeSelf)
         {
@@ -447,7 +450,7 @@ public class DriverPracticeMode : MonoBehaviour {
         }
     }
     
-    public void ToggleSetSavePanel()
+    public void ToggleSetSaveWindow()
     {
         if (setSaveWindow.activeSelf)
         {
@@ -461,7 +464,7 @@ public class DriverPracticeMode : MonoBehaviour {
         }
     }
 
-    public void ToggleCreateSavePanel()
+    public void ToggleCreateSaveWindow()
     {
         if (createSaveWindow.activeSelf)
         {
@@ -471,6 +474,7 @@ public class DriverPracticeMode : MonoBehaviour {
         {
             createSaveWindow.SetActive(true);
             newSaveFileField.text = "";
+            renamingSave = "";
         }
     }
 
@@ -563,7 +567,7 @@ public class DriverPracticeMode : MonoBehaviour {
             if (chosenSave != null)
             {
                 if (setSaveWindow.activeSelf)
-                    ToggleSetSavePanel();
+                    ToggleSetSaveWindow();
                 PlayerPrefs.SetString("selectedSaveFile", chosenSave);
                 currentSaveFileText.text = chosenSave;
             }
@@ -573,19 +577,43 @@ public class DriverPracticeMode : MonoBehaviour {
     }
 
     /// <summary>
-    /// Create a new save file with the name written in the new save file field.
+    /// Create a new save file with the name written in the new save file field, or rename a save file if rename was pressed.
     /// </summary>
     public void CreateSaveFile()
     {
         if (dpmRobot.modeEnabled)
         {
-            Scoreboard.CreateNewSaveFile(newSaveFileField.text);
+            try
+            {
+                if (renamingSave == "")
+                {
 
-            PlayerPrefs.SetString("selectedSaveFile", newSaveFileField.text);
-            currentSaveFileText.text = newSaveFileField.text;
-            
-            UpdateSaveFileList();
-            createSaveWindow.SetActive(false);
+                    Scoreboard.CreateNewSaveFile(newSaveFileField.text);
+
+                    PlayerPrefs.SetString("selectedSaveFile", newSaveFileField.text);
+                    currentSaveFileText.text = newSaveFileField.text;
+                }
+                else
+                {
+                    Scoreboard.RenameSaveFile(renamingSave, newSaveFileField.text);
+
+                    if (PlayerPrefs.GetString("selectedSaveFile", "Statistics") == renamingSave)
+                    {
+                        PlayerPrefs.SetString("selectedSaveFile", newSaveFileField.text);
+                        currentSaveFileText.text = newSaveFileField.text;
+                    }
+
+                    renamingSave = "";
+                }
+
+                UpdateSaveFileList();
+                createSaveWindow.SetActive(false);
+            }
+            catch
+            {
+                UserMessageManager.Dispatch("An unknown error occured!", 5);
+                throw;
+            }
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }
@@ -617,6 +645,23 @@ public class DriverPracticeMode : MonoBehaviour {
     }
 
     /// <summary>
+    /// Rename the save file currently selected in the dropdown by opening the create new save window.
+    /// </summary>
+    public void RenameSaveFile()
+    {
+        if (dpmRobot.modeEnabled)
+        {
+            string fileToRename = selectedSaveFileDropdown.options[selectedSaveFileDropdown.value].text;
+            if (!createSaveWindow.activeSelf)
+                ToggleCreateSaveWindow();
+
+            newSaveFileField.text = fileToRename;
+            renamingSave = fileToRename;
+        }
+        else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
+    }
+
+    /// <summary>
     /// Save the log of the current game to a text file.
     /// </summary>
     public void SaveGameStats()
@@ -626,7 +671,7 @@ public class DriverPracticeMode : MonoBehaviour {
             scoreboard.Save(Scoreboard.SaveDirectory + PlayerPrefs.GetString("selectedSaveFile", "Statistics") + ".csv");
             UserMessageManager.Dispatch("Save successful!", 5);
             if (saveGameWindow.activeSelf)
-                ToggleSaveGamePanel();
+                ToggleSaveGameWindow();
         }
         else UserMessageManager.Dispatch("You must enable driver practice mode first.", 5);
     }

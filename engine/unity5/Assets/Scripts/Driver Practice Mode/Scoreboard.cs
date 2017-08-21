@@ -219,6 +219,19 @@ public class Scoreboard : MonoBehaviour
     }
 
     /// <summary>
+    /// Rename a save file.
+    /// </summary>
+    /// <param name="saveFile">Save file to rename.</param>
+    /// <param name="newName">New name of the save file.</param>
+    public static void RenameSaveFile(string saveFile, string newName)
+    {
+        if (File.Exists(SaveDirectory + saveFile + ".csv"))
+        {
+            File.Move(SaveDirectory + saveFile + ".csv", SaveDirectory + newName + ".csv");
+        }
+    }
+
+    /// <summary>
     /// Export a game log CSV file to a location on the computer.
     /// </summary>
     /// <param name="saveFile">The save file to export.</param>
