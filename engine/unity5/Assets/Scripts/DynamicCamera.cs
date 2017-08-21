@@ -95,7 +95,14 @@ public class DynamicCamera : MonoBehaviour
             }
             if (MovingEnabled)
             {
-                currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+                if (!opposite)
+                {
+                    currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    currentPosition -= Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+                }
             }
             mono.transform.rotation = currentRotation;
             mono.transform.position = currentPosition;
@@ -112,101 +119,96 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class OrbitState : CameraState
     {
+        #region old orbit state
+        //Vector3 targetVector;
+        //Vector3 rotateVector;
+        //Vector3 lagVector;
+        //const float lagResponsiveness = 10f;
+        //float magnification = 5.0f;
+        //float cameraAngle = 45f;
+        //float panValue = 0f;
 
-        Vector3 targetVector;
-        Vector3 rotateVector;
-        Vector3 lagVector;
-        const float lagResponsiveness = 10f;
-        float magnification = 5.0f;
-        float cameraAngle = 45f;
-        float panValue = 0f;
+        //public OrbitState(MonoBehaviour mono)
+        //{
+        //    this.mono = mono;
+        //}
 
-        public OrbitState(MonoBehaviour mono)
-        {
-            this.mono = mono;
-        }
+        //public override void Init()
+        //{
+        //    rotateVector = new Vector3(0f, 1f, 0f);
+        //    lagVector = rotateVector;
+        //}
 
-        public override void Init()
-        {
-            rotateVector = new Vector3(0f, 1f, 0f);
-            lagVector = rotateVector;
-        }
+        //public override void Update()
+        //{
+        //    if (robot != null && robot.transform.childCount > 0)
+        //    {
+        //        targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
 
-        public override void Update()
-        {
-            if (robot != null && robot.transform.childCount > 0)
-            {
-                targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
+        //        if (MovingEnabled)
+        //        {
+        //            if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+        //            {
+        //                cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
+        //                panValue = -Input.GetAxis("Mouse X") / 5f;
+        //            }
+        //            else
+        //            {
+        //                panValue = 0f;
 
-                if (MovingEnabled)
-                {
-                    if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
-                    {
-                        cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
-                        panValue = -Input.GetAxis("Mouse X") / 5f;
-                    }
-                    else
-                    {
-                        panValue = 0f;
+        //                if (Input.GetMouseButton(1))
+        //                {
+        //                    magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
 
-                        if (Input.GetMouseButton(1))
-                        {
-                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
+        //                }
 
-                        }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            panValue = 0f;
+        //        }
 
-                    }
-                }
-                else
-                {
-                    panValue = 0f;
-                }
+        //        rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
+        //        rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
 
-                rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
-                rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+        //        lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
 
-                lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
+        //        mono.transform.position = lagVector;
+        //        mono.transform.LookAt(targetVector);
 
-                mono.transform.position = lagVector;
-                mono.transform.LookAt(targetVector);
+        //    }
+        //    else
+        //    {
+        //        robot = GameObject.Find("Robot");
+        //    }
+        //}
 
-            }
-            else
-            {
-                robot = GameObject.Find("Robot");
-            }
-        }
+        //public override void End()
+        //{
+        //}
 
-        public override void End()
-        {
-        }
+        //Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
+        //{
+        //    vector -= origin;
+        //    Vector3 output = vector;
+        //    output.x = Mathf.Cos(theta) * (vector.x) - Mathf.Sin(theta) * (vector.z);
+        //    output.z = Mathf.Sin(theta) * (vector.x) + Mathf.Cos(theta) * (vector.z);
 
-        Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
-        {
-            vector -= origin;
-            Vector3 output = vector;
-            output.x = Mathf.Cos(theta) * (vector.x) - Mathf.Sin(theta) * (vector.z);
-            output.z = Mathf.Sin(theta) * (vector.x) + Mathf.Cos(theta) * (vector.z);
-
-            return output.normalized * mag + origin;
-        }
-    }
-
-    /// <summary>
-    /// This state follows the robot from behind assuming the robot is configured correctly during export
-    /// </summary>
-    public class FollowState : CameraState
-    {
+        //    return output.normalized * mag + origin;
+        //}
+    #endregion
+        
         private Transform target;
         // The distance in the x-z plane to the target
-        private float distance = 1.5f;
+        private float distance = 5f;
         // the height we want the camera to be above the target
-        private float height = 1f;
+        private float height = 1.5f;
         private float angleOffset;
-        private float heightDamping = 2.0f;
-        private float rotationDamping = 3.0f;
+        private float heightDamping = 5f;
+        private float rotationDamping = 5f;
 
-        public FollowState(MonoBehaviour mono)
+        public OrbitState(MonoBehaviour mono)
         {
             this.mono = mono;
         }
@@ -220,7 +222,7 @@ public class DynamicCamera : MonoBehaviour
         {
             //Focus on the node 0
             target = GameObject.Find("Robot").transform.GetChild(0);
-            
+
             // Early out if we don't have a target
             if (!target)
                 return;
@@ -238,10 +240,11 @@ public class DynamicCamera : MonoBehaviour
                 {
                     distance = Mathf.Max(Mathf.Min(distance - ((Input.GetAxis("Mouse Y") / 5f) * distance), 12f), 1.5f);
                 }
-                //Use left mouse to adjust the angle the camera is pointing from
-                else if (Input.GetMouseButton(0))
+                //Use left mouse to adjust the angle the camera is pointing from and the height of camera
+                else if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
                 {
                     angleOffset += Input.GetAxis("Mouse X") * 5;
+                    height -= Input.GetAxis("Mouse Y")/2;
                 }
             }
 
@@ -520,8 +523,7 @@ public class DynamicCamera : MonoBehaviour
             if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
             else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
             else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
-            else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new FollowState(this));
-            else if (currentCameraState.GetType().Equals(typeof(FollowState))) SwitchCameraState(new DriverStationState(this, false));
+            else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this));
         }
         if (_cameraState != null) _cameraState.Update();
     }
@@ -586,6 +588,5 @@ public class DynamicCamera : MonoBehaviour
         else if (targetState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
         else if (targetState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new FreeroamState(this));
         else if (targetState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new OverviewState(this));
-        else if (targetState.GetType().Equals(typeof(FollowState))) SwitchCameraState(new FollowState(this));
     }
 }
