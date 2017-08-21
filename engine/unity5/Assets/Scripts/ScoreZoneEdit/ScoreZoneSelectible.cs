@@ -17,7 +17,8 @@ public class ScoreZoneSelectible : MonoBehaviour
             DestroyGamePieceOnScore = true,
             ReinstantiateGamePieceOnScore = true,
             TeamZone = ScoreZoneSettingsContainer.Team.Blue,
-            ZoneType = 0
+            ZoneType = ScoreZoneSettingsContainer.Shapes.Cube,
+            ScoreType = ScoreZoneSettingsContainer.ScoreTypes.Primary
         };
 	
     // Use this for initialization
@@ -33,6 +34,9 @@ public class ScoreZoneSelectible : MonoBehaviour
 	
     // Update is called once per frame
     void Update () {
+        SettingsContainer.Scale = transform.localScale;
+        SettingsContainer.Position = transform.position;
+        SettingsContainer.Rotation = transform.rotation;
     }
 
     void OnMouseOver()
@@ -68,6 +72,11 @@ public class ScoreZoneSelectible : MonoBehaviour
     {
         SettingsContainer.TeamZone = team;
         // manipManager.SetTeam(team);
+    }
+    
+    public void SetScoreType(ScoreZoneSettingsContainer.ScoreTypes type)
+    {
+        SettingsContainer.ScoreType = type;
     }
 
     public void SetContainer(ScoreZoneSettingsContainer container)

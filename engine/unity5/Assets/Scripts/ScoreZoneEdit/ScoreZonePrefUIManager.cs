@@ -18,10 +18,10 @@ struct MinMax
 
 public class ScoreZonePrefUIManager : MonoBehaviour
 {
-	public InputField xValue, yValue, zValue;
+    public InputField xValue, yValue, zValue;
 
 	
-	public Button xAdd, xSubtract, yAdd, ySubtract, zAdd, zSubtract;
+    public Button xAdd, xSubtract, yAdd, ySubtract, zAdd, zSubtract;
     private Text xMinT, xMaxT, yMinT, yMaxT, zMinT, zMaxT;
 
     public Toggle DestroyOnScoreToggle;
@@ -29,6 +29,9 @@ public class ScoreZonePrefUIManager : MonoBehaviour
     public Button DestroyButton;
     public InputField ScoreInput;
     public Slider TeamInput;
+    public Slider ScoreTypeInput;
+
+    public GameObject SplashScreen;
 	
     private MinMax xMM, yMM, zMM;
 		
@@ -68,67 +71,75 @@ public class ScoreZonePrefUIManager : MonoBehaviour
         {
             scoreZoneSelectableManager.SetReinstantationPref(InstantiateOnScoreToggle.isOn);
         });
+	    
+        ScoreTypeInput.onValueChanged.AddListener(delegate
+        {
+            scoreZoneSelectableManager.SetScoreType(
+                ScoreTypeInput.value == 0 
+                    ? ScoreZoneSettingsContainer.ScoreTypes.Primary
+                    : ScoreZoneSettingsContainer.ScoreTypes.Secondary);
+        });
 
 
-	    xValue.text = 1.ToString();
-	    yValue.text = 1.ToString();
-	    zValue.text = 1.ToString();
+        xValue.text = 1.ToString();
+        yValue.text = 1.ToString();
+        zValue.text = 1.ToString();
 	    
 	    
-	    xValue.onEndEdit.AddListener(delegate { UpdateScale(); });
-	    yValue.onEndEdit.AddListener(delegate { UpdateScale(); });
-	    zValue.onEndEdit.AddListener(delegate { UpdateScale(); });
+        xValue.onEndEdit.AddListener(delegate { UpdateScale(); });
+        yValue.onEndEdit.AddListener(delegate { UpdateScale(); });
+        zValue.onEndEdit.AddListener(delegate { UpdateScale(); });
 
-		xValue.contentType = InputField.ContentType.DecimalNumber;
-		yValue.contentType = InputField.ContentType.DecimalNumber;
-		zValue.contentType = InputField.ContentType.DecimalNumber;
-		ScoreInput.contentType = InputField.ContentType.DecimalNumber;
+        xValue.contentType = InputField.ContentType.DecimalNumber;
+        yValue.contentType = InputField.ContentType.DecimalNumber;
+        zValue.contentType = InputField.ContentType.DecimalNumber;
+        ScoreInput.contentType = InputField.ContentType.DecimalNumber;
 
-		xAdd.onClick.AddListener (delegate
-		{
-			//xValue.text = (double.Parse(xValue.text, CultureInfo.InvariantCulture) + .1f).ToString();
-			xValue.text = (float.Parse(xValue.text) + .1F).ToString();
-			UpdateScale();
-		});
+        xAdd.onClick.AddListener (delegate
+        {
+            //xValue.text = (double.Parse(xValue.text, CultureInfo.InvariantCulture) + .1f).ToString();
+            xValue.text = (float.Parse(xValue.text) + .1F).ToString();
+            UpdateScale();
+        });
 
-		yAdd.onClick.AddListener (delegate
-		{
-			yValue.text = (float.Parse(yValue.text) + .1F).ToString();
-			UpdateScale();
-		});
+        yAdd.onClick.AddListener (delegate
+        {
+            yValue.text = (float.Parse(yValue.text) + .1F).ToString();
+            UpdateScale();
+        });
 
-		zAdd.onClick.AddListener (delegate
-		{
-			zValue.text = (float.Parse(zValue.text) + .1F).ToString();
-			UpdateScale();
-		});
+        zAdd.onClick.AddListener (delegate
+        {
+            zValue.text = (float.Parse(zValue.text) + .1F).ToString();
+            UpdateScale();
+        });
 
-		xSubtract.onClick.AddListener (delegate
-		{
-			xValue.text = (float.Parse(xValue.text) - .1F).ToString();
-			UpdateScale();
-		});
+        xSubtract.onClick.AddListener (delegate
+        {
+            xValue.text = (float.Parse(xValue.text) - .1F).ToString();
+            UpdateScale();
+        });
 
-		ySubtract.onClick.AddListener (delegate
-		{
-			yValue.text = (float.Parse(yValue.text) - .1F).ToString();
-			UpdateScale();
-		});
+        ySubtract.onClick.AddListener (delegate
+        {
+            yValue.text = (float.Parse(yValue.text) - .1F).ToString();
+            UpdateScale();
+        });
 
-		zSubtract.onClick.AddListener (delegate
-		{
-			zValue.text = (float.Parse(zValue.text) - .1F).ToString();
-			UpdateScale();
-		});
+        zSubtract.onClick.AddListener (delegate
+        {
+            zValue.text = (float.Parse(zValue.text) - .1F).ToString();
+            UpdateScale();
+        });
 
     }
 
-	void UpdateScale()
-	{
-		scoreZoneSelectableManager.SetScale(new Vector3(
-			float.Parse(xValue.text), float.Parse(yValue.text), float.Parse(zValue.text)
-		));
-	}
+    void UpdateScale()
+    {
+        scoreZoneSelectableManager.SetScale(new Vector3(
+            float.Parse(xValue.text), float.Parse(yValue.text), float.Parse(zValue.text)
+        ));
+    }
 	
     // Update is called once per frame
     void Update ()
@@ -142,15 +153,15 @@ public class ScoreZonePrefUIManager : MonoBehaviour
         UIEnableDisable();
     }
 
-	public void LoadPrefs(ScoreZoneSettingsContainer container)
+    public void LoadPrefs(ScoreZoneSettingsContainer container)
     {
         // calculateMinMax(container.Scale.x, ref xMM);
         // calculateMinMax(container.Scale.y, ref yMM);
         // calculateMinMax(container.Scale.z, ref zMM);
 
-		xValue.text = container.Scale.x.ToString();
-		yValue.text = container.Scale.y.ToString();
-		zValue.text = container.Scale.z.ToString();
+        xValue.text = container.Scale.x.ToString();
+        yValue.text = container.Scale.y.ToString();
+        zValue.text = container.Scale.z.ToString();
 		
         // Set button and score to correct values from object
         DestroyOnScoreToggle.isOn = container.DestroyGamePieceOnScore;
@@ -159,6 +170,7 @@ public class ScoreZonePrefUIManager : MonoBehaviour
 
         // Set slider to correct team
         TeamInput.value = (container.TeamZone == ScoreZoneSettingsContainer.Team.Blue) ? 0 : 1;
+        ScoreTypeInput.value = (container.ScoreType == ScoreZoneSettingsContainer.ScoreTypes.Primary) ? 0 : 1;
     }
 
     // TODO
@@ -195,20 +207,31 @@ public class ScoreZonePrefUIManager : MonoBehaviour
     {
         bool enable = (currentlySelected != null);
 
-		xValue.interactable = enable;
-		yValue.interactable = enable;
-		zValue.interactable = enable;
-		xAdd.interactable = enable;
-		xSubtract.interactable = enable;
-		yAdd.interactable = enable;
-		ySubtract.interactable = enable;
-		zAdd.interactable = enable;
-		zSubtract.interactable = enable;
+        xValue.interactable = enable;
+        yValue.interactable = enable;
+        zValue.interactable = enable;
+        xAdd.interactable = enable;
+        xSubtract.interactable = enable;
+        yAdd.interactable = enable;
+        ySubtract.interactable = enable;
+        zAdd.interactable = enable;
+        zSubtract.interactable = enable;
 
         DestroyButton.interactable = enable;
         DestroyOnScoreToggle.interactable = enable;
         InstantiateOnScoreToggle.interactable = enable;
         TeamInput.interactable = enable;
         ScoreInput.interactable = enable;
+        ScoreTypeInput.interactable = enable;
+    }
+
+    public void ShowSplash()
+    {
+        SplashScreen.SetActive(true);
+    }
+
+    public void HideSplash()
+    {
+        SplashScreen.SetActive(false);
     }
 }

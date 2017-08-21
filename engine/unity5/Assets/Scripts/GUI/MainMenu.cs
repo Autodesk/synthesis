@@ -314,6 +314,7 @@ public class MainMenu : MonoBehaviour
         simTab.SetActive(false);
         optionsTab.SetActive(false);
         fieldBrowser.Active = false;
+        splashScreen.SetActive(true);
         SceneManager.LoadScene("EditScoreZones");
     }
 

@@ -412,8 +412,16 @@ public class DriverPracticeRobot : MonoBehaviour
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
                 gameobject.tag = "Gamepiece_" + ((index == 0) ? "Primary" : "Secondary"); // Tagging so we can use it with the scoring area
-                gameobject.AddComponent<GamePieceRememberSpawnParams>(); // allow us to easily reinstantiate from other scripts
                 gameobject.GetComponent<GamePieceRememberSpawnParams>().PieceType = index; // allow us to easily reinstantiate from other scripts
+                
+                // gameobject.GetComponent<SphereCollider>().isTrigger = true;
+                // gameobject.transform.GetChild(0).gameObject.AddComponent<MeshCollider>();
+                // gameobject.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().isTrigger = true;
+                // gameobject.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().inflateMesh = true;
+                // gameobject.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().convex = true;
+                // gameobject.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().sharedMesh =
+                //     gameobject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
+                
                 spawnedGamepieces[index].Add(gameobject);
             }
             catch

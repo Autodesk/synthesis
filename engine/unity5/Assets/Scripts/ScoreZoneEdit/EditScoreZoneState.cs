@@ -23,6 +23,8 @@ public class EditScoreZoneState : SimState
         
         mainCam.GetComponent<DynamicCamera>().SwitchCameraState(0);
         DynamicCamera.MovingEnabled = true;
+        
+        GameObject.Find("ScoreZonePrefsPanel").GetComponent<ScoreZonePrefUIManager>().HideSplash();
     }
 
     /// <summary>

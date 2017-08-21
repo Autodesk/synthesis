@@ -5,7 +5,7 @@ using UnityEngine;
 // This script drags an arrow in only a single direction, but drags the parent gameobject in that direction as well
 public class ArrowDragger : MonoBehaviour
 {
-    private Vector3 lastMousePos;
+    private Vector3 m_lastMousePos;
 
     public float OffsetFactor;
 
@@ -17,6 +17,43 @@ public class ArrowDragger : MonoBehaviour
     };
 
     public ConstrainAxis constrainAxis;
+
+    void Update()
+    {
+        // This code works fine but the positions get kinda screwed up, so fixes will have to be added for that (TODO)
+       //  switch (constrainAxis)
+       //  {
+       //      case ConstrainAxis.x:
+       //          // x -> y
+       //          // y -> x
+       //          // z -> z 
+       //          this.transform.localScale = new Vector3(
+       //              (1 / this.transform.parent.localScale.y) / 4,
+       //              (1 / this.transform.parent.localScale.x) / 4,
+       //              (1 / this.transform.parent.localScale.z) / 4);
+       //          break;
+       //      case ConstrainAxis.y:
+       //          // x -> x
+       //          // y -> y
+       //          // z -> z
+       //          this.transform.localScale = new Vector3(
+       //              (1 / this.transform.parent.localScale.x) / 4,
+       //              (1 / this.transform.parent.localScale.y) / 4,
+       //              (1 / this.transform.parent.localScale.z) / 4);
+       //          
+       //          break;
+       //      case ConstrainAxis.z:
+       //          // x -> x
+       //          // y -> z
+       //          // z -> y
+       //          this.transform.localScale = new Vector3(
+       //              (1 / this.transform.parent.localScale.x) / 4,
+       //              (1 / this.transform.parent.localScale.z) / 4,
+       //              (1 / this.transform.parent.localScale.y) / 4);
+       //          break;
+       //  }
+       //  
+    }
 	
     void OnMouseDrag()
     {
@@ -29,17 +66,17 @@ public class ArrowDragger : MonoBehaviour
             case ConstrainAxis.x:
                 Position.y = this.transform.position.y;
                 Position.z = this.transform.position.z;
-                Position.x -= OffsetFactor;
+                Position.x -= this.transform.parent.localScale.x * OffsetFactor;
                 break;
             case ConstrainAxis.y:
                 Position.z = this.transform.position.z;
                 Position.x = this.transform.position.x;
-                Position.y -= OffsetFactor;
+                Position.y -= this.transform.parent.localScale.y * OffsetFactor;
                 break;
             case ConstrainAxis.z:
                 Position.x = this.transform.position.x;
                 Position.y = this.transform.position.y;
-                Position.z -= OffsetFactor;
+                Position.z -= this.transform.parent.localScale.z * OffsetFactor;
                 break;
         }
 

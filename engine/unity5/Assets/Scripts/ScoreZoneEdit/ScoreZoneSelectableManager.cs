@@ -143,13 +143,13 @@ public class ScoreZoneSelectableManager : MonoBehaviour
 
     public void SetReinstantationPref(bool val)
     {
-        Debug.Log("Got upxmled reinstantiation pref of " + val);
+        Debug.Log("Got updated reinstantiation pref of " + val);
         CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetReinstantiationPref(val);
     }
     
     public void SetDestroyPref(bool val)
     {
-        Debug.Log("Got upxmled destroy pref of " + val);
+        Debug.Log("Got updated destroy pref of " + val);
         CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetDestroyPref(val);
     }
     
@@ -161,14 +161,20 @@ public class ScoreZoneSelectableManager : MonoBehaviour
 
     public void SetScore(float score)
     {
-        Debug.Log("Got upxmled score of " + score);
+        Debug.Log("Got updated score of " + score);
         CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetScore(score);
     }
     
     public void SetTeam (ScoreZoneSettingsContainer.Team team)
     {
-        Debug.Log("Got upxmled team of " + team.ToString());
+        Debug.Log("Got updated team of " + team.ToString());
         CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetTeam(team);
+    }
+    
+    public void SetScoreType (ScoreZoneSettingsContainer.ScoreTypes type)
+    {
+        Debug.Log("Got updated scoring type of " + type.ToString());
+        CurrentlySelected.GetComponent<ScoreZoneSelectible>().SetScoreType(type);
     }
 
     // Saves all scoring zones to a file (ScoreZones.xml) in the directory of the current loaded field
@@ -181,9 +187,10 @@ public class ScoreZoneSelectableManager : MonoBehaviour
         
         
         string directory = PlayerPrefs.GetString("simSelectedField");
-
         
         var xmlSeralizer = new XmlSerializer(typeof(List<ScoreZoneSettingsContainer>));
+        
+        File.Delete(directory + "\\ScoreZones.xml");
 
         using (Stream stream = new FileStream(
             directory + "\\ScoreZones.xml",
@@ -199,15 +206,15 @@ public class ScoreZoneSelectableManager : MonoBehaviour
     // Loads all scoring zones from a file (ScoreZones.xml) in the directory of the current loaded field
     public void LoadZones()
     {
+        DestroyAllZones();
+        
         string directory = PlayerPrefs.GetString("simSelectedField");
         if (!File.Exists(directory + "\\ScoreZones.xml")) return; // File does not exist, so we don't do anything
-        
-        DestroyAllZones();
 
         List<ScoreZoneSettingsContainer> containerList = new List<ScoreZoneSettingsContainer>();
         
         var xmlSeralizer = new XmlSerializer(typeof(List<ScoreZoneSettingsContainer>));
-        Stream stream = new FileStream(directory + "\\ScoreZones.xml", FileMode.Open, FileAccess.Read);
+        Stream stream = new FileStream(directory + "\\ScoreZones.xml", FileMode.Open, FileAccess.Read, FileShare.None);
         containerList = (List<ScoreZoneSettingsContainer>) xmlSeralizer.Deserialize(stream);
 
         foreach (ScoreZoneSettingsContainer i in containerList)
@@ -237,11 +244,20 @@ public class ScoreZoneSelectableManager : MonoBehaviour
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void LoadMainLevel()
     {
         SceneManager.LoadScene("MainMenu");
     }
 =======
+=======
+    public void LoadMainMenu()
+    {
+        prefUIManager.ShowSplash();
+        SceneManager.LoadScene("MainMenu");
+    }
+
+>>>>>>> 398dc8a... Updated with BulletSharp collision detection
 	/*
 	public void IncrementScale(float val, string axis)
 	{
