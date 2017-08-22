@@ -797,4 +797,10 @@ public class Robot : MonoBehaviour
         }
         return weight;
     }
+
+    public void SetControlIndex(int index)
+    {
+        ControlIndex = index;
+        dpmRobot.controlIndex = index;
+    }
 }

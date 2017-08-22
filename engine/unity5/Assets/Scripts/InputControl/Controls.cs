@@ -238,7 +238,7 @@ public class Controls
     /// </summary>
     /// <returns>CustomInput from string.</returns>
     /// <param name="value">String representation of CustomInput.</param>
-    private static CustomInput customInputFromString(string value)
+    public static CustomInput customInputFromString(string value)
     {
         CustomInput res;
 
