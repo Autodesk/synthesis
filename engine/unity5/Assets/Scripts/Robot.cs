@@ -197,11 +197,12 @@ public class Robot : MonoBehaviour
         //Initializes the wheel variables
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
-
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch");
-        if (isMixAndMatch == 1 && !MixAndMatchMode.isMecanum)
+
+        //Initializes the nodes and creates joints for the robot
+        if (isMixAndMatch == 1 && !MixAndMatchMode.IsMecanum) //If the user is in MaM and the robot they select is not mecanum, create the nodes and replace the wheel meshes to match those selected
         {
-            //Load Node_0
+            //Load Node_0, the base of the robot
             RigidNode node = (RigidNode)nodes[0];
             node.CreateTransform(transform);
 
@@ -219,7 +220,7 @@ public class Robot : MonoBehaviour
             if (node.MainObject.GetComponent<BRigidBody>() != null)
                 node.MainObject.AddComponent<Tracker>().Trace = true;
 
-            //Load the other nodes (wheels)
+            //Get the wheel mesh data from the file they are stored in. They are stored as .bxda files. This may need to update if exporters/file types change.
             string wheelDirectory = PlayerPrefs.GetString("simSelectedWheel");
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(wheelDirectory + "\\node_0.bxda");
@@ -241,9 +242,10 @@ public class Robot : MonoBehaviour
                 }
 
                 materialList.Add(materials);
-                //meshObject.GetComponent<MeshRenderer>().materials = materials;
             }, true);
 
+
+            //Loads the other nodes from the original robot
             for (int i = 1; i < nodes.Count; i++)
             {
                 node = (RigidNode)nodes[i];
@@ -255,6 +257,7 @@ public class Robot : MonoBehaviour
                     return false;
                 }
 
+                //If the node is a wheel, destroy the original wheel mesh and replace it with the wheels selected in MaM
                 if (node.HasDriverMeta<WheelDriverMeta>())
                 {
                     int chldCount = node.MainObject.transform.childCount;
@@ -274,17 +277,13 @@ public class Robot : MonoBehaviour
 
                         //Take out this line if you want some snazzy pink wheels
                         meshObj.AddComponent<MeshRenderer>().materials = materialList[k];
+
                         k++;
                     }
                     node.MainObject.GetComponentInChildren<MeshRenderer>().materials = materials;
                 }
 
-                //node.MainObject.transform.GetChild(0).localPosition = -node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds.center;// -node.MainObject.transform.localPosition;
-                //Bounds b = node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds;
-                // Debug.Log(b.center); 
-                //b.center = node.MainObject.transform.position;
-                //node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds = b;
-
+                //Create the joints that interact with physics
                 node.CreateJoint(numWheels);
 
                 if (node.HasDriverMeta<WheelDriverMeta>())
@@ -300,7 +299,7 @@ public class Robot : MonoBehaviour
                     node.MainObject.AddComponent<Tracker>().Trace = true;
             }
         }
-        else
+        else //Initialize the robot as normal
         {
             //Initializes the nodes
             foreach (RigidNode_Base n in nodes)
@@ -379,7 +378,7 @@ public class Robot : MonoBehaviour
     }
 
     /// <summary>
-    /// Deletes robot manipulator (meant only for use in Mix and Match mode)
+    /// Deletes robot manipulator (used for Mix and Match mode)
     /// </summary>
     public void DeleteManipulatorNodes()
     {
@@ -690,71 +689,14 @@ public class Robot : MonoBehaviour
     }
 
     /// <summary>
-    /// Loads and initializes the manipulator object (for use in Mix and Match mode)
+    /// Loads and initializes the manipulator object (used in Mix and Match mode)
     /// </summary>
-    public bool LoadManipulator(string directory)
-    {
-        ManipulatorObject = new GameObject("Manipulator");
-
-        //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
-        ManipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
-        //manipulatorObject.transform.position = robotStartPosition;
-
-        RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
-        {
-            return new RigidNode(guid);
-        };
-
-        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        //TO-DO: Read .robot instead (from the new exporters if they are implemented). Maybe need a RobotSkeleton class
-        manipulatorNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
-        manipulatorNode.ListAllNodes(nodes);
-
-        int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
-        float collectiveMass = 0f;
-
-        //Load node_0 for attaching manipulator to robot
-        RigidNode node = (RigidNode)nodes[0];
-        node.CreateTransform(ManipulatorObject.transform);
-        if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
-        {
-            Debug.Log("Robot not loaded!");
-            UnityEngine.Object.Destroy(ManipulatorObject);
-            return false;
-        }
-        GameObject robot = GameObject.Find("Robot");
-        node.CreateManipulatorJoint(robot);
-        node.MainObject.AddComponent<Tracker>().Trace = true;
-        Tracker t = node.MainObject.GetComponent<Tracker>();
-        Debug.Log(t);
-
-        //Load other nodes associated with the manipulator
-        for (int i = 1; i < nodes.Count; i++)
-        {
-            RigidNode otherNode = (RigidNode)nodes[i];
-            otherNode.CreateTransform(ManipulatorObject.transform);
-            if (!otherNode.CreateMesh(directory + "\\" + otherNode.ModelFileName))
-            {
-                Debug.Log("Robot not loaded!");
-                UnityEngine.Object.Destroy(ManipulatorObject);
-                return false;
-            }
-            otherNode.CreateJoint(numWheels);
-            otherNode.MainObject.AddComponent<Tracker>().Trace = true;
-            t = otherNode.MainObject.GetComponent<Tracker>();
-            Debug.Log(t);
-        }
-
-        foreach (BRaycastRobot r in ManipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.OverrideMass = collectiveMass;
-
-        RotateRobot(robotStartOrientation);
-        return true;
-    }
-
-
     public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
+        if(robotGameObject == null)
+        {
+            robotGameObject = GameObject.Find("Robot");
+        }
         ManipulatorObject = new GameObject("Manipulator");
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:

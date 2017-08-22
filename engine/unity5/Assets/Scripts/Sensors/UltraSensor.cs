@@ -101,6 +101,11 @@ public class UltraSensor : SensorBase
             return distanceToCollider;
     }
 
+    /// <summary>
+    /// Change the sensor range
+    /// </summary>
+    /// <param name="distance"></param>
+    /// <param name="isEditing"></param>
     public override void SetSensorRange(float distance, bool isEditing)
     {
         if (isEditing && !main.IsMetric) distance = AuxFunctions.ToMeter(distance);
@@ -114,7 +119,7 @@ public class UltraSensor : SensorBase
     }
 
     /// <summary>
-    /// Update the maxRange of ultrasonic sensor
+    /// Update the maxRange of ultrasonic sensor using W/S
     /// </summary>
     public override void UpdateRangeTransform()
     {
