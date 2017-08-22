@@ -81,7 +81,7 @@ public class SimUI : MonoBehaviour
     {
         if (main == null)
         {
-            main = transform.GetComponent<StateMachine>().CurrentState as MainState;
+            main = StateMachine.Instance.FindState<MainState>();
         }
         else if (dpm == null)
         {

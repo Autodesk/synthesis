@@ -74,7 +74,7 @@ class RobotCameraGUI : MonoBehaviour
         //Make sure main state and dynamic camera get initialized
         if (main == null)
         {
-            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+            main = StateMachine.Instance.FindState<MainState>();
             dynamicCamera = main.DynamicCameraObject.GetComponent<DynamicCamera>();
         }
         //Update gui about robot camera once main and dynamic camera is ready
