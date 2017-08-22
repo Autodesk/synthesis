@@ -73,6 +73,20 @@ namespace Assets.Scripts.FSM
         }
 
         /// <summary>
+        /// Finds the states of the given type in the stack of active states.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T FindState<T>() where T : SimState
+        {
+            foreach (SimState state in activeStates)
+                if (state is T)
+                    return state as T;
+
+            return null;
+        }
+
+        /// <summary>
         /// Links the given MonoBehaviour script to the provided state type.
         /// </summary>
         /// <typeparam name="T">The type of state with which to link the MonoBehaviour</typeparam>
