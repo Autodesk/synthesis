@@ -81,10 +81,13 @@ class RobotCameraGUI : MonoBehaviour
         else if (main != null && dynamicCamera != null)
         {
             UpdateCameraWindow();
-            UpdateCameraAnglePanel();
-            UpdateCameraFOVPanel();
-            UpdateNodeAttachment();
-            UpdateIndicatorTransform();
+            if (indicatorActive)
+            {
+                UpdateCameraAnglePanel();
+                UpdateCameraFOVPanel();
+                UpdateNodeAttachment();
+                UpdateIndicatorTransform();
+            }
         }
     }
 
@@ -153,7 +156,7 @@ class RobotCameraGUI : MonoBehaviour
                 robotCameraManager.CurrentCamera.SetActive(true);
                 robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
                 //Toggle the robot camera using Q (should be changed later)
-                if (Input.GetKeyDown(KeyCode.Q))
+                if (Input.GetKeyDown(KeyCode.Z))
                 {
                     //Reset the targetTexture of current camera or they will conflict
                     robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
@@ -220,7 +223,7 @@ class RobotCameraGUI : MonoBehaviour
             showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
             //Close the panel when indicator is not active and stop all configuration
             ResetConfigurationWindow();
-            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
             configureRobotCameraButton.SetActive(false);
 
         }
