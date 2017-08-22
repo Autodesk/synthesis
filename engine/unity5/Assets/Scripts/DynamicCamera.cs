@@ -85,7 +85,7 @@ public class DynamicCamera : MonoBehaviour
             startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
             currentRotation = startRotation;
             transformSpeed = 2.5f;
-            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+            main = StateMachine.Instance.FindState<MainState>();
         }
 
         public override void Update()
@@ -321,7 +321,7 @@ public class DynamicCamera : MonoBehaviour
             transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
             if (robot == null) robot = GameObject.Find("robot");
-            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+            main = StateMachine.Instance.FindState<MainState>();
         }
 
         public override void Update()

@@ -297,7 +297,16 @@ public class MixAndMatchMode : MonoBehaviour
     public void SetPresetName()
     {
         String name = "";
-        if (inputField.GetComponent<InputField>().text.Length > 0) name = inputField.GetComponent<InputField>().text;
+        if (inputField.GetComponent<InputField>().text.Length > 0)
+        {
+            name = inputField.GetComponent<InputField>().text;
+        } else
+        {
+            UserMessageManager.Dispatch("Please enter a name", 5);
+            ToggleSetPresetPanel();
+            return;
+        }
+
         foreach (MaMPreset preset in XMLManager.ins.itemDB.xmlList)
         {
             if (name == preset.GetName())
@@ -338,6 +347,7 @@ public class MixAndMatchMode : MonoBehaviour
             });
         }
 
+        inputField.GetComponent<InputField>().text = "";
     }
 
     void SetPresetFontSize(GameObject clone)
