@@ -1,4 +1,4 @@
-CC = i686-w64-mingw32-g++
+CC = x86_64-w64-mingw32-g++
 ifndef TARGET
 	TARGET := debug
 endif
@@ -10,7 +10,8 @@ ifndef SYNTHESIS_INCLUDES
 	SYNTHESIS_INCLUDES := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/include
 endif
 
-CCFLAGS := -m32 -L$(SYNTHESIS_LIBS)/ntcore -L$(SYNTHESIS_LIBS)/cpp -L$(SYNTHESIS_LIBS)/hal \
+CCFLAGS := -m64 \
+	-L$(SYNTHESIS_LIBS)/ntcore -L$(SYNTHESIS_LIBS)/cpp -L$(SYNTHESIS_LIBS)/hal \
 	-lwpilib -lntcore-static -lHAL -lWs2_32 \
 	-I$(SYNTHESIS_INCLUDES)/allwpilib/wpilibc/athena/include -I$(SYNTHESIS_INCLUDES)/allwpilib/wpilibc/shared/include \
 	-I$(SYNTHESIS_INCLUDES)/wpilibc/athena/include -I$(SYNTHESIS_INCLUDES)/wpilibc/shared/include \
@@ -30,7 +31,7 @@ SRC_FILES = $(shell find ./ -name "*.cpp")
 HEADER_FILES = $(shell find ./ -name "*.h")
 OBJ_FILES =	$(addprefix build/,$(patsubst %.cpp,%.o,$(SRC_FILES)))
 
-.PHONY: build/FRC_UserProgram
+.PHONY: build/FRC_UserProgram clean
 
 all: build/FRC_UserProgram
 
@@ -45,3 +46,6 @@ build/%.o: %.cpp | $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
 	@$(CC) $(CCFLAGS) -c $< -o $@
+
+clean:
+	rm -r build

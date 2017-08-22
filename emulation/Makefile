@@ -1,6 +1,6 @@
-.PHONY: install installHELBuildTool installSetupLoopbackAdapter
+.PHONY: install installHELBuildTool
 
-install: installHELBuildTool installSetupLoopbackAdapter
+install: installHELBuildTool
 	@$(MAKE) -C hel install TARGET=release
 
 installHELBuildTool:
@@ -11,20 +11,8 @@ installHELBuildTool:
 	@cp -f HELBuildTool/Makefile.java ../installer/SynthesisDrive/HELBuildTool/Makefile.java
 	@if [ -a HELBuildTool/HELBuildTool/bin/Release/b.exe ]; then \
 		echo -e "\e[1m\e[32mINSTALL\e[39m HELBuildTool/HELBuildTool.exe\e[0m"; \
-		cp -f HELBuildTool/HELBuildTool/bin/Release/b.exe ../installer/SynthesisDrive/HELBuildTool/HELBuildTool.exe; \
+		cp -f HELBuildTool/HELBuildTool/bin/x64/Release/b.exe ../installer/SynthesisDrive/HELBuildTool/HELBuildTool.exe; \
 	else \
 		echo -e "\e[32mBuild HELBuildTool in release mode before running make install\e[0m"; \
 		exit 1; \
 	fi
-
-installSetupLoopbackAdapter:
-	@mkdir -p ../installer/SynthesisDrive
-	@echo -e "\e[1m\e[32mINSTALL\e[39m SetupLoopbackAdapter.exe\e[0m"
-	@if [ -a SetupLoopbackAdapter/Release/SetupLoopbackAdapter.exe ]; then \
-		echo -e "\e[1m\e[32mINSTALL\e[39m HELBuildTool/HELBuildTool.exe\e[0m"; \
-		cp -f SetupLoopbackAdapter/Release/SetupLoopbackAdapter.exe ../installer/SynthesisDrive/SetupLoopbackAdapter.exe; \
-	else \
-		echo -e "\e[32mBuild SetupLoopbackAdapter in release mode before running make install\e[0m"; \
-		exit 1; \
-	fi
-
