@@ -109,7 +109,7 @@ public class Toolkit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (mainState == null) mainState = ((MainState)StateMachine.Instance.CurrentState);
+        if (mainState == null) mainState = StateMachine.Instance.FindState<MainState>();
         if (usingRuler)
         {
             if (ignoreClick) ignoreClick = false;

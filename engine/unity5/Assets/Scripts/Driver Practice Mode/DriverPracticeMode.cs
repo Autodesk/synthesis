@@ -80,7 +80,7 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (mainState == null)
         {
-            mainState = GetComponent<StateMachine>().CurrentState as MainState;
+            mainState = StateMachine.Instance.FindState<MainState>();
         }
         else if (dpmRobot == null)
         {
