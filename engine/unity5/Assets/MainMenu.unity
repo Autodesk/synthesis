@@ -2983,7 +2983,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -216, y: -95.76198}
+  m_AnchoredPosition: {x: -216, y: -95.76199}
   m_SizeDelta: {x: 269, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &273640680
@@ -4697,7 +4697,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -499.80002, y: -95.76196}
+  m_AnchoredPosition: {x: -499.80005, y: -95.76195}
   m_SizeDelta: {x: 276, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &509204076
@@ -8300,11 +8300,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  presetClones: []
-  presetsList: []
-  wheels: []
-  bases: []
-  manipulators: []
+  PresetClones: []
+  PresetsList: []
+  Wheels: []
+  Bases: []
+  Manipulators: []
 --- !u!114 &860937667
 MonoBehaviour:
   m_ObjectHideFlags: 0

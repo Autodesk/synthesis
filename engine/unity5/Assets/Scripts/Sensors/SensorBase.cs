@@ -40,6 +40,9 @@ public abstract class SensorBase : MonoBehaviour
 
     public abstract float ReturnOutput();
 
+    /// <summary>
+    /// Update the configuration transform of the sensor
+    /// </summary>
     public void UpdateTransform()
     {
         if (IsChangingPosition)
@@ -82,18 +85,33 @@ public abstract class SensorBase : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Change angle using W/S
+    /// </summary>
     public virtual void UpdateAngleTransform()
     {
         transform.Rotate(new Vector3(-Input.GetAxis("CameraVertical") * rotationSpeed, Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
     }
+
+    /// <summary>
+    /// Change height using W/S
+    /// </summary>
     public virtual void UpdateHeightTransform()
     {
         transform.Translate(new Vector3(0, Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
     }
+
+    /// <summary>
+    /// Change horizontal plane position using WASD
+    /// </summary>
     public virtual void UpdateHorizontalPlaneTransform()
     {
         transform.Translate(new Vector3(Input.GetAxis("CameraHorizontal") * positionSpeed, 0, Input.GetAxis("CameraVertical") * positionSpeed) * Time.deltaTime);
     }
+
+    /// <summary>
+    /// Change the range of the sensor depending on how range is defined for each type of sensor, mostly using W/S
+    /// </summary>
     public virtual void UpdateRangeTransform()
     {
         
@@ -120,6 +138,9 @@ public abstract class SensorBase : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Terminate all configuration state
+    /// </summary>
     public void ResetConfigurationState()
     {
         IsChangingPosition = IsChangingAngle = IsChangingHeight = IsChangingRange = false;

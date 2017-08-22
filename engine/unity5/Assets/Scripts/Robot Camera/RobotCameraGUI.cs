@@ -322,7 +322,6 @@ class RobotCameraGUI : MonoBehaviour
             float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp) &&
             float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp))
         {
-            //Debug.Log("Sync angle!");
             robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
         }
 

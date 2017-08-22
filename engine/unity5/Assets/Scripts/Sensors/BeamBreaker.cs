@@ -103,12 +103,16 @@ public class BeamBreaker : SensorBase
         sensorOffset = distance;
     }
 
+    /// <summary>
+    /// Change the distance between Emitter and Receiver using W/S
+    /// </summary>
     public override void UpdateRangeTransform()
     {
         //Lower the transform speed
         sensorOffset += Input.GetAxis("CameraVertical") * 0.02f;
         SetSensorRange(sensorOffset);
     }
+
 
     public override void UpdateOutputDisplay()
     {

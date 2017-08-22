@@ -316,7 +316,6 @@ public class SimUI : MonoBehaviour
     /// <param name="joe"></param>
     public void SwitchCameraView(int joe)
     {
-        //Debug.Log(joe);
         switch (joe)
         {
             case 1:
@@ -494,7 +493,7 @@ public class SimUI : MonoBehaviour
             int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
             main.IsMetric = (i == 1 ? true : false);
             PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
-            Debug.Log("Metric: " + main.IsMetric);
+            //Debug.Log("Metric: " + main.IsMetric);
         }
     }
 
