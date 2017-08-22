@@ -163,8 +163,7 @@ public class MainState : SimState
             return;
         }
 
-        //If the reset button is held down after a certain amount of time, then go into change spawnpoint mode (reset spawnpoint feature)
-        //Otherwise, reset the robot normally (quick reset feature)
+        //Spawn a new robot from the same path or switch active robot
         if (!ActiveRobot.IsResetting)
         {
             if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);

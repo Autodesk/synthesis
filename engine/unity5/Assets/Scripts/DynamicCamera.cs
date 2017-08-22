@@ -216,12 +216,10 @@ public class DynamicCamera : MonoBehaviour
         private float heightDamping = 5f;
         private float rotationDamping = 5f;
 
-        private MainState main;
 
         public OrbitState(MonoBehaviour mono)
         {
             this.mono = mono;
-            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
         }
         public override void Init()
         {
@@ -232,7 +230,8 @@ public class DynamicCamera : MonoBehaviour
         public override void Update()
         {
             //Focus on the node 0
-            target = main.ActiveRobot.transform.GetChild(0);
+            if (!robot) robot = StateMachine.Instance.FindState<MainState>().ActiveRobot.gameObject;
+            target = robot.transform.GetChild(0);
 
             // Early out if we don't have a target
             if (!target)
