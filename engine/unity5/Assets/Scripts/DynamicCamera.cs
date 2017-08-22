@@ -59,7 +59,9 @@ public class DynamicCamera : MonoBehaviour
         Quaternion startRotation;
         Quaternion lookingRotation;
         Quaternion currentRotation;
+        //The default starting position of the camera
         static Vector3 position1Vector = new Vector3(0f, 1.5f, -9.5f);
+        //The opposite default starting position of the camera
         static Vector3 position2Vector = new Vector3(0f, 1.5f, 9.5f);
         Vector3 currentPosition;
 
@@ -75,6 +77,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
+            //Decide which side the camera should be placed depending on whether it is opposite of default position
             if (opposite) currentPosition = position2Vector;
             else currentPosition = position1Vector;
             mono.transform.position = currentPosition;
@@ -87,6 +90,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
+            //Look towards the robot
             if (robot != null && robot.transform.childCount > 0)
             {
                 lookingRotation = Quaternion.LookRotation(robot.transform.GetChild(0).transform.position - mono.transform.position);
@@ -96,6 +100,7 @@ public class DynamicCamera : MonoBehaviour
             {
                 robot = GameObject.Find("Robot");
             }
+            //Move left/right using A/D, freeze camera movement when the robot is resetting
             if (MovingEnabled && !main.ActiveRobot.IsResetting)
             {
                 if (!opposite)
@@ -320,12 +325,14 @@ public class DynamicCamera : MonoBehaviour
         {
             if (MovingEnabled && !main.ActiveRobot.IsResetting)
             {
+                //Rotate camera when holding right mouse
                 if (InputControl.GetMouseButton(1))
                 {
                     rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
                 }
                 
+                //Use WASD to move camera position
                 positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
                 positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
 
@@ -423,7 +430,7 @@ public class DynamicCamera : MonoBehaviour
     }
 
     /// <summary>
-    /// This state is made for sensor/robot camera configuration, will focus on whatever target object is, the target is default to the first node
+    /// This state is made for sensor/robot camera configuration, will focus on the first node of the robot, potentially can focus on a target object
     /// Works basically the same as orbit view but focus closer
     /// </summary>
     public class ConfigurationState : CameraState
@@ -455,8 +462,9 @@ public class DynamicCamera : MonoBehaviour
             if (target != null)
             {
                 targetVector = target.transform.position;
-                if (MovingEnabled)
+                if (MovingEnabled) //Works like the old orbit state
                 {
+                    //Use left mouse to change angle
                     if (Input.GetMouseButton(0))
                     {
                         cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
@@ -465,7 +473,7 @@ public class DynamicCamera : MonoBehaviour
                     else
                     {
                         panValue = 0f;
-
+                        //Use right mouse to change magnification
                         if (Input.GetMouseButton(1))
                         {
                             magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 0.5f);
@@ -507,6 +515,10 @@ public class DynamicCamera : MonoBehaviour
             return output.normalized * mag + origin;
         }
     }
+
+    /// <summary>
+    /// Switch to orbit state when the simulator starts
+    /// </summary>
     void Start()
     {
         SwitchCameraState(new OrbitState(this));
@@ -580,13 +592,10 @@ public class DynamicCamera : MonoBehaviour
         return lagScalar;
     }
 
-    public void SwitchCameraState(int type)
-    {
-        if (type == 0) SwitchCameraState(new FreeroamState(this));
-        else if (type == 1) SwitchCameraState(new OrbitState(this));
-        else SwitchCameraState(new DriverStationState(this, false));
-    }
-
+    /// <summary>
+    /// Switch to a specific state given the target state, only decide on which type the target state is
+    /// </summary>
+    /// <param name="targetState"></param> The (type of) state you want to switch to
     public void SwitchToState(CameraState targetState)
     {
         if (targetState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
