@@ -148,6 +148,8 @@ public class MainState : SimState
         IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
 
         StateMachine.Instance.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
+        StateMachine.Instance.Link<ReplayState>(Resources.FindObjectsOfTypeAll<GameObject>().First(x => x.name.Equals("ReplayUI")));
+        StateMachine.Instance.Link<SaveReplayState>(Resources.FindObjectsOfTypeAll<GameObject>().First(x => x.name.Equals("SaveReplayUI")));
     }
 
     /// <summary>
