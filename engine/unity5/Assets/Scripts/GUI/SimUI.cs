@@ -442,6 +442,7 @@ public class SimUI : MonoBehaviour
 
             Controls.Load();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+            Controls.CheckIfSaved();
         }
         else
         {
@@ -449,11 +450,13 @@ public class SimUI : MonoBehaviour
             ToggleHotKeys(false);
 
             Controls.Load();
+            Controls.CheckIfSaved();
         }
     }
 
     public void ShowControlPanel()
     {
+        Controls.CheckIfSaved();
         ShowControlPanel(!inputManagerPanel.activeSelf);
         Controls.Load();
     }
