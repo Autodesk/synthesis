@@ -91,7 +91,7 @@ class SensorManagerGUI : MonoBehaviour
     {
         if(main == null)
         {
-            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+            main = StateMachine.Instance.FindState<MainState>();
         }
         //Find the dynamic camera
         if (dynamicCamera == null)
