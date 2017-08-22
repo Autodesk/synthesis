@@ -123,6 +123,8 @@ public class LocalMultiplayer : MonoBehaviour {
         }
         ToggleAddRobotWindow();
         UpdateUI();
+
+        PlayerPrefs.SetInt("hasManipulator", 0); //0 for false, 1 for true
     }
 
     public void ToggleChangeRobotPanel()
