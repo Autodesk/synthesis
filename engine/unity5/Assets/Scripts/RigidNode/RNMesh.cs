@@ -42,8 +42,6 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.position = root.position;
             meshObject.transform.rotation = root.rotation;
 
-            Debug.Log("Mesh Objects count " + meshObjects.Count);
-
         }, true);
 
         Vector3 com = mesh.physics.centerOfMass.AsV3();

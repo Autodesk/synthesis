@@ -269,7 +269,6 @@ public class Robot : MonoBehaviour
                     int k = 0;
                     foreach (Mesh meshObject in meshList)
                     {
-                        Debug.Log("Mesh Object" + meshObject);
                         GameObject meshObj = new GameObject(node.MainObject.name + "_mesh");
                         meshObj.transform.parent = node.MainObject.transform;
                         meshObj.AddComponent<MeshFilter>().mesh = meshObject;

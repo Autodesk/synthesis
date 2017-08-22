@@ -3414,23 +3414,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  presetClones: []
-  presetsList: []
-  wheels:
-  - {fileID: 1801133006866074}
-  - {fileID: 1181548296655586}
-  - {fileID: 1344142305221426}
-  - {fileID: 1632497991199700}
-  bases:
-  - {fileID: 1849267772519188}
-  - {fileID: 1967847772480644}
-  - {fileID: 1420895969840558}
-  - {fileID: 1218117728550756}
-  manipulators:
-  - {fileID: 1953173764804882}
-  - {fileID: 1405402095005130}
-  - {fileID: 1760777535018104}
-  - {fileID: 1009404414893684}
+  PresetClones: []
+  PresetsList: []
+  Wheels: []
+  Bases: []
+  Manipulators: []
 --- !u!114 &114536541990996480
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3591,22 +3579,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  presetClones: []
-  presetsList: []
-  wheels:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  bases:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  manipulators:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  PresetClones: []
+  PresetsList: []
+  Wheels: []
+  Bases: []
+  Manipulators: []
 --- !u!114 &114564991533059812
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3665,22 +3642,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  presetClones: []
-  presetsList: []
-  wheels:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  bases:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  manipulators:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  PresetClones: []
+  PresetsList: []
+  Wheels: []
+  Bases: []
+  Manipulators: []
 --- !u!114 &114578149744692632
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4578,28 +4544,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  presetClones:
-  - {fileID: 1501490603668404}
-  - {fileID: 1487693051550698}
-  - {fileID: 1548326279124848}
-  - {fileID: 1882886052206848}
-  - {fileID: 1406002909809856}
-  presetsList: []
-  wheels:
-  - {fileID: 1801133006866074}
-  - {fileID: 1181548296655586}
-  - {fileID: 1344142305221426}
-  - {fileID: 1632497991199700}
-  bases:
-  - {fileID: 1849267772519188}
-  - {fileID: 1967847772480644}
-  - {fileID: 1420895969840558}
-  - {fileID: 1218117728550756}
-  manipulators:
-  - {fileID: 1953173764804882}
-  - {fileID: 1405402095005130}
-  - {fileID: 1760777535018104}
-  - {fileID: 1009404414893684}
+  PresetClones: []
+  PresetsList: []
+  Wheels: []
+  Bases: []
+  Manipulators: []
 --- !u!114 &114719067334867764
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5040,23 +4989,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  presetClones: []
-  presetsList: []
-  wheels:
-  - {fileID: 1801133006866074}
-  - {fileID: 1181548296655586}
-  - {fileID: 1344142305221426}
-  - {fileID: 1632497991199700}
-  bases:
-  - {fileID: 1849267772519188}
-  - {fileID: 1967847772480644}
-  - {fileID: 1420895969840558}
-  - {fileID: 1218117728550756}
-  manipulators:
-  - {fileID: 1953173764804882}
-  - {fileID: 1405402095005130}
-  - {fileID: 1760777535018104}
-  - {fileID: 1009404414893684}
+  PresetClones: []
+  PresetsList: []
+  Wheels: []
+  Bases: []
+  Manipulators: []
 --- !u!114 &114795979719454670
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5302,23 +5239,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  presetClones: []
-  presetsList: []
-  wheels:
-  - {fileID: 1801133006866074}
-  - {fileID: 1181548296655586}
-  - {fileID: 1344142305221426}
-  - {fileID: 1632497991199700}
-  bases:
-  - {fileID: 1849267772519188}
-  - {fileID: 1967847772480644}
-  - {fileID: 1420895969840558}
-  - {fileID: 1218117728550756}
-  manipulators:
-  - {fileID: 1953173764804882}
-  - {fileID: 1405402095005130}
-  - {fileID: 1760777535018104}
-  - {fileID: 1009404414893684}
+  PresetClones: []
+  PresetsList: []
+  Wheels: []
+  Bases: []
+  Manipulators: []
 --- !u!114 &114851733816054476
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5892,26 +5817,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemDB:
     xmlList:
-    - name: 1
-      wheelIndex: 1
-      driveBaseIndex: 0
-      manipulatorIndex: 0
-    - name: 2
-      wheelIndex: 1
-      driveBaseIndex: 0
-      manipulatorIndex: 0
-    - name: 3
-      wheelIndex: 1
-      driveBaseIndex: 0
-      manipulatorIndex: 0
-    - name: 4
-      wheelIndex: 1
-      driveBaseIndex: 0
-      manipulatorIndex: 0
-    - name: qwqws
-      wheelIndex: 0
-      driveBaseIndex: 0
-      manipulatorIndex: 0
+    - Name: Default
+      WheelIndex: 0
+      DriveBaseIndex: 0
+      ManipulatorIndex: 0
+    - Name: Default
+      WheelIndex: 0
+      DriveBaseIndex: 0
+      ManipulatorIndex: 0
+    - Name: Default
+      WheelIndex: 0
+      DriveBaseIndex: 0
+      ManipulatorIndex: 0
+    - Name: Default
+      WheelIndex: 0
+      DriveBaseIndex: 0
+      ManipulatorIndex: 0
+    - Name: Default
+      WheelIndex: 0
+      DriveBaseIndex: 0
+      ManipulatorIndex: 0
 --- !u!114 &114999406583371532
 MonoBehaviour:
   m_ObjectHideFlags: 1
