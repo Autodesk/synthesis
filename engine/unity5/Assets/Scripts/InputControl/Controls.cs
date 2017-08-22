@@ -24,7 +24,7 @@ public class Controls
     #endregion
 
     public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
-    public static bool IsSaved;
+    public static bool IsSaved = false;
 
     ///Player indexes (for initializing and creating separate player key lists) <see cref="InputControl"/>
     public static int PlayerOneIndex = 0;

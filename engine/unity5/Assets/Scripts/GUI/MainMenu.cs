@@ -58,8 +58,6 @@ public class MainMenu : MonoBehaviour
     private GameObject input; //The Input GUI Objects
 
     private GameObject settingsMode; //The InputManager Objects
-    //private GameObject tankMode;     //Tank Mode InputManager
-    private Text enableTankDriveText; //Enable + Disable tank drive text
     private Text errorText; // The text of the error message
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
@@ -639,7 +637,6 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     void Start()
     {
-        
         FindAllGameObjects();
         splashScreen.SetActive(true); //Turns on the loading screen while initializing
         InitGraphicsSettings();
@@ -724,7 +721,6 @@ public class MainMenu : MonoBehaviour
         input = AuxFunctions.FindObject(gameObject, "Input");
 
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
-        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
         errorText = AuxFunctions.FindObject(errorScreen, "ErrorText").GetComponent<Text>();
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
