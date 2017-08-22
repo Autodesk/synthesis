@@ -333,7 +333,7 @@ public class MainState : SimState
     /// </summary>
     public void ChangeControlIndex(int index)
     {
-        ActiveRobot.ControlIndex = index;
+        ActiveRobot.SetControlIndex(index);
     }
 
     /// <summary>
