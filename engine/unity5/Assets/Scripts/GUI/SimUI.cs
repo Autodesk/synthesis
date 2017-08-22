@@ -506,11 +506,11 @@ public class SimUI : MonoBehaviour
         hotKeyPanel.SetActive(show);
         if (show)
         {
-            hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Key";
+            hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Keys";
         }
         else
         {
-            hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Key";
+            hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Keys";
         }
     }
 

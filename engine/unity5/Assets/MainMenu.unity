@@ -117,8 +117,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5751813}
   - component: {fileID: 5751816}
-  - component: {fileID: 5751815}
   - component: {fileID: 5751814}
+  - component: {fileID: 5751815}
   m_Layer: 0
   m_Name: PlayerFour Button
   m_TagString: Untagged
@@ -164,8 +164,8 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0, g: 0.54509807, b: 0.31764707, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -2750,8 +2750,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settingsMode: {fileID: 2074039509}
-  DefaultImage: {fileID: 21300000, guid: 50b0c58caee7d61419aa34e0a60abefd, type: 3}
-  HighlightedImage: {fileID: 21300000, guid: 51c6ae1c24f8c97468c2f20bae3581d5, type: 3}
+  DefaultImage: {fileID: 21300000, guid: e3bb53348c2be6d48a29b7c9ad079cf3, type: 3}
+  HighlightedImage: {fileID: 21300000, guid: fb673c560cd7b084a9c918ac244dbca8, type: 3}
 --- !u!1 &250185195
 GameObject:
   m_ObjectHideFlags: 0
@@ -7985,8 +7985,8 @@ GameObject:
   m_Component:
   - component: {fileID: 850230752}
   - component: {fileID: 850230755}
-  - component: {fileID: 850230754}
   - component: {fileID: 850230753}
+  - component: {fileID: 850230754}
   m_Layer: 0
   m_Name: PlayerFive Button
   m_TagString: Untagged
@@ -8032,8 +8032,8 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0, g: 0.54509807, b: 0.31764707, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -9774,8 +9774,8 @@ GameObject:
   m_Component:
   - component: {fileID: 989139103}
   - component: {fileID: 989139106}
-  - component: {fileID: 989139105}
   - component: {fileID: 989139104}
+  - component: {fileID: 989139105}
   m_Layer: 0
   m_Name: PlayerThree Button
   m_TagString: Untagged
@@ -9821,8 +9821,8 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0, g: 0.54509807, b: 0.31764707, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -11926,8 +11926,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1151934972}
   - component: {fileID: 1151934975}
-  - component: {fileID: 1151934974}
   - component: {fileID: 1151934973}
+  - component: {fileID: 1151934974}
   m_Layer: 0
   m_Name: PlayerSix Button
   m_TagString: Untagged
@@ -11973,8 +11973,8 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0, g: 0.54509807, b: 0.31764707, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -17108,8 +17108,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1656282957}
   - component: {fileID: 1656282960}
-  - component: {fileID: 1656282959}
   - component: {fileID: 1656282958}
+  - component: {fileID: 1656282959}
   m_Layer: 0
   m_Name: PlayerOne Button
   m_TagString: Untagged
@@ -17155,8 +17155,8 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0, g: 0.54509807, b: 0.31764707, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -18767,8 +18767,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1845290286}
   - component: {fileID: 1845290289}
-  - component: {fileID: 1845290288}
   - component: {fileID: 1845290287}
+  - component: {fileID: 1845290288}
   m_Layer: 0
   m_Name: PlayerTwo Button
   m_TagString: Untagged
@@ -18814,8 +18814,8 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0, g: 0.54509807, b: 0.31764707, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -21301,8 +21301,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settingsMode: {fileID: 2074039509}
-  DefaultImage: {fileID: 21300000, guid: 50b0c58caee7d61419aa34e0a60abefd, type: 3}
-  HighlightedImage: {fileID: 21300000, guid: 51c6ae1c24f8c97468c2f20bae3581d5, type: 3}
+  DefaultImage: {fileID: 21300000, guid: e3bb53348c2be6d48a29b7c9ad079cf3, type: 3}
+  HighlightedImage: {fileID: 21300000, guid: fb673c560cd7b084a9c918ac244dbca8, type: 3}
 --- !u!1 &2085001977
 GameObject:
   m_ObjectHideFlags: 0
