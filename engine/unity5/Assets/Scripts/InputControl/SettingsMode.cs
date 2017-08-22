@@ -9,8 +9,6 @@ public class SettingsMode : MonoBehaviour
     public Sprite DefaultImage;
     public Sprite HighlightedImage;
 
-    private GameObject lastButton;
-
     // Update is called once per frame
     void Update()
     {
@@ -178,8 +176,8 @@ public class SettingsMode : MonoBehaviour
                 GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = HighlightedImage;
                 break;
-            default:
-                GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultImage;
+            default: //Default to player one's button styles
+                GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = HighlightedImage;
                 GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultImage;
