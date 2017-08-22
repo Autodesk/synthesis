@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
 
 public class MixAndMatchMode : MonoBehaviour
 {
@@ -169,6 +170,13 @@ public class MixAndMatchMode : MonoBehaviour
             // Sets info panel to blank
             Text txt = infoText.GetComponent<Text>();
             txt.text = "";
+
+            if (SimUI.changeAnalytics) //for analytics tracking
+            {
+                Analytics.CustomEvent("Opened Mix and Match", new Dictionary<string, object>
+                {
+                });
+            }
         }
     }
 
@@ -187,6 +195,13 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.Save();
         isMixAndMatchMode = true;
         SceneManager.LoadScene("mixAndMatch");
+
+        if (SimUI.changeAnalytics) //for analytics tracking
+        {
+            Analytics.CustomEvent("Started Mix and Match", new Dictionary<string, object>
+            {
+            });
+        }
     }
 
     #region Change or Add MaM Robot
@@ -237,6 +252,13 @@ public class MixAndMatchMode : MonoBehaviour
         GameObject stateMachine = GameObject.Find("StateMachine");
 
         stateMachine.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory, robotHasManipulator);
+
+        if (SimUI.changeAnalytics) //For analytics tracking
+        {
+            Analytics.CustomEvent("Changed Mix and Match Robot", new Dictionary<string, object> 
+            {
+            });
+        }
     }
 
     /// <summary>
@@ -292,6 +314,13 @@ public class MixAndMatchMode : MonoBehaviour
 
         Text txt = infoText.GetComponent<Text>();
         txt.text = XMLManager.ins.itemDB.xmlList[presetClones.Count - 1].GetName();
+
+        if (SimUI.changeAnalytics) //for analytics tracking
+        {
+            Analytics.CustomEvent("Created Mix and Match Preset", new Dictionary<string, object>
+            {
+            });
+        }
 
     }
 

@@ -83,7 +83,8 @@ namespace Assets.Scripts.FSM
                 stateBehaviours[typeof(T)] = new List<Behaviour>();
             else if (stateBehaviours[typeof(T)].Contains(behaviour))
                 return;
-            
+
+            behaviour.enabled = CurrentState is T;
             stateBehaviours[typeof(T)].Add(behaviour);
         }
 
@@ -99,6 +100,7 @@ namespace Assets.Scripts.FSM
             else if (stateGameObjects[typeof(T)].Contains(gameObject))
                 return;
 
+            gameObject.SetActive(CurrentState is T);
             stateGameObjects[typeof(T)].Add(gameObject);
         }
 

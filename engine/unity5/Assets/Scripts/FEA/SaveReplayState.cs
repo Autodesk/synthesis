@@ -38,13 +38,15 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public override void Start()
         {
-            canvas = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("SaveReplayCanvas")).First();
-            canvas.SetActive(true);
+            //canvas = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("SaveReplayCanvas")).First();
+            //canvas.SetActive(true);
 
             saveButton = GameObject.Find("SaveButton").GetComponent<Button>();
+            saveButton.onClick.RemoveAllListeners();
             saveButton.onClick.AddListener(Save);
 
             cancelButton = GameObject.Find("CancelButton").GetComponent<Button>();
+            cancelButton.onClick.RemoveAllListeners();
             cancelButton.onClick.AddListener(Cancel);
 
             replayNameText = GameObject.Find("ReplayNameText").GetComponent<Text>();
@@ -65,7 +67,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public override void End()
         {
-            canvas.SetActive(false);
+            //canvas.SetActive(false);
             DynamicCamera.MovingEnabled = true;
         }
 
