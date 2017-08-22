@@ -29,8 +29,6 @@ public class SimUI : MonoBehaviour
     GameObject freeroamCameraWindow;
     GameObject spawnpointWindow;
 
-    GameObject swapWindow;
-
     GameObject wheelPanel;
     GameObject driveBasePanel;
     GameObject manipulatorPanel;
@@ -129,7 +127,6 @@ public class SimUI : MonoBehaviour
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
 
-        swapWindow = AuxFunctions.FindObject(canvas, "SwapPanel");
         wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
         driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
         manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
@@ -630,15 +627,6 @@ public class SimUI : MonoBehaviour
     {
         main.EnterReplayState();
     }
-    #region swap part
-    /// <summary>
-    /// Toggles the Driver Practice Mode window
-    /// </summary>
-    public void SwapToggleWindow()
-    {
-        swapWindowOn = !swapWindowOn;
-        swapWindow.SetActive(swapWindowOn);
-    }
 
     public void TogglePanel(GameObject panel)
     {
@@ -651,33 +639,4 @@ public class SimUI : MonoBehaviour
             panel.SetActive(true);
         }
     }
-
-    public void PartToggleWindow(string Window)
-    {
-        List<GameObject> swapPanels = new List<GameObject> { wheelPanel, driveBasePanel, manipulatorPanel };
-        switch (Window)
-        {
-            case "wheel":
-                TogglePanel(wheelPanel);
-                driveBasePanel.SetActive(false);
-                manipulatorPanel.SetActive(false);
-                break;
-            case "driveBase":
-                TogglePanel(driveBasePanel);
-                wheelPanel.SetActive(false);
-                manipulatorPanel.SetActive(false);
-                break;
-            case "manipulator":
-                TogglePanel(manipulatorPanel);
-                driveBasePanel.SetActive(false);
-                wheelPanel.SetActive(false);
-                break;
-            default:
-                wheelPanel.SetActive(false);
-                driveBasePanel.SetActive(false);
-                manipulatorPanel.SetActive(false);
-                break;
-        }
-    }
-    #endregion
 }
