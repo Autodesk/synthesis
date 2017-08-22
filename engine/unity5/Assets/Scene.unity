@@ -35877,6 +35877,8 @@ MonoBehaviour:
       m_Image: {fileID: 21300000, guid: aebb8a52ecf7082439a5f9a59a0509fd, type: 3}
     - m_Text: Driver Station
       m_Image: {fileID: 21300000, guid: 4693e3290ff33ed41bbb010c8fb761a2, type: 3}
+    - m_Text: Stands
+      m_Image: {fileID: 21300000, guid: 3afa839f07e175640ab5d0b99783db0b, type: 3}
     - m_Text: Orbit Robot
       m_Image: {fileID: 21300000, guid: 6b09b7d652541314b879bfdde21456f4, type: 3}
     - m_Text: Freeroam

@@ -62,7 +62,8 @@ public class DynamicCamera : MonoBehaviour
         static Vector3 position2Vector = new Vector3(0f, 1.5f, 9.5f);
         Vector3 currentPosition;
 
-        float transformSpeed;
+        RangeInt fieldWidth = new RangeInt(-5, 5);
+        float transformSpeed = 2.5f;
         bool opposite;
 
         public DriverStationState(MonoBehaviour mono, bool oppositeSide = false)
@@ -73,13 +74,18 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
-            if (opposite) currentPosition = position2Vector;
+            //Move to correct side
+            if (opposite)
+            {
+                currentPosition = position2Vector;
+                //Invert movement
+                transformSpeed = -transformSpeed;
+            }
             else currentPosition = position1Vector;
             mono.transform.position = currentPosition;
 
             startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
             currentRotation = startRotation;
-            transformSpeed = 2.5f;
         }
 
         public override void Update()
@@ -95,19 +101,111 @@ public class DynamicCamera : MonoBehaviour
             }
             if (MovingEnabled)
             {
-                if (!opposite)
-                {
-                    currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
-                }
-                else
-                {
-                    currentPosition -= Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
-                }
+                //Move sideways in station
+                Vector3 newPosition = currentPosition + Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+                if (newPosition.x > fieldWidth.start && newPosition.x < fieldWidth.end) currentPosition = newPosition;
             }
             mono.transform.rotation = currentRotation;
             mono.transform.position = currentPosition;
         }
 
+
+        public override void End()
+        {
+        }
+    }
+
+    public class StandsState : CameraState
+    {
+        Quaternion startRotation;
+        Quaternion lookingRotation;
+        Quaternion currentRotation;
+        Vector3 position1Vector = new Vector3(5, 2, 0);
+        Vector3 position2Vector = new Vector3(-10, 2, 0);
+        Vector3 focusPoint = new Vector3(0, 1, 0);
+        Vector3 newPosition;
+        Vector3 currentPosition;
+
+        Vector3 forwardVector = new Vector3(-2, -1, 0);
+        RangeInt fieldWidth = new RangeInt(-9, 13);
+        RangeInt fieldLength = new RangeInt(-8, 16);
+        float forwardSpeed = .7f;
+        float sidewaysSpeed = 2.5f;
+        bool oposite;
+        bool focusRobot;
+        bool legacy;
+
+        public StandsState(MonoBehaviour mono, bool oposite = false)
+        {
+            this.mono = mono;
+            this.oposite = oposite;
+        }
+
+        public override void Init()
+        {
+            //Look to center
+            currentRotation = Quaternion.LookRotation(focusPoint - mono.transform.position);
+            mono.transform.rotation = currentRotation;
+
+            //Switch to opposite side
+            if (oposite)
+            {
+                //Invert movement
+                sidewaysSpeed = -sidewaysSpeed;
+                forwardVector.x = -forwardVector.x;
+
+                //Move to side of field
+                currentPosition = position2Vector;
+            }
+            else currentPosition = position1Vector;
+            mono.transform.position = currentPosition;
+        }
+
+        public override void Update()
+        {
+            //Toggle robot focusing
+            if (Input.GetKeyDown(KeyCode.F)) focusRobot = !focusRobot;
+            if (focusRobot)
+            {
+                //Look at robot
+                if (robot != null && robot.transform.childCount > 0)
+                {
+                    lookingRotation = Quaternion.LookRotation(robot.transform.GetChild(0).transform.position - mono.transform.position);
+                    currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
+                }
+                else
+                {
+                    robot = GameObject.Find("Robot");
+                }
+            }
+            else
+            {
+                //Look at field
+                lookingRotation = Quaternion.LookRotation(focusPoint - mono.transform.position);
+                currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
+            }
+            if (MovingEnabled)
+            {
+                //Move viewpoint
+                if (Input.GetKey(KeyCode.W))
+                {
+                    //Move forward up to field
+                    newPosition = currentPosition + forwardVector * forwardSpeed * Time.deltaTime;
+                    if (newPosition.x < fieldWidth.start || newPosition.x > fieldWidth.end) currentPosition = newPosition;
+                }
+                else if (Input.GetKey(KeyCode.S))
+                {
+                    //Move backward
+                    currentPosition -= forwardVector * forwardSpeed * Time.deltaTime;
+                }
+                //Move sideways along field
+                newPosition = currentPosition + Input.GetAxis("CameraHorizontal") * new Vector3(0, 0, 1) * sidewaysSpeed * Time.deltaTime;
+                if (newPosition.z > fieldLength.start && newPosition.z < fieldLength.end) currentPosition = newPosition;
+            }
+            //Apply movement
+            mono.transform.position = currentPosition;
+            mono.transform.rotation = currentRotation;
+        }
 
         public override void End()
         {
@@ -585,6 +683,7 @@ public class DynamicCamera : MonoBehaviour
     public void SwitchToState(CameraState targetState)
     {
         if (targetState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
+        else if (targetState.GetType().Equals(typeof(StandsState))) SwitchCameraState(new StandsState(this));
         else if (targetState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
         else if (targetState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new FreeroamState(this));
         else if (targetState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new OverviewState(this));
