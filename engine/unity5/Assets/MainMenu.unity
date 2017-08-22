@@ -10384,6 +10384,26 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114165465249314636, guid: 2e1458182e7af5a459513738338549fc,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 860403445}
+    - target: {fileID: 114165465249314636, guid: 2e1458182e7af5a459513738338549fc,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SwitchSimLoadField
+      objectReference: {fileID: 0}
+    - target: {fileID: 114296018040090420, guid: 2e1458182e7af5a459513738338549fc,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 860403445}
+    - target: {fileID: 114296018040090420, guid: 2e1458182e7af5a459513738338549fc,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SwitchSimSelection
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114566778683576132, guid: 2e1458182e7af5a459513738338549fc, type: 2}
     - {fileID: 114916441259090812, guid: 2e1458182e7af5a459513738338549fc, type: 2}
