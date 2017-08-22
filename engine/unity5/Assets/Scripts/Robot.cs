@@ -100,7 +100,8 @@ public class Robot : MonoBehaviour
                 keyDownTime = Time.time;
             }
 
-            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot))
+            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) && 
+                !mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HOLD_TIME)
                 {
@@ -403,30 +404,12 @@ public class Robot : MonoBehaviour
     /// <param name="resetTransform"></param>
     public void BeginReset()
     {
-        IsResetting = true;
-
-        foreach (RigidNode n in rootNode.ListAllNodes())
+        if (!mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
         {
-            BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
-            
-            if (br == null)
-                continue;
+            Debug.Log(mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState);
+            IsResetting = true;
 
-            RigidBody r = (RigidBody)br.GetCollisionObject();
-
-            r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
-            r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
-
-            BulletSharp.Math.Matrix newTransform = r.WorldTransform;
-            newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
-            newTransform.Basis = BulletSharp.Math.Matrix.Identity;
-            r.WorldTransform = newTransform;
-        }
-
-        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-        if (RobotHasManipulator == 1 && isMixAndMatch == 1)
-        {
-            foreach (RigidNode n in manipulatorNode.ListAllNodes())
+            foreach (RigidNode n in rootNode.ListAllNodes())
             {
                 BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
 
@@ -444,15 +427,41 @@ public class Robot : MonoBehaviour
                 r.WorldTransform = newTransform;
             }
 
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
+            if (RobotHasManipulator == 1 && isMixAndMatch == 1)
+            {
+                foreach (RigidNode n in manipulatorNode.ListAllNodes())
+                {
+                    BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                    if (br == null)
+                        continue;
+
+                    RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                    r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+                    r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+
+                    BulletSharp.Math.Matrix newTransform = r.WorldTransform;
+                    newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
+                    newTransform.Basis = BulletSharp.Math.Matrix.Identity;
+                    r.WorldTransform = newTransform;
+                }
+
+            }
+
+            //Where "save orientation" works
+            RotateRobot(robotStartOrientation);
+
+            GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5);
+            if (IsResetting)
+            {
+                Debug.Log("is resetting!");
+            }
         }
-
-        //Where "save orientation" works
-        RotateRobot(robotStartOrientation);
-
-        GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5);
-        if (IsResetting)
+        else
         {
-            Debug.Log("is resetting!");
+            UserMessageManager.Dispatch("Please don't reset robot during configuration!", 5f);
         }
     }
 
