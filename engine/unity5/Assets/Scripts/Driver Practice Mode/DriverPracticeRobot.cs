@@ -364,7 +364,7 @@ public class DriverPracticeRobot : MonoBehaviour
                 Debug.Log("DPM: Game object not found");
 
             }
-            else if (collisionObject.transform.parent.name == "Robot")
+            else if (collisionObject.transform.parent != null && collisionObject.transform.parent.name == "Robot")
             {
                 UserMessageManager.Dispatch("You cannot select a robot part as a gamepiece!", 3);
             }
