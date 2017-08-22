@@ -681,6 +681,57 @@ public class MainMenu : MonoBehaviour
         customroboton = false;
         ApplyGraphics();
 
+        //Checks if this is the first launch of the main scene.
+        if (AppModel.InitialLaunch)
+        {
+            AppModel.InitialLaunch = false;
+
+            //Loads robot and field directories from command line arguments if valid.
+            string[] args = Environment.GetCommandLineArgs();
+            bool robotDefined = false;
+            bool fieldDefined = false;
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i].ToLower())
+                {
+                    case "-robot":
+                        if (i < args.Length - 1)
+                        {
+                            string robotFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(robotFile);
+                            robotDirectory = dirInfo.Parent.FullName;
+                            PlayerPrefs.SetString("RobotDirectory", robotDirectory);
+                            simSelectedRobot = robotFile;
+                            simSelectedRobotName = dirInfo.Name;
+                            robotDefined = true;
+                        }
+                        break;
+                    case "-field":
+                        if (i < args.Length - 1)
+                        {
+                            string fieldFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(fieldFile);
+                            fieldDirectory = dirInfo.Parent.FullName;
+                            PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
+                            simSelectedField = fieldFile;
+                            simSelectedFieldName = dirInfo.Name;
+                            fieldDefined = true;
+                        }
+                        break;
+                }
+            }
+
+            //If command line arguments have been passed, start the simulator.
+            if (robotDefined && fieldDefined)
+            {
+                StartDefaultSim();
+                return;
+            }
+        }
+
         //This makes it so that if the user exits from the simulator, 
         //they are put into the panel where they can select a robot/field
         //In all other cases, users are welcomed with the main menu screen.
