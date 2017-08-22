@@ -229,7 +229,8 @@ public class DynamicCamera : MonoBehaviour
         public override void Update()
         {
             //Focus on the node 0
-            target = GameObject.Find("Robot").transform.GetChild(0);
+            if (!robot) robot = StateMachine.Instance.FindState<MainState>().ActiveRobot.gameObject;
+            target = robot.transform.GetChild(0);
 
             // Early out if we don't have a target
             if (!target)
