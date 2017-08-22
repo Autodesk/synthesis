@@ -24,7 +24,6 @@ public class Controls
     #endregion
 
     public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
-    public static bool IsSaved = false;
 
     ///Player indexes (for initializing and creating separate player key lists) <see cref="InputControl"/>
     public static int PlayerOneIndex = 0;
@@ -135,8 +134,36 @@ public class Controls
             PlayerPrefs.SetString("Controls." + key.name + ".primary", key.primaryInput.ToString());
             PlayerPrefs.SetString("Controls." + key.name + ".secondary", key.secondaryInput.ToString());
         }
-        IsSaved = true;
         PlayerPrefs.Save();
+    }
+
+    public static bool CheckIfSaved()
+    {
+        ReadOnlyCollection<KeyMapping> currentKeys = InputControl.getKeysList();
+        ReadOnlyCollection<KeyMapping> inputKeys = InputControl.getActivePlayerKeys();
+
+        foreach (KeyMapping key in currentKeys)
+        {
+            string lastString;
+            string inputString;
+
+            lastString = PlayerPrefs.GetString("Controls." + key.name + ".primary");
+            inputString = key.primaryInput.ToString();
+
+            if (inputString != lastString)
+            {
+                return true;
+            }
+
+            lastString = PlayerPrefs.GetString("Controls." + key.name + ".secondary");
+            inputString = key.secondaryInput.ToString();
+
+            if (inputString != lastString)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
