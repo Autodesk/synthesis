@@ -60,6 +60,8 @@ public class Robot : MonoBehaviour
 
     public int RobotHasManipulator;
 
+    private DynamicCamera cam;
+
     //Robot statistics output
     public float Speed { get; private set; }
     private float oldSpeed;
@@ -406,7 +408,7 @@ public class Robot : MonoBehaviour
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
             BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
-
+            
             if (br == null)
                 continue;
 

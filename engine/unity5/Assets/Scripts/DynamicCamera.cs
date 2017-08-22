@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using Assets.Scripts.FSM;
 
 public class DynamicCamera : MonoBehaviour
 {
@@ -64,6 +65,7 @@ public class DynamicCamera : MonoBehaviour
 
         float transformSpeed;
         bool opposite;
+        private MainState main;
 
         public DriverStationState(MonoBehaviour mono, bool oppositeSide = false)
         {
@@ -80,6 +82,7 @@ public class DynamicCamera : MonoBehaviour
             startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
             currentRotation = startRotation;
             transformSpeed = 2.5f;
+            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
         }
 
         public override void Update()
@@ -93,7 +96,7 @@ public class DynamicCamera : MonoBehaviour
             {
                 robot = GameObject.Find("Robot");
             }
-            if (MovingEnabled)
+            if (MovingEnabled && !main.ActiveRobot.IsResetting)
             {
                 if (!opposite)
                 {
@@ -290,6 +293,7 @@ public class DynamicCamera : MonoBehaviour
         float rotationSpeed;
         float transformSpeed;
         float scrollWheelSensitivity;
+        MainState main;
 
         public FreeroamState(MonoBehaviour mono)
         {
@@ -309,18 +313,19 @@ public class DynamicCamera : MonoBehaviour
             transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
             if (robot == null) robot = GameObject.Find("robot");
+            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
         }
 
         public override void Update()
         {
-            if (MovingEnabled)
+            if (MovingEnabled && !main.ActiveRobot.IsResetting)
             {
                 if (InputControl.GetMouseButton(1))
                 {
                     rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
                 }
-
+                
                 positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
                 positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
 
