@@ -24,8 +24,9 @@ public class Controls
     #endregion
 
     public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
+    public static bool IsSaved;
 
-    ///Player indexes (for initializing and creating separate key lists) <see cref="InputControl"/>
+    ///Player indexes (for initializing and creating separate player key lists) <see cref="InputControl"/>
     public static int PlayerOneIndex = 0;
     public static int PlayerTwoIndex = 1;
     public static int PlayerThreeIndex = 2;
@@ -134,7 +135,7 @@ public class Controls
             PlayerPrefs.SetString("Controls." + key.name + ".primary", key.primaryInput.ToString());
             PlayerPrefs.SetString("Controls." + key.name + ".secondary", key.secondaryInput.ToString());
         }
-
+        IsSaved = true;
         PlayerPrefs.Save();
     }
 
@@ -183,7 +184,8 @@ public class Controls
     }
 
     /// <summary>
-    /// Resets to default Arcade Drive then updates the control/keybuttons' text.
+    /// Resets ALL player controls to default arcade drive controls.
+    /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
     /// </summary>
     public static void ResetArcadeDrive()
     {
@@ -192,12 +194,14 @@ public class Controls
 
         if (GameObject.Find("SettingsMode") != null)
         {
+            //Updates the controls text (keybuttons)
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
 
     /// <summary>
     /// Sets controls to Tank Drive.
+    /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
     /// </summary>
     public static void TankDrive()
     {
@@ -214,7 +218,8 @@ public class Controls
     }
 
     /// <summary>
-    /// Resets to default Tank Drive then updates the control/keybuttons' text.
+    /// Resets ALL player controls to default tank drive controls.
+    /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
     /// </summary>
     public static void ResetTankDrive()
     {
@@ -223,6 +228,7 @@ public class Controls
 
         if (GameObject.Find("SettingsMode") != null)
         {
+            //Updates the controls text (keybuttons)
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }

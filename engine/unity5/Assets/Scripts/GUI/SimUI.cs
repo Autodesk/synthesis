@@ -451,6 +451,11 @@ public class SimUI : MonoBehaviour
     public void ShowControlPanel()
     {
         ShowControlPanel(!inputManagerPanel.activeSelf);
+        if (!Controls.IsSaved)
+        {
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdateActiveButtons();
+            Debug.Log("!Controls.Saved");
+        }
     }
 
     

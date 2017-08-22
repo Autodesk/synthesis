@@ -23,7 +23,7 @@ public class CreateButton : MonoBehaviour
         DestroyList();
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
-        //Can change the default measure HERE and also change the default value in the slider game object in main menu
+        //Can change the default measurement HERE and also change the default value in the slider game object in main menu
         PlayerPrefs.SetString("Measure", "Metric");
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         namesTransform = transform.Find("Names");
@@ -98,7 +98,7 @@ public class CreateButton : MonoBehaviour
     }
 
     //==============================================================================================
-    //                                          Update Functions
+    //                                       Update Functions
     // The following functions are almost identical EXCEPT for the ReadOnlyCollection line.
     // Each function will retrieve the specified player list and generate controls for that player.
     // Each player is specified with a playerIndex and are retrieved by this index.
