@@ -195,6 +195,7 @@ public class MainMenu : MonoBehaviour
             simTab.SetActive(false);
             optionsTab.SetActive(true);
             settingsMode.SetActive(true);
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().GetLastSavedControls();
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }

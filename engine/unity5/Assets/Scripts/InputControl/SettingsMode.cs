@@ -67,6 +67,12 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
+    public void GetLastSavedControls()
+    {
+        Controls.Load();
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+    }
+
     /// <summary>
     /// Updates and creates the appropriate list for each player when the coordinated button is clicked.
     /// </summary>
