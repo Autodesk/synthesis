@@ -7,12 +7,12 @@ using System.Collections.Generic;
 
 public class CreateButton : MonoBehaviour
 {
+    //Toggle Switches
     public GameObject tankDriveSwitch;
     public GameObject unitConversionSwitch;
 
     public GameObject keyNamePrefab;
     public GameObject keyButtonsPrefab;
-    public List<GameObject> keyButtonList;
 
     private Transform namesTransform;
     private Transform keysTransform;
