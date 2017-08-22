@@ -439,17 +439,23 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             inputManagerPanel.SetActive(true);
+
+            Controls.Load();
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
         else
         {
             inputManagerPanel.SetActive(false);
             ToggleHotKeys(false);
+
+            Controls.Load();
         }
     }
 
     public void ShowControlPanel()
     {
         ShowControlPanel(!inputManagerPanel.activeSelf);
+        Controls.Load();
     }
 
     
