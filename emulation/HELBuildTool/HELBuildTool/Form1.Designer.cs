@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.label2 = new System.Windows.Forms.Label();
             this.txtBrowseJava = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.javaButton = new System.Windows.Forms.RadioButton();
@@ -40,55 +42,42 @@
             this.btnRunCode = new System.Windows.Forms.Button();
             this.txtNumber = new System.Windows.Forms.TextBox();
             this.lbNumber = new System.Windows.Forms.Label();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // label2
             // 
-            this.groupBox1.Controls.Add(this.txtBrowseJava);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.javaButton);
-            this.groupBox1.Controls.Add(this.cppButton);
-            this.groupBox1.Controls.Add(this.btnBrowse);
-            this.groupBox1.Controls.Add(this.txtBrowse);
-            this.groupBox1.Controls.Add(this.lbBrowse);
-            this.groupBox1.Controls.Add(this.btnSetup);
-            this.groupBox1.Controls.Add(this.btnRunCode);
-            this.groupBox1.Controls.Add(this.txtNumber);
-            this.groupBox1.Controls.Add(this.lbNumber);
-            this.groupBox1.Location = new System.Drawing.Point(34, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(202, 330);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Build Information";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(9, 48);
+            this.label2.Margin = new System.Windows.Forms.Padding(0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(152, 13);
+            this.label2.TabIndex = 24;
+            this.label2.Text = "Select Programming Language";
             // 
             // txtBrowseJava
             // 
-            this.txtBrowseJava.Location = new System.Drawing.Point(21, 194);
+            this.txtBrowseJava.Location = new System.Drawing.Point(12, 139);
             this.txtBrowseJava.Name = "txtBrowseJava";
-            this.txtBrowseJava.Size = new System.Drawing.Size(100, 20);
-            this.txtBrowseJava.TabIndex = 11;
-            this.txtBrowseJava.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.txtBrowseJava.Size = new System.Drawing.Size(460, 20);
+            this.txtBrowseJava.TabIndex = 23;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 167);
+            this.label1.Location = new System.Drawing.Point(9, 123);
+            this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(152, 13);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "Enter the main Java class path";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.label1.Size = new System.Drawing.Size(109, 13);
+            this.label1.TabIndex = 22;
+            this.label1.Text = "Java Main Class Path";
             // 
             // javaButton
             // 
             this.javaButton.AutoSize = true;
-            this.javaButton.Location = new System.Drawing.Point(21, 254);
+            this.javaButton.Location = new System.Drawing.Point(64, 64);
             this.javaButton.Name = "javaButton";
             this.javaButton.Size = new System.Drawing.Size(48, 17);
-            this.javaButton.TabIndex = 9;
+            this.javaButton.TabIndex = 21;
             this.javaButton.TabStop = true;
             this.javaButton.Text = "Java";
             this.javaButton.UseVisualStyleBackColor = true;
@@ -97,10 +86,10 @@
             // 
             this.cppButton.AutoSize = true;
             this.cppButton.Checked = true;
-            this.cppButton.Location = new System.Drawing.Point(21, 231);
+            this.cppButton.Location = new System.Drawing.Point(12, 64);
             this.cppButton.Name = "cppButton";
             this.cppButton.Size = new System.Drawing.Size(44, 17);
-            this.cppButton.TabIndex = 8;
+            this.cppButton.TabIndex = 20;
             this.cppButton.TabStop = true;
             this.cppButton.Text = "C++";
             this.cppButton.UseVisualStyleBackColor = true;
@@ -108,95 +97,111 @@
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(128, 124);
+            this.btnBrowse.Location = new System.Drawing.Point(397, 99);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(75, 23);
-            this.btnBrowse.TabIndex = 7;
+            this.btnBrowse.TabIndex = 19;
             this.btnBrowse.Text = "Browse";
             this.btnBrowse.UseVisualStyleBackColor = true;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+
             // 
             // txtBrowse
             // 
-            this.txtBrowse.Location = new System.Drawing.Point(21, 124);
+            this.txtBrowse.Location = new System.Drawing.Point(12, 100);
             this.txtBrowse.Name = "txtBrowse";
-            this.txtBrowse.Size = new System.Drawing.Size(100, 20);
-            this.txtBrowse.TabIndex = 6;
+            this.txtBrowse.Size = new System.Drawing.Size(379, 20);
+            this.txtBrowse.TabIndex = 18;
             // 
             // lbBrowse
             // 
             this.lbBrowse.AutoSize = true;
-            this.lbBrowse.Location = new System.Drawing.Point(21, 97);
+            this.lbBrowse.Location = new System.Drawing.Point(9, 84);
+            this.lbBrowse.Margin = new System.Windows.Forms.Padding(0);
             this.lbBrowse.Name = "lbBrowse";
-            this.lbBrowse.Size = new System.Drawing.Size(157, 13);
-            this.lbBrowse.TabIndex = 5;
-            this.lbBrowse.Text = "Browse for robot code directory:";
+            this.lbBrowse.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.lbBrowse.Size = new System.Drawing.Size(109, 13);
+            this.lbBrowse.TabIndex = 17;
+            this.lbBrowse.Text = "Robot Code Directory";
+            this.lbBrowse.Click += new System.EventHandler(this.lbBrowse_Click);
             // 
             // btnSetup
             // 
-            this.btnSetup.Location = new System.Drawing.Point(103, 291);
+            this.btnSetup.Location = new System.Drawing.Point(316, 165);
             this.btnSetup.Name = "btnSetup";
             this.btnSetup.Size = new System.Drawing.Size(75, 23);
-            this.btnSetup.TabIndex = 3;
+            this.btnSetup.TabIndex = 16;
             this.btnSetup.Text = "Setup";
             this.btnSetup.UseVisualStyleBackColor = true;
             this.btnSetup.Click += new System.EventHandler(this.btnSetup_Click);
             // 
             // btnRunCode
             // 
-            this.btnRunCode.Location = new System.Drawing.Point(21, 291);
+            this.btnRunCode.Location = new System.Drawing.Point(397, 165);
             this.btnRunCode.Name = "btnRunCode";
             this.btnRunCode.Size = new System.Drawing.Size(75, 23);
-            this.btnRunCode.TabIndex = 2;
+            this.btnRunCode.TabIndex = 15;
             this.btnRunCode.Text = "Run Code";
             this.btnRunCode.UseVisualStyleBackColor = true;
             this.btnRunCode.Click += new System.EventHandler(this.btnRunCode_Click);
             // 
             // txtNumber
             // 
-            this.txtNumber.Location = new System.Drawing.Point(21, 58);
+            this.txtNumber.Location = new System.Drawing.Point(12, 25);
             this.txtNumber.Name = "txtNumber";
-            this.txtNumber.Size = new System.Drawing.Size(100, 20);
-            this.txtNumber.TabIndex = 1;
+            this.txtNumber.Size = new System.Drawing.Size(99, 20);
+            this.txtNumber.TabIndex = 14;
             // 
             // lbNumber
             // 
             this.lbNumber.AutoSize = true;
-            this.lbNumber.Location = new System.Drawing.Point(18, 32);
+            this.lbNumber.Location = new System.Drawing.Point(9, 9);
+            this.lbNumber.Margin = new System.Windows.Forms.Padding(0);
             this.lbNumber.Name = "lbNumber";
-            this.lbNumber.Size = new System.Drawing.Size(122, 13);
-            this.lbNumber.TabIndex = 0;
-            this.lbNumber.Text = "Enter your team number:";
+            this.lbNumber.Size = new System.Drawing.Size(102, 13);
+            this.lbNumber.TabIndex = 13;
+            this.lbNumber.Text = "Enter Team Number";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(275, 354);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(484, 197);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.txtBrowseJava);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.javaButton);
+            this.Controls.Add(this.cppButton);
+            this.Controls.Add(this.btnBrowse);
+            this.Controls.Add(this.txtBrowse);
+            this.Controls.Add(this.lbBrowse);
+            this.Controls.Add(this.btnSetup);
+            this.Controls.Add(this.btnRunCode);
+            this.Controls.Add(this.txtNumber);
+            this.Controls.Add(this.lbNumber);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "HELBuildTool";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.Text = "Run User Code";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label lbNumber;
-        private System.Windows.Forms.TextBox txtNumber;
-        private System.Windows.Forms.Button btnSetup;
-        private System.Windows.Forms.Button btnRunCode;
-        private System.Windows.Forms.Label lbBrowse;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.TextBox txtBrowse;
-        private System.Windows.Forms.Button btnBrowse;
-        private System.Windows.Forms.RadioButton javaButton;
-        private System.Windows.Forms.RadioButton cppButton;
+        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtBrowseJava;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RadioButton javaButton;
+        private System.Windows.Forms.RadioButton cppButton;
+        private System.Windows.Forms.Button btnBrowse;
+        private System.Windows.Forms.TextBox txtBrowse;
+        private System.Windows.Forms.Label lbBrowse;
+        private System.Windows.Forms.Button btnSetup;
+        private System.Windows.Forms.Button btnRunCode;
+        private System.Windows.Forms.TextBox txtNumber;
+        private System.Windows.Forms.Label lbNumber;
     }
 }
 
