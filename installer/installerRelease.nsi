@@ -175,7 +175,7 @@ Section "Code Emulator (optional)"
   SetOutPath $INSTDIR\cygscripts
   File /r "cygscripts\*"
 
-  ExecShellWait "open" "$INSTDIR\cygscripts\cygpac.bat" "mingw64-i686-gcc-g++,make" ;SW_HIDE
+  ExecShellWait "open" "$INSTDIR\cygscripts\cygpac.bat" "mingw64-x86_64-gcc-g++,make" SW_HIDE
   
 SectionEnd
 

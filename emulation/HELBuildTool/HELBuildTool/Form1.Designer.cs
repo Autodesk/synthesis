@@ -104,7 +104,6 @@
             this.btnBrowse.Text = "Browse";
             this.btnBrowse.UseVisualStyleBackColor = true;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
-
             // 
             // txtBrowse
             // 
@@ -127,21 +126,21 @@
             // 
             // btnSetup
             // 
-            this.btnSetup.Location = new System.Drawing.Point(316, 165);
+            this.btnSetup.Location = new System.Drawing.Point(12, 165);
             this.btnSetup.Name = "btnSetup";
-            this.btnSetup.Size = new System.Drawing.Size(75, 23);
+            this.btnSetup.Size = new System.Drawing.Size(225, 23);
             this.btnSetup.TabIndex = 16;
-            this.btnSetup.Text = "Setup";
+            this.btnSetup.Text = "Remove Compiled Binaries";
             this.btnSetup.UseVisualStyleBackColor = true;
             this.btnSetup.Click += new System.EventHandler(this.btnSetup_Click);
             // 
             // btnRunCode
             // 
-            this.btnRunCode.Location = new System.Drawing.Point(397, 165);
+            this.btnRunCode.Location = new System.Drawing.Point(247, 165);
             this.btnRunCode.Name = "btnRunCode";
-            this.btnRunCode.Size = new System.Drawing.Size(75, 23);
+            this.btnRunCode.Size = new System.Drawing.Size(225, 23);
             this.btnRunCode.TabIndex = 15;
-            this.btnRunCode.Text = "Run Code";
+            this.btnRunCode.Text = "Build and Run Code";
             this.btnRunCode.UseVisualStyleBackColor = true;
             this.btnRunCode.Click += new System.EventHandler(this.btnRunCode_Click);
             // 

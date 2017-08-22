@@ -1,4 +1,4 @@
-CC = i686-w64-mingw32-g++
+CC = x86_64-w64-mingw32-g++
 
 ifndef JAVA_HOME
 	JAVA_VERSION := $(shell java -version |& sed -ne 's/^java version "\([^"]*\)"/\1/gp')
@@ -16,13 +16,15 @@ JAVA_FILES := $(shell find ./ -name "*.java")
 
 .PHONY: java_class_files run
 
-run: build/FRC_UserProgram.jar
-	java -cp "$(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/ntcore.jar')" -jar build/FRC_UserProgram.jar
+run: build/java_class_files
+	@cp "$(SYNTHESIS_JARS)/libstdc++-6.dll" ./build/classes
+	@cp "$(SYNTHESIS_JARS)/libgcc_s_seh-1.dll" ./build/classes
+	@cd build/classes; export PATH=".:$(PATH)"; $(JAVA_HOME)/bin/java.exe -Djava.library.path="$(shell cygpath -w '$(SYNTHESIS_JARS)')" -cp "$(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/ntcore.jar');." $(ENTRY_POINT)
 
 build/FRC_UserProgram.jar: build/java_class_files
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
 	@mkdir -p build
-	@echo "Class-Path: $(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$@" > build/Manifest.txt
+	@echo "Class-Path: $(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '${SYNTHESIS_JARS}/ntcore.jar');$@" > build/Manifest.txt
 	@cd build/classes; $(JAR) cfem ../../$@ $(ENTRY_POINT) ../Manifest.txt .
 
 build/java_class_files: $(JAVA_FILES)

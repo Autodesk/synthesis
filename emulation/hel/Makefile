@@ -1,5 +1,6 @@
-CC = i686-w64-mingw32-g++
-AR = i686-w64-mingw32-ar
+CC = x86_64-w64-mingw32-g++
+CC_JAVA = $(CC)
+AR = x86_64-w64-mingw32-ar
 TARGET = debug
 
 ifndef JAVA_HOME
@@ -10,19 +11,19 @@ endif
 JAVAC := $(JAVA_HOME)/bin/javac.exe
 JAR := $(JAVA_HOME)/bin/jar.exe
 
-CCFLAGS := -m32 -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Iallwpilib/ni-libraries/include -Iwpiutil/src/main/native/include -std=c++14
+CCFLAGS := -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Iallwpilib/ni-libraries/include -Iwpiutil/src/main/native/include -static-libgcc -static-libstdc++ -std=c++14 -Wl,--add-stdcall-alias -m64
 ifeq ($(TARGET), debug)
 	CCFLAGS += -O0 -g
 endif
 ifeq ($(TARGET), release)
-	CCflags += -O2
+	CCFLAGS += -O2
 endif
 
 CCFLAGS_CPP := -Iallwpilib/wpilibc/athena/include -Iallwpilib/wpilibc/shared/include -Iinclude -Intcore/include $(CCFLAGS)
 CCFLAGS_HAL := -Ilib -Ilib/athena -Intcore/include $(CCFLAGS) -Iallwpilib/wpilibc/shared/include -Iallwpilib/wpilibc/athena/include
 CCFLAGS_NTCORE := -Intcore/include $(CCFLAGS)
-CCFLAGS_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/java/header -Intcore/include -fpermissive $(CCFLAGS)
-CCFLAGS_NTCORE_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/ntcore/java/header -Intcore/include $(CCFLAGS)
+CCFLAGS_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/java/header -Intcore/include -fpermissive -D_JNI_IMPLEMENTATION_ $(CCFLAGS)
+CCFLAGS_NTCORE_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/ntcore/java/header -Intcore/include -D_JNI_IMPLEMENTATION_ $(CCFLAGS)
 
 SRC_FILES_HAL := $(shell find ./lib ./wpiutil/src/main/native -name "*.cpp" -not -name "*priority_mutex.cpp" -not -wholename "*ctre/*" -not -name "*NiFpgaState.cpp")
 
@@ -57,11 +58,13 @@ all: cpp java hal
 
 $(OUT_JAVA): $(LIB_JAVA) | build/java_class_files Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
+	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libstdc++-6.dll build/java
+	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libgcc_s_seh-1.dll build/java
 	@$(JAR) cf $@ -C build/java/class .
 
 $(LIB_JAVA): $(OBJ_FILES_JAVA) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
-	@$(CC) -shared -o $@ $^ -Lbuild/hal -lHAL -lWs2_32
+	@$(CC_JAVA) -shared -o $@ $^ -Lbuild/hal -lHAL -lWs2_32
 
 $(OUT_HAL): $(OBJ_FILES_HAL) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
@@ -77,7 +80,7 @@ $(OUT_NTCORE): $(OBJ_FILES_NTCORE) | Makefile $(HEADER_FILES)
 
 $(LIB_NTCORE_JAVA): $(OBJ_FILES_NTCORE_JAVA) | build/ntcore_java_class_files $(OUT_NTCORE) $(OUT_HAL) Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
-	@$(CC) -shared -o $@ $^ -Lbuild/ntcore -Lbuild/hal -lntcore-static -lHAL -lWs2_32
+	@$(CC_JAVA) -shared -o $@ $^ -Lbuild/ntcore -Lbuild/hal -lntcore-static -lHAL -lWs2_32
 
 $(OUT_NTCORE_JAVA): | $(LIB_NTCORE_JAVA) build/ntcore_java_class_files $(OUT_NTCORE) Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
@@ -96,7 +99,7 @@ build/hal/%.o: %.cpp Makefile $(HEADER_FILES)
 build/java/%.o: %.cpp Makefile $(HEADER_FILES) build/java_class_files
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC) -c $< -o $@ $(CCFLAGS_JAVA)
+	@$(CC_JAVA) -c $< -o $@ $(CCFLAGS_JAVA)
 
 build/ntcore/%.o: %.cpp Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
@@ -106,7 +109,7 @@ build/ntcore/%.o: %.cpp Makefile $(HEADER_FILES)
 build/ntcore/java/%.o: %.cpp build/ntcore_java_class_files Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC) -c $< -o $@ $(CCFLAGS_NTCORE_JAVA)
+	@$(CC_JAVA) -c $< -o $@ $(CCFLAGS_NTCORE_JAVA)
 
 build/java_class_files: $(JAVA_FILES_JAVA) | $(OUT_NTCORE_JAVA) Makefile
 	@echo -e "\e[1m\e[32mJAVA \e[39mwpilibj/*.java\e[0m"
@@ -165,6 +168,10 @@ install: $(OUT_CPP) $(OUT_JAVA)
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/ntcore.jar\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/jars
 	@cp -rf build/java/ntcore.jar ../../installer/SynthesisDrive/jars/ntcore.jar
+	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/wpilibJavaJNI.dll\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/jars
+	@cp -rf build/java/wpilibJavaJNI.dll ../../installer/SynthesisDrive/jars/wpilibJavaJNI.dll
+
 
 
 clean:

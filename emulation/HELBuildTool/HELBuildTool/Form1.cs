@@ -27,39 +27,34 @@ namespace WindowsFormsApp1
 
         private void btnSetup_Click(object sender, EventArgs e)
         {
-            String number = txtNumber.Text;
-            String firstDigits = number.Substring(0, number.Length - 2);
-            String secondDigits = number.Substring(number.Length - 2, 2);
+            String path = txtBrowse.Text;
+            Console.WriteLine(path);
+            String currentDir = System.IO.Directory.GetCurrentDirectory();
+            String windowsCurrentDir = currentDir;
+            //convert currentDir to a cygwin path
+            currentDir = currentDir.Replace("C:\\", "/cygdrive/c/").Replace("\\", "/");
+            System.IO.Directory.SetCurrentDirectory(path);
+#if DEBUG
+            String cygwinPath = "C:\\cygwin64";
+            String buildTool = currentDir + "/../../../..";
+#else
+            String cygwinPath = "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64";
+            String buildTool = "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool";
+#endif
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo(
+                        cygwinPath + "\\bin\\mintty.exe",
+                        "'" + cygwinPath + "\\bin\\bash.exe' " +
+                        "-c \"mount -c /cygdrive && make -f " +
+                        "'" + buildTool + "/Makefile' clean " +
+                        "|| read -p 'Press enter to exit'\"");
+            startInfo.UseShellExecute = false;
 
-            String deviceName;
-
-            //get all loopback adapters to see if one already exists
-            System.Management.ManagementObjectCollection results = (new System.Management.ManagementObjectSearcher(
-                        "SELECT Name, NetConnectionID, PNPDeviceID, ConfigManagerErrorCode, NetConnectionStatus " +
-                        "FROM Win32_NetworkAdapter " +
-                        "WHERE ServiceName='msloop'")).Get();
-
-            if(results.Count > 0) {
-                deviceName = results.GetEnumerator().Current.Properties.Cast<System.Management.PropertyData>()
-                    .Single(p => p.Name == "Name").Value.ToString();
-            }
-            else {
-
-                //enable a loopback adapter
-                System.Diagnostics.Process.Start("cmd", "/C devcon install %WINDIR%\\Inf\\NetLoop.inf *MSLOOP")
-                    .WaitForExit(0);
-
-                results = (new System.Management.ManagementObjectSearcher(
-                            "SELECT Name, NetConnectionID, PNPDeviceID, ConfigManagerErrorCode, NetConnectionStatus " +
-                            "FROM Win32_NetworkAdapter " +
-                            "WHERE ServiceName='msloop'")).Get();
-                deviceName = results.GetEnumerator().Current.Properties.Cast<System.Management.PropertyData>()
-                    .Single(p => p.Name == "Name").Value.ToString();
-            }
-
-            //set the IP address of the loopback adapter
-            System.Diagnostics.Process.Start("netsh", "int ip set address name=\"" + deviceName +
-                    "\" static 10." + firstDigits + "." + secondDigits + ".2 255.255.255.0");
+            String envPath = System.Environment.GetEnvironmentVariable("PATH");
+            startInfo.EnvironmentVariables["PATH"] = cygwinPath + "\\bin;" + envPath;
+            System.Diagnostics.Process.Start(startInfo);
+#if DEBUG
+            System.IO.Directory.SetCurrentDirectory(windowsCurrentDir);
+#endif
         }
 
         private void btnRunCode_Click(object sender, EventArgs e)
@@ -76,23 +71,27 @@ namespace WindowsFormsApp1
             //convert currentDir to a cygwin path
             currentDir = currentDir.Replace("C:\\", "/cygdrive/c/").Replace("\\", "/");
             System.IO.Directory.SetCurrentDirectory(path);
-            Console.WriteLine(entryPoint);
 
 #if DEBUG
             String cygwinPath = "C:\\cygwin64";
-            String buildTool = currentDir + "/../../..";
-            String makeArgs = "SYNTHESIS_LIBS=" + currentDir + "/../../../../../emulation/hel/build " +
-                "SYNTHESIS_INCLUDES=" + currentDir + "/../../../../../emulation/hel " +
-                "SYNTHESIS_JARS=" + currentDir + "/../../../../../emulation/hel/build/java " +
-                "TEAM_ID_FILE=" + currentDir + "/../../../teamID.cpp " +
-                "ENTRY_POINT=\"" + entryPoint + "\"";
+            String buildTool = currentDir + "/../../../..";
+            String jarDir = currentDir + "/../../../../../../emulation/hel/build/java";
+            String makeArgs = "SYNTHESIS_LIBS=" + currentDir + "/../../../../../../emulation/hel/build " +
+                "SYNTHESIS_INCLUDES=" + currentDir + "/../../../../../../emulation/hel " +
+                "SYNTHESIS_JARS=" + jarDir + " " +
+                "TEAM_ID_FILE=" + currentDir + "/../../../../teamID.cpp ";
+            jarDir = jarDir.Replace("/cygdrive/c/", "C:\\").Replace("\\", "/");
 #else
             String cygwinPath = "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64";
             String buildTool = "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool";
-            String makeArgs = "ENTRY_POINT=\"" + entryPoint + "\"";
+            String makeArgs = "";
+            String jarDir = "/cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/jar";
+            jarDir = jarDir.Replace("/cygdrive/c/", "C:\\").Replace("\\", "/");
 #endif
             System.Diagnostics.ProcessStartInfo startInfo;
             if (isJava) {
+                Console.WriteLine(entryPoint);
+                makeArgs += "ENTRY_POINT=\"" + entryPoint + "\"";
                 startInfo = new System.Diagnostics.ProcessStartInfo(
                         cygwinPath + "\\bin\\mintty.exe",
                         "'" + cygwinPath + "\\bin\\bash.exe' " +
@@ -114,7 +113,7 @@ namespace WindowsFormsApp1
                         "|| read -p 'Press enter to exit'\"");
             }
             String envPath = System.Environment.GetEnvironmentVariable("PATH");
-            startInfo.EnvironmentVariables["PATH"] = cygwinPath + "\\bin;" + envPath;
+            startInfo.EnvironmentVariables["PATH"] = cygwinPath + "\\bin;" + jarDir + envPath;
             startInfo.EnvironmentVariables["TEAM_ID"] = "" + number;
             startInfo.UseShellExecute = false;
 
