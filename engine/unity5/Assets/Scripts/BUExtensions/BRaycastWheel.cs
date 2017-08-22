@@ -121,6 +121,9 @@ namespace Assets.Scripts.BUExtensions
             if (robot == null)
                 return;
 
+            WheelInfo info = robot.RaycastRobot.GetWheelInfo(wheelIndex);
+
+            transform.position = info.WorldTransform.Origin.ToUnity();
             transform.localRotation *= Quaternion.AngleAxis(Speed, axis);
         }
     }
