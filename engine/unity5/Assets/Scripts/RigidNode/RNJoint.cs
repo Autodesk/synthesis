@@ -42,7 +42,7 @@ public partial class RigidNode : RigidNode_Base
                         BRaycastRobot robot = parent.MainObject.AddComponent<BRaycastRobot>();
                         robot.NumWheels = numWheels;
 
-                        if (MixAndMatchMode.isMixAndMatchMode)
+                        if (MixAndMatchMode.IsMixAndMatchMode)
                             robot.Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
                     }
 
