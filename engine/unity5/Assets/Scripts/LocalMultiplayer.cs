@@ -49,7 +49,7 @@ public class LocalMultiplayer : MonoBehaviour {
 	void Update () {
         if (mainState == null)
         {
-            mainState = ((MainState)StateMachine.Instance.CurrentState);
+            mainState = StateMachine.Instance.FindState<MainState>();
         }
     }
     
