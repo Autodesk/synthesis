@@ -169,6 +169,7 @@ public class MainState : SimState
         {
             if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
+            
         }
 
         // Toggles between the different camera states if the camera toggle button is pressed
