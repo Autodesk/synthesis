@@ -95,6 +95,10 @@ public class CreateButton : MonoBehaviour
 
         //Updates the landing page player (player one) with the active button style
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
+        Controls.Load();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+        Debug.Log("Start");
     }
 
     //==============================================================================================
