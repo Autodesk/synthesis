@@ -41,6 +41,7 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
+    GameObject checkSavePanel;
     GameObject unitConversionSwitch;
     GameObject hotKeyButton;
     GameObject hotKeyPanel;
@@ -140,6 +141,7 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
+        checkSavePanel = AuxFunctions.FindObject(canvas, "CheckSavePanel");
         unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
         hotKeyPanel = AuxFunctions.FindObject(canvas, "HotKeyPanel");
         hotKeyButton = AuxFunctions.FindObject(canvas, "DisplayHotKeyButton");
@@ -439,23 +441,24 @@ public class SimUI : MonoBehaviour
 
             Controls.Load();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-            Controls.CheckIfSaved();
         }
         else
         {
             inputManagerPanel.SetActive(false);
             ToggleHotKeys(false);
 
-            Controls.Load();
-            Controls.CheckIfSaved();
+            if (Controls.CheckIfSaved())
+            {
+                checkSavePanel.SetActive(true);
+            }
+            //Controls.Load();
         }
     }
 
     public void ShowControlPanel()
     {
-        Controls.CheckIfSaved();
         ShowControlPanel(!inputManagerPanel.activeSelf);
-        Controls.Load();
+        //Controls.Load();
     }
 
     
@@ -586,6 +589,25 @@ public class SimUI : MonoBehaviour
 
             case "cancel":
                 exitPanel.SetActive(false);
+                break;
+        }
+    }
+
+    public void CheckForSavedControls(string option)
+    {
+        checkSavePanel.SetActive(false);
+
+        switch (option)
+        {
+            case "yes":
+                Controls.Save();
+                break;
+            case "no":
+                Controls.Load();
+                inputManagerPanel.SetActive(false);
+                break;
+            case "cancel":
+                inputManagerPanel.SetActive(true);
                 break;
         }
     }

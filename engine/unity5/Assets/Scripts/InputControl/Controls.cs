@@ -150,12 +150,12 @@ public class Controls
             lastString = PlayerPrefs.GetString("Controls." + key.name + ".primary");
             inputString = key.primaryInput.ToString();
 
-            if (!inputString.Equals(lastString))
+            if (inputString != lastString)
             {
                 return true;
             }
 
-            lastString = PlayerPrefs.GetString("Controls." + key.name + ".primary");
+            lastString = PlayerPrefs.GetString("Controls." + key.name + ".secondary");
             inputString = key.secondaryInput.ToString();
 
             if (inputString != lastString)
