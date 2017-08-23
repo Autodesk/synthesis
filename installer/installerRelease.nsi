@@ -156,10 +156,10 @@ SectionEnd
 Section "Field Exporter Plugin (optional)"
 	
   ; Set output path to plugin directory
-  SetOutPath $APPDATA\Autodesk\Application Plugins\BxDFieldExporter
+  SetOutPath "$APPDATA\Autodesk\Application Plugins\BxDFieldExporter"
   
-  File /r "FieldExporter\BxDFieldExporter.dll"
-  File /r "FieldExporter\Autodesk.BxdFieldExporter.Inventor.addin"
+  ; File /r "FieldExporter\BxDFieldExporter.dll"
+  ; File /r "FieldExporter\Autodesk.BxdFieldExporter.Inventor.addin"
 
 SectionEnd
 
@@ -172,6 +172,11 @@ Section "Code Emulator (optional)"
   ;File "example2.nsi"
   File /r "SynthesisDrive\*"
 
+  SetOutPath $INSTDIR\cygscripts
+  File /r "cygscripts\*"
+
+  ExecShellWait "open" "$INSTDIR\cygscripts\cygpac.bat" "mingw64-x86_64-gcc-g++,make" SW_HIDE
+  
 SectionEnd
 
 Section "Uninstall"
