@@ -10,6 +10,9 @@ using Assets.Scripts.BUExtensions;
 
 public partial class RigidNode : RigidNode_Base
 {
+    private const float LinearSleepingThreshold = 0.25f;
+    private const float AngularSleepingThreshold = 0.5f;
+
     public bool CreateMesh(string filePath)
     {
         //Debug.Log(filePath);
@@ -80,6 +83,8 @@ public partial class RigidNode : RigidNode_Base
             BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
             rigidBody.mass = mesh.physics.mass;
             rigidBody.friction = 0.25f;
+            rigidBody.linearSleepingThreshold = LinearSleepingThreshold;
+            rigidBody.angularSleepingThreshold = AngularSleepingThreshold;
             rigidBody.RemoveOnCollisionCallbackEventHandler();
 
             foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
