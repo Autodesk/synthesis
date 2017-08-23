@@ -82,7 +82,7 @@ namespace Assets.Scripts.FSM
             foreach (SimState state in activeStates)
                 if (state is T)
                     return state as T;
-
+            
             return null;
         }
 
