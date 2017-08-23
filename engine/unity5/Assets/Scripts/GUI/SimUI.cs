@@ -47,6 +47,8 @@ public class SimUI : MonoBehaviour
     GameObject mixAndMatchPanel;
     GameObject maMOrExPanel;
 
+    GameObject toolbar;
+
     public static bool changeAnalytics = true;
 
     GameObject exitPanel;
@@ -103,6 +105,11 @@ public class SimUI : MonoBehaviour
                 }
             }
 
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.H))
+            {
+                TogglePanel(toolbar);
+            }
+
         }
     }
 
@@ -147,7 +154,10 @@ public class SimUI : MonoBehaviour
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
+
+        toolbar = AuxFunctions.FindObject(canvas, "Toolbar");
         maMOrExPanel = AuxFunctions.FindObject(canvas, "MaMorExPanel");
+
     }
 
     private void UpdateWindows()
@@ -196,7 +206,7 @@ public class SimUI : MonoBehaviour
             sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
             main.ChangeRobot(directory);
-            
+
         }
         else
         {
@@ -452,7 +462,7 @@ public class SimUI : MonoBehaviour
         //Controls.Load();
     }
 
-    
+
     /// <summary>
     /// Open totorial link
     /// </summary>
@@ -654,3 +664,4 @@ public class SimUI : MonoBehaviour
         }
     }
 }
+
