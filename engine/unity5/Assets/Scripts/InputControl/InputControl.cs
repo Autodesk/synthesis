@@ -4,10 +4,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-/// <summary>
-/// <see cref="InputControl"/> provide interface to the Input system. It's based on <see cref="Input"/> class and allow to change key mappings in runtime.
-/// Derived from: https://github.com/Gris87/InputControl
-/// </summary>
+//=========================================================================================
+//                                      InputControl.cs
+/// Description: <see cref = "InputControl" /> provides interface to the Input system. It's 
+/// based on <see cref="Input"/> class and allows the ability to change key mappings in runtime.
+/// Adapted from: https://github.com/Gris87/InputControl
+//=========================================================================================
+
 public static class InputControl
 {
     public const float NO_SMOOTH = 1000f;
@@ -39,8 +42,6 @@ public static class InputControl
 
     // Common options
     private static InputDevice mInputDevice = InputDevice.Any;
-
-
 
     #region Properties
 
@@ -170,7 +171,8 @@ public static class InputControl
     #region Synthesis Setup Keys
 
     /// <summary>
-    /// Create new <see cref="KeyMapping"/> with specified name, active player, inputs, and drive type.
+    /// Creates new <see cref="KeyMapping"/> with specified name, active player, primary CustomInput, 
+    /// and drive type.
     /// </summary>
     /// <returns>Created KeyMapping.</returns>
     /// <param name="name">KeyMapping name.</param>
@@ -183,7 +185,8 @@ public static class InputControl
     }
 
     /// <summary>
-    /// Create new <see cref="KeyMapping"/> with specified name, active player, inputs, and drive type.
+    /// Creates new <see cref="KeyMapping"/> with specified name, active player, primary KeyCode, 
+    /// secondary CustomInput, and drive type.
     /// </summary>
     /// <returns>Created KeyMapping.</returns>
     /// <param name="name">KeyMapping name.</param>
@@ -197,7 +200,7 @@ public static class InputControl
     }
 
     /// <summary>
-    /// Gets the list of keys.
+    /// Gets the list of ALL the keys.
     /// </summary>
     /// <returns>List of keys.</returns>
     public static ReadOnlyCollection<KeyMapping> getKeysList()
@@ -214,21 +217,21 @@ public static class InputControl
     }
 
     /// <summary>
-    /// Gets the list of a player's keys. Player specified by controlIndex.
+    /// Gets the list of a specific player's keys (player specified by controlIndex).
     /// </summary>
     /// <param name="controlIndex"></param>
     /// <returns>List of a player's keys.</returns>
     public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
     {
-        // Set the activePlayerIndex equal to the selected player
+        // Set the activePlayerIndex equal to the selected player (controlIndex)
         activePlayerIndex = controlIndex;
         return mPlayerList[controlIndex].GetActiveList();
     }
 
     /// <summary>
-    /// Gets the list of all the active player's keys. 
+    /// Gets the list of the active player's keys. 
     /// </summary>
-    /// <returns>The list of all the active player's keys.</returns>
+    /// <returns>The list of the active player's keys.</returns>
     public static ReadOnlyCollection<KeyMapping> getActivePlayerKeys()
     {
         return mPlayerList[activePlayerIndex].GetActiveList();
@@ -239,7 +242,7 @@ public static class InputControl
     #region Synthesis Setup Axes
 
     /// <summary>
-    /// Create new <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
+    /// Creates new <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
     /// </summary>
     /// <returns>Created Axis.</returns>
     /// <param name="name">Axis name.</param>

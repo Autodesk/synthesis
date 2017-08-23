@@ -433,6 +433,10 @@ public class SimUI : MonoBehaviour
 
     #endregion
     #region control panel functions
+    /// <summary>
+    /// Toggle the control panel ON/OFF based on the boolean passed.
+    /// </summary>
+    /// <param name="show"></param>
     public void ShowControlPanel(bool show)
     {
         if (show)
@@ -452,19 +456,19 @@ public class SimUI : MonoBehaviour
             {
                 checkSavePanel.SetActive(true);
             }
-            //Controls.Load();
         }
     }
 
+    /// <summary>
+    /// Toggle the control panel ON/OFF based on its current state
+    /// </summary>
     public void ShowControlPanel()
     {
         ShowControlPanel(!inputManagerPanel.activeSelf);
-        //Controls.Load();
     }
 
-
     /// <summary>
-    /// Open totorial link
+    /// Open tutorial link
     /// </summary>
     public void OpenTutorialLink()
     {
