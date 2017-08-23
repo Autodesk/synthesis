@@ -19,27 +19,8 @@ public class MaMSimUI : MonoBehaviour {
     GameObject changeRobotPanel;
     GameObject addRobotPanel;
 
-    GameObject driverStationPanel;
-
-    GameObject inputManagerPanel;
-    GameObject unitConversionButton;
-
-    public bool swapWindowOn = false; //if the swap window is active
-    public bool wheelPanelOn = false; //if the wheel panel is active
-    public bool driveBasePanelOn = false; //if the drive base panel is active
-    public bool manipulatorPanelOn = false; //if the manipulator panel is active
-
-    GameObject exitPanel;
-
-    Text cameraNodeText;
-
-    GameObject loadingPanel;
-
     private SimUI simUI;
 
-    /// <summary>
-    /// Retreives the Main State instance which controls everything in the simulator.
-    /// </summary>
     void Start()
     {
         FindElements();
@@ -69,14 +50,7 @@ public class MaMSimUI : MonoBehaviour {
 
         addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
 
-
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
-
-
-        inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
-
-        exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
-        loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
 
         simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
     }

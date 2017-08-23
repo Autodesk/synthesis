@@ -5,18 +5,18 @@ using UnityEngine;
 [System.Serializable]
 public class MaMPreset {
 
-    public string name = "Default";
-    public int wheelIndex = 0;
-    public int driveBaseIndex = 0;
-    public int manipulatorIndex = 0;
+    public string Name = "Default";
+    public int WheelIndex = 0;
+    public int DriveBaseIndex = 0;
+    public int ManipulatorIndex = 0;
 
     public MaMPreset (int wheel, int driveBase, int manipulator, string name)
     {
-        wheelIndex = wheel;
-        driveBaseIndex = driveBase;
-        manipulatorIndex = manipulator;
+        WheelIndex = wheel;
+        DriveBaseIndex = driveBase;
+        ManipulatorIndex = manipulator;
 
-        this.name = name;
+        this.Name = name;
     }
 
     public MaMPreset()
@@ -26,22 +26,22 @@ public class MaMPreset {
 
     public string GetName()
     {
-        return name;
+        return Name;
     }
 
     public int GetWheel()
     {
-        return wheelIndex;
+        return WheelIndex;
     }
 
     public int GetDriveBase()
     {
-        return driveBaseIndex;
+        return DriveBaseIndex;
     }
 
     public int GetManipulator()
     {
-        return manipulatorIndex;
+        return ManipulatorIndex;
     }
 	// Update is called once per frame
 	void Update () {

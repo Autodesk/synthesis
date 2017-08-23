@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//Adapted from: https://github.com/Gris87/InputControl
+
 public class KeyButton : MonoBehaviour
 {
     public static KeyButton selectedButton = null;
@@ -21,7 +23,7 @@ public class KeyButton : MonoBehaviour
     // Update is called once per frame
     void OnGUI()
     {
-        //Implements styles; (most assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
+        //Implement style preferances; (most assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
         mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
         mKeyText.color = Color.white;
         mKeyText.fontSize = 13;
@@ -39,8 +41,7 @@ public class KeyButton : MonoBehaviour
                     &&
                     currentInput is KeyboardInput
                     &&
-                    ((KeyboardInput)currentInput).key == KeyCode.Escape
-                   )
+                    ((KeyboardInput)currentInput).key == KeyCode.Backspace) //Allows users to use the BACKSPACE to set "None" to their controls.
                 {
                     SetInput(new KeyboardInput());
                 }
@@ -53,7 +54,7 @@ public class KeyButton : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the KeyButtons' text.
+    /// Updates the controls' (keyButtons') text.
     /// </summary>
     public void UpdateText()
     {
@@ -64,7 +65,6 @@ public class KeyButton : MonoBehaviour
 
         switch (keyIndex)
         {
-
             case 0:
                 mKeyText.text = keyMapping.primaryInput.ToString();
                 break;
@@ -79,10 +79,10 @@ public class KeyButton : MonoBehaviour
     /// </summary>
     public void OnClick()
     {
-        if (selectedButton != null)
-        {
-            selectedButton.UpdateText();
-        }
+        //if (selectedButton != null)
+        //{
+        //    selectedButton.UpdateText();
+        //}
 
         selectedButton = this;
 
@@ -111,7 +111,9 @@ public class KeyButton : MonoBehaviour
         }
 
         UpdateText();
-        Controls.Save();
+
+        //Enable this for auto-saving.
+        //Controls.Save();
 
         selectedButton = null;
     }

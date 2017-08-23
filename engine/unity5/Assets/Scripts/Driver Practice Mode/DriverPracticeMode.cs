@@ -73,17 +73,18 @@ public class DriverPracticeMode : MonoBehaviour {
     private void Awake()
     {
         InitializeTrajectories();
+        StateMachine.Instance.Link<MainState>(this);
     }
 
     private void Update()
     {
         if (mainState == null)
         {
-            mainState = GetComponent<StateMachine>().CurrentState as MainState;
+            mainState = StateMachine.Instance.FindState<MainState>();
         }
         else if (dpmRobot == null)
         {
-            dpmRobot = mainState.activeRobot.GetDriverPractice();
+            dpmRobot = mainState.ActiveRobot.GetDriverPractice();
             FindElements();
         }
         else
@@ -104,7 +105,7 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
 
-        enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
+        //enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
 
         primaryGamepieceText = AuxFunctions.FindObject(canvas, "PrimaryGamepieceText").GetComponent<Text>();
         secondaryGamepieceText = AuxFunctions.FindObject(canvas, "SecondaryGamepieceText").GetComponent<Text>();
@@ -135,8 +136,6 @@ public class DriverPracticeMode : MonoBehaviour {
 
         primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
         secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
-
-        lockPanel = AuxFunctions.FindObject(canvas, "DPMLockPanel");
     }
 
     /// <summary>
@@ -292,33 +291,6 @@ public class DriverPracticeMode : MonoBehaviour {
     }
 
     /// <summary>
-    /// Sets the driver practice mode to either be enabled or disabled, depending on what state it was at before.
-    /// </summary>
-    public void DPMToggle()
-    {
-        if (!dpmRobot.modeEnabled)
-        {
-            dpmRobot.modeEnabled = true;
-            enableDPMText.text = "Disable Driver Practice Mode";
-            lockPanel.SetActive(false);
-
-        }
-        else
-        {
-            if (configuring) UserMessageManager.Dispatch("You must close the configuration window first!", 5);
-            else
-            {
-                enableDPMText.text = "Enable Driver Practice Mode";
-                dpmRobot.displayTrajectories[0] = false;
-                dpmRobot.displayTrajectories[1] = false;
-                dpmRobot.modeEnabled = false;
-                lockPanel.SetActive(true);
-            }
-
-        }
-    }
-
-    /// <summary>
     /// Clears all the gamepieces sharing the same name as the ones that have been configured from the field.
     /// </summary>
     public void ClearGamepieces()
@@ -427,7 +399,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void HighlightIntake()
     {
-        dpmRobot.HighlightNode(dpmRobot.intakeNode[configuringIndex].name);
+        dpmRobot.HighlightNode(dpmRobot.intakeNode[configuringIndex]);
     }
 
     public void DefineRelease()
@@ -443,7 +415,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void HighlightRelease()
     {
-        dpmRobot.HighlightNode(dpmRobot.releaseNode[configuringIndex].name);
+        dpmRobot.HighlightNode(dpmRobot.releaseNode[configuringIndex]);
     }
 
     public void SetGamepieceSpawn()
@@ -562,23 +534,24 @@ public class DriverPracticeMode : MonoBehaviour {
         {
             if (Input.GetKeyDown(vKey))
             {
-                int index = mainState.activeRobot.controlIndex;
+                int index = mainState.ActiveRobot.ControlIndex;
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
                     {
-                        InputControl.setKey(Controls.buttons[index].pickupPrimary.name, vKey);
+                        Controls.buttons[index].pickupPrimary.primaryInput = Controls.customInputFromString(vKey.ToString());
                     }
-                    else if (settingControl == 2) InputControl.setKey(Controls.buttons[index].releasePrimary.name, vKey);
-                    else InputControl.setKey(Controls.buttons[index].spawnPrimary.name, vKey);
+                    else if (settingControl == 2) Controls.buttons[index].releasePrimary.primaryInput = Controls.customInputFromString(vKey.ToString());
+                    else Controls.buttons[index].spawnPrimary.primaryInput = Controls.customInputFromString(vKey.ToString());
                 }
                 else
                 {
-                    if (settingControl == 1) InputControl.setKey(Controls.buttons[index].pickupSecondary.name, vKey);
-                    else if (settingControl == 2) InputControl.setKey(Controls.buttons[index].releaseSecondary.name, vKey);
-                    else InputControl.setKey(Controls.buttons[index].spawnSecondary.name, vKey);
+                    if (settingControl == 1) Controls.buttons[index].pickupSecondary.primaryInput = Controls.customInputFromString(vKey.ToString());
+                    else if (settingControl == 2) Controls.buttons[index].releaseSecondary.primaryInput = Controls.customInputFromString(vKey.ToString());
+                    else Controls.buttons[index].spawnSecondary.primaryInput = Controls.customInputFromString(vKey.ToString());
                 }
                 settingControl = 0;
+                Controls.Save();
             }
         }
     }
@@ -614,18 +587,6 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmRobot.displayTrajectories[0] = false;
         dpmRobot.displayTrajectories[1] = false;
 
-        if (newRobot.modeEnabled)
-        {
-            enableDPMText.text = "Disable Driver Practice Mode";
-            lockPanel.SetActive(false);
-
-        }
-        else
-        { 
-            enableDPMText.text = "Enable Driver Practice Mode";
-            lockPanel.SetActive(true);
-        }
-
         UpdateDPMValues();
         dpmRobot = newRobot;
 
@@ -634,8 +595,15 @@ public class DriverPracticeMode : MonoBehaviour {
     private void InitializeTrajectories()
     {
         LineRenderer[] drawnTrajectory = new LineRenderer[2];
-        drawnTrajectory[0] = new GameObject("DrawnTrajectory1").AddComponent<LineRenderer>();
-        drawnTrajectory[1] = new GameObject("DrawnTrajectory2").AddComponent<LineRenderer>();
+
+        GameObject trajectory1 = new GameObject("DrawnTrajectory1");
+        GameObject trajectory2 = new GameObject("DrawnTrajectory2");
+
+        StateMachine.Instance.Link<MainState>(trajectory1);
+        StateMachine.Instance.Link<MainState>(trajectory2);
+
+        drawnTrajectory[0] = trajectory1.AddComponent<LineRenderer>();
+        drawnTrajectory[1] = trajectory2.AddComponent<LineRenderer>();
         foreach (LineRenderer line in drawnTrajectory)
         {
             line.startWidth = 0.2f;
