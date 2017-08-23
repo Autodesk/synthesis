@@ -81,8 +81,8 @@ public class MainMenu : MonoBehaviour
 
     public static bool fullscreen; //true if application is in fullscreen
     public static int resolutionsetting; //resolution setting index
-    private int[] xresolution = new int[8]; //arrays of resolution widths corresponding to index
-    private int[] yresolution = new int[8]; //arrays of resolution heights corresponding to index
+    private int[] xresolution = new int[9]; //arrays of resolution widths corresponding to index
+    private int[] yresolution = new int[9]; //arrays of resolution heights corresponding to index
 
     private Canvas canvas; //canvas component of this object--used for scaling user message manager to size
 
@@ -507,6 +507,7 @@ public class MainMenu : MonoBehaviour
     public void ApplyGraphics()
     {
         Screen.SetResolution(xresolution[resolutionsetting], yresolution[resolutionsetting], fullscreen);
+        PlayerPrefs.SetInt("fullscreen", (fullscreen ? 1 : 0));
         splashScreen.SetActive(true);
         StartCoroutine(HideSplashScreen(1));
         SwitchTabHome();
@@ -797,6 +798,7 @@ public class MainMenu : MonoBehaviour
         xresolution[5] = 1600;
         xresolution[6] = 1680;
         xresolution[7] = 1920;
+        xresolution[8] = Screen.currentResolution.width;
 
         yresolution[0] = 768;
         yresolution[1] = 720;
@@ -806,10 +808,11 @@ public class MainMenu : MonoBehaviour
         yresolution[5] = 900;
         yresolution[6] = 1050;
         yresolution[7] = 1080;
+        yresolution[8] = Screen.currentResolution.height;
 
-        fullscreen = false;
-        int width = Screen.currentResolution.width;
-        int height = Screen.currentResolution.height;
+        fullscreen = (PlayerPrefs.GetInt("fullscreen", 0) == 1);
+        int width = xresolution[8];
+        int height = yresolution[8];
         if (width == xresolution[0] && height == yresolution[0]) resolutionsetting = 0;
         else if (width == xresolution[1] && height == yresolution[1]) resolutionsetting = 1;
         else if (width == xresolution[2] && height == yresolution[2]) resolutionsetting = 2;
@@ -818,7 +821,7 @@ public class MainMenu : MonoBehaviour
         else if (width == xresolution[5] && height == yresolution[5]) resolutionsetting = 5;
         else if (width == xresolution[6] && height == yresolution[6]) resolutionsetting = 6;
         else if (width == xresolution[7] && height == yresolution[7]) resolutionsetting = 7;
-        else resolutionsetting = 0;
+        else resolutionsetting = 8;
     }
 
     /// <summary>
