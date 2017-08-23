@@ -20,7 +20,7 @@ public partial class SurfaceExporter
 
         public ExportPlan(SurfaceBody b, bool bestResolution, bool separateFaces)
         {
-            this.surf = b;
+            surf = b;
             this.bestResolution = bestResolution;
             this.separateFaces = separateFaces;
         }

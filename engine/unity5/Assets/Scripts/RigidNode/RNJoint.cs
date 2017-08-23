@@ -42,7 +42,7 @@ public partial class RigidNode : RigidNode_Base
                         BRaycastRobot robot = parent.MainObject.AddComponent<BRaycastRobot>();
                         robot.NumWheels = numWheels;
 
-                        if (MixAndMatchMode.isMixAndMatchMode)
+                        if (MixAndMatchMode.IsMixAndMatchMode)
                             robot.Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
                     }
 
@@ -57,6 +57,7 @@ public partial class RigidNode : RigidNode_Base
 
                     BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
                     Vector3 rAxis = rNode.axis.AsV3().normalized;
+                    rAxis.x *= -1f;
 
                     hc.axisInA = rAxis;
                     hc.axisInB = rAxis;

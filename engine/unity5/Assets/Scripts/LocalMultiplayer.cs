@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
 using System.Linq;
+using UnityEngine.Analytics;
 
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer
@@ -48,7 +49,7 @@ public class LocalMultiplayer : MonoBehaviour {
 	void Update () {
         if (mainState == null)
         {
-            mainState = ((MainState)StateMachine.Instance.CurrentState);
+            mainState = StateMachine.Instance.FindState<MainState>();
         }
     }
     
@@ -103,6 +104,12 @@ public class LocalMultiplayer : MonoBehaviour {
     /// </summary>
     public void AddRobot()
     {
+        if (SimUI.changeAnalytics)
+        {
+            Analytics.CustomEvent("Added Robot", new Dictionary<string, object>
+            {
+            });
+        }
         GameObject panel = GameObject.Find("RobotListPanel");
         string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
         if (Directory.Exists(directory))
@@ -116,6 +123,8 @@ public class LocalMultiplayer : MonoBehaviour {
         }
         ToggleAddRobotWindow();
         UpdateUI();
+
+        PlayerPrefs.SetInt("hasManipulator", 0); //0 for false, 1 for true
     }
 
     public void ToggleChangeRobotPanel()
@@ -146,7 +155,7 @@ public class LocalMultiplayer : MonoBehaviour {
     public void RemoveRobot()
     {
         mainState.RemoveRobot(activeIndex);
-        activeIndex = mainState.SpawnedRobots.IndexOf(mainState.activeRobot);
+        activeIndex = mainState.SpawnedRobots.IndexOf(mainState.ActiveRobot);
         GetComponent<DriverPracticeMode>().ChangeActiveRobot(activeIndex);
         UpdateUI();
     }
@@ -190,7 +199,7 @@ public class LocalMultiplayer : MonoBehaviour {
         highlight.transform.position = robotButtons[activeIndex].transform.position;
 
         Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ActiveRobotText")).First().GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
-        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ControlIndexDropdown")).First().GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
+        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ControlIndexDropdown")).First().GetComponent<Dropdown>().value = mainState.ActiveRobot.ControlIndex;
         // GameObject.Find("ActiveRobotText").GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
         //GameObject.Find("ControlIndexDropdown").GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
     }

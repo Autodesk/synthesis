@@ -58,8 +58,6 @@ public class MainMenu : MonoBehaviour
     private GameObject input; //The Input GUI Objects
 
     private GameObject settingsMode; //The InputManager Objects
-    //private GameObject tankMode;     //Tank Mode InputManager
-    private Text enableTankDriveText; //Enable + Disable tank drive text
     private Text errorText; // The text of the error message
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
@@ -197,6 +195,7 @@ public class MainMenu : MonoBehaviour
             simTab.SetActive(false);
             optionsTab.SetActive(true);
             settingsMode.SetActive(true);
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().GetLastSavedControls();
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
@@ -639,7 +638,6 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     void Start()
     {
-        
         FindAllGameObjects();
         splashScreen.SetActive(true); //Turns on the loading screen while initializing
         InitGraphicsSettings();
@@ -683,6 +681,57 @@ public class MainMenu : MonoBehaviour
         customroboton = false;
         ApplyGraphics();
 
+        //Checks if this is the first launch of the main scene.
+        if (AppModel.InitialLaunch)
+        {
+            AppModel.InitialLaunch = false;
+
+            //Loads robot and field directories from command line arguments if valid.
+            string[] args = Environment.GetCommandLineArgs();
+            bool robotDefined = false;
+            bool fieldDefined = false;
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i].ToLower())
+                {
+                    case "-robot":
+                        if (i < args.Length - 1)
+                        {
+                            string robotFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(robotFile);
+                            robotDirectory = dirInfo.Parent.FullName;
+                            PlayerPrefs.SetString("RobotDirectory", robotDirectory);
+                            simSelectedRobot = robotFile;
+                            simSelectedRobotName = dirInfo.Name;
+                            robotDefined = true;
+                        }
+                        break;
+                    case "-field":
+                        if (i < args.Length - 1)
+                        {
+                            string fieldFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(fieldFile);
+                            fieldDirectory = dirInfo.Parent.FullName;
+                            PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
+                            simSelectedField = fieldFile;
+                            simSelectedFieldName = dirInfo.Name;
+                            fieldDefined = true;
+                        }
+                        break;
+                }
+            }
+
+            //If command line arguments have been passed, start the simulator.
+            if (robotDefined && fieldDefined)
+            {
+                StartDefaultSim();
+                return;
+            }
+        }
+
         //This makes it so that if the user exits from the simulator, 
         //they are put into the panel where they can select a robot/field
         //In all other cases, users are welcomed with the main menu screen.
@@ -724,7 +773,6 @@ public class MainMenu : MonoBehaviour
         input = AuxFunctions.FindObject(gameObject, "Input");
 
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
-        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
         errorText = AuxFunctions.FindObject(errorScreen, "ErrorText").GetComponent<Text>();
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");

@@ -2,6 +2,7 @@
 
 using BulletSharp;
 using BulletSharp.Math;
+using BulletUnity;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,6 +26,7 @@ namespace Assets.Scripts.BUExtensions
         const float fwdFactor = 0.5f;// Original: 0.5f;
 
         WheelInfo[] wheelInfo = new WheelInfo[0];
+        float[] wheelSpeeds = new float[0];
 
         Vector3[] forwardWS = new Vector3[0];
         Vector3[] axle = new Vector3[0];
@@ -35,6 +37,11 @@ namespace Assets.Scripts.BUExtensions
         /// Controls how much sideways friction the wheels have when sliding.
         /// </summary>
         public float SlidingFriction { get; set; }
+
+        /// <summary>
+        /// Controls the maximum wheel angular velocity.
+        /// </summary>
+        public float MaxWheelAngularVelocity { get; set; }
 
         public Matrix ChassisWorldTransform
         {
@@ -70,9 +77,9 @@ namespace Assets.Scripts.BUExtensions
             get { return chassisBody; }
         }
 
-        public float SuspensionEffectiveMass { get; set; }
+        public float OverrideMass { get; set; }
 
-        public RigidBody FrictionEffectiveRigidBody { get; set; }
+        public RigidBody RootRigidBody { get; set; }
 
         IVehicleRaycaster vehicleRaycaster;
 
@@ -122,11 +129,12 @@ namespace Assets.Scripts.BUExtensions
         public RaycastRobot(VehicleTuning tuning, RigidBody chassis, IVehicleRaycaster raycaster)
         {
             chassisBody = chassis;
-            FrictionEffectiveRigidBody = chassis;
+            RootRigidBody = chassis;
             vehicleRaycaster = raycaster;
 
             SlidingFriction = 1.0f;
-            SuspensionEffectiveMass = 1.0f / chassis.InvMass;
+            MaxWheelAngularVelocity = 40f;
+            OverrideMass = 1.0f / chassis.InvMass;
         }
 
         public WheelInfo AddWheel(Vector3 connectionPointCS, Vector3 wheelDirectionCS0, Vector3 wheelAxleCS, float suspensionRestLength, float wheelRadius, VehicleTuning tuning, bool isFrontWheel)
@@ -149,6 +157,8 @@ namespace Assets.Scripts.BUExtensions
             Array.Resize<WheelInfo>(ref wheelInfo, wheelInfo.Length + 1);
             WheelInfo wheel = new WheelInfo(ci);
             wheelInfo[wheelInfo.Length - 1] = wheel;
+
+            Array.Resize<float>(ref wheelSpeeds, wheelInfo.Length);
 
             UpdateWheelTransformsWS(wheel, false);
             UpdateWheelTransform(NumWheels - 1, false);
@@ -230,6 +240,11 @@ namespace Assets.Scripts.BUExtensions
             Debug.Assert((index >= 0) && (index < NumWheels));
 
             return wheelInfo[index];
+        }
+
+        public float GetWheelAngularVelocity(int index)
+        {
+            return wheelSpeeds[index];
         }
 
         private float RayCast(WheelInfo wheel)
@@ -413,7 +428,7 @@ namespace Assets.Scripts.BUExtensions
                     Vector3.Cross(ref surfNormalWS, ref axle[i], out forwardWS[i]);
                     forwardWS[i].Normalize();
 
-                    ResolveSingleBilateral(FrictionEffectiveRigidBody, wheel.RaycastInfo.ContactPointWS,
+                    ResolveSingleBilateral(RootRigidBody, wheel.RaycastInfo.ContactPointWS,
                               groundObject, wheel.RaycastInfo.ContactPointWS,
                               0, axle[i], ref sideImpulse[i], timeStep);
 
@@ -432,9 +447,24 @@ namespace Assets.Scripts.BUExtensions
 
                 if (groundObject != null)
                 {
+                    Vector3 velocity = chassisBody.GetVelocityInLocalPoint(wheel.ChassisConnectionPointCS);
+                    Vector3 localVelocity = Vector3.TransformNormal(velocity, Matrix.Invert(chassisBody.WorldTransform.Basis));
+                    Vector3 forwardAxis = (UnityEngine.Quaternion.AngleAxis(90f, UnityEngine.Vector3.up) *
+                        wheel.WheelAxleCS.ToUnity() / (MathUtil.SIMD_PI * wheel.WheelsRadius)).ToBullet();
+
+                    float speed = Vector3.Dot(localVelocity, forwardAxis);
+
+                    wheelSpeeds[i] = speed;
+
                     if (wheel.EngineForce != 0.0f)
                     {
-                        rollingFriction = wheel.EngineForce * timeStep;
+                        //apply torque curves
+                        float engineForce = wheel.EngineForce;
+
+                        if (speed * engineForce > 0)
+                            engineForce *= 1 - (Math.Abs(speed) / MaxWheelAngularVelocity);
+
+                        rollingFriction = engineForce * timeStep;
                     }
                     else
                     {
@@ -573,7 +603,7 @@ namespace Assets.Scripts.BUExtensions
                     }
 
                     // RESULT
-                    wheel_info.WheelsSuspensionForce = force * SuspensionEffectiveMass;
+                    wheel_info.WheelsSuspensionForce = force * OverrideMass;
                     if (wheel_info.WheelsSuspensionForce < 0)
                     {
                         wheel_info.WheelsSuspensionForce = 0;

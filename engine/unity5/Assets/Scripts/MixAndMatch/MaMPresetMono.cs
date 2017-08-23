@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MaMPresetMono : MonoBehaviour {
     public GameObject preset;
@@ -22,7 +23,6 @@ public class MaMPresetMono : MonoBehaviour {
     {
         GameObject clone = Instantiate(preset, parent);
         clone.GetComponent<RectTransform>().anchoredPosition = positions[position];
-
         return clone;
     }
 	// Update is called once per frame

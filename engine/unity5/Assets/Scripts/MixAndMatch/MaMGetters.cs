@@ -34,19 +34,44 @@ public class MaMGetters : MonoBehaviour {
         switch (manipulatorID)
         {
             case 0: //No manipulator
-                MixAndMatchMode.hasManipulator = false;
+                MixAndMatchMode.HasManipulator = false;
                 PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
                 break;
             case 1: //SyntheClaw
-                MixAndMatchMode.hasManipulator = true;
+                MixAndMatchMode.HasManipulator = true;
                 PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
             case 2: //SyntheShot
-                MixAndMatchMode.hasManipulator = true;
+                MixAndMatchMode.HasManipulator = true;
                 PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheShot");
+            case 3: //Lift
+                MixAndMatchMode.HasManipulator = true;
+                PlayerPrefs.SetInt("hasManipulator", 1);
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheLift");
         }
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
+    }
+
+    ///<summary>
+    ///Returns the string destination path of a wheel
+    /// </summary>
+    public string GetWheel(int wheelID)
+    {
+        switch (wheelID)
+        {
+            case 0: //traction wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Traction");
+            case 1: //colson wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson");
+            case 2: //omni wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Omni");
+            case 3: //pnemuatic wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Pneumatic");
+
+        }
+
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson");
     }
 
     ///<summary> 
@@ -84,6 +109,25 @@ public class MaMGetters : MonoBehaviour {
                 return 0.42f;
             case 3: //pneumatic wheel
                 return 0.51f;
+        }
+        return 1.0f;
+    }
+
+    ///<summary>
+    ///Returns the wheel radius associated with a wheel. Radius are taken off Vex's website and converted to meters.
+    /// </summary>
+    public float GetWheelRadius(int wheelID)
+    {
+        switch (wheelID)
+        {
+            case 0: //traction wheel
+                return 0.0762f;
+            case 1: //colson wheel
+                return 0.0508f;
+            case 2: //omni wheel
+                return 0.0762f;
+            case 3: //pneumatic wheel
+                return 0.1016f;
         }
         return 1.0f;
     }

@@ -1,28 +1,29 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.FSM;
 
 /// <summary>
 /// This class handles every sensor-related GUI elements in Unity
 /// </summary>
 class SensorManagerGUI : MonoBehaviour
 {
-    SimUI simUI;
+    Toolkit toolkit;
     GameObject canvas;
     SensorBase currentSensor;
     SensorManager sensorManager;
     DynamicCamera.CameraState preConfigState;
     DynamicCamera dynamicCamera;
     RobotCameraGUI robotCameraGUI;
+    MainState main;
 
-    GameObject configureSensorButton;
     GameObject sensorOptionPanel;
     GameObject sensorTypePanel;
     GameObject cancelOptionButton;
     GameObject addSensorButton;
     GameObject selectExistingButton;
     GameObject sensorOptionToolTip;
-
+    
     GameObject addUltrasonicButton;
     GameObject addBeamBreakerButton;
     GameObject addGyroButton;
@@ -41,6 +42,7 @@ class SensorManagerGUI : MonoBehaviour
     GameObject editRangeButton;
     GameObject showRangeButton;
     GameObject RangeEntry;
+    Text rangeUnit;
 
     GameObject showSensorButton;
     GameObject sensorConfigurationModeButton;
@@ -73,6 +75,13 @@ class SensorManagerGUI : MonoBehaviour
     //A list of all output panels instantiated
     private List<GameObject> sensorOutputPanels = new List<GameObject>();
 
+    /// <summary>
+    /// Link the sensor GUI to main state
+    /// </summary>
+    private void Awake()
+    {
+        StateMachine.Instance.Link<MainState>(this);
+    }
     private void Start()
     {
         FindElements();
@@ -80,6 +89,10 @@ class SensorManagerGUI : MonoBehaviour
 
     private void Update()
     {
+        if(main == null)
+        {
+            main = StateMachine.Instance.FindState<MainState>();
+        }
         //Find the dynamic camera
         if (dynamicCamera == null)
         {
@@ -101,13 +114,12 @@ class SensorManagerGUI : MonoBehaviour
     private void FindElements()
     {
         canvas = GameObject.Find("Canvas");
-        simUI = gameObject.GetComponent<SimUI>();
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+        toolkit = GameObject.Find("StateMachine").GetComponent<Toolkit>();
 
         sensorOptionPanel = AuxFunctions.FindObject(canvas, "SensorOptionPanel");
         sensorTypePanel = AuxFunctions.FindObject(canvas, "SensorTypePanel");
-        configureSensorButton = AuxFunctions.FindObject(canvas, "ConfigureSensorButton");
 
         //For sensor option panel
         addSensorButton = AuxFunctions.FindObject(sensorOptionPanel, "AddNewSensor");
@@ -143,6 +155,7 @@ class SensorManagerGUI : MonoBehaviour
         RangeEntry = AuxFunctions.FindObject(sensorRangePanel, "RangeEntry");
         showRangeButton = AuxFunctions.FindObject(configureSensorPanel, "ShowSensorRangeButton");
         editRangeButton = AuxFunctions.FindObject(sensorRangePanel, "EditButton");
+        rangeUnit = AuxFunctions.FindObject(sensorRangePanel, "RangeUnit").GetComponent<Text>();
 
         lockPositionButton = AuxFunctions.FindObject(configureSensorPanel, "LockPositionButton");
         lockAngleButton = AuxFunctions.FindObject(configureSensorPanel, "LockAngleButton");
@@ -151,7 +164,7 @@ class SensorManagerGUI : MonoBehaviour
         showSensorButton = AuxFunctions.FindObject(canvas, "ShowOutputButton");
         sensorOutputPanel = AuxFunctions.FindObject(canvas, "SensorOutputBorder");
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
-
+        
     }
 
     #region Sensor Option Panel
@@ -162,6 +175,7 @@ class SensorManagerGUI : MonoBehaviour
     {
         //Deal with UI conflicts between robot camera & sensors
         robotCameraGUI.EndProcesses();
+        toolkit.EndProcesses(true);
         isChoosingOption = !isChoosingOption;
         sensorOptionPanel.SetActive(isChoosingOption);
         if (isChoosingOption)
@@ -185,6 +199,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorManager.SelectingNode = isAddingSensor;
         selectExistingButton.SetActive(!isAddingSensor);
         cancelOptionButton.SetActive(isAddingSensor);
+        cancelOptionButton.transform.position = selectExistingButton.transform.position;
         sensorOptionToolTip.SetActive(isAddingSensor);
 
         if (isAddingSensor)
@@ -223,6 +238,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorManager.SelectingSensor = isSelectingSensor;
         addSensorButton.SetActive(!isSelectingSensor);
         cancelOptionButton.SetActive(isSelectingSensor);
+        cancelOptionButton.transform.position = addSensorButton.transform.position;
         sensorOptionToolTip.SetActive(isSelectingSensor);
 
         if (isSelectingSensor)
@@ -325,6 +341,7 @@ class SensorManagerGUI : MonoBehaviour
         addBeamBreakerButton.SetActive(!isAddingUltrasonic);
         addGyroButton.SetActive(!isAddingUltrasonic);
         cancelTypeButton.SetActive(isAddingUltrasonic);
+        cancelTypeButton.transform.position = addBeamBreakerButton.transform.position;
         if (isAddingUltrasonic)
         {
             addUltrasonicButton.GetComponentInChildren<Text>().text = "Confirm";
@@ -350,6 +367,7 @@ class SensorManagerGUI : MonoBehaviour
         addUltrasonicButton.SetActive(!isAddingBeamBreaker);
         addGyroButton.SetActive(!isAddingBeamBreaker);
         cancelTypeButton.SetActive(isAddingBeamBreaker);
+        cancelTypeButton.transform.position = addGyroButton.transform.position;
         if (isAddingBeamBreaker)
         {
             addBeamBreakerButton.GetComponentInChildren<Text>().text = "Confirm";
@@ -373,6 +391,7 @@ class SensorManagerGUI : MonoBehaviour
         addUltrasonicButton.SetActive(!isAddingGyro);
         addBeamBreakerButton.SetActive(!isAddingGyro);
         cancelTypeButton.SetActive(isAddingGyro);
+        cancelTypeButton.transform.position = addBeamBreakerButton.transform.position;
         if (isAddingGyro)
         {
             addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
@@ -600,6 +619,8 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void UpdateSensorRangePanel()
     {
+        if (main.IsMetric) rangeUnit.text = "Range (meters)";
+        else rangeUnit.text = "Range (feet)";
         if (!isEditingRange)
         {
             RangeEntry.GetComponent<InputField>().text = currentSensor.GetSensorRange().ToString();
@@ -614,7 +635,7 @@ class SensorManagerGUI : MonoBehaviour
         float temp = 0;
         if ((float.TryParse(RangeEntry.GetComponent<InputField>().text, out temp) && temp >= 0))
         {
-            currentSensor.SetSensorRange(temp);
+            currentSensor.SetSensorRange(temp, true);
         }
     }
 
@@ -816,6 +837,7 @@ class SensorManagerGUI : MonoBehaviour
     }
     #endregion
 
+    #region Sensor Display
     /// <summary>
     /// Show all sensors temporarily
     /// </summary>
@@ -837,6 +859,8 @@ class SensorManagerGUI : MonoBehaviour
             sensor.GetComponent<SensorBase>().SyncVisibility();
         }
     }
+    #endregion
+
     /// <summary>
     /// Close all window related to adding/configuring sensor, also called in SimUI
     /// </summary>
@@ -854,9 +878,9 @@ class SensorManagerGUI : MonoBehaviour
         CancelTypeSelection();
         ResetConfigurationWindow();
         HideSensorOutput();
-        //configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         selectedNode = null;
 
+        //Switch back to the original camera state
         if (preConfigState != null)
         {
             dynamicCamera.SwitchToState(preConfigState);

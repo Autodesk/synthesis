@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{52DC911D-AD5D-4D01-9FC1-22AAADA97740}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BXDSim</RootNamespace>
+    <AssemblyName>SimulatorAPI</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IO\BinaryArrayIO.cs" />
+    <Compile Include="IO\BXDA\BXDAMesh.cs" />
+    <Compile Include="IO\BXDA\BXDAReader_v0.cs" />
+    <Compile Include="IO\BXDF\BXDFProperties.cs" />
+    <Compile Include="IO\BXDF\BXDFReader_2_2.cs" />
+    <Compile Include="IO\BXDIO.cs" />
+    <Compile Include="IO\BXDJ\BXDJReader_2_0.cs" />
+    <Compile Include="IO\BinaryRWObject.cs" />
+    <Compile Include="IO\IOUtilities.cs" />
+    <Compile Include="Joints\BallJoint_Base.cs" />
+    <Compile Include="Joints\CylindricalJoint_Base.cs" />
+    <Compile Include="Joints\Driver\ElevatorDriverMeta.cs" />
+    <Compile Include="Joints\Driver\PneumaticDriverMeta.cs" />
+    <Compile Include="Joints\Driver\JointDriverMeta.cs" />
+    <Compile Include="Joints\Driver\JointDriverType.cs" />
+    <Compile Include="Joints\Driver\WheelDriverMeta.cs" />
+    <Compile Include="Joints\LinearDOF.cs" />
+    <Compile Include="Joints\PlanarJoint_Base.cs" />
+    <Compile Include="Joints\Driver\JointDriver.cs" />
+    <Compile Include="Joints\LinearJoint_Base.cs" />
+    <Compile Include="Joints\AngularDOF.cs" />
+    <Compile Include="Joints\RotationalJoint_Base.cs" />
+    <Compile Include="Joints\SkeletalJoint_Base.cs" />
+    <Compile Include="Math\BXDBox.cs" />
+    <Compile Include="Math\BXDQuaternion.cs" />
+    <Compile Include="Math\BXDVector3.cs" />
+    <Compile Include="Math\PhysicalProperties.cs" />
+    <Compile Include="Math\Polynomial.cs" />
+    <Compile Include="ModelTree\FieldDefinition.cs" />
+    <Compile Include="ModelTree\FieldNodeGroup.cs" />
+    <Compile Include="ModelTree\FieldNode.cs" />
+    <Compile Include="ModelTree\PropertySet.cs" />
+    <Compile Include="ModelTree\RigidNode_Base.cs" />
+    <Compile Include="IO\BXDJ\BXDJSkeleton.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Joints\Sensors\RobotSensor.cs" />
+    <Compile Include="Utilities\ArrayUtilities.cs" />
+    <Compile Include="Utilities\FileUtilities.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

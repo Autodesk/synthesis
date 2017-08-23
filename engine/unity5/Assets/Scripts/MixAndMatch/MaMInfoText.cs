@@ -41,7 +41,7 @@ public class MaMInfoText : MonoBehaviour {
                 txt.text = "Default Drive\n \nNormal drive train  ";
                 break;
             case 1: //Mecanum Drive       
-                txt.text = "Mecanum Drive \n\nAllows robot to strafe from horizontally. \nUse left/right arrow keys to strafe. Use O and P to rotate.";
+                txt.text = "Mecanum Drive \n\nAllows robot to strafe from horizontally. \nUse inputs for PWM 2 for strafing";
                 break;
             case 2: //Swerve Drive           
                 txt.text = "Swerve Drive \n\nAllows wheels to swivel. \nUse controls for PWM port 2 to swivel wheels"; //Check if it is PWM port 2
@@ -67,6 +67,9 @@ public class MaMInfoText : MonoBehaviour {
                 break;
             case 2: //syntheshot
                 txt.text = "Syntheshot \n\nIdeal for shooting projectiles";
+                break;
+            case 3: //
+                txt.text = "Lift \n\nIdeal for picking up and stacking game elements";
                 break;
         }
 

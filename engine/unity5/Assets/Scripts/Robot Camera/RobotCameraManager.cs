@@ -112,7 +112,7 @@ public class RobotCameraManager : MonoBehaviour
         newCamera.AddComponent<Camera>();
 
         newCamera.transform.parent = anchor;
-        newCamera.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+        newCamera.transform.localPosition = new Vector3(0f, 0f, 0f);
         newCamera.transform.localRotation = Quaternion.identity;
 
         RobotCamera configuration = newCamera.AddComponent<RobotCamera>();
@@ -279,7 +279,6 @@ public class RobotCameraManager : MonoBehaviour
 
                     SelectedNode = selectedObject;
                     ChangeNodeColors(SelectedNode, selectedColor, selectedColors);
-                    Debug.Log(selectedColors.Count);
                     UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 5);
                 }
                 
@@ -308,7 +307,6 @@ public class RobotCameraManager : MonoBehaviour
     {
         CurrentCamera.transform.parent = SelectedNode.transform;
         SelectingNode = false;
-        Debug.Log("Stored color count " + selectedColors.Count);
         ResetNodeColors();
         SelectedNode = null;
     }
