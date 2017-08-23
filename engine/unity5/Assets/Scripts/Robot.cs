@@ -93,8 +93,6 @@ public class Robot : MonoBehaviour
             return;
         }
 
-        if (!rigidBody.GetCollisionObject().IsActive)
-            rigidBody.GetCollisionObject().Activate();
         if (!IsResetting)
         {
             if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
