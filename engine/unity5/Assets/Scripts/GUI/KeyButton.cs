@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-//Adapted from: https://github.com/Gris87/InputControl
+//=========================================================================================
+//                                      KeyButton.cs
+// Description: OnGUI() script with functions for CreateButton.cs
+// Main Content: Various functions to assist in generating control buttons and player lists.
+// Adapted from: https://github.com/Gris87/InputControl
+//=========================================================================================
 
 public class KeyButton : MonoBehaviour
 {
@@ -79,10 +84,10 @@ public class KeyButton : MonoBehaviour
     /// </summary>
     public void OnClick()
     {
-        //if (selectedButton != null)
-        //{
-        //    selectedButton.UpdateText();
-        //}
+        if (selectedButton != null)
+        {
+            selectedButton.UpdateText();
+        }
 
         selectedButton = this;
 
@@ -111,9 +116,6 @@ public class KeyButton : MonoBehaviour
         }
 
         UpdateText();
-
-        //Enable this for auto-saving.
-        //Controls.Save();
 
         selectedButton = null;
     }

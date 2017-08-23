@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 //=========================================================================================
 //                                      Player Class
-// Description: Controls the individual player's controls through KeyMapping Lists and Maps
+// Description: Controls the individual player's controls by generating individual lists
+///              through <see cref="KeyMapping"/>KeyMapping Lists and Maps
 // Adapted from: https://github.com/Gris87/InputControl
 //=========================================================================================
 public class Player
