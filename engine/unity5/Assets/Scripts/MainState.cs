@@ -279,6 +279,12 @@ public class MainState : SimState
         sensorManager.RemoveSensorsFromRobot(ActiveRobot);
         sensorManagerGUI.ShiftOutputPanels();
         sensorManagerGUI.EndProcesses();
+        if (ActiveRobot.RobotHasManipulator == 1)
+        {
+            ActiveRobot.DeleteManipulatorNodes();
+            ActiveRobot.RobotHasManipulator = 0;
+            ActiveRobot.RobotIsMixAndMatch = 0;
+        }
         return ActiveRobot.InitializeRobot(directory, this);
     }
 
