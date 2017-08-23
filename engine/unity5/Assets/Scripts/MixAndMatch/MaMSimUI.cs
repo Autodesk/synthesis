@@ -11,13 +11,7 @@ public class MaMSimUI : MonoBehaviour {
     GameObject canvas;
 
     GameObject mixAndMatchPanel;
-
-    GameObject wheelPanel;
-    GameObject driveBasePanel;
-    GameObject manipulatorPanel;
-
-    GameObject changeRobotPanel;
-    GameObject addRobotPanel;
+    GameObject multiplayerPanel;
 
     private SimUI simUI;
 
@@ -44,13 +38,7 @@ public class MaMSimUI : MonoBehaviour {
         canvas = GameObject.Find("Canvas");
 
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
-        wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
-        driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
-        manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
-
-        addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
-
-        changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
+        multiplayerPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
 
         simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
     }
@@ -64,7 +52,24 @@ public class MaMSimUI : MonoBehaviour {
         else
         {
             simUI.EndOtherProcesses();
+            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is true ,1 is false
             mixAndMatchPanel.SetActive(true);
+        }
+    }
+
+    public void ToggleMaMInMultiplayer()
+    {
+        if (mixAndMatchPanel.activeSelf)
+        {
+            mixAndMatchPanel.SetActive(false);
+            multiplayerPanel.SetActive(true);
+        }
+        else
+        {
+            simUI.EndOtherProcesses();
+            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is true ,1 is false
+            mixAndMatchPanel.SetActive(true);
+            multiplayerPanel.SetActive(true);
         }
     }
 }

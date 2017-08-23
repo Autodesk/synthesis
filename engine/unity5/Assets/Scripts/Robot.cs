@@ -76,7 +76,6 @@ public class Robot : MonoBehaviour
     void Start()
     {
         RobotHasManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
-        RobotIsMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); //0 is false, 1 is true
         StateMachine.Instance.Link<MainState>(this);
     }
 
@@ -132,7 +131,6 @@ public class Robot : MonoBehaviour
 
             if (RobotHasManipulator == 1)
             {
-                Debug.Log("Manipulator should be moving");
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, ControlIndex, MixAndMatchMode.GetMecanum());
             }
         }
