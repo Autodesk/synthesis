@@ -115,7 +115,10 @@ public class Robot : MonoBehaviour
                 EndReset();
             }
         }
-
+        else if (!rigidBody.GetCollisionObject().IsActive)
+        {
+            rigidBody.GetCollisionObject().Activate();
+        }
     }
 
     /// <summary>
@@ -397,6 +400,11 @@ public class Robot : MonoBehaviour
     /// <param name="resetTransform"></param>
     public void BeginReset()
     {
+        BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
+
+        if (rigidBody != null && !rigidBody.GetCollisionObject().IsActive)
+            rigidBody.GetCollisionObject().Activate();
+
         if (!mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
         {
             Debug.Log(mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState);
