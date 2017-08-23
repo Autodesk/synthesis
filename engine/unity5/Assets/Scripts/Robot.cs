@@ -59,6 +59,7 @@ public class Robot : MonoBehaviour
     UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
 
     public int RobotHasManipulator;
+    public int RobotIsMixAndMatch;
 
     private DynamicCamera cam;
 
@@ -75,6 +76,7 @@ public class Robot : MonoBehaviour
     void Start()
     {
         RobotHasManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
+        RobotIsMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); //0 is false, 1 is true
         StateMachine.Instance.Link<MainState>(this);
     }
 
@@ -129,10 +131,8 @@ public class Robot : MonoBehaviour
 
             if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, ControlIndex, MixAndMatchMode.GetMecanum());
             else DriveJoints.UpdateAllMotors(rootNode, emptyDIO, ControlIndex, MixAndMatchMode.GetMecanum());
-            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); //0 is false, 1 is true
 
-            //If the robot is in Mix and Match mode and has a manipulator, update the manipulator motors
-            if (RobotHasManipulator == 1 && isMixAndMatch == 1)
+            if (RobotHasManipulator == 1)
             {
                 Debug.Log("Manipulator should be moving");
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, ControlIndex, MixAndMatchMode.GetMecanum());
@@ -172,6 +172,8 @@ public class Robot : MonoBehaviour
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sensorManager.ResetSensorLists();
 
+        
+
         //Removes Driver Practice component if it exists
         if (dpmRobot != null)
         {
@@ -197,10 +199,10 @@ public class Robot : MonoBehaviour
         //Initializes the wheel variables
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
-        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch");
+ 
 
         //Initializes the nodes and creates joints for the robot
-        if (isMixAndMatch == 1 && !MixAndMatchMode.IsMecanum) //If the user is in MaM and the robot they select is not mecanum, create the nodes and replace the wheel meshes to match those selected
+        if (RobotIsMixAndMatch == 1 && !MixAndMatchMode.IsMecanum) //If the user is in MaM and the robot they select is not mecanum, create the nodes and replace the wheel meshes to match those selected
         {
             //Load Node_0, the base of the robot
             RigidNode node = (RigidNode)nodes[0];
@@ -324,7 +326,6 @@ public class Robot : MonoBehaviour
 
         #endregion
 
-
         //Get the offset from the first node to the robot for new robot start position calculation
         //This line is CRITICAL to new reset position accuracy! DON'T DELETE IT!
         nodeToRobotOffset = gameObject.transform.GetChild(0).localPosition - robotStartPosition;
@@ -425,8 +426,8 @@ public class Robot : MonoBehaviour
                 r.WorldTransform = newTransform;
             }
 
-            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-            if (RobotHasManipulator == 1 && isMixAndMatch == 1)
+         
+            if (RobotHasManipulator == 1 && RobotIsMixAndMatch == 1)
             {
                 foreach (RigidNode n in manipulatorNode.ListAllNodes())
                 {
@@ -521,8 +522,7 @@ public class Robot : MonoBehaviour
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
 
-        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-        if (RobotHasManipulator == 1 && isMixAndMatch == 1)
+        if (RobotHasManipulator == 1 && RobotIsMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
@@ -560,8 +560,7 @@ public class Robot : MonoBehaviour
             r.WorldTransform = newTransform;
         }
 
-        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-        if (RobotHasManipulator == 1 && isMixAndMatch == 1)
+        if (RobotHasManipulator == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
@@ -611,8 +610,7 @@ public class Robot : MonoBehaviour
             r.WorldTransform = currentTransform;
         }
 
-        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-        if (RobotHasManipulator == 1 && isMixAndMatch == 1)
+        if (RobotHasManipulator == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {

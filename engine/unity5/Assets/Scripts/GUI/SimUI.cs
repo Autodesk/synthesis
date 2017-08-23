@@ -29,10 +29,6 @@ public class SimUI : MonoBehaviour
     GameObject freeroamCameraWindow;
     GameObject spawnpointWindow;
 
-    GameObject wheelPanel;
-    GameObject driveBasePanel;
-    GameObject manipulatorPanel;
-
     GameObject changeRobotPanel;
     GameObject robotListPanel;
     GameObject changeFieldPanel;
@@ -49,12 +45,9 @@ public class SimUI : MonoBehaviour
     GameObject analyticsPanel;
 
     GameObject mixAndMatchPanel;
+    GameObject maMOrExPanel;
 
     public static bool changeAnalytics = true;
-    public bool swapWindowOn = false; //if the swap window is active
-    public bool wheelPanelOn = false; //if the wheel panel is active
-    public bool driveBasePanelOn = false; //if the drive base panel is active
-    public bool manipulatorPanelOn = false; //if the manipulator panel is active
 
     GameObject exitPanel;
 
@@ -128,10 +121,6 @@ public class SimUI : MonoBehaviour
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
 
-        wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
-        driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
-        manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
-
         addRobotPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
@@ -158,6 +147,7 @@ public class SimUI : MonoBehaviour
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
+        maMOrExPanel = AuxFunctions.FindObject(canvas, "MaMOrExPanel");
     }
 
     private void UpdateWindows()
@@ -192,6 +182,7 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
             PlayerPrefs.Save();
 
             if (changeAnalytics) //for analytics tracking
@@ -205,6 +196,7 @@ public class SimUI : MonoBehaviour
             sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
             main.ChangeRobot(directory);
+            
         }
         else
         {
@@ -226,7 +218,6 @@ public class SimUI : MonoBehaviour
         if (robotHasManipulator == 1) //0 is false, 1 is true
         {
             main.DeleteManipulatorNodes();
-
         }
 
         //If the new robot has a manipulator, load the manipulator
@@ -622,6 +613,7 @@ public class SimUI : MonoBehaviour
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         mixAndMatchPanel.SetActive(false);
+        maMOrExPanel.SetActive(false);
         analyticsPanel.SetActive(false);
         inputManagerPanel.SetActive(false);
         ToggleHotKeys(false);
