@@ -3356,8 +3356,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -216, y: -95.76198}
-  m_SizeDelta: {x: 269, y: 42}
+  m_AnchoredPosition: {x: -61.5, y: -95.76201}
+  m_SizeDelta: {x: 115, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &273640680
 MonoBehaviour:
@@ -5185,8 +5185,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -499.80002, y: -95.76196}
-  m_SizeDelta: {x: 276, y: 42}
+  m_AnchoredPosition: {x: -564.69995, y: -95.762054}
+  m_SizeDelta: {x: 223, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &509204076
 MonoBehaviour:
@@ -7691,7 +7691,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'BACKSPACE: Sets controls to none.'
+  m_Text: 'BACKSPACE: Sets controls to none'
 --- !u!222 &721602982
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7800,8 +7800,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: a9cc08d292007b54ca0ce5eb6ec48860, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -8728,8 +8728,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 11.2675705, y: 314}
-  m_SizeDelta: {x: 335.19995, y: 106}
+  m_AnchoredPosition: {x: 11.2675705, y: 314.06}
+  m_SizeDelta: {x: 335, y: 106.14}
   m_Pivot: {x: 0.53958094, y: 1.3996099}
 --- !u!114 &815203052
 MonoBehaviour:
