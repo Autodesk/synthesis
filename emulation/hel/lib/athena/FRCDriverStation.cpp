@@ -426,6 +426,7 @@ int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes) {
 }
 
 int32_t HAL_GetJoystickPOVs(int32_t joystickNum, HAL_JoystickPOVs* povs) {
+  povs->count = 0;
   /*return FRC_NetworkCommunication_getJoystickPOVs(
       joystickNum, reinterpret_cast<JoystickPOV_t*>(povs),
       HAL_kMaxJoystickPOVs);*/
@@ -457,6 +458,12 @@ int32_t HAL_GetJoystickButtons(int32_t joystickNum,
  */
 int32_t HAL_GetJoystickDescriptor(int32_t joystickNum,
                                   HAL_JoystickDescriptor* desc) {
+  desc->isXbox = 0;
+  desc->type = std::numeric_limits<uint8_t>::max();
+  desc->name[0] = '\0';
+  desc->axisCount = lastDataPacket.joysticks[joystickNum].num_axes;
+  desc->buttonCount = lastDataPacket.joysticks[joystickNum].num_buttons;
+  desc->povCount = 0;
   /*desc->isXbox = 0;
   desc->type = std::numeric_limits<uint8_t>::max();
   desc->name[0] = '\0';
