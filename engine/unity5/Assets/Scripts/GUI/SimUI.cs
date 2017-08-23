@@ -251,6 +251,7 @@ public class SimUI : MonoBehaviour
         else
         {
             EndOtherProcesses();
+            PlayerPrefs.SetInt("mixAndMatch", 0); //0 is false, 1 is true
             changeRobotPanel.SetActive(true);
             robotListPanel.SetActive(true);
         }

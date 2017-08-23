@@ -64,6 +64,7 @@ public class MaMSimUI : MonoBehaviour {
         else
         {
             simUI.EndOtherProcesses();
+            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is true ,1 is false
             mixAndMatchPanel.SetActive(true);
         }
     }
