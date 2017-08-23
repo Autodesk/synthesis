@@ -4,16 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Inventor;
-using System.Collections;
-using System.Diagnostics;
 using ConvexLibraryWrapper;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
 
 /// <summary>
 /// Computes and simplifies convex hulls for BXDA meshes.

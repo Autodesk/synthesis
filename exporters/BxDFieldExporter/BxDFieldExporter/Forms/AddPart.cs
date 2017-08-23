@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using BxDFieldExporter;
 using Inventor;
 
 namespace BxDFieldExporter
@@ -60,8 +52,6 @@ namespace BxDFieldExporter
 
         private void CancelButton_onClick(object sender, EventArgs e)
         {
-            mAddInInterface.SetCancel(true);
-            StandardAddInServer.task.TrySetResult(true);
             Close();
         }
 
@@ -94,6 +84,12 @@ namespace BxDFieldExporter
         private void okButton_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void AddPart_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            mAddInInterface.SetCancel(true);
+            StandardAddInServer.task.TrySetResult(true);
         }
     }
 }

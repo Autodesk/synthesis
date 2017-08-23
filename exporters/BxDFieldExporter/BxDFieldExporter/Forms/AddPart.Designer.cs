@@ -102,10 +102,12 @@
             this.Controls.Add(this.Label);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "AddPart";
             this.Text = "Add Part";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddPart_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 /// <summary>
 /// Interface for objects that can read/write binary data to files
@@ -41,6 +38,7 @@ public static class BinaryRWObjectExtensions
     /// <param name="path">Output path</param>
     public static void WriteToFile(this BinaryRWObject obj, String path)
     {
+        if (File.Exists(path)) File.Delete(path);
         using(BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate)))
         {
             writer.Write(obj);

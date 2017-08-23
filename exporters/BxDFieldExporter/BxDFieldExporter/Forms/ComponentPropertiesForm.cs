@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Inventor;
 
-namespace BxDFieldExporter {
+namespace BxDFieldExporter
+{
     // form that allows the user to enter properties for the field types
     public partial class ComponentPropertiesForm : Form {
         //keeps track of whether mass is in kg or lb, kg is true, lb is false
