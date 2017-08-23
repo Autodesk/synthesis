@@ -474,6 +474,9 @@ namespace Assets.Scripts.BUExtensions
                             engineForce *= 1 - (Math.Abs(speed) / MaxWheelAngularVelocity);
 
                         rollingFriction = engineForce * timeStep;
+
+                        if (!RootRigidBody.IsActive)
+                            RootRigidBody.Activate();
                     }
                     else
                     {
