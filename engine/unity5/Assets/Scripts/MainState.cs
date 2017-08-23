@@ -280,7 +280,7 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory"></param>
     /// <returns>whether the process was successful</returns>
-    public bool ChangeRobot(string directory)
+    public bool ChangeRobot(string directory, int isMixAndMatch)
     {
         sensorManager.RemoveSensorsFromRobot(ActiveRobot);
         sensorManagerGUI.ShiftOutputPanels();
@@ -289,8 +289,9 @@ public class MainState : SimState
         {
             ActiveRobot.DeleteManipulatorNodes();
             ActiveRobot.RobotHasManipulator = 0;
-            ActiveRobot.RobotIsMixAndMatch = 0;
         }
+
+        ActiveRobot.RobotIsMixAndMatch = isMixAndMatch;
         return ActiveRobot.InitializeRobot(directory, this);
     }
 
