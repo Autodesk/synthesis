@@ -320,12 +320,12 @@ public class Controls
         //Other Controls
         buttons[0].resetRobot = InputControl.setKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1), false);
         buttons[0].cameraToggle = InputControl.setKey("1: Camera Toggle", PlayerOneIndex, KeyCode.C, new JoystickInput(JoystickButton.Button7, Joystick.Joystick1), false);
-        buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
-        buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
-        buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
-        buttons[0].pickupSecondary = InputControl.setKey("1: Pick Up Secondary Gamepiece", PlayerOneIndex, KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
-        buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
-        buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
+        buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
+        buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
+        buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.LeftBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
+        buttons[0].pickupSecondary = InputControl.setKey("1: Pick Up Secondary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
+        buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
+        buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.RightBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
 
         //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[0].horizontal = InputControl.setAxis("1: Joystick 1 Axis 2", PlayerOneIndex, buttons[0].left, buttons[0].right, false);
@@ -572,12 +572,12 @@ public class Controls
         //Other Controls
         buttons[0].resetRobot = InputControl.setKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1), true);
         buttons[0].cameraToggle = InputControl.setKey("1: Camera Toggle", PlayerOneIndex, KeyCode.C, new JoystickInput(JoystickButton.Button7, Joystick.Joystick1), true);
-        buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
-        buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
-        buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
-        buttons[0].pickupSecondary = InputControl.setKey("1: Pick Up Secondary Gamepiece", PlayerOneIndex, KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
-        buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
-        buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
+        buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
+        buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
+        buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.LeftBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
+        buttons[0].pickupSecondary = InputControl.setKey("1: Pick Up Secondary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
+        buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
+        buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.RightBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
 
         //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[0].tankLeftAxes = InputControl.setAxis("1: Joystick 1 Axis 9", PlayerOneIndex, buttons[0].tankBackLeft, buttons[0].tankFrontLeft, true);
