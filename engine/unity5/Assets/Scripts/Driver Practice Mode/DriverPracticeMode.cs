@@ -551,6 +551,7 @@ public class DriverPracticeMode : MonoBehaviour {
                     else Controls.buttons[index].spawnSecondary.primaryInput = Controls.customInputFromString(vKey.ToString());
                 }
                 settingControl = 0;
+                Controls.Save();
             }
         }
     }

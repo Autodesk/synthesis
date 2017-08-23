@@ -31817,7 +31817,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1053024465
 RectTransform:
   m_ObjectHideFlags: 0
@@ -32378,7 +32378,6 @@ MonoBehaviour:
   keyNamePrefab: {fileID: 162476, guid: 490f8e896bf73924c80d01f7f15856d3, type: 2}
   keyButtonsPrefab: {fileID: 1333336039312162, guid: e36ab41e950298146a764caf526475bc,
     type: 2}
-  keyButtonList: []
 --- !u!1 &1080173123
 GameObject:
   m_ObjectHideFlags: 0
@@ -33770,7 +33769,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1145373416
 RectTransform:
   m_ObjectHideFlags: 0
@@ -40367,8 +40366,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 25, y: 0}
-  m_SizeDelta: {x: -50, y: 0}
+  m_AnchoredPosition: {x: 11.5, y: 0}
+  m_SizeDelta: {x: -77, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1354334529
 MonoBehaviour:
@@ -51822,10 +51821,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4350195affeb7684985229f088d2fe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swapWindowOn: 0
-  wheelPanelOn: 0
-  driveBasePanelOn: 0
-  manipulatorPanelOn: 0
 --- !u!114 &1741231146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51907,10 +51902,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4350195affeb7684985229f088d2fe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swapWindowOn: 0
-  wheelPanelOn: 0
-  driveBasePanelOn: 0
-  manipulatorPanelOn: 0
 --- !u!114 &1741231153
 MonoBehaviour:
   m_ObjectHideFlags: 0
