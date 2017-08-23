@@ -7,12 +7,12 @@ using System.Collections.Generic;
 
 public class CreateButton : MonoBehaviour
 {
+    //Toggle Switches
     public GameObject tankDriveSwitch;
     public GameObject unitConversionSwitch;
 
     public GameObject keyNamePrefab;
     public GameObject keyButtonsPrefab;
-    public List<GameObject> keyButtonList;
 
     private Transform namesTransform;
     private Transform keysTransform;
@@ -23,7 +23,7 @@ public class CreateButton : MonoBehaviour
         DestroyList();
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
-        //Can change the default measure HERE and also change the default value in the slider game object in main menu
+        //Can change the default measurement HERE and also change the default value in the slider game object in main menu
         PlayerPrefs.SetString("Measure", "Metric");
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         namesTransform = transform.Find("Names");
@@ -91,13 +91,18 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
 
+        //Updates the landing page player (player one) with the active button style
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
+        Controls.Load();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+        Debug.Log("Start");
     }
 
     //==============================================================================================
-    //                                          Update Functions
+    //                                       Update Functions
     // The following functions are almost identical EXCEPT for the ReadOnlyCollection line.
     // Each function will retrieve the specified player list and generate controls for that player.
     // Each player is specified with a playerIndex and are retrieved by this index.
@@ -170,7 +175,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
 
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
@@ -242,7 +247,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -312,7 +317,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -382,7 +387,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -452,7 +457,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -522,7 +527,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -592,7 +597,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -615,6 +620,9 @@ public class CreateButton : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calls the active player's reset tank drive controls.
+    /// </summary>
     public void ResetTankDrive()
     {
         DestroyList();
@@ -622,6 +630,9 @@ public class CreateButton : MonoBehaviour
         UpdateActiveButtons();
     }
 
+    /// <summary>
+    /// Calls the active player's reset arcade drive controls.
+    /// </summary>
     public void ResetArcadeDrive()
     {
         DestroyList();

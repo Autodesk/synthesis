@@ -279,7 +279,6 @@ public class RobotCameraManager : MonoBehaviour
 
                     SelectedNode = selectedObject;
                     ChangeNodeColors(SelectedNode, selectedColor, selectedColors);
-                    Debug.Log(selectedColors.Count);
                     UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 5);
                 }
                 
@@ -308,7 +307,6 @@ public class RobotCameraManager : MonoBehaviour
     {
         CurrentCamera.transform.parent = SelectedNode.transform;
         SelectingNode = false;
-        Debug.Log("Stored color count " + selectedColors.Count);
         ResetNodeColors();
         SelectedNode = null;
     }

@@ -74,17 +74,20 @@ class RobotCameraGUI : MonoBehaviour
         //Make sure main state and dynamic camera get initialized
         if (main == null)
         {
-            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+            main = StateMachine.Instance.FindState<MainState>();
             dynamicCamera = main.DynamicCameraObject.GetComponent<DynamicCamera>();
         }
         //Update gui about robot camera once main and dynamic camera is ready
         else if (main != null && dynamicCamera != null)
         {
             UpdateCameraWindow();
-            UpdateCameraAnglePanel();
-            UpdateCameraFOVPanel();
-            UpdateNodeAttachment();
-            UpdateIndicatorTransform();
+            if (indicatorActive)
+            {
+                UpdateCameraAnglePanel();
+                UpdateCameraFOVPanel();
+                UpdateNodeAttachment();
+                UpdateIndicatorTransform();
+            }
         }
     }
 
@@ -152,8 +155,8 @@ class RobotCameraGUI : MonoBehaviour
             {
                 robotCameraManager.CurrentCamera.SetActive(true);
                 robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
-                //Toggle the robot camera using Q (should be changed later)
-                if (Input.GetKeyDown(KeyCode.Q))
+                //Toggle the robot camera using Z (can be changed later)
+                if (Input.GetKeyDown(KeyCode.Z))
                 {
                     //Reset the targetTexture of current camera or they will conflict
                     robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
@@ -161,13 +164,6 @@ class RobotCameraGUI : MonoBehaviour
                     robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
                 }
             }
-        }
-        //Don't allow using robot view window when users are currently using one of the robot view
-        else if (usingRobotView && !main.DynamicCameraObject.activeSelf)
-        {
-            UserMessageManager.Dispatch("You can only use robot view window when you are not in robot view mode!", 2f);
-            usingRobotView = false;
-            robotCameraViewWindow.SetActive(false);
         }
         //Free the target texture of the current camera when the window is closed (for normal toggle camera function)
         else
@@ -178,11 +174,11 @@ class RobotCameraGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Toggles the state of usingRobotView when the button "Toggle Robot Camera" is clicked
+    /// Toggles the state of usingRobotView when the camera button in toolbar is clicked
     /// </summary>
     public void ToggleCameraWindow()
     {
-        //Deal with UI conflicts between robot camera & sensors
+        //Deal with UI conflicts (configuration stuff) between robot camera & sensors
         sensorManagerGUI.EndProcesses();
         usingRobotView = !usingRobotView;
         robotCameraViewWindow.SetActive(usingRobotView);
@@ -220,7 +216,7 @@ class RobotCameraGUI : MonoBehaviour
             showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
             //Close the panel when indicator is not active and stop all configuration
             ResetConfigurationWindow();
-            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
             configureRobotCameraButton.SetActive(false);
 
         }
@@ -326,7 +322,6 @@ class RobotCameraGUI : MonoBehaviour
             float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp) &&
             float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp))
         {
-            //Debug.Log("Sync angle!");
             robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
         }
 

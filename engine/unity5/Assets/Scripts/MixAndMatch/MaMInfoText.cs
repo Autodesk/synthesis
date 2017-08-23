@@ -68,6 +68,9 @@ public class MaMInfoText : MonoBehaviour {
             case 2: //syntheshot
                 txt.text = "Syntheshot \n\nIdeal for shooting projectiles";
                 break;
+            case 3: //
+                txt.text = "Lift \n\nIdeal for picking up and stacking game elements";
+                break;
         }
 
     }
