@@ -163,12 +163,12 @@ public class MainState : SimState
             return;
         }
 
-        //If the reset button is held down after a certain amount of time, then go into change spawnpoint mode (reset spawnpoint feature)
-        //Otherwise, reset the robot normally (quick reset feature)
+        //Spawn a new robot from the same path or switch active robot
         if (!ActiveRobot.IsResetting)
         {
             if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
+            
         }
 
         // Toggles between the different camera states if the camera toggle button is pressed
@@ -279,6 +279,12 @@ public class MainState : SimState
         sensorManager.RemoveSensorsFromRobot(ActiveRobot);
         sensorManagerGUI.ShiftOutputPanels();
         sensorManagerGUI.EndProcesses();
+        if (ActiveRobot.RobotHasManipulator == 1)
+        {
+            ActiveRobot.DeleteManipulatorNodes();
+            ActiveRobot.RobotHasManipulator = 0;
+            ActiveRobot.RobotIsMixAndMatch = 0;
+        }
         return ActiveRobot.InitializeRobot(directory, this);
     }
 
@@ -332,7 +338,7 @@ public class MainState : SimState
     /// </summary>
     public void ChangeControlIndex(int index)
     {
-        ActiveRobot.ControlIndex = index;
+        ActiveRobot.SetControlIndex(index);
     }
 
     /// <summary>
@@ -459,7 +465,7 @@ public class MainState : SimState
     /// <returns></returns>
     public bool LoadManipulator(string directory)
     {
-        return ActiveRobot.LoadManipulator(directory);
+        return ActiveRobot.LoadManipulator(directory, null);
     }
 
     /// <summary>

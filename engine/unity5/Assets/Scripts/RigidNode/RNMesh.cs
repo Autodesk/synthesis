@@ -42,8 +42,6 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.position = root.position;
             meshObject.transform.rotation = root.rotation;
 
-            Debug.Log("Mesh Objects count " + meshObjects.Count);
-
         }, true);
 
         Vector3 com = mesh.physics.centerOfMass.AsV3();
@@ -94,7 +92,7 @@ public partial class RigidNode : RigidNode_Base
         if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)
         {
             BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
-            if (MixAndMatchMode.isMixAndMatchMode)
+            if (MixAndMatchMode.IsMixAndMatchMode)
             {
                 rigidBody.mass += PlayerPrefs.GetFloat("wheelMass", 1f);
             }

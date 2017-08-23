@@ -9,8 +9,6 @@ public class SettingsMode : MonoBehaviour
     public Sprite DefaultImage;
     public Sprite HighlightedImage;
 
-    private GameObject lastButton;
-
     // Update is called once per frame
     void Update()
     {
@@ -69,6 +67,15 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
+    public void GetLastSavedControls()
+    {
+        Controls.Load();
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+    }
+
+    /// <summary>
+    /// Updates and creates the appropriate list for each player when the coordinated button is clicked.
+    /// </summary>
     #region Player Buttons
     public void OnPlayerOne()
     {
@@ -117,7 +124,12 @@ public class SettingsMode : MonoBehaviour
 
         UpdateButtonStyle();
     }
+    #endregion
 
+    /// <summary>
+    /// Updates the active player button to the active player style. This makes the button
+    /// appear highlighted (and stay highlighted) when the player clicks on a specific button.
+    /// </summary>
     public void UpdateButtonStyle()
     {
         switch (InputControl.activePlayerIndex)
@@ -170,8 +182,8 @@ public class SettingsMode : MonoBehaviour
                 GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = HighlightedImage;
                 break;
-            default:
-                GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultImage;
+            default: //Default to player one's button styles
+                GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = HighlightedImage;
                 GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultImage;
                 GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultImage;
@@ -180,7 +192,6 @@ public class SettingsMode : MonoBehaviour
                 break;
         }
     }
-    #endregion
 
     public void OnTankToggle()
     {

@@ -34,7 +34,7 @@ public class DummyScrollable : ScrollablePanel
 
     private void Update()
     {
-        if (mainState == null) mainState = ((MainState)StateMachine.Instance.CurrentState);
+        if (mainState == null) mainState = StateMachine.Instance.FindState<MainState>();
     }
     /*
     // Update is called once per frame

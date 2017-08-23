@@ -29,12 +29,6 @@ public class SimUI : MonoBehaviour
     GameObject freeroamCameraWindow;
     GameObject spawnpointWindow;
 
-    GameObject swapWindow;
-
-    GameObject wheelPanel;
-    GameObject driveBasePanel;
-    GameObject manipulatorPanel;
-
     GameObject changeRobotPanel;
     GameObject robotListPanel;
     GameObject changeFieldPanel;
@@ -43,6 +37,7 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
+    GameObject checkSavePanel;
     GameObject unitConversionSwitch;
     GameObject hotKeyButton;
     GameObject hotKeyPanel;
@@ -50,12 +45,9 @@ public class SimUI : MonoBehaviour
     GameObject analyticsPanel;
 
     GameObject mixAndMatchPanel;
+    GameObject maMOrExPanel;
 
     public static bool changeAnalytics = true;
-    public bool swapWindowOn = false; //if the swap window is active
-    public bool wheelPanelOn = false; //if the wheel panel is active
-    public bool driveBasePanelOn = false; //if the drive base panel is active
-    public bool manipulatorPanelOn = false; //if the manipulator panel is active
 
     GameObject exitPanel;
 
@@ -81,7 +73,7 @@ public class SimUI : MonoBehaviour
     {
         if (main == null)
         {
-            main = transform.GetComponent<StateMachine>().CurrentState as MainState;
+            main = StateMachine.Instance.FindState<MainState>();
         }
         else if (dpm == null)
         {
@@ -129,11 +121,6 @@ public class SimUI : MonoBehaviour
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
 
-        swapWindow = AuxFunctions.FindObject(canvas, "SwapPanel");
-        wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
-        driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
-        manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
-
         addRobotPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
@@ -143,6 +130,7 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
+        checkSavePanel = AuxFunctions.FindObject(canvas, "CheckSavePanel");
         unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
         hotKeyPanel = AuxFunctions.FindObject(canvas, "HotKeyPanel");
         hotKeyButton = AuxFunctions.FindObject(canvas, "DisplayHotKeyButton");
@@ -159,6 +147,7 @@ public class SimUI : MonoBehaviour
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
+        maMOrExPanel = AuxFunctions.FindObject(canvas, "MaMorExPanel");
     }
 
     private void UpdateWindows()
@@ -193,6 +182,7 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
             PlayerPrefs.Save();
 
             if (changeAnalytics) //for analytics tracking
@@ -206,6 +196,7 @@ public class SimUI : MonoBehaviour
             sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
             main.ChangeRobot(directory);
+            
         }
         else
         {
@@ -227,7 +218,6 @@ public class SimUI : MonoBehaviour
         if (robotHasManipulator == 1) //0 is false, 1 is true
         {
             main.DeleteManipulatorNodes();
-
         }
 
         //If the new robot has a manipulator, load the manipulator
@@ -316,7 +306,6 @@ public class SimUI : MonoBehaviour
     /// <param name="joe"></param>
     public void SwitchCameraView(int joe)
     {
-        //Debug.Log(joe);
         switch (joe)
         {
             case 1:
@@ -440,17 +429,27 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             inputManagerPanel.SetActive(true);
+
+            Controls.Load();
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
         else
         {
             inputManagerPanel.SetActive(false);
             ToggleHotKeys(false);
+
+            if (Controls.CheckIfSaved())
+            {
+                checkSavePanel.SetActive(true);
+            }
+            //Controls.Load();
         }
     }
 
     public void ShowControlPanel()
     {
         ShowControlPanel(!inputManagerPanel.activeSelf);
+        //Controls.Load();
     }
 
     
@@ -494,7 +493,7 @@ public class SimUI : MonoBehaviour
             int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
             main.IsMetric = (i == 1 ? true : false);
             PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
-            Debug.Log("Metric: " + main.IsMetric);
+            //Debug.Log("Metric: " + main.IsMetric);
         }
     }
 
@@ -507,11 +506,11 @@ public class SimUI : MonoBehaviour
         hotKeyPanel.SetActive(show);
         if (show)
         {
-            hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Key";
+            hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Keys";
         }
         else
         {
-            hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Key";
+            hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Keys";
         }
     }
 
@@ -585,6 +584,25 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    public void CheckForSavedControls(string option)
+    {
+        checkSavePanel.SetActive(false);
+
+        switch (option)
+        {
+            case "yes":
+                Controls.Save();
+                break;
+            case "no":
+                Controls.Load();
+                inputManagerPanel.SetActive(false);
+                break;
+            case "cancel":
+                inputManagerPanel.SetActive(true);
+                break;
+        }
+    }
+
 
     /// <summary>
     /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
@@ -595,6 +613,7 @@ public class SimUI : MonoBehaviour
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         mixAndMatchPanel.SetActive(false);
+        maMOrExPanel.SetActive(false);
         analyticsPanel.SetActive(false);
         inputManagerPanel.SetActive(false);
         ToggleHotKeys(false);
@@ -622,15 +641,6 @@ public class SimUI : MonoBehaviour
     {
         main.EnterReplayState();
     }
-    #region swap part
-    /// <summary>
-    /// Toggles the Driver Practice Mode window
-    /// </summary>
-    public void SwapToggleWindow()
-    {
-        swapWindowOn = !swapWindowOn;
-        swapWindow.SetActive(swapWindowOn);
-    }
 
     public void TogglePanel(GameObject panel)
     {
@@ -643,33 +653,4 @@ public class SimUI : MonoBehaviour
             panel.SetActive(true);
         }
     }
-
-    public void PartToggleWindow(string Window)
-    {
-        List<GameObject> swapPanels = new List<GameObject> { wheelPanel, driveBasePanel, manipulatorPanel };
-        switch (Window)
-        {
-            case "wheel":
-                TogglePanel(wheelPanel);
-                driveBasePanel.SetActive(false);
-                manipulatorPanel.SetActive(false);
-                break;
-            case "driveBase":
-                TogglePanel(driveBasePanel);
-                wheelPanel.SetActive(false);
-                manipulatorPanel.SetActive(false);
-                break;
-            case "manipulator":
-                TogglePanel(manipulatorPanel);
-                driveBasePanel.SetActive(false);
-                wheelPanel.SetActive(false);
-                break;
-            default:
-                wheelPanel.SetActive(false);
-                driveBasePanel.SetActive(false);
-                manipulatorPanel.SetActive(false);
-                break;
-        }
-    }
-    #endregion
 }

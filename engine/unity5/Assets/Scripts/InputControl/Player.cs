@@ -77,10 +77,10 @@ public class Player
     /// <param name="third">Third input.</param>
     public KeyMapping setKey(string name, CustomInput primary = null, CustomInput secondary = null, bool isTankDrive = false)
     {
-        KeyMapping outKey = null;
-        KeyMapping defaultKey = null;
+        KeyMapping outKey = null; //Key to return
+        KeyMapping defaultKey = null; //Key to set default key preferances at initialization (for resetting individual player lists)
 
-        if (!isTankDrive)
+        if (!isTankDrive) //Arcade Drive Enabled
         {
             if (arcadeDriveMap.TryGetValue(name, out outKey) && resetArcadeDriveMap.TryGetValue(name, out outKey))
             {
@@ -89,16 +89,20 @@ public class Player
             }
             else
             {
+                //Sets control to the main key list (outKey) and the default list (defaultKey; for resetting individual player lists) 
                 outKey = new KeyMapping(name, primary, secondary);
                 defaultKey = new KeyMapping(name, primary, secondary);
 
+                //Assigns each list with correct return key
                 arcadeDriveList.Add(outKey);
                 resetArcadeDriveList.Add(defaultKey);
+
+                //Assigns each key map with the correct name and return key
                 arcadeDriveMap.Add(name, outKey);
                 resetArcadeDriveMap.Add(name, defaultKey);
             }
         }
-        else
+        else //Tank Drive Enabled
         {
             if (tankDriveMap.TryGetValue(name, out outKey) && resetTankDriveMap.TryGetValue(name, out outKey))
             {
@@ -107,11 +111,15 @@ public class Player
             }
             else
             {
+                //Sets control to the main key list (outKey) and the default list (defaultKey; for resetting individual player lists) 
                 outKey = new KeyMapping(name, primary, secondary);
                 defaultKey = new KeyMapping(name, primary, secondary);
 
+                //Assigns each list with correct return key
                 tankDriveList.Add(outKey);
                 resetTankDriveList.Add(defaultKey);
+
+                //Assigns each key map with the correct name and return key
                 tankDriveMap.Add(name, outKey);
                 resetTankDriveMap.Add(name, defaultKey);
             }
@@ -162,21 +170,6 @@ public class Player
 
         return outAxis;
     }
-
-    //public void SetAxis(List<KeyMapping> list, Dictionary<string, Axis> map)
-    //{
-    //    if (map.TryGetValue(name, out outAxis))
-    //    {
-    //        list.set(negative, positive);
-    //    }
-    //    else
-    //    {
-    //        outAxis = new Axis(name, negative, positive);
-
-    //        TankAxesList.Add(outAxis);
-    //        TankAxesMap.Add(name, outAxis);
-    //    }
-    //}
     #endregion
 
     #region argToInput Helper Functions for setKey() and setAxis()

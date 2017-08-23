@@ -39,23 +39,6 @@ namespace Assets.Scripts.BUExtensions
         }
 
         /// <summary>
-        /// Returns the angular speed of the wheel.
-        /// </summary>
-        private float Speed
-        {
-            get
-            {
-                Vector3 velocity = ((RigidBody)transform.parent.GetComponent<BRigidBody>().GetCollisionObject()).GetVelocityInLocalPoint(basePoint).ToUnity();
-                Vector3 localVelocity = transform.parent.InverseTransformDirection(velocity);
-
-                WheelInfo wheelInfo = robot.RaycastRobot.GetWheelInfo(wheelIndex);
-                Vector3 wheelAxle = wheelInfo.WheelAxleCS.ToUnity();
-
-                return -Vector3.Dot(localVelocity, Quaternion.AngleAxis(90f, Vector3.up) * wheelAxle / (Mathf.PI * radius));
-            }
-        }
-
-        /// <summary>
         /// Creates a wheel and attaches it to the parent BRaycastVehicle.
         /// </summary>
         /// <param name="node"></param>
@@ -96,13 +79,7 @@ namespace Assets.Scripts.BUExtensions
         /// <param name="force"></param>
         public void ApplyForce(float force)
         {
-            float speed = Speed;
-            float appliedForce = -force * (SimTorque / radius) * robot.RaycastRobot.OverrideMass * MassTorqueScalar;
-
-            if (speed * force > 0)
-                appliedForce *= 1 - (Math.Abs(speed) / MaxAngularSpeed);
-
-            robot.RaycastRobot.ApplyEngineForce(appliedForce, wheelIndex);
+            robot.RaycastRobot.ApplyEngineForce(-force * (SimTorque / radius) * robot.RaycastRobot.OverrideMass * MassTorqueScalar, wheelIndex);
         }
 
         /// <summary>
@@ -121,7 +98,10 @@ namespace Assets.Scripts.BUExtensions
             if (robot == null)
                 return;
 
-            transform.localRotation *= Quaternion.AngleAxis(Speed, axis);
+            WheelInfo info = robot.RaycastRobot.GetWheelInfo(wheelIndex);
+
+            transform.position = info.WorldTransform.Origin.ToUnity();
+            transform.localRotation *= Quaternion.AngleAxis(-robot.RaycastRobot.GetWheelAngularVelocity(wheelIndex), axis);
         }
     }
 }
