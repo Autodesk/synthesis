@@ -117,13 +117,14 @@ public class MainState : SimState
                 return;
             }
 
-            if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot")))
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
+            if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), isMixAndMatch))
             {
                 AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                 return;
             }
 
-            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); // 0 is false, 1 is true
+            
             int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
             if (isMixAndMatch == 1 && hasManipulator == 1)
             {
@@ -167,7 +168,7 @@ public class MainState : SimState
         //Spawn a new robot from the same path or switch active robot
         if (!ActiveRobot.IsResetting)
         {
-            if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);
+            if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath, 0); //made parameter 0 because not sure what this is for
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
             
         }
@@ -245,7 +246,7 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory">robot directory</param>
     /// <returns>whether the process was successful</returns>
-    public bool LoadRobot(string directory)
+    public bool LoadRobot(string directory, int isMixAndMatch)
     {
         if (SpawnedRobots.Count < MAX_ROBOTS)
         {
@@ -253,6 +254,9 @@ public class MainState : SimState
 
             GameObject robotObject = new GameObject("Robot");
             Robot robot = robotObject.AddComponent<Robot>();
+
+            robot.RobotIsMixAndMatch = isMixAndMatch; //0 is false, 1 is true
+            robot.RobotHasManipulator = 0; //Defaults to false
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(directory, this)) return false;
@@ -265,6 +269,7 @@ public class MainState : SimState
 
             robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
+           
             return true;
         }
         return false;
@@ -352,8 +357,7 @@ public class MainState : SimState
             robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
             sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
 
-            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
-            if (isMixAndMatch == 1 && SpawnedRobots[index].RobotHasManipulator == 1)
+            if (SpawnedRobots[index].RobotHasManipulator == 1)
             {
                 GameObject.Destroy(SpawnedRobots[index].ManipulatorObject);
             }
@@ -397,7 +401,7 @@ public class MainState : SimState
 
         foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> rs in robotStates)
         {
-            if (!LoadRobot(rs.Key))
+            if (!LoadRobot(rs.Key, 0))
             {
                 AppModel.ErrorToMenu("Could not load robot: " + rs.Key + "\nHas it been moved or deleted?");
                 return;
@@ -466,6 +470,7 @@ public class MainState : SimState
     /// <returns></returns>
     public bool LoadManipulator(string directory)
     {
+        ActiveRobot.RobotHasManipulator = 1;
         return ActiveRobot.LoadManipulator(directory, null);
     }
 
@@ -476,6 +481,7 @@ public class MainState : SimState
     /// <returns></returns>
     public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
+        ActiveRobot.RobotHasManipulator = 1;
         return ActiveRobot.LoadManipulator(directory, robotGameObject);
     }
 
@@ -508,6 +514,7 @@ public class MainState : SimState
             SpawnedRobots.Add(robot);
 
             robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
+            ActiveRobot.RobotHasManipulator = 1;
             return true;
         }
         return false;

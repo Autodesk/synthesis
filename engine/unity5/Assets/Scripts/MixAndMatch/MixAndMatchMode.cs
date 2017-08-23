@@ -201,7 +201,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel));
         PlayerPrefs.Save();
         IsMixAndMatchMode = true;
-        SceneManager.LoadScene("mixAndMatch");
+        SceneManager.LoadScene("Scene");
 
         if (SimUI.changeAnalytics) //for analytics tracking
         {
