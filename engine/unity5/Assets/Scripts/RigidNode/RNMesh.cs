@@ -81,7 +81,6 @@ public partial class RigidNode : RigidNode_Base
             rigidBody.mass = mesh.physics.mass;
             rigidBody.friction = 0.25f;
             rigidBody.RemoveOnCollisionCallbackEventHandler();
-            ((RigidBody)rigidBody.GetCollisionObject()).ActivationState = ActivationState.DisableDeactivation;
 
             foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
                 rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
