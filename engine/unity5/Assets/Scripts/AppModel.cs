@@ -17,7 +17,20 @@ namespace Assets.Scripts
         /// The error message to display when returning to the main menu.
         /// </summary>
         public static string ErrorMessage { get; private set; }
+
+        /// <summary>
+        /// Determines if this is the first time loading the main menu scene.
+        /// </summary>
+        public static bool InitialLaunch { get; set; }
         
+        /// <summary>
+        /// Initializes the static AppModel instance.
+        /// </summary>
+        static AppModel()
+        {
+            InitialLaunch = true;
+        }
+
         /// <summary>
         /// Clears the error message is one is set.
         /// </summary>
