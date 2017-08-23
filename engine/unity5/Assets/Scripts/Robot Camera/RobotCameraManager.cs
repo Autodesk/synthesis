@@ -112,7 +112,7 @@ public class RobotCameraManager : MonoBehaviour
         newCamera.AddComponent<Camera>();
 
         newCamera.transform.parent = anchor;
-        newCamera.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+        newCamera.transform.localPosition = new Vector3(0f, 0f, 0f);
         newCamera.transform.localRotation = Quaternion.identity;
 
         RobotCamera configuration = newCamera.AddComponent<RobotCamera>();

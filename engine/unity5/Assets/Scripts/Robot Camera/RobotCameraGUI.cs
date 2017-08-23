@@ -193,7 +193,7 @@ class RobotCameraGUI : MonoBehaviour
             robotCameraManager.CurrentCamera.SetActive(false);
             //Close the panel when indicator is not active and stop all configuration
             configureCameraPanel.SetActive(false);
-            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
             EndProcesses();
         }
     }
