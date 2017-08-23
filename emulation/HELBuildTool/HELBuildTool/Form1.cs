@@ -85,7 +85,7 @@ namespace WindowsFormsApp1
             String cygwinPath = "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64";
             String buildTool = "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool";
             String makeArgs = "";
-            String jarDir = "/cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/jar";
+            String jarDir = "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/jars";
             jarDir = jarDir.Replace("/cygdrive/c/", "C:\\").Replace("\\", "/");
 #endif
             System.Diagnostics.ProcessStartInfo startInfo;
