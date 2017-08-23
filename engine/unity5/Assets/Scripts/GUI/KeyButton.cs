@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-//Adapted from: https://github.com/Gris87/InputControl
+//=========================================================================================
+//                                      KeyButton.cs
+// Description: OnGUI() script with functions for CreateButton.cs
+// Main Content: Various functions to assist in generating control buttons and player lists.
+// Adapted from: https://github.com/Gris87/InputControl
+//=========================================================================================
 
 public class KeyButton : MonoBehaviour
 {
@@ -23,13 +28,13 @@ public class KeyButton : MonoBehaviour
     // Update is called once per frame
     void OnGUI()
     {
-        //Implement style preferances; (most assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
+        //Implement style preferances; (some assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
         mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
         mKeyText.color = Color.white;
         mKeyText.fontSize = 13;
 
         //Checks if the currentInput uses the ignoreMouseMovement or useKeyModifiers
-        //Currently DISABLED (hidden in the Unity menu) due to inconsistent toggle to key updates 8/2017
+        //Currently DISABLED (hidden in the Unity menu) due to inconsistent toggle to key updates 08/2017
         if (selectedButton == this)
         {
             CustomInput currentInput = InputControl.currentInput(ignoreMouseMovement, useKeyModifiers);
@@ -54,7 +59,7 @@ public class KeyButton : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the controls' (keyButtons') text.
+    /// Updates the primary and secondary control buttons' text label.
     /// </summary>
     public void UpdateText()
     {
@@ -75,7 +80,7 @@ public class KeyButton : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the text when the user clicks the KeyButtons
+    /// Updates the text when the user clicks the control buttons. 
     /// </summary>
     public void OnClick()
     {
@@ -111,9 +116,6 @@ public class KeyButton : MonoBehaviour
         }
 
         UpdateText();
-
-        //Enable this for auto-saving.
-        //Controls.Save();
 
         selectedButton = null;
     }
