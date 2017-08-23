@@ -73,7 +73,7 @@ public class MixAndMatchMode : MonoBehaviour
     void Start()
     { 
         StartMixAndMatch();
-        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
+
     }
 
     // Update is called once per frame
@@ -190,6 +190,8 @@ public class MixAndMatchMode : MonoBehaviour
     /// </summary>
     public void StartMaMSim()
     {
+        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
+
         PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
         PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
@@ -241,6 +243,7 @@ public class MixAndMatchMode : MonoBehaviour
     /// </summary>
     void ChangeMaMRobot()
     {
+        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
         int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
 
         string baseDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
@@ -271,6 +274,7 @@ public class MixAndMatchMode : MonoBehaviour
     /// </summary>
     void AddMaMRobot()
     {
+        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
         string baseDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
         string manipulatorDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator);
 
