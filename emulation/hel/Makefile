@@ -48,7 +48,7 @@ OUT_HAL := build/hal/libHAL.a
 OUT_CPP := build/cpp/libwpilib.a
 OUT_NTCORE := build/ntcore/libntcore-static.a
 LIB_JAVA := build/java/wpilibJavaJNI.dll
-LIB_NTCORE_JAVA := build/ntcore/java/ntcore.dll
+LIB_NTCORE_JAVA := build/java/ntcore.dll
 OUT_JAVA := build/java/wpilib.jar
 OUT_NTCORE_JAVA := build/java/ntcore.jar
 
@@ -60,6 +60,7 @@ $(OUT_JAVA): $(LIB_JAVA) | build/java_class_files Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
 	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libstdc++-6.dll build/java
 	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libgcc_s_seh-1.dll build/java
+	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libwinpthread-1.dll build/java
 	@$(JAR) cf $@ -C build/java/class .
 
 $(LIB_JAVA): $(OBJ_FILES_JAVA) | Makefile $(HEADER_FILES)
@@ -171,8 +172,14 @@ install: $(OUT_CPP) $(OUT_JAVA)
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/wpilibJavaJNI.dll\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/jars
 	@cp -rf build/java/wpilibJavaJNI.dll ../../installer/SynthesisDrive/jars/wpilibJavaJNI.dll
-
-
+	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/ntcore.dll\e[0m"
+	@cp -rf build/java/ntcore.dll ../../installer/SynthesisDrive/jars/
+	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/libstc++-6.dll\e[0m"
+	@cp -rf build/java/libstdc++-6.dll ../../installer/SynthesisDrive/jars/
+	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/libgcc_s_seh.dll\e[0m"
+	@cp -rf build/java/libgcc_s_seh-1.dll ../../installer/SynthesisDrive/jars/
+	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/libwinpthread-1.dll\e[0m"
+	@cp -rf build/java/libwinpthread-1.dll ../../installer/SynthesisDrive/jars/
 
 clean:
 	rm -r build
