@@ -3,43 +3,58 @@ using UnityEngine.UI;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
-//Adapted from: https://github.com/Gris87/InputControl
+//=========================================================================================
+//                                      CreateButton.cs
+// Description: Generates buttons and button text for the each player in the control panel.
+// Main Content:
+//     UpdateActiveButtons(): Creates and updates the active player's buttons/controls.
+//     UpdatePlayerOne() - UpdatePlayerSix(): Creates and updates the specified player's controls.
+//     Toggles - Utilized by players to toggle their player preferances.
+//     Functions - Various functions supporting these features.
+// Adapted from: https://github.com/Gris87/InputControl
+//=========================================================================================
 
 public class CreateButton : MonoBehaviour
 {
     //Toggle Switches
-    public GameObject tankDriveSwitch;
+    public GameObject tankDriveSwitch; 
     public GameObject unitConversionSwitch;
 
     public GameObject keyNamePrefab;
     public GameObject keyButtonsPrefab;
 
-    private Transform namesTransform;
-    private Transform keysTransform;
+    private Transform namesTransform; //The string name of the control (the first column of the control panel; non-button)
+    private Transform keysTransform; //The buttons of the controls (column 2 and column 3 of the control panel)
 
     // Use this for initialization
     void Start()
     {
         DestroyList();
+
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
+
         //Can change the default measurement HERE and also change the default value in the slider game object in main menu
         PlayerPrefs.SetString("Measure", "Metric");
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+
         namesTransform = transform.Find("Names");
         keysTransform = transform.Find("Keys");
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Defaults to player one's keys
+        //Defaults to player one's keys at Start
         ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(0);
 
         foreach (KeyMapping key in keys)
         {
-            //===============================Key Text vs Key Buttons==================================
+            //========================================================================================
+            //                                   Key Text vs Key Buttons
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            //========================================================================================
+
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -91,21 +106,23 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.sizeDelta = new Vector2(0, contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight); //Controls the height on the control panel
 
-        //Updates the landing page player (player one) with the active button style
+        //Updates the current active player's button (at start, we default to player one.)
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
+
+        //Loads controls (if changed in another scene) and updates their button text.
         Controls.Load();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-        Debug.Log("Start");
     }
 
     //==============================================================================================
     //                                       Update Functions
     // The following functions are almost identical EXCEPT for the ReadOnlyCollection line.
-    // Each function will retrieve the specified player list and generate controls for that player.
-    // Each player is specified with a playerIndex and are retrieved by this index.
+    // Each function will retrieve control information for the specified player list and create control 
+    // input buttons for that player. Each player is specified by a playerIndex and the specific player's
+    // list can be called with this index 0 (player one) - index 5 (player six).
     //==============================================================================================
 
     #region Update Active Buttons
@@ -121,9 +138,12 @@ public class CreateButton : MonoBehaviour
 
         foreach (KeyMapping key in keys)
         {
-            //******************************Key Text vs Key Buttons***********************************
+            //========================================================================================
+            //                                   Key Text vs Key Buttons
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            //========================================================================================
+
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -193,9 +213,12 @@ public class CreateButton : MonoBehaviour
 
         foreach (KeyMapping key in keys)
         {
-            //******************************Key Text vs Key Buttons***********************************
+            //========================================================================================
+            //                                   Key Text vs Key Buttons
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            //========================================================================================
+
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -248,6 +271,8 @@ public class CreateButton : MonoBehaviour
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
         rectTransform.sizeDelta = new Vector2(0, contentHeight);
+
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
     #endregion
 
@@ -263,9 +288,12 @@ public class CreateButton : MonoBehaviour
 
         foreach (KeyMapping key in keys)
         {
-            //******************************Key Text vs Key Buttons***********************************
+            //========================================================================================
+            //                                   Key Text vs Key Buttons
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            //========================================================================================
+
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -318,6 +346,8 @@ public class CreateButton : MonoBehaviour
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
         rectTransform.sizeDelta = new Vector2(0, contentHeight);
+
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
     #endregion
 
@@ -333,9 +363,12 @@ public class CreateButton : MonoBehaviour
 
         foreach (KeyMapping key in keys)
         {
-            //******************************Key Text vs Key Buttons***********************************
+            //========================================================================================
+            //                                   Key Text vs Key Buttons
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            //========================================================================================
+
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -388,6 +421,8 @@ public class CreateButton : MonoBehaviour
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
         rectTransform.sizeDelta = new Vector2(0, contentHeight);
+
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
     #endregion
 
@@ -403,9 +438,12 @@ public class CreateButton : MonoBehaviour
 
         foreach (KeyMapping key in keys)
         {
-            //******************************Key Text vs Key Buttons***********************************
+            //========================================================================================
+            //                                   Key Text vs Key Buttons
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            //========================================================================================
+
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -458,6 +496,8 @@ public class CreateButton : MonoBehaviour
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
         rectTransform.sizeDelta = new Vector2(0, contentHeight);
+
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
     #endregion
 
@@ -473,9 +513,12 @@ public class CreateButton : MonoBehaviour
 
         foreach (KeyMapping key in keys)
         {
-            //******************************Key Text vs Key Buttons***********************************
+            //========================================================================================
+            //                                   Key Text vs Key Buttons
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            //========================================================================================
+
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -528,6 +571,8 @@ public class CreateButton : MonoBehaviour
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
         rectTransform.sizeDelta = new Vector2(0, contentHeight);
+
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
     #endregion
 
@@ -543,9 +588,12 @@ public class CreateButton : MonoBehaviour
 
         foreach (KeyMapping key in keys)
         {
-            //******************************Key Text vs Key Buttons***********************************
+            //========================================================================================
+            //                                   Key Text vs Key Buttons
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            //========================================================================================
+
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -598,22 +646,27 @@ public class CreateButton : MonoBehaviour
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
         rectTransform.sizeDelta = new Vector2(0, contentHeight);
+
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
     #endregion
 
     /// <summary>
-    /// Destroys old lists before regenerating a new list.
-    /// Call before retrieving a new player.
+    /// Destroys control lists.
+    /// Reccommended: Call before generating/creating a new player control list.
     /// </summary>
     public void DestroyList()
     {
         namesTransform = transform.Find("Names");
         keysTransform = transform.Find("Keys");
 
+        //Loops through each string name for controls and destroys the object(s)
         foreach (Transform child in namesTransform)
         {
             Destroy(child.gameObject);
         }
+
+        //Loops through each control input button and destroys the object(s)
         foreach (Transform child in keysTransform)
         {
             Destroy(child.gameObject);
@@ -621,7 +674,8 @@ public class CreateButton : MonoBehaviour
     }
 
     /// <summary>
-    /// Calls the active player's reset tank drive controls.
+    /// Resets controls to tank drive defaults for the active player and updates 
+    /// corresponding control labels/buttons.
     /// </summary>
     public void ResetTankDrive()
     {
@@ -631,7 +685,8 @@ public class CreateButton : MonoBehaviour
     }
 
     /// <summary>
-    /// Calls the active player's reset arcade drive controls.
+    /// Resets controls to arcade drive defaults for the active player and updates 
+    /// corresponding control labels/buttons.
     /// </summary>
     public void ResetArcadeDrive()
     {
@@ -641,26 +696,25 @@ public class CreateButton : MonoBehaviour
     }
 
     /// <summary>
-    /// Toggles the Tank slider between on/off for each player.
+    /// Toggles the tankDriveSwitch/slider between arcade/tank drive for each player.
     /// </summary>
     public void TankSlider()
     {
-        //tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
 
         switch (i)
         {
-            case 0:  //Tank Drive slider is OFF
+            case 0:  //tank drive slider is OFF
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
                 UpdateActiveButtons();
                 Controls.TankDriveEnabled = false;
                 break;
-            case 1:  //Tank Drive slider is ON
+            case 1:  //tank drive slider is ON
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
                 UpdateActiveButtons();
                 Controls.TankDriveEnabled = true;
                 break;
-            default: //Defaults to Arcade Drive
+            default: //defaults to arcade drive
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
                 UpdateActiveButtons();
                 Controls.TankDriveEnabled = false;
@@ -669,7 +723,7 @@ public class CreateButton : MonoBehaviour
     }
 
     /// <summary>
-    /// Set the player preference for measurement units
+    /// Sets the player preference for measurement units
     /// </summary>
     public void UnitConversionSlider()
     {
@@ -686,18 +740,21 @@ public class CreateButton : MonoBehaviour
         }
     }
     /// <summary>
-    /// Updates Tank Drive Slider from MainMenu to the active Scene.
+    /// Updates the toggles/sliders when changing scenes.
     /// </summary>
     public void OnEnable()
     {
+        //Tank drive slider
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
+
+        //Measurement slider
         unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
         unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 1 : 0;
     }
 
     /// <summary>
-    /// Updates slider. Called when players are switched to check for their drive settings.
+    /// Updates the tank slider. Called on the active player to check for each player's individual preferances.
     /// </summary>
     public void UpdateTankSlider()
     {

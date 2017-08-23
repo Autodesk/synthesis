@@ -81,48 +81,42 @@ public class SettingsMode : MonoBehaviour
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-
-        UpdateButtonStyle();
+        GetLastSavedControls();
     }
 
     public void OnPlayerTwo()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwoButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-
-        UpdateButtonStyle();
+        GetLastSavedControls();
     }
 
     public void OnPlayerThree()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThreeButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-
-        UpdateButtonStyle();
+        GetLastSavedControls();
     }
 
     public void OnPlayerFour()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFourButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-
-        UpdateButtonStyle();
+        GetLastSavedControls();
     }
 
     public void OnPlayerFive()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFiveButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-
-        UpdateButtonStyle();
+        GetLastSavedControls();
     }
 
     public void OnPlayerSix()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSixButtons();
         GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-
-        UpdateButtonStyle();
+        GetLastSavedControls();
     }
     #endregion
 
