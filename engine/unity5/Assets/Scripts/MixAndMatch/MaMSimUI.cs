@@ -63,7 +63,7 @@ public class MaMSimUI : MonoBehaviour {
         }
         else
         {
-            //simUI.EndOtherProcesses();
+            simUI.EndOtherProcesses();
             mixAndMatchPanel.SetActive(true);
         }
     }

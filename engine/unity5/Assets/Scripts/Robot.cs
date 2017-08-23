@@ -366,12 +366,10 @@ public class Robot : MonoBehaviour
         if (!hasRobotCamera)
         {
             //Attached to the main frame and face the front
-            robotCameraManager.AddCamera(this, transform.GetChild(0).transform);
-            //Attached to the first node and face the front
-            if (transform.childCount > 1)
-                robotCameraManager.AddCamera(this, transform.GetChild(1).transform);
+            robotCameraManager.AddCamera(this, transform.GetChild(0).transform,new Vector3(0, 0.5f, 0), new Vector3(0, 0, 0));
             ////Attached to main frame and face the back
-            robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
+            robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0.5f, 0), new Vector3(0, 180, 0));
+            robotCameraManager.AddCamera(this, transform.GetChild(0).transform);
         }
 
         return true;
