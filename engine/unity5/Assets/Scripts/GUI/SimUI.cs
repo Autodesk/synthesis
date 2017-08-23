@@ -147,7 +147,7 @@ public class SimUI : MonoBehaviour
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
-        maMOrExPanel = AuxFunctions.FindObject(canvas, "MaMOrExPanel");
+        maMOrExPanel = AuxFunctions.FindObject(canvas, "MaMorExPanel");
     }
 
     private void UpdateWindows()
