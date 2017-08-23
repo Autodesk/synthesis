@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Schema;
 
 public partial class BXDFProperties
 {
@@ -70,6 +64,7 @@ public partial class BXDFProperties
     /// <param name="fieldDefinition"></param>
     public static void WriteProperties(string path, FieldDefinition fieldDefinition)
     {
+        if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
         XmlWriterSettings settings = new XmlWriterSettings();
         settings.Indent = true;
 

@@ -6,8 +6,6 @@ using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 using System.Timers;
-using ExportProcess;
-using System.Diagnostics;
 using FieldExporter;
 using System.Threading.Tasks;
 
@@ -796,7 +794,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             SetDone(false);
             SetCancel(false);
             int componentsAdded = 0; //Tracks how many components are added
-            SetDone(false);
             while (!GetDone())
             {
                 try
@@ -918,6 +915,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                     {
                                         if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
                                         {
+                                            LegacyInterchange.AddComponents(node.BrowserNodeDefinition.Label, selectedPart);
                                             t.CompOccs.Add(selectedPart);// add the part occurence to the arraylist
                                             partSet.AddItem(selectedPart); //add the part occurence to a set that is highlighted in purple
                                             ClientNodeResources nodeRescs = oPanes.ClientNodeResources;
@@ -935,7 +933,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                             node.AddChild((BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(selectedPart.Name, rand.Next(), nodeRes));
                                             node.DoSelect();
                                             //LegacyInterchange.CompPropertyDictionary.Add(selectedPart.Name, node.BrowserNodeDefinition.Label);
-                                            LegacyInterchange.AddComponents(node.BrowserNodeDefinition.Label, selectedPart);
                                         }
                                     }
                                 }

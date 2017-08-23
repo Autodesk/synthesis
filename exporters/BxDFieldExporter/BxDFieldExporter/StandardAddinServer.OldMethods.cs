@@ -1,15 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Inventor;
-using System.Windows.Forms;
-using System.Drawing;
-using System.Collections;
-using System.Timers;
-using ExportProcess;
-using System.Diagnostics;
-using FieldExporter;
-
-namespace BxDFieldExporter
+﻿namespace BxDFieldExporter
 {
     public partial class StandardAddInServer
     {

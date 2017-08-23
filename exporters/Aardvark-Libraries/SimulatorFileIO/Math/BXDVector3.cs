@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Xml;
 
 public class BXDVector3 : BinaryRWObject
 {

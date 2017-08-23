@@ -2,10 +2,8 @@
 // #define USE_TEXTURES
 
 using Inventor;
-using System.IO;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 /// <summary>
 /// Exports Inventor objects into the BXDA format.  One instance per thread.

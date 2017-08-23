@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-public class ArrayUtilities
+﻿public class ArrayUtilities
 {
     public delegate T MakeVector2<T>(double x, double y);
     public delegate T MakeVector3<T>(double x, double y, double z);
