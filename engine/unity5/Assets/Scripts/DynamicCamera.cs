@@ -432,7 +432,7 @@ public class DynamicCamera : MonoBehaviour
     }
 
     /// <summary>
-    /// This state is made for sensor/robot camera configuration, will focus on the first node of the robot, potentially can focus on a target object
+    /// This state is made for sensor/robot camera configuration, will focus a given target object or by default on the first robot node
     /// Works basically the same as orbit view but focus closer
     /// </summary>
     public class ConfigurationState : CameraState
@@ -460,7 +460,6 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            target = robot.transform.GetChild(0).gameObject;
             if (target != null)
             {
                 targetVector = target.transform.position;

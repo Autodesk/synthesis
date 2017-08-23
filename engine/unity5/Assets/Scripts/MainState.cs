@@ -89,6 +89,7 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
 
         //setting up raycast robot tick callback
+        BPhysicsTickListener.Instance.OnTick -= BRobotManager.Instance.UpdateRaycastRobots;
         BPhysicsTickListener.Instance.OnTick += BRobotManager.Instance.UpdateRaycastRobots;
 
         //setting up replay
