@@ -239,11 +239,7 @@ namespace BxDFieldExporter
                             if (pane.Name.Equals("Field Exporter"))// if the pane has the correct name then we assume it is what we are looking for
                             {
 
-                                oPane = pane;// if we have found the correct node then use it
-                                foreach (BrowserNode f in oPane.TopNode.BrowserNodes)
-                                {
-                                    f.Delete();// delete any residual browser nodes
-                                }
+                                oPane = pane;// if we have found the correct node then use 
                                 oPane.Visible = true;// make the pane visible to the user
                                 oPane.Activate();// make the pane the shown one
                                 found = true;// tell the program we have found a previous top node
