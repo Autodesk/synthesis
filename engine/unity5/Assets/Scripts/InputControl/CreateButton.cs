@@ -91,7 +91,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
 
         //Updates the landing page player (player one) with the active button style
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
@@ -175,7 +175,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
 
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
     }
@@ -247,7 +247,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -317,7 +317,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -387,7 +387,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -457,7 +457,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -527,7 +527,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
@@ -597,7 +597,7 @@ public class CreateButton : MonoBehaviour
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+        rectTransform.sizeDelta = new Vector2(0, contentHeight);
     }
     #endregion
 
