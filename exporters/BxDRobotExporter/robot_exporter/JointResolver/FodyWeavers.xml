@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Weavers>
+  <Costura>
+    <IncludeAssemblies>
+      OpenTK
+      OpenTK.GLControl
+      SimulatorAPI
+      MIConvexHull
+    </IncludeAssemblies>
+  </Costura>
+</Weavers>
