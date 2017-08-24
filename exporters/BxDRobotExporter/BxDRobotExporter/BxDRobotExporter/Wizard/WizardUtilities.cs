@@ -97,17 +97,11 @@ namespace BxDRobotExporter.Wizard
                 else if (lowestY - node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y <= 0.1d && lowestY - node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y >= -0.1d)
                     lowestNodesFilter.Add(node);
             }
+            //Hopefully this will be enough filtering :point_right:
             if (lowestNodesFilter.Count == wheelCount)
             {
-                string detected = "Detected Wheels: ";
                 BXDJSkeleton.SetupFileNames(baseNode);
-                foreach (var node in lowestNodesFilter)
-                {
-                    detected += node.ModelFileName + ", ";
-                }
-                MessageBox.Show(detected);
                 StandardAddInServer.Instance.JointEditorPane_SelectedJoint(lowestNodesFilter);
-                SortWheels(lowestNodesFilter);
                 return lowestNodesFilter;
             }
 

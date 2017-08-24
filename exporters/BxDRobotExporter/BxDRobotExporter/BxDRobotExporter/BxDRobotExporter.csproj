@@ -158,6 +158,15 @@
     <Compile Include="Wizard\BasicRobotInfoPage.Designer.cs">
       <DependentUpon>BasicRobotInfoPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Wizard\CustomControls\WizardUpDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wizard\Panels\DefinePartPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\Panels\DefinePartPanel.Designer.cs">
+      <DependentUpon>DefinePartPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Wizard\DefineMovingPartsPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -176,7 +185,7 @@
     <Compile Include="Wizard\Panels\DataRow.Designer.cs">
       <DependentUpon>DataRow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\DataManagement\WizardData.cs" />
+    <Compile Include="Wizard\Data\WizardData.cs" />
     <Compile Include="Wizard\DefineWheelsPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -253,6 +262,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\BasicRobotInfoPage.resx">
       <DependentUpon>BasicRobotInfoPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Panels\DefinePartPanel.resx">
+      <DependentUpon>DefinePartPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\DefineMovingPartsPage.resx">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
