@@ -115,7 +115,7 @@ public class LocalMultiplayer : MonoBehaviour {
         if (Directory.Exists(directory))
         {
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
-            mainState.LoadRobot(directory, 0);
+            mainState.LoadRobot(directory, false);
         }
         else
         {
@@ -136,14 +136,14 @@ public class LocalMultiplayer : MonoBehaviour {
     /// <summary>
     /// Adds a new robot to the field based on user selection in the popup robot list window
     /// </summary>
-    public void AddMaMRobot(string baseDirectory, string manipulatorDirectory, int hasManipulator)
+    public void AddMaMRobot(string baseDirectory, string manipulatorDirectory, bool hasManipulator)
     {
-        if (hasManipulator == 1)
+        if (hasManipulator)
         {
             mainState.LoadRobotWithManipulator(baseDirectory, manipulatorDirectory);
         } else
         {
-            mainState.LoadRobot(baseDirectory, 1);
+            mainState.LoadRobot(baseDirectory, true);
         }
 
         UpdateUI();

@@ -85,7 +85,7 @@ public class DriveJoints
         return MathfExt.ToDegrees(Mathf.Acos(Vector3.Dot(childUp, parentUp) / (childUp.magnitude * parentUp.magnitude)));
     }
 
-    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
+    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex)
     {
         float[] pwm;
         float[] can;
@@ -308,6 +308,11 @@ public class DriveJoints
             foreach (RigidNode_Base node in listOfSubNodes)
             {
                 RigidNode rigidNode = (RigidNode)node;
+
+                BRigidBody rigidBody;
+
+                if (pwm[i] != 0f && (rigidBody = rigidNode.MainObject.GetComponent<BRigidBody>()) != null && !rigidBody.GetCollisionObject().IsActive)
+                    rigidBody.GetCollisionObject().Activate();
 
                 BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
 

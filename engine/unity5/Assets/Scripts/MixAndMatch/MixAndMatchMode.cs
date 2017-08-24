@@ -15,7 +15,6 @@ public class MixAndMatchMode : MonoBehaviour
 #region Variables
     private GameObject mixAndMatchMode;
     private GameObject mixAndMatchModeScript;
-    public static bool IsMixAndMatchMode = false;
     private GameObject infoText;
     private GameObject mecWheelPanel;
 
@@ -190,17 +189,15 @@ public class MixAndMatchMode : MonoBehaviour
     /// </summary>
     public void StartMaMSim()
     {
-        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
+        RobotTypeManager.IsMixAndMatch = true;
+        RobotTypeManager.RobotPath = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
+        RobotTypeManager.ManipulatorPath = mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator);
+        RobotTypeManager.WheelPath = mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(SelectedWheel);
 
-        PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
-        PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
-        PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
-        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel));
-        PlayerPrefs.Save();
-        IsMixAndMatchMode = true;
+        RobotTypeManager.SetWheelProperties(mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel), 
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel),
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
+       
         SceneManager.LoadScene("Scene");
 
         if (SimUI.changeAnalytics) //for analytics tracking
@@ -242,24 +239,31 @@ public class MixAndMatchMode : MonoBehaviour
     /// When the user changes wheels/drive bases/manipulators within the simulator, changes the robot.
     /// </summary>
     void ChangeMaMRobot()
-    {
-        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
-        int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
-
+    { 
         string baseDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
         string manipulatorDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator);
 
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
-        PlayerPrefs.SetString("simSelectedRobot", baseDirectory);
-        PlayerPrefs.SetString("simSelectedManipulator", manipulatorDirectory);
-        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel));
+
+        RobotTypeManager.IsMixAndMatch = true;
+        RobotTypeManager.RobotPath = baseDirectory;
+        if(selectedManipulator == 0)
+        {
+            RobotTypeManager.HasManipulator = false;
+        } else
+        {
+            RobotTypeManager.HasManipulator = true;
+            RobotTypeManager.ManipulatorPath = manipulatorDirectory;
+        }
+
+        RobotTypeManager.WheelPath = mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(SelectedWheel);
+        RobotTypeManager.SetWheelProperties(mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel),
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel),
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
 
         GameObject stateMachine = GameObject.Find("StateMachine");
 
-        stateMachine.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory, robotHasManipulator);
+        stateMachine.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
 
         if (SimUI.changeAnalytics) //For analytics tracking
         {
@@ -278,17 +282,28 @@ public class MixAndMatchMode : MonoBehaviour
         string baseDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
         string manipulatorDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator);
 
+        RobotTypeManager.IsMixAndMatch = true;
+        RobotTypeManager.RobotPath = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
+        if (selectedManipulator == 0)
+        {
+            RobotTypeManager.HasManipulator = false;
+        }
+        else
+        {
+            RobotTypeManager.HasManipulator = true;
+            RobotTypeManager.ManipulatorPath = manipulatorDirectory;
+        }
+        RobotTypeManager.WheelPath = mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(SelectedWheel);
+
+        RobotTypeManager.SetWheelProperties(mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel),
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel),
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
+
+
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
-        PlayerPrefs.SetString("simSelectedRobot", baseDirectory);
-        PlayerPrefs.SetString("simSelectedManipulator", manipulatorDirectory);
-        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel));
-        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel));
-        int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
         GameObject stateMachine = GameObject.Find("StateMachine");
 
-        stateMachine.GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, robotHasManipulator);
+        stateMachine.GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, RobotTypeManager.HasManipulator);
     }
 #endregion
    
