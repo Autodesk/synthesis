@@ -879,7 +879,7 @@ class SensorManagerGUI : MonoBehaviour
         CancelOptionSelection();
         CancelTypeSelection();
         ResetConfigurationWindow();
-        HideSensorOutput();
+        //HideSensorOutput();
         selectedNode = null;
 
         //Switch back to the original camera state

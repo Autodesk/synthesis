@@ -121,7 +121,7 @@ public class BeamBreaker : SensorBase
         {
             GameObject inputField = AuxFunctions.FindObject(outputPanel, "Entry");
             inputField.GetComponent<InputField>().text = state;
-            Debug.Log(state);
+            //Debug.Log(state);
             GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
             outputText.GetComponent<Text>().text = gameObject.name + " Output";
         }
