@@ -942,7 +942,7 @@ public class DriverPracticeRobot : MonoBehaviour
         }
 
         if ((InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPrimary))) SpawnGamepiece(0);
-        if ((InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPrimary))) SpawnGamepiece(1);
+        if ((InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnSecondary))) SpawnGamepiece(1);
     }
 
     private void OnDestroy()
