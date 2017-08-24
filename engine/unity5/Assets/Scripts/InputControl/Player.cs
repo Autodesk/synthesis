@@ -277,14 +277,18 @@ public class Player
     /// </summary>
     public void ResetTank()
     {
-        tankDriveList.Clear();
-        foreach(KeyMapping key in resetTankDriveList)
+        foreach (KeyMapping defaultKey in resetTankDriveList)
         {
-            KeyMapping defaultKey = new KeyMapping(key.name, key.primaryInput, key.secondaryInput);
-            tankDriveList.Add(defaultKey);
+            foreach (KeyMapping key in tankDriveList)
+            {
+                if (key.name.Equals(defaultKey.name))
+                {
+                    key.primaryInput = defaultKey.primaryInput;
+                    key.secondaryInput = defaultKey.secondaryInput;
+                }
+            }
         }
         isTankDrive = true;
-        Controls.TankDriveEnabled = true;
         activeList = tankDriveList;
     }
 
@@ -293,14 +297,18 @@ public class Player
     /// </summary>
     public void ResetArcade()
     {
-        arcadeDriveList.Clear();
-        foreach (KeyMapping key in resetArcadeDriveList)
+        foreach (KeyMapping defaultKey in resetArcadeDriveList)
         {
-            KeyMapping defaultKey = new KeyMapping(key.name, key.primaryInput, key.secondaryInput);
-            arcadeDriveList.Add(defaultKey);
+            foreach (KeyMapping key in arcadeDriveList)
+            {
+                if (key.name.Equals(defaultKey.name))
+                {
+                    key.primaryInput = defaultKey.primaryInput;
+                    key.secondaryInput = defaultKey.secondaryInput;
+                }
+            }
         }
         isTankDrive = false;
-        Controls.TankDriveEnabled = false;
         activeList = arcadeDriveList;
     }
 }

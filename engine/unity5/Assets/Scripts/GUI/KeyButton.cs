@@ -84,10 +84,10 @@ public class KeyButton : MonoBehaviour
     /// </summary>
     public void OnClick()
     {
-        //if (selectedButton != null)
-        //{
-        //    selectedButton.UpdateText();
-        //}
+        if (selectedButton != null)
+        {
+            selectedButton.UpdateText();
+        }
 
         selectedButton = this;
 

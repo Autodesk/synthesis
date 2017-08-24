@@ -11,7 +11,6 @@ public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
 
-    //public Button button;
     public Sprite DefaultButtonImage;
     public Sprite ActiveButtonImage;
 
@@ -67,13 +66,11 @@ public class SettingsMode : MonoBehaviour
         {
             GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
             Controls.Save();
-            Controls.Load();
         }
         else
         {
             GameObject.Find("Content").GetComponent<CreateButton>().ResetArcadeDrive();
             Controls.Save();
-            Controls.Load();
         }
     }
 
