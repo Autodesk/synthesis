@@ -117,18 +117,19 @@ public class MainState : SimState
                 return;
             }
 
-            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
-            if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), isMixAndMatch))
+            Debug.Log("Robot Type Manager isMixAndMatch:" + RobotTypeManager.IsMixAndMatch);
+            if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
             {
                 AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                 return;
             }
 
-            
-            int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
-            if (isMixAndMatch == 1 && hasManipulator == 1)
+            if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
             {
-                Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
+                Debug.Log(LoadManipulator(RobotTypeManager.ManipulatorPath) ? "Load manipulator success" : "Load manipulator failed");
+            } else
+            {
+
             }
         }
         else
@@ -168,7 +169,7 @@ public class MainState : SimState
         //Spawn a new robot from the same path or switch active robot
         if (!ActiveRobot.IsResetting)
         {
-            if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath, 0); //made parameter 0 because not sure what this is for
+            if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath, false); //made parameter 0 because not sure what this is for
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
             
         }
@@ -246,20 +247,26 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory">robot directory</param>
     /// <returns>whether the process was successful</returns>
-    public bool LoadRobot(string directory, int isMixAndMatch)
+    public bool LoadRobot(string directory, bool isMixAndMatch)
     {
         if (SpawnedRobots.Count < MAX_ROBOTS)
         {
-            robotPath = directory;
+            if (isMixAndMatch)
+            {
+                robotPath = RobotTypeManager.RobotPath;
+            } else
+            {
+                robotPath = directory;
+            }
 
             GameObject robotObject = new GameObject("Robot");
             Robot robot = robotObject.AddComponent<Robot>();
 
-            robot.RobotIsMixAndMatch = isMixAndMatch; //0 is false, 1 is true
-            robot.RobotHasManipulator = 0; //Defaults to false
+            robot.RobotIsMixAndMatch = isMixAndMatch; 
+            robot.RobotHasManipulator = false; //Defaults to false
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
-            if (!robot.InitializeRobot(directory, this)) return false;
+            if (!robot.InitializeRobot(robotPath, this)) return false;
 
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (ActiveRobot == null)
@@ -280,15 +287,15 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory"></param>
     /// <returns>whether the process was successful</returns>
-    public bool ChangeRobot(string directory, int isMixAndMatch)
+    public bool ChangeRobot(string directory, bool isMixAndMatch)
     {
         sensorManager.RemoveSensorsFromRobot(ActiveRobot);
         sensorManagerGUI.ShiftOutputPanels();
         sensorManagerGUI.EndProcesses();
-        if (ActiveRobot.RobotHasManipulator == 1)
+        if (ActiveRobot.RobotHasManipulator)
         {
             ActiveRobot.DeleteManipulatorNodes();
-            ActiveRobot.RobotHasManipulator = 0;
+            ActiveRobot.RobotHasManipulator = false;
         }
 
         ActiveRobot.RobotIsMixAndMatch = isMixAndMatch;
@@ -358,7 +365,7 @@ public class MainState : SimState
             robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
             sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
 
-            if (SpawnedRobots[index].RobotHasManipulator == 1)
+            if (SpawnedRobots[index].RobotHasManipulator)
             {
                 GameObject.Destroy(SpawnedRobots[index].ManipulatorObject);
             }
@@ -402,7 +409,7 @@ public class MainState : SimState
 
         foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> rs in robotStates)
         {
-            if (!LoadRobot(rs.Key, 0))
+            if (!LoadRobot(rs.Key, false))
             {
                 AppModel.ErrorToMenu("Could not load robot: " + rs.Key + "\nHas it been moved or deleted?");
                 return;
@@ -471,7 +478,7 @@ public class MainState : SimState
     /// <returns></returns>
     public bool LoadManipulator(string directory)
     {
-        ActiveRobot.RobotHasManipulator = 1;
+        ActiveRobot.RobotHasManipulator = true;
         return ActiveRobot.LoadManipulator(directory, null);
     }
 
@@ -482,7 +489,7 @@ public class MainState : SimState
     /// <returns></returns>
     public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
-        ActiveRobot.RobotHasManipulator = 1;
+        ActiveRobot.RobotHasManipulator = true;
         return ActiveRobot.LoadManipulator(directory, robotGameObject);
     }
 
@@ -515,7 +522,7 @@ public class MainState : SimState
             SpawnedRobots.Add(robot);
 
             robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
-            ActiveRobot.RobotHasManipulator = 1;
+            ActiveRobot.RobotHasManipulator = true;
             return true;
         }
         return false;

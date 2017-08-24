@@ -174,17 +174,19 @@ public class SimUI : MonoBehaviour
 
     #region change robot/field functions
 
-    public void SetIsMixAndMatch(bool isMixAndMatch)
-    {
-        if (isMixAndMatch)
-        {
-            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
-        }
-        else
-        {
-            PlayerPrefs.SetInt("mixAndMatch", 0);
-        }
-    }
+    //Get rid of this later if no problems arise
+    //public void SetIsMixAndMatch(bool isMixAndMatch)
+    //{
+    //    if (isMixAndMatch)
+    //    {
+    //        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
+    //    }
+    //    else
+    //    {
+    //        PlayerPrefs.SetInt("mixAndMatch", 0);
+    //    }
+    //}
+
     public void ChangeRobot()
     {
         GameObject panel = GameObject.Find("RobotListPanel");
@@ -210,7 +212,7 @@ public class SimUI : MonoBehaviour
             robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
             sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
-            main.ChangeRobot(directory, 0);
+            main.ChangeRobot(directory, false);
 
         }
         else
@@ -222,28 +224,27 @@ public class SimUI : MonoBehaviour
     /// <summary>
     /// Changes the drive base, destroys old manipulator and creates new manipulator, sets wheels
     /// </summary>
-    public void MaMChangeRobot(string robotDirectory, string manipulatorDirectory, int robotHasManipulator)
+    public void MaMChangeRobot(string robotDirectory, string manipulatorDirectory)
     {
         robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
         sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
-        main.ChangeRobot(robotDirectory, 1);
+        main.ChangeRobot(robotDirectory, true);
 
         //If the current robot has a manipulator, destroy the manipulator
-        if (robotHasManipulator == 1) //0 is false, 1 is true
+        if (main.ActiveRobot.RobotHasManipulator) 
         {
             main.DeleteManipulatorNodes();
         }
 
         //If the new robot has a manipulator, load the manipulator
-        int newRobotHasManipulator = PlayerPrefs.GetInt("hasManipulator");
-        if (newRobotHasManipulator == 1) //0 is false, 1 is true
+        if (RobotTypeManager.HasManipulator) 
         {
             main.LoadManipulator(manipulatorDirectory, main.ActiveRobot.gameObject);
         }
         else
         {
-            main.ActiveRobot.RobotHasManipulator = 0;
+            main.ActiveRobot.RobotHasManipulator = false;
         }
     }
 
