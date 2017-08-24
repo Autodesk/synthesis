@@ -309,10 +309,13 @@ public class DriveJoints
             {
                 RigidNode rigidNode = (RigidNode)node;
 
-                BRigidBody rigidBody;
+                if (pwm[i] != 0f)
+                {
+                    BRigidBody rigidBody = rigidNode.MainObject.GetComponent<BRigidBody>();
 
-                if (pwm[i] != 0f && (rigidBody = rigidNode.MainObject.GetComponent<BRigidBody>()) != null && !rigidBody.GetCollisionObject().IsActive)
-                    rigidBody.GetCollisionObject().Activate();
+                    if (rigidBody != null && !rigidBody.GetCollisionObject().IsActive)
+                        rigidBody.GetCollisionObject().Activate();
+                }
 
                 BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
 
