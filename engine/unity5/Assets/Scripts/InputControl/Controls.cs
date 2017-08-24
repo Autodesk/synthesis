@@ -25,7 +25,7 @@ public class Controls
 
     public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
 
-    ///Player indexes (for initializing and creating separate key lists) <see cref="InputControl"/>
+    ///Player indexes (for initializing and creating separate player key lists) <see cref="InputControl"/>
     public static int PlayerOneIndex = 0;
     public static int PlayerTwoIndex = 1;
     public static int PlayerThreeIndex = 2;
@@ -134,8 +134,36 @@ public class Controls
             PlayerPrefs.SetString("Controls." + key.name + ".primary", key.primaryInput.ToString());
             PlayerPrefs.SetString("Controls." + key.name + ".secondary", key.secondaryInput.ToString());
         }
-
         PlayerPrefs.Save();
+    }
+
+    public static bool CheckIfSaved()
+    {
+        ReadOnlyCollection<KeyMapping> currentKeys = InputControl.getKeysList();
+        ReadOnlyCollection<KeyMapping> inputKeys = InputControl.getActivePlayerKeys();
+
+        foreach (KeyMapping key in currentKeys)
+        {
+            string lastString;
+            string inputString;
+
+            lastString = PlayerPrefs.GetString("Controls." + key.name + ".primary");
+            inputString = key.primaryInput.ToString();
+
+            if (inputString != lastString)
+            {
+                return true;
+            }
+
+            lastString = PlayerPrefs.GetString("Controls." + key.name + ".secondary");
+            inputString = key.secondaryInput.ToString();
+
+            if (inputString != lastString)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -183,7 +211,8 @@ public class Controls
     }
 
     /// <summary>
-    /// Resets to default Arcade Drive then updates the control/keybuttons' text.
+    /// Resets ALL player controls to default arcade drive controls.
+    /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
     /// </summary>
     public static void ResetArcadeDrive()
     {
@@ -192,12 +221,14 @@ public class Controls
 
         if (GameObject.Find("SettingsMode") != null)
         {
+            //Updates the controls text (keybuttons)
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
 
     /// <summary>
     /// Sets controls to Tank Drive.
+    /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
     /// </summary>
     public static void TankDrive()
     {
@@ -214,7 +245,8 @@ public class Controls
     }
 
     /// <summary>
-    /// Resets to default Tank Drive then updates the control/keybuttons' text.
+    /// Resets ALL player controls to default tank drive controls.
+    /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
     /// </summary>
     public static void ResetTankDrive()
     {
@@ -223,6 +255,7 @@ public class Controls
 
         if (GameObject.Find("SettingsMode") != null)
         {
+            //Updates the controls text (keybuttons)
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
@@ -232,7 +265,7 @@ public class Controls
     /// </summary>
     /// <returns>CustomInput from string.</returns>
     /// <param name="value">String representation of CustomInput.</param>
-    private static CustomInput customInputFromString(string value)
+    public static CustomInput customInputFromString(string value)
     {
         CustomInput res;
 
@@ -287,12 +320,12 @@ public class Controls
         //Other Controls
         buttons[0].resetRobot = InputControl.setKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1), false);
         buttons[0].cameraToggle = InputControl.setKey("1: Camera Toggle", PlayerOneIndex, KeyCode.C, new JoystickInput(JoystickButton.Button7, Joystick.Joystick1), false);
-        buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
-        buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
-        buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
-        buttons[0].pickupSecondary = InputControl.setKey("1: Pick Up Secondary Gamepiece", PlayerOneIndex, KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
-        buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
-        buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
+        buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
+        buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
+        buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.LeftBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
+        buttons[0].pickupSecondary = InputControl.setKey("1: Pick Up Secondary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
+        buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
+        buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.RightBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
 
         //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[0].horizontal = InputControl.setAxis("1: Joystick 1 Axis 2", PlayerOneIndex, buttons[0].left, buttons[0].right, false);
@@ -539,12 +572,12 @@ public class Controls
         //Other Controls
         buttons[0].resetRobot = InputControl.setKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1), true);
         buttons[0].cameraToggle = InputControl.setKey("1: Camera Toggle", PlayerOneIndex, KeyCode.C, new JoystickInput(JoystickButton.Button7, Joystick.Joystick1), true);
-        buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
-        buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
-        buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
-        buttons[0].pickupSecondary = InputControl.setKey("1: Pick Up Secondary Gamepiece", PlayerOneIndex, KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
-        buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
-        buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
+        buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
+        buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
+        buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.LeftBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
+        buttons[0].pickupSecondary = InputControl.setKey("1: Pick Up Secondary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
+        buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
+        buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.RightBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
 
         //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[0].tankLeftAxes = InputControl.setAxis("1: Joystick 1 Axis 9", PlayerOneIndex, buttons[0].tankBackLeft, buttons[0].tankFrontLeft, true);

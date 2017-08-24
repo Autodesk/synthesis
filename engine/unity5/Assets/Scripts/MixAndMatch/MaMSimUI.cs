@@ -11,35 +11,10 @@ public class MaMSimUI : MonoBehaviour {
     GameObject canvas;
 
     GameObject mixAndMatchPanel;
-
-    GameObject wheelPanel;
-    GameObject driveBasePanel;
-    GameObject manipulatorPanel;
-
-    GameObject changeRobotPanel;
-    GameObject addRobotPanel;
-
-    GameObject driverStationPanel;
-
-    GameObject inputManagerPanel;
-    GameObject unitConversionButton;
-
-    public bool swapWindowOn = false; //if the swap window is active
-    public bool wheelPanelOn = false; //if the wheel panel is active
-    public bool driveBasePanelOn = false; //if the drive base panel is active
-    public bool manipulatorPanelOn = false; //if the manipulator panel is active
-
-    GameObject exitPanel;
-
-    Text cameraNodeText;
-
-    GameObject loadingPanel;
+    GameObject multiplayerPanel;
 
     private SimUI simUI;
 
-    /// <summary>
-    /// Retreives the Main State instance which controls everything in the simulator.
-    /// </summary>
     void Start()
     {
         FindElements();
@@ -63,20 +38,7 @@ public class MaMSimUI : MonoBehaviour {
         canvas = GameObject.Find("Canvas");
 
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
-        wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
-        driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
-        manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
-
-        addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
-
-
-        changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
-
-
-        inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
-
-        exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
-        loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
+        multiplayerPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
 
         simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
     }
@@ -90,7 +52,24 @@ public class MaMSimUI : MonoBehaviour {
         else
         {
             simUI.EndOtherProcesses();
+            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is true ,1 is false
             mixAndMatchPanel.SetActive(true);
+        }
+    }
+
+    public void ToggleMaMInMultiplayer()
+    {
+        if (mixAndMatchPanel.activeSelf)
+        {
+            mixAndMatchPanel.SetActive(false);
+            multiplayerPanel.SetActive(true);
+        }
+        else
+        {
+            simUI.EndOtherProcesses();
+            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is true ,1 is false
+            mixAndMatchPanel.SetActive(true);
+            multiplayerPanel.SetActive(true);
         }
     }
 }

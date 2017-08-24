@@ -68,6 +68,7 @@ GameObject:
   - component: {fileID: 114912895082227264}
   - component: {fileID: 114042964862781166}
   - component: {fileID: 114572936759535586}
+  - component: {fileID: 114455208329461400}
   m_Layer: 5
   m_Name: PneumaticWheel
   m_TagString: Untagged
@@ -109,6 +110,7 @@ GameObject:
   - component: {fileID: 114488447256437270}
   - component: {fileID: 114908912650963172}
   - component: {fileID: 114557289401562694}
+  - component: {fileID: 114030795504234784}
   m_Layer: 0
   m_Name: Lift
   m_TagString: Untagged
@@ -222,6 +224,7 @@ GameObject:
   - component: {fileID: 114126940730987624}
   - component: {fileID: 114935445603095084}
   - component: {fileID: 114675332338960098}
+  - component: {fileID: 114516694090814454}
   m_Layer: 0
   m_Name: NarrowBase
   m_TagString: Untagged
@@ -281,7 +284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1239403972157500
 GameObject:
   m_ObjectHideFlags: 1
@@ -318,7 +321,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1250364497671928
 GameObject:
   m_ObjectHideFlags: 1
@@ -475,7 +478,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1343827611804342
 GameObject:
   m_ObjectHideFlags: 1
@@ -529,7 +532,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1384956389450992
 GameObject:
   m_ObjectHideFlags: 1
@@ -822,7 +825,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1728633207998924
 GameObject:
   m_ObjectHideFlags: 0
@@ -1092,7 +1095,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1952805340897084
 GameObject:
   m_ObjectHideFlags: 1
@@ -1271,6 +1274,17 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Delete Preset
+--- !u!114 &114030795504234784
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1108988409081648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d6a7c0697995d34fa4ee02a252fde4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114032834754964688
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3167,6 +3181,17 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Mix and Match Mode
+--- !u!114 &114455208329461400
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1101574596089034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d6a7c0697995d34fa4ee02a252fde4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114461832463951390
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3560,6 +3585,17 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &114516694090814454
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1149407114210114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d6a7c0697995d34fa4ee02a252fde4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114517872271384606
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4491,11 +4527,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  presetClones: []
-  presetsList: []
-  wheels: []
-  bases: []
-  manipulators: []
+  PresetClones: []
+  PresetsList: []
+  Wheels: []
+  Bases: []
+  Manipulators: []
 --- !u!114 &114779121442372860
 MonoBehaviour:
   m_ObjectHideFlags: 1

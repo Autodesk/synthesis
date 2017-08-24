@@ -103,12 +103,16 @@ public class BeamBreaker : SensorBase
         sensorOffset = distance;
     }
 
+    /// <summary>
+    /// Change the distance between Emitter and Receiver using W/S
+    /// </summary>
     public override void UpdateRangeTransform()
     {
         //Lower the transform speed
         sensorOffset += Input.GetAxis("CameraVertical") * 0.02f;
         SetSensorRange(sensorOffset);
     }
+
 
     public override void UpdateOutputDisplay()
     {
@@ -117,7 +121,7 @@ public class BeamBreaker : SensorBase
         {
             GameObject inputField = AuxFunctions.FindObject(outputPanel, "Entry");
             inputField.GetComponent<InputField>().text = state;
-            Debug.Log(state);
+            //Debug.Log(state);
             GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
             outputText.GetComponent<Text>().text = gameObject.name + " Output";
         }

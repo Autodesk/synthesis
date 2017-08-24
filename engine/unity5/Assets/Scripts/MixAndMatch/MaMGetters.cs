@@ -13,12 +13,16 @@ public class MaMGetters : MonoBehaviour {
         switch (baseID)
         {
             case 0: //Default Drive Base
+                RobotTypeManager.IsMecanum = false;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\Default");
             case 1: //Mech Drive Base
+                RobotTypeManager.IsMecanum = true;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheMac");
             case 2: //Swerve Drive
+                RobotTypeManager.IsMecanum = false;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheSwerve");
             case 3: //Narrow Drive
+                RobotTypeManager.IsMecanum = false;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\Non");
         }
 
@@ -34,20 +38,16 @@ public class MaMGetters : MonoBehaviour {
         switch (manipulatorID)
         {
             case 0: //No manipulator
-                MixAndMatchMode.hasManipulator = false;
-                PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
+                RobotTypeManager.HasManipulator = false;
                 break;
             case 1: //SyntheClaw
-                MixAndMatchMode.hasManipulator = true;
-                PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
+                RobotTypeManager.HasManipulator = true;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
             case 2: //SyntheShot
-                MixAndMatchMode.hasManipulator = true;
-                PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
+                RobotTypeManager.HasManipulator = true;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheShot");
             case 3: //Lift
-                MixAndMatchMode.hasManipulator = true;
-                PlayerPrefs.SetInt("hasManipulator", 1);
+                RobotTypeManager.HasManipulator = true;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheLift");
         }
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");

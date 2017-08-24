@@ -10,7 +10,10 @@ using Assets.Scripts.BUExtensions;
 
 public partial class RigidNode : RigidNode_Base
 {
-    public bool CreateMesh(string filePath)
+    private const float LinearSleepingThreshold = 0.25f;
+    private const float AngularSleepingThreshold = 0.5f;
+
+    public bool CreateMesh(string filePath, bool isMixAndMatch = false, float wheelMass = 1.0f)
     {
         //Debug.Log(filePath);
         BXDAMesh mesh = new BXDAMesh();
@@ -41,8 +44,6 @@ public partial class RigidNode : RigidNode_Base
 
             meshObject.transform.position = root.position;
             meshObject.transform.rotation = root.rotation;
-
-            Debug.Log("Mesh Objects count " + meshObjects.Count);
 
         }, true);
 
@@ -77,13 +78,14 @@ public partial class RigidNode : RigidNode_Base
             MainObject.AddComponent<MeshRenderer>();
 
             PhysicalProperties = mesh.physics;
-            Debug.Log(PhysicalProperties.centerOfMass);
+            //Debug.Log(PhysicalProperties.centerOfMass);
 
             BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
             rigidBody.mass = mesh.physics.mass;
             rigidBody.friction = 0.25f;
+            rigidBody.linearSleepingThreshold = LinearSleepingThreshold;
+            rigidBody.angularSleepingThreshold = AngularSleepingThreshold;
             rigidBody.RemoveOnCollisionCallbackEventHandler();
-            ((RigidBody)rigidBody.GetCollisionObject()).ActivationState = ActivationState.DisableDeactivation;
 
             foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
                 rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
@@ -94,9 +96,9 @@ public partial class RigidNode : RigidNode_Base
         if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)
         {
             BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
-            if (MixAndMatchMode.isMixAndMatchMode)
+            if (isMixAndMatch)
             {
-                rigidBody.mass += PlayerPrefs.GetFloat("wheelMass", 1f);
+                rigidBody.mass += wheelMass;
             }
             rigidBody.GetCollisionObject().CollisionShape.CalculateLocalInertia(rigidBody.mass);
         }

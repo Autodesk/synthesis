@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using Assets.Scripts.FSM;
 
 public class DynamicCamera : MonoBehaviour
 {
@@ -58,12 +59,15 @@ public class DynamicCamera : MonoBehaviour
         Quaternion startRotation;
         Quaternion lookingRotation;
         Quaternion currentRotation;
+        //The default starting position of the camera
         static Vector3 position1Vector = new Vector3(0f, 1.5f, -9.5f);
+        //The opposite default starting position of the camera
         static Vector3 position2Vector = new Vector3(0f, 1.5f, 9.5f);
         Vector3 currentPosition;
 
         float transformSpeed;
         bool opposite;
+        private MainState main;
 
         public DriverStationState(MonoBehaviour mono, bool oppositeSide = false)
         {
@@ -73,6 +77,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
+            //Decide which side the camera should be placed depending on whether it is opposite of default position
             if (opposite) currentPosition = position2Vector;
             else currentPosition = position1Vector;
             mono.transform.position = currentPosition;
@@ -80,10 +85,12 @@ public class DynamicCamera : MonoBehaviour
             startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
             currentRotation = startRotation;
             transformSpeed = 2.5f;
+            main = StateMachine.Instance.FindState<MainState>();
         }
 
         public override void Update()
         {
+            //Look towards the robot
             if (robot != null && robot.transform.childCount > 0)
             {
                 lookingRotation = Quaternion.LookRotation(robot.transform.GetChild(0).transform.position - mono.transform.position);
@@ -91,9 +98,10 @@ public class DynamicCamera : MonoBehaviour
             }
             else
             {
-                robot = GameObject.Find("Robot");
+                robot = main.ActiveRobot.gameObject;
             }
-            if (MovingEnabled)
+            //Move left/right using A/D, freeze camera movement when the robot is resetting
+            if (MovingEnabled && !main.ActiveRobot.IsResetting)
             {
                 if (!opposite)
                 {
@@ -208,6 +216,7 @@ public class DynamicCamera : MonoBehaviour
         private float heightDamping = 5f;
         private float rotationDamping = 5f;
 
+
         public OrbitState(MonoBehaviour mono)
         {
             this.mono = mono;
@@ -221,7 +230,8 @@ public class DynamicCamera : MonoBehaviour
         public override void Update()
         {
             //Focus on the node 0
-            target = GameObject.Find("Robot").transform.GetChild(0);
+            if (!robot) robot = StateMachine.Instance.FindState<MainState>().ActiveRobot.gameObject;
+            target = robot.transform.GetChild(0);
 
             // Early out if we don't have a target
             if (!target)
@@ -290,6 +300,7 @@ public class DynamicCamera : MonoBehaviour
         float rotationSpeed;
         float transformSpeed;
         float scrollWheelSensitivity;
+        MainState main;
 
         public FreeroamState(MonoBehaviour mono)
         {
@@ -309,18 +320,21 @@ public class DynamicCamera : MonoBehaviour
             transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
             if (robot == null) robot = GameObject.Find("robot");
+            main = StateMachine.Instance.FindState<MainState>();
         }
 
         public override void Update()
         {
-            if (MovingEnabled)
+            if (MovingEnabled && !main.ActiveRobot.IsResetting)
             {
+                //Rotate camera when holding right mouse
                 if (InputControl.GetMouseButton(1))
                 {
                     rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
                 }
-
+                
+                //Use WASD to move camera position
                 positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
                 positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
 
@@ -418,7 +432,7 @@ public class DynamicCamera : MonoBehaviour
     }
 
     /// <summary>
-    /// This state is made for sensor/robot camera configuration, will focus on whatever target object is, the target is default to the first node
+    /// This state is made for sensor/robot camera configuration, will focus a given target object or by default on the first robot node
     /// Works basically the same as orbit view but focus closer
     /// </summary>
     public class ConfigurationState : CameraState
@@ -446,12 +460,12 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            target = robot.transform.GetChild(0).gameObject;
             if (target != null)
             {
                 targetVector = target.transform.position;
-                if (MovingEnabled)
+                if (MovingEnabled) //Works like the old orbit state
                 {
+                    //Use left mouse to change angle
                     if (Input.GetMouseButton(0))
                     {
                         cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
@@ -460,7 +474,7 @@ public class DynamicCamera : MonoBehaviour
                     else
                     {
                         panValue = 0f;
-
+                        //Use right mouse to change magnification
                         if (Input.GetMouseButton(1))
                         {
                             magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 0.5f);
@@ -502,6 +516,10 @@ public class DynamicCamera : MonoBehaviour
             return output.normalized * mag + origin;
         }
     }
+
+    /// <summary>
+    /// Switch to orbit state when the simulator starts
+    /// </summary>
     void Start()
     {
         SwitchCameraState(new OrbitState(this));
@@ -575,13 +593,10 @@ public class DynamicCamera : MonoBehaviour
         return lagScalar;
     }
 
-    public void SwitchCameraState(int type)
-    {
-        if (type == 0) SwitchCameraState(new FreeroamState(this));
-        else if (type == 1) SwitchCameraState(new OrbitState(this));
-        else SwitchCameraState(new DriverStationState(this, false));
-    }
-
+    /// <summary>
+    /// Switch to a specific state given the target state, only decide on which type the target state is
+    /// </summary>
+    /// <param name="targetState"></param> The (type of) state you want to switch to
     public void SwitchToState(CameraState targetState)
     {
         if (targetState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));

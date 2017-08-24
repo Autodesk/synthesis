@@ -138,6 +138,11 @@ Section "Code Emulator (optional)"
   ; Put file there
   ;File "example2.nsi"
   File /r "SynthesisDrive\*"
+
+  SetOutPath $INSTDIR\cygscripts
+  File /r "cygscripts\*"
+
+  ExecWait "$INSTDIR\cygscripts\cygpac.bat" "mingw64-x86_64-gcc-g++" SW_HIDE
   
 SectionEnd 
 

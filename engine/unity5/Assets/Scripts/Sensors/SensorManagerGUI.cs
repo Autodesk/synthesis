@@ -91,7 +91,7 @@ class SensorManagerGUI : MonoBehaviour
     {
         if(main == null)
         {
-            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+            main = StateMachine.Instance.FindState<MainState>();
         }
         //Find the dynamic camera
         if (dynamicCamera == null)
@@ -824,6 +824,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorOutputPanel.SetActive(true);
         isHidingOutput = false ;
         showSensorButton.SetActive(false);
+        sensorOutputPanel.transform.position = showSensorButton.transform.position;
     }
 
     /// <summary>
@@ -834,6 +835,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorOutputPanel.SetActive(false);
         isHidingOutput = true;
         showSensorButton.SetActive(true);
+        showSensorButton.transform.position = sensorOutputPanel.transform.position;
     }
     #endregion
 
@@ -877,7 +879,7 @@ class SensorManagerGUI : MonoBehaviour
         CancelOptionSelection();
         CancelTypeSelection();
         ResetConfigurationWindow();
-        HideSensorOutput();
+        //HideSensorOutput();
         selectedNode = null;
 
         //Switch back to the original camera state
