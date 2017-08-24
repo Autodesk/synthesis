@@ -1130,7 +1130,7 @@ GameObject:
   - component: {fileID: 41100157}
   - component: {fileID: 41100156}
   m_Layer: 5
-  m_Name: AddRobotButton (1)
+  m_Name: ExportedButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1148,7 +1148,7 @@ RectTransform:
   m_Children:
   - {fileID: 1982910960}
   m_Father: {fileID: 311707563}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -1348,7 +1348,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -27.525, y: -13.5}
+  m_AnchoredPosition: {x: -27.525002, y: -13.5}
   m_SizeDelta: {x: 55.05, y: 27}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &54876711
@@ -2452,7 +2452,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.23}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 550.4002, y: -0.3997345}
+  m_AnchoredPosition: {x: 550.40027, y: -0.3997345}
   m_SizeDelta: {x: 100, y: -115.23001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &93044912
@@ -6009,7 +6009,7 @@ RectTransform:
   - {fileID: 1258167107}
   - {fileID: 260594385}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 28
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -6973,7 +6973,7 @@ GameObject:
   - component: {fileID: 206618949}
   - component: {fileID: 206618948}
   m_Layer: 5
-  m_Name: AddRobotButton (1)
+  m_Name: ExportedButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6991,7 +6991,7 @@ RectTransform:
   m_Children:
   - {fileID: 539729574}
   m_Father: {fileID: 1710198743}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -7037,8 +7037,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231153}
-        m_MethodName: ToggleMaMInMultiplayer
+      - m_Target: {fileID: 1741231147}
+        m_MethodName: ToggleChangeRobotPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10032,10 +10032,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 675746853}
-  - {fileID: 1293936845}
   - {fileID: 41100155}
+  - {fileID: 1293936845}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 24
+  m_RootOrder: 34
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -11243,7 +11243,7 @@ GameObject:
   - component: {fileID: 347415342}
   - component: {fileID: 347415341}
   m_Layer: 5
-  m_Name: AddRobotButton
+  m_Name: MaMButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11261,7 +11261,7 @@ RectTransform:
   m_Children:
   - {fileID: 435042019}
   m_Father: {fileID: 1710198743}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -11309,6 +11309,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1741231153}
         m_MethodName: ToggleMaMPanel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1741231147}
+        m_MethodName: ToggleMultiplayerWindow
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -17130,7 +17141,7 @@ RectTransform:
   - {fileID: 132884431}
   - {fileID: 1793333219}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 31
+  m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -19555,7 +19566,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 750.0999, y: 0.06278229}
+  m_AnchoredPosition: {x: 750.1, y: 0.06278229}
   m_SizeDelta: {x: 100, y: -114.92999}
   m_Pivot: {x: 0.5, y: 0.68613124}
 --- !u!114 &551255808
@@ -26169,7 +26180,7 @@ RectTransform:
   - {fileID: 826430620}
   - {fileID: 804562552}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 32
+  m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -29994,7 +30005,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 949.1, y: -0.30000305}
+  m_AnchoredPosition: {x: 949.0999, y: -0.30000305}
   m_SizeDelta: {x: 97.9, y: -115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &858276091
@@ -30196,7 +30207,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 650.40015, y: 0.09983826}
+  m_AnchoredPosition: {x: 650.4001, y: 0.09983826}
   m_SizeDelta: {x: 100, y: -114.92999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &860974968
@@ -32784,7 +32795,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 250.40005, y: 0.15861511}
+  m_AnchoredPosition: {x: 250.40009, y: 0.15861511}
   m_SizeDelta: {x: 100, y: -114.900024}
   m_Pivot: {x: 0.5, y: 0.49999696}
 --- !u!114 &934928212
@@ -33840,7 +33851,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 850.2001, y: -0.28048706}
+  m_AnchoredPosition: {x: 850.2, y: -0.28048706}
   m_SizeDelta: {x: 100, y: -115.03}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &962559497
@@ -37539,7 +37550,7 @@ GameObject:
   - component: {fileID: 1066735928}
   - component: {fileID: 1066735927}
   m_Layer: 5
-  m_Name: AddRobotButton (1)
+  m_Name: ExportedButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37557,7 +37568,7 @@ RectTransform:
   m_Children:
   - {fileID: 460939680}
   m_Father: {fileID: 1713259039}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -38550,7 +38561,7 @@ RectTransform:
   - {fileID: 458882536}
   - {fileID: 1132811339}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 34
+  m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -40811,7 +40822,7 @@ RectTransform:
   - {fileID: 1594305238}
   - {fileID: 2089153570}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 33
+  m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -41176,7 +41187,7 @@ RectTransform:
   - {fileID: 271220810}
   - {fileID: 940192645}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 30
+  m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -42034,9 +42045,6 @@ RectTransform:
   - {fileID: 1337019838}
   - {fileID: 84161136}
   - {fileID: 568844238}
-  - {fileID: 311707563}
-  - {fileID: 1710198743}
-  - {fileID: 1713259039}
   - {fileID: 1526485025}
   - {fileID: 169396283}
   - {fileID: 1500428352}
@@ -42046,6 +42054,9 @@ RectTransform:
   - {fileID: 1196512550}
   - {fileID: 1100542522}
   - {fileID: 1959832927}
+  - {fileID: 1713259039}
+  - {fileID: 311707563}
+  - {fileID: 1710198743}
   m_Father: {fileID: 1039971749}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -42090,7 +42101,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50.4, y: -0.9000015}
+  m_AnchoredPosition: {x: 50.399998, y: -0.9000015}
   m_SizeDelta: {x: 100, y: -116.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1236095645
@@ -44114,7 +44125,7 @@ GameObject:
   - component: {fileID: 1293936847}
   - component: {fileID: 1293936846}
   m_Layer: 5
-  m_Name: AddRobotButton
+  m_Name: MaMButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44132,7 +44143,7 @@ RectTransform:
   m_Children:
   - {fileID: 405050098}
   m_Father: {fileID: 311707563}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -47985,7 +47996,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -106.85, y: -71.4}
+  m_AnchoredPosition: {x: -106.850006, y: -71.399994}
   m_SizeDelta: {x: 184.6, y: 26}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1404552048
@@ -50113,7 +50124,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1420777380}
         m_MethodName: ChangeMaMClicked
         m_Mode: 1
         m_Arguments:
@@ -50691,7 +50702,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1420777380}
         m_MethodName: AddMaMClicked
         m_Mode: 1
         m_Arguments:
@@ -50768,7 +50779,7 @@ RectTransform:
   - {fileID: 200022082}
   - {fileID: 950036149}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 29
+  m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -51974,7 +51985,7 @@ RectTransform:
   - {fileID: 156840287}
   - {fileID: 387656284}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 27
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -58188,10 +58199,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 929528510}
-  - {fileID: 347415340}
   - {fileID: 206618947}
+  - {fileID: 347415340}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 25
+  m_RootOrder: 35
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -58511,10 +58522,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 484300994}
-  - {fileID: 2115986354}
   - {fileID: 1066735926}
+  - {fileID: 2115986354}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 26
+  m_RootOrder: 33
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -65682,7 +65693,7 @@ RectTransform:
   - {fileID: 1420777384}
   - {fileID: 1890078084}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 35
+  m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.2}
   m_AnchorMax: {x: 1, y: 0.8}
@@ -69838,7 +69849,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150.39993, y: -1.9000092}
+  m_AnchoredPosition: {x: 150.39996, y: -1.9000092}
   m_SizeDelta: {x: 100, y: -116.130005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2079626143
@@ -69891,7 +69902,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1420777380}
         m_MethodName: ChangeMaMClicked
         m_Mode: 1
         m_Arguments:
@@ -70636,7 +70647,7 @@ GameObject:
   - component: {fileID: 2115986356}
   - component: {fileID: 2115986355}
   m_Layer: 5
-  m_Name: AddRobotButton
+  m_Name: MaMButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70654,7 +70665,7 @@ RectTransform:
   m_Children:
   - {fileID: 1702411888}
   m_Father: {fileID: 1713259039}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
