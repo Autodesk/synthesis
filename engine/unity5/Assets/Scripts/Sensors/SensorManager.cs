@@ -196,7 +196,16 @@ class SensorManager : MonoBehaviour
         Physics.Raycast(ray, out hitInfo);
         if (hitInfo.transform != null && hitInfo.transform.gameObject.tag == "Sensor")
         {
-            GameObject selectedObject = hitInfo.transform.gameObject;
+            GameObject selectedObject;
+            //If the sensor is a beam breaker, select the parent object instead
+            if (hitInfo.transform.gameObject.transform.parent.gameObject.GetComponent<BeamBreaker>() != null)
+            {
+                selectedObject = hitInfo.transform.gameObject.transform.parent.gameObject;
+            }
+            else
+            {
+                selectedObject = hitInfo.transform.gameObject;
+            }
             
             if (lastNode != null && !selectedObject.Equals(lastNode))
             {
@@ -213,7 +222,7 @@ class SensorManager : MonoBehaviour
             {
                 RevertNodeColors(lastNode, hoveredColors);
                 RevertNodeColors(SelectedSensor, selectedColors);
-                SelectedSensor = hitInfo.transform.gameObject;
+                SelectedSensor = selectedObject;
                 ChangeNodeColors(SelectedSensor, selectedColor, selectedColors);
                 UserMessageManager.Dispatch(SelectedSensor.name + " has been selected as the current sensor", 5);
             }
