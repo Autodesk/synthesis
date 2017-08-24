@@ -457,6 +457,15 @@ namespace Assets.Scripts.FEA
         /// </summary>
         private void PushSaveReplayState()
         {
+            MainState mainState = StateMachine.Instance.FindState<MainState>();
+            foreach (Robot robot in mainState.SpawnedRobots)
+            {
+                if (robot.RobotIsMixAndMatch)
+                {
+                    UserMessageManager.Dispatch("Cannot save replays with Mix and Match robots", 5);
+                    return;
+                }
+            }
             StateMachine.Instance.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
         }
 

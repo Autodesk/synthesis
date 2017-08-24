@@ -80,7 +80,7 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (mainState == null)
         {
-            mainState = GetComponent<StateMachine>().CurrentState as MainState;
+            mainState = StateMachine.Instance.FindState<MainState>();
         }
         else if (dpmRobot == null)
         {
@@ -399,7 +399,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void HighlightIntake()
     {
-        dpmRobot.HighlightNode(dpmRobot.intakeNode[configuringIndex].name);
+        dpmRobot.HighlightNode(dpmRobot.intakeNode[configuringIndex]);
     }
 
     public void DefineRelease()
@@ -415,7 +415,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void HighlightRelease()
     {
-        dpmRobot.HighlightNode(dpmRobot.releaseNode[configuringIndex].name);
+        dpmRobot.HighlightNode(dpmRobot.releaseNode[configuringIndex]);
     }
 
     public void SetGamepieceSpawn()
@@ -539,18 +539,19 @@ public class DriverPracticeMode : MonoBehaviour {
                 {
                     if (settingControl == 1)
                     {
-                        InputControl.setKey(Controls.buttons[index].pickupPrimary.name, vKey);
+                        Controls.buttons[index].pickupPrimary.primaryInput = Controls.customInputFromString(vKey.ToString());
                     }
-                    else if (settingControl == 2) InputControl.setKey(Controls.buttons[index].releasePrimary.name, vKey);
-                    else InputControl.setKey(Controls.buttons[index].spawnPrimary.name, vKey);
+                    else if (settingControl == 2) Controls.buttons[index].releasePrimary.primaryInput = Controls.customInputFromString(vKey.ToString());
+                    else Controls.buttons[index].spawnPrimary.primaryInput = Controls.customInputFromString(vKey.ToString());
                 }
                 else
                 {
-                    if (settingControl == 1) InputControl.setKey(Controls.buttons[index].pickupSecondary.name, vKey);
-                    else if (settingControl == 2) InputControl.setKey(Controls.buttons[index].releaseSecondary.name, vKey);
-                    else InputControl.setKey(Controls.buttons[index].spawnSecondary.name, vKey);
+                    if (settingControl == 1) Controls.buttons[index].pickupSecondary.primaryInput = Controls.customInputFromString(vKey.ToString());
+                    else if (settingControl == 2) Controls.buttons[index].releaseSecondary.primaryInput = Controls.customInputFromString(vKey.ToString());
+                    else Controls.buttons[index].spawnSecondary.primaryInput = Controls.customInputFromString(vKey.ToString());
                 }
                 settingControl = 0;
+                Controls.Save();
             }
         }
     }

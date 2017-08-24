@@ -1,33 +1,11 @@
 # Emulation
 ## Overview
 Here you'll find things regarding emulating hardware, firmware, and/or software, usually related to the RoboRIO.
-there are serval projects here.
 
-### fake-wpilib 
-fake-wpilib is the oldest project for running code on the simulator.
-it is combination of partially edited wpilib code and a write of 
-fakefpga and network code.
+### Hardware Emulation Layer
 
-##### warning
-this code is highly out of date. badly written and not reviewed.
-this is decrapcated project.
+`hel` is (mainly) a reimplementation of the hardware abstraction layer that compiles and runs natively on Windows which allows your robot code to do the same and to communicate with Synthesis. By reimplementing a lower level of the robot code runtime, we can improve maintainability and portability of code across new releases of WPILib. This is currently in development and will replace the old solution soon.
 
+### HEL Build Tool
 
-### fake-Hal 
-#### old research development.
-fake-Hal is an attempt to rewrite the hal section of the official wpilib to allow  
-the simulator to understand commands from code. this would be alot simpler and avoid
-the need for any fpga simulatation than fake wpilib.
-
-
-
-
-### Emulator
-#### official project for emulation
-this is the newest attempt at getting the code emulatation working. 
-it makes the code run in a "virtual machine".
-this code relies on the xliynx qemu project for emulation. 
-
-the reason for this is it will allow teams to update the wpilib without updating  
-emulatation software. ideally developing against qemu will be signaficantly less painful for both
-syntheis developer and robot developers.
+`HELBuildTool` is for compiling robot code via Makefile outside of Eclipse targeted at Synthesis, so that your code can run natively on Windows and communicate with the simulator. In the future, this will be integrated into Eclipse to make the compilation process more intuitive and easier to use.

@@ -16,7 +16,7 @@ public class MainMenu : MonoBehaviour
     public enum Tab { Main, Sim, Options, FieldDir, RobotDir, ErrorScreen };
     public static Tab currentTab = Tab.Main;
 
-    public static bool isMixAndMatch = false;
+    public static bool isMixAndMatchTab = false;
     public GameObject mixAndMatchModeScript;
 
     //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
@@ -58,8 +58,6 @@ public class MainMenu : MonoBehaviour
     private GameObject input; //The Input GUI Objects
 
     private GameObject settingsMode; //The InputManager Objects
-    //private GameObject tankMode;     //Tank Mode InputManager
-    private Text enableTankDriveText; //Enable + Disable tank drive text
     private Text errorText; // The text of the error message
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
@@ -83,8 +81,8 @@ public class MainMenu : MonoBehaviour
 
     public static bool fullscreen; //true if application is in fullscreen
     public static int resolutionsetting; //resolution setting index
-    private int[] xresolution = new int[8]; //arrays of resolution widths corresponding to index
-    private int[] yresolution = new int[8]; //arrays of resolution heights corresponding to index
+    private int[] xresolution = new int[9]; //arrays of resolution widths corresponding to index
+    private int[] yresolution = new int[9]; //arrays of resolution heights corresponding to index
 
     private Canvas canvas; //canvas component of this object--used for scaling user message manager to size
 
@@ -197,6 +195,7 @@ public class MainMenu : MonoBehaviour
             simTab.SetActive(false);
             optionsTab.SetActive(true);
             settingsMode.SetActive(true);
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().GetLastSavedControls();
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
@@ -217,7 +216,7 @@ public class MainMenu : MonoBehaviour
 
         selectionPanel.SetActive(true);
 
-        isMixAndMatch = false;
+        isMixAndMatchTab = false;
     }
 
     /// <summary>
@@ -225,7 +224,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchSimDefault()
     {
-        if (!isMixAndMatch)
+        if (!isMixAndMatchTab)
         {
             currentSim = Sim.DefaultSimulator;
 
@@ -241,6 +240,8 @@ public class MainMenu : MonoBehaviour
 
             simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
             simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+
+            RobotTypeManager.SetProperties(false);
         }
         else
         {
@@ -261,9 +262,8 @@ public class MainMenu : MonoBehaviour
         simLoadReplay.SetActive(false);
         mixAndMatchMode.SetActive(true);
 
-        PlayerPrefs.SetString("simSelectedField", simSelectedField);
-
-        isMixAndMatch = true;
+        RobotTypeManager.SetProperties(true);
+        isMixAndMatchTab = true;
 
     }
 
@@ -299,8 +299,6 @@ public class MainMenu : MonoBehaviour
         defaultSimulator.SetActive(false);
         simLoadField.SetActive(true);
         mixAndMatchMode.SetActive(false);
-
-        isMixAndMatch = true;
     }
 
     /// <summary>
@@ -376,8 +374,9 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
-            Application.LoadLevel("Scene");
-            PlayerPrefs.SetInt("mixAndMatch", 0); //0 means false, 1 means true
+            SceneManager.LoadScene("Scene");
+
+            RobotTypeManager.SetProperties(false);
 
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
@@ -508,6 +507,7 @@ public class MainMenu : MonoBehaviour
     public void ApplyGraphics()
     {
         Screen.SetResolution(xresolution[resolutionsetting], yresolution[resolutionsetting], fullscreen);
+        PlayerPrefs.SetInt("fullscreen", (fullscreen ? 1 : 0));
         splashScreen.SetActive(true);
         StartCoroutine(HideSplashScreen(1));
         SwitchTabHome();
@@ -558,7 +558,7 @@ public class MainMenu : MonoBehaviour
             simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
 
-            if (isMixAndMatch) //Starts the MixAndMatch scene
+            if (isMixAndMatchTab) //Starts the MixAndMatch scene
             {
                 PlayerPrefs.SetString("simSelectedField", simSelectedField);
                 fieldList.SetActive(false);
@@ -639,7 +639,6 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     void Start()
     {
-        
         FindAllGameObjects();
         splashScreen.SetActive(true); //Turns on the loading screen while initializing
         InitGraphicsSettings();
@@ -683,6 +682,57 @@ public class MainMenu : MonoBehaviour
         customroboton = false;
         ApplyGraphics();
 
+        //Checks if this is the first launch of the main scene.
+        if (AppModel.InitialLaunch)
+        {
+            AppModel.InitialLaunch = false;
+
+            //Loads robot and field directories from command line arguments if valid.
+            string[] args = Environment.GetCommandLineArgs();
+            bool robotDefined = false;
+            bool fieldDefined = false;
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i].ToLower())
+                {
+                    case "-robot":
+                        if (i < args.Length - 1)
+                        {
+                            string robotFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(robotFile);
+                            robotDirectory = dirInfo.Parent.FullName;
+                            PlayerPrefs.SetString("RobotDirectory", robotDirectory);
+                            simSelectedRobot = robotFile;
+                            simSelectedRobotName = dirInfo.Name;
+                            robotDefined = true;
+                        }
+                        break;
+                    case "-field":
+                        if (i < args.Length - 1)
+                        {
+                            string fieldFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(fieldFile);
+                            fieldDirectory = dirInfo.Parent.FullName;
+                            PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
+                            simSelectedField = fieldFile;
+                            simSelectedFieldName = dirInfo.Name;
+                            fieldDefined = true;
+                        }
+                        break;
+                }
+            }
+
+            //If command line arguments have been passed, start the simulator.
+            if (robotDefined && fieldDefined)
+            {
+                StartDefaultSim();
+                return;
+            }
+        }
+
         //This makes it so that if the user exits from the simulator, 
         //they are put into the panel where they can select a robot/field
         //In all other cases, users are welcomed with the main menu screen.
@@ -724,7 +774,6 @@ public class MainMenu : MonoBehaviour
         input = AuxFunctions.FindObject(gameObject, "Input");
 
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
-        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
         errorText = AuxFunctions.FindObject(errorScreen, "ErrorText").GetComponent<Text>();
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
@@ -749,6 +798,7 @@ public class MainMenu : MonoBehaviour
         xresolution[5] = 1600;
         xresolution[6] = 1680;
         xresolution[7] = 1920;
+        xresolution[8] = Screen.currentResolution.width;
 
         yresolution[0] = 768;
         yresolution[1] = 720;
@@ -758,10 +808,11 @@ public class MainMenu : MonoBehaviour
         yresolution[5] = 900;
         yresolution[6] = 1050;
         yresolution[7] = 1080;
+        yresolution[8] = Screen.currentResolution.height;
 
-        fullscreen = false;
-        int width = Screen.currentResolution.width;
-        int height = Screen.currentResolution.height;
+        fullscreen = (PlayerPrefs.GetInt("fullscreen", 0) == 1);
+        int width = xresolution[8];
+        int height = yresolution[8];
         if (width == xresolution[0] && height == yresolution[0]) resolutionsetting = 0;
         else if (width == xresolution[1] && height == yresolution[1]) resolutionsetting = 1;
         else if (width == xresolution[2] && height == yresolution[2]) resolutionsetting = 2;
@@ -770,7 +821,7 @@ public class MainMenu : MonoBehaviour
         else if (width == xresolution[5] && height == yresolution[5]) resolutionsetting = 5;
         else if (width == xresolution[6] && height == yresolution[6]) resolutionsetting = 6;
         else if (width == xresolution[7] && height == yresolution[7]) resolutionsetting = 7;
-        else resolutionsetting = 0;
+        else resolutionsetting = 8;
     }
 
     /// <summary>

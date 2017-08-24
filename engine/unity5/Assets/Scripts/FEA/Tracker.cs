@@ -102,7 +102,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         void Awake()
         {
-            mainState = StateMachine.Instance.CurrentState as MainState;
+            mainState = StateMachine.Instance.FindState<MainState>();
 
             if (mainState == null)
                 Destroy(this);

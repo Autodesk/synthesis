@@ -2,6 +2,7 @@
 
 using BulletSharp;
 using BulletSharp.Math;
+using BulletUnity;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +11,22 @@ using System.Text;
 
 namespace Assets.Scripts.BUExtensions
 {
+    /// <summary>
+    /// Describes info about a robot wheel.
+    /// </summary>
+    public class RobotWheelInfo : WheelInfo
+    {
+        public float SlidingFriction;
+        public float Speed;
+        public float freeSpinDamping;
+
+        public RobotWheelInfo(WheelInfoConstructionInfo ci) : base(ci)
+        {
+            SlidingFriction = 1.0f;
+            freeSpinDamping = 0.05f;
+        }
+    }
+
     /// <summary>
     /// This class is a modified version of RaycastVehicle to better suit how robots behave.
     /// </summary>
@@ -24,7 +41,8 @@ namespace Assets.Scripts.BUExtensions
         // The higher the fwdFactor, the less side traction the robot has wheen accelerating.
         const float fwdFactor = 0.5f;// Original: 0.5f;
 
-        WheelInfo[] wheelInfo = new WheelInfo[0];
+        RobotWheelInfo[] wheelInfo = new RobotWheelInfo[0];
+        //float[] wheelSpeeds = new float[0];
 
         Vector3[] forwardWS = new Vector3[0];
         Vector3[] axle = new Vector3[0];
@@ -34,7 +52,12 @@ namespace Assets.Scripts.BUExtensions
         /// <summary>
         /// Controls how much sideways friction the wheels have when sliding.
         /// </summary>
-        public float SlidingFriction { get; set; }
+        //public float SlidingFriction { get; set; }
+
+        /// <summary>
+        /// Controls the maximum wheel angular velocity.
+        /// </summary>
+        public float MaxWheelAngularVelocity { get; set; }
 
         public Matrix ChassisWorldTransform
         {
@@ -125,11 +148,12 @@ namespace Assets.Scripts.BUExtensions
             RootRigidBody = chassis;
             vehicleRaycaster = raycaster;
 
-            SlidingFriction = 1.0f;
+            //SlidingFriction = 1.0f;
+            MaxWheelAngularVelocity = 40f;
             OverrideMass = 1.0f / chassis.InvMass;
         }
 
-        public WheelInfo AddWheel(Vector3 connectionPointCS, Vector3 wheelDirectionCS0, Vector3 wheelAxleCS, float suspensionRestLength, float wheelRadius, VehicleTuning tuning, bool isFrontWheel)
+        public RobotWheelInfo AddWheel(Vector3 connectionPointCS, Vector3 wheelDirectionCS0, Vector3 wheelAxleCS, float suspensionRestLength, float wheelRadius, VehicleTuning tuning, bool isFrontWheel)
         {
             WheelInfoConstructionInfo ci = new WheelInfoConstructionInfo();
 
@@ -146,9 +170,11 @@ namespace Assets.Scripts.BUExtensions
             ci.MaxSuspensionTravelCm = tuning.MaxSuspensionTravelCm;
             ci.MaxSuspensionForce = tuning.MaxSuspensionForce;
 
-            Array.Resize<WheelInfo>(ref wheelInfo, wheelInfo.Length + 1);
-            WheelInfo wheel = new WheelInfo(ci);
+            Array.Resize<RobotWheelInfo>(ref wheelInfo, wheelInfo.Length + 1);
+            RobotWheelInfo wheel = new RobotWheelInfo(ci);
             wheelInfo[wheelInfo.Length - 1] = wheel;
+
+            //Array.Resize<float>(ref wheelSpeeds, wheelInfo.Length);
 
             UpdateWheelTransformsWS(wheel, false);
             UpdateWheelTransform(NumWheels - 1, false);
@@ -225,7 +251,7 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
-        public WheelInfo GetWheelInfo(int index)
+        public RobotWheelInfo GetWheelInfo(int index)
         {
             Debug.Assert((index >= 0) && (index < NumWheels));
 
@@ -392,7 +418,7 @@ namespace Assets.Scripts.BUExtensions
 
             for (int i = 0; i < NumWheels; i++)
             {
-                WheelInfo wheel = wheelInfo[i];
+                RobotWheelInfo wheel = wheelInfo[i];
 
                 RigidBody groundObject = wheel.RaycastInfo.GroundObject as RigidBody;
                 if (groundObject != null)
@@ -417,7 +443,14 @@ namespace Assets.Scripts.BUExtensions
                               groundObject, wheel.RaycastInfo.ContactPointWS,
                               0, axle[i], ref sideImpulse[i], timeStep);
 
-                    sideImpulse[i] *= SlidingFriction;
+                    sideImpulse[i] *= wheel.SlidingFriction;
+                }
+                else
+                {
+                    if (wheel.Speed > 0)
+                        wheel.Speed = Math.Max(wheel.Speed - wheel.freeSpinDamping, 0f);
+                    else if (wheel.Speed < 0)
+                        wheel.Speed = Math.Min(wheel.Speed + wheel.freeSpinDamping, 0f);
                 }
             }
 
@@ -425,16 +458,34 @@ namespace Assets.Scripts.BUExtensions
 
             for (int i = 0; i < NumWheels; i++)
             {
-                WheelInfo wheel = wheelInfo[i];
+                RobotWheelInfo wheel = wheelInfo[i];
                 RigidBody groundObject = wheel.RaycastInfo.GroundObject as RigidBody;
 
                 float rollingFriction = 0.0f;
 
                 if (groundObject != null)
                 {
+                    Vector3 velocity = chassisBody.GetVelocityInLocalPoint(wheel.ChassisConnectionPointCS);
+                    Vector3 localVelocity = Vector3.TransformNormal(velocity, Matrix.Invert(chassisBody.WorldTransform.Basis));
+                    Vector3 forwardAxis = (UnityEngine.Quaternion.AngleAxis(90f, UnityEngine.Vector3.up) *
+                        wheel.WheelAxleCS.ToUnity() / (MathUtil.SIMD_PI * wheel.WheelsRadius)).ToBullet();
+
+                    float speed = Vector3.Dot(localVelocity, forwardAxis);
+
+                    wheel.Speed = speed;
+
                     if (wheel.EngineForce != 0.0f)
                     {
-                        rollingFriction = wheel.EngineForce * timeStep;
+                        //apply torque curves
+                        float engineForce = wheel.EngineForce;
+
+                        if (speed * engineForce > 0)
+                            engineForce *= 1 - (Math.Abs(speed) / MaxWheelAngularVelocity);
+
+                        rollingFriction = engineForce * timeStep;
+
+                        if (!RootRigidBody.IsActive)
+                            RootRigidBody.Activate();
                     }
                     else
                     {

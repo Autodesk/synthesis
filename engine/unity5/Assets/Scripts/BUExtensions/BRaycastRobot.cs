@@ -14,9 +14,11 @@ namespace Assets.Scripts.BUExtensions
         private const float SuspensionCompressionRatio = 10f;
         private const float SuspensionStiffnessRatio = 2000f;
         private const float RollingFriction = 0.01f;
+        private const float RollInfluence = 0.25f;
+        private const float DefaultSlidingFriction = 1.0f;
         private const int DefaultNumWheels = 4;
 
-        private VehicleTuning vehicleTuning;
+        private VehicleTuning defaultVehicleTuning;
         private BRigidBody rigidBody;
 
         /// <summary>
@@ -31,22 +33,7 @@ namespace Assets.Scripts.BUExtensions
         {
             set
             {
-                vehicleTuning.SuspensionStiffness = CalculateStiffness(value);
-            }
-        }
-
-        /// <summary>
-        /// Adjusts the friction value of the robot's wheels.
-        /// </summary>
-        public float Friction
-        {
-            set
-            {
-                vehicleTuning.FrictionSlip = value;
-            }
-            get
-            {
-                return vehicleTuning.FrictionSlip;
+                defaultVehicleTuning.SuspensionStiffness = CalculateStiffness(value);
             }
         }
 
@@ -60,24 +47,27 @@ namespace Assets.Scripts.BUExtensions
         /// <returns></returns>
         public int AddWheel(WheelType wheelType, BulletSharp.Math.Vector3 connectionPoint, BulletSharp.Math.Vector3 axle, float suspensionRestLength, float radius)
         {
+            float slidingFriction = DefaultSlidingFriction;
+
             switch (wheelType)
             {
                 case WheelType.MECANUM:
-                    RaycastRobot.SlidingFriction = 0.1f;
+                    slidingFriction = 0.1f;
                     axle = (Quaternion.AngleAxis((connectionPoint.X > 0 && connectionPoint.Z > 0) || (connectionPoint.X < 0 && connectionPoint.Z < 0) ? -45 : 45,
                         Vector3.up) * axle.ToUnity()).ToBullet();
                     break;
                 case WheelType.OMNI:
-                    RaycastRobot.SlidingFriction = 0.1f;
+                    slidingFriction = 0.1f;
                     break;
             }
 
-            WheelInfo w = RaycastRobot.AddWheel(connectionPoint,
+            RobotWheelInfo wheel = RaycastRobot.AddWheel(connectionPoint,
                 -BulletSharp.Math.Vector3.UnitY, axle, suspensionRestLength,
-                radius, vehicleTuning, false);
+                radius, defaultVehicleTuning, false);
 
-            w.RollInfluence = 0.25f;
-            w.Brake = (RollingFriction / radius) * RaycastRobot.OverrideMass * BRaycastWheel.MassTorqueScalar;
+            wheel.RollInfluence = RollInfluence;
+            wheel.SlidingFriction = slidingFriction;
+            wheel.Brake = (RollingFriction / radius) * RaycastRobot.OverrideMass * BRaycastWheel.MassTorqueScalar;
 
             return RaycastRobot.NumWheels - 1;
         }
@@ -95,7 +85,7 @@ namespace Assets.Scripts.BUExtensions
                 return;
             }
 
-            RaycastRobot = new RaycastRobot(vehicleTuning = new VehicleTuning
+            RaycastRobot = new RaycastRobot(defaultVehicleTuning = new VehicleTuning
             {
                 MaxSuspensionForce = 1000f,
                 MaxSuspensionTravelCm = SuspensionToleranceCm,

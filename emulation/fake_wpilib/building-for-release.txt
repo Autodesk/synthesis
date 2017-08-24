@@ -1,1 +1,0 @@
-LIB.EXE /OUT:EmulatedWPI.lib Aardvark-WPILib.lib FakeFPGA.lib
