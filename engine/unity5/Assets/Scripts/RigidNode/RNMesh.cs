@@ -78,7 +78,7 @@ public partial class RigidNode : RigidNode_Base
             MainObject.AddComponent<MeshRenderer>();
 
             PhysicalProperties = mesh.physics;
-            Debug.Log(PhysicalProperties.centerOfMass);
+            //Debug.Log(PhysicalProperties.centerOfMass);
 
             BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
             rigidBody.mass = mesh.physics.mass;
