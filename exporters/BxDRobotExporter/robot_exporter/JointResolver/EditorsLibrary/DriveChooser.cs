@@ -268,21 +268,24 @@ public partial class DriveChooser : Form
         {
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
 
-            joint.cDriver = new JointDriver(cType);
-
-            joint.cDriver.portA = (int) txtPortA.Value;
-            joint.cDriver.portB = (int) txtPortB.Value;
-            joint.cDriver.lowerLimit = (float) txtLowLimit.Value;
-            joint.cDriver.upperLimit = (float) txtHighLimit.Value;
-            joint.cDriver.isCan = rbCAN.Checked;
+            joint.cDriver = new JointDriver(cType)
+            {
+                portA = (int)txtPortA.Value,
+                portB = (int)txtPortB.Value,
+                lowerLimit = (float)txtLowLimit.Value,
+                upperLimit = (float)txtHighLimit.Value,
+                isCan = rbCAN.Checked
+            };
             //Only need to store wheel driver if run by motor and is a wheel.
             if (cType.IsMotor() && (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
             {
                 #region WHEEL_SAVING
-                WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
-                wheelDriver.type = (WheelType) cmbWheelType.SelectedIndex;
-                wheelDriver.isDriveWheel = chkBoxDriveWheel.Checked;
-                //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
+                WheelDriverMeta wheelDriver = new WheelDriverMeta()
+                {
+                    type = (WheelType)cmbWheelType.SelectedIndex,
+                    isDriveWheel = chkBoxDriveWheel.Checked
+                }; //The info about the wheel attached to the joint.
+                   //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
                 switch ((FrictionLevel) cmbFrictionLevel.SelectedIndex)
                 {
                     case FrictionLevel.HIGH:
@@ -361,9 +364,11 @@ public partial class DriveChooser : Form
             if (cType.IsPneumatic())
             {
                 #region PNEUMATIC_SAVING
-                PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta(); //The info about the wheel attached to the joint.
-                pneumaticDriver.pressureEnum = (PneumaticPressure) cmbPneumaticPressure.SelectedIndex;
-                pneumaticDriver.widthEnum = (PneumaticDiameter) cmbPneumaticDiameter.SelectedIndex;
+                PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
+                {
+                    pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
+                    widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                }; //The info about the wheel attached to the joint.
                 joint.cDriver.AddInfo(pneumaticDriver);
                 #endregion
             }
@@ -375,8 +380,10 @@ public partial class DriveChooser : Form
             if (cType.IsElevator())
             {
                 #region ELEVATOR_SAVING
-                ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta();
-                elevatorDriver.type = (ElevatorType)cmbStages.SelectedIndex;
+                ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta()
+                {
+                    type = (ElevatorType)cmbStages.SelectedIndex
+                };
                 joint.cDriver.AddInfo(elevatorDriver);
                 #endregion
             }
@@ -396,12 +403,14 @@ public partial class DriveChooser : Form
                 }
                 else
                 {
-                    JointDriver driver = new JointDriver(joint.cDriver.GetDriveType());
-                    driver.portA = joint.cDriver.portA;
-                    driver.portB = joint.cDriver.portB;
-                    driver.isCan = joint.cDriver.isCan;
-                    driver.lowerLimit = joint.cDriver.lowerLimit;
-                    driver.upperLimit = joint.cDriver.upperLimit;
+                    JointDriver driver = new JointDriver(joint.cDriver.GetDriveType())
+                    {
+                        portA = joint.cDriver.portA,
+                        portB = joint.cDriver.portB,
+                        isCan = joint.cDriver.isCan,
+                        lowerLimit = joint.cDriver.lowerLimit,
+                        upperLimit = joint.cDriver.upperLimit
+                    };
                     joint.cDriver.CopyMetaInfo(driver);
 
                     node.GetSkeletalJoint().cDriver = driver;

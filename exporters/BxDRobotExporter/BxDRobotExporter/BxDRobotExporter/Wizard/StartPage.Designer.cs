@@ -56,7 +56,7 @@
             this.TutorialsLinkLabel.Text = "bxd.autodesk.com/tutorials.html";
             this.TutorialsLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.TutorialsLinkLabel_LinkClicked);
             // 
-            // label1
+            // LowerLimitLabel
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(15, 606);

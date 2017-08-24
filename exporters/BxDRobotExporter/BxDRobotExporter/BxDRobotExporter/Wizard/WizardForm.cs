@@ -16,6 +16,7 @@ namespace BxDRobotExporter.Wizard
         {
             get => Utilities.GUI.SkeletonBase.ListAllNodes();
         }
+        
         WizardData data = new WizardData();
 
         public WizardForm()
@@ -41,6 +42,11 @@ namespace BxDRobotExporter.Wizard
             defineWheelsPage.DeactivateNext += DeactivateNext;
             WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.Clean);
 
+            DefineMovingPartsPage defineMovingPartsPage = new DefineMovingPartsPage();
+            defineMovingPartsPage.ActivateNext += ActivateNext;
+            defineMovingPartsPage.DeactivateNext += DeactivateNext;
+            WizardPages.Add(defineMovingPartsPage, WizardNavigator.WizardNavigatorState.Clean);
+
             ReviewAndFinishPage reviewAndFinishPage = new ReviewAndFinishPage();
             reviewAndFinishPage.ActivateNext += ActivateNext;
             reviewAndFinishPage.DeactivateNext += DeactivateNext;
@@ -59,7 +65,7 @@ namespace BxDRobotExporter.Wizard
         {
             WizardPages.Size = new Size(460, this.Size.Height - 63);
         }
-
+        
         private void ActivateNext()
         {
             WizardPages.WizardNavigator.NextButton.Enabled = true;
@@ -68,5 +74,7 @@ namespace BxDRobotExporter.Wizard
         {
             WizardPages.WizardNavigator.NextButton.Enabled = false;
         }
+
+
     }
 }
