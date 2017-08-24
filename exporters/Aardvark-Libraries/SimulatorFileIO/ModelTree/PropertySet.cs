@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-/// <summary>
+﻿/// <summary>
 /// Stores physical properties for a node or group of nodes.
 /// </summary>
 public struct PropertySet
