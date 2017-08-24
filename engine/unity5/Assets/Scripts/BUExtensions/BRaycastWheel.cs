@@ -39,6 +39,21 @@ namespace Assets.Scripts.BUExtensions
         }
 
         /// <summary>
+        /// Sets or gets the friction of the wheel.
+        /// </summary>
+        public float Friction
+        {
+            get
+            {
+                return robot.RaycastRobot.GetWheelInfo(wheelIndex).FrictionSlip;
+            }
+            set
+            {
+                robot.RaycastRobot.GetWheelInfo(wheelIndex).FrictionSlip = value;
+            }
+        }
+
+        /// <summary>
         /// Creates a wheel and attaches it to the parent BRaycastVehicle.
         /// </summary>
         /// <param name="node"></param>
@@ -98,10 +113,10 @@ namespace Assets.Scripts.BUExtensions
             if (robot == null)
                 return;
 
-            WheelInfo info = robot.RaycastRobot.GetWheelInfo(wheelIndex);
+            RobotWheelInfo wheel = robot.RaycastRobot.GetWheelInfo(wheelIndex);
 
-            transform.position = info.WorldTransform.Origin.ToUnity();
-            transform.localRotation *= Quaternion.AngleAxis(-robot.RaycastRobot.GetWheelAngularVelocity(wheelIndex), axis);
+            transform.position = wheel.WorldTransform.Origin.ToUnity();
+            transform.localRotation *= Quaternion.AngleAxis(-wheel.Speed, axis);
         }
     }
 }

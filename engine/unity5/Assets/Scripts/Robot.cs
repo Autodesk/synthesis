@@ -76,7 +76,6 @@ public class Robot : MonoBehaviour
     void Start()
     {
         RobotHasManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
-        RobotIsMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); //0 is false, 1 is true
         StateMachine.Instance.Link<MainState>(this);
     }
 
@@ -93,8 +92,6 @@ public class Robot : MonoBehaviour
             return;
         }
 
-        if (!rigidBody.GetCollisionObject().IsActive)
-            rigidBody.GetCollisionObject().Activate();
         if (!IsResetting)
         {
             if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
@@ -118,7 +115,10 @@ public class Robot : MonoBehaviour
                 EndReset();
             }
         }
-
+        else if (!rigidBody.GetCollisionObject().IsActive)
+        {
+            rigidBody.GetCollisionObject().Activate();
+        }
     }
 
     /// <summary>
@@ -134,7 +134,6 @@ public class Robot : MonoBehaviour
 
             if (RobotHasManipulator == 1)
             {
-                Debug.Log("Manipulator should be moving");
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, ControlIndex, MixAndMatchMode.GetMecanum());
             }
         }
@@ -401,6 +400,11 @@ public class Robot : MonoBehaviour
     /// <param name="resetTransform"></param>
     public void BeginReset()
     {
+        BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
+
+        if (rigidBody != null && !rigidBody.GetCollisionObject().IsActive)
+            rigidBody.GetCollisionObject().Activate();
+
         if (!mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
         {
             Debug.Log(mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState);

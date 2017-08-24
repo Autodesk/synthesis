@@ -201,7 +201,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel));
         PlayerPrefs.Save();
         IsMixAndMatchMode = true;
-        SceneManager.LoadScene("mixAndMatch");
+        SceneManager.LoadScene("Scene");
 
         if (SimUI.changeAnalytics) //for analytics tracking
         {
@@ -525,11 +525,15 @@ public class MixAndMatchMode : MonoBehaviour
         SetColor(Bases[driveBase], purple);
         this.gameObject.GetComponent<MaMInfoText>().SetBaseInfoText(driveBase);
         selectedDriveBase = driveBase;
+        mecWheelPanel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("MecWheelLabel")).First();
         mecWheelPanel.SetActive(false);
         if (selectedDriveBase == 1)
         {
             IsMecanum = true;
             mecWheelPanel.SetActive(true);
+        } else
+        {
+
         }
     }
 

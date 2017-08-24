@@ -115,7 +115,7 @@ public class LocalMultiplayer : MonoBehaviour {
         if (Directory.Exists(directory))
         {
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
-            mainState.LoadRobot(directory);
+            mainState.LoadRobot(directory, 0);
         }
         else
         {
@@ -143,7 +143,7 @@ public class LocalMultiplayer : MonoBehaviour {
             mainState.LoadRobotWithManipulator(baseDirectory, manipulatorDirectory);
         } else
         {
-            mainState.LoadRobot(baseDirectory);
+            mainState.LoadRobot(baseDirectory, 1);
         }
 
         UpdateUI();

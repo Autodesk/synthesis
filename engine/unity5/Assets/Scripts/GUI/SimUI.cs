@@ -45,7 +45,9 @@ public class SimUI : MonoBehaviour
     GameObject analyticsPanel;
 
     GameObject mixAndMatchPanel;
-    GameObject maMOrExPanel;
+    GameObject changePanel;
+    GameObject changeInMultiplayerPanel;
+    GameObject addPanel;
 
     GameObject toolbar;
 
@@ -156,7 +158,9 @@ public class SimUI : MonoBehaviour
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
 
         toolbar = AuxFunctions.FindObject(canvas, "Toolbar");
-        maMOrExPanel = AuxFunctions.FindObject(canvas, "MaMorExPanel");
+        changePanel = AuxFunctions.FindObject(canvas, "ChangePanel");
+        changeInMultiplayerPanel = AuxFunctions.FindObject(canvas, "ChangeInMultiplayerPanel");
+        addPanel = AuxFunctions.FindObject(canvas, "AddPanel");
 
     }
 
@@ -192,6 +196,7 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            PlayerPrefs.SetInt("mixAndMatch", 0);
             PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
             PlayerPrefs.Save();
 
@@ -205,7 +210,7 @@ public class SimUI : MonoBehaviour
             robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
             sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
-            main.ChangeRobot(directory);
+            main.ChangeRobot(directory, 0);
 
         }
         else
@@ -222,7 +227,7 @@ public class SimUI : MonoBehaviour
         robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
         sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
-        main.ChangeRobot(robotDirectory);
+        main.ChangeRobot(robotDirectory, 1);
 
         //If the current robot has a manipulator, destroy the manipulator
         if (robotHasManipulator == 1) //0 is false, 1 is true
@@ -251,6 +256,7 @@ public class SimUI : MonoBehaviour
         else
         {
             EndOtherProcesses();
+            PlayerPrefs.SetInt("mixAndMatch", 0); //0 is false, 1 is true
             changeRobotPanel.SetActive(true);
             robotListPanel.SetActive(true);
         }
@@ -627,7 +633,9 @@ public class SimUI : MonoBehaviour
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         mixAndMatchPanel.SetActive(false);
-        maMOrExPanel.SetActive(false);
+        changePanel.SetActive(false);
+        changeInMultiplayerPanel.SetActive(false);
+        addPanel.SetActive(false);
         analyticsPanel.SetActive(false);
         inputManagerPanel.SetActive(false);
         ToggleHotKeys(false);

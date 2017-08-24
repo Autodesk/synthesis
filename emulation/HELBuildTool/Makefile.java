@@ -9,7 +9,7 @@ JAVAC := $(JAVA_HOME)/bin/javac.exe
 JAR := $(JAVA_HOME)/bin/jar.exe
 
 ifndef SYNTHESIS_JARS
-	SYNTHESIS_JARS := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/jar
+	SYNTHESIS_JARS := /cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/jars
 endif
 
 JAVA_FILES := $(shell find ./ -name "*.java")
