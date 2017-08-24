@@ -1,6 +1,4 @@
 ﻿using Inventor;
-using System.IO;
-using System;
 using System.Collections.Generic;
 
 public partial class SurfaceExporter

@@ -1,8 +1,5 @@
 ﻿using Inventor;
-using System.IO;
-using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 public partial class SurfaceExporter
 {

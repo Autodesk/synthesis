@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-public class BXDQuaternion
+﻿public class BXDQuaternion
 {
     /// <summary>
     /// The X value of the BXDQuaternion.
