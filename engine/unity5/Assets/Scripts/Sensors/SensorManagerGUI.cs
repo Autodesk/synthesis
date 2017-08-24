@@ -824,6 +824,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorOutputPanel.SetActive(true);
         isHidingOutput = false ;
         showSensorButton.SetActive(false);
+        sensorOutputPanel.transform.position = showSensorButton.transform.position;
     }
 
     /// <summary>
@@ -834,6 +835,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorOutputPanel.SetActive(false);
         isHidingOutput = true;
         showSensorButton.SetActive(true);
+        showSensorButton.transform.position = sensorOutputPanel.transform.position;
     }
     #endregion
 
