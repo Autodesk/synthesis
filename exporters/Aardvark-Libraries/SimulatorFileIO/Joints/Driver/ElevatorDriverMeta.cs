@@ -1,5 +1,4 @@
-﻿using System.IO;
-public enum ElevatorType : byte
+﻿public enum ElevatorType : byte
 {
     NOT_MULTI = 0, //Single stage elevator, constitutes most frc elevator
     CASCADING_STAGE_1 = 1,

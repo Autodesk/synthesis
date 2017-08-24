@@ -1,17 +1,6 @@
-﻿using Inventor;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Drawing.Drawing2D;
 using FieldExporter.Components;
-using FieldExporter.Controls;
 using System.Diagnostics;
 
 namespace FieldExporter
