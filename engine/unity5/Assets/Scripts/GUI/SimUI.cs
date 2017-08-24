@@ -520,6 +520,7 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             analyticsPanel.SetActive(true);
+            inputManagerPanel.SetActive(true);
         }
     }
 

@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/MainMenu.unity
     guid: 42208a42719dc3645a460c8bb3094921
-  - enabled: 1
+  - enabled: 0
     path: Assets/MixAndMatch.unity
     guid: 4e76dc897aa5540459a842fc6f7133a6
   - enabled: 1
