@@ -22,7 +22,7 @@ public partial class RigidNode : RigidNode_Base
         Y
     }
 
-    public void CreateJoint(int numWheels)
+    public void CreateJoint(int numWheels, bool mixAndMatch, float wheelFriction = 1f)
     {
         if (joint != null || GetSkeletalJoint() == null)
         {
@@ -48,8 +48,8 @@ public partial class RigidNode : RigidNode_Base
                     BRaycastWheel wheel = MainObject.AddComponent<BRaycastWheel>();
                     wheel.CreateWheel(this);
 
-                    if (MixAndMatchMode.IsMixAndMatchMode)
-                        wheel.Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
+                    if (mixAndMatch)
+                        wheel.Friction = wheelFriction;
 
                     MainObject.transform.parent = parent.MainObject.transform;
                 }

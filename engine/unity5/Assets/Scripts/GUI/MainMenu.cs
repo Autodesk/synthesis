@@ -16,7 +16,7 @@ public class MainMenu : MonoBehaviour
     public enum Tab { Main, Sim, Options, FieldDir, RobotDir, ErrorScreen };
     public static Tab currentTab = Tab.Main;
 
-    public static bool isMixAndMatch = false;
+    public static bool isMixAndMatchTab = false;
     public GameObject mixAndMatchModeScript;
 
     //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
@@ -216,7 +216,7 @@ public class MainMenu : MonoBehaviour
 
         selectionPanel.SetActive(true);
 
-        isMixAndMatch = false;
+        isMixAndMatchTab = false;
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchSimDefault()
     {
-        if (!isMixAndMatch)
+        if (!isMixAndMatchTab)
         {
             currentSim = Sim.DefaultSimulator;
 
@@ -240,6 +240,8 @@ public class MainMenu : MonoBehaviour
 
             simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
             simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+
+            RobotTypeManager.SetProperties(false);
         }
         else
         {
@@ -260,9 +262,8 @@ public class MainMenu : MonoBehaviour
         simLoadReplay.SetActive(false);
         mixAndMatchMode.SetActive(true);
 
-        PlayerPrefs.SetString("simSelectedField", simSelectedField);
-
-        isMixAndMatch = true;
+        RobotTypeManager.SetProperties(true);
+        isMixAndMatchTab = true;
 
     }
 
@@ -298,8 +299,6 @@ public class MainMenu : MonoBehaviour
         defaultSimulator.SetActive(false);
         simLoadField.SetActive(true);
         mixAndMatchMode.SetActive(false);
-
-        isMixAndMatch = true;
     }
 
     /// <summary>
@@ -375,8 +374,9 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
-            Application.LoadLevel("Scene");
-            PlayerPrefs.SetInt("mixAndMatch", 0); //0 means false, 1 means true
+            SceneManager.LoadScene("Scene");
+
+            RobotTypeManager.SetProperties(false);
 
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
@@ -558,7 +558,7 @@ public class MainMenu : MonoBehaviour
             simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
 
-            if (isMixAndMatch) //Starts the MixAndMatch scene
+            if (isMixAndMatchTab) //Starts the MixAndMatch scene
             {
                 PlayerPrefs.SetString("simSelectedField", simSelectedField);
                 fieldList.SetActive(false);
