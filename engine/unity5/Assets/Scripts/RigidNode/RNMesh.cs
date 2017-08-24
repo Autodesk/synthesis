@@ -13,7 +13,7 @@ public partial class RigidNode : RigidNode_Base
     private const float LinearSleepingThreshold = 0.25f;
     private const float AngularSleepingThreshold = 0.5f;
 
-    public bool CreateMesh(string filePath)
+    public bool CreateMesh(string filePath, bool isMixAndMatch = false, float wheelMass = 1.0f)
     {
         //Debug.Log(filePath);
         BXDAMesh mesh = new BXDAMesh();
@@ -96,9 +96,9 @@ public partial class RigidNode : RigidNode_Base
         if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)
         {
             BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
-            if (MixAndMatchMode.IsMixAndMatchMode)
+            if (isMixAndMatch)
             {
-                rigidBody.mass += PlayerPrefs.GetFloat("wheelMass", 1f);
+                rigidBody.mass += wheelMass;
             }
             rigidBody.GetCollisionObject().CollisionShape.CalculateLocalInertia(rigidBody.mass);
         }

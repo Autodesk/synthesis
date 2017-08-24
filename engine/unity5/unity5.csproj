@@ -284,6 +284,7 @@
     <Compile Include="Assets\Scripts\MixAndMatch\MaMSimUI.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
+    <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
