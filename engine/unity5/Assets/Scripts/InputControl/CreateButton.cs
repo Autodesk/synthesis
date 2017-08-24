@@ -679,7 +679,6 @@ public class CreateButton : MonoBehaviour
     /// </summary>
     public void ResetTankDrive()
     {
-        DestroyList();
         InputControl.mPlayerList[InputControl.activePlayerIndex].ResetTank();
         UpdateActiveButtons();
     }
@@ -690,7 +689,6 @@ public class CreateButton : MonoBehaviour
     /// </summary>
     public void ResetArcadeDrive()
     {
-        DestroyList();
         InputControl.mPlayerList[InputControl.activePlayerIndex].ResetArcade();
         UpdateActiveButtons();
     }

@@ -11,7 +11,6 @@ public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
 
-    //public Button button;
     public Sprite DefaultButtonImage;
     public Sprite ActiveButtonImage;
 
@@ -63,7 +62,7 @@ public class SettingsMode : MonoBehaviour
     /// </summary>
     public void OnReset()
     {
-        if (Controls.TankDriveEnabled)
+        if (InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive)
         {
             GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
             Controls.Save();
@@ -73,6 +72,14 @@ public class SettingsMode : MonoBehaviour
             GameObject.Find("Content").GetComponent<CreateButton>().ResetArcadeDrive();
             Controls.Save();
         }
+    }
+
+    /// <summary>
+    /// Allows the player to toggle their drive preferences between arcade and tank drive.
+    /// </summary>
+    public void OnTankToggle()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().TankSlider();
     }
 
     //=========================================================================================
