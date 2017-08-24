@@ -13,12 +13,16 @@ public class MaMGetters : MonoBehaviour {
         switch (baseID)
         {
             case 0: //Default Drive Base
+                RobotTypeManager.IsMecanum = false;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\Default");
             case 1: //Mech Drive Base
+                RobotTypeManager.IsMecanum = true;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheMac");
             case 2: //Swerve Drive
+                RobotTypeManager.IsMecanum = false;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheSwerve");
             case 3: //Narrow Drive
+                RobotTypeManager.IsMecanum = false;
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\Non");
         }
 
