@@ -162,6 +162,7 @@ public class SimUI : MonoBehaviour
         changeInMultiplayerPanel = AuxFunctions.FindObject(canvas, "ChangeInMultiplayerPanel");
         addPanel = AuxFunctions.FindObject(canvas, "AddPanel");
 
+        CheckControlPanel();
     }
 
     private void UpdateWindows()
@@ -472,6 +473,25 @@ public class SimUI : MonoBehaviour
     public void ShowControlPanel()
     {
         ShowControlPanel(!inputManagerPanel.activeSelf);
+    }
+
+    /// <summary>
+    /// Checks the last state of the control panel. Defaults to OFF
+    /// unless the user leaves it on.
+    /// </summary>
+    public void CheckControlPanel()
+    {
+        if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
+        {
+            inputManagerPanel.SetActive(false);
+            Debug.Log("false");
+        }
+        else
+        {
+            inputManagerPanel.SetActive(true);
+            PlayerPrefs.SetInt("isInputManagerPanel", 0);
+            Debug.Log("true");
+        }
     }
 
     /// <summary>
