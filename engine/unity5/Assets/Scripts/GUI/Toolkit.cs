@@ -199,6 +199,12 @@ public class Toolkit : MonoBehaviour
         rulerStartPoint.SetActive(true);
         AuxFunctions.FindObject(canvas, "RulerStartButton").SetActive(false);
         AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(true);
+        if (SimUI.changeAnalytics)
+        {
+            Analytics.CustomEvent("Used Ruler", new Dictionary<string, object> //for analytics tracking
+            {
+            });
+        }
     }
 
     /// <summary>
@@ -313,6 +319,12 @@ public class Toolkit : MonoBehaviour
             stopwatchTime = 0f;
             stopwatchStartButtonText.text = "Stop";
             stopwatchOn = true;
+            if (SimUI.changeAnalytics)
+            {
+                Analytics.CustomEvent("Used Stopwatch", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
         }
         else
         {
