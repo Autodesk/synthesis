@@ -17,7 +17,6 @@ using Assets.Scripts;
 /// </summary>
 public class Robot : MonoBehaviour
 {
-
     private bool isInitialized;
 
     private const float ResetVelocity = 0.05f;
@@ -721,9 +720,6 @@ public class Robot : MonoBehaviour
         }
         ManipulatorObject = new GameObject("Manipulator");
 
-        //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
-        ManipulatorObject.transform.position = robotGameObject.transform.GetChild(0).transform.position;
-
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
             return new RigidNode(guid);
@@ -737,11 +733,8 @@ public class Robot : MonoBehaviour
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
 
-
         //Load node_0 for attaching manipulator to robot
         RigidNode node = (RigidNode)nodes[0];
-
-
 
         node.CreateTransform(ManipulatorObject.transform);
         if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
@@ -752,24 +745,12 @@ public class Robot : MonoBehaviour
         }
         GameObject robot = robotGameObject;
 
-        ////////////////////////////////////////////////
-        BRigidBody br = node.MainObject.GetComponent<BRigidBody>();
+        //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING: LIKE ACTUALLY
+        Vector3 manipulatorTransform = robotStartPosition;
+        Debug.Log("Node Com Offset" + node.ComOffset);
+        ManipulatorObject.transform.position = manipulatorTransform;
 
-        BulletSharp.Math.Matrix newTransform = BulletSharp.Math.Matrix.Identity;
-
-        if (br != null)
-        {
-            RigidBody r = (RigidBody)br.GetCollisionObject();
-          
-            newTransform = r.WorldTransform;
-            newTransform.Origin = (robotStartPosition + node.ComOffset).ToBullet();
-            newTransform.Basis = BulletSharp.Math.Matrix.Identity;
-            r.WorldTransform = newTransform;
-            Debug.Log(newTransform.Origin.ToUnity());
-        }
-        //////////////////////////////////////////////////////
-        
-        node.CreateManipulatorJoint(robot, newTransform.Origin.ToUnity());
+        node.CreateManipulatorJoint(robot);
         node.MainObject.AddComponent<Tracker>().Trace = true;
         Tracker t = node.MainObject.GetComponent<Tracker>();
         Debug.Log(t);
