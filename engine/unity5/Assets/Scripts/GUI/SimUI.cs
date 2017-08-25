@@ -230,13 +230,13 @@ public class SimUI : MonoBehaviour
         robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
         sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
-        main.ChangeRobot(robotDirectory, true);
-
         //If the current robot has a manipulator, destroy the manipulator
         if (main.ActiveRobot.RobotHasManipulator)
         {
             main.DeleteManipulatorNodes();
         }
+
+        main.ChangeRobot(robotDirectory, true);
 
         //If the new robot has a manipulator, load the manipulator
         if (RobotTypeManager.HasManipulator)
@@ -282,18 +282,8 @@ public class SimUI : MonoBehaviour
             {
                 Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                 {
-                });
-
-                int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
-                if (isMixAndMatch == 1)
-                {
-                    SceneManager.LoadScene("MixAndMatch");
-                }
-                else
-                {
-                    SceneManager.LoadScene("Scene");
-                }
-
+                });              
+                    SceneManager.LoadScene("Scene");           
             }
             else
             {

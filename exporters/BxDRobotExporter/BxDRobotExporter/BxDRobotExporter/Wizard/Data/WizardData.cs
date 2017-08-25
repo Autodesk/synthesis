@@ -8,11 +8,12 @@ namespace BxDRobotExporter.Wizard
 {
     public class WizardData
     {
-        public static WizardData Instance;
+        public static WizardData Instance { get; private set; }
         public WizardData()
         {
             Instance = this;
         }
+        public int NextFreePort = 3;
 
         #region Nested enums and classes
         public enum WizardDriveTrain
@@ -55,9 +56,8 @@ namespace BxDRobotExporter.Wizard
                 Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR)
                 {
                     isCan = false,
-                    portA = PWMPort,
-                    portB = 1
                 };
+                Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
                 WheelDriverMeta wheelDriver = new WheelDriverMeta();
                 switch (FrictionLevel)
                 {
@@ -141,7 +141,7 @@ namespace BxDRobotExporter.Wizard
 
         }
         #endregion
-        
+
         #region BasicRobotInfoPage
         //General Info
         public string RobotName;
@@ -176,9 +176,14 @@ namespace BxDRobotExporter.Wizard
         }
         #endregion
 
+        #region DefineMovingPartsPage
+        public List<RigidNode_Base> MergeQueue = new List<RigidNode_Base>();
+
+        public Dictionary<RigidNode_Base, JointDriver> JointDrivers = new Dictionary<RigidNode_Base, JointDriver>();
+        #endregion
+
         public void Apply()
         {
-            //Do something with drive train
             switch (MassMode)
             {
                 default:
@@ -198,6 +203,19 @@ namespace BxDRobotExporter.Wizard
             foreach(WheelSetupData data in Wheels)
             {
                 data.ApplyToNode();
+            }
+
+            //DefineMovingPartsPage
+            foreach (KeyValuePair<RigidNode_Base, JointDriver> driver in JointDrivers)
+            {
+                if (!MergeQueue.Contains(driver.Key) && driver.Value != null)
+                {
+                    driver.Key.GetSkeletalJoint().cDriver = driver.Value;
+                }
+            }
+            foreach(RigidNode_Base node in MergeQueue)
+            {
+                Utilities.GUI.MergeNodeIntoParent(node);
             }
         }
     }
