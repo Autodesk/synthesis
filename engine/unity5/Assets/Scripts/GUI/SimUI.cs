@@ -230,13 +230,13 @@ public class SimUI : MonoBehaviour
         robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
         sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
 
-        main.ChangeRobot(robotDirectory, true);
-
         //If the current robot has a manipulator, destroy the manipulator
         if (main.ActiveRobot.RobotHasManipulator)
         {
             main.DeleteManipulatorNodes();
         }
+
+        main.ChangeRobot(robotDirectory, true);
 
         //If the new robot has a manipulator, load the manipulator
         if (RobotTypeManager.HasManipulator)
