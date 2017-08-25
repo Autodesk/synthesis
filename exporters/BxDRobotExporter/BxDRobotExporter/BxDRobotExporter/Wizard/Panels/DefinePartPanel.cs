@@ -12,7 +12,11 @@ namespace BxDRobotExporter.Wizard
 {
     public partial class DefinePartPanel : UserControl
     {
-        public RigidNode_Base Node;
+        private string unit = "°";
+
+        public bool Merged { get => WizardData.Instance.MergeQueue.Contains(node); }
+
+        public RigidNode_Base node;
         
         public DefinePartPanel()
         {
@@ -22,29 +26,13 @@ namespace BxDRobotExporter.Wizard
         
         public DefinePartPanel(RigidNode_Base node)
         {
-            Node = node;
+            InitializeComponent();
+            BackColor = Control.DefaultBackColor;
+            this.node = node;
             this.NodeGroupBox.Text = node.ModelFileName;
 
-            UpperLimitUpDown = new WizardUpDown();
-            LowerLimitUpDown = new WizardUpDown();
-            // 
-            // UpperLimitUpDown
-            // 
-            this.UpperLimitUpDown.Location = new System.Drawing.Point(72, 26);
-            this.UpperLimitUpDown.Name = "UpperLimitUpDown";
-            this.UpperLimitUpDown.Size = new System.Drawing.Size(46, 20);
-            this.UpperLimitUpDown.TabIndex = 3;
-            this.UpperLimitUpDown.ValueChanged += new System.EventHandler(this.UpperLimitUpDown_ValueChanged);
-            ((WizardUpDown)this.UpperLimitUpDown).Unit = "°";
-            // 
-            // LowerLimitUpDown
-            // 
-            this.LowerLimitUpDown.Location = new System.Drawing.Point(72, 53);
-            this.LowerLimitUpDown.Name = "LowerLimitUpDown";
-            this.LowerLimitUpDown.Size = new System.Drawing.Size(45, 20);
-            this.LowerLimitUpDown.TabIndex = 0;
-            this.LowerLimitUpDown.ValueChanged += new System.EventHandler(this.LowerLimitUpDown_ValueChanged);
-            ((WizardUpDown)this.LowerLimitUpDown).Unit = "°";
+            DriverComboBox.SelectedIndex = 0;
+            DriverComboBox_SelectedIndexChanged(null, null);
         }
 
         private void AutoAssignCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -76,69 +64,86 @@ namespace BxDRobotExporter.Wizard
         {
             switch (DriverComboBox.SelectedIndex)
             {
-                case 0: //Motor
-                    MetaTabControl.Enabled = false;
+                case 0: // No Driver
+                    foreach(Control control in Controls)
+                    {
+                        if (!control.Equals(DriverComboBox))
+                            control.Enabled = false;
+                    }
+                    break;
+                case 1: //Motor
+                    foreach (Control control in Controls)
+                    {
+                        if (!control.Equals(DriverComboBox))
+                            control.Enabled = true;
+                    }
+                    MetaTabControl.Visible = false;
                     PortTwoLabel.Enabled = false;
                     PortTwoUpDown.Enabled = false;
-                    ((WizardUpDown)this.LowerLimitUpDown).Unit = "°";
-                    ((WizardUpDown)this.UpperLimitUpDown).Unit = "°";
+                    UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
+                    UpperLimitUpDown.Minimum = LowerLimitUpDown.Minimum = 0;
+                    unit = "°";
                     break;
-                case 1: //Worm Screw
-                    MetaTabControl.Enabled = false;
+                case 2: //Servo
+                    foreach (Control control in Controls)
+                    {
+                        if (!control.Equals(DriverComboBox))
+                            control.Enabled = true;
+                    }
+                    MetaTabControl.Visible = false;
                     PortTwoLabel.Enabled = false;
                     PortTwoUpDown.Enabled = false;
-                    ((WizardUpDown)this.LowerLimitUpDown).Unit = "in";
-                    ((WizardUpDown)this.UpperLimitUpDown).Unit = "in";
+                    unit = "cm";
                     break;
-                case 2: 
-                    MetaTabControl.Enabled = true;
-                    PneumaticTab.Show();
-                    ElevatorStagesTab.Hide();
-                    ElevatorBrakeTab.Hide();
+                case 3: //Bumper Pneumatics
+                    foreach (Control control in Controls)
+                    {
+                        if (!control.Equals(DriverComboBox))
+                            control.Enabled = true;
+                    }
+                    MetaTabControl.Visible = true;
+                    if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
                     PortTwoLabel.Enabled = true;
                     PortTwoUpDown.Enabled = true;
-                    ((WizardUpDown)this.LowerLimitUpDown).Unit = "in";
-                    ((WizardUpDown)this.UpperLimitUpDown).Unit = "in";
+                    unit = "cm";
                     break;
-                case 3:
-                    MetaTabControl.Enabled = true;
-                    PneumaticTab.Show();
-                    ElevatorBrakeTab.Hide();
-                    ElevatorStagesTab.Hide();
+                case 4: //Relay Pneumatics
+                    foreach (Control control in Controls)
+                    {
+                        if (!control.Equals(DriverComboBox))
+                            control.Enabled = true;
+                    }
+                    MetaTabControl.Visible = true;
+                    if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
                     PortTwoUpDown.Enabled = false;
                     PortTwoLabel.Enabled = false;
-                    ((WizardUpDown)this.LowerLimitUpDown).Unit = "in";
-                    ((WizardUpDown)this.UpperLimitUpDown).Unit = "in";
+                    unit = "cm";
                     break;
-                case 4:
-                    MetaTabControl.Enabled = false;
-                    PortTwoLabel.Enabled = false;
-                    PortTwoUpDown.Enabled = false;
-                    ((WizardUpDown)this.LowerLimitUpDown).Unit = "°";
-                    ((WizardUpDown)this.UpperLimitUpDown).Unit = "°";
-                    break;
-                case 5:
-                    MetaTabControl.Enabled = false;
-                    break;
-                case 6:
+                case 5: //Dual Motor
+                    foreach (Control control in Controls)
+                    {
+                        if (!control.Equals(DriverComboBox))
+                            control.Enabled = true;
+                    }
+                    MetaTabControl.Visible = false;
+                    PortTwoLabel.Enabled = true;
+                    PortTwoUpDown.Enabled = true;
+                    UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
+                    UpperLimitUpDown.Minimum = LowerLimitUpDown.Minimum = 0;
+                    unit = "°";
                     break;
             }
 
         }
 
-        private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e)
-        {
-            BrakePortOneUpDown.Enabled = BrakePortTwoUpDown.Enabled = HasBrakeCheckBox.Checked;
-        }
-
         private void UpperLimitUpDown_ValueChanged(object sender, EventArgs e)
         {
-
+            TotalFreedomLabel.Text = (UpperLimitUpDown.Value - LowerLimitUpDown.Value).ToString() + unit;
         }
 
         private void LowerLimitUpDown_ValueChanged(object sender, EventArgs e)
         {
-
+            TotalFreedomLabel.Text = (UpperLimitUpDown.Value - LowerLimitUpDown.Value).ToString() + unit;
         }
 
         private void MergeNodeButton_Click(object sender, EventArgs e)
@@ -152,21 +157,64 @@ namespace BxDRobotExporter.Wizard
                 }
                 Label mergedLabel = new Label
                 {
-                    Text = "Merged" + Node.ModelFileName + " into " + Node.GetParent().ModelFileName,
+                    Text = "Merged " + node.ModelFileName + " into " + node.GetParent().ModelFileName,
                     Font = new Font(DefaultFont.FontFamily, 12.0f),
                     BackColor = System.Windows.Forms.Control.DefaultBackColor,
                     ForeColor = Color.DarkGray,
                     AutoSize = false,
-                    Dock = DockStyle.Fill
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleCenter
                 };
                 this.Controls.Add(mergedLabel);
                 mergedLabel.BringToFront();
+
+                WizardData.Instance.MergeQueue.Add(node);
             }
         }
 
         private void InventorHighlightButton_Click(object sender, EventArgs e)
         {
-            StandardAddInServer.Instance.WizardSelect(Node);
+            StandardAddInServer.Instance.WizardSelect(node);
         }
+
+        public JointDriver GetJointDriver()
+        {
+            if (Merged)
+                return null;
+            switch(DriverComboBox.SelectedIndex)
+            {
+                case 1: //Motor
+                    JointDriver driver = new JointDriver(JointDriverType.MOTOR);
+                    driver.SetLimits((float)(LowerLimitUpDown.Value * (decimal)(Math.PI / 180d)), (float)(UpperLimitUpDown.Value * (decimal)(Math.PI / 180d)));
+                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.NextFreePort : (int)PortOneUpDown.Value);
+                    if (AutoAssignCheckBox.Checked) WizardData.Instance.NextFreePort++;
+                    return driver;
+                case 2: //Servo
+                    driver = new JointDriver(JointDriverType.SERVO);
+                    driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
+                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.NextFreePort : (int)PortOneUpDown.Value);
+                    if (AutoAssignCheckBox.Checked) WizardData.Instance.NextFreePort++;
+                    return driver;
+                case 3: //Bumper Pneumatic
+                    driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
+                    driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
+                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.NextFreePort : (int)PortOneUpDown.Value);
+                    if (AutoAssignCheckBox.Checked) WizardData.Instance.NextFreePort += 2;
+                    return driver;
+                case 4: //Relay Pneumatic
+                    driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
+                    driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
+                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.NextFreePort : (int)PortOneUpDown.Value);
+                    if (AutoAssignCheckBox.Checked) WizardData.Instance.NextFreePort++;
+                    return driver;
+                case 5: //Dual Motor
+                    driver = new JointDriver(JointDriverType.DUAL_MOTOR);
+                    driver.SetLimits((float)(LowerLimitUpDown.Value * (decimal)(Math.PI / 180d)), (float)(UpperLimitUpDown.Value * (decimal)(Math.PI / 180d)));
+                    if (AutoAssignCheckBox.Checked) WizardData.Instance.NextFreePort += 2;
+                    return driver;
+            }
+            return null;
+        }
+
     }
 }

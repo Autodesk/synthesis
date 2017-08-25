@@ -85,6 +85,8 @@ namespace BxDRobotExporter.Wizard
             page.BackColor = Color.Transparent;
             defaultNavigatorStates.Add(Controls.Count, defaultState);
             Controls.Add(page);
+
+            ((IWizardPage)page).InvalidatePage += WizardPageControl_InvalidatePage;
         }
 
         public void AddRange(UserControl[] pages, WizardNavigator.WizardNavigatorState[] defaultStates = null)
@@ -104,6 +106,22 @@ namespace BxDRobotExporter.Wizard
                 else
                     defaultNavigatorStates.Add(Controls.Count, defaultStates[pages.ToList().IndexOf(page)]);
                 Controls.Add(page);
+                ((IWizardPage)page).InvalidatePage += WizardPageControl_InvalidatePage;
+
+            }
+        }
+
+        private void WizardPageControl_InvalidatePage(Type PageType)
+        {
+            if (PageType != null)
+            {
+                foreach (var page in Controls)
+                {
+                    if (page.GetType() == PageType)
+                    {
+                        ((IWizardPage)page).Initialized = false;
+                    }
+                }
             }
         }
 
