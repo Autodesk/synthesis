@@ -12,6 +12,7 @@ public partial class RigidNode : RigidNode_Base
 {
     private const float LinearSleepingThreshold = 0.25f;
     private const float AngularSleepingThreshold = 0.5f;
+    private const float CollisionMargin = 0f;
 
     public bool CreateMesh(string filePath, bool isMixAndMatch = false, float wheelMass = 1.0f)
     {
@@ -71,7 +72,7 @@ public partial class RigidNode : RigidNode_Base
             foreach (Mesh collider in colliders)
             {
                 ConvexHullShape hull = new ConvexHullShape(Array.ConvertAll(collider.vertices, x => x.ToBullet()), collider.vertices.Length);
-                hull.Margin = 0f;
+                hull.Margin = CollisionMargin;
                 hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
             }
 

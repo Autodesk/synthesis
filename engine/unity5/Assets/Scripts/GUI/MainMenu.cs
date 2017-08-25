@@ -5,6 +5,7 @@ using System.IO;
 using System;
 using UnityEngine.SceneManagement;
 using Assets.Scripts;
+using Assets.Scripts.Utils;
 
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
