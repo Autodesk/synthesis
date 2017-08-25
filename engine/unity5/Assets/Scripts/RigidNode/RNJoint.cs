@@ -50,7 +50,7 @@ public partial class RigidNode : RigidNode_Base
 
                     if (mixAndMatch)
                         wheel.Friction = wheelFriction;
-
+                    
                     MainObject.transform.parent = parent.MainObject.transform;
                 }
                 else
