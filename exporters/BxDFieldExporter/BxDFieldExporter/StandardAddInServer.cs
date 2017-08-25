@@ -810,8 +810,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                     foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                                     {
                                         if (t.same(node.BrowserNodeDefinition))// if the fieldDataComponent is from that browsernode then run
-                                        {
-
+                                        { 
                                             LegacyInterchange.AddComponents(node.BrowserNodeDefinition.Label, selectedAssembly);
                                             t.CompOccs.Add(selectedAssembly);// add the assembly occurence to the arraylist
                                             partSet.AddItem(selectedAssembly); //add the assembly occurence to a set that is highlighted in purple
@@ -1217,15 +1216,14 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 }
 
             }
+            SetAllButtons(true);
             if (IsDone)
             {
-                SetAllButtons(true);
                 return;
             }
             else
             {
                 MessageBox.Show("ERROR: No parts or assemblies were selected", "Remove Part or Assembly...");
-                SetAllButtons(true);
                 return;
             }
         }
