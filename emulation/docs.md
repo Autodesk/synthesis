@@ -26,9 +26,9 @@ The team number configuration is a little weird. The only reason that we need to
 
 In the future, the `HELBuildTool` will probably be replaced with an Eclipse plugin which integrates in to the IDE to provide a more seamless interface to the user. Unfortunately, eclipse is a massive, badly documented, project with a disgusting API, so this will be a lot of work.
 
-### Patching System
+### Modifications to Wpilib or Ntcore
 
-***TODO: this isn't really finished yet. so probably wait to document it...***
+Wpilib and ntcore are both provided as git submodules, which means that changes get tracked in a sligntly different way from things that are stored in the repository normally. Submodules work by including a reference to an external git repository, but the files included in this external repository are not included in our git repository. 
 
 ## Building
 
