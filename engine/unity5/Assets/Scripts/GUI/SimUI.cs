@@ -282,18 +282,8 @@ public class SimUI : MonoBehaviour
             {
                 Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                 {
-                });
-
-                int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
-                if (isMixAndMatch == 1)
-                {
-                    SceneManager.LoadScene("MixAndMatch");
-                }
-                else
-                {
-                    SceneManager.LoadScene("Scene");
-                }
-
+                });              
+                    SceneManager.LoadScene("Scene");           
             }
             else
             {
