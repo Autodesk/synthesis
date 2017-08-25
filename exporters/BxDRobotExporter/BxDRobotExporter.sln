@@ -39,8 +39,8 @@ Global
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.FodyRelease|Any CPU.ActiveCfg = FodyRelease|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.FodyRelease|Any CPU.Build.0 = FodyRelease|Any CPU
+		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.FodyRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.FodyRelease|Any CPU.Build.0 = Release|Any CPU
 		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

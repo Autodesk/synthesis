@@ -42,13 +42,6 @@
             this.PneumaticPressureComboBox = new System.Windows.Forms.ComboBox();
             this.PneumaticDiameterComboBox = new System.Windows.Forms.ComboBox();
             this.DiameterLabel = new System.Windows.Forms.Label();
-            this.ElevatorBrakeTab = new System.Windows.Forms.TabPage();
-            this.BrakePortTwoUpDown = new System.Windows.Forms.NumericUpDown();
-            this.BrakePortOneUpDown = new System.Windows.Forms.NumericUpDown();
-            this.BrakePortLabel = new System.Windows.Forms.Label();
-            this.HasBrakeCheckBox = new System.Windows.Forms.CheckBox();
-            this.ElevatorStagesTab = new System.Windows.Forms.TabPage();
-            this.ElevatorStagesComboBox = new System.Windows.Forms.ComboBox();
             this.PortsGroupBox = new System.Windows.Forms.GroupBox();
             this.AutoAssignCheckBox = new System.Windows.Forms.CheckBox();
             this.PortTwoUpDown = new System.Windows.Forms.NumericUpDown();
@@ -68,10 +61,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.LowerLimitUpDown)).BeginInit();
             this.MetaTabControl.SuspendLayout();
             this.PneumaticTab.SuspendLayout();
-            this.ElevatorBrakeTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BrakePortTwoUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BrakePortOneUpDown)).BeginInit();
-            this.ElevatorStagesTab.SuspendLayout();
             this.PortsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).BeginInit();
@@ -164,14 +153,13 @@
             // MetaTabControl
             // 
             this.MetaTabControl.Controls.Add(this.PneumaticTab);
-            this.MetaTabControl.Controls.Add(this.ElevatorBrakeTab);
-            this.MetaTabControl.Controls.Add(this.ElevatorStagesTab);
             this.MetaTabControl.Location = new System.Drawing.Point(10, 98);
             this.MetaTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.MetaTabControl.Name = "MetaTabControl";
             this.MetaTabControl.SelectedIndex = 0;
             this.MetaTabControl.Size = new System.Drawing.Size(211, 86);
             this.MetaTabControl.TabIndex = 12;
+            this.MetaTabControl.Visible = false;
             // 
             // PneumaticTab
             // 
@@ -235,85 +223,6 @@
             this.DiameterLabel.Size = new System.Drawing.Size(87, 13);
             this.DiameterLabel.TabIndex = 9;
             this.DiameterLabel.Text = "Internal Diameter";
-            // 
-            // ElevatorBrakeTab
-            // 
-            this.ElevatorBrakeTab.Controls.Add(this.BrakePortTwoUpDown);
-            this.ElevatorBrakeTab.Controls.Add(this.BrakePortOneUpDown);
-            this.ElevatorBrakeTab.Controls.Add(this.BrakePortLabel);
-            this.ElevatorBrakeTab.Controls.Add(this.HasBrakeCheckBox);
-            this.ElevatorBrakeTab.Location = new System.Drawing.Point(4, 22);
-            this.ElevatorBrakeTab.Margin = new System.Windows.Forms.Padding(2);
-            this.ElevatorBrakeTab.Name = "ElevatorBrakeTab";
-            this.ElevatorBrakeTab.Size = new System.Drawing.Size(203, 60);
-            this.ElevatorBrakeTab.TabIndex = 3;
-            this.ElevatorBrakeTab.Text = "Brake Info";
-            this.ElevatorBrakeTab.UseVisualStyleBackColor = true;
-            // 
-            // BrakePortTwoUpDown
-            // 
-            this.BrakePortTwoUpDown.Location = new System.Drawing.Point(106, 28);
-            this.BrakePortTwoUpDown.Margin = new System.Windows.Forms.Padding(2);
-            this.BrakePortTwoUpDown.Name = "BrakePortTwoUpDown";
-            this.BrakePortTwoUpDown.Size = new System.Drawing.Size(90, 20);
-            this.BrakePortTwoUpDown.TabIndex = 3;
-            // 
-            // BrakePortOneUpDown
-            // 
-            this.BrakePortOneUpDown.Location = new System.Drawing.Point(8, 28);
-            this.BrakePortOneUpDown.Margin = new System.Windows.Forms.Padding(2);
-            this.BrakePortOneUpDown.Name = "BrakePortOneUpDown";
-            this.BrakePortOneUpDown.Size = new System.Drawing.Size(90, 20);
-            this.BrakePortOneUpDown.TabIndex = 2;
-            // 
-            // BrakePortLabel
-            // 
-            this.BrakePortLabel.AutoSize = true;
-            this.BrakePortLabel.Location = new System.Drawing.Point(8, 8);
-            this.BrakePortLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.BrakePortLabel.Name = "BrakePortLabel";
-            this.BrakePortLabel.Size = new System.Drawing.Size(57, 13);
-            this.BrakePortLabel.TabIndex = 1;
-            this.BrakePortLabel.Text = "Brake Port";
-            // 
-            // HasBrakeCheckBox
-            // 
-            this.HasBrakeCheckBox.AutoSize = true;
-            this.HasBrakeCheckBox.Location = new System.Drawing.Point(120, 8);
-            this.HasBrakeCheckBox.Margin = new System.Windows.Forms.Padding(2);
-            this.HasBrakeCheckBox.Name = "HasBrakeCheckBox";
-            this.HasBrakeCheckBox.Size = new System.Drawing.Size(76, 17);
-            this.HasBrakeCheckBox.TabIndex = 0;
-            this.HasBrakeCheckBox.Text = "Has Brake";
-            this.HasBrakeCheckBox.UseVisualStyleBackColor = true;
-            this.HasBrakeCheckBox.CheckedChanged += new System.EventHandler(this.chkBoxHasBrake_CheckedChanged);
-            // 
-            // ElevatorStagesTab
-            // 
-            this.ElevatorStagesTab.Controls.Add(this.ElevatorStagesComboBox);
-            this.ElevatorStagesTab.Location = new System.Drawing.Point(4, 22);
-            this.ElevatorStagesTab.Margin = new System.Windows.Forms.Padding(2);
-            this.ElevatorStagesTab.Name = "ElevatorStagesTab";
-            this.ElevatorStagesTab.Size = new System.Drawing.Size(203, 60);
-            this.ElevatorStagesTab.TabIndex = 4;
-            this.ElevatorStagesTab.Text = "Stages";
-            this.ElevatorStagesTab.UseVisualStyleBackColor = true;
-            // 
-            // ElevatorStagesComboBox
-            // 
-            this.ElevatorStagesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ElevatorStagesComboBox.FormattingEnabled = true;
-            this.ElevatorStagesComboBox.Items.AddRange(new object[] {
-            "Single Stage Elevator",
-            "Cascading Stage One",
-            "Cascading Stage Two",
-            "Continuous Stage One",
-            "Continuos Stage Two"});
-            this.ElevatorStagesComboBox.Location = new System.Drawing.Point(2, 21);
-            this.ElevatorStagesComboBox.Margin = new System.Windows.Forms.Padding(2);
-            this.ElevatorStagesComboBox.Name = "ElevatorStagesComboBox";
-            this.ElevatorStagesComboBox.Size = new System.Drawing.Size(199, 21);
-            this.ElevatorStagesComboBox.TabIndex = 0;
             // 
             // PortsGroupBox
             // 
@@ -440,13 +349,12 @@
             this.DriverComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DriverComboBox.FormattingEnabled = true;
             this.DriverComboBox.Items.AddRange(new object[] {
+            "No Driver",
             "Motor",
             "Servo",
             "Bumper Pneumatic",
             "Relay Pneumatic",
-            "Worm Screw",
-            "Dual Motor",
-            "Elevator"});
+            "Dual Motor"});
             this.DriverComboBox.Location = new System.Drawing.Point(84, 17);
             this.DriverComboBox.Name = "DriverComboBox";
             this.DriverComboBox.Size = new System.Drawing.Size(260, 21);
@@ -500,11 +408,6 @@
             this.MetaTabControl.ResumeLayout(false);
             this.PneumaticTab.ResumeLayout(false);
             this.PneumaticTab.PerformLayout();
-            this.ElevatorBrakeTab.ResumeLayout(false);
-            this.ElevatorBrakeTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BrakePortTwoUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BrakePortOneUpDown)).EndInit();
-            this.ElevatorStagesTab.ResumeLayout(false);
             this.PortsGroupBox.ResumeLayout(false);
             this.PortsGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).EndInit();
@@ -533,13 +436,6 @@
         private System.Windows.Forms.ComboBox PneumaticPressureComboBox;
         private System.Windows.Forms.ComboBox PneumaticDiameterComboBox;
         private System.Windows.Forms.Label DiameterLabel;
-        private System.Windows.Forms.TabPage ElevatorBrakeTab;
-        private System.Windows.Forms.NumericUpDown BrakePortTwoUpDown;
-        private System.Windows.Forms.NumericUpDown BrakePortOneUpDown;
-        private System.Windows.Forms.Label BrakePortLabel;
-        private System.Windows.Forms.CheckBox HasBrakeCheckBox;
-        private System.Windows.Forms.TabPage ElevatorStagesTab;
-        private System.Windows.Forms.ComboBox ElevatorStagesComboBox;
         private System.Windows.Forms.GroupBox JointLimitGroupBox;
         private System.Windows.Forms.NumericUpDown UpperLimitUpDown;
         private System.Windows.Forms.Label UpperLimitLabel;
