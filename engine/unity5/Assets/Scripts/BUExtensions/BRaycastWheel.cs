@@ -54,6 +54,21 @@ namespace Assets.Scripts.BUExtensions
         }
 
         /// <summary>
+        /// Sets or gets the sliding friction of the wheel.
+        /// </summary>
+        public float SlidingFriction
+        {
+            get
+            {
+                return robot.RaycastRobot.GetWheelInfo(wheelIndex).SlidingFriction;
+            }
+            set
+            {
+                robot.RaycastRobot.GetWheelInfo(wheelIndex).SlidingFriction = value;
+            }
+        }
+
+        /// <summary>
         /// Creates a wheel and attaches it to the parent BRaycastVehicle.
         /// </summary>
         /// <param name="node"></param>
