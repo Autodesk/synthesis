@@ -131,7 +131,7 @@ public partial class RigidNode : RigidNode_Base
     /// <summary>
     /// Creates node_0 of a manipulator for QuickSwap mode. Node_0 is used to attach the manipulator to the robot.
     /// </summary>
-    public void CreateManipulatorJoint(GameObject robot, Vector3 constraintPoint)
+    public void CreateManipulatorJoint(GameObject robot)
     {
         ////Ignore physics/collisions between the manipulator and the robot. Currently not working. 
         //foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
@@ -140,19 +140,6 @@ public partial class RigidNode : RigidNode_Base
         //}
 
         if (joint != null || GetSkeletalJoint() == null) {
-            //{
-            //    RotationalJoint_Base rNode = new RotationalJoint_Base();
-            //    B6DOFConstraint hc = MainObject.AddComponent<B6DOFConstraint>();
-
-            //    hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
-            //    hc.otherRigidBody = robot.GetComponentInChildren<BRigidBody>();
-
-            //    hc.localConstraintPoint = Vector3.zero;// ComOffset;
-
-            //    //Put this after everything else
-            //    hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
-           
-
             BHingedConstraintEx hc = MainObject.AddComponent<BHingedConstraintEx>();
 
             hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
@@ -160,11 +147,11 @@ public partial class RigidNode : RigidNode_Base
             hc.axisInA = new Vector3(0, 1, 0);
             hc.axisInB = new Vector3 ( 0, 1, 0);
             hc.setLimit = true;
-            //if (hc.setLimit = rNode.hasAngularLimit)
-            //{
-            hc.lowLimitAngleRadians = 0;// rNode.currentAngularPosition - rNode.angularLimitHigh;
-            hc.highLimitAngleRadians = 0;// rNode.currentAngularPosition - rNode.angularLimitLow;
-        //}
+
+            hc.localConstraintPoint = new Vector3(0, 0, 0);
+
+            hc.lowLimitAngleRadians = 0;
+            hc.highLimitAngleRadians = 0;
 
             hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
         }

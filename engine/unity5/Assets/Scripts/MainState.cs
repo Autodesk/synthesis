@@ -506,8 +506,6 @@ public class MainState : SimState
 
             GameObject robotObject = new GameObject("Robot");
             Robot robot = robotObject.AddComponent<Robot>();
-
-            //robot.RobotHasManipulator = true;
             robot.RobotIsMixAndMatch = true;
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
@@ -525,7 +523,6 @@ public class MainState : SimState
             SpawnedRobots.Add(robot);
 
             robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
-            //ActiveRobot.RobotHasManipulator = true;
             return true;
         }
         return false;
