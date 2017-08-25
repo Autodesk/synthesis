@@ -18,7 +18,7 @@ namespace BxDRobotExporter.Wizard
 
         private Dictionary<string, RigidNode_Base> checkedListItems = new Dictionary<string, RigidNode_Base>();
 
-        private List<WheelSlotPanel> Slots = new List<WheelSlotPanel>();
+        private List<WheelSlotPanel> slots = new List<WheelSlotPanel>();
 
         public DefineWheelsPage()
         {
@@ -47,7 +47,7 @@ namespace BxDRobotExporter.Wizard
                 {
                     UpdateProgress();
                 }
-                if(WizardData.Instance.WheelCount != Slots.Count)
+                if(WizardData.Instance.WheelCount != slots.Count)
                 {
                     _initialized = false;
                 }
@@ -63,23 +63,24 @@ namespace BxDRobotExporter.Wizard
                     e.NewValue = CheckState.Unchecked;
                     return;
                 }
-                switch(WizardData.Instance.DriveTrain)
+                OnInvalidatePage();
+                switch (WizardData.Instance.DriveTrain)
                 {
                     case WizardData.WizardDriveTrain.WESTERN:
-                        Slots[checkedCount].FillSlot(checkedListItems.Values.ElementAt(e.Index));
+                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
                         break;
                     case WizardData.WizardDriveTrain.MECANUM:
-                        Slots[checkedCount].FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.MECANUM);
+                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.MECANUM);
                         break;
                     case WizardData.WizardDriveTrain.H_DRIVE:
-                        Slots[checkedCount].FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.OMNI);
+                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.OMNI);
                         break;
                     case WizardData.WizardDriveTrain.SWERVE:
                         //TODO implement this crap
-                        Slots[checkedCount].FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.NORMAL);
+                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.NORMAL);
                         break;
                     case WizardData.WizardDriveTrain.CUSTOM:
-                        Slots[checkedCount].FillSlot(checkedListItems.Values.ElementAt(e.Index));
+                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
                         break;
                 }
                 checkedCount++;
@@ -89,9 +90,14 @@ namespace BxDRobotExporter.Wizard
             }
             else
             {
+                OnInvalidatePage();
                 checkedCount--;
                 disableChecked = false;
-                Slots[checkedCount].FreeSlot();
+                foreach(var slot in slots)
+                {
+                    if (slot.Node == checkedListItems[NodeCheckedListBox.Items[e.Index].ToString()])
+                        slot.FreeSlot();
+                }
             }
 
             UpdateProgress();
@@ -104,7 +110,7 @@ namespace BxDRobotExporter.Wizard
                 case WizardData.WizardDriveTrain.MECANUM:
                     string BadPanels = string.Empty;
                     int BadPanelCount = 0;
-                    foreach (WheelSlotPanel slot in Slots)
+                    foreach (WheelSlotPanel slot in slots)
                     {
                         if (slot.WheelType != WizardData.WizardWheelType.MECANUM)
                         {
@@ -127,7 +133,7 @@ namespace BxDRobotExporter.Wizard
                 case WizardData.WizardDriveTrain.H_DRIVE:
                     BadPanels = string.Empty;
                     BadPanelCount = 0;
-                    foreach (WheelSlotPanel slot in Slots)
+                    foreach (WheelSlotPanel slot in slots)
                     {
                         if (slot.WheelType != WizardData.WizardWheelType.OMNI)
                         {
@@ -152,7 +158,7 @@ namespace BxDRobotExporter.Wizard
                 default:
                     BadPanels = string.Empty;
                     BadPanelCount = 0;
-                    foreach (WheelSlotPanel slot in Slots)
+                    foreach (WheelSlotPanel slot in slots)
                     {
                         if (slot.WheelType != WizardData.WizardWheelType.NORMAL)
                         {
@@ -180,25 +186,34 @@ namespace BxDRobotExporter.Wizard
             ValidateInput();
         }
 
+        private WheelSlotPanel GetNextEmptyPanel()
+        {
+            foreach(WheelSlotPanel panel in slots)
+            {
+                if (!panel.IsFilled)
+                    return panel;
+            }
+            return null;
+        }
+
         #region IWizardPage Implementation
         public void OnNext()
         {
             WizardData.Instance.Wheels = new List<WizardData.WheelSetupData>();
-            foreach(var slot in Slots)
+            foreach(var slot in slots)
             {
                 WizardData.Instance.Wheels.Add(slot.WheelData);
             }
-            WizardData.Instance.Apply();
         }
 
         public void Initialize()
         {
-            Slots = new List<WheelSlotPanel>();
+            slots = new List<WheelSlotPanel>();
             for (int i = 0; i < WizardData.Instance.WheelCount; i++)
             {
                 WheelSlotPanel panel = new WheelSlotPanel();
                 panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                Slots.Add(panel);
+                slots.Add(panel);
                 WheelPropertiesPanel.Controls.Add(panel);
                 
             }
@@ -227,10 +242,22 @@ namespace BxDRobotExporter.Wizard
         public event InvalidatePageEventHandler InvalidatePage;
         public void OnInvalidatePage()
         {
-            InvalidatePage?.Invoke(null);
+            InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
         }
 
-        public bool Initialized { get => _initialized; set => _initialized = value; }
+        public bool Initialized
+        {
+            get => _initialized;
+            set
+            {
+                if (!value)
+                {
+                    while (WheelPropertiesPanel.Controls.Count > 0)
+                        WheelPropertiesPanel.Controls[0].Dispose(); 
+                }
+                _initialized = value;
+            }
+        }
         private bool _initialized = false;
         #endregion
     }

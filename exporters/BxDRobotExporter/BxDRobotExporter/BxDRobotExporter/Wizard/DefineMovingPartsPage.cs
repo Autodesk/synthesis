@@ -18,15 +18,6 @@ namespace BxDRobotExporter.Wizard
         {
             InitializeComponent();
 
-            foreach(RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
-            {
-                if (node.GetParent() != null && !WizardData.Instance.WheelNodes.Contains(node))
-                {
-                    DefinePartPanel panel = new DefinePartPanel(node);
-                    panels.Add(panel);
-                    this.DefinePartsPanelLayout.Controls.Add(panel);
-                }
-            }
         }
 
         #region IWizardPage Implementation
@@ -48,7 +39,9 @@ namespace BxDRobotExporter.Wizard
             {
                 if(node.GetSkeletalJoint() != null && !WizardData.Instance.WheelNodes.Contains(node))
                 {
-                    DefinePartsPanelLayout.Controls.Add(new DefinePartPanel());
+                    DefinePartPanel panel = new DefinePartPanel(node);
+                    panels.Add(panel);
+                    DefinePartsPanelLayout.Controls.Add(panel);
                 }
             }
 
@@ -57,7 +50,10 @@ namespace BxDRobotExporter.Wizard
 
         public void OnNext()
         {
-            throw new NotImplementedException();
+            foreach(var panel in panels)
+            {
+                WizardData.Instance.JointDrivers.Add(panel.node, panel.GetJointDriver());
+            }
         } 
         #endregion
     }
