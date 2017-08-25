@@ -18,12 +18,12 @@ namespace Assets.Scripts.BUExtensions
     {
         public float SlidingFriction;
         public float Speed;
-        public float freeSpinDamping;
+        public float FreeSpinDamping;
 
         public RobotWheelInfo(WheelInfoConstructionInfo ci) : base(ci)
         {
             SlidingFriction = 1.0f;
-            freeSpinDamping = 0.05f;
+            FreeSpinDamping = 0.05f;
         }
     }
 
@@ -448,9 +448,9 @@ namespace Assets.Scripts.BUExtensions
                 else
                 {
                     if (wheel.Speed > 0)
-                        wheel.Speed = Math.Max(wheel.Speed - wheel.freeSpinDamping, 0f);
+                        wheel.Speed = Math.Max(wheel.Speed - wheel.FreeSpinDamping, 0f);
                     else if (wheel.Speed < 0)
-                        wheel.Speed = Math.Min(wheel.Speed + wheel.freeSpinDamping, 0f);
+                        wheel.Speed = Math.Min(wheel.Speed + wheel.FreeSpinDamping, 0f);
                 }
             }
 

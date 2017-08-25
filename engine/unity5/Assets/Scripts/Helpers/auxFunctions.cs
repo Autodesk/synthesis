@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using BulletSharp;
 using BulletUnity;
+using Assets.Scripts.Utils;
 
 public class AuxFunctions
 {
@@ -88,32 +89,93 @@ public class AuxFunctions
     /// </summary>
     /// <param name="original"></param>
     /// <returns></returns>
-    public static Mesh GenerateCollisionMesh(Mesh original, Vector3 offset = default(Vector3))
+    public static Mesh GenerateCollisionMesh(Mesh original, Vector3 offset = default(Vector3), bool embed = false)
     {
-        ConvexHullShape tempShape = new ConvexHullShape(Array.ConvertAll(original.vertices, x => x.ToBullet()), original.vertices.Length);
-        tempShape.Margin = 0f;
+        if (embed)
+        {
+            ConvexHullShape tempShape = new ConvexHullShape(Array.ConvertAll(original.vertices, x => x.ToBullet()), original.vertices.Length);
+            tempShape.Margin = 0f;
 
-        ShapeHull shapeHull = new ShapeHull(tempShape);
-        bool b = shapeHull.BuildHull(0f);
+            ShapeHull shapeHull = new ShapeHull(tempShape);
+            bool b = shapeHull.BuildHull(0f);
 
-        Mesh collisionMesh = new Mesh();
+            Mesh collisionMesh = new Mesh();
 
-        Vector3[] vertices = new Vector3[shapeHull.NumVertices];
-        for (int i = 0; i < vertices.Length; i++)
-            vertices[i] = shapeHull.Vertices[i].ToUnity() - offset;
+            // TODO: Fix embedded margin system by reimplementing the math while using current BulletSharp objects when possible. See recent tabs in Chrome.
+            
+            /*
+             * The issue is:
+             * I need to access the W component of vectors of the plane equations, but BulletSharp does not expose it
+             * becuase it only returns Vector3s. BulletSharp itself is implemented in a way that returning plane equations only uses
+             * vector3s. So the w component is pretty much ignored. But the original bullet physics math does use it, so reimplement
+             * that but in C#, and you could still use BulletSharp objects so you don't have to custom reimplement everything yourself.
+             */
 
-        int[] triangles = new int[shapeHull.NumIndices];
-        for (int i = 0; i < triangles.Length; i++)
-            triangles[i] = (int)shapeHull.Indices[i];
+            AlignedVector3Array initialVertices = new AlignedVector3Array();
+            for (int i = 0; i < shapeHull.NumVertices; i++)
+                initialVertices.Add(shapeHull.Vertices[i]);
 
-        collisionMesh.vertices = vertices;
-        collisionMesh.triangles = triangles;
-        collisionMesh.RecalculateNormals();
-        collisionMesh.RecalculateBounds();
+            List<BulletSharp.Math.Vector4> planeEquations = new List<BulletSharp.Math.Vector4>();
 
-        // TODO: Find a way to implement embedded margins. See https://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=2358
+            GeometryUtilEx.GetPlaneEquationsFromVertices(initialVertices, planeEquations);
 
-        return collisionMesh;
+            AlignedVector3Array shiftedPlaneEquations = new AlignedVector3Array();
+            
+            for (int i = 0; i < planeEquations.Count; i++)
+            {
+                BulletSharp.Math.Vector4 plane = planeEquations[i];
+                //plane.W += 0.04f;
+                shiftedPlaneEquations.Add(plane);
+            }
+
+            AlignedVector3Array shiftedVertices = new AlignedVector3Array();
+            GeometryUtil.GetVerticesFromPlaneEquations(shiftedPlaneEquations, shiftedVertices);
+
+            foreach (BulletSharp.Math.Vector3 vert in shiftedVertices)
+            {
+                if (vert != BulletSharp.Math.Vector3.Zero)
+                {
+                    BulletSharp.Math.Vector3 copy = vert;
+                }
+            }
+
+            Vector3[] finalVertices = new Vector3[shiftedVertices.Count];
+
+            for (int i = 0; i < finalVertices.Length; i++)
+                finalVertices[i] = shiftedVertices[i].ToUnity() - offset;
+
+            collisionMesh.vertices = finalVertices;
+            collisionMesh.RecalculateBounds();
+
+            return collisionMesh;
+        }
+        else
+        {
+            ConvexHullShape tempShape = new ConvexHullShape(Array.ConvertAll(original.vertices, x => x.ToBullet()), original.vertices.Length);
+            tempShape.Margin = 0f;
+
+            ShapeHull shapeHull = new ShapeHull(tempShape);
+            bool b = shapeHull.BuildHull(0f);
+
+            Mesh collisionMesh = new Mesh();
+
+            Vector3[] vertices = new Vector3[shapeHull.NumVertices];
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i] = shapeHull.Vertices[i].ToUnity() - offset;
+
+            int[] triangles = new int[shapeHull.NumIndices];
+            for (int i = 0; i < triangles.Length; i++)
+                triangles[i] = (int)shapeHull.Indices[i];
+
+            collisionMesh.vertices = vertices;
+            collisionMesh.triangles = triangles;
+            collisionMesh.RecalculateNormals();
+            collisionMesh.RecalculateBounds();
+
+            return collisionMesh;
+
+            //TODO: Find a way to implement embedded margins.See https://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=2358
+        }
     }
 
     public static void OrientRobot(List<GameObject> wheelcolliders, Transform parent)

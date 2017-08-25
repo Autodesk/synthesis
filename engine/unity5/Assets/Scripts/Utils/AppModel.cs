@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine.SceneManagement;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Utils
 {
     /// <summary>
     /// This class is used to store global variables, which carry over from scene to scene.
