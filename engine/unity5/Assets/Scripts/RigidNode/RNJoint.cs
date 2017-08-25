@@ -139,17 +139,33 @@ public partial class RigidNode : RigidNode_Base
         //    MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
         //}
 
-        if (joint != null || GetSkeletalJoint() == null)
-        {
-            RotationalJoint_Base rNode = new RotationalJoint_Base();
-            B6DOFConstraint hc = MainObject.AddComponent<B6DOFConstraint>();
+        if (joint != null || GetSkeletalJoint() == null) {
+            //{
+            //    RotationalJoint_Base rNode = new RotationalJoint_Base();
+            //    B6DOFConstraint hc = MainObject.AddComponent<B6DOFConstraint>();
+
+            //    hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
+            //    hc.otherRigidBody = robot.GetComponentInChildren<BRigidBody>();
+
+            //    hc.localConstraintPoint = Vector3.zero;// ComOffset;
+
+            //    //Put this after everything else
+            //    hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
+           
+
+            BHingedConstraintEx hc = MainObject.AddComponent<BHingedConstraintEx>();
 
             hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
             hc.otherRigidBody = robot.GetComponentInChildren<BRigidBody>();
+            hc.axisInA = new Vector3(0, 1, 0);
+            hc.axisInB = new Vector3 ( 0, 1, 0);
+            hc.setLimit = true;
+            //if (hc.setLimit = rNode.hasAngularLimit)
+            //{
+            hc.lowLimitAngleRadians = 0;// rNode.currentAngularPosition - rNode.angularLimitHigh;
+            hc.highLimitAngleRadians = 0;// rNode.currentAngularPosition - rNode.angularLimitLow;
+        //}
 
-            hc.localConstraintPoint = constraintPoint;// ComOffset;
-
-            //Put this after everything else
             hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
         }
     }
