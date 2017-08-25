@@ -708,6 +708,7 @@ public class Robot : MonoBehaviour
     /// </summary>
     public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
+       
         if(robotGameObject == null)
         {
             robotGameObject = GameObject.Find("Robot");
@@ -767,6 +768,8 @@ public class Robot : MonoBehaviour
             r.RaycastRobot.OverrideMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
+
+        this.RobotHasManipulator = true;
         return true;
     }
 
