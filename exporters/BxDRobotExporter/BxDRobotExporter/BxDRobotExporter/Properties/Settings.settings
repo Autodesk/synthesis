@@ -5,14 +5,14 @@
     <Setting Name="ChildColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">125, 0, 255</Value>
     </Setting>
-    <Setting Name="ParentColor" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Lime</Value>
-    </Setting>
     <Setting Name="HighlightParent" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="SaveLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)">firstRun</Value>
+    </Setting>
+    <Setting Name="FancyColors" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

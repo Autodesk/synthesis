@@ -8,4 +8,8 @@
     <StartAction>Program</StartAction>
     <StartProgram>E:\Program Files\Autodesk\Inventor 2018\Bin\Inventor.exe</StartProgram>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Benchmark|AnyCPU'">
+    <StartProgram>E:\Program Files\Autodesk\Inventor 2018\Bin\Inventor.exe</StartProgram>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>
