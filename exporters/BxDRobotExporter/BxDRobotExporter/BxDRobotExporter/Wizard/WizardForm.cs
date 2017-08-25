@@ -56,8 +56,8 @@ namespace BxDRobotExporter.Wizard
             WizardPages.FinishClicked += delegate ()
             {
                 WizardData.Instance.Apply();
-                Close();
                 Utilities.GUI.ReloadPanels();
+                Close();
             };
         }
 

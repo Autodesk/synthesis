@@ -33,12 +33,12 @@
             this.DefinePartsPanelLayout = new System.Windows.Forms.FlowLayoutPanel();
             this.SuspendLayout();
             // 
-            // DefineMovingParts
+            // DefineMovingPartsLabel
             // 
             this.DefineMovingPartsLabel.AutoSize = true;
             this.DefineMovingPartsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DefineMovingPartsLabel.Location = new System.Drawing.Point(-4, 0);
-            this.DefineMovingPartsLabel.Name = "DefineMovingParts";
+            this.DefineMovingPartsLabel.Name = "DefineMovingPartsLabel";
             this.DefineMovingPartsLabel.Size = new System.Drawing.Size(283, 20);
             this.DefineMovingPartsLabel.TabIndex = 0;
             this.DefineMovingPartsLabel.Text = "Step 3: Define Other Moving Parts";
@@ -53,10 +53,11 @@
     " to have in the simulation, set them up here by checking any of the nodes on the" +
     " list.\r\n";
             // 
-            // flowLayoutPanel1
+            // DefinePartsPanelLayout
             // 
+            this.DefinePartsPanelLayout.AutoScroll = true;
             this.DefinePartsPanelLayout.Location = new System.Drawing.Point(0, 70);
-            this.DefinePartsPanelLayout.Name = "flowLayoutPanel1";
+            this.DefinePartsPanelLayout.Name = "DefinePartsPanelLayout";
             this.DefinePartsPanelLayout.Size = new System.Drawing.Size(460, 583);
             this.DefinePartsPanelLayout.TabIndex = 2;
             // 
