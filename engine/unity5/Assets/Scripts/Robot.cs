@@ -80,7 +80,7 @@ public class Robot : MonoBehaviour
     /// </summary>
     void Start()
     {
-        
+
         StateMachine.Instance.Link<MainState>(this);
     }
 
@@ -104,7 +104,7 @@ public class Robot : MonoBehaviour
                 keyDownTime = Time.time;
             }
 
-            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) && 
+            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
                 !mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HOLD_TIME)
@@ -168,7 +168,7 @@ public class Robot : MonoBehaviour
             wheelMass = RobotTypeManager.WheelMass;
 
             RobotIsMecanum = RobotTypeManager.IsMecanum;
-        } 
+        }
 
         #region Robot Initialization
         RobotDirectory = directory;
@@ -188,7 +188,7 @@ public class Robot : MonoBehaviour
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sensorManager.ResetSensorLists();
 
-        
+
 
         //Removes Driver Practice component if it exists
         if (dpmRobot != null)
@@ -215,7 +215,7 @@ public class Robot : MonoBehaviour
         //Initializes the wheel variables
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
- 
+
 
         //Initializes the nodes and creates joints for the robot
         if (RobotIsMixAndMatch && !RobotIsMecanum) //If the user is in MaM and the robot they select is not mecanum, create the nodes and replace the wheel meshes to match those selected
@@ -306,7 +306,7 @@ public class Robot : MonoBehaviour
                 {
                     node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelRadius;
                 }
-                   
+
                 if (node.PhysicalProperties != null)
                     collectiveMass += node.PhysicalProperties.mass;
 
@@ -380,7 +380,7 @@ public class Robot : MonoBehaviour
         if (!hasRobotCamera)
         {
             //Attached to the main frame and face the front
-            robotCameraManager.AddCamera(this, transform.GetChild(0).transform,new Vector3(0, 0.5f, 0), new Vector3(0, 0, 0));
+            robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0.5f, 0), new Vector3(0, 0, 0));
             ////Attached to main frame and face the back
             robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0.5f, 0), new Vector3(0, 180, 0));
             robotCameraManager.AddCamera(this, transform.GetChild(0).transform);
@@ -443,7 +443,7 @@ public class Robot : MonoBehaviour
                 r.WorldTransform = newTransform;
             }
 
-         
+
             if (RobotHasManipulator && RobotIsMixAndMatch)
             {
                 int i = 0;
@@ -465,7 +465,7 @@ public class Robot : MonoBehaviour
                     r.WorldTransform = newTransform;
                     if (i == 0)
                     {
-                       Debug.Log("Transform Origin" + newTransform.Origin);
+                        Debug.Log("Transform Origin" + newTransform.Origin);
                     }
                     i++;
                 }
@@ -713,8 +713,8 @@ public class Robot : MonoBehaviour
     /// </summary>
     public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
-       
-        if(robotGameObject == null)
+
+        if (robotGameObject == null)
         {
             robotGameObject = GameObject.Find("Robot");
         }
@@ -814,7 +814,7 @@ public class Robot : MonoBehaviour
     {
         float weight = 0;
 
-        foreach(Transform child in gameObject.transform)
+        foreach (Transform child in gameObject.transform)
         {
             if (child.GetComponent<BRigidBody>() != null)
             {
