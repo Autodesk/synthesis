@@ -131,7 +131,7 @@ public partial class RigidNode : RigidNode_Base
     /// <summary>
     /// Creates node_0 of a manipulator for QuickSwap mode. Node_0 is used to attach the manipulator to the robot.
     /// </summary>
-    public void CreateManipulatorJoint(GameObject robot, Vector3 constraintPoint)
+    public void CreateManipulatorJoint(GameObject robot)
     {
         ////Ignore physics/collisions between the manipulator and the robot. Currently not working. 
         //foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
@@ -139,17 +139,20 @@ public partial class RigidNode : RigidNode_Base
         //    MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
         //}
 
-        if (joint != null || GetSkeletalJoint() == null)
-        {
-            RotationalJoint_Base rNode = new RotationalJoint_Base();
-            B6DOFConstraint hc = MainObject.AddComponent<B6DOFConstraint>();
+        if (joint != null || GetSkeletalJoint() == null) {
+            BHingedConstraintEx hc = MainObject.AddComponent<BHingedConstraintEx>();
 
             hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
             hc.otherRigidBody = robot.GetComponentInChildren<BRigidBody>();
+            hc.axisInA = new Vector3(0, 1, 0);
+            hc.axisInB = new Vector3 ( 0, 1, 0);
+            hc.setLimit = true;
 
-            hc.localConstraintPoint = constraintPoint;// ComOffset;
+            hc.localConstraintPoint = new Vector3(0, 0, 0);
 
-            //Put this after everything else
+            hc.lowLimitAngleRadians = 0;
+            hc.highLimitAngleRadians = 0;
+
             hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
         }
     }
