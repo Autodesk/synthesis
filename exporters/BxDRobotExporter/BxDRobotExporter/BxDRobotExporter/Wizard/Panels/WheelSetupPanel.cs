@@ -33,6 +33,8 @@ namespace BxDRobotExporter.Wizard
                     StandardAddInServer.Instance.WizardSelect(Node);
             };
 
+            this.BackColor = Control.DefaultBackColor;
+
         }
 
         public RigidNode_Base Node;

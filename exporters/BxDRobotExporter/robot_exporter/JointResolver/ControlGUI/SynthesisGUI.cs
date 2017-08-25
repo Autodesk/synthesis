@@ -344,7 +344,13 @@ public partial class SynthesisGUI : Form
         {
             if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName))
                 Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName);
+            BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
+            for (int i = 0; i < Meshes.Count; i++)
+            {
+                Meshes[i].WriteToFile(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
+            }
+
             for (int i = 0; i < Meshes.Count; i++)
             {
                 Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
@@ -539,8 +545,8 @@ public partial class SynthesisGUI : Form
         node.GetParent().ModelFullID += node.ModelFullID;
 
         //Get meshes for each node
-        var childMesh = (BXDAMesh)node.GetModel();
-        var parentMesh = (BXDAMesh)node.GetParent().GetModel();
+        var childMesh = GetMesh(node);
+        var parentMesh = GetMesh(node.GetParent());
 
         //Merge submeshes and colliders
         parentMesh.meshes.AddRange(childMesh.meshes);
@@ -548,9 +554,15 @@ public partial class SynthesisGUI : Form
 
         //Merge physics
         parentMesh.physics.Add(childMesh.physics.mass, childMesh.physics.centerOfMass);
-
+        
         //Remove node from the children of its parent
         node.GetParent().Children.Remove(node.GetSkeletalJoint());
+        Meshes.Remove(childMesh);
+    }
+
+    private BXDAMesh GetMesh(RigidNode_Base node)
+    {
+        return Meshes[SkeletonBase.ListAllNodes().IndexOf(node)];
     }
 
     #region OUTDATED EXPORTER METHODS
