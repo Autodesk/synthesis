@@ -447,6 +447,7 @@ public class Robot : MonoBehaviour
          
             if (RobotHasManipulator && RobotIsMixAndMatch)
             {
+                int i = 0;
                 foreach (RigidNode n in manipulatorNode.ListAllNodes())
                 {
                     BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
@@ -463,7 +464,11 @@ public class Robot : MonoBehaviour
                     newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
                     newTransform.Basis = BulletSharp.Math.Matrix.Identity;
                     r.WorldTransform = newTransform;
-                    Debug.Log("Transofrm Origin" + newTransform.Origin);
+                    if (i == 0)
+                    {
+                       Debug.Log("Transform Origin" + newTransform.Origin);
+                    }
+                    i++;
                 }
 
             }
@@ -755,7 +760,7 @@ public class Robot : MonoBehaviour
         if (br != null)
         {
             RigidBody r = (RigidBody)br.GetCollisionObject();
-
+          
             newTransform = r.WorldTransform;
             newTransform.Origin = (robotStartPosition + node.ComOffset).ToBullet();
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;
