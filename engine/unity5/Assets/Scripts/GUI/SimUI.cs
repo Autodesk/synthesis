@@ -32,7 +32,7 @@ public class SimUI : MonoBehaviour
     GameObject changeRobotPanel;
     GameObject robotListPanel;
     GameObject changeFieldPanel;
-    GameObject addRobotPanel;
+    GameObject multiplayerPanel;
 
     GameObject driverStationPanel;
 
@@ -130,7 +130,7 @@ public class SimUI : MonoBehaviour
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
 
-        addRobotPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
+        multiplayerPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
@@ -233,13 +233,13 @@ public class SimUI : MonoBehaviour
         main.ChangeRobot(robotDirectory, true);
 
         //If the current robot has a manipulator, destroy the manipulator
-        if (main.ActiveRobot.RobotHasManipulator) 
+        if (main.ActiveRobot.RobotHasManipulator)
         {
             main.DeleteManipulatorNodes();
         }
 
         //If the new robot has a manipulator, load the manipulator
-        if (RobotTypeManager.HasManipulator) 
+        if (RobotTypeManager.HasManipulator)
         {
             main.LoadManipulator(manipulatorDirectory, main.ActiveRobot.gameObject);
         }
@@ -520,6 +520,7 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             analyticsPanel.SetActive(true);
+            inputManagerPanel.SetActive(true);
         }
     }
 
@@ -694,6 +695,32 @@ public class SimUI : MonoBehaviour
         else
         {
             panel.SetActive(true);
+        }
+    }
+
+    public void ToggleAddRobotPanel()
+    {
+        if (addPanel.activeSelf == true)
+        {
+            addPanel.SetActive(false);
+        }
+        else
+        {
+            addPanel.SetActive(true);
+            changePanel.SetActive(false);
+        }
+    }
+
+    public void ToggleChangePanel()
+    {
+        if (changePanel.activeSelf == true)
+        {
+            changePanel.SetActive(false);
+        }
+        else
+        {
+            changePanel.SetActive(true);
+            addPanel.SetActive(false);
         }
     }
 }

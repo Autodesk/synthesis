@@ -460,7 +460,7 @@ class SensorManagerGUI : MonoBehaviour
     {
         if (selectedNode != null)
         {
-            currentSensor = sensorManager.AddBeamBreaker(selectedNode, Vector3.zero, new Vector3(0, 90, 0));
+            currentSensor = sensorManager.AddBeamBreaker(selectedNode, Vector3.zero, Vector3.zero);
             DisplayOutput();
         }
     }

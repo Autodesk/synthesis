@@ -62,7 +62,7 @@
             this.Cancel.Text = "Cancel";
             this.Cancel.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // LowerLimitLabel
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 13);

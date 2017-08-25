@@ -51,9 +51,9 @@
             this.SimulatorGroupBox.Controls.Add(this.FieldSelectComboBox);
             this.SimulatorGroupBox.Controls.Add(this.FieldLabel);
             this.SimulatorGroupBox.Controls.Add(this.LauchSimCheckBox);
-            this.SimulatorGroupBox.Location = new System.Drawing.Point(0, 515);
+            this.SimulatorGroupBox.Location = new System.Drawing.Point(0, 580);
             this.SimulatorGroupBox.Name = "SimulatorGroupBox";
-            this.SimulatorGroupBox.Size = new System.Drawing.Size(460, 100);
+            this.SimulatorGroupBox.Size = new System.Drawing.Size(460, 46);
             this.SimulatorGroupBox.TabIndex = 1;
             this.SimulatorGroupBox.TabStop = false;
             this.SimulatorGroupBox.Text = "Simulator";
@@ -63,7 +63,7 @@
             this.FieldSelectComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.FieldSelectComboBox.Enabled = false;
             this.FieldSelectComboBox.FormattingEnabled = true;
-            this.FieldSelectComboBox.Location = new System.Drawing.Point(81, 26);
+            this.FieldSelectComboBox.Location = new System.Drawing.Point(215, 19);
             this.FieldSelectComboBox.Name = "FieldSelectComboBox";
             this.FieldSelectComboBox.Size = new System.Drawing.Size(239, 21);
             this.FieldSelectComboBox.TabIndex = 2;
@@ -71,7 +71,7 @@
             // FieldLabel
             // 
             this.FieldLabel.AutoSize = true;
-            this.FieldLabel.Location = new System.Drawing.Point(7, 29);
+            this.FieldLabel.Location = new System.Drawing.Point(141, 22);
             this.FieldLabel.Name = "FieldLabel";
             this.FieldLabel.Size = new System.Drawing.Size(68, 13);
             this.FieldLabel.TabIndex = 1;
@@ -80,7 +80,7 @@
             // LauchSimCheckBox
             // 
             this.LauchSimCheckBox.AutoSize = true;
-            this.LauchSimCheckBox.Location = new System.Drawing.Point(331, 0);
+            this.LauchSimCheckBox.Location = new System.Drawing.Point(6, 21);
             this.LauchSimCheckBox.Name = "LauchSimCheckBox";
             this.LauchSimCheckBox.Size = new System.Drawing.Size(110, 17);
             this.LauchSimCheckBox.TabIndex = 0;
