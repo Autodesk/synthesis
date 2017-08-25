@@ -99,7 +99,7 @@ public partial class RigidNode : RigidNode_Base
                 if (lAxis.x < 0) lAxis.x *= -1f;
                 if (lAxis.y < 0) lAxis.y *= -1f;
                 if (lAxis.z < 0) lAxis.z *= -1f;
-                
+
                 sc.localConstraintAxisX = lAxis;
                 sc.localConstraintAxisY = new Vector3(lAxis.y, lAxis.z, lAxis.x);
 
@@ -139,13 +139,14 @@ public partial class RigidNode : RigidNode_Base
         //    MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
         //}
 
-        if (joint != null || GetSkeletalJoint() == null) {
+        if (joint != null || GetSkeletalJoint() == null)
+        {
             BHingedConstraintEx hc = MainObject.AddComponent<BHingedConstraintEx>();
 
             hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
             hc.otherRigidBody = robot.GetComponentInChildren<BRigidBody>();
             hc.axisInA = new Vector3(0, 1, 0);
-            hc.axisInB = new Vector3 ( 0, 1, 0);
+            hc.axisInB = new Vector3(0, 1, 0);
             hc.setLimit = true;
 
             hc.localConstraintPoint = new Vector3(0, 0, 0);

@@ -92,6 +92,20 @@ public class MaMGetters : MonoBehaviour {
                 return 0.93f;
         }
         return 1.0f;
+
+    }
+    ///<summary> 
+    /// Returns the coefficient of friction value associated with a wheel. The coeffecient of friction is taken from VexPro's website. 
+    /// These may need to be adjusted.
+    /// </summary>
+    public float GetWheelLateralFriction(int wheelID)
+    {
+        switch (wheelID)
+        {
+            case 2: //omni wheel
+                return 0.1f;
+        }
+        return 1.0f;
     }
 
     ///<summary>
