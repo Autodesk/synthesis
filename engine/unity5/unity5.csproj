@@ -13,7 +13,7 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>Assets\smcs.rsp</CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
@@ -75,6 +75,9 @@
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>Assets\Scripts\SimulatorAPI.dll</HintPath>
@@ -202,7 +205,6 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyRope.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
-    <Compile Include="Assets\Scripts\AppModel.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BBallSocketConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiCallbacks.cs" />
@@ -305,6 +307,8 @@
     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
+    <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
+    <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />

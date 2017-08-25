@@ -21,18 +21,19 @@ namespace BxDRobotExporter.Wizard
         public DefinePartPanel()
         {
             InitializeComponent();
-
         }
         
         public DefinePartPanel(RigidNode_Base node)
         {
             InitializeComponent();
-            BackColor = Control.DefaultBackColor;
+            BackColor = DefaultBackColor;
             this.node = node;
             this.NodeGroupBox.Text = node.ModelFileName;
 
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
+            PortTwoUpDown.Minimum = WizardData.Instance.NextFreePort;
+            PortOneUpDown.Minimum = WizardData.Instance.NextFreePort;
         }
 
         private void AutoAssignCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -40,19 +41,8 @@ namespace BxDRobotExporter.Wizard
             PortOneUpDown.Enabled = !AutoAssignCheckBox.Checked;
             if(DriverComboBox.SelectedIndex == 3 || DriverComboBox.SelectedIndex == 5)
             {
-                PortTwoUpDown.Enabled = !AutoAssignCheckBox.Checked;
+                PortTwoUpDown.Enabled = PortOneUpDown.Enabled = !AutoAssignCheckBox.Checked;
             }
-        }
-
-        private void PoweredRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            UnpoweredRadioButton.Checked = !PoweredRadioButton.Checked;
-        }
-
-        private void UnpoweredRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            PoweredRadioButton.Checked = !UnpoweredRadioButton.Checked;
-
         }
 
         public JointDriverMeta GetJointData()
@@ -67,9 +57,9 @@ namespace BxDRobotExporter.Wizard
                 case 0: // No Driver
                     foreach(Control control in Controls)
                     {
-                        if (!control.Equals(DriverComboBox))
-                            control.Enabled = false;
+                        control.Enabled = false;
                     }
+                    DriverComboBox.Enabled = true;
                     break;
                 case 1: //Motor
                     foreach (Control control in Controls)
@@ -215,6 +205,5 @@ namespace BxDRobotExporter.Wizard
             }
             return null;
         }
-
     }
 }

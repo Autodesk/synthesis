@@ -36,6 +36,7 @@
             this.FrictionLabel = new System.Windows.Forms.Label();
             this.WheelTypeLabel = new System.Windows.Forms.Label();
             this.WheelTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.ViewInventorButton = new System.Windows.Forms.Button();
             this.MainGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -48,7 +49,6 @@
             this.MainGroupBox.Controls.Add(this.FrictionLabel);
             this.MainGroupBox.Controls.Add(this.WheelTypeLabel);
             this.MainGroupBox.Controls.Add(this.WheelTypeComboBox);
-            this.MainGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainGroupBox.Location = new System.Drawing.Point(0, 0);
             this.MainGroupBox.Name = "MainGroupBox";
             this.MainGroupBox.Size = new System.Drawing.Size(220, 100);
@@ -99,7 +99,7 @@
             "High"});
             this.FrictionComboBox.Location = new System.Drawing.Point(81, 45);
             this.FrictionComboBox.Name = "FrictionComboBox";
-            this.FrictionComboBox.Size = new System.Drawing.Size(132, 21);
+            this.FrictionComboBox.Size = new System.Drawing.Size(116, 21);
             this.FrictionComboBox.TabIndex = 3;
             // 
             // FrictionLabel
@@ -130,17 +130,27 @@
             "Mecanum"});
             this.WheelTypeComboBox.Location = new System.Drawing.Point(81, 17);
             this.WheelTypeComboBox.Name = "WheelTypeComboBox";
-            this.WheelTypeComboBox.Size = new System.Drawing.Size(133, 21);
+            this.WheelTypeComboBox.Size = new System.Drawing.Size(116, 21);
             this.WheelTypeComboBox.TabIndex = 0;
             this.WheelTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.WheelTypeComboBox_SelectedIndexChanged);
+            // 
+            // ViewInventorButton
+            // 
+            this.ViewInventorButton.Location = new System.Drawing.Point(3, 106);
+            this.ViewInventorButton.Name = "ViewInventorButton";
+            this.ViewInventorButton.Size = new System.Drawing.Size(197, 22);
+            this.ViewInventorButton.TabIndex = 1;
+            this.ViewInventorButton.Text = "View in Inventor";
+            this.ViewInventorButton.UseVisualStyleBackColor = true;
             // 
             // WheelSetupPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ViewInventorButton);
             this.Controls.Add(this.MainGroupBox);
             this.Name = "WheelSetupPanel";
-            this.Size = new System.Drawing.Size(220, 100);
+            this.Size = new System.Drawing.Size(203, 131);
             this.MainGroupBox.ResumeLayout(false);
             this.MainGroupBox.PerformLayout();
             this.ResumeLayout(false);
@@ -157,5 +167,6 @@
         private System.Windows.Forms.Label WheelSideLabel;
         private System.Windows.Forms.RadioButton RightRadioButton;
         private System.Windows.Forms.RadioButton LeftRadioButton;
+        private System.Windows.Forms.Button ViewInventorButton;
     }
 }

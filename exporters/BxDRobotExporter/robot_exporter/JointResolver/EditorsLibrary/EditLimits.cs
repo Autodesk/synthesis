@@ -36,6 +36,8 @@ namespace EditorsLibrary
                 }
             }
             base.Text = joint.GetType().Name.Replace("_Base", "").Replace("Joint", " Joint");
+
+            FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
         }
 
         private void btnOkay_Click(object sender, EventArgs e)

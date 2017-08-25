@@ -74,6 +74,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Benchmark|AnyCPU'">
+    <OutputPath>bin\Benchmark\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="ControlGUI\LiteExporterForm.cs">
       <SubType>Form</SubType>
