@@ -14,7 +14,7 @@ namespace BxDRobotExporter.Wizard
 {
     public partial class ReviewAndFinishPage : UserControl, IWizardPage
     {
-        public const string SYNTHESIS_BETA_PATH = @"C:\users\t_howab\Desktop\TempSynthesisBuild\Build.exe";
+        public const string SYTHESIS_PATH = @"C:\users\t_howab\Desktop\TempSynthesisBuild\Build.exe";
         Dictionary<string, string> fields = new Dictionary<string, string>();
 
         public ReviewAndFinishPage()
@@ -45,9 +45,9 @@ namespace BxDRobotExporter.Wizard
 
         public void Initialize()
         {
-                var dirs = Directory.GetDirectories(@"C:\users\t_howab\documents\synthesis\fields");
-            
-            foreach(var dir in dirs)
+            var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\synthesis\fields");
+
+            foreach (var dir in dirs)
             {
                 fields.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last(), dir);
                 FieldSelectComboBox.Items.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last());
@@ -61,7 +61,7 @@ namespace BxDRobotExporter.Wizard
             if(LauchSimCheckBox.Checked)
             {
                 Utilities.GUI.RobotSave();
-                Process.Start(SYNTHESIS_BETA_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + Utilities.GUI.RMeta.ActiveRobotName, fields[(string)FieldSelectComboBox.SelectedItem]));
+                Process.Start(SYTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + Utilities.GUI.RMeta.ActiveRobotName, fields[(string)FieldSelectComboBox.SelectedItem]));
             }
         }
         #endregion

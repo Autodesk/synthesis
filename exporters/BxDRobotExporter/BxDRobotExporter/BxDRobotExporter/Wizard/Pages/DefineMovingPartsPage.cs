@@ -17,27 +17,17 @@ namespace BxDRobotExporter.Wizard
         public DefineMovingPartsPage()
         {
             InitializeComponent();
-
         }
 
         #region IWizardPage Implementation
         public bool Initialized { get => _initialized; set => _initialized = value; }
         private bool _initialized = false;
 
-        public event Action DeactivateNext;
-        private void OnDeactivateNext() => DeactivateNext?.Invoke();
-
-        public event Action ActivateNext;
-        private void OnActivateNext() => ActivateNext?.Invoke();
-
-        public event InvalidatePageEventHandler InvalidatePage;
-        private void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(ReviewAndFinishPage));
-
         public void Initialize()
         {
-            foreach(RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+            foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                if(node.GetSkeletalJoint() != null && !WizardData.Instance.WheelNodes.Contains(node))
+                if (node.GetSkeletalJoint() != null && !WizardData.Instance.WheelNodes.Contains(node))
                 {
                     DefinePartPanel panel = new DefinePartPanel(node);
                     panels.Add(panel);
@@ -47,6 +37,16 @@ namespace BxDRobotExporter.Wizard
 
             _initialized = true;
         }
+        
+        public event Action DeactivateNext;
+        private void OnDeactivateNext() => DeactivateNext?.Invoke();
+
+        public event Action ActivateNext;
+        private void OnActivateNext() => ActivateNext?.Invoke();
+
+        public event InvalidatePageEventHandler InvalidatePage;
+        private void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(ReviewAndFinishPage));
+
 
         public void OnNext()
         {

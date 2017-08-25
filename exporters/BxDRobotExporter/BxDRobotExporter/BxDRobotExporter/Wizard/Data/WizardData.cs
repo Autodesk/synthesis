@@ -53,10 +53,7 @@ namespace BxDRobotExporter.Wizard
 
             public void ApplyToNode()
             {
-                Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR)
-                {
-                    isCan = false,
-                };
+                Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR);
                 Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
                 WheelDriverMeta wheelDriver = new WheelDriverMeta();
                 switch (FrictionLevel)

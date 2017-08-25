@@ -7,6 +7,9 @@ namespace EditorsLibrary
         public ParametersEditor()
         {
             InitializeComponent();
+
+            FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
+
         }
     }
 }
