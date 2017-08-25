@@ -45,7 +45,7 @@ namespace BxDRobotExporter.Wizard
 
         public void Initialize()
         {
-            var dirs = Directory.GetDirectories(@"C:\users\t_howab\documents\synthesis\fields");
+                var dirs = Directory.GetDirectories(@"C:\users\t_howab\documents\synthesis\fields");
             
             foreach(var dir in dirs)
             {

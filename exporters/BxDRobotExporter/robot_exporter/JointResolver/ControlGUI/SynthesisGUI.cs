@@ -338,7 +338,7 @@ public partial class SynthesisGUI : Form
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
-    public bool RobotSave()
+    public bool RobotSave(bool silent = false)
     {
         try
         {
@@ -349,7 +349,8 @@ public partial class SynthesisGUI : Form
             {
                 Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
             }
-            MessageBox.Show("Saved");
+            if(!silent)
+                MessageBox.Show("Saved");
             return true;
         }
         catch (Exception e)
@@ -474,11 +475,11 @@ public partial class SynthesisGUI : Form
         ResumeLayout();
     }
 
-    private void HelpTutorials_Click(object sender, EventArgs e)
-    {
-        Process.Start("http://bxd.autodesk.com/tutorial-robot.html");
-    }
-
+    /// <summary>
+    /// Opens the <see cref="PluginSettingsForm"/> form
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public void SettingsExporter_OnClick(object sender, System.EventArgs e)
     {
         try
@@ -498,6 +499,10 @@ public partial class SynthesisGUI : Form
         }
     }
 
+    /// <summary>
+    /// Runs the standalone Robot Viewer with and tells it to view the current robot
+    /// </summary>
+    /// <param name="settingsDir"></param>
     public void PreviewRobot(string settingsDir = null)
     {
         if(RMeta.ActiveDir != null)
@@ -510,6 +515,9 @@ public partial class SynthesisGUI : Form
         }
     }
 
+    /// <summary>
+    /// Used to load <see cref="BXDAMesh"/>es into their corresponding <see cref="OGL_RigidNode"/>s
+    /// </summary>
     public void LoadMeshes()
     {
         List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
@@ -517,6 +525,32 @@ public partial class SynthesisGUI : Form
         {
             ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
         }
+    }
+
+    /// <summary>
+    /// Merges a node into the parent. Used during the one click export and the wizard.
+    /// </summary>
+    /// <param name="node"></param>
+    public void MergeNodeIntoParent(RigidNode_Base node)
+    {
+        if (node.GetParent() == null)
+            throw new ArgumentException("ERROR: Root node passed to MergeNodeIntoParent(RigidNode_Base)", "node");
+
+        node.GetParent().ModelFullID += node.ModelFullID;
+
+        //Get meshes for each node
+        var childMesh = (BXDAMesh)node.GetModel();
+        var parentMesh = (BXDAMesh)node.GetParent().GetModel();
+
+        //Merge submeshes and colliders
+        parentMesh.meshes.AddRange(childMesh.meshes);
+        parentMesh.colliders.AddRange(childMesh.colliders);
+
+        //Merge physics
+        parentMesh.physics.Add(childMesh.physics.mass, childMesh.physics.centerOfMass);
+
+        //Remove node from the children of its parent
+        node.GetParent().Children.Remove(node.GetSkeletalJoint());
     }
 
     #region OUTDATED EXPORTER METHODS
@@ -567,6 +601,11 @@ public partial class SynthesisGUI : Form
     }
 
     private ExporterForm exporter = null;
+
+    private void HelpTutorials_Click(object sender, EventArgs e)
+    {
+        Process.Start("http://bxd.autodesk.com/tutorial-robot.html");
+    }
 
     #endregion
 

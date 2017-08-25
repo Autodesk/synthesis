@@ -393,8 +393,7 @@ namespace BxDRobotExporter
                 }
                 else if (EnvironmentState == EnvironmentStateEnum.kTerminateEnvironmentState && EnvironmentEnabled && BeforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    if (this.WarnUnsaved())
-                        SaveButton_OnExecute(null);
+                    
                     ToggleEnvironment();
                 }
             }
@@ -541,7 +540,7 @@ namespace BxDRobotExporter
                     occurrences.Add(occurrence);
                     if (node.GetParent() != null && IsParentHighlight)
                     {
-                        string[] Nodes = node.GetParent().ModelFullID.Split(new char[] { '-', '_', '-' });
+                        string[] Nodes = node.GetParent().ModelFullID.Split(new string[] { "-_-" }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (string name in Nodes)
                         {
                             SelectNode(name, JointNodeTypeEnum.kParentNode);
@@ -572,6 +571,8 @@ namespace BxDRobotExporter
             Properties.Settings.Default.SaveLocation = SaveLocation;
             Properties.Settings.Default.Save();
         } 
+
+
         #endregion
         #endregion
 

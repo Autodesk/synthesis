@@ -49,4 +49,15 @@ public class Utilities
     }
 }
 
-
+namespace LegacyInterchange
+{
+    public static class LegacyEvents
+    {
+        public static event Action RobotModified;
+        
+        public static void OnRobotModified()
+        {
+            RobotModified?.Invoke();
+        }
+    }
+}
