@@ -403,6 +403,18 @@ public class Toolkit : MonoBehaviour
     public void EndProcesses(bool toolkitWindowOn = false)
     {
         ToggleRulerWindow(false);
+
+        //Reset the stopwatch stuff
+        if (stopwatchOn)
+        {
+            ResetStopwatch();
+            if (stopwatchPaused)
+            {
+                PauseStopwatch();
+            }
+            ToggleStopwatch();
+        }
+
         toolkitWindow.SetActive(toolkitWindowOn);
         ToggleStatsWindow(false);
         ToggleStopwatchWindow(false);
