@@ -123,7 +123,10 @@ public class Toolkit : MonoBehaviour
             UpdateStatsWindow();
         }
         //UpdateControlIndicator();
-
+        if (Input.GetKeyDown(KeyCode.P) && stopwatchWindow.activeSelf)
+        {
+            PauseStopwatch();
+        }
     }
 
     /// <summary>
@@ -310,15 +313,14 @@ public class Toolkit : MonoBehaviour
             stopwatchTime = 0f;
             stopwatchStartButtonText.text = "Stop";
             stopwatchOn = true;
-            stopwatchPauseButtonText.text = "Pause";
-            stopwatchPaused = false;
         }
         else
         {
             stopwatchStartButtonText.text = "Start";
             stopwatchOn = false;
         }
-
+        stopwatchPauseButtonText.text = "Pause";
+        stopwatchPaused = false;
     }
 
     public void PauseStopwatch()
@@ -403,6 +405,18 @@ public class Toolkit : MonoBehaviour
     public void EndProcesses(bool toolkitWindowOn = false)
     {
         ToggleRulerWindow(false);
+
+        //Reset the stopwatch stuff
+        if (stopwatchOn)
+        {
+            ResetStopwatch();
+            if (stopwatchPaused)
+            {
+                PauseStopwatch();
+            }
+            ToggleStopwatch();
+        }
+
         toolkitWindow.SetActive(toolkitWindowOn);
         ToggleStatsWindow(false);
         ToggleStopwatchWindow(false);
