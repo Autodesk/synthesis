@@ -67,10 +67,11 @@ public class MixAndMatchMode : MonoBehaviour
     // Use this for initialization
     private void Awake()
     {
-        FindAllGameObjects();
+        
     }
     void Start()
-    { 
+    {
+        FindAllGameObjects();
         StartMixAndMatch();
 
     }
@@ -81,7 +82,7 @@ public class MixAndMatchMode : MonoBehaviour
 
     }
 
-    void FindAllGameObjects()
+    public void FindAllGameObjects()
     {
         mixAndMatchMode = GameObject.Find("MixAndMatchMode");
         mixAndMatchModeScript = GameObject.Find("MixAndMatchModeScript");
