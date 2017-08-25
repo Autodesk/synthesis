@@ -223,6 +223,46 @@ namespace BxDRobotExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap RobotClick16 {
+            get {
+                object obj = ResourceManager.GetObject("RobotClick16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RobotClick32 {
+            get {
+                object obj = ResourceManager.GetObject("RobotClick32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RobotMagicWand16 {
+            get {
+                object obj = ResourceManager.GetObject("RobotMagicWand16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RobotMagicWand32 {
+            get {
+                object obj = ResourceManager.GetObject("RobotMagicWand32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SaveRobot16 {
             get {
                 object obj = ResourceManager.GetObject("SaveRobot16", resourceCulture);

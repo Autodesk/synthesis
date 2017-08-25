@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OneClickExportForm));
             this.WheelCountLabel = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.WheelCountUpDown = new System.Windows.Forms.NumericUpDown();
             this.DriveTrainLabel = new System.Windows.Forms.Label();
             this.DriveTrainComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -41,7 +41,8 @@
             this.LaunchSynthesisCheckBox = new System.Windows.Forms.CheckBox();
             this.ExportButton = new System.Windows.Forms.Button();
             this.CancelExportButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            this.MergeNodesCheckBox = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.WheelCountUpDown)).BeginInit();
             this.ExportParametersGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,21 +55,22 @@
             this.WheelCountLabel.TabIndex = 0;
             this.WheelCountLabel.Text = "Wheel Count:";
             // 
-            // numericUpDown1
+            // WheelCountUpDown
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(84, 17);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(73, 20);
-            this.numericUpDown1.TabIndex = 1;
+            this.WheelCountUpDown.Location = new System.Drawing.Point(84, 17);
+            this.WheelCountUpDown.Name = "WheelCountUpDown";
+            this.WheelCountUpDown.Size = new System.Drawing.Size(35, 20);
+            this.WheelCountUpDown.TabIndex = 1;
             // 
             // DriveTrainLabel
             // 
             this.DriveTrainLabel.AutoSize = true;
-            this.DriveTrainLabel.Location = new System.Drawing.Point(163, 20);
+            this.DriveTrainLabel.Location = new System.Drawing.Point(125, 19);
             this.DriveTrainLabel.Name = "DriveTrainLabel";
             this.DriveTrainLabel.Size = new System.Drawing.Size(62, 13);
             this.DriveTrainLabel.TabIndex = 2;
             this.DriveTrainLabel.Text = "Drive Train:";
+            this.DriveTrainLabel.Click += new System.EventHandler(this.DriveTrainLabel_Click);
             // 
             // DriveTrainComboBox
             // 
@@ -76,15 +78,14 @@
             this.DriveTrainComboBox.FormattingEnabled = true;
             this.DriveTrainComboBox.Items.AddRange(new object[] {
             "Western",
-            "Mecanum",
-            "Swerve",
-            "H-Drive"});
-            this.DriveTrainComboBox.Location = new System.Drawing.Point(231, 16);
+            "Mecanum"});
+            this.DriveTrainComboBox.Location = new System.Drawing.Point(193, 16);
             this.DriveTrainComboBox.Name = "DriveTrainComboBox";
-            this.DriveTrainComboBox.Size = new System.Drawing.Size(193, 21);
+            this.DriveTrainComboBox.Size = new System.Drawing.Size(96, 21);
             this.DriveTrainComboBox.TabIndex = 3;
+            this.DriveTrainComboBox.SelectedIndexChanged += new System.EventHandler(this.DriveTrainComboBox_SelectedIndexChanged);
             // 
-            // LowerLimitLabel
+            // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -105,12 +106,13 @@
             // ExportParametersGroupBox
             // 
             this.ExportParametersGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ExportParametersGroupBox.Controls.Add(this.MergeNodesCheckBox);
             this.ExportParametersGroupBox.Controls.Add(this.FieldSelectComboBox);
             this.ExportParametersGroupBox.Controls.Add(this.label2);
             this.ExportParametersGroupBox.Controls.Add(this.LaunchSynthesisCheckBox);
             this.ExportParametersGroupBox.Controls.Add(this.DriveTrainComboBox);
             this.ExportParametersGroupBox.Controls.Add(this.DriveTrainLabel);
-            this.ExportParametersGroupBox.Controls.Add(this.numericUpDown1);
+            this.ExportParametersGroupBox.Controls.Add(this.WheelCountUpDown);
             this.ExportParametersGroupBox.Controls.Add(this.WheelCountLabel);
             this.ExportParametersGroupBox.Location = new System.Drawing.Point(12, 93);
             this.ExportParametersGroupBox.Name = "ExportParametersGroupBox";
@@ -122,6 +124,7 @@
             // FieldSelectComboBox
             // 
             this.FieldSelectComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FieldSelectComboBox.Enabled = false;
             this.FieldSelectComboBox.FormattingEnabled = true;
             this.FieldSelectComboBox.Location = new System.Drawing.Point(196, 46);
             this.FieldSelectComboBox.Name = "FieldSelectComboBox";
@@ -169,6 +172,17 @@
             this.CancelExportButton.UseVisualStyleBackColor = true;
             this.CancelExportButton.Click += new System.EventHandler(this.CancelExportButton_Click);
             // 
+            // MergeNodesCheckBox
+            // 
+            this.MergeNodesCheckBox.AutoSize = true;
+            this.MergeNodesCheckBox.Location = new System.Drawing.Point(295, 19);
+            this.MergeNodesCheckBox.Name = "MergeNodesCheckBox";
+            this.MergeNodesCheckBox.Size = new System.Drawing.Size(130, 17);
+            this.MergeNodesCheckBox.TabIndex = 7;
+            this.MergeNodesCheckBox.Text = "Merge Unused Nodes";
+            this.MergeNodesCheckBox.UseVisualStyleBackColor = true;
+            this.MergeNodesCheckBox.CheckedChanged += new System.EventHandler(this.MergeNodesCheckBox_CheckedChanged);
+            // 
             // OneClickExportForm
             // 
             this.AcceptButton = this.CancelExportButton;
@@ -188,7 +202,7 @@
             this.Name = "OneClickExportForm";
             this.Text = "One Click Export (Beta)";
             this.Load += new System.EventHandler(this.OneClickExportForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WheelCountUpDown)).EndInit();
             this.ExportParametersGroupBox.ResumeLayout(false);
             this.ExportParametersGroupBox.PerformLayout();
             this.ResumeLayout(false);
@@ -199,7 +213,7 @@
         #endregion
 
         private System.Windows.Forms.Label WheelCountLabel;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown WheelCountUpDown;
         private System.Windows.Forms.Label DriveTrainLabel;
         private System.Windows.Forms.ComboBox DriveTrainComboBox;
         private System.Windows.Forms.Label label1;
@@ -210,5 +224,6 @@
         private System.Windows.Forms.CheckBox LaunchSynthesisCheckBox;
         private System.Windows.Forms.Button ExportButton;
         private System.Windows.Forms.Button CancelExportButton;
+        private System.Windows.Forms.CheckBox MergeNodesCheckBox;
     }
 }

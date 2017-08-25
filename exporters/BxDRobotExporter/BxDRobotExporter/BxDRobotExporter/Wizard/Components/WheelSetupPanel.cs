@@ -12,6 +12,8 @@ namespace BxDRobotExporter.Wizard
 {
     public partial class WheelSetupPanel : UserControl
     {
+        public bool Valid { get => LeftRadioButton.Checked || RightRadioButton.Checked; }
+
         public WheelSetupPanel()
         {
             InitializeComponent();
@@ -34,7 +36,6 @@ namespace BxDRobotExporter.Wizard
             };
 
             this.BackColor = Control.DefaultBackColor;
-
         }
 
         public RigidNode_Base Node;

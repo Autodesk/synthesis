@@ -20,6 +20,8 @@ namespace EditorsLibrary
 
             joint = passJoint;
             this.UpdateSensorList();
+            FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
+
         }
 
         private void UpdateSensorList()

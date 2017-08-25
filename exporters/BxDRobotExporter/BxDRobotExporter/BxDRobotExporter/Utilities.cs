@@ -132,9 +132,8 @@ namespace BxDRobotExporter
             SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
             {
                 InventorChildColor = Properties.Settings.Default.ChildColor,
-                InventorParentColor = Properties.Settings.Default.ParentColor,
-                InventorHighlightParent = Properties.Settings.Default.HighlightParent,
-                GeneralSaveLocation = Properties.Settings.Default.SaveLocation
+                GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
+                GeneralUseFancyColors = Properties.Settings.Default.FancyColors
             };
         }
     }

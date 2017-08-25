@@ -26,12 +26,26 @@ namespace BxDRobotExporter.Wizard
 
             NodeCheckedListBox.CheckOnClick = false;
 
-            foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+            if (WizardData.Instance.DriveTrain != WizardData.WizardDriveTrain.SWERVE)
             {
-                if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
                 {
-                    NodeCheckedListBox.Items.Add(node.ModelFileName);
-                    checkedListItems.Add(node.ModelFileName, node);
+                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+                    {
+                        NodeCheckedListBox.Items.Add(node.ModelFileName);
+                        checkedListItems.Add(node.ModelFileName, node);
+                    }
+                }
+            }
+            else
+            {
+                foreach(RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                {
+                    if(node.GetParent().GetParent() != null)
+                    {
+                        NodeCheckedListBox.Items.Add(node.ModelFileName);
+                        checkedListItems.Add(node.ModelFileName, node);
+                    }
                 }
             }
             NodeCheckedListBox.SelectedIndexChanged += delegate (object sender, EventArgs e)
@@ -121,7 +135,8 @@ namespace BxDRobotExporter.Wizard
 
                     if (!string.IsNullOrEmpty(BadPanels))
                     {
-                        WarningLabel.Text = string.Format("Warning: Wheel {0} {1} {2} not set to Mecanum. This may cause problems with the exporter. If you have a custom drive train, select \'Other/Custom\' on the previous page.", (BadPanelCount == 1) ? "node" : "nodes", BadPanels.Substring(0, (BadPanels.Length - 2)), (BadPanelCount == 1) ? "is" : "are");
+                        WarningLabel.Text = string.Format("Warning: Wheel {0} {1} {2} not set to Mecanum. This may cause problems with the exporter. If you have a custom drive train, select \'Other/Custom\' on the previous page.",
+                            (BadPanelCount == 1) ? "node" : "nodes", BadPanels.Substring(0, (BadPanels.Length - 2)), (BadPanelCount == 1) ? "is" : "are");
                         OnDeactivateNext();
                     }
                     else
@@ -188,10 +203,10 @@ namespace BxDRobotExporter.Wizard
 
         private WheelSlotPanel GetNextEmptyPanel()
         {
-            foreach(WheelSlotPanel panel in slots)
+            for(int i = (slots.Count - 1); i > 0; i--)
             {
-                if (!panel.IsFilled)
-                    return panel;
+                if (!slots[i].IsFilled)
+                    return slots[i];
             }
             return null;
         }

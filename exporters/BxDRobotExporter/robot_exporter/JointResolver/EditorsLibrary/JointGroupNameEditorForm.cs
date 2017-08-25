@@ -20,6 +20,8 @@ namespace EditorsLibrary
             InitializeComponent();
 
             textBox1.Text = name;
+            FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
+
         }
 
         private void button1_Click(object sender, EventArgs e)
