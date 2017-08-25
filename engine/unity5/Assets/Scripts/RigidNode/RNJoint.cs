@@ -131,14 +131,13 @@ public partial class RigidNode : RigidNode_Base
     /// <summary>
     /// Creates node_0 of a manipulator for QuickSwap mode. Node_0 is used to attach the manipulator to the robot.
     /// </summary>
-    public void CreateManipulatorJoint(GameObject robot)
+    public void CreateManipulatorJoint(GameObject robot, Vector3 constraintPoint)
     {
-
-        //Ignore physics/collisions between the manipulator and the robot. Currently not working. 
-        foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
-        {
-            MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
-        }
+        ////Ignore physics/collisions between the manipulator and the robot. Currently not working. 
+        //foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
+        //{
+        //    MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
+        //}
 
         if (joint != null || GetSkeletalJoint() == null)
         {
@@ -148,7 +147,7 @@ public partial class RigidNode : RigidNode_Base
             hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
             hc.otherRigidBody = robot.GetComponentInChildren<BRigidBody>();
 
-            hc.localConstraintPoint = ComOffset;
+            hc.localConstraintPoint = constraintPoint;// ComOffset;
 
             //Put this after everything else
             hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
