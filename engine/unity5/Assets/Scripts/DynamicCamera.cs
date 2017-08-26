@@ -302,9 +302,16 @@ public class DynamicCamera : MonoBehaviour
         public override void Init()
         {
             //This position makes it less weird when the camera first zoom in to the camera
-            mono.transform.position = new Vector3(-4, 3, 0);
-            currentPosition = new Vector3(0f, 1f, 0f);
-            targetPosition = currentPosition;
+            if (!robot)
+            {
+                mono.transform.position = new Vector3(-4, 3, 0);
+            }
+            else
+            {
+                mono.transform.position = robot.transform.position + new Vector3(-4, 3, 0);
+            }
+            currentPosition = mono.transform.position;
+            targetPosition = mono.transform.position;
         }
 
 
