@@ -342,7 +342,7 @@ public class DynamicCamera : MonoBehaviour
                 if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
                 {
                     
-                    if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+                    if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
                     {
                         currentPosition = mono.transform.position;
                         targetPosition = currentPosition;
