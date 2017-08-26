@@ -292,7 +292,7 @@ public class DynamicCamera : MonoBehaviour
         Vector3 targetVector;
         Vector3 currentPosition;
         Vector3 targetPosition;
-        float cameraAngle = 30f;
+        float cameraAngle = 25f;
         float panValue = 0f;
         const float lagResponsiveness = 10f;
         public OrbitState(MonoBehaviour mono)
@@ -301,14 +301,15 @@ public class DynamicCamera : MonoBehaviour
         }
         public override void Init()
         {
+            if (!robot) robot = StateMachine.Instance.FindState<MainState>().ActiveRobot.gameObject;
             //This position makes it less weird when the camera first zoom in to the camera
             if (!robot)
             {
-                mono.transform.position = new Vector3(-4, 3, 0);
+                mono.transform.position = new Vector3(-2, 2, -2);
             }
             else
             {
-                mono.transform.position = robot.transform.position + new Vector3(-4, 3, 0);
+                mono.transform.position = robot.transform.GetChild(0).position + new Vector3(-2, 2, -2);
             }
             currentPosition = mono.transform.position;
             targetPosition = mono.transform.position;
@@ -337,7 +338,7 @@ public class DynamicCamera : MonoBehaviour
             if (MovingEnabled)
             {   
                 //Force the camera to stay above the field if the robot is flipped over at spawn
-                if(mono.transform.position.y < 0) mono.transform.position = new Vector3(-4, 3, 0);
+                if(mono.transform.position.y < 0) mono.transform.position = new Vector3(-2, 2, -2);
                 //Enable position and angle transform
                 if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
                 {
