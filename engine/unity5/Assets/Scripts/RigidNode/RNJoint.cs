@@ -22,7 +22,7 @@ public partial class RigidNode : RigidNode_Base
         Y
     }
 
-    public void CreateJoint(int numWheels, bool mixAndMatch, float wheelFriction = 1f)
+    public void CreateJoint(int numWheels, bool mixAndMatch, float wheelFriction = 1f, float lateralFriction = 1f)
     {
         if (joint != null || GetSkeletalJoint() == null)
         {
@@ -49,7 +49,11 @@ public partial class RigidNode : RigidNode_Base
                     wheel.CreateWheel(this);
 
                     if (mixAndMatch)
+                    {
                         wheel.Friction = wheelFriction;
+                        wheel.SlidingFriction = lateralFriction;
+                    }
+                        
                     
                     MainObject.transform.parent = parent.MainObject.transform;
                 }
