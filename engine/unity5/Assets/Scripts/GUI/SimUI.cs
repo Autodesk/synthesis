@@ -46,7 +46,6 @@ public class SimUI : MonoBehaviour
 
     GameObject mixAndMatchPanel;
     GameObject changePanel;
-    GameObject changeInMultiplayerPanel;
     GameObject addPanel;
 
     GameObject toolbar;
@@ -159,7 +158,6 @@ public class SimUI : MonoBehaviour
 
         toolbar = AuxFunctions.FindObject(canvas, "Toolbar");
         changePanel = AuxFunctions.FindObject(canvas, "ChangePanel");
-        changeInMultiplayerPanel = AuxFunctions.FindObject(canvas, "ChangeInMultiplayerPanel");
         addPanel = AuxFunctions.FindObject(canvas, "AddPanel");
 
         CheckControlPanel();
@@ -646,7 +644,6 @@ public class SimUI : MonoBehaviour
         exitPanel.SetActive(false);
         mixAndMatchPanel.SetActive(false);
         changePanel.SetActive(false);
-        changeInMultiplayerPanel.SetActive(false);
         addPanel.SetActive(false);
         analyticsPanel.SetActive(false);
         inputManagerPanel.SetActive(false);

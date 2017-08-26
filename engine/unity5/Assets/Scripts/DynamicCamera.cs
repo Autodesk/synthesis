@@ -127,6 +127,7 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class OrbitState : CameraState
     {
+        //The old orbit state won't lock its angle relative to the robot
         #region old orbit state
         //Vector3 targetVector;
         //Vector3 rotateVector;
@@ -206,7 +207,7 @@ public class DynamicCamera : MonoBehaviour
         //    return output.normalized * mag + origin;
         //}
         #endregion
-
+        //The other version orbit state locks the angle, but when it doesn't change the vertical angle and instead changes the height
         #region another version of orbit state
         //private Transform target;
         //// The distance in the x-z plane to the target
@@ -285,7 +286,9 @@ public class DynamicCamera : MonoBehaviour
 
         //}
         #endregion
-
+        
+        //This version can change both horizontal & vertical angle like the old orbit and lock the angle by setting the main camera as the
+        //child of the robot
         private Transform target;
         private float angleOffset;
         private float magnification = 3f;
@@ -295,6 +298,7 @@ public class DynamicCamera : MonoBehaviour
         float cameraAngle = 25f;
         float panValue = 0f;
         const float lagResponsiveness = 10f;
+
         public OrbitState(MonoBehaviour mono)
         {
             this.mono = mono;
@@ -305,10 +309,12 @@ public class DynamicCamera : MonoBehaviour
             //This position makes it less weird when the camera first zoom in to the camera
             if (!robot)
             {
+                //Before robot is loaded
                 mono.transform.position = new Vector3(-2, 2, -2);
             }
             else
             {
+                //After robot is loaded, find its drive base
                 mono.transform.position = robot.transform.GetChild(0).position + new Vector3(-2, 2, -2);
             }
             currentPosition = mono.transform.position;
@@ -342,7 +348,7 @@ public class DynamicCamera : MonoBehaviour
                 //Enable position and angle transform
                 if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
                 {
-                    
+                    //Avoid interference with God Mode
                     if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
                     {
                         currentPosition = mono.transform.position;
@@ -352,13 +358,13 @@ public class DynamicCamera : MonoBehaviour
                     //Unbond the main camera from the robot
                     mono.transform.parent = null;
                     
-                    //Change rotation angle
+                    //Change rotation angle using left mouse
                     if (Input.GetMouseButton(0))
                     {
                         cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f) + angleOffset;
                         panValue = -Input.GetAxis("Mouse X") / 5f;
                     }
-                    //Change magnification
+                    //Change magnification using right mouse
                     else
                     {
                         magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
@@ -366,7 +372,7 @@ public class DynamicCamera : MonoBehaviour
 
                     //Calculate the current position
                     currentPosition = RotateXZ(currentPosition, targetVector, panValue, magnification);
-                    //Elevate the height of the camera according to camera angle
+                    //Elevate the height offset of the camera according to camera angle
                     currentPosition.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
                     //Calculate target position
                     targetPosition = CalculateLagVector(targetPosition, currentPosition, lagResponsiveness);
@@ -389,6 +395,14 @@ public class DynamicCamera : MonoBehaviour
             mono.transform.parent = null;
         }
 
+        /// <summary>
+        /// Calculate rotation on the xz plane
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="origin"></param>
+        /// <param name="theta"></param>
+        /// <param name="mag"></param>
+        /// <returns></returns>
         Vector3 RotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
         {
             vector -= origin;

@@ -123,7 +123,7 @@ public class UltraSensor : SensorBase
     /// </summary>
     public override void UpdateRangeTransform()
     {
-        MaxRange += Input.GetAxis("CameraVertical");
+        MaxRange += Input.GetAxis("CameraVertical") * 0.02f;
     }
 
     public override void UpdateOutputDisplay()
