@@ -65,6 +65,7 @@ public class Robot : MonoBehaviour
     string wheelPath;
     float wheelRadius;
     float wheelFriction;
+    float wheelLateralFriction;
     float wheelMass;
 
     private DynamicCamera cam;
@@ -165,6 +166,7 @@ public class Robot : MonoBehaviour
         {
             wheelPath = RobotTypeManager.WheelPath;
             wheelFriction = RobotTypeManager.WheelFriction;
+            wheelLateralFriction = RobotTypeManager.WheelLateralFriction;
             wheelRadius = RobotTypeManager.WheelRadius;
             wheelMass = RobotTypeManager.WheelMass;
 
@@ -231,7 +233,7 @@ public class Robot : MonoBehaviour
                 return false;
             }
 
-            node.CreateJoint(numWheels, RobotIsMixAndMatch, wheelFriction);
+            node.CreateJoint(numWheels, RobotIsMixAndMatch);
 
             if (node.PhysicalProperties != null)
                 collectiveMass += node.PhysicalProperties.mass;
@@ -301,7 +303,7 @@ public class Robot : MonoBehaviour
                 }
 
                 //Create the joints that interact with physics
-                node.CreateJoint(numWheels, RobotIsMixAndMatch, wheelFriction);
+                node.CreateJoint(numWheels, RobotIsMixAndMatch, wheelFriction, wheelLateralFriction);
 
                 if (node.HasDriverMeta<WheelDriverMeta>())
                 {
