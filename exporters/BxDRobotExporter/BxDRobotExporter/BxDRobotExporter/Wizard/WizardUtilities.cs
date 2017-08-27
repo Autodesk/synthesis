@@ -39,17 +39,20 @@ namespace BxDRobotExporter.Wizard
             return names.ToArray();
         }
 
-        public static double GetVolume(ComponentOccurrences occurrences)
+        public static double GetVolume(ComponentOccurrence[] occurrences)
         {
             double volume = 0.0d;
 
             Inventor.Application app = StandardAddInServer.Instance.MainApplication;
             
-            foreach(ComponentOccurrence component in occurrences.AllLeafOccurrences)
-            { 
-                foreach(SurfaceBody body in component.SurfaceBodies)
+            foreach(ComponentOccurrence component in occurrences)
+            {
+                foreach (ComponentOccurrence occurrence in component.SubOccurrences)
                 {
-                    volume += body.Volume[0.001];
+                    foreach (SurfaceBody body in occurrence.SurfaceBodies)
+                    {
+                        volume += body.Volume[0.001];
+                    } 
                 }
             }
 

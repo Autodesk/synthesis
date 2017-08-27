@@ -46,8 +46,7 @@ namespace BxDRobotExporter.Wizard
 
         public event InvalidatePageEventHandler InvalidatePage;
         private void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(ReviewAndFinishPage));
-
-
+        
         public void OnNext()
         {
             foreach(var panel in panels)

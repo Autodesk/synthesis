@@ -16,6 +16,7 @@ namespace BxDRobotExporter.Wizard
         public WheelSlotPanel()
         {
             InitializeComponent();
+            IsFilled = false;
         }
         public void FillSlot(RigidNode_Base node, WizardData.WizardWheelType wheelType = WizardData.WizardWheelType.NORMAL)
         {
@@ -32,17 +33,23 @@ namespace BxDRobotExporter.Wizard
             this.ResumeLayout();
 
             wheelSetupPanel._WheelTypeChangedInternal += delegate () { OnWheelTypeChanged(); };
+
+            IsFilled = true;
         }
         public void FillSlot(WheelSetupPanel setupPanel)
         {
             wheelSetupPanel = setupPanel;
             wheelSetupPanel.Dock = DockStyle.Fill;
             this.Controls.Add(wheelSetupPanel);
+
+            IsFilled = true;
         }
         public void FreeSlot()
         {
             wheelSetupPanel.Dispose();
             InitializeComponent();
+
+            IsFilled = false;
         }
 
         public WizardData.WheelSetupData WheelData
@@ -54,7 +61,7 @@ namespace BxDRobotExporter.Wizard
             get => IsFilled ? wheelSetupPanel.WheelType : 0;
         }
         public RigidNode_Base Node { get => wheelSetupPanel?.Node; }
-        public bool IsFilled { get => wheelSetupPanel != null; }
+        public bool IsFilled { get; private set; }
 
         public event WheelTypeChangedEventHandler WheelTypeChanged;
         

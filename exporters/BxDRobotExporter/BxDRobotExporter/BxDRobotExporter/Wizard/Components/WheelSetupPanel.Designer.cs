@@ -142,6 +142,7 @@
             this.ViewInventorButton.TabIndex = 1;
             this.ViewInventorButton.Text = "View in Inventor";
             this.ViewInventorButton.UseVisualStyleBackColor = true;
+            this.ViewInventorButton.Click += new System.EventHandler(this.ViewInventorButton_Click);
             // 
             // WheelSetupPanel
             // 

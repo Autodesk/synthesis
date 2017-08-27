@@ -70,5 +70,10 @@ namespace BxDRobotExporter.Wizard
         {
             _WheelTypeChangedInternal?.Invoke();
         }
+
+        private void ViewInventorButton_Click(object sender, EventArgs e)
+        {
+            StandardAddInServer.Instance.WizardSelect(Node);
+        }
     }
 }

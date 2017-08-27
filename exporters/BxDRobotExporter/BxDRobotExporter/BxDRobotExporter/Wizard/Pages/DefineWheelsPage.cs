@@ -91,7 +91,7 @@ namespace BxDRobotExporter.Wizard
                         break;
                     case WizardData.WizardDriveTrain.SWERVE:
                         //TODO implement this crap
-                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.NORMAL);
+                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
                         break;
                     case WizardData.WizardDriveTrain.CUSTOM:
                         GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
@@ -107,6 +107,7 @@ namespace BxDRobotExporter.Wizard
                 OnInvalidatePage();
                 checkedCount--;
                 disableChecked = false;
+
                 foreach(var slot in slots)
                 {
                     if (slot.Node == checkedListItems[NodeCheckedListBox.Items[e.Index].ToString()])
@@ -203,7 +204,7 @@ namespace BxDRobotExporter.Wizard
 
         private WheelSlotPanel GetNextEmptyPanel()
         {
-            for(int i = (slots.Count - 1); i > 0; i--)
+            for(int i = 0; i < slots.Count; i++)
             {
                 if (!slots[i].IsFilled)
                     return slots[i];
@@ -229,8 +230,7 @@ namespace BxDRobotExporter.Wizard
                 WheelSlotPanel panel = new WheelSlotPanel();
                 panel.WheelTypeChanged += Panel_WheelTypeChanged;
                 slots.Add(panel);
-                WheelPropertiesPanel.Controls.Add(panel);
-                
+                WheelPropertiesPanel.Controls.Add(panel);                
             }
 
             UpdateProgress();

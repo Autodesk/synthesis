@@ -186,12 +186,23 @@ namespace BxDRobotExporter.Wizard
                 default:
                     break;
                 case WizardMassMode.SIMPLE_USER:
-                    //do stuff
+                    //Get node volumes
+                    List<float> nodeMasses = new List<float>();
+                    float totalDefaultMass = 0;
+                    foreach(BXDAMesh mesh in Utilities.GUI.Meshes)
+                    {
+                        nodeMasses.Add(mesh.physics.mass);
+                        totalDefaultMass += mesh.physics.mass;
+                    }
+                    for(int i = 0; i < Utilities.GUI.Meshes.Count; i++)
+                    {
+                        Utilities.GUI.Meshes[i].physics.mass = this.Mass * (float)(nodeMasses[i] / totalDefaultMass);
+                    }
                     break;
                 case WizardMassMode.COMPLEX_USER:
-                    for (int i = 0; i < Masses.Length; i++)
+                    for (int j = 0; j < Masses.Length; j++)
                     {
-                        Utilities.GUI.Meshes[i].physics.mass = Masses[i];
+                        Utilities.GUI.Meshes[j].physics.mass = Masses[j];
                     }
                     break;
             }
