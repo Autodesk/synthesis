@@ -73,6 +73,7 @@ namespace BxDRobotExporter
 
         //Highlighting
         HighlightSet ChildHighlight;
+        HighlightSet WheelHighlight;
 
         #region DEBUG
 #if DEBUG
@@ -337,6 +338,8 @@ namespace BxDRobotExporter
             Utilities.CreateDockableWindows(MainApplication);
             ChildHighlight = AsmDocument.CreateHighlightSet();
             ChildHighlight.Color = Utilities.GetInventorColor(SynthesisGUI.PluginSettings.InventorChildColor);
+            WheelHighlight = AsmDocument.CreateHighlightSet();
+            WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
             Utilities.GUI.jointEditorPane1.SelectedJoint += JointEditorPane_SelectedJoint;
@@ -445,6 +448,10 @@ namespace BxDRobotExporter
         #region Custom Button Events
 
         //Begin
+        /// <summary>
+        /// Opens the <see cref="Forms.ChooseExportModeForm"/> and prompts the user to select an export mode.
+        /// </summary>
+        /// <param name="Context"></param>
         private void BeginGenericExport_OnExecute(NameValueMap Context)
         {
             Forms.ChooseExportModeForm exportChoose = new Forms.ChooseExportModeForm();
@@ -873,6 +880,10 @@ namespace BxDRobotExporter
             return false;
         }
 
+        /// <summary>
+        /// Public method used to select a node from the wizard.
+        /// </summary>
+        /// <param name="node"></param>
         public void WizardSelect(RigidNode_Base node)
         {
             ChildHighlight.Clear();

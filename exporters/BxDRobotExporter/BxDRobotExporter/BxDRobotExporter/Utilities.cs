@@ -13,11 +13,13 @@ namespace BxDRobotExporter
 {
     internal static class Utilities
     {
+        public const string SYTHESIS_PATH = @"C:\users\t_howab\Desktop\TempSynthesisBuild\Build.exe";
+
+
         //TODO: Maybe make less stuff static. Or just make it a singleton. 
         static internal SynthesisGUI GUI;
         static DockableWindow EmbededJointPane;
         static DockableWindow EmbededBxDViewer;
-
 
         /// <summary>
         /// Creates a dockable window containing all of the components of the SynthesisGUI object
