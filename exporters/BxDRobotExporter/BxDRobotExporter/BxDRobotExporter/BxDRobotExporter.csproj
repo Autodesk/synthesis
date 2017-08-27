@@ -135,7 +135,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs">
+    <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ChooseExportModeForm.cs">
@@ -268,8 +268,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Components\WheelSlot.resx">
       <DependentUpon>WheelSlot.cs</DependentUpon>
