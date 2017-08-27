@@ -447,14 +447,15 @@ namespace BxDRobotExporter
         //Begin
         private void BeginGenericExport_OnExecute(NameValueMap Context)
         {
-
+            Forms.ChooseExportModeForm exportChoose = new Forms.ChooseExportModeForm();
+            exportChoose.ShowDialog();
         }
 
         /// <summary>
         /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>
         /// </summary>
         /// <param name="Context"></param>
-        private void BeginAdvancedExport_OnExecute(NameValueMap Context)
+        public void BeginAdvancedExport_OnExecute(NameValueMap Context)
         {
             if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.ExportMeshes())
             {
@@ -475,7 +476,7 @@ namespace BxDRobotExporter
         /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>, then opens the <see cref="Wizard.WizardForm"/>
         /// </summary>
         /// <param name="Context"></param>
-        private void BeginWizardExport_OnExecute(NameValueMap Context)
+        public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
             if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.ExportMeshes())
             {
@@ -507,7 +508,7 @@ namespace BxDRobotExporter
         /// Opens the <see cref="Wizard.OneClickExportForm"/> which allows for a super easy exporting of a robot
         /// </summary>
         /// <param name="Context"></param>
-        private void BeginOneClickExport_OnExecute(NameValueMap Context)
+        public void BeginOneClickExport_OnExecute(NameValueMap Context)
         {
             Wizard.OneClickExportForm oneClickExportForm = new Wizard.OneClickExportForm();
             if((!PendingChanges || this.WarnUnsaved()) && (oneClickExportForm.ShowDialog() == DialogResult.OK))

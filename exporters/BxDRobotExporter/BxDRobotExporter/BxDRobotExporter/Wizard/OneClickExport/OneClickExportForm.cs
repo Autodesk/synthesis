@@ -119,6 +119,14 @@ namespace BxDRobotExporter.Wizard
                 }
                 DialogResult = DialogResult.OK;
                 Utilities.GUI.ReloadPanels();
+                if(MergeNodesCheckBox.Checked)
+                {
+                    foreach(var node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                    {
+                        if (!wheelsRaw.Contains(node))
+                            Utilities.GUI.MergeNodeIntoParent(node);
+                    }
+                }
             }
             else
                 DialogResult = DialogResult.None;
