@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 namespace BxDRobotExporter.Wizard
 {
@@ -136,16 +137,19 @@ namespace BxDRobotExporter.Wizard
                         }
                         break;
                 }
-                DialogResult = DialogResult.OK;
-                Utilities.GUI.ReloadPanels();
                 if(MergeNodesCheckBox.Checked)
                 {
                     foreach(var node in Utilities.GUI.SkeletonBase.ListAllNodes())
                     {
-                        if (!wheelsRaw.Contains(node))
+                        if (!wheelsRaw.Contains(node) && node.GetParent() != null)
                             Utilities.GUI.MergeNodeIntoParent(node);
                     }
                 }
+                Utilities.GUI.ReloadPanels();
+                Utilities.GUI.RobotSave();
+                DialogResult = DialogResult.OK;
+                Process.Start(Utilities.SYTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + Utilities.GUI.RMeta.ActiveRobotName, fields[(string)FieldSelectComboBox.SelectedItem]));
+
             }
             else
                 DialogResult = DialogResult.None;

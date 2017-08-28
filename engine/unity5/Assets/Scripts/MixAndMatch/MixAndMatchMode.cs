@@ -376,12 +376,12 @@ public class MixAndMatchMode : MonoBehaviour
     void SetPresetFontSize(GameObject clone)
     {
         Debug.Log(clone.GetComponent<Text>().text+ clone.GetComponent<Text>().text.Length);
-        if (clone.GetComponent<Text>().text.Length < 9)
+        if (clone.GetComponent<Text>().text.Length < 8)
         {
             clone.GetComponent<Text>().fontSize = 36; 
         } else if (clone.GetComponent<Text>().text.Length < 20)
         {
-            clone.GetComponent<Text>().fontSize = 36 - 2 * (clone.GetComponent<Text>().text.Length - 9);
+            clone.GetComponent<Text>().fontSize = 36 - 3 * (clone.GetComponent<Text>().text.Length - 8);
         } else
         {
             clone.GetComponent<Text>().fontSize = 16;
