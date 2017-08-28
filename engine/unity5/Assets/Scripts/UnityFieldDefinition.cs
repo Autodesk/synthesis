@@ -132,7 +132,7 @@ public class UnityFieldDefinition : FieldDefinition
                             subObject.transform.rotation = meshObject.transform.rotation;
 
                             BConvexHullShape hullshape = subObject.AddComponent<BConvexHullShape>();
-                            hullshape.HullMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh, dummyMeshCollider.sharedMesh.bounds.center);
+                            hullshape.HullMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh, dummyMeshCollider.sharedMesh.bounds.center, 0f/*CollisionMargin*/);
                             hullshape.GetCollisionShape().Margin = CollisionMargin;
 
                             //subObject.AddComponent<MouseListener>();
@@ -147,8 +147,6 @@ public class UnityFieldDefinition : FieldDefinition
                             meshShape.HullMesh = meshObject.GetComponent<MeshFilter>().mesh.GetScaledCopy(-1f, 1f, 1f);
                             meshShape.GetCollisionShape().Margin = CollisionMargin;
                         }
-
-                        // TODO: Find a way to implement embedded margins. See https://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=2358
                         break;
                 }
 
