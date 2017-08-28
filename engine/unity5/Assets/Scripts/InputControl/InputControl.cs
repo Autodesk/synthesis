@@ -260,6 +260,8 @@ public static class InputControl
     #endregion
 
     // ----------------------------------------------------------------
+    // The following functions have not been implemented in Synthesis.
+    // Source: https://github.com/Gris87/InputControl
 
     #region Setup/Remove Key Variations (With Different Arguments)
 

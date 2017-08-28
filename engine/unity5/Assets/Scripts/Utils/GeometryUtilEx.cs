@@ -1,100 +1,168 @@
-﻿using BulletSharp;
-using BulletSharp.Math;
-using System;
+﻿using BulletSharp.Math;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Assets.Scripts.Utils
 {
+    /// <summary>
+    /// This class is used for shrinking a collision mesh to compensate for collision margins.
+    /// It is based off the BulletSharp GeometryUtil class. The one currently included with BulletUnity
+    /// is outdated and does not function properly, which is why this one was added essentially as an extension.
+    /// </summary>
     public static class GeometryUtilEx
     {
-        public static void GetPlaneEquationsFromVertices(AlignedVector3Array vertices, List<Vector4> planeEquationsOut)
+        /// <summary>
+        /// Returns true if the given vertices are behind the supplied plane normal.
+        /// </summary>
+        /// <param name="planeNormal"></param>
+        /// <param name="planeConstant"></param>
+        /// <param name="vertices"></param>
+        /// <param name="margin"></param>
+        /// <returns></returns>
+        public static bool AreVerticesBehindPlane(Vector3 planeNormal, float planeConstant, IEnumerable<Vector3> vertices,
+            float margin)
+        {
+            return vertices.All(v => planeNormal.Dot(v) + planeConstant <= margin);
+        }
+
+        /// <summary>
+        /// Gets plane equations from the given list of vertices.
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static List<Vector4> GetPlaneEquationsFromVertices(ICollection<Vector3> vertices)
         {
             int numVertices = vertices.Count;
+            Vector3[] vertexArray = vertices.ToArray();
+            var planeEquations = new List<Vector4>();
 
             for (int i = 0; i < numVertices; i++)
             {
-                Vector3 n1 = vertices[i];
-
                 for (int j = i + 1; j < numVertices; j++)
                 {
-                    Vector3 n2 = vertices[j];
-
                     for (int k = j + 1; k < numVertices; k++)
                     {
-                        Vector3 n3 = vertices[k];
+                        Vector3 edge0 = vertexArray[j] - vertexArray[i];
+                        Vector3 edge1 = vertexArray[k] - vertexArray[i];
 
-                        Vector3 planeEquationV3;
-                        Vector3 edge0 = n2 - n1;
-                        Vector3 edge1 = n3 - n1;
-
-                        float normalSign = 1f;
-
-                        for (int ww = 0; ww < 2; ww++)
+                        Vector3 normal = edge0.Cross(edge1);
+                        if (normal.LengthSquared > 0.0001)
                         {
-                            planeEquationV3 = normalSign * edge0.Cross(edge1);
-
-                            if (planeEquationV3.LengthSquared > 0.0001f)
+                            normal.Normalize();
+                            if (!Vector4EnumerableContainsVector3(planeEquations, normal))
                             {
-                                planeEquationV3.Normalize();
-
-                                if (NotExist(planeEquationV3, planeEquationsOut))
+                                float constant = -normal.Dot(vertexArray[i]);
+                                if (AreVerticesBehindPlane(normal, constant, vertexArray, 0.01f))
                                 {
-                                    Vector4 planeEquation = new Vector4(planeEquationV3, -planeEquationV3.Dot(n1));
-
-                                    AlignedVector3Array array = new AlignedVector3Array();
-
-                                    foreach (Vector4 v in planeEquationsOut)
-                                        array.Add(new Vector3(v.X, v.Y, v.Z));
-
-                                    if (GeometryUtil.AreVerticesBehindPlane(planeEquationV3, array, 0.01f)/*AreVerticesBehindPlane(planeEquation, planeEquationsOut, 0.01f)*/)
-                                    {
-                                        planeEquationsOut.Add(planeEquation);
-                                    }
+                                    planeEquations.Add(new Vector4(normal, constant));
                                 }
                             }
 
-                            normalSign = -1f;
+                            normal = -normal;
+                            if (!Vector4EnumerableContainsVector3(planeEquations, normal))
+                            {
+                                float constant = -normal.Dot(vertexArray[i]);
+                                if (AreVerticesBehindPlane(normal, constant, vertexArray, 0.01f))
+                                {
+                                    planeEquations.Add(new Vector4(normal, constant));
+                                }
+                            }
                         }
                     }
                 }
             }
+
+            return planeEquations;
         }
 
-        private static bool NotExist(Vector3 planeEquation, List<Vector4> planeEquations)
+        /// <summary>
+        /// Returns true if the given vertex exists in the given list of vertices within a small margin.
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="vertex"></param>
+        /// <returns></returns>
+        private static bool Vector4EnumerableContainsVector3(IEnumerable<Vector4> vertices, Vector3 vertex)
         {
-            int numBrushes = planeEquations.Count;
-
-            for (int i = 0; i < numBrushes; i++)
-            {
-                Vector4 n1 = planeEquations[i];
-                Vector3 n1V3 = new Vector3(n1.X, n1.Y, n1.Z);
-
-                if (planeEquation.Dot(n1V3) > 0.999f)
-                    return false;
-            }
-            
-            return true;
+            return vertices.Any(v => {
+                var v3 = new Vector3(v.X, v.Y, v.Z);
+                return v3.Dot(vertex) > 0.999;
+            });
         }
 
-        private static bool AreVerticesBehindPlane(Vector4 planeNormal, List<Vector4> vertices, float margin)
+        /// <summary>
+        /// Returns s list of vertices from provided plane equations.
+        /// </summary>
+        /// <param name="planeEquations"></param>
+        /// <returns></returns>
+        public static List<Vector3> GetVerticesFromPlaneEquations(ICollection<Vector4> planeEquations)
         {
-            int numVertices = vertices.Count;
-
-            for (int i = 0; i < numVertices; i++)
+            int numPlanes = planeEquations.Count;
+            Vector3[] planeNormals = new Vector3[numPlanes];
+            float[] planeConstants = new float[numPlanes];
+            int i = 0;
+            foreach (Vector4 plane in planeEquations)
             {
-                Vector4 n1 = vertices[i];
-                Vector3 n1V3 = new Vector3(n1.X, n1.Y, n1.Z);
-                Vector3 planeNormalV3 = new Vector3(planeNormal.X, planeNormal.Y, planeNormal.Z);
-
-                float dist = planeNormalV3.Dot(n1V3) + planeNormal.W - margin;
-
-                if (dist > 0f)
-                    return false;
+                planeNormals[i] = new Vector3(plane.X, plane.Y, plane.Z);
+                planeConstants[i] = plane.W;
+                i++;
             }
 
-            return true;
+            var vertices = new List<Vector3>();
+
+            for (i = 0; i < numPlanes; i++)
+            {
+                for (int j = i + 1; j < numPlanes; j++)
+                {
+                    for (int k = j + 1; k < numPlanes; k++)
+                    {
+                        Vector3 n2n3 = planeNormals[j].Cross(planeNormals[k]);
+                        Vector3 n3n1 = planeNormals[k].Cross(planeNormals[i]);
+                        Vector3 n1n2 = planeNormals[i].Cross(planeNormals[j]);
+
+                        if ((n2n3.LengthSquared > 0.0001f) &&
+                             (n3n1.LengthSquared > 0.0001f) &&
+                             (n1n2.LengthSquared > 0.0001f))
+                        {
+                            //point P out of 3 plane equations:
+
+                            //	  d1 ( N2 * N3 ) + d2 ( N3 * N1 ) + d3 ( N1 * N2 )  
+                            //P = ------------------------------------------------
+                            //	N1 . ( N2 * N3 )  
+
+                            float quotient = planeNormals[i].Dot(n2n3);
+                            if (System.Math.Abs(quotient) > 0.000001)
+                            {
+                                quotient = -1.0f / quotient;
+                                n2n3 *= planeConstants[i];
+                                n3n1 *= planeConstants[j];
+                                n1n2 *= planeConstants[k];
+                                Vector3 potentialPoint = quotient * (n2n3 + n3n1 + n1n2);
+
+                                //check if inside, and replace supportingVertexOut if needed
+                                if (IsPointInsidePlanes(planeEquations, potentialPoint, 0.01f))
+                                {
+                                    vertices.Add(potentialPoint);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return vertices;
+        }
+
+        /// <summary>
+        /// Returns true if the given point is contained inside the provided plane equations.
+        /// </summary>
+        /// <param name="planeEquations"></param>
+        /// <param name="point"></param>
+        /// <param name="margin"></param>
+        /// <returns></returns>
+        public static bool IsPointInsidePlanes(IEnumerable<Vector4> planeEquations,
+            Vector3 point, float margin)
+        {
+            return planeEquations.All(p => new Vector3(p.X, p.Y, p.Z).Dot(point) + p.W <= margin);
         }
     }
 }

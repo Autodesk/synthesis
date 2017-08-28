@@ -80,7 +80,7 @@ void DriverStationThread() {
 	robotAddress.sin_port = htons( 1110 );
 
 	dsAddress.sin_family = AF_INET;
-	dsAddress.sin_addr.s_addr = htonl(network | 5);
+	dsAddress.sin_addr.s_addr = htonl(0);//network | 5);
 	dsAddress.sin_port = htons( 1150 );
 
 	robotSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -119,7 +119,8 @@ void DriverStationThread() {
 			resyncSem->take();
 			lockedResync = true;
 		}
-		int len = recv(robotSocket, (char*) &buffer, sizeof(buffer), 0);
+		int srcaddrSize = sizeof(sockaddr_in);
+		int len = recvfrom(robotSocket, (char*) &buffer, sizeof(buffer), 0, (sockaddr*) &dsAddress, &srcaddrSize);
 		if (len < 0) {
 			printf("Read failed\n");
 		}
@@ -301,7 +302,8 @@ void DriverStationThread() {
 		uint32_t crc = crc32buf(sendBuffer, 0x400);
 		crc = htonl(crc);
 		memcpy(&sendBuffer[0x3fc], &crc, sizeof(uint32_t));
-		sendto(dsSocket,(const char *) &sendBuffer, 0x07, 0,(const sockaddr*)&dsAddress, sizeof(dsAddress));
+		dsAddress.sin_port = htons( 1150 );
+		sendto(dsSocket,(const char *) &sendBuffer, 0x07, 0,(const sockaddr*)&dsAddress, srcaddrSize);
 	}
 }
 
