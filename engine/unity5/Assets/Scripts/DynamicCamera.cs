@@ -456,8 +456,8 @@ public class DynamicCamera : MonoBehaviour
         {
             if (MovingEnabled && !main.ActiveRobot.IsResetting)
             {
-                //Rotate camera when holding right mouse
-                if (InputControl.GetMouseButton(1))
+                //Rotate camera when holding left mouse
+                if (InputControl.GetMouseButton(0))
                 {
                     rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
@@ -469,7 +469,6 @@ public class DynamicCamera : MonoBehaviour
 
                 zoomValue = Mathf.Max(Mathf.Min(zoomValue - InputControl.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 
-                //lagPosVector = CalculateLagVector(lagPosVector, positionVector, lagResponsiveness);
                 lagRotVector = CalculateLagVector(lagRotVector, rotationVector, lagResponsiveness);
                 lagZoom = CalculateLagScalar(lagZoom, zoomValue, lagResponsiveness);
 
