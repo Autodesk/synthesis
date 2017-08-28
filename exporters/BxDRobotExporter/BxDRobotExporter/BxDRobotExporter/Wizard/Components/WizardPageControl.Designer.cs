@@ -31,14 +31,13 @@
             this.WizardNavigator = new BxDRobotExporter.Wizard.WizardNavigator();
             this.SuspendLayout();
             // 
-            // wizardNavigator
+            // WizardNavigator
             // 
-            this.WizardNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.WizardNavigator.BackColor = System.Drawing.Color.Transparent;
-            this.WizardNavigator.Location = new System.Drawing.Point(0, 656);
-            this.WizardNavigator.Name = "wizardNavigator";
-            //this.WizardNavigator.Size = new System.Drawing.Size(460, 28);
+            this.WizardNavigator.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.WizardNavigator.Location = new System.Drawing.Point(0, 659);
+            this.WizardNavigator.Name = "WizardNavigator";
+            this.WizardNavigator.Size = new System.Drawing.Size(460, 28);
             this.WizardNavigator.TabIndex = 0;
             // 
             // WizardPageControl
