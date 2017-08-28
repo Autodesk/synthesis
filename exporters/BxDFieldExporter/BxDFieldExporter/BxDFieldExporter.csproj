@@ -33,7 +33,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2018\Bin\BxDFieldExporter\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -283,11 +283,11 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>call "%25VS141COMNTOOLS%25vsvars32"
-			mt.exe -manifest "$(ProjectDir)BxDFieldExporter.X.manifest" -outputresource:"$(TargetPath)";#2
-			XCopy "$(TargetPath)" "%25ProgramData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
-		    XCopy "$(ProjectDir)Autodesk.BxDFieldExporter.Inventor.addin" "%25ProgramData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
-	</PostBuildEvent>
+    <PostBuildEvent>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.15063.0\x86\mt.exe" -manifest "$(ProjectDir)BxDFieldExporter.X.manifest" -outputresource:"$(TargetPath)";#2
+XCopy "$(TargetPath)" "%25ProgramFiles(X86)%25\Autodesk\Synthesis\" /Y /R
+XCopy "$(ProjectDir)Autodesk.BxDFieldExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
+
+</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Fody.2.0.0\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.2.0.0\build\dotnet\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
