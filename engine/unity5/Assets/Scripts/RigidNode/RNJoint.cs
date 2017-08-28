@@ -137,11 +137,11 @@ public partial class RigidNode : RigidNode_Base
     /// </summary>
     public void CreateManipulatorJoint(GameObject robot)
     {
-        ////Ignore physics/collisions between the manipulator and the robot. Currently not working. 
-        //foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
-        //{
-        //    MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
-        //}
+        //Ignore physics/collisions between the manipulator and the robot. Currently not working. 
+        foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
+        {
+            MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
+        }
 
         if (joint != null || GetSkeletalJoint() == null)
         {
