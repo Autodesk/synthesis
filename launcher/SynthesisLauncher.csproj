@@ -53,7 +53,7 @@
     <ApplicationIcon>plantlogo%28NoBack%29.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>B3580A314132544EFD27BE6B202E54310A4B0DF8</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>219D4277019946031CF252359B842FDA7F91E7CA</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>SynthesisLauncher_TemporaryKey.pfx</ManifestKeyFile>
@@ -65,12 +65,12 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="HtmlAgilityPack, Version=1.5.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>packages\HtmlAgilityPack.1.5.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -82,6 +82,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AquireFilesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AquireFilesForm.Designer.cs">
+      <DependentUpon>AquireFilesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ContentDistributor.cs" />
     <Compile Include="LaunchForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,6 +97,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AquireFilesForm.resx">
+      <DependentUpon>AquireFilesForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LaunchForm.en.resx">
       <DependentUpon>LaunchForm.cs</DependentUpon>
     </EmbeddedResource>

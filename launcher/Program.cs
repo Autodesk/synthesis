@@ -16,6 +16,7 @@ namespace SynthesisLauncher
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            ContentDistributor.ListFiles();
             Application.Run(new LaunchForm());
         }
 
