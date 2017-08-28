@@ -289,12 +289,18 @@ public class Robot : MonoBehaviour
                     }
 
                     int k = 0;
+
+                    Vector3? offset = null; 
                     foreach (Mesh meshObject in meshList)
                     {
                         GameObject meshObj = new GameObject(node.MainObject.name + "_mesh");
                         meshObj.transform.parent = node.MainObject.transform;
                         meshObj.AddComponent<MeshFilter>().mesh = meshObject;
-                        meshObj.transform.localPosition = -meshObject.bounds.center;
+                        if (!offset.HasValue)
+                        {
+                            offset = meshObject.bounds.center;
+                        }
+                        meshObj.transform.localPosition = -offset.Value;
 
                         //Take out this line if you want some snazzy pink wheels
                         meshObj.AddComponent<MeshRenderer>().materials = materialList[k];
