@@ -70,7 +70,6 @@
             this.DriveTrainLabel.Size = new System.Drawing.Size(62, 13);
             this.DriveTrainLabel.TabIndex = 2;
             this.DriveTrainLabel.Text = "Drive Train:";
-            this.DriveTrainLabel.Click += new System.EventHandler(this.DriveTrainLabel_Click);
             // 
             // DriveTrainComboBox
             // 
@@ -181,7 +180,6 @@
             this.MergeNodesCheckBox.TabIndex = 7;
             this.MergeNodesCheckBox.Text = "Merge Unused Nodes";
             this.MergeNodesCheckBox.UseVisualStyleBackColor = true;
-            this.MergeNodesCheckBox.CheckedChanged += new System.EventHandler(this.MergeNodesCheckBox_CheckedChanged);
             // 
             // OneClickExportForm
             // 

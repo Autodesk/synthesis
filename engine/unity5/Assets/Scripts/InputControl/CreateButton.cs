@@ -55,6 +55,7 @@ public class CreateButton : MonoBehaviour
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
             //========================================================================================
 
+            //Source: https://github.com/Gris87/InputControl
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -96,6 +97,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.UpdateText();
             }
             #endregion
+            //==============================================
 
             contentHeight += 28;
         }
@@ -144,6 +146,7 @@ public class CreateButton : MonoBehaviour
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
             //========================================================================================
 
+            //Source: https://github.com/Gris87/InputControl
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -185,6 +188,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.UpdateText();
             }
             #endregion
+            //=============================================
 
             contentHeight += 28;
         }
@@ -219,6 +223,7 @@ public class CreateButton : MonoBehaviour
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
             //========================================================================================
 
+            //Source: https://github.com/Gris87/InputControl
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -260,6 +265,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.UpdateText();
             }
             #endregion
+            //==============================================
 
             contentHeight += 28;
         }
@@ -294,6 +300,7 @@ public class CreateButton : MonoBehaviour
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
             //========================================================================================
 
+            //Source: https://github.com/Gris87/InputControl
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -335,6 +342,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.UpdateText();
             }
             #endregion
+            //==============================================
 
             contentHeight += 28;
         }
@@ -369,6 +377,7 @@ public class CreateButton : MonoBehaviour
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
             //========================================================================================
 
+            //Source: https://github.com/Gris87/InputControl
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -410,6 +419,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.UpdateText();
             }
             #endregion
+            //===============================================
 
             contentHeight += 28;
         }
@@ -444,6 +454,7 @@ public class CreateButton : MonoBehaviour
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
             //========================================================================================
 
+            //Source: https://github.com/Gris87/InputControl
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -485,6 +496,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.UpdateText();
             }
             #endregion
+            //=============================================
 
             contentHeight += 28;
         }
@@ -519,6 +531,7 @@ public class CreateButton : MonoBehaviour
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
             //========================================================================================
 
+            //Source: https://github.com/Gris87/InputControl
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -560,6 +573,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.UpdateText();
             }
             #endregion
+            //===============================================
 
             contentHeight += 28;
         }
@@ -594,6 +608,7 @@ public class CreateButton : MonoBehaviour
             //Key Buttons: The buttons in the second and third column of the Input Manager menu
             //========================================================================================
 
+            //Source: https://github.com/Gris87/InputControl
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -635,6 +650,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.UpdateText();
             }
             #endregion
+            //==============================================
 
             contentHeight += 28;
         }

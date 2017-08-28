@@ -10,8 +10,14 @@ using System.Windows.Forms;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// Prompts the user to set the properties of each of the remaining <see cref="RigidNode_Base"/> objects.
+    /// </summary>
     public partial class DefineMovingPartsPage : UserControl, IWizardPage
     {
+        /// <summary>
+        /// List containing all of the <see cref="DefinePartPanel"/>s 
+        /// </summary>
         private List<DefinePartPanel> panels = new List<DefinePartPanel>();
 
         public DefineMovingPartsPage()
@@ -23,6 +29,9 @@ namespace BxDRobotExporter.Wizard
         public bool Initialized { get => _initialized; set => _initialized = value; }
         private bool _initialized = false;
 
+        /// <summary>
+        /// Adds all of the remaining <see cref="RigidNode_Base"/> objects to <see cref="DefinePartPanel"/>s and adds them to <see cref="DefinePartsPanelLayout"/>
+        /// </summary>
         public void Initialize()
         {
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
@@ -46,8 +55,10 @@ namespace BxDRobotExporter.Wizard
 
         public event InvalidatePageEventHandler InvalidatePage;
         private void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(ReviewAndFinishPage));
-
-
+        
+        /// <summary>
+        /// Passes the <see cref="JointDriver"/> from each <see cref="DefinePartPanel"/> to <see cref="WizardData.Instance"/>
+        /// </summary>
         public void OnNext()
         {
             foreach(var panel in panels)

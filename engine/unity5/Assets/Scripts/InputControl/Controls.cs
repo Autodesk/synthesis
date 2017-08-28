@@ -124,6 +124,7 @@ public class Controls
 
     /// <summary>
     /// Saves all primary and secondary controls.
+    /// Source: https://github.com/Gris87/InputControl
     /// </summary>
     public static void Save()
     {
@@ -137,6 +138,12 @@ public class Controls
         PlayerPrefs.Save();
     }
 
+    /// <summary>
+    /// Checks if the user has saved their control settings by comparing strings.
+    /// </summary>
+    /// <returns>True: If user did not save their controls
+    ///          False: If the user saved their controls.
+    /// </returns>
     public static bool CheckIfSaved()
     {
         ReadOnlyCollection<KeyMapping> currentKeys = InputControl.getKeysList();
@@ -168,6 +175,7 @@ public class Controls
 
     /// <summary>
     /// Loads all primary and secondary controls.
+    /// Source: https://github.com/Gris87/InputControl
     /// </summary>
     public static void Load()
     {
@@ -262,6 +270,7 @@ public class Controls
 
     /// <summary>
     /// Converts string representation of CustomInput to CustomInput.
+    /// Source: https://github.com/Gris87/InputControl
     /// </summary>
     /// <returns>CustomInput from string.</returns>
     /// <param name="value">String representation of CustomInput.</param>
@@ -295,6 +304,7 @@ public class Controls
 
     /// <summary>
     /// Default settings for ArcadeDrive controls.
+    /// Adapted from: https://github.com/Gris87/InputControl
     /// </summary>
     public static void ArcadeControls()
     {
@@ -547,6 +557,7 @@ public class Controls
 
     /// <summary>
     /// Default settings for TankDrive controls.
+    /// Adapted from: https://github.com/Gris87/InputControl
     /// </summary>
     public static void TankControls()
     {

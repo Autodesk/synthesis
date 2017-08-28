@@ -89,6 +89,10 @@ class RobotCameraGUI : MonoBehaviour
                 UpdateIndicatorTransform();
             }
         }
+
+        //Allows users to save their configuration using enter
+        if (isEditingAngle && Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
+        if (isEditingFOV && Input.GetKeyDown(KeyCode.Return)) ToggleEditFOV();
     }
 
     #region robot camera GUI functions

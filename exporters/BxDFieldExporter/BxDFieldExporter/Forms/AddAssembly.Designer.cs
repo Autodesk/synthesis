@@ -41,7 +41,7 @@
             // 
             this.pictureBox1.Image = global::BxDFieldExporter.Resource.Pointer;
             this.pictureBox1.Location = new System.Drawing.Point(67, 31);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(32, 30);
             this.pictureBox1.TabIndex = 0;
@@ -50,7 +50,7 @@
             // okButton
             // 
             this.okButton.Location = new System.Drawing.Point(21, 103);
-            this.okButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(85, 28);
             this.okButton.TabIndex = 1;
@@ -73,7 +73,7 @@
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(116, 103);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(84, 28);
             this.btnCancel.TabIndex = 3;
@@ -106,11 +106,12 @@
             this.Controls.Add(this.pictureBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "AddAssembly";
             this.Text = "Add Assembly";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddAssembly_FormClosing);
             this.Load += new System.EventHandler(this.AddAssembly_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddAssembly_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

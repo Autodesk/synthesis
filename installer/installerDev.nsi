@@ -179,7 +179,7 @@ MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view 
 
     Exec "$INSTDIR\SynthesisLauncher.exe"
 
-    MessageBox MB_OK "Synthesis has been installed succsessfully!"
+    MessageBox MB_OK "Synthesis has been installed succsessfully!\\In order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. This information is not used to identify or contact you.\\You can turn data collection off from the Control Panel within the simulation"
 
     Quit
 

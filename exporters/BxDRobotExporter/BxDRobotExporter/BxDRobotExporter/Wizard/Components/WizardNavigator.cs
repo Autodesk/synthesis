@@ -10,30 +10,58 @@ using System.Windows.Forms;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// Panel at the bottom of the <see cref="WizardForm"/> used for navigating through the pages.
+    /// </summary>
     public partial class WizardNavigator : UserControl
     {
         public enum WizardNavigatorState : byte
         {
+            /// <summary>
+            /// <see cref="NextButton"/> reads "Start >". <see cref="BackButton"/> is disabled.
+            /// </summary>
             StartEnabled = 0b00000001,
-            FinishEnabled = 0b00001000,
-            Hidden = 0b00010000,
-            Clean = 0b00100000,
-            NextDisabled = 0b01000000
+            /// <summary>
+            /// <see cref="NextButton"/> reads "Finish". When clicked, it invokes the <see cref="WizardPageControl.FinishClicked"/> event.
+            /// </summary>
+            FinishEnabled = 0b00000010,
+            /// <summary>
+            /// The entire control is invisible. TODO: Use this to export the meshes within the Wizard.
+            /// </summary>
+            Hidden = 0b00000100,
+            /// <summary>
+            /// Default state. <see cref="NextButton"/> and <see cref="BackButton"/> both are enabled.
+            /// </summary>
+            Clean = 0b0001000,
+            /// <summary>
+            /// Same as <see cref="WizardNavigatorState.Clean"/> except <see cref="NextButton"/> is enabled.
+            /// </summary>
+            NextDisabled = 0b00010000
         }
         public WizardNavigator()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Enables/Disables <see cref="NextButton"/>
+        /// </summary>
         public void ToggleNext()
         {
             NextButton.Enabled = !NextButton.Enabled;
         }
+        /// <summary>
+        /// Enables/Disables <see cref="BackButton"/>
+        /// </summary>
         public void ToggleBack()
         {
             BackButton.Enabled = !BackButton.Enabled;
         }
 
+        /// <summary>
+        /// Updates the active state of the navigator.
+        /// </summary>
+        /// <param name="state"></param>
         public void UpdateState(WizardNavigatorState state)
         {
             switch(state)

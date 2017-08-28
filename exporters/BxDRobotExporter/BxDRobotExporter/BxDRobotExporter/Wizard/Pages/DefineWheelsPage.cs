@@ -10,14 +10,29 @@ using System.Windows.Forms;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// Prompts the user to define all the wheels on the robot.
+    /// </summary>
     public partial class DefineWheelsPage : UserControl, IWizardPage
     {
+        /// <summary>
+        /// Active counter of how many <see cref="RigidNode_Base"/>s have been selected
+        /// </summary>
         private int checkedCount = 0;
 
+        /// <summary>
+        /// Set to true when <see cref="checkedCount"/> equals <see cref="WizardData.wheelCount"/>
+        /// </summary>
         private bool disableChecked = false;
 
+        /// <summary>
+        /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
+        /// </summary>
         private Dictionary<string, RigidNode_Base> checkedListItems = new Dictionary<string, RigidNode_Base>();
 
+        /// <summary>
+        /// List of all the <see cref="WheelSlotPanel"/>s in this page. Referenced in <see cref="GetNextEmptyPanel()"/>
+        /// </summary>
         private List<WheelSlotPanel> slots = new List<WheelSlotPanel>();
 
         public DefineWheelsPage()
@@ -26,7 +41,7 @@ namespace BxDRobotExporter.Wizard
 
             NodeCheckedListBox.CheckOnClick = false;
 
-            if (WizardData.Instance.DriveTrain != WizardData.WizardDriveTrain.SWERVE)
+            if (WizardData.Instance.driveTrain != WizardData.WizardDriveTrain.SWERVE)
             {
                 foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
                 {
@@ -61,13 +76,18 @@ namespace BxDRobotExporter.Wizard
                 {
                     UpdateProgress();
                 }
-                if(WizardData.Instance.WheelCount != slots.Count)
+                if(WizardData.Instance.wheelCount != slots.Count)
                 {
                     _initialized = false;
                 }
             };
         }
 
+        /// <summary>
+        /// Either fills or removes a <see cref="WheelSetupPanel"/> from a <see cref="WheelSlotPanel"/> 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NodeCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             if(e.NewValue == CheckState.Checked)
@@ -78,7 +98,7 @@ namespace BxDRobotExporter.Wizard
                     return;
                 }
                 OnInvalidatePage();
-                switch (WizardData.Instance.DriveTrain)
+                switch (WizardData.Instance.driveTrain)
                 {
                     case WizardData.WizardDriveTrain.WESTERN:
                         GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
@@ -91,7 +111,7 @@ namespace BxDRobotExporter.Wizard
                         break;
                     case WizardData.WizardDriveTrain.SWERVE:
                         //TODO implement this crap
-                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.NORMAL);
+                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
                         break;
                     case WizardData.WizardDriveTrain.CUSTOM:
                         GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
@@ -99,7 +119,7 @@ namespace BxDRobotExporter.Wizard
                 }
                 checkedCount++;
 
-                if (checkedCount == WizardData.Instance.WheelCount)
+                if (checkedCount == WizardData.Instance.wheelCount)
                     disableChecked = true;
             }
             else
@@ -107,6 +127,7 @@ namespace BxDRobotExporter.Wizard
                 OnInvalidatePage();
                 checkedCount--;
                 disableChecked = false;
+
                 foreach(var slot in slots)
                 {
                     if (slot.Node == checkedListItems[NodeCheckedListBox.Items[e.Index].ToString()])
@@ -117,9 +138,12 @@ namespace BxDRobotExporter.Wizard
             UpdateProgress();
         }
 
+        /// <summary>
+        /// Makes sure all of the wheels are set correctly.
+        /// </summary>
         private void ValidateInput()
         {
-            switch (WizardData.Instance.DriveTrain)
+            switch (WizardData.Instance.driveTrain)
             {
                 case WizardData.WizardDriveTrain.MECANUM:
                     string BadPanels = string.Empty;
@@ -196,14 +220,23 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Validates input
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Panel_WheelTypeChanged(object sender, WheelTypeChangedEventArgs e)
         {
             ValidateInput();
         }
 
+        /// <summary>
+        /// Gets the next unfilled <see cref="WheelSlotPanel"/>. Referenced in <see cref="NodeCheckedListBox_ItemCheck(object, ItemCheckEventArgs)"/>
+        /// </summary>
+        /// <returns></returns>
         private WheelSlotPanel GetNextEmptyPanel()
         {
-            for(int i = (slots.Count - 1); i > 0; i--)
+            for(int i = 0; i < slots.Count; i++)
             {
                 if (!slots[i].IsFilled)
                     return slots[i];
@@ -211,37 +244,45 @@ namespace BxDRobotExporter.Wizard
             return null;
         }
 
+        /// <summary>
+        /// Updates <see cref="WheelProgressLabel"/>
+        /// </summary>
+        private void UpdateProgress()
+        {
+            WheelProgressLabel.Text = string.Format("{0} out of {1} wheels selected.", checkedCount, WizardData.Instance.wheelCount);
+        }
+
         #region IWizardPage Implementation
+        /// <summary>
+        /// Adds all the <see cref="WizardData.WheelSetupData"/> from each <see cref="WheelSetupPanel"/> to <see cref="WizardData.wheels"/>
+        /// </summary>
         public void OnNext()
         {
-            WizardData.Instance.Wheels = new List<WizardData.WheelSetupData>();
+            WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in slots)
             {
-                WizardData.Instance.Wheels.Add(slot.WheelData);
+                WizardData.Instance.wheels.Add(slot.WheelData);
             }
         }
 
+        /// <summary>
+        /// Adds as many <see cref="WheelSlotPanel"/>s as there are wheels
+        /// </summary>
         public void Initialize()
         {
             slots = new List<WheelSlotPanel>();
-            for (int i = 0; i < WizardData.Instance.WheelCount; i++)
+            for (int i = 0; i < WizardData.Instance.wheelCount; i++)
             {
                 WheelSlotPanel panel = new WheelSlotPanel();
                 panel.WheelTypeChanged += Panel_WheelTypeChanged;
                 slots.Add(panel);
-                WheelPropertiesPanel.Controls.Add(panel);
-                
+                WheelPropertiesPanel.Controls.Add(panel);                
             }
 
             UpdateProgress();
             _initialized = true;
         }
         
-        private void UpdateProgress()
-        {
-            WheelProgressLabel.Text = string.Format("{0} out of {1} wheels selected.", checkedCount, WizardData.Instance.WheelCount);
-        }
-
         public event Action ActivateNext;
         private void OnActivateNext()
         {
