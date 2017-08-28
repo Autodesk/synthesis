@@ -89,12 +89,6 @@ public class Toolkit : MonoBehaviour
         stopwatchStartButtonText = AuxFunctions.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
         stopwatchPauseButtonText = AuxFunctions.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
 
-        //Dummy Robot Objects
-        dummyWindow = AuxFunctions.FindObject(canvas, "DummyRobotPanel");
-        dummyList = AuxFunctions.FindObject(canvas, "DummyList").GetComponent<DummyScrollable>();
-        dummyIndicator = GameObject.Find("DummyIndicator");
-        dummyIndicator.SetActive(false);
-
         //Stats Objects
         statsWindow = AuxFunctions.FindObject(canvas, "StatsPanel");
         speedEntry = AuxFunctions.FindObject(statsWindow, "SpeedEntry");
@@ -115,7 +109,6 @@ public class Toolkit : MonoBehaviour
             if (ignoreClick) ignoreClick = false;
             else ClickRuler();
         }
-
         UpdateStopwatch();
 
         if (statsOn)
@@ -434,40 +427,5 @@ public class Toolkit : MonoBehaviour
         ToggleStopwatchWindow(false);
         sensorManagerGUI.EndProcesses();
     }
-    
-    #region Dummy Robot
 
-    /*public void SpawnDummyRobot()
-    {
-        dummyList.AddDummy();
-    }
-
-    public void ControlDummyRobot()
-    {
-        dummyList.ControlDummy();
-        dummyIndicator.SetActive(true);
-        controllingDummy = true;
-    }
-
-    public void ControlMainRobot()
-    {
-        mainState.activeRobot = mainState.GetRootNode();
-        dummyIndicator.SetActive(false);
-        controllingDummy = false;
-    }
-
-    public void DeleteDummyRobot()
-    {
-        dummyList.DeleteDummy();
-    }
-
-    private void UpdateControlIndicator()
-    {
-        if (controllingDummy)
-        {
-            dummyIndicator.transform.position = ((RigidNode)mainState.activeRobot).MainObject.transform.position + new Vector3(0, 1f) ;
-        }
-    }
-    */
-    #endregion
 }
