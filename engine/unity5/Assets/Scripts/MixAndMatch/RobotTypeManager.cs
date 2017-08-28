@@ -14,6 +14,7 @@ public static class RobotTypeManager{
     public static float WheelMass;
     public static float WheelRadius;
     public static float WheelFriction;
+    public static float WheelLateralFriction;
 
     public static void SetProperties (bool isMixAndMatch, bool hasManipulator, bool isMecanum  )
     {
@@ -29,10 +30,11 @@ public static class RobotTypeManager{
         IsMecanum = false;
     }
 
-    public static void SetWheelProperties(float mass, float radius, float friction)
+    public static void SetWheelProperties(float mass, float radius, float friction, float lateralFriction)
     {
         WheelMass = mass;
         WheelRadius = radius;
         WheelFriction = friction;
+        WheelLateralFriction = lateralFriction;
     }
 }

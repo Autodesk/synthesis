@@ -13,7 +13,6 @@ namespace Assets.Scripts.BUExtensions
         private const float SuspensionToleranceCm = 5f;
         private const float SuspensionCompressionRatio = 10f;
         private const float SuspensionStiffnessRatio = 2000f;
-        private const float RollingFriction = 0.01f;
         private const float RollInfluence = 0.25f;
         private const float DefaultSlidingFriction = 1.0f;
         private const int DefaultNumWheels = 4;
@@ -67,7 +66,6 @@ namespace Assets.Scripts.BUExtensions
 
             wheel.RollInfluence = RollInfluence;
             wheel.SlidingFriction = slidingFriction;
-            wheel.Brake = (RollingFriction / radius) * RaycastRobot.OverrideMass * BRaycastWheel.MassTorqueScalar;
 
             return RaycastRobot.NumWheels - 1;
         }

@@ -1,7 +1,6 @@
-//Source: https://github.com/Gris87/InputControl
-
 /// <summary>
 /// <see cref="KeyMapping"/> is a named handler for 3 <see cref="CustomInput"/>.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public class KeyMapping
 {

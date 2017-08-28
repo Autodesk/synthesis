@@ -37,18 +37,6 @@ namespace BxDRobotExporter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Lime")]
-        public global::System.Drawing.Color ParentColor {
-            get {
-                return ((global::System.Drawing.Color)(this["ParentColor"]));
-            }
-            set {
-                this["ParentColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool HighlightParent {
             get {
@@ -68,6 +56,18 @@ namespace BxDRobotExporter.Properties {
             }
             set {
                 this["SaveLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FancyColors {
+            get {
+                return ((bool)(this["FancyColors"]));
+            }
+            set {
+                this["FancyColors"] = value;
             }
         }
     }

@@ -676,11 +676,11 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     {
                         stdole.IPictureDisp componentIcon =
                             PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ComponentBrowserNode16));
-                        oRes = oNodeRescs.Add("MYID", 1, componentIcon);// create a new ClientNodeResource to be used when you add the browser node
+                        oRes = oNodeRescs.Add("MYID", 3, componentIcon);// create a new ClientNodeResource to be used when you add the browser node
                     }
                     catch (Exception)
                     {// if the method fails then assume that there is already a ClientNodeResource
-                        oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+                        oRes = oPanes.ClientNodeResources.ItemById("MYID", 3);// get the ClientNodeResource by the name
                     }
                     def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(name, th, oRes);// creates a new browser node def for the field data
                     oPane.TopNode.AddChild(def);// add the browsernode to the topnode
@@ -798,7 +798,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     ComponentOccurrence selectedAssembly = null;
                     selectedAssembly = (ComponentOccurrence)InventorApplication.CommandManager.Pick(SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
                     await task.Task;
-
+                    SetAllButtons(true);
                     if (!GetCancel())
                     {
                         if (selectedAssembly != null)
@@ -810,8 +810,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                     foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                                     {
                                         if (t.same(node.BrowserNodeDefinition))// if the fieldDataComponent is from that browsernode then run
-                                        {
-
+                                        { 
                                             LegacyInterchange.AddComponents(node.BrowserNodeDefinition.Label, selectedAssembly);
                                             t.CompOccs.Add(selectedAssembly);// add the assembly occurence to the arraylist
                                             partSet.AddItem(selectedAssembly); //add the assembly occurence to a set that is highlighted in purple
@@ -899,6 +898,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     selectedPart = (ComponentOccurrence)InventorApplication.CommandManager.Pick// have the user select a part
                               (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
                     await task.Task;
+                    SetAllButtons(true);
                     if (!GetCancel())
                     {
                         if (selectedPart != null)
@@ -920,7 +920,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                             {
                                                 stdole.IPictureDisp partIcon =
                                                     PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.PartIcon16));
-                                                nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 1, partIcon);
+                                                nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 2, partIcon);
                                             }
                                             catch (Exception e)
                                             {
@@ -1217,15 +1217,14 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 }
 
             }
+            SetAllButtons(true);
             if (IsDone)
             {
-                SetAllButtons(true);
                 return;
             }
             else
             {
                 MessageBox.Show("ERROR: No parts or assemblies were selected", "Remove Part or Assembly...");
-                SetAllButtons(true);
                 return;
             }
         }

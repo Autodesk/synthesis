@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public delegate void SettingsEvent(Color Child, Color Parent, bool IsParentHighlight, string SaveLocation);
+    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation);
 
     public partial class PluginSettingsForm : Form
     {
@@ -45,13 +45,8 @@ namespace EditorsLibrary
         {
             Values = SynthesisGUI.PluginSettings;
             ChildHighlight.BackColor = Values.InventorChildColor;
-            ParentHighlight.BackColor = Values.InventorParentColor;
-            HighlightParentsCheckBox.Checked = Values.InventorHighlightParent;
             SaveLocationTextBox.Text = Values.GeneralSaveLocation;
-            if (!Values.InventorHighlightParent)
-                ParentLabel.ForeColor = Color.Gray;
-            HighlightParentsCheckBox_CheckedChanged(null, null);
-            
+            UseFancyColorsCheckBox.Checked = Values.GeneralUseFancyColors;
         }
         
         /// <summary>
@@ -60,9 +55,9 @@ namespace EditorsLibrary
         private void SaveValues()
         {
             Values.InventorChildColor = ChildHighlight.BackColor;
-            Values.InventorParentColor = ParentHighlight.BackColor;
-            Values.InventorHighlightParent = HighlightParentsCheckBox.Checked;
-            Values.OnSettingsChanged(ChildHighlight.BackColor, ParentHighlight.BackColor, HighlightParentsCheckBox.Checked, SaveLocationTextBox.Text);
+            Values.GeneralSaveLocation = SaveLocationTextBox.Text;
+            Values.GeneralUseFancyColors = UseFancyColorsCheckBox.Checked;
+            Values.OnSettingsChanged(ChildHighlight.BackColor, Values.GeneralUseFancyColors, SaveLocationTextBox.Text);
         }
 
         /// <summary>
@@ -73,9 +68,8 @@ namespace EditorsLibrary
         {
             return new PluginSettingsValues()
             {
-                InventorParentColor = Color.FromArgb(255, 125, 0, 255),
                 InventorChildColor = Color.FromArgb(255, 0, 125, 255),
-                InventorHighlightParent = false,
+                GeneralUseFancyColors = false,
                 GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Robots"
             };
         }
@@ -85,70 +79,51 @@ namespace EditorsLibrary
         /// </summary>
         public struct PluginSettingsValues
         {
-            public Color InventorParentColor;
             public Color InventorChildColor;
 
-            public bool InventorHighlightParent;
-
             public static event SettingsEvent SettingsChanged;
-            internal void OnSettingsChanged(Color Child, Color Parent, bool IsParentHighlight, string SaveLocation)
+            internal void OnSettingsChanged(Color Child, bool UseFancyColors, string SaveLocation)
             {
-                SettingsChanged.Invoke(Child, Parent, IsParentHighlight, SaveLocation);
+                SettingsChanged.Invoke(Child, UseFancyColors, SaveLocation);
             }
 
             public string GeneralSaveLocation;
+            public bool GeneralUseFancyColors;
         }
 
         /// <summary>
-        /// Handles the 'Highlight Parents' checkbox being changed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HighlightParentsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            ParentHighlight.Enabled = HighlightParentsCheckBox.Checked;
-            if (ParentHighlight.Enabled)
-                ParentLabel.ForeColor = Color.Black;
-            else
-                ParentLabel.ForeColor = Color.Gray;
-        }
-
-        /// <summary>
-        /// Sets the <see cref="Color"/> of the , and by extension the <see cref="PluginSettingsValues"/>
+        /// Sets the <see cref="Color"/> of the <see cref="Button"/> and by extension the <see cref="PluginSettingsValues"/>
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ChildHighlight_Click(object sender, EventArgs e)
         {
             ColorDialog colorChoose = new ColorDialog();
-            colorChoose.ShowDialog();
-            ChildHighlight.BackColor = colorChoose.Color;
-        }
-
-        /// <summary>
-        /// Sets the <see cref="Color"/> of the background, and by extension the <see cref="PluginSettingsValues"/>
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ParentHighlight_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorChoose = new ColorDialog();
-            colorChoose.ShowDialog();
-            ParentHighlight.BackColor = colorChoose.Color;
+            if(colorChoose.ShowDialog() == DialogResult.OK)
+            {
+                ChildHighlight.BackColor = colorChoose.Color;
+            }
         }
         
         private void ButtonBrowse_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog folderBrowser = new FolderBrowserDialog()
-            {
-                RootFolder = Environment.SpecialFolder.MyDocuments
-            };
+            FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
             folderBrowser.ShowDialog();
             if(folderBrowser.SelectedPath != null)
             {
                 Values.GeneralSaveLocation = folderBrowser.SelectedPath;
             }
-
         }
+
+        private void UseFancyColorsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (UseFancyColorsCheckBox.Checked)
+            {
+                UseFancyColorsCheckBox.ForeColor = Color.Red;
+            }
+            else
+                UseFancyColorsCheckBox.ForeColor = DefaultForeColor;
+        }
+
     }
 }

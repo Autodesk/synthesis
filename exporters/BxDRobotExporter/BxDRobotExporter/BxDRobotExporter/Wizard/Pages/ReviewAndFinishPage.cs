@@ -12,14 +12,24 @@ using System.Diagnostics;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// Displays the "finish" button and allows the user to launch Synthesis on exiting the wizard.
+    /// </summary>
     public partial class ReviewAndFinishPage : UserControl, IWizardPage
     {
-        public const string SYNTHESIS_BETA_PATH = @"C:\users\t_howab\Desktop\TempSynthesisBuild\Build.exe";
+        /// <summary>
+        /// Dictionary associating field names with field paths.
+        /// </summary>
         Dictionary<string, string> fields = new Dictionary<string, string>();
 
         public ReviewAndFinishPage()
         {
             InitializeComponent();
+        }
+        
+        private void LauchSimCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            FieldSelectComboBox.Enabled = LauchSimCheckBox.Checked;
         }
 
         #region IWizardPage Implementation
@@ -43,11 +53,14 @@ namespace BxDRobotExporter.Wizard
             InvalidatePage?.Invoke(null);
         }
 
+        /// <summary>
+        /// Gets the paths for all the synthesis fields.
+        /// </summary>
         public void Initialize()
         {
-                var dirs = Directory.GetDirectories(@"C:\users\t_howab\documents\synthesis\fields");
-            
-            foreach(var dir in dirs)
+            var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\synthesis\fields");
+
+            foreach (var dir in dirs)
             {
                 fields.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last(), dir);
                 FieldSelectComboBox.Items.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last());
@@ -61,14 +74,10 @@ namespace BxDRobotExporter.Wizard
             if(LauchSimCheckBox.Checked)
             {
                 Utilities.GUI.RobotSave();
-                Process.Start(SYNTHESIS_BETA_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + Utilities.GUI.RMeta.ActiveRobotName, fields[(string)FieldSelectComboBox.SelectedItem]));
+                Process.Start(Utilities.SYTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + Utilities.GUI.RMeta.ActiveRobotName, fields[(string)FieldSelectComboBox.SelectedItem]));
             }
         }
         #endregion
 
-        private void LauchSimCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            FieldSelectComboBox.Enabled = LauchSimCheckBox.Checked;
-        }
     }
 }

@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
+using UnityEngine.Analytics;
 
 /// <summary>
 /// This class handles every sensor-related GUI elements in Unity
@@ -106,6 +107,11 @@ class SensorManagerGUI : MonoBehaviour
             UpdateSensorRangePanel();
         }
         showSensorButton.SetActive(sensorManager.GetActiveSensors().Count > 0 && isHidingOutput);
+
+        //Allows users to save their configuration using enter
+        if (isEditingAngle && Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
+        if (isEditingRange && Input.GetKeyDown(KeyCode.Return)) ToggleEditRange();
+
     }
 
     /// <summary>
@@ -348,6 +354,12 @@ class SensorManagerGUI : MonoBehaviour
 
             //Add a sensor
             AddUltrasonic();
+            if (SimUI.changeAnalytics)
+            {
+                Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
         }
         else
         {
@@ -373,6 +385,13 @@ class SensorManagerGUI : MonoBehaviour
             addBeamBreakerButton.GetComponentInChildren<Text>().text = "Confirm";
 
             AddBeamBreaker();
+
+            if (SimUI.changeAnalytics)
+            {
+                Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
         }
         else
         {
@@ -396,6 +415,13 @@ class SensorManagerGUI : MonoBehaviour
         {
             addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
             AddGyro();
+
+            if (SimUI.changeAnalytics)
+            {
+                Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
         }
         else
         {

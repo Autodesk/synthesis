@@ -119,14 +119,15 @@ public partial class LiteExporterForm : Form
             ProgressLabel.Text = "Export Cancelled";
         else if (e.Error != null)
         {
-            #region DEBUG
+            ProgressLabel.Text = "An error occurred.";
+            #region DEBUG SWITCH
 #if DEBUG
             MessageBox.Show(e.Error.ToString());
-#endif 
-            #endregion
-            ProgressLabel.Text = "An error occured.";
+#else
             MessageBox.Show(e.Error.Message);
-        }
+#endif
+        } 
+        #endregion
         else
         {
             ProgressLabel.Text = "Export Completed Successfully";
@@ -146,7 +147,7 @@ public partial class LiteExporterForm : Form
             throw new ArgumentException("ERROR: 0 Occurrences passed to ExportSkeletonLite", "occurrences");
         }
 
-        #region CenterJoints
+#region CenterJoints
         int NumCentered = 0;
 
         SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
@@ -156,9 +157,9 @@ public partial class LiteExporterForm : Form
             NumCentered++;
             SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
         }
-        #endregion
+#endregion
 
-        #region Build Models
+#region Build Models
         //Getting Rigid Body Info...
         SetProgressText("Getting Rigid Body Info...", ProgressTextType.ShortTaskBegin);
         NameValueMap RigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
@@ -178,9 +179,9 @@ public partial class LiteExporterForm : Form
 
         //Building Model...Done
         SetProgressText(null, ProgressTextType.ShortTaskEnd);
-        #endregion
+#endregion
 
-        #region Cleaning Up
+#region Cleaning Up
         //Cleaning Up...
         LiteExporterForm.Instance.SetProgressText("Cleaning Up...", ProgressTextType.ShortTaskBegin);
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
@@ -193,7 +194,7 @@ public partial class LiteExporterForm : Form
         }
         //Cleaning Up...Done
         LiteExporterForm.Instance.SetProgressText(null, ProgressTextType.ShortTaskEnd);
-        #endregion
+#endregion
         return BaseNode;
     }
 

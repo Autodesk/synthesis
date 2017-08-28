@@ -42,9 +42,10 @@
             // 
             this.DefineWheelsTitleLabel.AutoSize = true;
             this.DefineWheelsTitleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DefineWheelsTitleLabel.Location = new System.Drawing.Point(-4, 0);
+            this.DefineWheelsTitleLabel.Location = new System.Drawing.Point(-5, 0);
+            this.DefineWheelsTitleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.DefineWheelsTitleLabel.Name = "DefineWheelsTitleLabel";
-            this.DefineWheelsTitleLabel.Size = new System.Drawing.Size(232, 20);
+            this.DefineWheelsTitleLabel.Size = new System.Drawing.Size(280, 25);
             this.DefineWheelsTitleLabel.TabIndex = 0;
             this.DefineWheelsTitleLabel.Text = "Step 2: Define Your Wheels";
             // 
@@ -52,17 +53,19 @@
             // 
             this.NodeCheckedListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.NodeCheckedListBox.FormattingEnabled = true;
-            this.NodeCheckedListBox.Location = new System.Drawing.Point(0, 19);
+            this.NodeCheckedListBox.Location = new System.Drawing.Point(0, 23);
+            this.NodeCheckedListBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.NodeCheckedListBox.Name = "NodeCheckedListBox";
-            this.NodeCheckedListBox.Size = new System.Drawing.Size(300, 94);
+            this.NodeCheckedListBox.Size = new System.Drawing.Size(399, 106);
             this.NodeCheckedListBox.TabIndex = 1;
             // 
             // DefineWheelsInstruction1
             // 
             this.DefineWheelsInstruction1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.DefineWheelsInstruction1.Location = new System.Drawing.Point(306, 19);
+            this.DefineWheelsInstruction1.Location = new System.Drawing.Point(408, 23);
+            this.DefineWheelsInstruction1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.DefineWheelsInstruction1.Name = "DefineWheelsInstruction1";
-            this.DefineWheelsInstruction1.Size = new System.Drawing.Size(142, 56);
+            this.DefineWheelsInstruction1.Size = new System.Drawing.Size(189, 69);
             this.DefineWheelsInstruction1.TabIndex = 2;
             this.DefineWheelsInstruction1.Text = "Check the boxes of all of the nodes which are drive wheels. Select a node to focu" +
     "s on it in Inventor.";
@@ -72,9 +75,11 @@
             this.WheelNodeGroupBox.Controls.Add(this.WheelProgressLabel);
             this.WheelNodeGroupBox.Controls.Add(this.NodeCheckedListBox);
             this.WheelNodeGroupBox.Controls.Add(this.DefineWheelsInstruction1);
-            this.WheelNodeGroupBox.Location = new System.Drawing.Point(0, 71);
+            this.WheelNodeGroupBox.Location = new System.Drawing.Point(0, 87);
+            this.WheelNodeGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.WheelNodeGroupBox.Name = "WheelNodeGroupBox";
-            this.WheelNodeGroupBox.Size = new System.Drawing.Size(460, 119);
+            this.WheelNodeGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.WheelNodeGroupBox.Size = new System.Drawing.Size(613, 146);
             this.WheelNodeGroupBox.TabIndex = 3;
             this.WheelNodeGroupBox.TabStop = false;
             this.WheelNodeGroupBox.Text = "Select Wheel Nodes";
@@ -82,38 +87,43 @@
             // WheelProgressLabel
             // 
             this.WheelProgressLabel.AutoSize = true;
-            this.WheelProgressLabel.Location = new System.Drawing.Point(306, 100);
+            this.WheelProgressLabel.Location = new System.Drawing.Point(408, 123);
+            this.WheelProgressLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.WheelProgressLabel.Name = "WheelProgressLabel";
-            this.WheelProgressLabel.Size = new System.Drawing.Size(35, 13);
+            this.WheelProgressLabel.Size = new System.Drawing.Size(46, 17);
             this.WheelProgressLabel.TabIndex = 3;
             this.WheelProgressLabel.Text = "label1";
             // 
             // WheelPropertiesPanel
             // 
-            this.WheelPropertiesPanel.Location = new System.Drawing.Point(0, 196);
+            this.WheelPropertiesPanel.AutoScroll = true;
+            this.WheelPropertiesPanel.Location = new System.Drawing.Point(0, 241);
+            this.WheelPropertiesPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.WheelPropertiesPanel.Name = "WheelPropertiesPanel";
-            this.WheelPropertiesPanel.Size = new System.Drawing.Size(460, 457);
+            this.WheelPropertiesPanel.Size = new System.Drawing.Size(613, 562);
             this.WheelPropertiesPanel.TabIndex = 4;
             // 
             // WarningLabel
             // 
             this.WarningLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WarningLabel.ForeColor = System.Drawing.Color.Red;
-            this.WarningLabel.Location = new System.Drawing.Point(4, 20);
+            this.WarningLabel.Location = new System.Drawing.Point(5, 25);
+            this.WarningLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.WarningLabel.Name = "WarningLabel";
-            this.WarningLabel.Size = new System.Drawing.Size(444, 48);
+            this.WarningLabel.Size = new System.Drawing.Size(592, 59);
             this.WarningLabel.TabIndex = 5;
             // 
             // DefineWheelsPage
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.WarningLabel);
             this.Controls.Add(this.WheelPropertiesPanel);
             this.Controls.Add(this.WheelNodeGroupBox);
             this.Controls.Add(this.DefineWheelsTitleLabel);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "DefineWheelsPage";
-            this.Size = new System.Drawing.Size(460, 653);
+            this.Size = new System.Drawing.Size(613, 804);
             this.WheelNodeGroupBox.ResumeLayout(false);
             this.WheelNodeGroupBox.PerformLayout();
             this.ResumeLayout(false);
