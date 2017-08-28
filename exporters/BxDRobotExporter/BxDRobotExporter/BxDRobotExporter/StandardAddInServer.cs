@@ -160,7 +160,7 @@ namespace BxDRobotExporter
 
             #region Setup Buttons
             //Generic Begin Export
-            GenericExportButton = ControlDefs.AddButtonDefinition("Begin Export", "BxD:RobotExporter:BeginExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, ExportRobotIconSmall, ExportRobotIconLarge);
+            GenericExportButton = ControlDefs.AddButtonDefinition("Begin Export", "BxD:RobotExporter:BeginExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens a window with information on each export mode", ExportRobotIconSmall, ExportRobotIconLarge);
             GenericExportButton.OnExecute += BeginGenericExport_OnExecute;
             GenericExportButton.OnHelp += _OnHelp;
 
@@ -187,36 +187,36 @@ namespace BxDRobotExporter
             BeginPanel.CommandControls.AddSplitButton(GenericExportButton, ExportButtonCollection, true);
 
             //Load Exported Robot
-            LoadExportedRobotButton = ControlDefs.AddButtonDefinition("Load Exported Robot", "BxD:RobotExporter:LoadExportedRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, LoadExportedRobotIconSmall, LoadExportedRobotIconLarge);
+            LoadExportedRobotButton = ControlDefs.AddButtonDefinition("Load Exported Robot", "BxD:RobotExporter:LoadExportedRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Loads a robot you have already exported for further editing.", LoadExportedRobotIconSmall, LoadExportedRobotIconLarge);
             LoadExportedRobotButton.OnExecute += LoadExportedRobotButton_OnExecute;
             LoadExportedRobotButton.OnHelp += _OnHelp;
             BeginPanel.CommandControls.AddButton(LoadExportedRobotButton, true);
 
             //Preview Robot
-            PreviewRobotButton = ControlDefs.AddButtonDefinition("Preview Robot", "BxD:RobotExporter:PreviewRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, PreviewRobotIconSmall, PreviewRobotIconLarge);
+            PreviewRobotButton = ControlDefs.AddButtonDefinition("Preview Robot", "BxD:RobotExporter:PreviewRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens the robot viewer from the old exporter. Use this to test your joint limits.", PreviewRobotIconSmall, PreviewRobotIconLarge);
             PreviewRobotButton.OnExecute += PreviewRobotButton_OnExecute;
             PreviewRobotButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(PreviewRobotButton, true);
 
             //Exporter Settings
-            ExporterSettingsButton = ControlDefs.AddButtonDefinition("Exporter Settings", "BxD:RobotExporter:ExporterSettings", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            ExporterSettingsButton = ControlDefs.AddButtonDefinition("Exporter Settings", "BxD:RobotExporter:ExporterSettings", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens the settings menu.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
             ExporterSettingsButton.OnExecute += ExporterSettings_OnExecute;
             ExporterSettingsButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(ExporterSettingsButton, true);
 
             //Help Button
-            HelpButton = ControlDefs.AddButtonDefinition("Help", "BxD:RobotExporter:Help", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, HelpButtonIconSmall, HelpButtonIconLarge);
+            HelpButton = ControlDefs.AddButtonDefinition("Help", "BxD:RobotExporter:Help", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Takes you to the tutorials page at bxd.autodesk.com.", HelpButtonIconSmall, HelpButtonIconLarge);
             HelpButton.OnExecute += HelpButton_OnExecute;
             HelpButton.OnHelp += _OnHelp;
             HelpPanel.CommandControls.AddButton(HelpButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to its previous location.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
             SaveButton.OnHelp += _OnHelp;
 
             //Save As Button
-            SaveAsButton = ControlDefs.AddButtonDefinition("Save As...", "BxD:RobotExporter:SaveAs", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, SaveRobotAsIconSmall, SaveRobotAsIconLarge);
+            SaveAsButton = ControlDefs.AddButtonDefinition("Save As...", "BxD:RobotExporter:SaveAs", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to a new location.", SaveRobotAsIconSmall, SaveRobotAsIconLarge);
             SaveAsButton.OnExecute += SaveAsButton_OnExecute;
             SaveAsButton.OnHelp += _OnHelp;
 
