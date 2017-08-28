@@ -78,6 +78,15 @@ namespace BxDFieldExporter
             StandardAddInServer.task.TrySetResult(true);
         }
 
+        private void AddAssembly_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode.Equals(Keys.ShiftKey))
+            {
+                MessageBox.Show("WARNING: The field exporter does not accept multiple models at this time.");
+                    
+            }
+        }
+
         ///// <summary>
         ///// Override ProcessCmdKey in order to collect escape and enter key input
         ///// </summary>
