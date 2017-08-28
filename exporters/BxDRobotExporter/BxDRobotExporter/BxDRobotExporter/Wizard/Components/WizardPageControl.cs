@@ -10,8 +10,14 @@ using System.Windows.Forms;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// Primary <see cref="Control"/> of the whole wizard and the only object in <see cref="WizardForm.components"/>
+    /// </summary>
     public partial class WizardPageControl : UserControl
     {
+        /// <summary>
+        /// Invoked when the <see cref="WizardNavigator.WizardNavigatorState"/> is set to <see cref="WizardNavigator.WizardNavigatorState.FinishEnabled"/> and <see cref="WizardNavigator.NextButton"/> is clicked.
+        /// </summary>
         public event Action FinishClicked;
 
         public WizardPageControl()
@@ -22,6 +28,11 @@ namespace BxDRobotExporter.Wizard
             this.WizardNavigator.BackButton.Click += BackButton_Click;
         }
 
+        /// <summary>
+        /// Invoked when <see cref="WizardNavigator.BackButton"/> is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BackButton_Click(object sender, EventArgs e)
         {
             if (ActivePageIndex > 0)
@@ -40,6 +51,11 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Invoked when <see cref="WizardNavigator.NextButton"/> is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NextButton_Click(object sender, EventArgs e)
         {
             try
@@ -69,10 +85,18 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
-        int ActivePageIndex = 0;
+        private int ActivePageIndex = 0;
 
+        /// <summary>
+        /// Dictionary containing all of the page indices and their respective default navigator states.
+        /// </summary>
         private Dictionary<int, WizardNavigator.WizardNavigatorState> defaultNavigatorStates = new Dictionary<int, WizardNavigator.WizardNavigatorState>();
 
+        /// <summary>
+        /// Adds a page to the <see cref="WizardPageControl"/>. Throws an exception if the given <see cref="UserControl"/> does not implement <see cref="IWizardPage"/>
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="defaultState"></param>
         public void Add(UserControl page, WizardNavigator.WizardNavigatorState defaultState = WizardNavigator.WizardNavigatorState.Clean)
         {
             if (!(page is IWizardPage))
@@ -89,6 +113,11 @@ namespace BxDRobotExporter.Wizard
             ((IWizardPage)page).InvalidatePage += WizardPageControl_InvalidatePage;
         }
 
+        /// <summary>
+        /// Adds several pages to the <see cref="WizardPageControl"/>. Throws an exception if the given <see cref="UserControl"/>s do not implement <see cref="IWizardPage"/>
+        /// </summary>
+        /// <param name="pages"></param>
+        /// <param name="defaultStates"></param>
         public void AddRange(UserControl[] pages, WizardNavigator.WizardNavigatorState[] defaultStates = null)
         {
             foreach (UserControl page in pages)
@@ -111,6 +140,10 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Invalidates a page of the given type so that <see cref="IWizardPage.Initialize"/> will be invoked next time it is visible.
+        /// </summary>
+        /// <param name="PageType"></param>
         private void WizardPageControl_InvalidatePage(Type PageType)
         {
             if (PageType != null)
@@ -125,6 +158,9 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Loads the first page and begins the wizard.
+        /// </summary>
         public void BeginWizard()
         {
             Controls[1].Visible = true;

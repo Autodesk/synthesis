@@ -73,6 +73,7 @@ namespace BxDRobotExporter
 
         //Highlighting
         HighlightSet ChildHighlight;
+        HighlightSet WheelHighlight;
 
         #region DEBUG
 #if DEBUG
@@ -159,7 +160,7 @@ namespace BxDRobotExporter
 
             #region Setup Buttons
             //Generic Begin Export
-            GenericExportButton = ControlDefs.AddButtonDefinition("Begin Export", "BxD:RobotExporter:BeginExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, ExportRobotIconSmall, ExportRobotIconLarge);
+            GenericExportButton = ControlDefs.AddButtonDefinition("Begin Export", "BxD:RobotExporter:BeginExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens a window with information on each export mode", ExportRobotIconSmall, ExportRobotIconLarge);
             GenericExportButton.OnExecute += BeginGenericExport_OnExecute;
             GenericExportButton.OnHelp += _OnHelp;
 
@@ -186,36 +187,36 @@ namespace BxDRobotExporter
             BeginPanel.CommandControls.AddSplitButton(GenericExportButton, ExportButtonCollection, true);
 
             //Load Exported Robot
-            LoadExportedRobotButton = ControlDefs.AddButtonDefinition("Load Exported Robot", "BxD:RobotExporter:LoadExportedRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, LoadExportedRobotIconSmall, LoadExportedRobotIconLarge);
+            LoadExportedRobotButton = ControlDefs.AddButtonDefinition("Load Exported Robot", "BxD:RobotExporter:LoadExportedRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Loads a robot you have already exported for further editing.", LoadExportedRobotIconSmall, LoadExportedRobotIconLarge);
             LoadExportedRobotButton.OnExecute += LoadExportedRobotButton_OnExecute;
             LoadExportedRobotButton.OnHelp += _OnHelp;
             BeginPanel.CommandControls.AddButton(LoadExportedRobotButton, true);
 
             //Preview Robot
-            PreviewRobotButton = ControlDefs.AddButtonDefinition("Preview Robot", "BxD:RobotExporter:PreviewRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, PreviewRobotIconSmall, PreviewRobotIconLarge);
+            PreviewRobotButton = ControlDefs.AddButtonDefinition("Preview Robot", "BxD:RobotExporter:PreviewRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens the robot viewer from the old exporter. Use this to test your joint limits.", PreviewRobotIconSmall, PreviewRobotIconLarge);
             PreviewRobotButton.OnExecute += PreviewRobotButton_OnExecute;
             PreviewRobotButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(PreviewRobotButton, true);
 
             //Exporter Settings
-            ExporterSettingsButton = ControlDefs.AddButtonDefinition("Exporter Settings", "BxD:RobotExporter:ExporterSettings", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            ExporterSettingsButton = ControlDefs.AddButtonDefinition("Exporter Settings", "BxD:RobotExporter:ExporterSettings", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens the settings menu.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
             ExporterSettingsButton.OnExecute += ExporterSettings_OnExecute;
             ExporterSettingsButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(ExporterSettingsButton, true);
 
             //Help Button
-            HelpButton = ControlDefs.AddButtonDefinition("Help", "BxD:RobotExporter:Help", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, HelpButtonIconSmall, HelpButtonIconLarge);
+            HelpButton = ControlDefs.AddButtonDefinition("Help", "BxD:RobotExporter:Help", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Takes you to the tutorials page at bxd.autodesk.com.", HelpButtonIconSmall, HelpButtonIconLarge);
             HelpButton.OnExecute += HelpButton_OnExecute;
             HelpButton.OnHelp += _OnHelp;
             HelpPanel.CommandControls.AddButton(HelpButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to its previous location.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
             SaveButton.OnHelp += _OnHelp;
 
             //Save As Button
-            SaveAsButton = ControlDefs.AddButtonDefinition("Save As...", "BxD:RobotExporter:SaveAs", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, SaveRobotAsIconSmall, SaveRobotAsIconLarge);
+            SaveAsButton = ControlDefs.AddButtonDefinition("Save As...", "BxD:RobotExporter:SaveAs", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to a new location.", SaveRobotAsIconSmall, SaveRobotAsIconLarge);
             SaveAsButton.OnExecute += SaveAsButton_OnExecute;
             SaveAsButton.OnHelp += _OnHelp;
 
@@ -337,6 +338,8 @@ namespace BxDRobotExporter
             Utilities.CreateDockableWindows(MainApplication);
             ChildHighlight = AsmDocument.CreateHighlightSet();
             ChildHighlight.Color = Utilities.GetInventorColor(SynthesisGUI.PluginSettings.InventorChildColor);
+            WheelHighlight = AsmDocument.CreateHighlightSet();
+            WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
             Utilities.GUI.jointEditorPane1.SelectedJoint += JointEditorPane_SelectedJoint;
@@ -445,16 +448,21 @@ namespace BxDRobotExporter
         #region Custom Button Events
 
         //Begin
+        /// <summary>
+        /// Opens the <see cref="Forms.ChooseExportModeForm"/> and prompts the user to select an export mode.
+        /// </summary>
+        /// <param name="Context"></param>
         private void BeginGenericExport_OnExecute(NameValueMap Context)
         {
-
+            Forms.ChooseExportModeForm exportChoose = new Forms.ChooseExportModeForm();
+            exportChoose.ShowDialog();
         }
 
         /// <summary>
         /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>
         /// </summary>
         /// <param name="Context"></param>
-        private void BeginAdvancedExport_OnExecute(NameValueMap Context)
+        public void BeginAdvancedExport_OnExecute(NameValueMap Context)
         {
             if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.ExportMeshes())
             {
@@ -475,7 +483,7 @@ namespace BxDRobotExporter
         /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>, then opens the <see cref="Wizard.WizardForm"/>
         /// </summary>
         /// <param name="Context"></param>
-        private void BeginWizardExport_OnExecute(NameValueMap Context)
+        public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
             if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.ExportMeshes())
             {
@@ -507,7 +515,7 @@ namespace BxDRobotExporter
         /// Opens the <see cref="Wizard.OneClickExportForm"/> which allows for a super easy exporting of a robot
         /// </summary>
         /// <param name="Context"></param>
-        private void BeginOneClickExport_OnExecute(NameValueMap Context)
+        public void BeginOneClickExport_OnExecute(NameValueMap Context)
         {
             Wizard.OneClickExportForm oneClickExportForm = new Wizard.OneClickExportForm();
             if((!PendingChanges || this.WarnUnsaved()) && (oneClickExportForm.ShowDialog() == DialogResult.OK))
@@ -872,6 +880,10 @@ namespace BxDRobotExporter
             return false;
         }
 
+        /// <summary>
+        /// Public method used to select a node from the wizard.
+        /// </summary>
+        /// <param name="node"></param>
         public void WizardSelect(RigidNode_Base node)
         {
             ChildHighlight.Clear();

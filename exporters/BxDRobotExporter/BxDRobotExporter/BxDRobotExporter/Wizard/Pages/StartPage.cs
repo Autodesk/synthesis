@@ -11,6 +11,9 @@ using System.Diagnostics;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// First page the user sees. Has a link to the tutorials page. TODO: Add more stuff here.
+    /// </summary>
     public partial class StartPage : UserControl, IWizardPage
     {
         public StartPage()

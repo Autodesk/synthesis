@@ -11,8 +11,14 @@ using System.IO;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// <see cref="Form"/> shown when the user selects "One Click Export". Prompts the user to set the number of wheels and the drive train of their robot and hopefully does the work from there.
+    /// </summary>
     public partial class OneClickExportForm : Form
     {
+        /// <summary>
+        /// Dictionary associating field names with field paths
+        /// </summary>
         private Dictionary<string, string> fields = new Dictionary<string, string>();
 
         public OneClickExportForm()
@@ -21,6 +27,9 @@ namespace BxDRobotExporter.Wizard
             DriveTrainComboBox.SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// The drive train to export for. Currently only supports <see cref="WizardData.WizardDriveTrain.WESTERN"/> and <see cref="WizardData.WizardDriveTrain.MECANUM"/>
+        /// </summary>
         private WizardData.WizardDriveTrain DriveTrain
         {
             get
@@ -38,6 +47,11 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Detects all of the fields in the default directory.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OneClickExportForm_Load(object sender, EventArgs e)
         {
             var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\synthesis\fields");
@@ -58,6 +72,11 @@ namespace BxDRobotExporter.Wizard
             Close();
         }
 
+        /// <summary>
+        /// Exports the joints and meshes, prompts for a name, detects the wheels, sets the wheel properties, and merges other, unused nodes into their parents.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ExportButton_Click(object sender, EventArgs e)
         {
             Hide();
@@ -119,12 +138,20 @@ namespace BxDRobotExporter.Wizard
                 }
                 DialogResult = DialogResult.OK;
                 Utilities.GUI.ReloadPanels();
+                if(MergeNodesCheckBox.Checked)
+                {
+                    foreach(var node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                    {
+                        if (!wheelsRaw.Contains(node))
+                            Utilities.GUI.MergeNodeIntoParent(node);
+                    }
+                }
             }
             else
                 DialogResult = DialogResult.None;
             Close();
         }
-
+        
         private void DriveTrainComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch(DriveTrainComboBox.SelectedIndex)
@@ -142,16 +169,6 @@ namespace BxDRobotExporter.Wizard
                     break;
 
             }
-        }
-
-        private void DriveTrainLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void MergeNodesCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }
