@@ -12,7 +12,7 @@ public partial class RigidNode : RigidNode_Base
 {
     private const float LinearSleepingThreshold = 0.25f;
     private const float AngularSleepingThreshold = 0.5f;
-    private const float CollisionMargin = 0.01f;
+    private const float CollisionMargin = 0f;
 
     public bool CreateMesh(string filePath, bool isMixAndMatch = false, float wheelMass = 1.0f)
     {

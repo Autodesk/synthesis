@@ -42,17 +42,11 @@ namespace Assets.Scripts.BUExtensions
         const float fwdFactor = 0.5f;// Original: 0.5f;
 
         RobotWheelInfo[] wheelInfo = new RobotWheelInfo[0];
-        //float[] wheelSpeeds = new float[0];
 
         Vector3[] forwardWS = new Vector3[0];
         Vector3[] axle = new Vector3[0];
         float[] forwardImpulse = new float[0];
         float[] sideImpulse = new float[0];
-
-        /// <summary>
-        /// Controls how much sideways friction the wheels have when sliding.
-        /// </summary>
-        //public float SlidingFriction { get; set; }
 
         /// <summary>
         /// Controls the maximum wheel angular velocity.
@@ -148,7 +142,6 @@ namespace Assets.Scripts.BUExtensions
             RootRigidBody = chassis;
             vehicleRaycaster = raycaster;
 
-            //SlidingFriction = 1.0f;
             MaxWheelAngularVelocity = 40f;
             OverrideMass = 1.0f / chassis.InvMass;
         }
@@ -173,8 +166,6 @@ namespace Assets.Scripts.BUExtensions
             Array.Resize<RobotWheelInfo>(ref wheelInfo, wheelInfo.Length + 1);
             RobotWheelInfo wheel = new RobotWheelInfo(ci);
             wheelInfo[wheelInfo.Length - 1] = wheel;
-
-            //Array.Resize<float>(ref wheelSpeeds, wheelInfo.Length);
 
             UpdateWheelTransformsWS(wheel, false);
             UpdateWheelTransform(NumWheels - 1, false);
@@ -491,7 +482,7 @@ namespace Assets.Scripts.BUExtensions
                     {
                         float defaultRollingFrictionImpulse = 0.0f;
                         float maxImpulse = (wheel.Brake != 0) ? wheel.Brake : defaultRollingFrictionImpulse;
-                        rollingFriction = CalcRollingFriction(chassisBody, groundObject, wheel.RaycastInfo.ContactPointWS, forwardWS[i], maxImpulse);
+                        rollingFriction = CalcRollingFriction(RootRigidBody, groundObject, wheel.RaycastInfo.ContactPointWS, forwardWS[i], maxImpulse);
                     }
                 }
 
@@ -586,8 +577,6 @@ namespace Assets.Scripts.BUExtensions
 
         public void UpdateSuspension(float step)
         {
-            //float chassisMass = 1.0f / chassisBody.InvMass;
-
             for (int w_it = 0; w_it < NumWheels; w_it++)
             {
                 WheelInfo wheel_info = wheelInfo[w_it];
