@@ -38,18 +38,19 @@
             // statusStrip1
             // 
             this.statusStrip1.BackColor = System.Drawing.Color.Transparent;
+            this.statusStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Progress});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 6);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 0);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(460, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(460, 28);
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // Progress
             // 
             this.Progress.Name = "Progress";
-            this.Progress.Size = new System.Drawing.Size(136, 17);
+            this.Progress.Size = new System.Drawing.Size(133, 17);
             this.Progress.Text = "Click \'Next\' to continue.";
             // 
             // NextButton
@@ -76,6 +77,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Transparent;
             this.Controls.Add(this.BackButton);
             this.Controls.Add(this.NextButton);

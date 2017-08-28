@@ -38,7 +38,7 @@
             this.WizardNavigator.BackColor = System.Drawing.Color.Transparent;
             this.WizardNavigator.Location = new System.Drawing.Point(0, 656);
             this.WizardNavigator.Name = "wizardNavigator";
-            this.WizardNavigator.Size = new System.Drawing.Size(460, 28);
+            //this.WizardNavigator.Size = new System.Drawing.Size(460, 28);
             this.WizardNavigator.TabIndex = 0;
             // 
             // WizardPageControl
