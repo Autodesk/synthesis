@@ -1,5 +1,6 @@
 /// <summary>
 /// Joystick button. Enumeration for joystick buttons.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public enum JoystickButton
 {

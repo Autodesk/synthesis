@@ -1,5 +1,6 @@
 /// <summary>
 /// Key modifier. Enumeration for key modifiers.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public enum KeyModifier
 {

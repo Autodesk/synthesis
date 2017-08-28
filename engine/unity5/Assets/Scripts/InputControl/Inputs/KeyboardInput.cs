@@ -738,6 +738,7 @@ namespace Internal
 
 /// <summary>
 /// <see cref="KeyboardInput"/> handles keyboard input device.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public class KeyboardInput : CustomInput
 {
