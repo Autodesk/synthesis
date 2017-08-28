@@ -16,6 +16,13 @@ namespace BxDRobotExporter.Wizard
 
     public class WizardUtilities
     {
+        private struct GUIDDoublePair { public Guid guid; public double d; }
+
+        /// <summary>
+        /// Gets an array of all the names at and below a node.
+        /// </summary>
+        /// <param name="baseNode"></param>
+        /// <returns></returns>
         public static string[] GetExportedComponentNames(RigidNode_Base baseNode)
         {
             List<string> names = new List<string>();
@@ -26,6 +33,11 @@ namespace BxDRobotExporter.Wizard
             return names.ToArray();
         }
 
+        /// <summary>
+        /// Gets an array of all the exported <see cref="ComponentOccurrence"/>s at and below a node.
+        /// </summary>
+        /// <param name="baseNode"></param>
+        /// <returns></returns>
         public static ComponentOccurrence[] GetExportedComponents(RigidNode_Base baseNode)
         {
             List<ComponentOccurrence> names = new List<ComponentOccurrence>();
@@ -39,23 +51,38 @@ namespace BxDRobotExporter.Wizard
             return names.ToArray();
         }
 
-        public static double GetVolume(ComponentOccurrences occurrences)
+        /// <summary>
+        /// NOT FUNCTIONAL: Gets the volume of a list of <see cref="ComponentOccurrence"/>s
+        /// </summary>
+        /// <param name="occurrences"></param>
+        /// <returns></returns>
+        public static double GetVolume(ComponentOccurrence[] occurrences)
         {
             double volume = 0.0d;
 
             Inventor.Application app = StandardAddInServer.Instance.MainApplication;
             
-            foreach(ComponentOccurrence component in occurrences.AllLeafOccurrences)
-            { 
-                foreach(SurfaceBody body in component.SurfaceBodies)
+            foreach(ComponentOccurrence component in occurrences)
+            {
+                foreach (ComponentOccurrence occurrence in component.SubOccurrences)
                 {
-                    volume += body.Volume[0.001];
+                    foreach (SurfaceBody body in occurrence.SurfaceBodies)
+                    {
+                        volume += body.Volume[0.001];
+                    } 
                 }
             }
 
             return volume;
         }
 
+        /// <summary>
+        /// Detects all the wheel nodes in a robot. Needs improvement
+        /// </summary>
+        /// <param name="baseNode"></param>
+        /// <param name="driveTrain"></param>
+        /// <param name="wheelCount"></param>
+        /// <returns></returns>
         public static List<RigidNode_Base> DetectWheels(RigidNode_Base baseNode, WizardData.WizardDriveTrain driveTrain, int wheelCount)
         {
             List<RigidNode_Base> jointParentFilter = new List<RigidNode_Base>();
@@ -158,26 +185,36 @@ namespace BxDRobotExporter.Wizard
             {
                 nodes += node.ModelFileName + ", ";
             }
-            MessageBox.Show(nodes);
+            #region DEBUG
+#if DEBUG
+            MessageBox.Show(nodes); 
+#endif 
+            #endregion
 
             return wheels;
         }
 
+        /// <summary>
+        /// Sorts all the wheels into left and right.
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="IsHDrive"></param>
+        /// <returns></returns>
         public static RigidNode_Base[][] SortWheels(List<RigidNode_Base> nodes, bool IsHDrive = false)
         {
             if (!IsHDrive)
             {
-                Dictionary<double, RigidNode_Base> nodeDict = new Dictionary<double, RigidNode_Base>();
+                Dictionary<GUIDDoublePair, RigidNode_Base> nodeDict = new Dictionary<GUIDDoublePair, RigidNode_Base>();
                 foreach (var node in nodes)
                 {
-                    nodeDict.Add(node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x, node);
+                    nodeDict.Add(new GUIDDoublePair { guid = Guid.NewGuid(), d = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x }, node);
                 }
-                var newKeyOrder = nodeDict.Keys.OrderBy(key => key);
+                List<GUIDDoublePair> newKeyOrder = nodeDict.Keys.OrderBy(x => x.d).ToList();
                 RigidNode_Base[] left = new RigidNode_Base[nodes.Count / 2];
                 RigidNode_Base[] right = new RigidNode_Base[nodes.Count / 2];
                 string leftNodes = "Left Nodes: ", rightNodes = "Right Nodes: ";
                 int i = 0;
-                foreach (double key in newKeyOrder)
+                foreach (GUIDDoublePair key in newKeyOrder)
                 {
                     if(i < nodes.Count / 2)
                     {
@@ -191,7 +228,11 @@ namespace BxDRobotExporter.Wizard
                     }
                     i++;
                 }
-                MessageBox.Show(leftNodes.Substring(0, leftNodes.Length - 2) + "\n" + rightNodes.Substring(0, rightNodes.Length - 2));
+                #region DEBUG
+#if DEBUG
+                MessageBox.Show(leftNodes.Substring(0, leftNodes.Length - 2) + "\n" + rightNodes.Substring(0, rightNodes.Length - 2)); 
+#endif 
+                #endregion
 
                 return new RigidNode_Base[][] { left, right };
             }

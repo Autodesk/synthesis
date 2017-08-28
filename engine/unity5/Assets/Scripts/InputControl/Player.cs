@@ -56,6 +56,7 @@ public class Player
     //=================================================================================================
     ///The SetKey() and SetAxis() Functions called here are specific to our Controls.cs initialization.
     ///Additional functions (aside from Synthesis) can be found in <see cref="InputControl"/>
+    ///Adapted from: https://github.com/Gris87/InputControl
     //=================================================================================================
 
     #region setKey() and setAxis() Functions
@@ -178,6 +179,7 @@ public class Player
     #endregion
 
     #region argToInput Helper Functions for setKey() and setAxis()
+    //Source: https://github.com/Gris87/InputControl
     /// <summary>
     /// Convert argument to <see cref="CustomInput"/>.
     /// </summary>

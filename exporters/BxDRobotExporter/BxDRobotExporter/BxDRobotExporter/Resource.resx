@@ -211,4 +211,16 @@
   <data name="SaveRobotAs32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Images\SaveRobotAs32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="RobotClick16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RobotClick16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RobotClick32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RobotClick32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RobotMagicWand16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RobotMagicWand16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RobotMagicWand32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RobotMagicWand32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

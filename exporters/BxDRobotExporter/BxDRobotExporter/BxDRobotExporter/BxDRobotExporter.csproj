@@ -90,12 +90,17 @@
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'FodyRelease|AnyCPU'">
-    <OutputPath>E:\Program Files\Autodesk\Inventor 2018\Bin\BxDRobotExporter\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Benchmark|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Benchmark\</OutputPath>
+    <DefineConstants>TRACE;LITEMODE, BENCHMARK</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
     <Optimize>true</Optimize>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <RegisterForComInterop>true</RegisterForComInterop>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="autodesk.inventor.interop, Version=21.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
@@ -130,8 +135,14 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs">
+    <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ChooseExportModeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChooseExportModeForm.Designer.cs">
+      <DependentUpon>ChooseExportModeForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\DebugHighlightForm.cs">
       <SubType>Form</SubType>
@@ -152,69 +163,66 @@
     </Compile>
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="Wizard\BasicRobotInfoPage.cs">
+    <Compile Include="Wizard\Pages\BasicRobotInfoPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\BasicRobotInfoPage.Designer.cs">
+    <Compile Include="Wizard\Pages\BasicRobotInfoPage.Designer.cs">
       <DependentUpon>BasicRobotInfoPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\CustomControls\WizardUpDown.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Wizard\Panels\DefinePartPanel.cs">
+    <Compile Include="Wizard\Components\DefinePartPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\Panels\DefinePartPanel.Designer.cs">
+    <Compile Include="Wizard\Components\DefinePartPanel.Designer.cs">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\DefineMovingPartsPage.cs">
+    <Compile Include="Wizard\Pages\DefineMovingPartsPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\DefineMovingPartsPage.Designer.cs">
+    <Compile Include="Wizard\Pages\DefineMovingPartsPage.Designer.cs">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\OneClickExportForm.cs">
+    <Compile Include="Wizard\OneClickExport\OneClickExportForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Wizard\OneClickExportForm.Designer.cs">
+    <Compile Include="Wizard\OneClickExport\OneClickExportForm.Designer.cs">
       <DependentUpon>OneClickExportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\Panels\DataRow.cs">
+    <Compile Include="Wizard\Components\DataRow.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\Panels\DataRow.Designer.cs">
+    <Compile Include="Wizard\Components\DataRow.Designer.cs">
       <DependentUpon>DataRow.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\Data\WizardData.cs" />
-    <Compile Include="Wizard\DefineWheelsPage.cs">
+    <Compile Include="Wizard\Pages\DefineWheelsPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\DefineWheelsPage.Designer.cs">
+    <Compile Include="Wizard\Pages\DefineWheelsPage.Designer.cs">
       <DependentUpon>DefineWheelsPage.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\IWizardPage.cs" />
-    <Compile Include="Wizard\ReviewAndFinishPage.cs">
+    <Compile Include="Wizard\Pages\ReviewAndFinishPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\ReviewAndFinishPage.Designer.cs">
+    <Compile Include="Wizard\Pages\ReviewAndFinishPage.Designer.cs">
       <DependentUpon>ReviewAndFinishPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\StartPage.cs">
+    <Compile Include="Wizard\Pages\StartPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\StartPage.Designer.cs">
+    <Compile Include="Wizard\Pages\StartPage.Designer.cs">
       <DependentUpon>StartPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\Panels\WheelSetupPanel.cs">
+    <Compile Include="Wizard\Components\WheelSetupPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\Panels\WheelSetupPanel.Designer.cs">
+    <Compile Include="Wizard\Components\WheelSetupPanel.Designer.cs">
       <DependentUpon>WheelSetupPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\Panels\WheelSlot.cs">
+    <Compile Include="Wizard\Components\WheelSlot.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\Panels\WheelSlot.Designer.cs">
+    <Compile Include="Wizard\Components\WheelSlot.Designer.cs">
       <DependentUpon>WheelSlot.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\WizardForm.cs">
@@ -223,16 +231,16 @@
     <Compile Include="Wizard\WizardForm.Designer.cs">
       <DependentUpon>WizardForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\Panels\WizardNavigator.cs">
+    <Compile Include="Wizard\Components\WizardNavigator.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\Panels\WizardNavigator.Designer.cs">
+    <Compile Include="Wizard\Components\WizardNavigator.Designer.cs">
       <DependentUpon>WizardNavigator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\WizardPageControl.cs">
+    <Compile Include="Wizard\Components\WizardPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Wizard\WizardPageControl.Designer.cs">
+    <Compile Include="Wizard\Components\WizardPageControl.Designer.cs">
       <DependentUpon>WizardPageControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\WizardUtilities.cs" />
@@ -252,48 +260,54 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\ChooseExportModeForm.resx">
+      <DependentUpon>ChooseExportModeForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DebugHighlightForm.resx">
       <DependentUpon>DebugHighlightForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\BasicRobotInfoPage.resx">
+    <EmbeddedResource Include="Wizard\Components\WheelSlot.resx">
+      <DependentUpon>WheelSlot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Pages\BasicRobotInfoPage.resx">
       <DependentUpon>BasicRobotInfoPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Panels\DefinePartPanel.resx">
+    <EmbeddedResource Include="Wizard\Components\DefinePartPanel.resx">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\DefineMovingPartsPage.resx">
+    <EmbeddedResource Include="Wizard\Pages\DefineMovingPartsPage.resx">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\OneClickExportForm.resx">
+    <EmbeddedResource Include="Wizard\OneClickExport\OneClickExportForm.resx">
       <DependentUpon>OneClickExportForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Panels\DataRow.resx">
+    <EmbeddedResource Include="Wizard\Components\DataRow.resx">
       <DependentUpon>DataRow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\DefineWheelsPage.resx">
+    <EmbeddedResource Include="Wizard\Pages\DefineWheelsPage.resx">
       <DependentUpon>DefineWheelsPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\ReviewAndFinishPage.resx">
+    <EmbeddedResource Include="Wizard\Pages\ReviewAndFinishPage.resx">
       <DependentUpon>ReviewAndFinishPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\StartPage.resx">
+    <EmbeddedResource Include="Wizard\Pages\StartPage.resx">
       <DependentUpon>StartPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Panels\WheelSetupPanel.resx">
+    <EmbeddedResource Include="Wizard\Components\WheelSetupPanel.resx">
       <DependentUpon>WheelSetupPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\WizardForm.resx">
       <DependentUpon>WizardForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Panels\WizardNavigator.resx">
+    <EmbeddedResource Include="Wizard\Components\WizardNavigator.resx">
       <DependentUpon>WizardNavigator.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\WizardPageControl.resx">
+    <EmbeddedResource Include="Wizard\Components\WizardPageControl.resx">
       <DependentUpon>WizardPageControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
@@ -324,6 +338,10 @@
     <None Include="Images\SaveRobot32.bmp" />
     <None Include="Images\SaveRobotAs16.bmp" />
     <None Include="Images\SaveRobotAs32.bmp" />
+    <None Include="Images\RobotClick16.bmp" />
+    <None Include="Images\RobotClick32.bmp" />
+    <None Include="Images\RobotMagicWand16.bmp" />
+    <None Include="Images\RobotMagicWand32.bmp" />
     <Content Include="Images\SelectJointInsideJoint16.bmp" />
     <Content Include="Images\SelectJointInsideJoint32.bmp" />
     <Content Include="Images\StartRobotExporter16.bmp" />

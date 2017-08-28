@@ -11,9 +11,16 @@ using BxDRobotExporter.Wizard;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// Gets basic information about the robot, such as drive train and mass.
+    /// </summary>
     public partial class BasicRobotInfoPage : UserControl, IWizardPage
     {
+        /// <summary>
+        /// Mass value used in <see cref="TotalMassLabel"/> and potentially passed to <see cref="WizardData"/>
+        /// </summary>
         private float totalMass = 0.0f;
+
         public BasicRobotInfoPage()
         {
             InitializeComponent();
@@ -29,15 +36,25 @@ namespace BxDRobotExporter.Wizard
 
             this.VisibleChanged += delegate (object sender, EventArgs e)
             {
-                ValidateInput();
+                if(Visible) ValidateInput();
             };
         }
 
+        /// <summary>
+        /// Validates input
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AnalyticsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             ValidateInput();
         }
 
+        /// <summary>
+        /// Changes the mask for <see cref="TeamNumberTextBox"/> and validates input.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FRCRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             TeamNumberTextBox.Enabled = true;
@@ -46,6 +63,11 @@ namespace BxDRobotExporter.Wizard
             ValidateInput();
         }
 
+        /// <summary>
+        /// Changes the mask for <see cref="TeamNumberTextBox"/> and validates input.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FTCRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             TeamNumberTextBox.Enabled = true;
@@ -54,6 +76,11 @@ namespace BxDRobotExporter.Wizard
             ValidateInput();
         }
 
+        /// <summary>
+        /// Changes the rows in <see cref="MassPanel"/> and validates input.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MassModeDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch (MassModeDropdown.SelectedIndex)
@@ -111,6 +138,11 @@ namespace BxDRobotExporter.Wizard
             ValidateInput();
         }
 
+        /// <summary>
+        /// Adds a panel to <see cref="MassPanel"/>
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="node"></param>
         private void AddPanelRow(string name, RigidNode_Base node)
         {
             MassDataRow row = new MassDataRow(name, node);
@@ -125,18 +157,29 @@ namespace BxDRobotExporter.Wizard
             MassPanel.Controls.Add(row);
         }
 
+        /// <summary>
+        /// Clears all rows from <see cref="MassPanel"/>
+        /// </summary>
         private void ClearPanel()
         {
             while (MassPanel.Controls.Count > 0)
                 MassPanel.Controls[0].Dispose();
         }
 
+        /// <summary>
+        /// Updates the <see cref="totalMass"/> field and the text of <see cref="TotalMassLabel"/>
+        /// </summary>
         private void UpdateMassCount()
         {
             TotalMassLabel.Text = string.Format("Total Mass: {0} {1}", totalMass, (MetricCheckBox.Checked) ? "kg" : "lbs");
             ValidateInput();
         }
 
+        /// <summary>
+        /// Toggles the superior system of measurement. (toggles between metric and imperial.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if(MassModeDropdown.SelectedIndex == 2)
@@ -157,6 +200,9 @@ namespace BxDRobotExporter.Wizard
                 UpdateMassCount();
         }
 
+        /// <summary>
+        /// Makes sure all of the necessary fields are filled out and enables/disables the <see cref="WizardNavigator.NextButton"/>
+        /// </summary>
         private void ValidateInput()
         {
             if (!string.IsNullOrEmpty(RobotNameTextBox.Text) && DriveTrainDropdown.SelectedIndex != 0 && totalMass != 0.0f)
@@ -164,12 +210,12 @@ namespace BxDRobotExporter.Wizard
             else
                 OnDeactivateNext();
         }
-
-        private void RobotNameTextBox_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
         
+        /// <summary>
+        /// Sets the limits of <see cref="WheelCountUpDown"/> and validates input.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DriveTrainDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch(DriveTrainDropdown.SelectedIndex)
@@ -211,23 +257,29 @@ namespace BxDRobotExporter.Wizard
         }
         
         #region IWizardPage Implementation
+        /// <summary>
+        /// Pretty much just sets <see cref="_initialized"/>
+        /// </summary>
         public void Initialize() { _initialized = true; }
 
+        /// <summary>
+        /// Called when the next button is clicked. Passes the gathered information about wheel count, mass, and drive train to <see cref="WizardData.Instance"/>
+        /// </summary>
         public void OnNext()
         {
-            WizardData.Instance.RobotName = RobotNameTextBox.Text;
-            WizardData.Instance.Analytics_TeamNumber = TeamNumberTextBox.Text;
-            WizardData.Instance.Analytics_TeamLeague = (FTCRadioButton.Checked) ? "FTC" : "FRC";
-            WizardData.Instance.DriveTrain = (WizardData.WizardDriveTrain)DriveTrainDropdown.SelectedIndex;
-            WizardData.Instance.WheelCount = (int)WheelCountUpDown.Value;
-            WizardData.Instance.MassMode = (WizardData.WizardMassMode)MassModeDropdown.SelectedIndex;
-            WizardData.Instance.Mass = totalMass;
+            WizardData.Instance.robotName = RobotNameTextBox.Text;
+            WizardData.Instance.analytics_TeamNumber = TeamNumberTextBox.Text;
+            WizardData.Instance.analytics_TeamLeague = (FTCRadioButton.Checked) ? "FTC" : "FRC";
+            WizardData.Instance.driveTrain = (WizardData.WizardDriveTrain)DriveTrainDropdown.SelectedIndex;
+            WizardData.Instance.wheelCount = (int)WheelCountUpDown.Value;
+            WizardData.Instance.massMode = (WizardData.WizardMassMode)MassModeDropdown.SelectedIndex;
+            WizardData.Instance.mass = totalMass;
             if (MassModeDropdown.SelectedIndex == 1)
             {
-                WizardData.Instance.Masses = new float[Utilities.GUI.SkeletonBase.ListAllNodes().Count];
-                for (int i = 0; i < WizardData.Instance.Masses.Length; i++)
+                WizardData.Instance.masses = new float[Utilities.GUI.SkeletonBase.ListAllNodes().Count];
+                for (int i = 0; i < WizardData.Instance.masses.Length; i++)
                 {
-                    WizardData.Instance.Masses[i] = (MetricCheckBox.Checked) ? ((MassDataRow)MassPanel.Controls[i]).Value : ((MassDataRow)MassPanel.Controls[i]).Value / 2.20462f;
+                    WizardData.Instance.masses[i] = (MetricCheckBox.Checked) ? ((MassDataRow)MassPanel.Controls[i]).Value : ((MassDataRow)MassPanel.Controls[i]).Value / 2.20462f;
                 }
             }
         }
@@ -244,6 +296,9 @@ namespace BxDRobotExporter.Wizard
             this.DeactivateNext?.Invoke();
         }
 
+        /// <summary>
+        /// Invalidates the <see cref="DefineMovingPartsPage"/>
+        /// </summary>
         public event InvalidatePageEventHandler InvalidatePage;
         public void OnInvalidatePage()
         {

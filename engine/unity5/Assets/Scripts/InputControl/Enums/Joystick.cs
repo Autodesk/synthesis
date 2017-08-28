@@ -1,5 +1,6 @@
 /// <summary>
 /// Target joystick. This enumeration contains entry for all joysticks and list of joysticks.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public enum Joystick
 {

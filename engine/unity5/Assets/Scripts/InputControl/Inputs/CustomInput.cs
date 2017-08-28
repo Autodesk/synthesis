@@ -4,6 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// <see cref="CustomInput"/> is an interface for handling some input device(keyboard, mouse, joystick).
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public abstract class CustomInput
 {

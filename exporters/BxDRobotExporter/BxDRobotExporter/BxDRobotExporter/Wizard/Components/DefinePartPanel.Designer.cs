@@ -48,9 +48,6 @@
             this.PortTwoLabel = new System.Windows.Forms.Label();
             this.PortOneLabel = new System.Windows.Forms.Label();
             this.PortOneUpDown = new System.Windows.Forms.NumericUpDown();
-            this.JointModeLabel = new System.Windows.Forms.Label();
-            this.UnpoweredRadioButton = new System.Windows.Forms.RadioButton();
-            this.PoweredRadioButton = new System.Windows.Forms.RadioButton();
             this.DriverComboBox = new System.Windows.Forms.ComboBox();
             this.SelectDriverLabel = new System.Windows.Forms.Label();
             this.MergeNodeButton = new System.Windows.Forms.Button();
@@ -71,9 +68,6 @@
             this.NodeGroupBox.Controls.Add(this.JointLimitGroupBox);
             this.NodeGroupBox.Controls.Add(this.MetaTabControl);
             this.NodeGroupBox.Controls.Add(this.PortsGroupBox);
-            this.NodeGroupBox.Controls.Add(this.JointModeLabel);
-            this.NodeGroupBox.Controls.Add(this.UnpoweredRadioButton);
-            this.NodeGroupBox.Controls.Add(this.PoweredRadioButton);
             this.NodeGroupBox.Controls.Add(this.DriverComboBox);
             this.NodeGroupBox.Controls.Add(this.SelectDriverLabel);
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
@@ -233,7 +227,7 @@
             this.PortsGroupBox.Controls.Add(this.PortOneUpDown);
             this.PortsGroupBox.Location = new System.Drawing.Point(10, 44);
             this.PortsGroupBox.Name = "PortsGroupBox";
-            this.PortsGroupBox.Size = new System.Drawing.Size(334, 51);
+            this.PortsGroupBox.Size = new System.Drawing.Size(424, 51);
             this.PortsGroupBox.TabIndex = 6;
             this.PortsGroupBox.TabStop = false;
             this.PortsGroupBox.Text = "Ports";
@@ -311,39 +305,6 @@
             0,
             0});
             // 
-            // JointModeLabel
-            // 
-            this.JointModeLabel.AutoSize = true;
-            this.JointModeLabel.Location = new System.Drawing.Point(354, 20);
-            this.JointModeLabel.Name = "JointModeLabel";
-            this.JointModeLabel.Size = new System.Drawing.Size(62, 13);
-            this.JointModeLabel.TabIndex = 5;
-            this.JointModeLabel.Text = "Joint Mode:";
-            // 
-            // UnpoweredRadioButton
-            // 
-            this.UnpoweredRadioButton.AutoSize = true;
-            this.UnpoweredRadioButton.Location = new System.Drawing.Point(357, 64);
-            this.UnpoweredRadioButton.Name = "UnpoweredRadioButton";
-            this.UnpoweredRadioButton.Size = new System.Drawing.Size(80, 17);
-            this.UnpoweredRadioButton.TabIndex = 4;
-            this.UnpoweredRadioButton.Text = "Unpowered";
-            this.UnpoweredRadioButton.UseVisualStyleBackColor = true;
-            this.UnpoweredRadioButton.CheckedChanged += new System.EventHandler(this.UnpoweredRadioButton_CheckedChanged);
-            // 
-            // PoweredRadioButton
-            // 
-            this.PoweredRadioButton.AutoSize = true;
-            this.PoweredRadioButton.Checked = true;
-            this.PoweredRadioButton.Location = new System.Drawing.Point(357, 41);
-            this.PoweredRadioButton.Name = "PoweredRadioButton";
-            this.PoweredRadioButton.Size = new System.Drawing.Size(67, 17);
-            this.PoweredRadioButton.TabIndex = 3;
-            this.PoweredRadioButton.TabStop = true;
-            this.PoweredRadioButton.Text = "Powered";
-            this.PoweredRadioButton.UseVisualStyleBackColor = true;
-            this.PoweredRadioButton.CheckedChanged += new System.EventHandler(this.PoweredRadioButton_CheckedChanged);
-            // 
             // DriverComboBox
             // 
             this.DriverComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -357,7 +318,7 @@
             "Dual Motor"});
             this.DriverComboBox.Location = new System.Drawing.Point(84, 17);
             this.DriverComboBox.Name = "DriverComboBox";
-            this.DriverComboBox.Size = new System.Drawing.Size(260, 21);
+            this.DriverComboBox.Size = new System.Drawing.Size(350, 21);
             this.DriverComboBox.TabIndex = 2;
             this.DriverComboBox.SelectedIndexChanged += new System.EventHandler(this.DriverComboBox_SelectedIndexChanged);
             // 
@@ -420,9 +381,6 @@
 
         private System.Windows.Forms.GroupBox NodeGroupBox;
         private System.Windows.Forms.Label SelectDriverLabel;
-        private System.Windows.Forms.Label JointModeLabel;
-        private System.Windows.Forms.RadioButton UnpoweredRadioButton;
-        private System.Windows.Forms.RadioButton PoweredRadioButton;
         private System.Windows.Forms.ComboBox DriverComboBox;
         private System.Windows.Forms.GroupBox PortsGroupBox;
         private System.Windows.Forms.CheckBox AutoAssignCheckBox;

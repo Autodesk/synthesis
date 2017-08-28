@@ -5,6 +5,9 @@ using BulletSharp;
 using BulletUnity;
 using Assets.Scripts.FSM;
 
+/// <summary>
+/// This class handles a list of sensors and other sensor-related actions like adding/removing sensor, and selecting existing sensor/attachment node
+/// </summary>
 class SensorManager : MonoBehaviour
 {
     public GameObject Ultrasonic;
@@ -125,7 +128,7 @@ class SensorManager : MonoBehaviour
     }
 
     /// <summary>
-    /// When user click left mouse, use raycast to select a node for attachment
+    /// When user click left mouse, use raycast to select a node for attachment, and highlight accordingly
     /// </summary>
     public void SetNode()
     {
@@ -187,7 +190,7 @@ class SensorManager : MonoBehaviour
     }
 
     /// <summary>
-    /// When user click left mouse, use raycast to select a sensor for configuration
+    /// When user click left mouse, use raycast to select a sensor for configuration, and highlight accordingly
     /// </summary>
     public void SetSensor()
     {

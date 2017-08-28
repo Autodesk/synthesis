@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using BulletSharp;
 using BulletUnity;
+using Assets.Scripts.Utils;
 
 public class AuxFunctions
 {
@@ -88,32 +89,70 @@ public class AuxFunctions
     /// </summary>
     /// <param name="original"></param>
     /// <returns></returns>
-    public static Mesh GenerateCollisionMesh(Mesh original, Vector3 offset = default(Vector3))
+    public static Mesh GenerateCollisionMesh(Mesh original, Vector3 offset = default(Vector3), float margin = 0f)
     {
-        ConvexHullShape tempShape = new ConvexHullShape(Array.ConvertAll(original.vertices, x => x.ToBullet()), original.vertices.Length);
-        tempShape.Margin = 0f;
+        if (margin > 0f)
+        {
+            ConvexHullShape tempShape = new ConvexHullShape(Array.ConvertAll(original.vertices, x => x.ToBullet()), original.vertices.Length);
+            tempShape.Margin = 0f;
 
-        ShapeHull shapeHull = new ShapeHull(tempShape);
-        bool b = shapeHull.BuildHull(0f);
+            ShapeHull shapeHull = new ShapeHull(tempShape);
+            bool b = shapeHull.BuildHull(0f);
 
-        Mesh collisionMesh = new Mesh();
+            AlignedVector3Array initialVertices = new AlignedVector3Array();
+            for (int i = 0; i < shapeHull.NumVertices; i++)
+                initialVertices.Add(shapeHull.Vertices[i]);
 
-        Vector3[] vertices = new Vector3[shapeHull.NumVertices];
-        for (int i = 0; i < vertices.Length; i++)
-            vertices[i] = shapeHull.Vertices[i].ToUnity() - offset;
+            List<BulletSharp.Math.Vector4> planeEquations = GeometryUtilEx.GetPlaneEquationsFromVertices(initialVertices);
 
-        int[] triangles = new int[shapeHull.NumIndices];
-        for (int i = 0; i < triangles.Length; i++)
-            triangles[i] = (int)shapeHull.Indices[i];
+            List<BulletSharp.Math.Vector4> shiftedPlaneEquations = new List<BulletSharp.Math.Vector4>();
+            
+            for (int i = 0; i < planeEquations.Count; i++)
+            {
+                BulletSharp.Math.Vector4 plane = planeEquations[i];
+                plane.W += margin;
+                shiftedPlaneEquations.Add(plane);
+            }
 
-        collisionMesh.vertices = vertices;
-        collisionMesh.triangles = triangles;
-        collisionMesh.RecalculateNormals();
-        collisionMesh.RecalculateBounds();
+            List<BulletSharp.Math.Vector3> shiftedVertices = GeometryUtilEx.GetVerticesFromPlaneEquations(shiftedPlaneEquations);
 
-        // TODO: Find a way to implement embedded margins. See https://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=2358
+            Vector3[] finalVertices = new Vector3[shiftedVertices.Count];
 
-        return collisionMesh;
+            Mesh collisionMesh = new Mesh();
+
+            for (int i = 0; i < finalVertices.Length; i++)
+                finalVertices[i] = shiftedVertices[i].ToUnity() - offset;
+
+            collisionMesh.vertices = finalVertices;
+            collisionMesh.RecalculateBounds();
+
+            return collisionMesh;
+        }
+        else
+        {
+            ConvexHullShape tempShape = new ConvexHullShape(Array.ConvertAll(original.vertices, x => x.ToBullet()), original.vertices.Length);
+            tempShape.Margin = 0f;
+
+            ShapeHull shapeHull = new ShapeHull(tempShape);
+            bool b = shapeHull.BuildHull(0f);
+
+            Mesh collisionMesh = new Mesh();
+
+            Vector3[] vertices = new Vector3[shapeHull.NumVertices];
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i] = shapeHull.Vertices[i].ToUnity() - offset;
+
+            int[] triangles = new int[shapeHull.NumIndices];
+            for (int i = 0; i < triangles.Length; i++)
+                triangles[i] = (int)shapeHull.Indices[i];
+
+            collisionMesh.vertices = vertices;
+            collisionMesh.triangles = triangles;
+            collisionMesh.RecalculateNormals();
+            collisionMesh.RecalculateBounds();
+
+            return collisionMesh;
+        }
     }
 
     public static void OrientRobot(List<GameObject> wheelcolliders, Transform parent)

@@ -56,6 +56,9 @@ namespace EditorsLibrary
             {
                 secondaryBox.Visible = true;
             }
+
+            FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
+
         }
 
         private void saveButton_Click(object sender, EventArgs e)
