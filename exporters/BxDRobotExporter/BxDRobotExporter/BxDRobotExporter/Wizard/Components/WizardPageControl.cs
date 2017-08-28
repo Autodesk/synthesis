@@ -101,7 +101,6 @@ namespace BxDRobotExporter.Wizard
         {
             if (!(page is IWizardPage))
                 throw new ArgumentException("ERROR: Given page does not extend IWizardPage", "page");
-            page.Size = new Size(460, 653);
             page.Location = new Point(0, 0);
             page.Top = 0;
             page.Left = 0;
@@ -124,7 +123,6 @@ namespace BxDRobotExporter.Wizard
             {
                 if (!(page is IWizardPage))
                     throw new ArgumentException("ERROR: Given page does not extend IWizardPage", "page");
-                page.Size = new Size(460, 653);
                 page.Location = new Point(0, 0);
                 page.Top = 0;
                 page.Left = 0;
