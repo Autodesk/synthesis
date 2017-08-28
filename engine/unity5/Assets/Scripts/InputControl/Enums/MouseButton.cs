@@ -1,5 +1,6 @@
 /// <summary>
 /// Mouse button. Enumeration for mouse buttons.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public enum MouseButton
 {

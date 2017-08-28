@@ -14,19 +14,19 @@ public class MaMGetters : MonoBehaviour {
         {
             case 0: //Default Drive Base
                 RobotTypeManager.IsMecanum = false;
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\Default");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\DriveBases\\Default");
             case 1: //Mech Drive Base
                 RobotTypeManager.IsMecanum = true;
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheMac");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\DriveBases\\SyntheMac");
             case 2: //Swerve Drive
                 RobotTypeManager.IsMecanum = false;
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheSwerve");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\DriveBases\\SyntheSwerve");
             case 3: //Narrow Drive
                 RobotTypeManager.IsMecanum = false;
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\Non");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\DriveBases\\Non");
         }
 
-        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\DriveBase2557");
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\DriveBases\\DriveBase2557");
     }
 
     /// <summary>
@@ -42,15 +42,15 @@ public class MaMGetters : MonoBehaviour {
                 break;
             case 1: //SyntheClaw
                 RobotTypeManager.HasManipulator = true;
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Manipulators\\Claw");
             case 2: //SyntheShot
                 RobotTypeManager.HasManipulator = true;
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheShot");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Manipulators\\SyntheShot");
             case 3: //Lift
                 RobotTypeManager.HasManipulator = true;
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheLift");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Manipulators\\SyntheLift");
         }
-        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Manipulators\\Claw");
     }
 
     ///<summary>
@@ -61,17 +61,17 @@ public class MaMGetters : MonoBehaviour {
         switch (wheelID)
         {
             case 0: //traction wheel
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Traction");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Wheels\\Traction");
             case 1: //colson wheel
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Wheels\\Colson");
             case 2: //omni wheel
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Omni");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Wheels\\Omni");
             case 3: //pnemuatic wheel
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Pneumatic");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Wheels\\Pneumatic");
 
         }
 
-        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson");
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\MixAndMatch\\Wheels\\Colson");
     }
 
     ///<summary> 

@@ -60,6 +60,7 @@ public class KeyButton : MonoBehaviour
 
     /// <summary>
     /// Updates the primary and secondary control buttons' text label.
+    /// Source: https://github.com/Gris87/InputControl
     /// </summary>
     public void UpdateText()
     {
@@ -81,6 +82,7 @@ public class KeyButton : MonoBehaviour
 
     /// <summary>
     /// Updates the text when the user clicks the control buttons. 
+    /// Source: https://github.com/Gris87/InputControl
     /// </summary>
     public void OnClick()
     {
@@ -101,6 +103,7 @@ public class KeyButton : MonoBehaviour
 
     /// <summary>
     /// Sets the primary or secondary input to the selected input from the user.
+    /// Source: https://github.com/Gris87/InputControl
     /// </summary>
     /// <param name="input">Input from any device or axis (e.g. Joysticks, Mouse, Keyboard)</param>
     private void SetInput(CustomInput input)
