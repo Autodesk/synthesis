@@ -423,7 +423,6 @@ public class DynamicCamera : MonoBehaviour
         float magnification = 5.0f;
         float cameraAngle = 45f;
         float panValue = 0f;
-        bool locked;
 
         public OrbitState(MonoBehaviour mono)
         {
@@ -435,6 +434,7 @@ public class DynamicCamera : MonoBehaviour
             // Calculates the initial robot position
             rotateVector = RotateXZ(new Vector3(-1f, 1f, 0f), Vector3.zero, 0f, magnification);
             lagVector = rotateVector;
+            lockedVector = rotateVector;
         }
 
         public override void Update()
@@ -475,19 +475,12 @@ public class DynamicCamera : MonoBehaviour
                 if (adjusting)
                 {
                     // Unlocks the camera position for adjustment
-                    locked = false;
                     rotateVector = RotateXZ(rotateVector, targetVector, panValue, magnification);
                     rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+                    lockedVector = robot.transform.GetChild(0).InverseTransformPoint(rotateVector);
                 }
                 else
                 {
-                    if (!locked)
-                    {
-                        // Calculates the current position of the camera in local coordinates of the robot's node 0
-                        locked = true;
-                        lockedVector = robot.transform.GetChild(0).InverseTransformPoint(rotateVector);
-                    }
-
                     rotateVector = robot.transform.GetChild(0).TransformPoint(lockedVector);
                 }
 
