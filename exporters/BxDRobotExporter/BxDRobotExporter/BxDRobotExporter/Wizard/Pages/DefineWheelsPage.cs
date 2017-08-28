@@ -41,28 +41,7 @@ namespace BxDRobotExporter.Wizard
 
             NodeCheckedListBox.CheckOnClick = false;
 
-            if (WizardData.Instance.driveTrain != WizardData.WizardDriveTrain.SWERVE)
-            {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
-                {
-                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
-                    {
-                        NodeCheckedListBox.Items.Add(node.ModelFileName);
-                        checkedListItems.Add(node.ModelFileName, node);
-                    }
-                }
-            }
-            else
-            {
-                foreach(RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
-                {
-                    if(node.GetParent().GetParent() != null)
-                    {
-                        NodeCheckedListBox.Items.Add(node.ModelFileName);
-                        checkedListItems.Add(node.ModelFileName, node);
-                    }
-                }
-            }
+
             NodeCheckedListBox.SelectedIndexChanged += delegate (object sender, EventArgs e)
             {
                 StandardAddInServer.Instance.WizardSelect(checkedListItems[NodeCheckedListBox.Items[NodeCheckedListBox.SelectedIndex].ToString()]);
@@ -270,6 +249,29 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Initialize()
         {
+            if (WizardData.Instance.driveTrain != WizardData.WizardDriveTrain.SWERVE)
+            {
+                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                {
+                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+                    {
+                        NodeCheckedListBox.Items.Add(node.ModelFileName);
+                        checkedListItems.Add(node.ModelFileName, node);
+                    }
+                }
+            }
+            else
+            {
+                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                {
+                    if (node.GetParent().GetParent() != null)
+                    {
+                        NodeCheckedListBox.Items.Add(node.ModelFileName);
+                        checkedListItems.Add(node.ModelFileName, node);
+                    }
+                }
+            }
+
             slots = new List<WheelSlotPanel>();
             for (int i = 0; i < WizardData.Instance.wheelCount; i++)
             {

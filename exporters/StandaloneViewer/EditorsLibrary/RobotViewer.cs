@@ -450,14 +450,14 @@ namespace StandaloneViewer
 
         public void FixLimits()
         {
-            foreach(OGL_RigidNode node in baseNode.ListAllNodes())
-            {
-                if(node.GetSkeletalJoint() is RotationalJoint_Base joint && joint.hasAngularLimit)
-                {
-                    joint.angularLimitHigh += 1.57f;
-                    joint.angularLimitLow += 1.57f;
-                }
-            }
+            //foreach(OGL_RigidNode node in baseNode.ListAllNodes())
+            //{
+            //    if(node.GetSkeletalJoint() is RotationalJoint_Base joint && joint.hasAngularLimit)
+            //    {
+            //        joint.angularLimitHigh += 1.57f;
+            //        joint.angularLimitLow += 1.57f;
+            //    }
+            //}
         }
         #region INPUT
         /// <summary>

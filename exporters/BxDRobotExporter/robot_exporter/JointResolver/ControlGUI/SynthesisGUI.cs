@@ -348,7 +348,7 @@ public partial class SynthesisGUI : Form
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
             for (int i = 0; i < Meshes.Count; i++)
             {
-                Meshes[i].WriteToFile(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
+                Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
             }
 
             for (int i = 0; i < Meshes.Count; i++)
@@ -373,33 +373,36 @@ public partial class SynthesisGUI : Form
     /// <param name="robotName"></param>
     public bool RobotSaveAs(NameRobotForm.NameMode mode = NameRobotForm.NameMode.SaveAs)
     {
-        NameRobotForm.NameRobot(out string robotName, mode);
-        try
+        if (NameRobotForm.NameRobot(out string robotName, mode) == DialogResult.OK)
         {
-            if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + robotName))
-                Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + robotName);
-
-            BXDJSkeleton.WriteSkeleton(PluginSettings.GeneralSaveLocation + "\\" + robotName + "\\skeleton.bxdj", SkeletonBase);
-
-            for (int i = 0; i < Meshes.Count; i++)
+            try
             {
-                Meshes[i].WriteToFile(PluginSettings.GeneralSaveLocation + "\\" + robotName + "\\node_" + i + ".bxda");
+                if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + robotName))
+                    Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + robotName);
+
+                BXDJSkeleton.WriteSkeleton(PluginSettings.GeneralSaveLocation + "\\" + robotName + "\\skeleton.bxdj", SkeletonBase);
+
+                for (int i = 0; i < Meshes.Count; i++)
+                {
+                    Meshes[i].WriteToFile(PluginSettings.GeneralSaveLocation + "\\" + robotName + "\\node_" + i + ".bxda");
+                }
+
+                MessageBox.Show("Saved");
+
+                RMeta.UseSettingsDir = true;
+                RMeta.ActiveDir = null;
+                RMeta.ActiveRobotName = robotName;
+
+                return true;
             }
-
-            MessageBox.Show("Saved");
-
-            RMeta.UseSettingsDir = true;
-            RMeta.ActiveDir = null;
-            RMeta.ActiveRobotName = robotName;
-
-            return true;
+            catch (Exception e)
+            {
+                //TODO: Create a form that displays a simple error message with an option to expand it and view the exception info
+                MessageBox.Show("Error saving robot: " + e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
         }
-        catch (Exception e)
-        {
-            //TODO: Create a form that displays a simple error message with an option to expand it and view the exception info
-            MessageBox.Show("Error saving robot: " + e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
+        return false;
     }
 
     /// <summary>
@@ -513,7 +516,7 @@ public partial class SynthesisGUI : Form
     {
         if(RMeta.ActiveDir != null)
         {
-            Process.Start(Utilities.VIEWER_PATH, "-path \"" + RMeta.ActiveDir + "\\" + RMeta.ActiveRobotName + "\"");
+            Process.Start(Utilities.VIEWER_PATH, "-path \"" + RMeta.ActiveDir + "\"");
         }
         else
         {
