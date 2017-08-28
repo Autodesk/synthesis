@@ -165,12 +165,12 @@ namespace BxDRobotExporter
             GenericExportButton.OnHelp += _OnHelp;
 
             //Begin Advanced Export
-            AdvancedExportButton = ControlDefs.AddButtonDefinition("Begin Export (Advanced)", "BxD:RobotExporter:BeginAdvancedExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports your robot in advanced mode. Recommended if you intend to emulate code.", ExportRobotIconSmall, ExportRobotIconLarge);
+            AdvancedExportButton = ControlDefs.AddButtonDefinition("Begin Advanced Export", "BxD:RobotExporter:BeginAdvancedExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports your robot in advanced mode. Recommended if you intend to emulate code.", ExportRobotIconSmall, ExportRobotIconLarge);
             AdvancedExportButton.OnExecute += BeginAdvancedExport_OnExecute;
             AdvancedExportButton.OnHelp += _OnHelp;
 
             //Begin Wizard Export
-            WizardExportButton = ControlDefs.AddButtonDefinition("Begin Export with Wizard", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports the robot with the aid of a wizard to guide you through the process.", WizardExportIconSmall, WizardExportIconLarge);
+            WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Export", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports the robot with the aid of a wizard to guide you through the process.", WizardExportIconSmall, WizardExportIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
 

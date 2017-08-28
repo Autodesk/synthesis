@@ -4,7 +4,7 @@
   <ClientId>{e50be244-9f7b-4b94-8f87-8224faba8ca1}</ClientId>
   <DisplayName>BxDFieldExporter</DisplayName>
   <Description>BxDFieldExporter</Description>
-  <Assembly>BxDFieldExporter.dll</Assembly>
+  <Assembly>C:\Program Files (x86)\Autodesk\Synthesis\BxDFieldExporter.dll</Assembly>
   <LoadOnStartUp>1</LoadOnStartUp>
   <UserUnloadable>1</UserUnloadable>
   <Hidden>0</Hidden>
