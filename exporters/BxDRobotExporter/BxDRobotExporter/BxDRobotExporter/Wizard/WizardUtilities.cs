@@ -16,6 +16,8 @@ namespace BxDRobotExporter.Wizard
 
     public class WizardUtilities
     {
+        private struct GUIDDoublePair { public Guid guid; public double d; }
+
         /// <summary>
         /// Gets an array of all the names at and below a node.
         /// </summary>
@@ -202,17 +204,17 @@ namespace BxDRobotExporter.Wizard
         {
             if (!IsHDrive)
             {
-                Dictionary<double, RigidNode_Base> nodeDict = new Dictionary<double, RigidNode_Base>();
+                Dictionary<GUIDDoublePair, RigidNode_Base> nodeDict = new Dictionary<GUIDDoublePair, RigidNode_Base>();
                 foreach (var node in nodes)
                 {
-                    nodeDict.Add(node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x, node);
+                    nodeDict.Add(new GUIDDoublePair { guid = Guid.NewGuid(), d = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x }, node);
                 }
-                var newKeyOrder = nodeDict.Keys.OrderBy(key => key);
+                List<GUIDDoublePair> newKeyOrder = nodeDict.Keys.OrderBy(x => x.d).ToList();
                 RigidNode_Base[] left = new RigidNode_Base[nodes.Count / 2];
                 RigidNode_Base[] right = new RigidNode_Base[nodes.Count / 2];
                 string leftNodes = "Left Nodes: ", rightNodes = "Right Nodes: ";
                 int i = 0;
-                foreach (double key in newKeyOrder)
+                foreach (GUIDDoublePair key in newKeyOrder)
                 {
                     if(i < nodes.Count / 2)
                     {
