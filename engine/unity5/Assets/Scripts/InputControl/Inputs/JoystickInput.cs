@@ -5,6 +5,7 @@ using System;
 
 /// <summary>
 /// <see cref="JoystickInput"/> handles joystick input device.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public class JoystickInput : CustomInput
 {

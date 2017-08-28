@@ -1,5 +1,6 @@
 /// <summary>
 /// Joystick axis. Enumeration for joystick axes.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public enum JoystickAxis
 {
