@@ -446,9 +446,9 @@ public class DynamicCamera : MonoBehaviour
 
                 bool adjusting = false;
 
-                if (MovingEnabled)
+                if (MovingEnabled && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
                 {
-                    if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+                    if (Input.GetMouseButton(0))
                     {
                         // Pan around the robot
                         adjusting = true;
@@ -559,7 +559,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            if (MovingEnabled && !main.ActiveRobot.IsResetting)
+            if (MovingEnabled && !main.ActiveRobot.IsResetting && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
             {
                 //Rotate camera when holding left mouse
                 if (InputControl.GetMouseButton(0))
