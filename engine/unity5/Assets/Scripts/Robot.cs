@@ -68,6 +68,8 @@ public class Robot : MonoBehaviour
     float wheelLateralFriction;
     float wheelMass;
 
+    Vector3 offset;
+
     private DynamicCamera cam;
 
     //Robot statistics output
@@ -387,6 +389,24 @@ public class Robot : MonoBehaviour
             ////Attached to main frame and face the back
             robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0.5f, 0), new Vector3(0, 180, 0));
             robotCameraManager.AddCamera(this, transform.GetChild(0).transform);
+        }
+
+        if (RobotIsMixAndMatch)
+        {
+            offset = Vector3.zero;
+            try
+            {
+                using (TextReader reader = File.OpenText(directory + "\\position.txt"))
+                {
+                    offset.x = float.Parse(reader.ReadLine());
+                    offset.y = float.Parse(reader.ReadLine());
+                    offset.z = float.Parse(reader.ReadLine());
+                }
+            } catch
+            {
+                offset = Vector3.zero;
+            }
+           
         }
 
         return true;
@@ -749,7 +769,10 @@ public class Robot : MonoBehaviour
         GameObject robot = robotGameObject;
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING: LIKE ACTUALLY
-        Vector3 manipulatorTransform = robotStartPosition;
+      
+
+
+        Vector3 manipulatorTransform = robotStartPosition + offset;
         Debug.Log("Node Com Offset" + node.ComOffset);
         ManipulatorObject.transform.position = manipulatorTransform;
 
