@@ -20,17 +20,17 @@ run: build/java_class_files
 	@cp "$(SYNTHESIS_JARS)/libstdc++-6.dll" ./build/classes
 	@cp "$(SYNTHESIS_JARS)/libgcc_s_seh-1.dll" ./build/classes
 	@cp "$(SYNTHESIS_JARS)/libwinpthread-1.dll" ./build/classes
-	@cd build/classes; export PATH=".:$(PATH)"; export ROBOT_CLASS="$(ENTRY_POINT)"; $(JAVA_HOME)/bin/java.exe -Djava.library.path="$(shell cygpath -w '$(SYNTHESIS_JARS)')" -cp "$(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/ntcore.jar');." edu.wpi.first.wpilibj.RobotBase
+	@cd build/classes; export PATH=".:$(PATH)"; export ROBOT_CLASS="$(ENTRY_POINT)"; $(JAVA_HOME)/bin/java.exe -Djava.library.path="$(shell cygpath -w '$(SYNTHESIS_JARS)')" -cp "$(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/ntcore.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/wpiutil.jar')." edu.wpi.first.wpilibj.RobotBase
 
 build/FRC_UserProgram.jar: build/java_class_files
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
 	@mkdir -p build
-	@echo "Class-Path: $(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '${SYNTHESIS_JARS}/ntcore.jar');$@" > build/Manifest.txt
+	@echo "Class-Path: $(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '${SYNTHESIS_JARS}/ntcore.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/wpiutil.jar');$@" > build/Manifest.txt
 	@cd build/classes; $(JAR) cfem ../../$@ $(ENTRY_POINT) ../Manifest.txt .
 
 build/java_class_files: $(JAVA_FILES)
 	@echo -e "\e[1m\e[32mJAVA \e[39m*.java\e[0m"
 	@mkdir -p build/classes
-	@$(JAVAC) -cp "$(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/ntcore.jar')" -d build/classes $^
+	@$(JAVAC) -cp "$(shell cygpath -w '$(SYNTHESIS_JARS)/wpilib.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/ntcore.jar');$(shell cygpath -w '$(SYNTHESIS_JARS)/wpiutil.jar')" -d build/classes $^
 	@touch $@
 
