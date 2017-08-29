@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
 
 namespace Assets.Scripts.FEA
 {
@@ -84,6 +85,13 @@ namespace Assets.Scripts.FEA
 
             ReplayExporter.Write(replayNameText.text, fieldPath, trackers, contacts);
             StateMachine.Instance.PopState();
+
+            if (SimUI.changeAnalytics)
+            {
+                Analytics.CustomEvent("Saved Replay", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
         }
 
         /// <summary>

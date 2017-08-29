@@ -24,3 +24,5 @@ installer/cygscripts/http*
 *.VC.db
 
 Replays/
+*.dll
+*.pdb

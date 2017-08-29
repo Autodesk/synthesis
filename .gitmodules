@@ -1,0 +1,9 @@
+[submodule "emulation/hel/ntcore"]
+	path = emulation/hel/ntcore
+	url = https://github.com/wpilibsuite/ntcore
+[submodule "emulation/hel/wpiutil"]
+	path = emulation/hel/wpiutil
+	url = https://github.com/wpilibsuite/wpiutil
+[submodule "emulation/hel/allwpilib"]
+	path = emulation/hel/allwpilib
+url = https://github.com/wpilibsuite/allwpilib

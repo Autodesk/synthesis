@@ -13,6 +13,7 @@ using System.Linq;
 using Assets.Scripts.BUExtensions;
 using Assets.Scripts;
 using UnityEngine.UI;
+using Assets.Scripts.Utils;
 
 /// <summary>
 /// This is the main class of the simulator; it handles all the initialization of robot and field objects within the simulator.
@@ -45,7 +46,7 @@ public class MainState : SimState
 
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
-   
+
 
     private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
@@ -98,7 +99,7 @@ public class MainState : SimState
         //starts a new instance of unity packet which receives packets from the driver station
         unityPacket = new UnityPacket();
         unityPacket.Start();
-        
+
         //loads all the controls
         Controls.Load();
 
@@ -110,7 +111,7 @@ public class MainState : SimState
         if (string.IsNullOrEmpty(selectedReplay))
         {
             Tracking = true;
-            
+
             if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
             {
                 AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
@@ -127,7 +128,8 @@ public class MainState : SimState
             if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
             {
                 Debug.Log(LoadManipulator(RobotTypeManager.ManipulatorPath) ? "Load manipulator success" : "Load manipulator failed");
-            } else
+            }
+            else
             {
 
             }
@@ -171,7 +173,7 @@ public class MainState : SimState
         {
             if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath, false); //made parameter 0 because not sure what this is for
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
-            
+
         }
 
         // Toggles between the different camera states if the camera toggle button is pressed
@@ -254,7 +256,8 @@ public class MainState : SimState
             if (isMixAndMatch)
             {
                 robotPath = RobotTypeManager.RobotPath;
-            } else
+            }
+            else
             {
                 robotPath = directory;
             }
@@ -262,7 +265,7 @@ public class MainState : SimState
             GameObject robotObject = new GameObject("Robot");
             Robot robot = robotObject.AddComponent<Robot>();
 
-            robot.RobotIsMixAndMatch = isMixAndMatch; 
+            robot.RobotIsMixAndMatch = isMixAndMatch;
             robot.RobotHasManipulator = false; //Defaults to false
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
@@ -276,7 +279,7 @@ public class MainState : SimState
 
             robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
-           
+
             return true;
         }
         return false;
@@ -506,6 +509,7 @@ public class MainState : SimState
 
             GameObject robotObject = new GameObject("Robot");
             Robot robot = robotObject.AddComponent<Robot>();
+            robot.RobotIsMixAndMatch = true;
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory, this)) return false;
@@ -522,7 +526,6 @@ public class MainState : SimState
             SpawnedRobots.Add(robot);
 
             robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
-            ActiveRobot.RobotHasManipulator = true;
             return true;
         }
         return false;
@@ -570,7 +573,7 @@ public class MainState : SimState
     public void BeginRobotReset()
     {
         ActiveRobot.BeginReset();
-        
+
     }
 
     /// <summary>

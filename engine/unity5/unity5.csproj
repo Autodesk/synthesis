@@ -202,7 +202,6 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyRope.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
-    <Compile Include="Assets\Scripts\AppModel.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BBallSocketConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiCallbacks.cs" />
@@ -305,6 +304,8 @@
     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
+    <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
+    <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
