@@ -40,7 +40,7 @@
 #undef max
 #undef min
 
-#include "FRC_NetworkCommunication/UsageReporting.h"
+#include "UsageReporting.h"
 #include "HAL/Types.h"
 
 namespace HALUsageReporting = nUsageReporting;

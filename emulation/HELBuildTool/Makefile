@@ -12,7 +12,7 @@ endif
 
 CCFLAGS := -m64 \
 	-L$(SYNTHESIS_LIBS)/ntcore -L$(SYNTHESIS_LIBS)/cpp -L$(SYNTHESIS_LIBS)/hal \
-	-lwpilib -lntcore-static -lHAL -lWs2_32 \
+	-lwpilib -lntcore-static -lHAL -lWs2_32 -lshell32 -lole32 -luuid \
 	-I$(SYNTHESIS_INCLUDES)/allwpilib/wpilibc/athena/include -I$(SYNTHESIS_INCLUDES)/allwpilib/wpilibc/shared/include \
 	-I$(SYNTHESIS_INCLUDES)/wpilibc/athena/include -I$(SYNTHESIS_INCLUDES)/wpilibc/shared/include \
 	-I$(SYNTHESIS_INCLUDES)/include \
