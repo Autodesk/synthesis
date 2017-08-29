@@ -1,0 +1,107 @@
+diff --git a/wpilibc/src/main/native/include/WPILib.h b/wpilibc/src/main/native/include/WPILib.h
+old mode 100644
+new mode 100755
+index dca88b54..c7c5e11e
+--- a/wpilibc/src/main/native/include/WPILib.h
++++ b/wpilibc/src/main/native/include/WPILib.h
+@@ -22,7 +22,7 @@
+ #include "Buttons/InternalButton.h"
+ #include "Buttons/JoystickButton.h"
+ #include "Buttons/NetworkButton.h"
+-#include "CameraServer.h"
++//#include "CameraServer.h"
+ #include "Commands/Command.h"
+ #include "Commands/CommandGroup.h"
+ #include "Commands/PIDCommand.h"
+@@ -88,4 +88,4 @@
+ #include "interfaces/Accelerometer.h"
+ #include "interfaces/Gyro.h"
+ #include "interfaces/Potentiometer.h"
+-#include "vision/VisionRunner.h"
++//#include "vision/VisionRunner.h"
+diff --git a/wpilibj/src/main/java/edu/wpi/first/wpilibj/DriverStation.java b/wpilibj/src/main/java/edu/wpi/first/wpilibj/DriverStation.java
+old mode 100644
+new mode 100755
+diff --git a/wpilibj/src/main/java/edu/wpi/first/wpilibj/RobotBase.java b/wpilibj/src/main/java/edu/wpi/first/wpilibj/RobotBase.java
+old mode 100644
+new mode 100755
+index c01256ad..3615c3fd
+--- a/wpilibj/src/main/java/edu/wpi/first/wpilibj/RobotBase.java
++++ b/wpilibj/src/main/java/edu/wpi/first/wpilibj/RobotBase.java
+@@ -179,17 +179,6 @@ public abstract class RobotBase {
+     Timer.SetImplementation(new HardwareTimer());
+     HLUsageReporting.SetImplementation(new HardwareHLUsageReporting());
+     RobotState.SetImplementation(DriverStation.getInstance());
+-
+-    // Load opencv
+-    /* TODO (after opencv is added again)
+-    try {
+-      System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+-    } catch (UnsatisfiedLinkError ex) {
+-      System.out.println("OpenCV Native Libraries could not be loaded.");
+-      System.out.println("Please try redeploying, or reimage your roboRIO and try again.");
+-      ex.printStackTrace();
+-    }
+-    */
+   }
+ 
+   /**
+@@ -203,19 +192,9 @@ public abstract class RobotBase {
+ 
+     String robotName = "";
+     Enumeration<URL> resources = null;
+-    try {
+-      resources = RobotBase.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+-    } catch (IOException ex) {
+-      ex.printStackTrace();
+-    }
+-    while (resources != null && resources.hasMoreElements()) {
+-      try {
+-        Manifest manifest = new Manifest(resources.nextElement().openStream());
+-        robotName = manifest.getMainAttributes().getValue("Robot-Class");
+-      } catch (IOException ex) {
+-        ex.printStackTrace();
+-      }
+-    }
++    //use the environment variable because we don't place this in a jar
++    //anymore.
++    robotName = System.getenv("ROBOT_CLASS");
+ 
+     System.out.println("********** Robot program starting **********");
+ 
+@@ -227,6 +206,7 @@ public abstract class RobotBase {
+           + throwable.toString() + " at " + Arrays.toString(throwable.getStackTrace()), false);
+       System.err.println("WARNING: Robots don't quit!");
+       System.err.println("ERROR: Could not instantiate robot " + robotName + "!");
++      System.err.println(throwable.toString());
+       System.exit(1);
+       return;
+     }
+diff --git a/wpilibj/src/main/native/cpp/HAL.cpp b/wpilibj/src/main/native/cpp/HAL.cpp
+old mode 100644
+new mode 100755
+index 6dcceb89..b637a4fe
+--- a/wpilibj/src/main/native/cpp/HAL.cpp
++++ b/wpilibj/src/main/native/cpp/HAL.cpp
+@@ -186,7 +186,9 @@ Java_edu_wpi_first_wpilibj_hal_HAL_getJoystickPOVs(JNIEnv* env, jclass,
+     ThrowIllegalArgumentException(env, "Native array size larger then passed in java array size");
+   }
+ 
+-  env->SetShortArrayRegion(povsArray, 0, povs.count, povs.povs);
++  if(povs.count != 0) {
++    env->SetShortArrayRegion(povsArray, 0, povs.count, povs.povs);
++  }
+ 
+   return povs.count;
+ }
+diff --git a/wpilibj/src/main/native/cpp/HALUtil.h b/wpilibj/src/main/native/cpp/HALUtil.h
+old mode 100644
+new mode 100755
+index baad654b..ade93bf6
+--- a/wpilibj/src/main/native/cpp/HALUtil.h
++++ b/wpilibj/src/main/native/cpp/HALUtil.h
+@@ -55,3 +55,4 @@ jobject CreatePWMConfigDataResult(JNIEnv *env, int32_t maxPwm,
+ }  // namespace frc
+ 
+ #endif  // HALUTIL_H
++
