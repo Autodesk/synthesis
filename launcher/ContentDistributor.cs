@@ -129,8 +129,8 @@ namespace SynthesisLauncher
             {
                 if(System.Windows.Forms.MessageBox.Show(string.Format("{0}{1}{2} {3} available for you to download. Would you like to download {4} now?",
             (robotCount != 0) ? string.Format("{0} {1}", robotCount, (robotCount == 1) ? "robot" : "robots") : "",
-            (fieldCount != 0 && robotCount != 0) ? "and " : "",
-            (fieldCount != 0) ? string.Format("{0} {1}", robotCount, (robotCount == 1) ? "field" : "fields") : "",
+            (fieldCount != 0 && robotCount != 0) ? " and " : "",
+            (fieldCount != 0) ? string.Format("{0} {1}", fieldCount, (fieldCount == 1) ? "field" : "fields") : "",
             (fieldCount + robotCount > 1) ? "are" : "is", 
             (fieldCount + robotCount > 1) ? "them" : "it"), "New Fields/Robots",
             System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
