@@ -202,16 +202,7 @@ namespace BxDFieldExporter
                 {
                     nativeDoc = InventorApplication.ActiveDocument;
                     envMan = ((AssemblyDocument)InventorApplication.ActiveDocument).EnvironmentManager;
-                    inExportView = true;
-                    addNewComponent.Enabled = true;
-                    editComponent.Enabled = true;
-                    removeComponent.Enabled = true;
-                    addAssembly.Enabled = true;
-                    beginExporter.Enabled = true; //show the correct buttons
-                    exportField.Enabled = true;
-                    addPart.Enabled = true;
-                    removeAssembly.Enabled = true;
-                    removePart.Enabled = true;
+                    SetAllButtons(true); //Activates all the buttons in the field exporting environment
                     AssemblyDocument asmDoc = (AssemblyDocument)InventorApplication.ActiveDocument;// get the active assembly document
                     BrowserNodeDefinition oDef; // create browsernodedef to use to add browser node to the pane
                     oDoc = InventorApplication.ActiveDocument;// get the active document in inventor
@@ -226,7 +217,7 @@ namespace BxDFieldExporter
                     try
                     {// if no browser pane previously created then create a new one
                         ClientNodeResources oRscs = oPanes.ClientNodeResources;
-                        oRsc = oRscs.Add(m_ClientId, 1, null);// creat new client node resources
+                        oRsc = oRscs.Add(m_ClientId, 1, null);// create new client node resources
                         oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Field Components", 3, null);// create the top node for the browser pane
                         oPane = oPanes.AddTreeBrowserPane("Field Exporter", m_ClientId, oDef);// add a new tree browser
                         oPane.Activate();// make the pane be shown to the user
@@ -258,7 +249,7 @@ namespace BxDFieldExporter
                 }
                 else
                 {
-                    MessageBox.Show("Please close out of the robot exporter in the other assembly");
+                    MessageBox.Show("Please close out of the field exporter in the other assembly");
                 }
             }
             catch (Exception)
@@ -293,7 +284,7 @@ namespace BxDFieldExporter
         {
             try
             {
-
+                //Converts the Bitmaps from the resource folder into IPictureDisps that are usable by Inventor
                 #region Make Icons
                 stdole.IPictureDisp startExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.StartExporter16));
                 stdole.IPictureDisp startExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.StartExporter32));
@@ -449,7 +440,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             {
             }
         }
-
+        //Called whenever a node is deleted manually so that it's cleared from internal lists as well
         private void ContextDelete_OnExecute(NameValueMap Context)
         {
             if (oPane.TopNode.Selected)
@@ -474,7 +465,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             SetAllButtons(true);
         }
-
+        //Passes the component property information to the exporation process
         private void UpdateLegacy(NameValueMap Context = null)
         {
             LegacyInterchange.PropSets = LegacyUtilities.GetLegacyProps(FieldComponents);
@@ -584,7 +575,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             {
             }
         }
-
+        //Checks whether or not the passed key was pressed
         public static bool CheckKeyPressed(Keys key)
         {
             return ((GetKeyState((short)key) & 0x80) == 0x80);
@@ -731,6 +722,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     }
                 }
             }
+            //Uses the name to determine if there has been a component selected or not
             if (names == "")
             {
                 MessageBox.Show("ERROR: No components were selected", "Remove Component");
@@ -740,6 +732,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete Component: " + "\n" + names, "Remove Component", MessageBoxButtons.OKCancel);
             if (dialogResult == DialogResult.OK)
             {
+                //Iterates through the list of browser nodes and deletes the one that matches the name of the selected node
                 ArrayList FieldComponentsCopy = (ArrayList)FieldComponents.Clone();
                 foreach (BrowserNode node in selectedNodes)
                 {
@@ -810,7 +803,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                     foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                                     {
                                         if (t.same(node.BrowserNodeDefinition))// if the fieldDataComponent is from that browsernode then run
-                                        { 
+                                        {
                                             LegacyInterchange.AddComponents(node.BrowserNodeDefinition.Label, selectedAssembly);
                                             t.CompOccs.Add(selectedAssembly);// add the assembly occurence to the arraylist
                                             partSet.AddItem(selectedAssembly); //add the assembly occurence to a set that is highlighted in purple
@@ -845,27 +838,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
 
             partSet.Clear(); //Clears the highlighted set
 
-            /*//TODO: If the user clicks "cancel", remove all parts previously added to the list
-            //if (cancel == true)
-            //{
-            //    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
-            //    {
-            //        if (node.Selected)// find the selected node
-            //        {
-            //            foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-            //            {
-            //                if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-            //                {
-            //                    for (int i = 0; i < componentsAdded; i++) //for each previously added component
-            //                    {
-            //                        t.CompOccs.RemoveAt(t.CompOccs.Count - 1); //remove previously added components
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}*/
-
             SetAllButtons(true);
         }
 
@@ -883,7 +855,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             form.Show();
 
             SetAllButtons(false);
-            
+
             int componentsAdded = 0; //Tracks how many components are added
             SetCancel(false);
             SetDone(false);
@@ -898,6 +870,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     selectedPart = (ComponentOccurrence)InventorApplication.CommandManager.Pick// have the user select a part
                               (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
                     await task.Task;
+
                     SetAllButtons(true);
                     if (!GetCancel())
                     {
@@ -944,27 +917,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 }
             }
             partSet.Clear(); //Clears the highlighted set
-
-            ////TODO: If the user clicks "cancel", remove all parts previously added to the list
-            //if (cancel == true)
-            //{
-            //    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
-            //    {
-            //        if (node.Selected)// find the selected node
-            //        {
-            //            foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-            //            {
-            //                if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-            //                {
-            //                    for (int i = 0; i < componentsAdded; i++) //for each previously added component
-            //                    {
-            //                        t.CompOccs.RemoveAt(t.CompOccs.Count - 1); //removes the component
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+            
             SetAllButtons(true);
         }
 
@@ -1153,21 +1106,13 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 SetAllButtons(true);
                 return;
             }
-            DialogResult result = MessageBox.Show("To export correctly, all parts and assemblies should be assigned to components.\nDo you wish to continue?",
-                "Warning", MessageBoxButtons.OKCancel);
-            if(result == DialogResult.Cancel)
-            {
-                SetAllButtons(true);
-                return;
-            }
-            else
-            {
+
+
                 UpdateLegacy();
                 Program.ASSEMBLY_DOCUMENT = (AssemblyDocument)InventorApplication.ActiveDocument;
                 Program.INVENTOR_APPLICATION = InventorApplication;
                 LegacyUtilities.exporter.ShowDialog();
-                SetAllButtons(true);
-            }
+            SetAllButtons(true);
         }
 
         //Generic function for removing both parts and assemblies
