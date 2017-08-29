@@ -11,12 +11,7 @@ using System.Windows.Forms;
 namespace BxDRobotExporter.Wizard
 {
     public partial class WizardForm : Form
-    {
-        public List<RigidNode_Base> NodeTree
-        {
-            get => Utilities.GUI.SkeletonBase.ListAllNodes();
-        }
-        
+    {        
         WizardData data = new WizardData();
 
         public WizardForm()
@@ -27,26 +22,31 @@ namespace BxDRobotExporter.Wizard
             
             this.Resize += WizardForm_Resize;
 
+            //Start page
             StartPage startPage = new StartPage();
             startPage.ActivateNext += ActivateNext;
             startPage.DeactivateNext += DeactivateNext;
             WizardPages.Add(startPage, WizardNavigator.WizardNavigatorState.StartEnabled);
 
+            //Step 1: Basic Robot Information
             BasicRobotInfoPage basicRobotInfoPage = new BasicRobotInfoPage();
             basicRobotInfoPage.ActivateNext += ActivateNext;
             basicRobotInfoPage.DeactivateNext += DeactivateNext;
             WizardPages.Add(basicRobotInfoPage, WizardNavigator.WizardNavigatorState.NextDisabled);
             
+            //Step 2: Define Wheels
             DefineWheelsPage defineWheelsPage = new DefineWheelsPage();
             defineWheelsPage.ActivateNext += ActivateNext;
             defineWheelsPage.DeactivateNext += DeactivateNext;
             WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.Clean);
 
+            //Step 3: Define other moving parts
             DefineMovingPartsPage defineMovingPartsPage = new DefineMovingPartsPage();
             defineMovingPartsPage.ActivateNext += ActivateNext;
             defineMovingPartsPage.DeactivateNext += DeactivateNext;
             WizardPages.Add(defineMovingPartsPage, WizardNavigator.WizardNavigatorState.Clean);
 
+            //Step 4: Review and finish
             ReviewAndFinishPage reviewAndFinishPage = new ReviewAndFinishPage();
             reviewAndFinishPage.ActivateNext += ActivateNext;
             reviewAndFinishPage.DeactivateNext += DeactivateNext;
@@ -56,8 +56,8 @@ namespace BxDRobotExporter.Wizard
             WizardPages.FinishClicked += delegate ()
             {
                 WizardData.Instance.Apply();
-                Close();
                 Utilities.GUI.ReloadPanels();
+                Close();
             };
         }
 

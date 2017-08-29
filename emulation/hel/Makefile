@@ -58,6 +58,7 @@ all: cpp java hal
 
 $(OUT_JAVA): $(LIB_JAVA) | build/java_class_files Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
+	@mkdir -p $(dir $@)
 	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libstdc++-6.dll build/java
 	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libgcc_s_seh-1.dll build/java
 	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libwinpthread-1.dll build/java
@@ -65,26 +66,32 @@ $(OUT_JAVA): $(LIB_JAVA) | build/java_class_files Makefile $(HEADER_FILES)
 
 $(LIB_JAVA): $(OBJ_FILES_JAVA) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
+	@mkdir -p $(dir $@)
 	@$(CC_JAVA) -shared -o $@ $^ -Lbuild/hal -lHAL -lWs2_32
 
 $(OUT_HAL): $(OBJ_FILES_HAL) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
+	@mkdir -p $(dir $@)
 	@$(AR) rcs $@ $^
 
 $(OUT_CPP): $(OBJ_FILES_CPP) $(OUT_HAL) $(OUT_NTCORE) |	Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
+	@mkdir -p $(dir $@)
 	@$(AR) rcs $@ $^
 
 $(OUT_NTCORE): $(OBJ_FILES_NTCORE) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
+	@mkdir -p $(dir $@)
 	@$(AR) rcs $@ $^
 
 $(LIB_NTCORE_JAVA): $(OBJ_FILES_NTCORE_JAVA) | build/ntcore_java_class_files $(OUT_NTCORE) $(OUT_HAL) Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
+	@mkdir -p $(dir $@)
 	@$(CC_JAVA) -shared -o $@ $^ -Lbuild/ntcore -Lbuild/hal -lntcore-static -lHAL -lWs2_32
 
 $(OUT_NTCORE_JAVA): | $(LIB_NTCORE_JAVA) build/ntcore_java_class_files $(OUT_NTCORE) Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
+	@mkdir -p $(dir $@)
 	@$(JAR) cf $@ -C build/ntcore/java/class .
 
 build/cpp/%.o: %.cpp Makefile $(HEADER_FILES)

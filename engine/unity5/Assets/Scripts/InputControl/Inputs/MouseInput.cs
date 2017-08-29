@@ -5,6 +5,7 @@ using System;
 
 /// <summary>
 /// <see cref="MouseInput"/> handles mouse input device.
+/// Source: https://github.com/Gris87/InputControl
 /// </summary>
 public class MouseInput : CustomInput
 {

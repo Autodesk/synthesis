@@ -16,6 +16,7 @@ public partial class DriveChooser : Form
     {
         InitializeComponent();
         base.Layout += DriveChooser_Layout;
+        FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
     }
 
     public bool Saved;

@@ -89,12 +89,6 @@ public class Toolkit : MonoBehaviour
         stopwatchStartButtonText = AuxFunctions.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
         stopwatchPauseButtonText = AuxFunctions.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
 
-        //Dummy Robot Objects
-        dummyWindow = AuxFunctions.FindObject(canvas, "DummyRobotPanel");
-        dummyList = AuxFunctions.FindObject(canvas, "DummyList").GetComponent<DummyScrollable>();
-        dummyIndicator = GameObject.Find("DummyIndicator");
-        dummyIndicator.SetActive(false);
-
         //Stats Objects
         statsWindow = AuxFunctions.FindObject(canvas, "StatsPanel");
         speedEntry = AuxFunctions.FindObject(statsWindow, "SpeedEntry");
@@ -115,7 +109,6 @@ public class Toolkit : MonoBehaviour
             if (ignoreClick) ignoreClick = false;
             else ClickRuler();
         }
-
         UpdateStopwatch();
 
         if (statsOn)
@@ -123,7 +116,10 @@ public class Toolkit : MonoBehaviour
             UpdateStatsWindow();
         }
         //UpdateControlIndicator();
-
+        if (Input.GetKeyDown(KeyCode.P) && stopwatchWindow.activeSelf)
+        {
+            PauseStopwatch();
+        }
     }
 
     /// <summary>
@@ -196,6 +192,12 @@ public class Toolkit : MonoBehaviour
         rulerStartPoint.SetActive(true);
         AuxFunctions.FindObject(canvas, "RulerStartButton").SetActive(false);
         AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(true);
+        if (SimUI.changeAnalytics)
+        {
+            Analytics.CustomEvent("Used Ruler", new Dictionary<string, object> //for analytics tracking
+            {
+            });
+        }
     }
 
     /// <summary>
@@ -310,15 +312,20 @@ public class Toolkit : MonoBehaviour
             stopwatchTime = 0f;
             stopwatchStartButtonText.text = "Stop";
             stopwatchOn = true;
-            stopwatchPauseButtonText.text = "Pause";
-            stopwatchPaused = false;
+            if (SimUI.changeAnalytics)
+            {
+                Analytics.CustomEvent("Used Stopwatch", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
         }
         else
         {
             stopwatchStartButtonText.text = "Start";
             stopwatchOn = false;
         }
-
+        stopwatchPauseButtonText.text = "Pause";
+        stopwatchPaused = false;
     }
 
     public void PauseStopwatch()
@@ -403,45 +410,22 @@ public class Toolkit : MonoBehaviour
     public void EndProcesses(bool toolkitWindowOn = false)
     {
         ToggleRulerWindow(false);
+
+        //Reset the stopwatch stuff
+        if (stopwatchOn)
+        {
+            ResetStopwatch();
+            if (stopwatchPaused)
+            {
+                PauseStopwatch();
+            }
+            ToggleStopwatch();
+        }
+
         toolkitWindow.SetActive(toolkitWindowOn);
         ToggleStatsWindow(false);
         ToggleStopwatchWindow(false);
         sensorManagerGUI.EndProcesses();
     }
-    
-    #region Dummy Robot
 
-    /*public void SpawnDummyRobot()
-    {
-        dummyList.AddDummy();
-    }
-
-    public void ControlDummyRobot()
-    {
-        dummyList.ControlDummy();
-        dummyIndicator.SetActive(true);
-        controllingDummy = true;
-    }
-
-    public void ControlMainRobot()
-    {
-        mainState.activeRobot = mainState.GetRootNode();
-        dummyIndicator.SetActive(false);
-        controllingDummy = false;
-    }
-
-    public void DeleteDummyRobot()
-    {
-        dummyList.DeleteDummy();
-    }
-
-    private void UpdateControlIndicator()
-    {
-        if (controllingDummy)
-        {
-            dummyIndicator.transform.position = ((RigidNode)mainState.activeRobot).MainObject.transform.position + new Vector3(0, 1f) ;
-        }
-    }
-    */
-    #endregion
 }

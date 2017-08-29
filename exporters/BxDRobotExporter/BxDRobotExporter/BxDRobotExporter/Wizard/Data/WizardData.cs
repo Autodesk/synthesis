@@ -6,13 +6,25 @@ using System.Threading.Tasks;
 
 namespace BxDRobotExporter.Wizard
 {
+    /// <summary>
+    /// Class storing all of the data gathered during the Guided Export process. 
+    /// </summary>
     public class WizardData
     {
-        public static WizardData Instance;
+        /// <summary>
+        /// Active instance of <see cref="WizardData"/>. TODO: Put a <see cref="WizardData"/> property in <see cref="IWizardPage"/>
+        /// </summary>
+        public static WizardData Instance { get; private set; }
+
         public WizardData()
         {
             Instance = this;
         }
+
+        /// <summary>
+        /// The next free PWM port to assign a driver to.
+        /// </summary>
+        public int nextFreePort = 3;
 
         #region Nested enums and classes
         public enum WizardDriveTrain
@@ -29,7 +41,6 @@ namespace BxDRobotExporter.Wizard
             COMPLEX_USER,
             MATERIAL_BASED
         } 
-
         public enum WizardWheelType
         {
             NORMAL = 1,
@@ -43,6 +54,9 @@ namespace BxDRobotExporter.Wizard
             HIGH
         }
 
+        /// <summary>
+        /// Struct used for storing data from <see cref="WheelSetupPanel"/>s
+        /// </summary>
         public struct WheelSetupData
         {
             public WizardWheelType WheelType;
@@ -52,12 +66,8 @@ namespace BxDRobotExporter.Wizard
 
             public void ApplyToNode()
             {
-                Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR)
-                {
-                    isCan = false,
-                    portA = PWMPort,
-                    portB = 1
-                };
+                Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR);
+                Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
                 WheelDriverMeta wheelDriver = new WheelDriverMeta();
                 switch (FrictionLevel)
                 {
@@ -141,32 +151,62 @@ namespace BxDRobotExporter.Wizard
 
         }
         #endregion
-        
+
         #region BasicRobotInfoPage
         //General Info
-        public string RobotName;
-        public string Analytics_TeamNumber;
-        public string Analytics_TeamLeague;
+        /// <summary>
+        /// The name of the robot. Does not do anything now.
+        /// </summary>
+        public string robotName;
+        /// <summary>
+        /// Analytics currently not implemented
+        /// </summary>
+        public string analytics_TeamNumber;
+        /// <summary>
+        /// Analytics currently not implemented
+        /// </summary>
+        public string analytics_TeamLeague;
 
         //Drive Information
-        public WizardDriveTrain DriveTrain;
-        public int WheelCount;
+        /// <summary>
+        /// Drive train set in <see cref="BasicRobotInfoPage"/>
+        /// </summary>
+        public WizardDriveTrain driveTrain;
+        /// <summary>
+        /// Number of wheels on the robot. TODO: Use this alongside the wheel detection algorithm to add an "Autodetect Wheels" button on <see cref="DefineWheelsPage"/>
+        /// </summary>
+        public int wheelCount;
 
         //Mass Info
-        public WizardMassMode MassMode;
-        public float Mass;
-        public float[] Masses;
+        /// <summary>
+        /// The mode by which the mass is calculated.
+        /// </summary>
+        public WizardMassMode massMode;
+        /// <summary>
+        /// Only assigned if <see cref="massMode"/> is set to <see cref="WizardMassMode.SIMPLE_USER"/>
+        /// </summary>
+        public float mass;
+        /// <summary>
+        /// Only assigned if <see cref="massMode"/> is set to <see cref="WizardMassMode.COMPLEX_USER"/>
+        /// </summary>
+        public float[] masses;
         #endregion
 
-        #region WheelSetupPage
-        public List<WheelSetupData> Wheels;
+        #region DefineWheelsPage
+        /// <summary>
+        /// A list of all the <see cref="WheelSetupData"/> gotten from <see cref="DefineWheelsPage"/>
+        /// </summary>
+        public List<WheelSetupData> wheels;
+        /// <summary>
+        /// A property that gets the <see cref="RigidNode_Base"/> from each <see cref="WheelSetupData"/> in <see cref="wheels"/>
+        /// </summary>
         public List<RigidNode_Base> WheelNodes
         {
             get
             {
                 List<RigidNode_Base> wheelNodes = new List<RigidNode_Base>();
 
-                foreach (WheelSetupData wheel in Wheels)
+                foreach (WheelSetupData wheel in wheels)
                 {
                     wheelNodes.Add(wheel.Node);
                 }
@@ -176,28 +216,66 @@ namespace BxDRobotExporter.Wizard
         }
         #endregion
 
+        #region DefineMovingPartsPage
+        /// <summary>
+        /// List of all the <see cref="RigidNode_Base"/> objects to be merged into their parent node.
+        /// </summary>
+        public List<RigidNode_Base> MergeQueue = new List<RigidNode_Base>();
+
+        /// <summary>
+        /// Dictionary associating <see cref="RigidNode_Base"/> instances with <see cref="JointDriver"/> instances
+        /// </summary>
+        public Dictionary<RigidNode_Base, JointDriver> JointDrivers = new Dictionary<RigidNode_Base, JointDriver>();
+        #endregion
+
+        /// <summary>
+        /// Applies the gathered data to the nodes and meshes.
+        /// </summary>
         public void Apply()
         {
-            //Do something with drive train
-            switch (MassMode)
+            switch (massMode)
             {
                 default:
                     break;
                 case WizardMassMode.SIMPLE_USER:
-                    //do stuff
+                    //Get node volumes
+                    List<float> nodeMasses = new List<float>();
+                    float totalDefaultMass = 0;
+                    foreach(BXDAMesh mesh in Utilities.GUI.Meshes)
+                    {
+                        nodeMasses.Add(mesh.physics.mass);
+                        totalDefaultMass += mesh.physics.mass;
+                    }
+                    for(int i = 0; i < Utilities.GUI.Meshes.Count; i++)
+                    {
+                        Utilities.GUI.Meshes[i].physics.mass = this.mass * (float)(nodeMasses[i] / totalDefaultMass);
+                    }
                     break;
                 case WizardMassMode.COMPLEX_USER:
-                    for (int i = 0; i < Masses.Length; i++)
+                    for (int j = 0; j < masses.Length; j++)
                     {
-                        Utilities.GUI.Meshes[i].physics.mass = Masses[i];
+                        Utilities.GUI.Meshes[j].physics.mass = masses[j];
                     }
                     break;
             }
 
             //WheelSetupPage
-            foreach(WheelSetupData data in Wheels)
+            foreach(WheelSetupData data in wheels)
             {
                 data.ApplyToNode();
+            }
+
+            //DefineMovingPartsPage
+            foreach (KeyValuePair<RigidNode_Base, JointDriver> driver in JointDrivers)
+            {
+                if (!MergeQueue.Contains(driver.Key) && driver.Value != null)
+                {
+                    driver.Key.GetSkeletalJoint().cDriver = driver.Value;
+                }
+            }
+            foreach(RigidNode_Base node in MergeQueue)
+            {
+                Utilities.GUI.MergeNodeIntoParent(node);
             }
         }
     }

@@ -20,6 +20,7 @@ namespace Assets.Scripts.BUExtensions
         private const float VerticalOffset = 0.1f;
         private const float SimTorque = 2.42f;
         private const float MaxAngularSpeed = 40f;
+        private const float RollingFriction = 0.01f;
 
         public const float MassTorqueScalar = 0.05f;
 
@@ -50,6 +51,21 @@ namespace Assets.Scripts.BUExtensions
             set
             {
                 robot.RaycastRobot.GetWheelInfo(wheelIndex).FrictionSlip = value;
+            }
+        }
+
+        /// <summary>
+        /// Sets or gets the sliding friction of the wheel.
+        /// </summary>
+        public float SlidingFriction
+        {
+            get
+            {
+                return robot.RaycastRobot.GetWheelInfo(wheelIndex).SlidingFriction;
+            }
+            set
+            {
+                robot.RaycastRobot.GetWheelInfo(wheelIndex).SlidingFriction = value;
             }
         }
 
@@ -114,6 +130,9 @@ namespace Assets.Scripts.BUExtensions
                 return;
 
             RobotWheelInfo wheel = robot.RaycastRobot.GetWheelInfo(wheelIndex);
+
+            if (wheel.Brake == 0f)
+                wheel.Brake = (RollingFriction / radius) * robot.RaycastRobot.OverrideMass * MassTorqueScalar;
 
             transform.position = wheel.WorldTransform.Origin.ToUnity();
             transform.localRotation *= Quaternion.AngleAxis(-wheel.Speed, axis);

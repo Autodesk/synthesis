@@ -22,7 +22,7 @@ public partial class RigidNode : RigidNode_Base
         Y
     }
 
-    public void CreateJoint(int numWheels, bool mixAndMatch, float wheelFriction = 1f)
+    public void CreateJoint(int numWheels, bool mixAndMatch, float wheelFriction = 1f, float lateralFriction = 1f)
     {
         if (joint != null || GetSkeletalJoint() == null)
         {
@@ -49,8 +49,12 @@ public partial class RigidNode : RigidNode_Base
                     wheel.CreateWheel(this);
 
                     if (mixAndMatch)
+                    {
                         wheel.Friction = wheelFriction;
-
+                        wheel.SlidingFriction = lateralFriction;
+                    }
+                        
+                    
                     MainObject.transform.parent = parent.MainObject.transform;
                 }
                 else
@@ -99,7 +103,7 @@ public partial class RigidNode : RigidNode_Base
                 if (lAxis.x < 0) lAxis.x *= -1f;
                 if (lAxis.y < 0) lAxis.y *= -1f;
                 if (lAxis.z < 0) lAxis.z *= -1f;
-                
+
                 sc.localConstraintAxisX = lAxis;
                 sc.localConstraintAxisY = new Vector3(lAxis.y, lAxis.z, lAxis.x);
 
@@ -133,7 +137,6 @@ public partial class RigidNode : RigidNode_Base
     /// </summary>
     public void CreateManipulatorJoint(GameObject robot)
     {
-
         //Ignore physics/collisions between the manipulator and the robot. Currently not working. 
         foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
         {
@@ -142,15 +145,19 @@ public partial class RigidNode : RigidNode_Base
 
         if (joint != null || GetSkeletalJoint() == null)
         {
-            RotationalJoint_Base rNode = new RotationalJoint_Base();
-            B6DOFConstraint hc = MainObject.AddComponent<B6DOFConstraint>();
+            BHingedConstraintEx hc = MainObject.AddComponent<BHingedConstraintEx>();
 
             hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
             hc.otherRigidBody = robot.GetComponentInChildren<BRigidBody>();
+            hc.axisInA = new Vector3(0, 1, 0);
+            hc.axisInB = new Vector3(0, 1, 0);
+            hc.setLimit = true;
 
-            hc.localConstraintPoint = ComOffset;
+            hc.localConstraintPoint = new Vector3(0, 0, 0);
 
-            //Put this after everything else
+            hc.lowLimitAngleRadians = 0;
+            hc.highLimitAngleRadians = 0;
+
             hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
         }
     }

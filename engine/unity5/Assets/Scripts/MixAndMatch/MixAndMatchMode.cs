@@ -67,10 +67,11 @@ public class MixAndMatchMode : MonoBehaviour
     // Use this for initialization
     private void Awake()
     {
-        FindAllGameObjects();
+        
     }
     void Start()
-    { 
+    {
+        FindAllGameObjects();
         StartMixAndMatch();
 
     }
@@ -81,7 +82,7 @@ public class MixAndMatchMode : MonoBehaviour
 
     }
 
-    void FindAllGameObjects()
+    public void FindAllGameObjects()
     {
         mixAndMatchMode = GameObject.Find("MixAndMatchMode");
         mixAndMatchModeScript = GameObject.Find("MixAndMatchModeScript");
@@ -196,7 +197,8 @@ public class MixAndMatchMode : MonoBehaviour
 
         RobotTypeManager.SetWheelProperties(mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel), 
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel),
-            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel),
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelLateralFriction(SelectedWheel));
        
         SceneManager.LoadScene("Scene");
 
@@ -259,7 +261,8 @@ public class MixAndMatchMode : MonoBehaviour
         RobotTypeManager.WheelPath = mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(SelectedWheel);
         RobotTypeManager.SetWheelProperties(mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel),
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel),
-            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel),
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelLateralFriction(SelectedWheel));
 
         GameObject stateMachine = GameObject.Find("StateMachine");
 
@@ -297,7 +300,8 @@ public class MixAndMatchMode : MonoBehaviour
 
         RobotTypeManager.SetWheelProperties(mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(SelectedWheel),
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel),
-            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel));
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel),
+            mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelLateralFriction(SelectedWheel));
 
 
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
@@ -372,12 +376,12 @@ public class MixAndMatchMode : MonoBehaviour
     void SetPresetFontSize(GameObject clone)
     {
         Debug.Log(clone.GetComponent<Text>().text+ clone.GetComponent<Text>().text.Length);
-        if (clone.GetComponent<Text>().text.Length < 9)
+        if (clone.GetComponent<Text>().text.Length < 8)
         {
             clone.GetComponent<Text>().fontSize = 36; 
         } else if (clone.GetComponent<Text>().text.Length < 20)
         {
-            clone.GetComponent<Text>().fontSize = 36 - 2 * (clone.GetComponent<Text>().text.Length - 9);
+            clone.GetComponent<Text>().fontSize = 36 - 3 * (clone.GetComponent<Text>().text.Length - 8);
         } else
         {
             clone.GetComponent<Text>().fontSize = 16;

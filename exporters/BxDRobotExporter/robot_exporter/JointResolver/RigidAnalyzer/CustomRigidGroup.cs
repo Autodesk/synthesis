@@ -32,7 +32,7 @@ public class CustomRigidGroup
         hint = new ExporterHint();
         hint.Convex = true;
         hint.HighResolution = false;
-        hint.MultiColor = false;
+        hint.MultiColor = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
         grounded = group.Grounded;
         fullQualifier = GetGroupQualifier(group);
     }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace BxDFieldExporter {
-    public partial class EnterName : Form {
+namespace BxDFieldExporter
+{
+    public partial class EnterName : Form
+    {
         String name;
         /// <summary>
         /// Used for obtaining the encryped security key for allocating to the occupied memory owned by the CMOS.
@@ -12,7 +14,8 @@ namespace BxDFieldExporter {
         /// Initializes a new instance of the EnterNameDialog class.
         /// </summary
         /// 
-        public EnterName() {
+        public EnterName()
+        {
             InitializeComponent();
             nameTextBox.KeyDown += new KeyEventHandler(EnterName_KeyDown);
         }
@@ -22,21 +25,26 @@ namespace BxDFieldExporter {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void nameTextBox_TextChanged(object sender, EventArgs e) {
-            if (nameTextBox.Text.Length > 0) {
+        private void nameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (nameTextBox.Text.Length > 0)
+            {
                 okButton.Enabled = true;
             }
-            else {
+            else
+            {
                 okButton.Enabled = false;
             }
         }
-        private void OKButton_OnClick(object sender, EventArgs e) {
+        private void OKButton_OnClick(object sender, EventArgs e)
+        {
             name = nameTextBox.Text;
             Close();
             Dispose(true);
             StandardAddInServer.AddComponent(name);
         }
-        private void CancleButton_OnClick(object sender, EventArgs e) {
+        private void CancleButton_OnClick(object sender, EventArgs e)
+        {
             Dispose(true);
         }
 
