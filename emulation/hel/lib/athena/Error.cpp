@@ -78,9 +78,6 @@ void Error::Report() {
   locStream << basename(m_filename.c_str());
 #endif
   locStream << ":" << m_lineNumber << "]";
-
-  //DriverStation::ReportError(true, m_code, m_message, locStream.str(),
-  //                           GetStackTrace(4));
 }
 
 void Error::Clear() {

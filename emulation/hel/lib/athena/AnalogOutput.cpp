@@ -74,34 +74,10 @@ HAL_Bool HAL_CheckAnalogOutputChannel(int32_t channel) {
 }
 
 void HAL_SetAnalogOutput(HAL_AnalogOutputHandle analogOutputHandle,
-                         double voltage, int32_t* status) {
-  /*auto port = analogOutputHandles.Get(analogOutputHandle);
-  if (port == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-
-  uint16_t rawValue = static_cast<uint16_t>(voltage / 5.0 * 0x1000);
-
-  if (voltage < 0.0)
-    rawValue = 0;
-  else if (voltage > 5.0)
-    rawValue = 0x1000;
-
-  analogOutputSystem->writeMXP(port->channel, rawValue, status);*/
-}
+                         double voltage, int32_t* status) {}
 
 double HAL_GetAnalogOutput(HAL_AnalogOutputHandle analogOutputHandle,
                            int32_t* status) {
-  /*auto port = analogOutputHandles.Get(analogOutputHandle);
-  if (port == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return 0.0;
-  }
-
-  uint16_t rawValue = analogOutputSystem->readMXP(port->channel, status);
-  */
-  //return rawValue * 5.0 / 0x1000;
   return 0.0;
 }
 }

@@ -40,13 +40,8 @@ HAL_CounterHandle HAL_InitializeCounter(HAL_Counter_Mode mode, int32_t* index,
     *status = HAL_HANDLE_ERROR;
     return HAL_kInvalidHandle;
   }
-  //counter->index = static_cast<uint7_t>(getHandleIndex(handle));
-  //*index = counter->index;
 
   counter->counter.reset(0);
-  /*counter->counter.reset(tCounter::create(counter->index, status));
-  counter->counter->writeConfig_Mode(mode, status);
-  counter->counter->writeTimerConfig_AverageSize(1, status);*/
 
   return handle;
 }
@@ -56,14 +51,7 @@ void HAL_FreeCounter(HAL_CounterHandle counterHandle, int32_t* status) {
 }
 
 void HAL_SetCounterAverageSize(HAL_CounterHandle counterHandle, int32_t size,
-                               int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeTimerConfig_AverageSize(size, status);*/
-}
+                               int32_t* status) {}
 
 /**
  * Set the source object that causes the counter to count up.
@@ -72,36 +60,7 @@ void HAL_SetCounterAverageSize(HAL_CounterHandle counterHandle, int32_t size,
 void HAL_SetCounterUpSource(HAL_CounterHandle counterHandle,
                             HAL_Handle digitalSourceHandle,
                             HAL_AnalogTriggerType analogTriggerType,
-                            int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-
-  bool routingAnalogTrigger = false;
-  uint8_t routingChannel = 0;
-  uint8_t routingModule = 0;
-  bool success =
-      remapDigitalSource(digitalSourceHandle, analogTriggerType, routingChannel,
-                         routingModule, routingAnalogTrigger);
-  if (!success) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-
-  counter->counter->writeConfig_UpSource_Module(routingModule, status);
-  counter->counter->writeConfig_UpSource_Channel(routingChannel, status);
-  counter->counter->writeConfig_UpSource_AnalogTrigger(routingAnalogTrigger,
-                                                       status);
-
-  if (counter->counter->readConfig_Mode(status) == HAL_Counter_kTwoPulse ||
-      counter->counter->readConfig_Mode(status) ==
-          HAL_Counter_kExternalDirection) {
-    HAL_SetCounterUpSourceEdge(counterHandle, true, false, status);
-  }
-  counter->counter->strobeReset(status);*/
-}
+                            int32_t* status) {}
 
 /**
  * Set the edge sensitivity on an up counting source.
@@ -109,32 +68,13 @@ void HAL_SetCounterUpSource(HAL_CounterHandle counterHandle,
  */
 void HAL_SetCounterUpSourceEdge(HAL_CounterHandle counterHandle,
                                 HAL_Bool risingEdge, HAL_Bool fallingEdge,
-                                int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeConfig_UpRisingEdge(risingEdge, status);
-  counter->counter->writeConfig_UpFallingEdge(fallingEdge, status);*/
-}
+                                int32_t* status) {}
 
 /**
  * Disable the up counting source to the counter.
  */
 void HAL_ClearCounterUpSource(HAL_CounterHandle counterHandle,
-                              int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeConfig_UpFallingEdge(false, status);
-  counter->counter->writeConfig_UpRisingEdge(false, status);
-  // Index 0 of digital is always 0.
-  counter->counter->writeConfig_UpSource_Channel(0, status);
-  counter->counter->writeConfig_UpSource_AnalogTrigger(false, status);*/
-}
+                              int32_t* status) {}
 
 /**
  * Set the source object that causes the counter to count down.
@@ -143,39 +83,7 @@ void HAL_ClearCounterUpSource(HAL_CounterHandle counterHandle,
 void HAL_SetCounterDownSource(HAL_CounterHandle counterHandle,
                               HAL_Handle digitalSourceHandle,
                               HAL_AnalogTriggerType analogTriggerType,
-                              int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  uint8_t mode = counter->counter->readConfig_Mode(status);
-  if (mode != HAL_Counter_kTwoPulse && mode != HAL_Counter_kExternalDirection) {
-    // TODO: wpi_setWPIErrorWithContext(ParameterOutOfRange, "Counter only
-    // supports DownSource in TwoPulse and ExternalDirection modes.");
-    *status = PARAMETER_OUT_OF_RANGE;
-    return;
-  }
-
-  bool routingAnalogTrigger = false;
-  uint8_t routingChannel = 0;
-  uint8_t routingModule = 0;
-  bool success =
-      remapDigitalSource(digitalSourceHandle, analogTriggerType, routingChannel,
-                         routingModule, routingAnalogTrigger);
-  if (!success) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-
-  counter->counter->writeConfig_DownSource_Module(routingModule, status);
-  counter->counter->writeConfig_DownSource_Channel(routingChannel, status);
-  counter->counter->writeConfig_DownSource_AnalogTrigger(routingAnalogTrigger,
-                                                         status);
-
-  HAL_SetCounterDownSourceEdge(counterHandle, true, false, status);
-  counter->counter->strobeReset(status);*/
-}
+                              int32_t* status) {}
 
 /**
  * Set the edge sensitivity on a down counting source.
@@ -183,46 +91,20 @@ void HAL_SetCounterDownSource(HAL_CounterHandle counterHandle,
  */
 void HAL_SetCounterDownSourceEdge(HAL_CounterHandle counterHandle,
                                   HAL_Bool risingEdge, HAL_Bool fallingEdge,
-                                  int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeConfig_DownRisingEdge(risingEdge, status);
-  counter->counter->writeConfig_DownFallingEdge(fallingEdge, status);*/
-}
+                                  int32_t* status) {}
 
 /**
  * Disable the down counting source to the counter.
  */
 void HAL_ClearCounterDownSource(HAL_CounterHandle counterHandle,
-                                int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeConfig_DownFallingEdge(false, status);
-  counter->counter->writeConfig_DownRisingEdge(false, status);
-  // Index 0 of digital is always 0.
-  counter->counter->writeConfig_DownSource_Channel(0, status);
-  counter->counter->writeConfig_DownSource_AnalogTrigger(false, status);*/
-}
+                                int32_t* status) {}
 
 /**
  * Set standard up / down counting mode on this counter.
  * Up and down counts are sourced independently from two inputs.
  */
 void HAL_SetCounterUpDownMode(HAL_CounterHandle counterHandle,
-                              int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeConfig_Mode(HAL_Counter_kTwoPulse, status);*/
-}
+                              int32_t* status) {}
 
 /**
  * Set external direction mode on this counter.
@@ -230,30 +112,14 @@ void HAL_SetCounterUpDownMode(HAL_CounterHandle counterHandle,
  * The Down counter input represents the direction to count.
  */
 void HAL_SetCounterExternalDirectionMode(HAL_CounterHandle counterHandle,
-                                         int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeConfig_Mode(HAL_Counter_kExternalDirection, status);*/
-}
+                                         int32_t* status) {}
 
 /**
  * Set Semi-period mode on this counter.
  * Counts up on both rising and falling edges.
  */
 void HAL_SetCounterSemiPeriodMode(HAL_CounterHandle counterHandle,
-                                  HAL_Bool highSemiPeriod, int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeConfig_Mode(HAL_Counter_kSemiperiod, status);
-  counter->counter->writeConfig_UpRisingEdge(highSemiPeriod, status);
-  HAL_SetCounterUpdateWhenEmpty(counterHandle, false, status);*/
-}
+                                  HAL_Bool highSemiPeriod, int32_t* status) {}
 
 /**
  * Configure the counter to count in up or down based on the length of the input
@@ -263,18 +129,7 @@ void HAL_SetCounterSemiPeriodMode(HAL_CounterHandle counterHandle,
  * opposite direction.  Units are seconds.
  */
 void HAL_SetCounterPulseLengthMode(HAL_CounterHandle counterHandle,
-                                   double threshold, int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeConfig_Mode(HAL_Counter_kPulseLength, status);
-  counter->counter->writeConfig_PulseLengthThreshold(
-      static_cast<uint32_t>(threshold * 1.0e6) *
-          kSystemClockTicksPerMicrosecond,
-      status);*/
-}
+                                   double threshold, int32_t* status) {}
 
 /**
  * Get the Samples to Average which specifies the number of samples of the timer
@@ -285,12 +140,6 @@ void HAL_SetCounterPulseLengthMode(HAL_CounterHandle counterHandle,
  */
 int32_t HAL_GetCounterSamplesToAverage(HAL_CounterHandle counterHandle,
                                        int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return 0;
-  }
-  return counter->counter->readTimerConfig_AverageSize(status);*/
   return 0;
 }
 
@@ -301,17 +150,7 @@ int32_t HAL_GetCounterSamplesToAverage(HAL_CounterHandle counterHandle,
  * @param samplesToAverage The number of samples to average from 1 to 127.
  */
 void HAL_SetCounterSamplesToAverage(HAL_CounterHandle counterHandle,
-                                    int32_t samplesToAverage, int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  if (samplesToAverage < 1 || samplesToAverage > 127) {
-    *status = PARAMETER_OUT_OF_RANGE;
-  }
-  counter->counter->writeTimerConfig_AverageSize(samplesToAverage, status);*/
-}
+                                    int32_t samplesToAverage, int32_t* status) {}
 
 /**
  * Reset the Counter to zero.
@@ -325,7 +164,6 @@ void HAL_ResetCounter(HAL_CounterHandle counterHandle, int32_t* status) {
     return;
   }
   *counter->counter = 0;
-  //counter->counter->strobeReset(status);
 }
 
 /**
@@ -339,7 +177,6 @@ int32_t HAL_GetCounter(HAL_CounterHandle counterHandle, int32_t* status) {
     *status = HAL_HANDLE_ERROR;
     return 0;
   }
-  //int32_t value = counter->counter->readOutput_Value(status);
   int32_t value = *counter->counter;
   return value;
 }
@@ -351,25 +188,6 @@ int32_t HAL_GetCounter(HAL_CounterHandle counterHandle, int32_t* status) {
  * @returns The period of the last two pulses in units of seconds.
  */
 double HAL_GetCounterPeriod(HAL_CounterHandle counterHandle, int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return 0.0;
-  }
-  tCounter::tTimerOutput output = counter->counter->readTimerOutput(status);
-  double period;
-  if (output.Stalled) {
-    // Return infinity
-    double zero = 0.0;
-    period = 1.0 / zero;
-  } else {
-    // output.Period is a fixed point number that counts by 2 (24 bits, 25
-    // integer bits)
-    period = static_cast<double>(output.Period << 1) /
-             static_cast<double>(output.Count);
-  }
-  return static_cast<double>(period *
-                             2.5e-8);  // result * timebase (currently 25ns)*/
   return 0.0;
 }
 
@@ -382,15 +200,7 @@ double HAL_GetCounterPeriod(HAL_CounterHandle counterHandle, int32_t* status) {
  * moving in seconds.
  */
 void HAL_SetCounterMaxPeriod(HAL_CounterHandle counterHandle, double maxPeriod,
-                             int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeTimerConfig_StallPeriod(
-      static_cast<uint32_t>(maxPeriod * 4.0e8), status);*/
-}
+                             int32_t* status) {}
 
 /**
  * Select whether you want to continue updating the event timer output when
@@ -406,14 +216,7 @@ void HAL_SetCounterMaxPeriod(HAL_CounterHandle counterHandle, double maxPeriod,
  * at the end of an average and there are no samples to average).
  */
 void HAL_SetCounterUpdateWhenEmpty(HAL_CounterHandle counterHandle,
-                                   HAL_Bool enabled, int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  counter->counter->writeTimerConfig_UpdateWhenEmpty(enabled, status);*/
-}
+                                   HAL_Bool enabled, int32_t* status) {}
 
 /**
  * Determine if the clock is stopped.
@@ -425,12 +228,6 @@ void HAL_SetCounterUpdateWhenEmpty(HAL_CounterHandle counterHandle,
  */
 HAL_Bool HAL_GetCounterStopped(HAL_CounterHandle counterHandle,
                                int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return false;
-  }
-  return counter->counter->readTimerOutput_Stalled(status);*/
   return true;
 }
 
@@ -440,13 +237,6 @@ HAL_Bool HAL_GetCounterStopped(HAL_CounterHandle counterHandle,
  */
 HAL_Bool HAL_GetCounterDirection(HAL_CounterHandle counterHandle,
                                  int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return false;
-  }
-  bool value = counter->counter->readOutput_Direction(status);
-  return value;*/
   return true;
 }
 
@@ -458,18 +248,5 @@ HAL_Bool HAL_GetCounterDirection(HAL_CounterHandle counterHandle,
  */
 void HAL_SetCounterReverseDirection(HAL_CounterHandle counterHandle,
                                     HAL_Bool reverseDirection,
-                                    int32_t* status) {
-  /*auto counter = counterHandles.Get(counterHandle);
-  if (counter == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  if (counter->counter->readConfig_Mode(status) ==
-      HAL_Counter_kExternalDirection) {
-    if (reverseDirection)
-      HAL_SetCounterDownSourceEdge(counterHandle, true, true, status);
-    else
-      HAL_SetCounterDownSourceEdge(counterHandle, false, true, status);
-  }*/
-}
+                                    int32_t* status) {}
 }
