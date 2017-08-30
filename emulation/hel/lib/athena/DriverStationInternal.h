@@ -95,42 +95,6 @@ struct FRCCommonControlData2015 {
 	uint8_t state;
 	uint8_t command;
 	uint8_t station;
-	
-	/*uint8_t size_joystick0;
-	uint8_t size_up_to_pov0;
-	uint8_t size_axes0;
-	uint8_t axis0[4];
-	uint8_t unknown1[1];
-	uint16_t buttons0;
-	uint8_t size_pov0; // unsure
-	uint8_t pov0[2];
-	
-	uint8_t size_joystick1;
-	uint8_t size_up_to_pov1;
-	uint8_t size_axes1;
-	uint8_t axis1[6];
-	uint8_t unknown2[1];
-	uint16_t buttons1;
-	uint8_t size_pov1; // unsure
-	uint8_t pov1[2];
-
-	uint8_t size_joystick2;
-	uint8_t size_up_to_pov2;
-	uint8_t size_axes2;
-	uint8_t axis2[6];
-	uint8_t unknown3[1];
-	uint16_t buttons2;
-	uint8_t size_pov2; // unsure
-	uint8_t pov2[2];
-	
-	uint8_t size_joystick3;
-	uint8_t size_up_to_pov3;
-	uint8_t size_axes3;
-	uint8_t axis3[6];
-	uint8_t unknown4[1];
-	uint16_t buttons3;
-	uint8_t size_pov3; // unsure
-	uint8_t pov3[2];*/
 };
 
 /*
@@ -153,7 +117,6 @@ struct FRCRobotControl2015 {
 	uint8_t state;
 	uint8_t voltage_greater;
 	uint8_t voltage_lesser;
-	//uint8_t padding; // don't think this is needed
 };
 
 extern float JAG_SPEEDS[32];
