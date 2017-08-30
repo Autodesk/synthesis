@@ -1,3 +1,8 @@
+#this makefile is used to automate the emulation part of the installer build
+#process. run `make install` to copy files to the install directory.
+#this will build all the hel code except for the build tool and copy it to
+#../installer
+
 .PHONY: install installHELBuildTool
 
 install: installHELBuildTool

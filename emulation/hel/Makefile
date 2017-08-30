@@ -1,17 +1,44 @@
+#c++ compiler
 CC = x86_64-w64-mingw32-g++
-CC_JAVA = $(CC)
+#static library tool
 AR = x86_64-w64-mingw32-ar
-TARGET = debug
 
+#default to debug mode
+ifndef TARGET
+	TARGET := debug
+endif
+
+#the java tool directory
 ifndef JAVA_HOME
-	JAVA_VERSION := $(shell java -version |& sed -ne 's/^java version "\([^"]*\)"/\1/gp')
+	#we get this by parsing java's version to find the correct subdirectory
+	#this would be a lot easier if java either put it's binary path in
+	#`PATH` or if it hadd a separate environment variable for this
+	JAVA_VERSION := $(shell java -version |& \
+		sed -ne 's/^java version "\([^"]*\)"/\1/gp')
 	JAVA_HOME := /cygdrive/c/Program\ Files/java/jdk$(JAVA_VERSION)
 endif
 
+#java compiler
 JAVAC := $(JAVA_HOME)/bin/javac.exe
+#jar tool
 JAR := $(JAVA_HOME)/bin/jar.exe
 
-CCFLAGS := -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Iallwpilib/ni-libraries/include -Iwpiutil/src/main/native/include -static-libgcc -static-libstdc++ -std=c++14 -Wl,--add-stdcall-alias -m64 -lshell32 -lole32
+CCFLAGS := -m64
+#this tricks the compiler into thinking we are on windows vista
+CCFLAGS += -D_WIN32 -D_WIN32_WINNT=0x0602
+#header directories
+CCFLAGS += -Iinclude \
+	-Iallwpilib/ni-libraries/include \
+	-Iwpiutil/src/main/native/include
+#sstatic linking for libgcc and libstdc++
+CCFLAGS += -static-libgcc -static-libstdc++
+#use c++14 standard
+CCFLAGS += -std=c++14
+#needed for JNI stuff with mingw
+#black magic copied from stack overflow
+CCFLAGS += -Wl,--add-stdcall-alias
+
+#turn on optinizations if release mode, or debug info if debug mode
 ifeq ($(TARGET), debug)
 	CCFLAGS += -O0 -g
 endif
@@ -19,25 +46,105 @@ ifeq ($(TARGET), release)
 	CCFLAGS += -O2
 endif
 
-CCFLAGS_CPP := -Iallwpilib/wpilibc/src/main/native/include -Iinclude -Intcore/src/main/native/include $(CCFLAGS)
-CCFLAGS_HAL := -Ilib -Ilib/athena -Intcore/src/main/native/include $(CCFLAGS) -Iallwpilib/wpilibc/src/main/native/include
-CCFLAGS_NTCORE := -Intcore/src/main/native/include $(CCFLAGS)
-CCFLAGS_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/java/header -Intcore/src/main/native/include -fpermissive -D_JNI_IMPLEMENTATION_ $(CCFLAGS)
-CCFLAGS_NTCORE_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/ntcore/java/header -Intcore/src/main/native/include -D_JNI_IMPLEMENTATION_ $(CCFLAGS)
+#cflags for the C++ wpilib
+#header directories
+CCFLAGS_CPP := \
+	-Iallwpilib/wpilibc/src/main/native/include \
+	-Iinclude \
+	-Intcore/src/main/native/include
+#keep all the global cflags
+CCFLAGS_CPP += $(CCFLAGS)
 
-SRC_FILES_HAL := $(shell find ./lib ./wpiutil/src/main/native/cpp -name "*.cpp" -not -name "*priority_mutex.cpp" -not -wholename "*ctre/*" -not -name "*NiFpgaState.cpp")
+#cflags for the HAL
+#header directories
+CCFLAGS_HAL := \
+	-Ilib \
+	-Ilib/athena \
+	-Intcore/src/main/native/include
+#keep all the global clfags
+CCFLAGS_HAL += $(CCFLAGS)
+#prefer this include path before the global ones if conflicts come up
+CCFLAGS_HAL += -Iallwpilib/wpilibc/src/main/native/include
 
-SRC_FILES_NTCORE := $(shell find ./ntcore/src/main/native -name "*.cpp" -not -wholename "*jni/*")
+#cflags for ntcore
+#header directories
+CCFLAGS_NTCORE := \
+	-Intcore/src/main/native/include
+#kepp all the global cflags
+CCFLAGS_NTCORE += $(CCFLAGS)
+
+#ccflags for wpilib JNI stuff
+#header directories
+CCFLAGS_JAVA := \
+	-I$(JAVA_HOME)/include \
+	-I$(JAVA_HOME)/include/win32 \
+	-Ibuild/java/header \
+	-Intcore/src/main/native/include
+#allow bad stuff for java
+CCFLAGS_JAVA += -fpermissive
+#let java know that this is JNI
+CCFLAGS_JAVA += -D_JNI_IMPLEMENTATION_
+#keep all the global cflags
+CCFLAGS_JAVA += $(CCFLAGS)
+
+#cflags for ntcore's JNI bindings
+#header directories
+CCFLAGS_NTCORE_JAVA := \
+	-I$(JAVA_HOME)/include \
+	-I$(JAVA_HOME)/include/win32 \
+	-Ibuild/ntcore/java/header \
+	-Intcore/src/main/native/include
+#let java know that this is JNI
+CCFLAGS_NTCORE_JAVA += -D_JNI_IMPLEMENTATION_
+#keep all the global cflags
+CCFLAGS_NTCORE_JAVA += $(CCFLAGS)
+
+#find all the C++ source code files in the HAL directory
+#this also includes some wpiutil stuff and should not include
+#priority_mutex.cpp (because it doesn't work on windows), or ctre/fpga stuff
+#(because it make sense off of the roborio)
+SRC_FILES_HAL := $(shell find ./lib \
+	./wpiutil/src/main/native/cpp -name "*.cpp" \
+	-not -name "*priority_mutex.cpp" \
+	-not -wholename "*ctre/*" \
+	-not -name "*NiFpgaState.cpp")
+
+#find all the C++ source code files in ntcore, but exclude JNI because that
+#goes in a dll
+SRC_FILES_NTCORE := $(shell find ./ntcore/src/main/native -name "*.cpp" \
+	-not -wholename "*jni/*")
+
+#the JNI file for ntcore
 SRC_FILES_NTCORE_JAVA := ntcore/src/main/native/cpp/jni/NetworkTablesJNI.cpp
+
+#find all the java source code files in ntcore
 JAVA_FILES_NTCORE_JAVA := $(shell find ./ntcore/src/main/java -name "*.java")
 
-SRC_FILES_CPP := $(shell find ./allwpilib/wpilibc/src/main/native -name "*.cpp" -not -name "VisionRunner.cpp" -not -name "CameraServer.cpp" -not -wholename "*sim/*")
+#find all the C++ source code files for wpilib, excluding opencv related
+#files and frcsim related files
+SRC_FILES_CPP := $(shell find ./allwpilib/wpilibc/src/main/native \
+	-name "*.cpp" \
+	-not -name "VisionRunner.cpp" \
+	-not -name "CameraServer.cpp" \
+	-not -wholename "*sim/*")
 
-SRC_FILES_JAVA := $(shell find ./allwpilib/wpilibj/src/main -name "*.cpp" -not -name "CANJNI.cpp")
+#find all the JNI c++ source code for wpilib, excluding CAN
+SRC_FILES_JAVA := $(shell find ./allwpilib/wpilibj/src/main -name "*.cpp" \
+	-not -name "CANJNI.cpp")
 
-JAVA_FILES_JAVA := $(shell find ./allwpilib/wpilibj/src/main -name "*.java" -not -wholename "*sim/*" -not -wholename "*test/*" -not -name "CameraServer.java" -not -name "Vision*.java") java_overrides/edu/wpi/first/wpilibj/WPILibVersion.java
+#find all the java source code filese for wpilibj, excluding computer vision
+#unit tests, and frcsim stuff
+JAVA_FILES_JAVA := $(shell find ./allwpilib/wpilibj/src/main -name "*.java" \
+	-not -wholename "*sim/*" \
+	-not -wholename "*test/*" \
+	-not -name "CameraServer.java" \
+	-not -name "Vision*.java")
+#also include our fake WPILibVersion file
+JAVA_FILES_JAVA += java_overrides/edu/wpi/first/wpilibj/WPILibVersion.java
 
-JAVA_FILES_WPIUTIL_JAVA := $(shell find ./wpiutil/src/main/java/ -name "*.java")
+#find all the java source code files for wpiutil
+JAVA_FILES_WPIUTIL_JAVA := \
+	$(shell find ./wpiutil/src/main/java/ -name "*.java")
 
 OBJ_FILES_CPP := $(addprefix build/cpp/,$(patsubst %.cpp,%.o,$(SRC_FILES_CPP)))
 OBJ_FILES_JAVA := $(addprefix build/java/,$(patsubst %.cpp,%.o,$(SRC_FILES_JAVA)))
@@ -74,7 +181,7 @@ $(OUT_JAVA): $(LIB_JAVA) | build/java_class_files Makefile $(HEADER_FILES)
 $(LIB_JAVA): $(OBJ_FILES_JAVA) | patch Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC_JAVA) -shared -o $@ $^ -Lbuild/hal -lHAL -lWs2_32 -lole32 -lshell32 -luuid
+	@$(CC) -shared -o $@ $^ -Lbuild/hal -lHAL -lWs2_32 -lole32 -lshell32 -luuid
 
 $(OUT_HAL): $(OBJ_FILES_HAL) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
@@ -94,7 +201,7 @@ $(OUT_NTCORE): $(OBJ_FILES_NTCORE) | Makefile $(HEADER_FILES)
 $(LIB_NTCORE_JAVA): $(OBJ_FILES_NTCORE_JAVA) | build/ntcore_java_class_files $(OUT_NTCORE) $(OUT_HAL) Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC_JAVA) -shared -o $@ $^ -Lbuild/ntcore -Lbuild/hal -lntcore-static -lHAL -lWs2_32 -lole32 -lshell32 -luuid
+	@$(CC) -shared -o $@ $^ -Lbuild/ntcore -Lbuild/hal -lntcore-static -lHAL -lWs2_32 -lole32 -lshell32 -luuid
 
 $(OUT_NTCORE_JAVA): | $(LIB_NTCORE_JAVA) build/ntcore_java_class_files $(OUT_NTCORE) Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
@@ -119,7 +226,7 @@ build/hal/%.o: %.cpp Makefile $(HEADER_FILES)
 build/java/%.o: %.cpp patch Makefile $(HEADER_FILES) build/java_class_files
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC_JAVA) -c $< -o $@ $(CCFLAGS_JAVA)
+	@$(CC) -c $< -o $@ $(CCFLAGS_JAVA)
 
 build/ntcore/%.o: %.cpp Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
@@ -129,7 +236,7 @@ build/ntcore/%.o: %.cpp Makefile $(HEADER_FILES)
 build/ntcore/java/%.o: %.cpp build/ntcore_java_class_files Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC_JAVA) -c $< -o $@ $(CCFLAGS_NTCORE_JAVA)
+	@$(CC) -c $< -o $@ $(CCFLAGS_NTCORE_JAVA)
 
 build/java_class_files: $(JAVA_FILES_JAVA) | patch $(OUT_WPIUTIL_JAVA) $(OUT_NTCORE_JAVA) Makefile
 	@echo -e "\e[1m\e[32mJAVA \e[39mwpilibj/*.java\e[0m"
