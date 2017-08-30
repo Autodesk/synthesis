@@ -263,12 +263,19 @@ public class DriverPracticeRobot : MonoBehaviour
     {
         if (objectsHeld[index].Count > 0)
         {
+            StartCoroutine(UnIgnoreCollision(objectsHeld[index][0]));
+            intakeInteractor[index].heldGamepieces.Remove(objectsHeld[index][0]);
+
+            BRigidBody intakeRigidBody = intakeInteractor[index].GetComponent<BRigidBody>();
+
+            if (intakeRigidBody != null && !intakeRigidBody.GetCollisionObject().IsActive)
+                intakeRigidBody.GetCollisionObject().Activate();
+
             BRigidBody orb = objectsHeld[index][0].GetComponent<BRigidBody>();
             orb.collisionFlags = BulletSharp.CollisionFlags.None;
             orb.velocity += releaseNode[index].transform.rotation * releaseVelocityVector[index];
             orb.angularFactor = UnityEngine.Vector3.one;
-            StartCoroutine(UnIgnoreCollision(objectsHeld[index][0]));
-            intakeInteractor[index].heldGamepieces.Remove(objectsHeld[index][0]);
+
             objectsHeld[index].RemoveAt(0);
         }
     }
