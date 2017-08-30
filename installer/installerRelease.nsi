@@ -29,7 +29,9 @@ IfFileExists "$INSTDIR" +1 +28
         DeleteRegKey HKLM SOFTWARE\Synthesis
 
         RMDir /r /REBOOTOK $INSTDIR
-        RMDir /r /REBOOTOK $APPDATA\Autodesk\ApplicationPlugins\Synthesis
+        RMDir /r /REBOOTOK "$APPDATA\Autodesk\Application Plugins\BxDRobotExporter"
+        RMDir /r /REBOOTOK "$APPDATA\Autodesk\Application Plugins\BxDFieldExporter"
+        RMDIR /r /REBOOTOK $DOCUMENTS\RobotViewer
         ; Remove files and uninstaller
         Delete $INSTDIR\Synthesis.nsi
         Delete $INSTDIR\uninstall.exe
@@ -122,6 +124,14 @@ File /r "Fields\*"
 
 SectionEnd
 
+Section "MixAndMatch Files"
+
+SetOutPath $DOCUMENTS\Synthesis\MixAndMatch
+
+File /r "MixAndMatch\*"
+
+SectionEnd
+
 Section
 
   ; Set output path to the installation directory.
@@ -133,7 +143,7 @@ Section
 
 SectionEnd
 
-Section "Robot Exporter (optional)"
+Section /o "Standalone Robot Exporter (legacy)"
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\RobotExporter
@@ -142,7 +152,7 @@ Section "Robot Exporter (optional)"
 
 SectionEnd
 
-Section "Legacy Field Exporter (optional)"
+Section /o "Standalone Field Exporter (legacy)"
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\FieldExporter
@@ -153,29 +163,46 @@ Section "Legacy Field Exporter (optional)"
 	
 SectionEnd
 
-Section "Field Exporter Plugin (optional)"
+Section "Robot Exporter Plugin (reccommended)"
+
+  ; Set output path to plugin directory
+  SetOutPath "$APPDATA\Autodesk\Application Plugins\BxDRobotExporter"
+  File /r "RobotExporter\Autodesk.BxDRobotExporter.Inventor.addin"
+
+  SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
+  File /r "RobotExporter\BxDRobotExporter.dll"
+ 
+  SetOutPath "$DOCUMENTS\RobotViewer"
+  File /r "RobotExporter\Viewer\RobotViewer.exe"
+  File /r "RobotExporter\Viewer\OpenTK.dll"
+  File /r "RobotExporter\Viewer\OpenTK.GLControl.dll"
+  File /r "RobotExporter\Viewer\OGLViewer.dll"
+  File /r "RobotExporter\Viewer\SimulatorAPI.dll"
+
+SectionEnd
+
+Section "Field Exporter Plugin (reccommended)"
 	
   ; Set output path to plugin directory
   SetOutPath "$APPDATA\Autodesk\Application Plugins\BxDFieldExporter"
-  
-  ; File /r "FieldExporter\BxDFieldExporter.dll"
-  ; File /r "FieldExporter\Autodesk.BxdFieldExporter.Inventor.addin"
+  File /r "FieldExporter\Autodesk.BxdFieldExporter.Inventor.addin"
+
+  SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
+  File /r "FieldExporter\BxDFieldExporter.dll"
 
 SectionEnd
 
 Section "Code Emulator (optional)"
 
-  ; Set output path to the installation directory.
   SetOutPath $INSTDIR\SynthesisDrive
 
-  ; Put file there
-  ;File "example2.nsi"
   File /r "SynthesisDrive\*"
 
   SetOutPath $INSTDIR\cygscripts
   File /r "cygscripts\*"
 
-  ExecShellWait "open" "$INSTDIR\cygscripts\cygpac.bat" "mingw64-x86_64-gcc-g++,make" SW_HIDE
+  ; installs cygwin
+  ExecWait "$INSTDIR\cygscripts\cygpac.bat"
   
 SectionEnd
 
@@ -198,7 +225,7 @@ Section "Uninstall"
   Delete "$DESKTOP\Synthesis.lnk"
   Delete "$DESKTOP\BXD Synthesis.lnk"
 
-        ;Remvoe Installshield shortcuts
+  ; Remove Installshield shortcuts
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   Delete "$SMPROGRAMS\BXD Synthesis.lnk"
