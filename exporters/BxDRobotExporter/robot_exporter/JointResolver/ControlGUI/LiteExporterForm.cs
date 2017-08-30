@@ -79,6 +79,11 @@ public partial class LiteExporterForm : Form
 
     }
 
+    /// <summary>
+    /// Executes the functions that export the robot
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
     {
         if (InventorManager.Instance == null)
@@ -147,7 +152,7 @@ public partial class LiteExporterForm : Form
             throw new ArgumentException("ERROR: 0 Occurrences passed to ExportSkeletonLite", "occurrences");
         }
 
-#region CenterJoints
+        #region CenterJoints
         int NumCentered = 0;
 
         SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
@@ -159,7 +164,7 @@ public partial class LiteExporterForm : Form
         }
 #endregion
 
-#region Build Models
+        #region Build Models
         //Getting Rigid Body Info...
         SetProgressText("Getting Rigid Body Info...", ProgressTextType.ShortTaskBegin);
         NameValueMap RigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
@@ -175,17 +180,17 @@ public partial class LiteExporterForm : Form
         //Building Model...
         SetProgressText("Building Model...", ProgressTextType.ShortTaskBegin);
         RigidBodyCleaner.CleanGroundedBodies(RigidResults);
-        RigidNode BaseNode = RigidBodyCleaner.BuildAndCleanDijkstra(RigidResults);
+        RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(RigidResults);
 
         //Building Model...Done
         SetProgressText(null, ProgressTextType.ShortTaskEnd);
 #endregion
 
-#region Cleaning Up
+        #region Cleaning Up
         //Cleaning Up...
         LiteExporterForm.Instance.SetProgressText("Cleaning Up...", ProgressTextType.ShortTaskBegin);
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        BaseNode.ListAllNodes(nodes);
+        baseNode.ListAllNodes(nodes);
 
         foreach (RigidNode_Base node in nodes)
         {
@@ -195,7 +200,7 @@ public partial class LiteExporterForm : Form
         //Cleaning Up...Done
         LiteExporterForm.Instance.SetProgressText(null, ProgressTextType.ShortTaskEnd);
 #endregion
-        return BaseNode;
+        return baseNode;
     }
 
     /// <summary>
@@ -228,7 +233,6 @@ public partial class LiteExporterForm : Form
                     {
                         SetProgressText(String.Format("Export {0} / {1}", progress, total));
                     });
-                    Console.WriteLine();
                     BXDAMesh output = surfs.GetOutput();
                     output.colliders.Clear();
                     output.colliders.AddRange(ConvexHullCalculator.GetHull(output));
