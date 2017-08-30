@@ -146,112 +146,181 @@ JAVA_FILES_JAVA += java_overrides/edu/wpi/first/wpilibj/WPILibVersion.java
 JAVA_FILES_WPIUTIL_JAVA := \
 	$(shell find ./wpiutil/src/main/java/ -name "*.java")
 
+#compiled object file paths for wpilibc
 OBJ_FILES_CPP := $(addprefix build/cpp/,$(patsubst %.cpp,%.o,$(SRC_FILES_CPP)))
+#compiled object files for JNI in wpilibj
 OBJ_FILES_JAVA := $(addprefix build/java/,$(patsubst %.cpp,%.o,$(SRC_FILES_JAVA)))
+#compiled object files for HAL
 OBJ_FILES_HAL := $(addprefix build/hal/,$(patsubst %.cpp,%.o,$(SRC_FILES_HAL)))
+#compiled object files for ntcore
 OBJ_FILES_NTCORE := $(addprefix build/ntcore/,$(patsubst %.cpp,%.o,$(SRC_FILES_NTCORE)))
+#compiled object files for ntcore JNI
 OBJ_FILES_NTCORE_JAVA := $(addprefix build/ntcore/java/,$(patsubst %.cpp,%.o,$(SRC_FILES_NTCORE_JAVA)))
 
+#all the header files
+#this is used for rebuilding things when the headers change
 HEADER_FILES := $(shell find . -name "*.h")
+
+#static library for HAL
 OUT_HAL := build/hal/libHAL.a
+#static library for wpilib
 OUT_CPP := build/cpp/libwpilib.a
+#static library for ntcore
 OUT_NTCORE := build/ntcore/libntcore-static.a
+#dynamic library for wpilibj
 LIB_JAVA := build/java/wpilibJNI.dll
+#dynamic library for JNI ntcore
 LIB_NTCORE_JAVA := build/java/ntcore.dll
+#jar for wpilibj
 OUT_JAVA := build/java/wpilib.jar
+#jar for ntcore
 OUT_NTCORE_JAVA := build/java/ntcore.jar
+#jar for wpiutil
 OUT_WPIUTIL_JAVA := build/java/wpiutil.jar
 
 all: cpp java hal
 	
 .PHONY: all cpp java hal clean patch
 
+#patches the wpilib for our changes
+#these changes are:
+# - removing opencv
+# - making it work outside of a jar environment
 patch: wpilib.patch Makefile
 	@echo -e "\e[1m\e[32mPATCH \e[39m$<\e[0m"
 	@-cd allwpilib; patch -p1 < ../wpilib.patch
 
+#put the wpilibj jar together
 $(OUT_JAVA): $(LIB_JAVA) | build/java_class_files Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
+	@#copies all the mingw related dlls
 	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libstdc++-6.dll build/java
 	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libgcc_s_seh-1.dll build/java
 	@cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libwinpthread-1.dll build/java
+	@#actually making the jar
 	@$(JAR) cf $@ -C build/java/class .
 
+#links the dynamic library for wpilibj
 $(LIB_JAVA): $(OBJ_FILES_JAVA) | patch Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC) -shared -o $@ $^ -Lbuild/hal -lHAL -lWs2_32 -lole32 -lshell32 -luuid
+	@$(CC) -shared -o $@ $^ \
+		-Lbuild/hal \
+		-lHAL \
+		-lWs2_32 \
+		-lole32 \
+		-lshell32 \
+		-luuid
 
+#links the static library for HAL
 $(OUT_HAL): $(OBJ_FILES_HAL) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
 	@$(AR) rcs $@ $^
 
-$(OUT_CPP): $(OBJ_FILES_CPP) $(OUT_HAL) $(OUT_NTCORE) |	patch Makefile $(HEADER_FILES)
+#links the static library for wpilibc
+$(OUT_CPP): $(OBJ_FILES_CPP) $(OUT_HAL) $(OUT_NTCORE) |	\
+		patch Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
 	@$(AR) rcs $@ $^
 
+#links the static library for ntcore
 $(OUT_NTCORE): $(OBJ_FILES_NTCORE) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
 	@$(AR) rcs $@ $^
 
-$(LIB_NTCORE_JAVA): $(OBJ_FILES_NTCORE_JAVA) | build/ntcore_java_class_files $(OUT_NTCORE) $(OUT_HAL) Makefile $(HEADER_FILES)
+#links the dynamic library for JNI ntcore
+$(LIB_NTCORE_JAVA): $(OBJ_FILES_NTCORE_JAVA) | \
+		build/ntcore_java_class_files \
+		$(OUT_NTCORE) \
+		$(OUT_HAL) \
+		Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
-	@$(CC) -shared -o $@ $^ -Lbuild/ntcore -Lbuild/hal -lntcore-static -lHAL -lWs2_32 -lole32 -lshell32 -luuid
+	@$(CC) -shared -o $@ $^ \
+		-Lbuild/ntcore \
+		-Lbuild/hal \
+		-lntcore-static \
+		-lHAL \
+		-lWs2_32 \
+		-lole32 \
+		-lshell32 \
+		-luuid
 
-$(OUT_NTCORE_JAVA): | $(LIB_NTCORE_JAVA) build/ntcore_java_class_files $(OUT_NTCORE) Makefile $(HEADER_FILES)
+#creates the ntcore jar file
+$(OUT_NTCORE_JAVA): | $(LIB_NTCORE_JAVA) \
+		build/ntcore_java_class_files \
+		$(OUT_NTCORE) \
+		Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
 	@$(JAR) cf $@ -C build/ntcore/java/class .
 
-$(OUT_WPIUTIL_JAVA): | $(LIB_WPIUTIL_JAVA) build/wpiutil_java_class_files $(OUT_NTCORE) Makefile $(HEADER_FILES)
+#creates the wpilib jar file
+$(OUT_WPIUTIL_JAVA): | $(LIB_WPIUTIL_JAVA) \
+		build/wpiutil_java_class_files \
+		$(OUT_NTCORE) \
+		Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
 	@mkdir -p $(dir $@)
 	@$(JAR) cf $@ -C build/wpiutil/java/class .
 
+#compiles a C++ file for wpilibc
 build/cpp/%.o: %.cpp patch Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
 	@$(CC) -c $< -o $@ $(CCFLAGS_CPP)
 
+#compiles a C++ file for HAL
 build/hal/%.o: %.cpp Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
 	@$(CC) -c $< -o $@ $(CCFLAGS_HAL)
 
+#compiles a C++ file for JNI in wpilibj
 build/java/%.o: %.cpp patch Makefile $(HEADER_FILES) build/java_class_files
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
 	@$(CC) -c $< -o $@ $(CCFLAGS_JAVA)
 
+#compiles a C++ file for ntcore
 build/ntcore/%.o: %.cpp Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
 	@$(CC) -c $< -o $@ $(CCFLAGS_NTCORE)
 
-build/ntcore/java/%.o: %.cpp build/ntcore_java_class_files Makefile $(HEADER_FILES)
+#compiles a C++ file for JNI in ntcore
+build/ntcore/java/%.o: %.cpp \
+		build/ntcore_java_class_files Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
 	@mkdir -p $(dir $@)
 	@$(CC) -c $< -o $@ $(CCFLAGS_NTCORE_JAVA)
 
-build/java_class_files: $(JAVA_FILES_JAVA) | patch $(OUT_WPIUTIL_JAVA) $(OUT_NTCORE_JAVA) Makefile
+#compiles all the java class files for wpilibj
+build/java_class_files: $(JAVA_FILES_JAVA) | patch \
+		$(OUT_WPIUTIL_JAVA) $(OUT_NTCORE_JAVA) Makefile
 	@echo -e "\e[1m\e[32mJAVA \e[39mwpilibj/*.java\e[0m"
 	@mkdir -p build/java/class
 	@mkdir -p build/java/header
-	@$(JAVAC) -cp "$(OUT_NTCORE_JAVA);$(OUT_WPIUTIL_JAVA)" -d build/java/class -h build/java/header $^
+	@$(JAVAC) -cp "$(OUT_NTCORE_JAVA);$(OUT_WPIUTIL_JAVA)" \
+		-d build/java/class -h build/java/header $^
 	@touch $@
 
-build/ntcore_java_class_files: $(JAVA_FILES_NTCORE_JAVA) | $(OUT_WPIUTIL_JAVA) Makefile
+#compiles all the java class files for ntcore
+build/ntcore_java_class_files: $(JAVA_FILES_NTCORE_JAVA) | \
+		$(OUT_WPIUTIL_JAVA) Makefile
 	@echo -e "\e[1m\e[32mJAVA \e[39mntcore/*.java\e[0m"
 	@mkdir -p build/ntcore/java/class
 	@mkdir -p build/ntcore/java/header
-	@$(JAVAC) -cp $(OUT_WPIUTIL_JAVA) -d build/ntcore/java/class -h build/ntcore/java/header $^
+	@$(JAVAC) -cp $(OUT_WPIUTIL_JAVA) \
+		-d build/ntcore/java/class \
+		-h build/ntcore/java/header $^
 	@touch $@
 
+#compiles all the java files for wpiutil
 build/wpiutil_java_class_files: $(JAVA_FILES_WPIUTIL_JAVA) | Makefile
 	@echo -e "\e[1m\e[32mJAVA \e[39mwpiutil/*.java\e[0m"
 	@mkdir -p build/wpiutil/java/class
@@ -264,57 +333,92 @@ java: $(OUT_JAVA)
 
 hal: $(OUT_HAL)
 
+#copies all the files to the directory used to build the installer
 install: $(OUT_CPP) $(OUT_JAVA)
+	@#HAL header files
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include
 	@cp -rf include ../../installer/SynthesisDrive/include
+	@#NI header files
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include/ni-libraries\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include/ni-libraries
-	@cp -rf allwpilib/ni-libraries/include ../../installer/SynthesisDrive/include/ni-libraries/include
+	@cp -rf allwpilib/ni-libraries/include \
+		../../installer/SynthesisDrive/include/ni-libraries/include
+	@#wpilib header files
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include/wpilibc/athena\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include/wpilibc/athena
 	@mkdir -p ../../installer/SynthesisDrive/include/wpilibc/athena/vision
-	@cp -rf allwpilib/wpilibc/src/main/native/include ../../installer/SynthesisDrive/include/wpilibc/athena/include
-	@cp -rf CameraServer.h ../../installer/SynthesisDrive/include/wpilibc/athena/include
-	@cp -rf VisionRunner.h ../../installer/SynthesisDrive/include/wpilibc/athena/include/vision
+	@cp -rf allwpilib/wpilibc/src/main/native/include \
+		../../installer/SynthesisDrive/include/wpilibc/athena/include
+	@#opencv related overrides
+	@cp -rf CameraServer.h \
+		../../installer/SynthesisDrive/include/wpilibc/athena/include
+	@cp -rf VisionRunner.h \
+		../../installer/SynthesisDrive/include/wpilibc/athena/include/vision
+	@#more wpilib headers
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include/wpilibc/shared\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include/wpilibc/shared
-	@cp -rf allwpilib/wpilibc/src/main/native/include ../../installer/SynthesisDrive/include/wpilibc/shared/include
+	@cp -rf allwpilib/wpilibc/src/main/native/include \
+		../../installer/SynthesisDrive/include/wpilibc/shared/include
+	@#wpiutil header files
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include/wpiutil\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include/wpiutil/src/main/native
-	@cp -rf wpiutil/src/main/native/include ../../installer/SynthesisDrive/include/wpiutil/src/main/native/include
+	@cp -rf wpiutil/src/main/native/include \
+		../../installer/SynthesisDrive/include/wpiutil/src/main/native/include
+	@#ntcore header files
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include/ntcore\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include/ntcore
-	@cp -rf ntcore/src/main/native/include ../../installer/SynthesisDrive/include/ntcore/include
+	@cp -rf ntcore/src/main/native/include \
+		../../installer/SynthesisDrive/include/ntcore/include
+	@#HAL libraries
 	@echo -e "\e[1m\e[32mINSTALL\e[39m lib/hal\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/lib/hal
-	@cp -rf build/hal/libHAL.a ../../installer/SynthesisDrive/lib/hal/libHAL.a
+	@cp -rf build/hal/libHAL.a \
+		../../installer/SynthesisDrive/lib/hal/libHAL.a
+	@#ntcore libraries
 	@echo -e "\e[1m\e[32mINSTALL\e[39m lib/ntcore\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/lib/ntcore
-	@cp -rf build/ntcore/libntcore-static.a ../../installer/SynthesisDrive/lib/ntcore/libntcore-static.a
+	@cp -rf build/ntcore/libntcore-static.a \
+		../../installer/SynthesisDrive/lib/ntcore/libntcore-static.a
+	@#wpilibc libraries
 	@echo -e "\e[1m\e[32mINSTALL\e[39m lib/cpp\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/lib/cpp
-	@cp -rf build/cpp/libwpilib.a ../../installer/SynthesisDrive/lib/cpp/libwpilib.a
+	@cp -rf build/cpp/libwpilib.a \
+		../../installer/SynthesisDrive/lib/cpp/libwpilib.a
+	@#wpilibj jar
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/wpilib.jar\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/jars
-	@cp -rf build/java/wpilib.jar ../../installer/SynthesisDrive/jars/wpilib.jar
+	@cp -rf build/java/wpilib.jar \
+		../../installer/SynthesisDrive/jars/wpilib.jar
+	@#ntcore jar
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/ntcore.jar\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/jars
-	@cp -rf build/java/ntcore.jar ../../installer/SynthesisDrive/jars/ntcore.jar
+	@cp -rf build/java/ntcore.jar \
+		../../installer/SynthesisDrive/jars/ntcore.jar
+	@#wpiutil jar
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/wpiutil.jar\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/jars
-	@cp -rf build/java/wpiutil.jar ../../installer/SynthesisDrive/jars/wpiutil.jar
+	@cp -rf build/java/wpiutil.jar \
+		../../installer/SynthesisDrive/jars/wpiutil.jar
+	@#wpilibj JNI dynamic libraries
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/wpilibJNI.dll\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/jars
-	@cp -rf build/java/wpilibJNI.dll ../../installer/SynthesisDrive/jars/wpilibJNI.dll
+	@cp -rf build/java/wpilibJNI.dll \
+		../../installer/SynthesisDrive/jars/wpilibJNI.dll
+	@#ntcore JNI dynamic libraries
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/ntcore.dll\e[0m"
-	@cp -rf build/java/ntcore.dll ../../installer/SynthesisDrive/jars/
+	@cp -rf build/java/ntcore.dll \
+		../../installer/SynthesisDrive/jars/
+	@#mingw dynamic libraries
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/libstc++-6.dll\e[0m"
-	@cp -rf build/java/libstdc++-6.dll ../../installer/SynthesisDrive/jars/
+	@cp -rf build/java/libstdc++-6.dll \
+		../../installer/SynthesisDrive/jars/
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/libgcc_s_seh.dll\e[0m"
-	@cp -rf build/java/libgcc_s_seh-1.dll ../../installer/SynthesisDrive/jars/
+	@cp -rf build/java/libgcc_s_seh-1.dll \
+		../../installer/SynthesisDrive/jars/
 	@echo -e "\e[1m\e[32mINSTALL\e[39m jars/libwinpthread-1.dll\e[0m"
-	@cp -rf build/java/libwinpthread-1.dll ../../installer/SynthesisDrive/jars/
+	@cp -rf build/java/libwinpthread-1.dll \
+		../../installer/SynthesisDrive/jars/
 
 clean:
 	rm -r build
