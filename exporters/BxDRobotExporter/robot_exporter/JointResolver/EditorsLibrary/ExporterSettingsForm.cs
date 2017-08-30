@@ -77,9 +77,8 @@ namespace EditorsLibrary
         /// <summary>
         /// The struct that stores settings for the <see cref="Exporter"/>
         /// </summary>
-        public struct PluginSettingsValues
+        public class PluginSettingsValues
         {
-            public Color InventorChildColor;
 
             public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged(Color Child, bool UseFancyColors, string SaveLocation)
@@ -87,8 +86,11 @@ namespace EditorsLibrary
                 SettingsChanged.Invoke(Child, UseFancyColors, SaveLocation);
             }
 
+            //General
             public string GeneralSaveLocation;
             public bool GeneralUseFancyColors;
+            //Inventor
+            public Color InventorChildColor;
         }
 
         /// <summary>
