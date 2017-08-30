@@ -1,3 +1,6 @@
+// this stuff is used internally to read driver station packets, but it isn't
+// exposed through the HAL
+
 #ifndef __FRC_DRIVER_STATION_H
 #define __FRC_DRIVER_STATION_H
 
@@ -7,10 +10,6 @@
 #include "OSAL/WaitSemaphore.h"
 #include "OSAL/OSAL.h"
 
-// To Robot
-// #include <NetworkCommunication/FRCComm.h>
-
-// To DS
 union RobotControlByte {
 	uint8_t control;
 	struct {
@@ -65,7 +64,6 @@ typedef struct
 } DynamicControlData;
 
 /*
-
 0		|	Upper byte for packet identification
 1		|	Lower byte for packet identification
 2		|	Unknown: 01
@@ -87,7 +85,6 @@ typedef struct
 18		|	sizeof pov?: 01 
 19 & 20	|	POV		|	FFFF = Center; 005A = Right; 0087 = Right-Bottom; 00B4 = Bottom; 00E1 = Left-Bottom; 010E = Left; 013B = Left-Top; 0000 = Top; 002D = Right-Top;
 Repeats 6-20 for every other controller
-
 */
 struct FRCCommonControlData2015 {
 	uint16_t packetIndex;
