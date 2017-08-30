@@ -20,7 +20,7 @@ Because wpilib is left unmodified, we are using submodules for wpilib and the ot
 
 ### `HELBuildTool`
 
-The user's robot code is currently built using the Cygwin MinGW compiler. This can be a pain for the end user, so we created a tool to compile and run code fairly easily. This tool is in `emulation/HELBuildTool` and is written in C# with windows forms. The main purpose is to allow the user to select a team number and robot code directory, followed by launching a Cygwin terminal to run `make` and build the code. The makefile used for this is `emulation/HELBuildTool/Makefile`, but is installed to a different location. When `HELBuildTool` is built in release mode, it will point towards the absolute path of the installed makefile, but when built in debug mode it will use the relative path from it's executable location.
+The user's robot code is currently built using the Cygwin MinGW compiler. This can be a pain for the end user, so we created a tool to compile and run code fairly easily. This tool is in `emulation/HELBuildTool` and is written in C# with windows forms. The main purpose is to allow the user to select a team number and robot code directory, followed by launching a Cygwin terminal to run `make` and build the code. The makefile used for this is `emulation/HELBuildTool/Makefile`, but is installed to a different location. When `HELBuildTool` is built in release mode, it will point towards the absolute path of the installed makefile, but when built in debug mode it will use the relative path from it's executable location. It is also important to make sure that it is built in the `x64` mode instead of `Any CPU` or things will break.
 
 The team number configuration is a little weird. The only reason that we need to know what the team number is is to connect to the driver station by selecting the correct IP address that corresponds to the loopback adapter. This usage is in `emulation/hel/lib/athena/FRCDriverStation.cpp`. Unfortunately, we don't know what the team number is when building the HAL because it is distributed as a binary to the user. For this to work, we link the HAL as a static library with `extern int teamID` declared. Then, when compiling the user code, we compile a separate file containing just the `teamID` definition. Things get a little more complicated because now we have to figure out when to recompile this file. Ideally, it should only be compiled when the preprocessor macro for `TEAM_ID` changes. Detecting this is quite difficult, and the file compiles very quickly, so we opted to recompile it every time that the code is linked. This still leaves the issue that the file is not linked if the user code is not changed, so we declared the output binary as `.PHONY` to force the target to be run every time.
 
@@ -44,11 +44,9 @@ The next step is selecting which packages to install. Cygwin has support for aut
 
 - `make`
 - `patch`
-- `mingw64-i686-gcc-g++`
+- `mingw64-x86_64-gcc-g++`
 
 Once all of these packages have been selected, you can click next until the progress bars appear, at which point Cygwin will install these packages to the root (`C:\cygwin64`).
-
-
 
 ### Basic Cygwin Usage
 
