@@ -19,7 +19,7 @@ namespace BxDRobotExporter
     public class StandardAddInServer : ApplicationAddInServer
     {
         #region Variables 
-        public static StandardAddInServer Instance;
+        public static StandardAddInServer Instance { get; set; }
 
         public bool PendingChanges
         {
@@ -185,7 +185,7 @@ namespace BxDRobotExporter
             ExportButtonCollection.Add(OneClickExportButton);
             ExportButtonCollection.Add(AdvancedExportButton);
             BeginPanel.CommandControls.AddSplitButton(GenericExportButton, ExportButtonCollection, true);
-
+            
             //Load Exported Robot
             LoadExportedRobotButton = ControlDefs.AddButtonDefinition("Load Exported Robot", "BxD:RobotExporter:LoadExportedRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Loads a robot you have already exported for further editing.", LoadExportedRobotIconSmall, LoadExportedRobotIconLarge);
             LoadExportedRobotButton.OnExecute += LoadExportedRobotButton_OnExecute;
@@ -650,8 +650,6 @@ namespace BxDRobotExporter
             Properties.Settings.Default.SaveLocation = SaveLocation;
             Properties.Settings.Default.Save();
         } 
-
-
         #endregion
         #endregion
 
@@ -734,6 +732,7 @@ namespace BxDRobotExporter
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
         public void ViewOccurrence(ComponentOccurrence occurrence, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = true)
         {
+            //The translation from the origin of occurrence
             Vector translation = occurrence.Transformation.Translation;
 
             Camera cam = MainApplication.ActiveView.Camera;
