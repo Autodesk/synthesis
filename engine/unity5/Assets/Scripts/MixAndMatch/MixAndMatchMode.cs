@@ -176,6 +176,8 @@ public class MixAndMatchMode : MonoBehaviour
             Text txt = infoText.GetComponent<Text>();
             txt.text = "";
 
+
+
             if (SimUI.changeAnalytics) //for analytics tracking
             {
                 Analytics.CustomEvent("Opened Mix and Match", new Dictionary<string, object>
@@ -199,7 +201,7 @@ public class MixAndMatchMode : MonoBehaviour
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(SelectedWheel),
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel),
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelLateralFriction(SelectedWheel));
-       
+        PlayerPrefs.SetString("simSelectedReplay", string.Empty);
         SceneManager.LoadScene("Scene");
 
         if (SimUI.changeAnalytics) //for analytics tracking

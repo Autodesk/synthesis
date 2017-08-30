@@ -29,7 +29,11 @@ IfFileExists "$INSTDIR" +1 +28
         DeleteRegKey HKLM SOFTWARE\Synthesis
 
         RMDir /r /REBOOTOK $INSTDIR
-        RMDir /r /REBOOTOK $APPDATA\Autodesk\ApplicationPlugins\Synthesis
+        Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
+        Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDFieldExporter.inventor.addin"
+        Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
+        Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
+        RMDIR /r /REBOOTOK $DOCUMENTS\RobotViewer
         ; Remove files and uninstaller
         Delete $INSTDIR\Synthesis.nsi
         Delete $INSTDIR\uninstall.exe
@@ -75,35 +79,122 @@ Section "Synthesis (required)"
   ;File "installer.nsi"
   File /r "Synthesis\*"
 
-CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\SynthesisLauncher.exe" ""
+  SetOutPath $INSTDIR
+  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\SynthesisLauncher.exe"
+  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\SynthesisLauncher.exe"
 
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayName" "Autodesk Synthesis"
 
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayIcon" "plantlogo(NoBack).ico"
 
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "Publisher" "Autodesk"
 
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "Readme" "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
 
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
+  ; Update this on release
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                 "DisplayVersion" "4.0.0.0"
 
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "3.0.1.0"
-
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
 
-createShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\SynthesisLauncher.exe"
 
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
-WriteUninstaller "uninstall.exe"
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
+  WriteUninstaller "uninstall.exe"
 
+SectionEnd
+
+Section "MixAndMatch Files"
+
+SetOutPath $DOCUMENTS\Synthesis\MixAndMatch
+
+File /r "MixAndMatch\*"
+
+SectionEnd
+
+Section
+
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR
+
+  File "SynthesisLauncher.exe"
+  File "Apache2.rtf"
+  File "README.pdf"
+
+SectionEnd
+
+Section /o "Standalone Robot Exporter (legacy)"
+
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR\RobotExporter
+
+  File /r "RobotExporter\*"
+
+SectionEnd
+
+Section /o "Standalone Field Exporter (legacy)"
+
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR\FieldExporter
+
+  File /r "FieldExporter\SimulatorAPI.dll"
+  File /r "FieldExporter\FieldExporter.exe"
+  File /r "FieldExporter\ConvexLibraryWrapper.dll"
+	
+SectionEnd
+
+Section "Robot Exporter Plugin (reccommended)"
+
+  ; Set output path to plugin directory
+  SetOutPath "$INSTDIR"
+  File /r "RobotExporter\RobotDistrib.bat"
+  File /r "RobotExporter\autodesk.BxDRobotExporter.inventor.addin"
+  ExecShell open "$INSTDIR\RobotDistrib.bat" SW_HIDE
+
+  SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
+  File /r "RobotExporter\BxDRobotExporter.dll"
+ 
+  SetOutPath "$DOCUMENTS\RobotViewer"
+  File /r "RobotExporter\Viewer\RobotViewer.exe"
+  File /r "RobotExporter\Viewer\OpenTK.dll"
+  File /r "RobotExporter\Viewer\OpenTK.GLControl.dll"
+  File /r "RobotExporter\Viewer\OGLViewer.dll"
+  File /r "RobotExporter\Viewer\SimulatorAPI.dll"
+
+SectionEnd
+
+Section "Field Exporter Plugin (reccommended)"
+	
+  ; Set output path to plugin directory
+  SetOutPath "$INSTDIR"
+  File /r "FieldExporter\FieldDistrib.bat"
+  File /r "FieldExporter\autodesk.BxDFieldExporter.inventor.addin"
+  ExecShell open "$INSTDIR\FieldDistrib.bat" SW_HIDE
+
+  SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
+  File /r "FieldExporter\BxDFieldExporter.dll"
+
+SectionEnd
+
+Section "Code Emulator (optional)"
+
+  SetOutPath $INSTDIR\SynthesisDrive
+
+  File /r "SynthesisDrive\*"
+
+  SetOutPath $INSTDIR\cygscripts
+  File /r "cygscripts\*"
+
+  ; installs cygwin
+  ExecWait "$INSTDIR\cygscripts\cygpac.bat"
+  
 SectionEnd
 
 Section "Robot Files"
@@ -122,83 +213,26 @@ File /r "Fields\*"
 
 SectionEnd
 
-Section
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR
-
-  File "SynthesisLauncher.exe"
-  File "Apache2.rtf"
-  File "README.pdf"
-
-SectionEnd
-
-Section "Robot Exporter (optional)"
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\RobotExporter
-
-  File /r "RobotExporter\*"
-
-SectionEnd
-
-Section "Legacy Field Exporter (optional)"
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\FieldExporter
-
-  File /r "FieldExporter\SimulatorAPI.dll"
-  File /r "FieldExporter\FieldExporter.exe"
-  File /r "FieldExporter\ConvexLibraryWrapper.dll"
-	
-SectionEnd
-
-Section "Field Exporter Plugin (optional)"
-	
-  ; Set output path to plugin directory
-  SetOutPath "$APPDATA\Autodesk\Application Plugins\BxDFieldExporter"
-  
-  ; File /r "FieldExporter\BxDFieldExporter.dll"
-  ; File /r "FieldExporter\Autodesk.BxdFieldExporter.Inventor.addin"
-
-SectionEnd
-
-Section "Code Emulator (optional)"
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\SynthesisDrive
-
-  ; Put file there
-  ;File "example2.nsi"
-  File /r "SynthesisDrive\*"
-
-  SetOutPath $INSTDIR\cygscripts
-  File /r "cygscripts\*"
-
-  ExecShellWait "open" "$INSTDIR\cygscripts\cygpac.bat" "mingw64-x86_64-gcc-g++,make" SW_HIDE
-  
-SectionEnd
-
 Section "Uninstall"
 
   ; Remove registry keys
   DeleteRegKey HKLM SOFTWARE\Synthesis
 
   RMDir /r /REBOOTOK $INSTDIR
-  RMDir /r /REBOOTOK $APPDATA\Autodesk\ApplicationPlugins\Synthesis
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDFieldExporter.inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
   ; Remove files and uninstaller
   Delete $INSTDIR\Synthesis.nsi
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\*
-  Delete $APPDATA\Autodesk\ApplicationPlugins\*
-  Delete %ProgramData%\Autodesk\ApplicationPlugins\BxDFieldExporter
-
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Synthesis.lnk"
   Delete "$DESKTOP\Synthesis.lnk"
   Delete "$DESKTOP\BXD Synthesis.lnk"
 
-        ;Remvoe Installshield shortcuts
+  ; Remove Installshield shortcuts
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   Delete "$SMPROGRAMS\BXD Synthesis.lnk"

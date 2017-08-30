@@ -58,7 +58,6 @@ namespace SynthesisLauncher
             InitializeComponent();
             this.fileInfoList = fileInfoList;
             this.webClient = webClient;
-            this.webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
             downloadWorker.RunWorkerCompleted += DownloadWorker_RunWorkerCompleted;
 
             progressBar.Maximum = fileInfoList.Count;
@@ -82,6 +81,8 @@ namespace SynthesisLauncher
             if(!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\SynthesisTEMP"))
                 Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\SynthesisTEMP");
             var targetDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\SynthesisTEMP";
+            this.webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
+
             foreach (ContentDistributor.FileInfo fileInfo in fileInfoList)
             {
                 try
@@ -91,17 +92,22 @@ namespace SynthesisLauncher
                     UpdateTextExtracting();
                     if (fileInfo.type == ContentDistributor.FileType.ROBOT)
                     {
-                        ZipFile.ExtractToDirectory(targetDir + "\\" + Path.GetFileName(fileInfo.path), Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Robots");
+                        ZipFile.ExtractToDirectory(targetDir + "\\" + Path.GetFileName(fileInfo.path), Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Robots\" + fileInfo.name);
                     }
                     else
                     {
-                        ZipFile.ExtractToDirectory(targetDir + "\\" + Path.GetFileName(fileInfo.path), Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Fields");
+                        ZipFile.ExtractToDirectory(targetDir + "\\" + Path.GetFileName(fileInfo.path), Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Fields\" + fileInfo.name);
                     }
                     File.Delete(targetDir + "\\" + Path.GetFileName(fileInfo.path));
+                    ProgressStep();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    MessageBox.Show("An error has occurred. Please try again later.");
+#if DEBUG
+                    MessageBox.Show(ex.ToString());
+#else
+                    MessageBox.Show("An error has occurred. Please try again later."); 
+#endif
                     throw; 
                 }
             }

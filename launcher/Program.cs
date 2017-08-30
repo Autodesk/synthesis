@@ -19,8 +19,5 @@ namespace SynthesisLauncher
             ContentDistributor.ListFiles();
             Application.Run(new LaunchForm());
         }
-
-        
-
     }
 }

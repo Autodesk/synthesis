@@ -124,8 +124,12 @@
   <data name="menuStrip1.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="menuStrip1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 2, 0, 2</value>
+  </data>
   <data name="menuStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>469, 28</value>
+    <value>352, 24</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="menuStrip1.TabIndex" type="System.Int32, mscorlib">
@@ -147,54 +151,47 @@
     <value>9</value>
   </data>
   <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>44, 24</value>
+    <value>37, 20</value>
   </data>
   <data name="fileToolStripMenuItem.Text" xml:space="preserve">
     <value>File</value>
   </data>
   <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>120, 26</value>
+    <value>103, 22</value>
   </data>
   <data name="closeToolStripMenuItem.Text" xml:space="preserve">
     <value>Close</value>
   </data>
   <data name="tutorialsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>78, 24</value>
+    <value>65, 20</value>
   </data>
   <data name="tutorialsToolStripMenuItem.Text" xml:space="preserve">
     <value>Tutorials</value>
   </data>
   <data name="robotExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>172, 26</value>
+    <value>152, 22</value>
   </data>
   <data name="robotExportToolStripMenuItem.Text" xml:space="preserve">
     <value>Robot Export</value>
   </data>
   <data name="fieldExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>172, 26</value>
+    <value>152, 22</value>
   </data>
   <data name="fieldExportToolStripMenuItem.Text" xml:space="preserve">
     <value>Field Export</value>
   </data>
-  <data name="jointsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>172, 26</value>
+  <data name="simulatorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
   </data>
-  <data name="jointsToolStripMenuItem.Text" xml:space="preserve">
-    <value>Joints</value>
+  <data name="simulatorToolStripMenuItem.Text" xml:space="preserve">
+    <value>Simulator</value>
   </data>
-  <data name="javaToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>172, 26</value>
+  <data name="emulatorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
   </data>
-  <data name="javaToolStripMenuItem.Text" xml:space="preserve">
-    <value>Java</value>
+  <data name="emulatorToolStripMenuItem.Text" xml:space="preserve">
+    <value>Emulator</value>
   </data>
-  <data name="driverstationToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>172, 26</value>
-  </data>
-  <data name="driverstationToolStripMenuItem.Text" xml:space="preserve">
-    <value>Driverstation</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="synthesisButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -202,10 +199,13 @@
     <value>NoControl</value>
   </data>
   <data name="synthesisButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>65, 123</value>
+    <value>49, 100</value>
+  </data>
+  <data name="synthesisButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
   </data>
   <data name="synthesisButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>328, 78</value>
+    <value>246, 63</value>
   </data>
   <data name="synthesisButton.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -229,10 +229,13 @@
     <value>Flat</value>
   </data>
   <data name="fExporterButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>65, 368</value>
+    <value>49, 299</value>
+  </data>
+  <data name="fExporterButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
   </data>
   <data name="fExporterButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>328, 76</value>
+    <value>246, 62</value>
   </data>
   <data name="fExporterButton.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -259,16 +262,19 @@
     <value>NoControl</value>
   </data>
   <data name="rExporterButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>65, 275</value>
+    <value>49, 223</value>
+  </data>
+  <data name="rExporterButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
   </data>
   <data name="rExporterButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>328, 76</value>
+    <value>246, 62</value>
   </data>
   <data name="rExporterButton.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
   </data>
   <data name="rExporterButton.Text" xml:space="preserve">
-    <value>Robot Exporter</value>
+    <value>Robot Exporter (Legacy)</value>
   </data>
   <data name="&gt;&gt;rExporterButton.Name" xml:space="preserve">
     <value>rExporterButton</value>
@@ -289,10 +295,13 @@
     <value>NoControl</value>
   </data>
   <data name="codeViewerButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>65, 512</value>
+    <value>49, 416</value>
+  </data>
+  <data name="codeViewerButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
   </data>
   <data name="codeViewerButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>328, 76</value>
+    <value>246, 62</value>
   </data>
   <data name="codeViewerButton.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -312,36 +321,6 @@
   <data name="&gt;&gt;codeViewerButton.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="liveUpdater.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="liveUpdater.Location" type="System.Drawing.Point, System.Drawing">
-    <value>62, 616</value>
-  </data>
-  <data name="liveUpdater.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>500, 300</value>
-  </data>
-  <data name="liveUpdater.Size" type="System.Drawing.Size, System.Drawing">
-    <value>68, 17</value>
-  </data>
-  <data name="liveUpdater.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
-  </data>
-  <data name="liveUpdater.Text" xml:space="preserve">
-    <value>Changes:</value>
-  </data>
-  <data name="&gt;&gt;liveUpdater.Name" xml:space="preserve">
-    <value>liveUpdater</value>
-  </data>
-  <data name="&gt;&gt;liveUpdater.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;liveUpdater.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;liveUpdater.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
   <data name="label3.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -349,10 +328,13 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>63, 80</value>
+    <value>47, 65</value>
+  </data>
+  <data name="label3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 0, 2, 0</value>
   </data>
   <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>109, 25</value>
+    <value>87, 20</value>
   </data>
   <data name="label3.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -370,7 +352,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="label4.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -379,10 +361,13 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>63, 234</value>
+    <value>47, 190</value>
+  </data>
+  <data name="label4.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 0, 2, 0</value>
   </data>
   <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>100, 25</value>
+    <value>80, 20</value>
   </data>
   <data name="label4.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
@@ -400,7 +385,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label4.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="label5.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -409,10 +394,13 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>60, 472</value>
+    <value>45, 384</value>
+  </data>
+  <data name="label5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 0, 2, 0</value>
   </data>
   <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>66, 25</value>
+    <value>51, 20</value>
   </data>
   <data name="label5.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
@@ -430,22 +418,28 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label5.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
+  </data>
+  <data name="buildLabel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Right</value>
   </data>
   <data name="buildLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="buildLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>354, 721</value>
+    <value>301, 517</value>
+  </data>
+  <data name="buildLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 0, 2, 0</value>
   </data>
   <data name="buildLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>39, 17</value>
+    <value>40, 13</value>
   </data>
   <data name="buildLabel.TabIndex" type="System.Int32, mscorlib">
     <value>13</value>
   </data>
   <data name="buildLabel.Text" xml:space="preserve">
-    <value>Build</value>
+    <value>0.0.0.0</value>
   </data>
   <data name="&gt;&gt;buildLabel.Name" xml:space="preserve">
     <value>buildLabel</value>
@@ -457,6 +451,36 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buildLabel.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="updateLabel.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="updateLabel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="updateLabel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>46, 493</value>
+  </data>
+  <data name="updateLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>35, 13</value>
+  </data>
+  <data name="updateLabel.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <data name="updateLabel.Text" xml:space="preserve">
+    <value>label1</value>
+  </data>
+  <data name="&gt;&gt;updateLabel.Name" xml:space="preserve">
+    <value>updateLabel</value>
+  </data>
+  <data name="&gt;&gt;updateLabel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;updateLabel.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;updateLabel.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -466,10 +490,10 @@
     <value>25</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>8, 16</value>
+    <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>469, 747</value>
+    <value>352, 539</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -6643,6 +6667,9 @@
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 </value>
   </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
+  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Autodesk Synthesis</value>
   </data>
@@ -6676,22 +6703,16 @@
   <data name="&gt;&gt;fieldExportToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;jointsToolStripMenuItem.Name" xml:space="preserve">
-    <value>jointsToolStripMenuItem</value>
+  <data name="&gt;&gt;simulatorToolStripMenuItem.Name" xml:space="preserve">
+    <value>simulatorToolStripMenuItem</value>
   </data>
-  <data name="&gt;&gt;jointsToolStripMenuItem.Type" xml:space="preserve">
+  <data name="&gt;&gt;simulatorToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;javaToolStripMenuItem.Name" xml:space="preserve">
-    <value>javaToolStripMenuItem</value>
+  <data name="&gt;&gt;emulatorToolStripMenuItem.Name" xml:space="preserve">
+    <value>emulatorToolStripMenuItem</value>
   </data>
-  <data name="&gt;&gt;javaToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;driverstationToolStripMenuItem.Name" xml:space="preserve">
-    <value>driverstationToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;driverstationToolStripMenuItem.Type" xml:space="preserve">
+  <data name="&gt;&gt;emulatorToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

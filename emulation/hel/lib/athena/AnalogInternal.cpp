@@ -16,8 +16,6 @@
 
 namespace hal {
 priority_recursive_mutex analogRegisterWindowMutex;
-//std::unique_ptr<tAI> analogInputSystem;
-//std::unique_ptr<tAO> analogOutputSystem;
 
 IndexedHandleResource<HAL_AnalogInputHandle, hal::AnalogPort, kNumAnalogInputs,
                       HAL_HandleEnum::AnalogInput>
@@ -36,10 +34,6 @@ void initializeAnalog(int32_t* status) {
   if (analogSystemInitialized) return;
   std::lock_guard<priority_recursive_mutex> sync(analogRegisterWindowMutex);
   if (analogSystemInitialized) return;
-  /*analogInputSystem.reset(tAI::create(status));
-  analogOutputSystem.reset(tAO::create(status));
-  setAnalogNumChannelsToActivate(kNumAnalogInputs);
-  setAnalogSampleRate(kDefaultSampleRate, status);*/
   analogSystemInitialized = true;
 }
 
@@ -49,9 +43,6 @@ void initializeAnalog(int32_t* status) {
  * @return Active channels.
  */
 int32_t getAnalogNumActiveChannels(int32_t* status) {
-  /*int32_t scanSize = analogInputSystem->readConfig_ScanSize(status);
-  if (scanSize == 0) return 8;
-  return scanSize;*/
   return 0;
 }
 
@@ -79,33 +70,7 @@ int32_t getAnalogNumChannelsToActivate(int32_t* status) {
  *
  * @param samplesPerSecond The number of samples per channel per second.
  */
-void setAnalogSampleRate(double samplesPerSecond, int32_t* status) {
-  // TODO: This will change when variable size scan lists are implemented.
-  // TODO: Need double comparison with epsilon.
-  // wpi_assert(!sampleRateSet || GetSampleRate() == samplesPerSecond);
-  /*analogSampleRateSet = true;
-
-  // Compute the convert rate
-  uint32_t ticksPerSample =
-      static_cast<uint32_t>(static_cast<double>(kTimebase) / samplesPerSecond);
-  uint32_t ticksPerConversion =
-      ticksPerSample / getAnalogNumChannelsToActivate(status);
-  // ticksPerConversion must be at least 80
-  if (ticksPerConversion < 80) {
-    if ((*status) >= 0) *status = SAMPLE_RATE_TOO_HIGH;
-    ticksPerConversion = 80;
-  }
-
-  // Atomically set the scan size and the convert rate so that the sample rate
-  // is constant
-  tAI::tConfig config;
-  config.ScanSize = getAnalogNumChannelsToActivate(status);
-  config.ConvertRate = ticksPerConversion;
-  analogInputSystem->writeConfig(config, status);
-
-  // Indicate that the scan size has been commited to hardware.
-  setAnalogNumChannelsToActivate(0);*/
-}
+void setAnalogSampleRate(double samplesPerSecond, int32_t* status) {}
 
 /**
  * Set the number of active channels.

@@ -9,9 +9,7 @@ tags
 *.userprefs
 docs/
 build/
-installer/FieldExporter
 installer/Fields
-installer/RobotExporter
 installer/Robots
 installer/Synthesis
 installer/SynthesisDrive
