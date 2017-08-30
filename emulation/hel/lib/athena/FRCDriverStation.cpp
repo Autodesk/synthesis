@@ -49,9 +49,6 @@ static int newDSDataAvailableCounter{0};
 
 FRCCommonControlData lastDataPacket;
 DynamicControlData lastDynamicControlPacket [32];
-/*WaitSemaphore newDataSemInternal;
-ReentrantSemaphore readingSem;
-ReentrantSemaphore writingSem;*/
 WaitSemaphore newDataSemInternal;
 WaitSemaphore* newDataSem = NULL;
 ReentrantSemaphore readingSem;
@@ -71,9 +68,6 @@ void DriverStationThread() {
 	int teamID;
 	sscanf(teamIDString, "%d", &teamID);
 	uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
-	//uint32_t network = 0xFFFFFFFF; // 127.0.0.1
-  //10.0.2.5
-  //uint32_t network = (10 << 24) | 0 | 2 << 8 | 0;
 
 	robotAddress.sin_family = AF_INET;
 	robotAddress.sin_addr.s_addr = htonl(network | 2);
@@ -89,12 +83,6 @@ void DriverStationThread() {
 		return;
 	}
 
-  /*int option = 1;
-  if(setsockopt(robotSocket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) != 0) {
-    fprintf(stderr, "Could not set socket options for ROBOT!\n");
-    perror("setsockopt");
-  }*/
-
 	if (bind(robotSocket, (const struct sockaddr *)&robotAddress, sizeof(robotAddress)) != 0) {
 		fprintf(stderr, "Could not bind socket ROBOT!  Did you configure your loopback adapters?\n");
     perror("bind");
@@ -108,9 +96,6 @@ void DriverStationThread() {
 	}
 
 	char buffer[1024];
-	/*for (int i = 0; i < 32; i++) {
-		memset(&lastDynamicControlPacket [i], 0, sizeof(lastDynamicControlPacket [i]));
-	}*/
 	bool lockedResync = false;
 
 	// Read from the DS thread
@@ -170,14 +155,6 @@ void DriverStationThread() {
 			p2014.dsID_Alliance = alliance;
 			p2014.dsID_Position = position;
 
-			/*memcpy(&p2014.stick0Axes[0], &p2015.axis0[0], (size_t)6);
-			memcpy(&p2014.stick1Axes[0], &p2015.axis1[0], (size_t)6);
-			memcpy(&p2014.stick2Axes[0], &p2015.axis2[0], (size_t)6);
-			memcpy(&p2014.stick3Axes[0], &p2015.axis3[0], (size_t)6);
-			p2014.stick0Buttons = p2015.buttons0;
-			p2014.stick1Buttons = p2015.buttons1;
-			p2014.stick2Buttons = p2015.buttons2;
-			p2014.stick3Buttons = p2015.buttons3;*/
       int joystick_idx = 0;
       size_t address = (size_t)&buffer[6];
       while(address < (size_t)&buffer + len) {
@@ -186,7 +163,6 @@ void DriverStationThread() {
         address += 2; //skip the next byte
 
         uint8_t num_axes = *(uint8_t*)address;
-        //printf("%d\n", num_axes);
         p2014.joysticks[joystick_idx].num_axes = num_axes;
         address += 1;
         for(int axis = 0; axis < num_axes; axis++) {
@@ -216,37 +192,10 @@ void DriverStationThread() {
 			memcpy(&lastDataPacket, &p2014, sizeof(p2014));
 		}
 
-		// Reading dynamic data
-		/*{
-			int head = address;
-			uint8_t size;
-			uint8_t id;
-			while (head < 1024 && (size = buffer[head]) > 0) {
-				uint8_t id = buffer[head+1];
-				lastDynamicControlPacket [id].id=id;
-				lastDynamicControlPacket [id].size=size;
-				if (lastDynamicControlPacket [id].data != NULL) {
-					//delete lastDynamicControlPacket [id].data; // getting a segfault??
-					lastDynamicControlPacket [id].data = NULL;
-				}
-				lastDynamicControlPacket [id].data = (uint8_t*) malloc(size +2);
-				memcpy(lastDynamicControlPacket [id].data, &buffer[head], size+2);
-				head += size;
-			}
-		}*/
-
 		{
 			// Handle endians
 			lastDataPacket.packetIndex = ntohs(lastDataPacket.packetIndex);
 			lastDataPacket.teamID = ntohs(lastDataPacket.teamID);
-			//lastDataPacket.analog1 = ntohs(lastDataPacket.analog1);
-			//lastDataPacket.analog2 = ntohs(lastDataPacket.analog2);
-			//lastDataPacket.analog3 = ntohs(lastDataPacket.analog3);
-			//lastDataPacket.analog4 = ntohs(lastDataPacket.analog4);
-			//lastDataPacket.stick0Buttons = ntohs(lastDataPacket.stick0Buttons);
-			//lastDataPacket.stick1Buttons = ntohs(lastDataPacket.stick1Buttons);
-			//lastDataPacket.stick2Buttons = ntohs(lastDataPacket.stick2Buttons);
-			//lastDataPacket.stick3Buttons = ntohs(lastDataPacket.stick3Buttons);
 		}
 
 		readingSem.give();
@@ -266,7 +215,6 @@ void DriverStationThread() {
 		char sendBuffer[2048];
 		writingSem.take();
 		memset(&sendBuffer, 0, sizeof(sendBuffer));
-		//memcpy(&sendBuffer, &ctl,  sizeof(FRCRobotControl));
 
 		// Convert 2014 packets to 2015
 		{
@@ -281,8 +229,6 @@ void DriverStationThread() {
 			c2015.mode += (ctl.control.autonomous ? 2 : 0); // sets 2nd bit
 			c2015.state = 0x30; // TODO change
 			memcpy(&sendBuffer, &c2015, sizeof(c2015));
-
-			//printf("%s\n", ctl.control.enabled ? "true" : "false");
 		}
 
 		uint32_t pos = 0x21;
@@ -310,63 +256,12 @@ void DriverStationThread() {
 extern "C" {
 int32_t HAL_SetErrorData(const char* errors, int32_t errorsLength,
                          int32_t waitMs) {
-  //return setErrorData(errors, errorsLength, waitMs);
   return 0;
 }
 
 int32_t HAL_SendError(HAL_Bool isError, int32_t errorCode, HAL_Bool isLVCode,
                       const char* details, const char* location,
                       const char* callStack, HAL_Bool printMsg) {
-  // Avoid flooding console by keeping track of previous 5 error
-  // messages and only printing again if they're longer than 1 second old.
-  /*static constexpr int KEEP_MSGS = 5;
-  std::lock_guard<hal::priority_mutex> lock(msgMutex);
-  static std::string prevMsg[KEEP_MSGS];
-  static std::chrono::time_point<std::chrono::steady_clock>
-      prevMsgTime[KEEP_MSGS];
-  static bool initialized = false;
-  if (!initialized) {
-    for (int i = 0; i < KEEP_MSGS; i++) {
-      prevMsgTime[i] =
-          std::chrono::steady_clock::now() - std::chrono::seconds(2);
-    }
-    initialized = true;
-  }
-
-  auto curTime = std::chrono::steady_clock::now();
-  int i;
-  for (i = 0; i < KEEP_MSGS; ++i) {
-    if (prevMsg[i] == details) break;
-  }
-  int retval = 0;
-  if (i == KEEP_MSGS || (curTime - prevMsgTime[i]) >= std::chrono::seconds(1)) {
-    retval = FRC_NetworkCommunication_sendError(isError, errorCode, isLVCode,
-                                                details, location, callStack);
-    if (printMsg) {
-      if (location && location[0] != '\0') {
-        std::fprintf(stderr, "%s at %s: ", isError ? "Error" : "Warning",
-                     location);
-      }
-      std::fprintf(stderr, "%s\n", details);
-      if (callStack && callStack[0] != '\0') {
-        std::fprintf(stderr, "%s\n", callStack);
-      }
-    }
-    if (i == KEEP_MSGS) {
-      // replace the oldest one
-      i = 0;
-      auto first = prevMsgTime[0];
-      for (int j = 1; j < KEEP_MSGS; ++j) {
-        if (prevMsgTime[j] < first) {
-          first = prevMsgTime[j];
-          i = j;
-        }
-      }
-      prevMsg[i] = details;
-    }
-    prevMsgTime[i] = curTime;
-  }
-  return retval;*/
   return 0;
 }
 
@@ -378,18 +273,10 @@ int32_t HAL_GetControlWord(HAL_ControlWord* controlWord) {
   controlWord->fmsAttached = ctl.control.fmsAttached;
   controlWord->dsAttached = true;
   controlWord->eStop = !ctl.control.notEStop;
-  //printf("%d\n", controlWord->autonomous);
-
-  /*return FRC_NetworkCommunication_getControlWord(
-      reinterpret_cast<ControlWord_t*>(controlWord));*/
   return 0;
 }
 
 HAL_AllianceStationID HAL_GetAllianceStation(int32_t* status) {
-  /*HAL_AllianceStationID allianceStation;
-  *status = FRC_NetworkCommunication_getAllianceStation(
-      reinterpret_cast<AllianceStationID_t*>(&allianceStation));
-  return allianceStation;*/
   return HAL_AllianceStationID_kRed1;
 }
 
@@ -400,15 +287,9 @@ void HAL_FreeJoystickName(char* name) {
 int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes) {
   HAL_JoystickAxesInt axesInt;
   axesInt.count = lastDataPacket.joysticks[joystickNum].num_axes;
-  //memcpy(axesInt.axes, lastDataPacket.joysticks[joystickNum].axes, 12);
   for(int i = 0; i < axesInt.count; i++) {
     axesInt.axes[i] = lastDataPacket.joysticks[joystickNum].axes[i];
   }
-
-  /*int retVal = FRC_NetworkCommunication_getJoystickAxes(
-      joystickNum, reinterpret_cast<JoystickAxes_t*>(&axesInt),
-      HAL_kMaxJoystickAxes);*/
-
   // copy integer values to double values
   axes->count = axesInt.count;
   // current scaling is -128 to 127, can easily be patched in the future by
@@ -421,18 +302,11 @@ int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes) {
       axes->axes[i] = value / 127.0;
     }
   }
-
-  //return retVal;
-
   return 0;
 }
 
 int32_t HAL_GetJoystickPOVs(int32_t joystickNum, HAL_JoystickPOVs* povs) {
   povs->count = 0;
-  /*return FRC_NetworkCommunication_getJoystickPOVs(
-      joystickNum, reinterpret_cast<JoystickPOV_t*>(povs),
-      HAL_kMaxJoystickPOVs);*/
-
   return 0;
 }
 
@@ -440,10 +314,6 @@ int32_t HAL_GetJoystickButtons(int32_t joystickNum,
                                HAL_JoystickButtons* buttons) {
   buttons->count = lastDataPacket.joysticks[joystickNum].num_buttons;
   buttons->buttons = lastDataPacket.joysticks[joystickNum].buttons;
-  //printf("%d\n", buttons->buttons);
-
-  /*return FRC_NetworkCommunication_getJoystickButtons(
-      joystickNum, &buttons->buttons, &buttons->count);*/
   return 0;
 }
 
@@ -466,22 +336,6 @@ int32_t HAL_GetJoystickDescriptor(int32_t joystickNum,
   desc->axisCount = lastDataPacket.joysticks[joystickNum].num_axes;
   desc->buttonCount = lastDataPacket.joysticks[joystickNum].num_buttons;
   desc->povCount = 0;
-  /*desc->isXbox = 0;
-  desc->type = std::numeric_limits<uint8_t>::max();
-  desc->name[0] = '\0';
-  desc->axisCount =
-      HAL_kMaxJoystickAxes; 
-  desc->buttonCount = 0;
-  desc->povCount = 0;
-  int retval = FRC_NetworkCommunication_getJoystickDesc(
-      joystickNum, &desc->isXbox, &desc->type,
-      reinterpret_cast<char*>(&desc->name), &desc->axisCount,
-      reinterpret_cast<uint8_t*>(&desc->axisTypes), &desc->buttonCount,
-      &desc->povCount);
-  if (retval != 0) {
-    desc->axisCount = 0;
-  }
-  return retval;*/
   return 0;
 }
 
@@ -495,89 +349,37 @@ HAL_Bool HAL_GetJoystickIsXbox(int32_t joystickNum) {
 }
 
 int32_t HAL_GetJoystickType(int32_t joystickNum) {
-  /*HAL_JoystickDescriptor joystickDesc;
-  if (HAL_GetJoystickDescriptor(joystickNum, &joystickDesc) < 0) {
-    return -1;
-  } else {
-    return joystickDesc.type;
-  }*/
   return 0;
 }
 
 char* HAL_GetJoystickName(int32_t joystickNum) {
-  /*HAL_JoystickDescriptor joystickDesc;
-  if (HAL_GetJoystickDescriptor(joystickNum, &joystickDesc) < 0) {
-    char* name = static_cast<char*>(std::malloc(1));
-    name[0] = '\0';
-    return name;
-  } else {
-    size_t len = std::strlen(joystickDesc.name);
-    char* name = static_cast<char*>(std::malloc(len + 1));
-    std::strncpy(name, joystickDesc.name, len);
-    name[len] = '\0';
-    return name;
-  }*/
   return 0;
 }
 
 int32_t HAL_GetJoystickAxisType(int32_t joystickNum, int32_t axis) {
-  /*HAL_JoystickDescriptor joystickDesc;
-  if (HAL_GetJoystickDescriptor(joystickNum, &joystickDesc) < 0) {
-    return -1;
-  } else {
-    return joystickDesc.axisTypes[axis];
-  }*/
   return 0;
 }
 
 int32_t HAL_SetJoystickOutputs(int32_t joystickNum, int64_t outputs,
                                int32_t leftRumble, int32_t rightRumble) {
-  /*return FRC_NetworkCommunication_setJoystickOutputs(joystickNum, outputs,
-                                                     leftRumble, rightRumble);*/
   return 0;
 }
 
 double HAL_GetMatchTime(int32_t* status) {
-  /*float matchTime;
-  *status = FRC_NetworkCommunication_getMatchTime(&matchTime);
-  return matchTime;*/
   return 0.0;
 }
 
-void HAL_ObserveUserProgramStarting(void) {
-  //FRC_NetworkCommunication_observeUserProgramStarting();
-}
+void HAL_ObserveUserProgramStarting(void) {}
 
-void HAL_ObserveUserProgramDisabled(void) {
-  //FRC_NetworkCommunication_observeUserProgramDisabled();
-}
+void HAL_ObserveUserProgramDisabled(void) {}
 
-void HAL_ObserveUserProgramAutonomous(void) {
-  //FRC_NetworkCommunication_observeUserProgramAutonomous();
-}
+void HAL_ObserveUserProgramAutonomous(void) {}
 
-void HAL_ObserveUserProgramTeleop(void) {
-  //FRC_NetworkCommunication_observeUserProgramTeleop();
-}
+void HAL_ObserveUserProgramTeleop(void) {}
 
-void HAL_ObserveUserProgramTest(void) {
-  //FRC_NetworkCommunication_observeUserProgramTest();
-}
+void HAL_ObserveUserProgramTest(void) {}
 
 bool HAL_IsNewControlData(void) {
-  // There is a rollover error condition here. At Packet# = n * (uintmax), this
-  // will return false when instead it should return true. However, this at a
-  // 20ms rate occurs once every 2.7 years of DS connected runtime, so not
-  // worth the cycles to check.
-  /*thread_local int lastCount{-1};
-  int currentCount = 0;
-  {
-    std::unique_lock<hal::priority_mutex> lock(newDSDataAvailableMutex);
-    currentCount = newDSDataAvailableCounter;
-  }
-  if (lastCount == currentCount) return false;
-  lastCount = currentCount;
-  return true;*/
   return false;
 }
 
@@ -592,21 +394,6 @@ void HAL_WaitForDSData(void) { /*HAL_WaitForDSDataTimeout(0);*/ }
  * time has passed. Returns true on new data, false on timeout.
  */
 HAL_Bool HAL_WaitForDSDataTimeout(double timeout) {
-  /*auto timeoutTime =
-      std::chrono::steady_clock::now() + std::chrono::duration<double>(timeout);
-
-  std::unique_lock<hal::priority_mutex> lock(newDSDataAvailableMutex);
-  int currentCount = newDSDataAvailableCounter;
-  while (newDSDataAvailableCounter == currentCount) {
-    if (timeout > 0) {
-      auto timedOut = newDSDataAvailableCond.wait_until(lock, timeoutTime);
-      if (timedOut == std::cv_status::timeout) {
-        return false;
-      }
-    } else {
-      newDSDataAvailableCond.wait(lock);
-    }
-  }*/
   return true;
 }
 
@@ -618,13 +405,6 @@ extern int NetCommRPCProxy_SetOccurFuncPointer(
 constexpr int32_t refNumber = 42;
 
 static int32_t newDataOccur(uint32_t refNum) {
-  /*// Since we could get other values, require our specific handle
-  // to signal our threads
-  if (refNum != refNumber) return 0;
-  std::lock_guard<hal::priority_mutex> lock(newDSDataAvailableMutex);
-  // Nofify all threads
-  newDSDataAvailableCounter++;
-  newDSDataAvailableCond.notify_all();*/
   return 0;
 }
 
