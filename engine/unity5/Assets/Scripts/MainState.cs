@@ -118,7 +118,6 @@ public class MainState : SimState
                 return;
             }
 
-            Debug.Log("Robot Type Manager isMixAndMatch:" + RobotTypeManager.IsMixAndMatch);
             if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
             {
                 AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
@@ -128,10 +127,6 @@ public class MainState : SimState
             if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
             {
                 Debug.Log(LoadManipulator(RobotTypeManager.ManipulatorPath) ? "Load manipulator success" : "Load manipulator failed");
-            }
-            else
-            {
-
             }
         }
         else
@@ -525,7 +520,7 @@ public class MainState : SimState
             robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
-            robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
+            if(!robot.LoadManipulator(manipulatorDirectory, robot.gameObject)) return false;
             return true;
         }
         return false;

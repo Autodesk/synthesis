@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class RobotTypeManager{
+/// <summary>
+/// Static class used to temporarily store properties of a robot before they are read and assigned by the Robot.cs class
+/// </summary>
+public static class RobotTypeManager
+{
     public static bool IsMixAndMatch;
     public static bool HasManipulator;
     public static bool IsMecanum;
