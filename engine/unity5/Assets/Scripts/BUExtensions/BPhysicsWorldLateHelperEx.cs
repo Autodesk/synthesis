@@ -6,6 +6,12 @@ using System.Text;
 
 namespace Assets.Scripts.BUExtensions
 {
+    /// <summary>
+    /// This class is used to override the <see cref="BPhysicsWorldLateHelper"/> class normally used by
+    /// the <see cref="BPhysicsWorld"/> component. This should be attached to the same GameObject as the
+    /// BPhysicsWorld. That way, when the BPhysicsWorld is initialized, it finds an instance
+    /// of this component and uses it instead of creating its own <see cref="BPhysicsWorldLateHelper"/>.
+    /// </summary>
     public class BPhysicsWorldLateHelperEx : BPhysicsWorldLateHelper
     {
         protected override void FixedUpdate()
