@@ -20,11 +20,6 @@ public class MaMSimUI : MonoBehaviour {
         FindElements();
     }
 
-    private void Update()
-    {
-
-    }
-
     private void OnGUI()
     {
         UserMessageManager.Render();
@@ -52,7 +47,6 @@ public class MaMSimUI : MonoBehaviour {
         else
         {
             simUI.EndOtherProcesses();
-            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is true ,1 is false
             mixAndMatchPanel.SetActive(true);
         }
     }
@@ -67,7 +61,6 @@ public class MaMSimUI : MonoBehaviour {
         else
         {
             simUI.EndOtherProcesses();
-            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is true ,1 is false
             mixAndMatchPanel.SetActive(true);
             multiplayerPanel.SetActive(true);
         }

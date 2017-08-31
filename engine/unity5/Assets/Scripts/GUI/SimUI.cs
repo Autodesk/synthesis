@@ -172,20 +172,6 @@ public class SimUI : MonoBehaviour
     }
 
     #region change robot/field functions
-
-    //Get rid of this later if no problems arise
-    //public void SetIsMixAndMatch(bool isMixAndMatch)
-    //{
-    //    if (isMixAndMatch)
-    //    {
-    //        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
-    //    }
-    //    else
-    //    {
-    //        PlayerPrefs.SetInt("mixAndMatch", 0);
-    //    }
-    //}
-
     public void ChangeRobot()
     {
         GameObject panel = GameObject.Find("RobotListPanel");
@@ -197,7 +183,6 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
-            PlayerPrefs.SetInt("mixAndMatch", 0);
             PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
             PlayerPrefs.Save();
 
@@ -256,7 +241,6 @@ public class SimUI : MonoBehaviour
         else
         {
             EndOtherProcesses();
-            PlayerPrefs.SetInt("mixAndMatch", 0); //0 is false, 1 is true
             changeRobotPanel.SetActive(true);
             robotListPanel.SetActive(true);
         }
