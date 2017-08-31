@@ -31,43 +31,7 @@ extern "C" {
  * If opening the MXP port, also sets up the channel functions appropriately
  * @param port The port to open, 0 for the on-board, 1 for the MXP.
  */
-void HAL_InitializeI2C(HAL_I2CPort port, int32_t* status) { /*
-  initializeDigital(status);
-  if (*status != 0) return;
-
-  if (port > 1) {
-    // Set port out of range error here
-    return;
-  }
-
-  priority_recursive_mutex& lock =
-      port == 0 ? digitalI2COnBoardMutex : digitalI2CMXPMutex;
-  {
-    std::lock_guard<priority_recursive_mutex> sync(lock);
-    if (port == 0) {
-      i2COnboardObjCount++;
-      if (i2COnBoardHandle > 0) return;
-      i2COnBoardHandle = i2clib_open("/dev/i2c-2");
-    } else if (port == 1) {
-      i2CMXPObjCount++;
-      if (i2CMXPHandle > 0) return;
-      if ((i2CMXPDigitalHandle1 = HAL_InitializeDIOPort(
-               HAL_GetPort(24), false, status)) == HAL_kInvalidHandle) {
-        return;
-      }
-      if ((i2CMXPDigitalHandle2 = HAL_InitializeDIOPort(
-               HAL_GetPort(25), false, status)) == HAL_kInvalidHandle) {
-        HAL_FreeDIOPort(i2CMXPDigitalHandle1);  // free the first port allocated
-        return;
-      }
-      digitalSystem->writeEnableMXPSpecialFunction(
-          digitalSystem->readEnableMXPSpecialFunction(status) | 0xC000, status);
-      i2CMXPHandle = i2clib_open("/dev/i2c-1");
-    }
-    return;
-  }
-  */
-}
+void HAL_InitializeI2C(HAL_I2CPort port, int32_t* status) {}
 
 /**
  * Generic transaction.
@@ -83,24 +47,7 @@ void HAL_InitializeI2C(HAL_I2CPort port, int32_t* status) { /*
  */
 int32_t HAL_TransactionI2C(HAL_I2CPort port, int32_t deviceAddress,
                            uint8_t* dataToSend, int32_t sendSize,
-                           uint8_t* dataReceived, int32_t receiveSize) { /*
-  if (port > 1) {
-    // Set port out of range error here
-    return -1;
-  }
-
-  int32_t handle = port == 0 ? i2COnBoardHandle : i2CMXPHandle;
-  priority_recursive_mutex& lock =
-      port == 0 ? digitalI2COnBoardMutex : digitalI2CMXPMutex;
-
-  {
-    std::lock_guard<priority_recursive_mutex> sync(lock);
-    return i2clib_writeread(
-        handle, deviceAddress, reinterpret_cast<const char*>(dataToSend),
-        static_cast<int32_t>(sendSize), reinterpret_cast<char*>(dataReceived),
-        static_cast<int32_t>(receiveSize));
-  }
-  */
+                           uint8_t* dataReceived, int32_t receiveSize) {
   return 0;
 }
 
@@ -116,21 +63,7 @@ int32_t HAL_TransactionI2C(HAL_I2CPort port, int32_t deviceAddress,
  * @return >= 0 on success or -1 on transfer abort.
  */
 int32_t HAL_WriteI2C(HAL_I2CPort port, int32_t deviceAddress,
-                     uint8_t* dataToSend, int32_t sendSize) { /*
-  if (port > 1) {
-    // Set port out of range error here
-    return -1;
-  }
-
-  int32_t handle = port == 0 ? i2COnBoardHandle : i2CMXPHandle;
-  priority_recursive_mutex& lock =
-      port == 0 ? digitalI2COnBoardMutex : digitalI2CMXPMutex;
-  {
-    std::lock_guard<priority_recursive_mutex> sync(lock);
-    return i2clib_write(handle, deviceAddress,
-                        reinterpret_cast<const char*>(dataToSend), sendSize);
-  }
-  */
+                     uint8_t* dataToSend, int32_t sendSize) {
 	  return 0;
 }
 
@@ -148,44 +81,9 @@ int32_t HAL_WriteI2C(HAL_I2CPort port, int32_t deviceAddress,
  * @return >= 0 on success or -1 on transfer abort.
  */
 int32_t HAL_ReadI2C(HAL_I2CPort port, int32_t deviceAddress, uint8_t* buffer,
-                    int32_t count) { /*
-  if (port > 1) {
-    // Set port out of range error here
-    return -1;
-  }
-
-  int32_t handle = port == 0 ? i2COnBoardHandle : i2CMXPHandle;
-  priority_recursive_mutex& lock =
-      port == 0 ? digitalI2COnBoardMutex : digitalI2CMXPMutex;
-  {
-    std::lock_guard<priority_recursive_mutex> sync(lock);
-    return i2clib_read(handle, deviceAddress, reinterpret_cast<char*>(buffer),
-                       static_cast<int32_t>(count));
-  }
-  */
+                    int32_t count) {
 	  return 0;
 }
 
-void HAL_CloseI2C(HAL_I2CPort port) { /*
-  if (port > 1) {
-    // Set port out of range error here
-    return;
-  }
-  priority_recursive_mutex& lock =
-      port == 0 ? digitalI2COnBoardMutex : digitalI2CMXPMutex;
-  {
-    std::lock_guard<priority_recursive_mutex> sync(lock);
-    if ((port == 0 ? i2COnboardObjCount-- : i2CMXPObjCount--) == 0) {
-      int32_t handle = port == 0 ? i2COnBoardHandle : i2CMXPHandle;
-      i2clib_close(handle);
-    }
-  }
-
-  if (port == 1) {
-    HAL_FreeDIOPort(i2CMXPDigitalHandle1);
-    HAL_FreeDIOPort(i2CMXPDigitalHandle2);
-  }
-  return;
-  */
-}
+void HAL_CloseI2C(HAL_I2CPort port) {}
 }

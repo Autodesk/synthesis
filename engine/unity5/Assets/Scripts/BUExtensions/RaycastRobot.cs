@@ -53,26 +53,32 @@ namespace Assets.Scripts.BUExtensions
         /// </summary>
         public float MaxWheelAngularVelocity { get; set; }
 
+        /// <summary>
+        /// The world transform of the parent chassis.
+        /// </summary>
         public Matrix ChassisWorldTransform
         {
             get
             {
-                /*if (RigidBody.MotionState != null)
-                {
-                    return RigidBody.MotionState.WorldTransform;
-                }*/
                 return RigidBody.CenterOfMassTransform;
             }
         }
 
         float currentVehicleSpeedKmHour;
 
+        /// <summary>
+        /// The number of wheels associated with the RaycastRobot.
+        /// </summary>
         public int NumWheels
         {
             get { return wheelInfo.Length; }
         }
 
         int indexRightAxis = 0;
+
+        /// <summary>
+        /// The relative right axis of the robot.
+        /// </summary>
         public int RightAxis
         {
             get { return indexRightAxis; }
@@ -82,30 +88,55 @@ namespace Assets.Scripts.BUExtensions
         int indexForwardAxis = 1;
 
         RigidBody chassisBody;
+
+        /// <summary>
+        /// The <see cref="BulletSharp.RigidBody"/> associated with the parent chassis.
+        /// </summary>
         public RigidBody RigidBody
         {
             get { return chassisBody; }
         }
 
+        /// <summary>
+        /// This property can be used to override the parent chassis mass used for calculations.
+        /// </summary>
         public float OverrideMass { get; set; }
 
+        /// <summary>
+        /// This property can be used to override the parent chassis <see cref="BulletSharp.RigidBody"/> for calculations.
+        /// </summary>
         public RigidBody RootRigidBody { get; set; }
 
         IVehicleRaycaster vehicleRaycaster;
 
         static RigidBody fixedBody;
 
+        /// <summary>
+        /// Sets the brake value for the given wheel.
+        /// </summary>
+        /// <param name="brake"></param>
+        /// <param name="wheelIndex"></param>
         public void SetBrake(float brake, int wheelIndex)
         {
             Debug.Assert((wheelIndex >= 0) && (wheelIndex < NumWheels));
             GetWheelInfo(wheelIndex).Brake = brake;
         }
 
+        /// <summary>
+        /// Returns the steering value for the given wheel.
+        /// </summary>
+        /// <param name="wheel"></param>
+        /// <returns></returns>
         public float GetSteeringValue(int wheel)
         {
             return GetWheelInfo(wheel).Steering;
         }
 
+        /// <summary>
+        /// Sets the steering value for the given wheel.
+        /// </summary>
+        /// <param name="steering"></param>
+        /// <param name="wheel"></param>
         public void SetSteeringValue(float steering, int wheel)
         {
             Debug.Assert(wheel >= 0 && wheel < NumWheels);
@@ -114,6 +145,12 @@ namespace Assets.Scripts.BUExtensions
             wheelInfo.Steering = steering;
         }
 
+        /// <summary>
+        /// Defines the coordinate system for the robot.
+        /// </summary>
+        /// <param name="rightIndex"></param>
+        /// <param name="upIndex"></param>
+        /// <param name="forwardIndex"></param>
         public void SetCoordinateSystem(int rightIndex, int upIndex, int forwardIndex)
         {
             indexRightAxis = rightIndex;
@@ -121,12 +158,20 @@ namespace Assets.Scripts.BUExtensions
             indexForwardAxis = forwardIndex;
         }
 
+        /// <summary>
+        /// Returns the wheel transform <see cref="Matrix"/> for the given wheel.
+        /// </summary>
+        /// <param name="wheelIndex"></param>
+        /// <returns></returns>
         public Matrix GetWheelTransformWS(int wheelIndex)
         {
             Debug.Assert(wheelIndex < NumWheels);
             return wheelInfo[wheelIndex].WorldTransform;
         }
 
+        /// <summary>
+        /// Initializes the static RaycastRobot instance.
+        /// </summary>
         static RaycastRobot()
         {
             using (var ci = new RigidBodyConstructionInfo(0, null, null))
@@ -136,6 +181,12 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Initializes the RaycastRobot with the given vehicle settings and parent chassis.
+        /// </summary>
+        /// <param name="tuning"></param>
+        /// <param name="chassis"></param>
+        /// <param name="raycaster"></param>
         public RaycastRobot(VehicleTuning tuning, RigidBody chassis, IVehicleRaycaster raycaster)
         {
             chassisBody = chassis;
@@ -146,24 +197,37 @@ namespace Assets.Scripts.BUExtensions
             OverrideMass = 1.0f / chassis.InvMass;
         }
 
-        public RobotWheelInfo AddWheel(Vector3 connectionPointCS, Vector3 wheelDirectionCS0, Vector3 wheelAxleCS, float suspensionRestLength, float wheelRadius, VehicleTuning tuning, bool isFrontWheel)
+        /// <summary>
+        /// Adds a wheel to the RaycastRobot.
+        /// </summary>
+        /// <param name="connectionPointCS"></param>
+        /// <param name="wheelDirectionCS0"></param>
+        /// <param name="wheelAxleCS"></param>
+        /// <param name="suspensionRestLength"></param>
+        /// <param name="wheelRadius"></param>
+        /// <param name="tuning"></param>
+        /// <param name="isFrontWheel"></param>
+        /// <returns></returns>
+        public RobotWheelInfo AddWheel(Vector3 connectionPointCS, Vector3 wheelDirectionCS0, Vector3 wheelAxleCS,
+            float suspensionRestLength, float wheelRadius, VehicleTuning tuning, bool isFrontWheel)
         {
-            WheelInfoConstructionInfo ci = new WheelInfoConstructionInfo();
+            WheelInfoConstructionInfo ci = new WheelInfoConstructionInfo
+            {
+                ChassisConnectionCS = connectionPointCS,
+                WheelDirectionCS = wheelDirectionCS0,
+                WheelAxleCS = wheelAxleCS,
+                SuspensionRestLength = suspensionRestLength,
+                WheelRadius = wheelRadius,
+                SuspensionStiffness = tuning.SuspensionStiffness,
+                WheelsDampingCompression = tuning.SuspensionCompression,
+                WheelsDampingRelaxation = tuning.SuspensionDamping,
+                FrictionSlip = tuning.FrictionSlip,
+                IsFrontWheel = isFrontWheel,
+                MaxSuspensionTravelCm = tuning.MaxSuspensionTravelCm,
+                MaxSuspensionForce = tuning.MaxSuspensionForce
+            };
 
-            ci.ChassisConnectionCS = connectionPointCS;
-            ci.WheelDirectionCS = wheelDirectionCS0;
-            ci.WheelAxleCS = wheelAxleCS;
-            ci.SuspensionRestLength = suspensionRestLength;
-            ci.WheelRadius = wheelRadius;
-            ci.SuspensionStiffness = tuning.SuspensionStiffness;
-            ci.WheelsDampingCompression = tuning.SuspensionCompression;
-            ci.WheelsDampingRelaxation = tuning.SuspensionDamping;
-            ci.FrictionSlip = tuning.FrictionSlip;
-            ci.IsFrontWheel = isFrontWheel;
-            ci.MaxSuspensionTravelCm = tuning.MaxSuspensionTravelCm;
-            ci.MaxSuspensionForce = tuning.MaxSuspensionForce;
-
-            Array.Resize<RobotWheelInfo>(ref wheelInfo, wheelInfo.Length + 1);
+            Array.Resize(ref wheelInfo, wheelInfo.Length + 1);
             RobotWheelInfo wheel = new RobotWheelInfo(ci);
             wheelInfo[wheelInfo.Length - 1] = wheel;
 
@@ -172,6 +236,11 @@ namespace Assets.Scripts.BUExtensions
             return wheel;
         }
 
+        /// <summary>
+        /// Applies the provided force to the given wheel.
+        /// </summary>
+        /// <param name="force"></param>
+        /// <param name="wheel"></param>
         public void ApplyEngineForce(float force, int wheel)
         {
             Debug.Assert(wheel >= 0 && wheel < NumWheels);
@@ -179,6 +248,15 @@ namespace Assets.Scripts.BUExtensions
             wheelInfo.EngineForce = force;
         }
 
+        /// <summary>
+        /// Calculates rolling friction for a wheel.
+        /// </summary>
+        /// <param name="body0"></param>
+        /// <param name="body1"></param>
+        /// <param name="contactPosWorld"></param>
+        /// <param name="frictionDirectionWorld"></param>
+        /// <param name="maxImpulse"></param>
+        /// <returns></returns>
         float CalcRollingFriction(RigidBody body0, RigidBody body1, Vector3 contactPosWorld, Vector3 frictionDirectionWorld, float maxImpulse)
         {
             float denom0 = body0.ComputeImpulseDenominator(contactPosWorld, frictionDirectionWorld);
@@ -242,6 +320,11 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Returns the <see cref="RobotWheelInfo"/> for the given wheel index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public RobotWheelInfo GetWheelInfo(int index)
         {
             Debug.Assert((index >= 0) && (index < NumWheels));
@@ -249,6 +332,11 @@ namespace Assets.Scripts.BUExtensions
             return wheelInfo[index];
         }
 
+        /// <summary>
+        /// Casts a ray given the provided <see cref="WheelInfo"/> for suspension calculations.
+        /// </summary>
+        /// <param name="wheel"></param>
+        /// <returns></returns>
         private float RayCast(WheelInfo wheel)
         {
             UpdateWheelTransformsWS(wheel, false);
@@ -329,6 +417,9 @@ namespace Assets.Scripts.BUExtensions
             return depth;
         }
 
+        /// <summary>
+        /// Resets the suspension for all wheels.
+        /// </summary>
         void ResetSuspension()
         {
             for (int i = 0; i < NumWheels; i++)
@@ -343,6 +434,17 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Calculates friction between two RigidBodies.
+        /// </summary>
+        /// <param name="body1"></param>
+        /// <param name="pos1"></param>
+        /// <param name="body2"></param>
+        /// <param name="pos2"></param>
+        /// <param name="distance"></param>
+        /// <param name="normal"></param>
+        /// <param name="impulse"></param>
+        /// <param name="timeStep"></param>
         private void ResolveSingleBilateral(RigidBody body1, Vector3 pos1, RigidBody body2, Vector3 pos2, float distance, Vector3 normal, ref float impulse, float timeStep)
         {
             float normalLenSqr = normal.LengthSquared;
@@ -378,11 +480,10 @@ namespace Assets.Scripts.BUExtensions
             impulse = velocityImpulse;
         }
 
-        public void UpdateAction(CollisionWorld collisionWorld, float deltaTimeStep)
-        {
-            UpdateVehicle(deltaTimeStep);
-        }
-
+        /// <summary>
+        /// Updates the friction for the RaycastRobot.
+        /// </summary>
+        /// <param name="timeStep"></param>
         public void UpdateFriction(float timeStep)
         {
             //calculate the impulse, so that the wheels don't move sidewards
@@ -500,7 +601,7 @@ namespace Assets.Scripts.BUExtensions
 
                     float maximpSquared = maximp * maximpSide;
 
-                    forwardImpulse[i] = rollingFriction;//wheel.EngineForce* timeStep;
+                    forwardImpulse[i] = rollingFriction;
 
                     float x = forwardImpulse[i] * fwdFactor;
                     float y = sideImpulse[i] * sideFactor;
@@ -575,6 +676,10 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Updates suspension forces for the RaycastRobot.
+        /// </summary>
+        /// <param name="step"></param>
         public void UpdateSuspension(float step)
         {
             for (int w_it = 0; w_it < NumWheels; w_it++)
@@ -626,6 +731,10 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Updates the RaycastRobot as a whole.
+        /// </summary>
+        /// <param name="step"></param>
         public void UpdateVehicle(float step)
         {
             for (int i = 0; i < wheelInfo.Length; i++)
@@ -709,6 +818,11 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Updates the wheel transform that corresponds with the provided wheel index.
+        /// </summary>
+        /// <param name="wheelIndex"></param>
+        /// <param name="interpolatedTransform"></param>
         public void UpdateWheelTransform(int wheelIndex, bool interpolatedTransform)
         {
             WheelInfo wheel = wheelInfo[wheelIndex];
@@ -740,6 +854,11 @@ namespace Assets.Scripts.BUExtensions
             wheel.WorldTransform = transform;
         }
 
+        /// <summary>
+        /// Updates the wheel transform given the provided <see cref="WheelInfo"/>.
+        /// </summary>
+        /// <param name="wheel"></param>
+        /// <param name="interpolatedTransform"></param>
         void UpdateWheelTransformsWS(WheelInfo wheel, bool interpolatedTransform)
         {
             wheel.RaycastInfo.IsInContact = false;

@@ -83,88 +83,11 @@ static uint8_t readRegister(Register reg);
 /**
  * Initialize the accelerometer.
  */
-static void initializeAccelerometer() {
-  /*
-  int32_t status;
+static void initializeAccelerometer() {}
 
-  if (!accel) {
-    accel.reset(tAccel::create(&status));
+static void writeRegister(Register reg, uint8_t data) {}
 
-    // Enable I2C
-    accel->writeCNFG(1, &status);
-
-    // Set the counter to 100 kbps
-    accel->writeCNTR(213, &status);
-
-    // The device identification number should be 0x2a
-    assert(readRegister(kReg_WhoAmI) == 0x2a);
-  }
-  */
-}
-
-static void writeRegister(Register reg, uint8_t data) {
-  /*
-  int32_t status = 0;
-  uint64_t initialTime;
-
-  accel->writeADDR(kSendAddress, &status);
-
-  // Send a start transmit/receive message with the register address
-  accel->writeCNTL(kControlStart | kControlTxRx, &status);
-  accel->writeDATO(reg, &status);
-  accel->strobeGO(&status);
-
-  // Execute and wait until it's done (up to a millisecond)
-  initialTime = HAL_GetFPGATime(&status);
-  while (accel->readSTAT(&status) & 1) {
-    if (HAL_GetFPGATime(&status) > initialTime + 1000) break;
-  }
-
-  // Send a stop transmit/receive message with the data
-  accel->writeCNTL(kControlStop | kControlTxRx, &status);
-  accel->writeDATO(data, &status);
-  accel->strobeGO(&status);
-
-  // Execute and wait until it's done (up to a millisecond)
-  initialTime = HAL_GetFPGATime(&status);
-  while (accel->readSTAT(&status) & 1) {
-    if (HAL_GetFPGATime(&status) > initialTime + 1000) break;
-  }
-  */
-}
-
-static uint8_t readRegister(Register reg) {
-  /*
-  int32_t status = 0;
-  uint64_t initialTime;
-
-  // Send a start transmit/receive message with the register address
-  accel->writeADDR(kSendAddress, &status);
-  accel->writeCNTL(kControlStart | kControlTxRx, &status);
-  accel->writeDATO(reg, &status);
-  accel->strobeGO(&status);
-
-  // Execute and wait until it's done (up to a millisecond)
-  initialTime = HAL_GetFPGATime(&status);
-  while (accel->readSTAT(&status) & 1) {
-    if (HAL_GetFPGATime(&status) > initialTime + 1000) break;
-  }
-
-  // Receive a message with the data and stop
-  accel->writeADDR(kReceiveAddress, &status);
-  accel->writeCNTL(kControlStart | kControlStop | kControlTxRx, &status);
-  accel->strobeGO(&status);
-
-  // Execute and wait until it's done (up to a millisecond)
-  initialTime = HAL_GetFPGATime(&status);
-  while (accel->readSTAT(&status) & 1) {
-    if (HAL_GetFPGATime(&status) > initialTime + 1000) break;
-  }
-
-  return accel->readDATI(&status);
-  */
-  return 0;
-}
+static uint8_t readRegister(Register reg) {}
 
 // This function will probably (read: hopefully) be fine as is.
 /**

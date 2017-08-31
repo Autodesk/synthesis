@@ -24,11 +24,6 @@ namespace hal {
 // Create a mutex to protect changes to the DO PWM config
 priority_recursive_mutex digitalPwmMutex;
 
-/*std::unique_ptr<tDIO> digitalSystem;
-std::unique_ptr<tRelay> relaySystem;
-std::unique_ptr<tPWM> pwmSystem;
-std::unique_ptr<tSPI> spiSystem;*/
-
 static std::atomic<bool> digitalSystemsInitialized{false};
 static hal::priority_mutex initializeMutex;
 
@@ -44,60 +39,9 @@ void initializeDigital(int32_t* status) {
   if (digitalSystemsInitialized) return;
 
   std::lock_guard<hal::priority_mutex> lock(initializeMutex);
+
   // Second check in case another thread was waiting
   if (digitalSystemsInitialized) return;
-
-  /*digitalSystem.reset(tDIO::create(status));
-
-  // Relay Setup
-  relaySystem.reset(tRelay::create(status));
-
-  // Turn off all relay outputs.
-  relaySystem->writeValue_Forward(0, status);
-  relaySystem->writeValue_Reverse(0, status);
-
-  // PWM Setup
-  pwmSystem.reset(tPWM::create(status));
-
-  // Make sure that the 9403 IONode has had a chance to initialize before
-  // continuing.
-  while (pwmSystem->readLoopTiming(status) == 0) std::this_thread::yield();
-
-  if (pwmSystem->readLoopTiming(status) != kExpectedLoopTiming) {
-    *status = LOOP_TIMING_ERROR;  // NOTE: Doesn't display the error
-  }
-
-  // Calculate the length, in ms, of one DIO loop
-  double loopTime = pwmSystem->readLoopTiming(status) /
-                    (kSystemClockTicksPerMicrosecond * 1e3);
-
-  pwmSystem->writeConfig_Period(
-      static_cast<uint16_t>(kDefaultPwmPeriod / loopTime + .5), status);
-  uint16_t minHigh = static_cast<uint16_t>(
-      (kDefaultPwmCenter - kDefaultPwmStepsDown * loopTime) / loopTime + .5);
-  pwmSystem->writeConfig_MinHigh(minHigh, status);
-  // Ensure that PWM output values are set to OFF
-  for (uint8_t pwmIndex = 0; pwmIndex < kNumPWMChannels; pwmIndex++) {
-    // Copy of SetPWM
-    if (pwmIndex < tPWM::kNumHdrRegisters) {
-      pwmSystem->writeHdr(pwmIndex, kPwmDisabled, status);
-    } else {
-      pwmSystem->writeMXP(pwmIndex - tPWM::kNumHdrRegisters, kPwmDisabled,
-                          status);
-    }
-
-    // Copy of SetPWMPeriodScale, set to 4x by default.
-    if (pwmIndex < tPWM::kNumPeriodScaleHdrElements) {
-      pwmSystem->writePeriodScaleHdr(pwmIndex, 3, status);
-    } else {
-      pwmSystem->writePeriodScaleMXP(
-          pwmIndex - tPWM::kNumPeriodScaleHdrElements, 3, status);
-    }
-  }
-
-  // SPI setup
-  spiSystem.reset(tSPI::create(status));*/
-
   digitalSystemsInitialized = true;
 }
 

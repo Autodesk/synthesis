@@ -10,6 +10,9 @@ namespace Assets.Scripts.BUExtensions
 {
     public class BHingedConstraintEx : BHingedConstraint
     {
+        /// <summary>
+        /// Overrides the base localConstraintAxisX to prevent usage (not implemented).
+        /// </summary>
         public new Vector3 localConstraintAxisX
         {
             get
@@ -22,6 +25,9 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Overrides the base localConstraintAxisY to prevent usage (not implemented).
+        /// </summary>
         public new Vector3 localConstraintAxisY
         {
             get
@@ -35,6 +41,10 @@ namespace Assets.Scripts.BUExtensions
         }
 
         protected Vector3 m_axisInA = Vector3.up;
+
+        /// <summary>
+        /// The local axis relative to body A.
+        /// </summary>
         public Vector3 axisInA
         {
             get
@@ -55,6 +65,10 @@ namespace Assets.Scripts.BUExtensions
         }
 
         protected Vector3 m_axisInB = Vector3.up;
+
+        /// <summary>
+        /// The local axis relative to body B.
+        /// </summary>
         public Vector3 axisInB
         {
             get
@@ -74,6 +88,10 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Builds the constraint.
+        /// </summary>
+        /// <returns></returns>
         internal override bool _BuildConstraint()
         {
             BPhysicsWorld world = BPhysicsWorld.Get();

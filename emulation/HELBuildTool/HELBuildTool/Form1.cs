@@ -25,33 +25,68 @@ namespace WindowsFormsApp1
             txtBrowseJava.Enabled = false;
         }
 
-        private void btnSetup_Click(object sender, EventArgs e)
+        private void btnClean_Click(object sender, EventArgs e)
         {
+            //get the values for the various fields
             String path = txtBrowse.Text;
-            Console.WriteLine(path);
+
+            //don't do anything if the user hasn't entered a path yet
+            if(path == "") {
+                return;
+            }
+
+            //current directory used in debug mode for getting the build
+            //directory relative to the HELBuildTool directory
             String currentDir = System.IO.Directory.GetCurrentDirectory();
+
             String windowsCurrentDir = currentDir;
             //convert currentDir to a cygwin path
-            currentDir = currentDir.Replace("C:\\", "/cygdrive/c/").Replace("\\", "/");
+            //this pattern will be used a few times for converting between
+            //windows style paths and cygwin paths. It's not perfect, but
+            //it works pretty well. The one situation in which this could
+            //become a problem is if your code is not in `C:\`. This is
+            //something that we should look into fixing in the future.
+            currentDir = currentDir
+                .Replace("C:\\", "/cygdrive/c/").Replace("\\", "/");
             System.IO.Directory.SetCurrentDirectory(path);
+
+            //in debug mode, use the built files relative to the HELBuildTool
+            //directory. In release mode, use the ones from the installer.
 #if DEBUG
+            //path to the cygwin installation
             String cygwinPath = "C:\\cygwin64";
+            //path to the build tool directory. `currentDir` is actually the
+            //build directory of the build tool, so we need to back up a bit to
+            //get to the actual build tool
             String buildTool = currentDir + "/../../../..";
 #else
-            String cygwinPath = "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64";
-            String buildTool = "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool";
+            //path to the cygwin installation
+            String cygwinPath =
+                "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64";
+            //path to the build tool directory
+            String buildTool =
+                "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/" +
+                "SynthesisDrive/HELBuildTool";
 #endif
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo(
-                        cygwinPath + "\\bin\\mintty.exe",
-                        "'" + cygwinPath + "\\bin\\bash.exe' " +
-                        "-c \"mount -c /cygdrive && make -f " +
-                        "'" + buildTool + "/Makefile' clean " +
-                        "|| read -p 'Press enter to exit'\"");
+            //launch cygwin bash to clean
+            System.Diagnostics.ProcessStartInfo startInfo;
+            startInfo = new System.Diagnostics.ProcessStartInfo(
+                    cygwinPath + "\\bin\\mintty.exe",
+                    "'" + cygwinPath + "\\bin\\bash.exe' " +
+                    "-c \"mount -c /cygdrive && make -f " +
+                    "'" + buildTool + "/Makefile' " +
+                    "clean " +
+                    "|| read -p 'Press enter to exit'\"");
+
+            //make sure that the cygwin directory is in the PATH
+            String envPath = System.Environment.GetEnvironmentVariable("PATH");
+            startInfo.EnvironmentVariables["PATH"] =
+                cygwinPath + "\\bin;" + envPath;
+
             startInfo.UseShellExecute = false;
 
-            String envPath = System.Environment.GetEnvironmentVariable("PATH");
-            startInfo.EnvironmentVariables["PATH"] = cygwinPath + "\\bin;" + envPath;
             System.Diagnostics.Process.Start(startInfo);
+
 #if DEBUG
             System.IO.Directory.SetCurrentDirectory(windowsCurrentDir);
 #endif
@@ -59,49 +94,100 @@ namespace WindowsFormsApp1
 
         private void btnRunCode_Click(object sender, EventArgs e)
         {
+            //get the values for the various fields
             String number = txtNumber.Text;
             String entryPoint = txtBrowseJava.Text;
             String path = txtBrowse.Text;
 
+            //don't do anything if the user hasn't entered a path yet
+            if(path == "" || number == "") {
+                return;
+            }
+
             bool isJava = javaButton.Checked;
 
-            Console.WriteLine(path);
+            //current directory used in debug mode for getting the build
+            //directory relative to the HELBuildTool directory
             String currentDir = System.IO.Directory.GetCurrentDirectory();
+
             String windowsCurrentDir = currentDir;
             //convert currentDir to a cygwin path
-            currentDir = currentDir.Replace("C:\\", "/cygdrive/c/").Replace("\\", "/");
+            //this pattern will be used a few times for converting between
+            //windows style paths and cygwin paths. It's not perfect, but
+            //it works pretty well. The one situation in which this could
+            //become a problem is if your code is not in `C:\`. This is
+            //something that we should look into fixing in the future.
+            currentDir = currentDir
+                .Replace("C:\\", "/cygdrive/c/").Replace("\\", "/");
             System.IO.Directory.SetCurrentDirectory(path);
 
+            //in debug mode, use the built files relative to the HELBuildTool
+            //directory. In release mode, use the ones from the installer.
 #if DEBUG
+            //path to the cygwin installation
             String cygwinPath = "C:\\cygwin64";
+            //path to the build tool directory. `currentDir` is actually the
+            //build directory of the build tool, so we need to back up a bit to
+            //get to the actual build tool
             String buildTool = currentDir + "/../../../..";
-            String jarDir = currentDir + "/../../../../../../emulation/hel/build/java";
-            String makeArgs = "SYNTHESIS_LIBS=" + currentDir + "/../../../../../../emulation/hel/build " +
-                "SYNTHESIS_INCLUDES=" + currentDir + "/../../../../../../emulation/hel " +
+            //java built directory
+            String jarDir = currentDir +
+                "/../../../../../../emulation/hel/build/java";
+            //arguments to pass to make
+            String makeArgs =
+                "SYNTHESIS_LIBS=" + currentDir +
+                    "/../../../../../../emulation/hel/build " +
+                "SYNTHESIS_INCLUDES=" + currentDir +
+                    "/../../../../../../emulation/hel " +
                 "SYNTHESIS_JARS=" + jarDir + " " +
-                "TEAM_ID_FILE=" + currentDir + "/../../../../teamID.cpp ";
-            jarDir = jarDir.Replace("/cygdrive/c/", "C:\\").Replace("\\", "/");
+                "TEAM_ID_FILE=" + currentDir +
+                    "/../../../../teamID.cpp ";
+            
+            jarDir = jarDir
+                .Replace("/cygdrive/c/", "C:\\").Replace("\\", "/");
 #else
-            String cygwinPath = "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64";
-            String buildTool = "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool";
+            //path to the cygwin installation
+            String cygwinPath =
+                "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64";
+            //path to the build tool directory
+            String buildTool =
+                "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/" +
+                "SynthesisDrive/HELBuildTool";
+            //arguments to pass to make (there are none in release mode)
             String makeArgs = "";
-            String jarDir = "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/jars";
+            //path to the java jars
+            String jarDir =
+                "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/" +
+                "SynthesisDrive/jars";
+
             jarDir = jarDir.Replace("/cygdrive/c/", "C:\\").Replace("\\", "/");
 #endif
+            //launch cygwin bash to compile and run
             System.Diagnostics.ProcessStartInfo startInfo;
             if (isJava) {
-                Console.WriteLine(entryPoint);
+                //in java, the makefile also needs to know what the java class
+                //that contains the main robot file is
                 makeArgs += "ENTRY_POINT=\"" + entryPoint + "\"";
+
                 startInfo = new System.Diagnostics.ProcessStartInfo(
+                        //launch the terminal
                         cygwinPath + "\\bin\\mintty.exe",
+                        //with bash
                         "'" + cygwinPath + "\\bin\\bash.exe' " +
-                        "-c \"mount -c /cygdrive && make -f " +
-                        "'" + buildTool + "/Makefile.java' " +
+                        //mount the cygwin directories
+                        "-c \"mount -c /cygdrive && " +
+                        //run make using the java makefile
+                        "make -f " + "'" + buildTool + "/Makefile.java' " +
+                        //set the team number env variable
                         "TEAM_ID=" + number + " " +
+                        //run the java at the end (java is special, so
+                        //the code for this gets moved into the makefile)
                         makeArgs + " run " +
+                        //if there is an error, don't close the window
                         "|| read -p 'Press enter to exit'\"");
             }
             else {
+                //pretty much the same
                 startInfo = new System.Diagnostics.ProcessStartInfo(
                         cygwinPath + "\\bin\\mintty.exe",
                         "'" + cygwinPath + "\\bin\\bash.exe' " +
@@ -109,15 +195,24 @@ namespace WindowsFormsApp1
                         "'" + buildTool + "/Makefile' " +
                         "TEAM_ID=" + number + " " +
                         makeArgs + " " +
-                        "&& echo 'Starting robot code' && ./build/FRC_UserProgram " +
+                        //C++ is a lot simpler, so we can just run the compiled
+                        //executable directly
+                        "&& echo 'Starting robot code' &&" +
+                        "./build/FRC_UserProgram " +
                         "|| read -p 'Press enter to exit'\"");
             }
+
+            //make sure that the cygwin directory is in the PATH
             String envPath = System.Environment.GetEnvironmentVariable("PATH");
-            startInfo.EnvironmentVariables["PATH"] = cygwinPath + "\\bin;" + jarDir + envPath;
+            startInfo.EnvironmentVariables["PATH"] =
+                cygwinPath + "\\bin;" + jarDir + envPath;
+            //set the team number env variable
             startInfo.EnvironmentVariables["TEAM_ID"] = "" + number;
+
             startInfo.UseShellExecute = false;
 
             System.Diagnostics.Process.Start(startInfo);
+
 #if DEBUG
             System.IO.Directory.SetCurrentDirectory(windowsCurrentDir);
 #endif
@@ -125,7 +220,7 @@ namespace WindowsFormsApp1
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            //openFileDialog.ShowDialog();
+            //set the user code directory
             if (folderSelectDialog.ShowDialog())
             {
                 txtBrowse.Text = folderSelectDialog.FileName;

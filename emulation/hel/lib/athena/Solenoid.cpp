@@ -15,7 +15,6 @@
 #include "HAL/handles/IndexedHandleResource.h"
 #include "PCMInternal.h"
 #include "PortsInternal.h"
-//#include "ctre/PCM.h"
 
 namespace {
 struct Solenoid {
@@ -90,16 +89,12 @@ HAL_Bool HAL_GetSolenoid(HAL_SolenoidHandle solenoidPortHandle,
   }
   bool value;
 
-  //*status = PCM_modules[port->module]->GetSolenoid(port->channel, value);
-
   return value;
 }
 
 int32_t HAL_GetAllSolenoids(int32_t module, int32_t* status) {
   if (!checkPCMInit(module, status)) return 0;
   uint8_t value;
-
-  //*status = PCM_modules[module]->GetAllSolenoids(value);
 
   return value;
 }
@@ -111,21 +106,15 @@ void HAL_SetSolenoid(HAL_SolenoidHandle solenoidPortHandle, HAL_Bool value,
     *status = HAL_HANDLE_ERROR;
     return;
   }
-
-  //*status = PCM_modules[port->module]->SetSolenoid(port->channel, value);
 }
 
 void HAL_SetAllSolenoids(int32_t module, int32_t state, int32_t* status) {
   if (!checkPCMInit(module, status)) return;
-
-  //*status = PCM_modules[module]->SetAllSolenoids(state);
 }
 
 int32_t HAL_GetPCMSolenoidBlackList(int32_t module, int32_t* status) {
   if (!checkPCMInit(module, status)) return 0;
   uint8_t value;
-
-  //*status = PCM_modules[module]->GetSolenoidBlackList(value);
 
   return value;
 }
@@ -133,22 +122,16 @@ HAL_Bool HAL_GetPCMSolenoidVoltageStickyFault(int32_t module, int32_t* status) {
   if (!checkPCMInit(module, status)) return 0;
   bool value;
 
-  //*status = PCM_modules[module]->GetSolenoidStickyFault(value);
-
   return value;
 }
 HAL_Bool HAL_GetPCMSolenoidVoltageFault(int32_t module, int32_t* status) {
   if (!checkPCMInit(module, status)) return false;
   bool value;
 
-  //*status = PCM_modules[module]->GetSolenoidFault(value);
-
   return value;
 }
 void HAL_ClearAllPCMStickyFaults(int32_t module, int32_t* status) {
   if (!checkPCMInit(module, status)) return;
-
-  //*status = PCM_modules[module]->ClearStickyFaults();
 }
 
 }  // extern "C"

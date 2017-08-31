@@ -132,7 +132,7 @@
             this.btnSetup.TabIndex = 16;
             this.btnSetup.Text = "Remove Compiled Binaries";
             this.btnSetup.UseVisualStyleBackColor = true;
-            this.btnSetup.Click += new System.EventHandler(this.btnSetup_Click);
+            this.btnSetup.Click += new System.EventHandler(this.btnClean_Click);
             // 
             // btnRunCode
             // 
