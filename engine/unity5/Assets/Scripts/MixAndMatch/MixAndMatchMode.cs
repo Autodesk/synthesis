@@ -283,6 +283,7 @@ public class MixAndMatchMode : MonoBehaviour
     /// </summary>
     void AddMaMRobot()
     {
+        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
         string baseDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
         string manipulatorDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator);
 
@@ -551,6 +552,9 @@ public class MixAndMatchMode : MonoBehaviour
         {
             IsMecanum = true;
             mecWheelPanel.SetActive(true);
+        } else
+        {
+
         }
     }
 
@@ -576,6 +580,7 @@ public class MixAndMatchMode : MonoBehaviour
         //selects the manipulator that is clicked
         SetColor(Manipulators[manipulator], purple);
         this.gameObject.GetComponent<MaMInfoText>().SetManipulatorInfoText(manipulator);
+        //hasManipulator = (manipulator == 0) ? false : true;
         selectedManipulator = manipulator;
     }
 
