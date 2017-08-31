@@ -12,6 +12,9 @@ namespace Assets.Scripts.BUExtensions
     {
         private BulletSharp.Math.Vector3 _pivotInA;
 
+        /// <summary>
+        /// The local pivot point relative to body A.
+        /// </summary>
         public BulletSharp.Math.Vector3 PivotInA
         {
             get
@@ -36,6 +39,9 @@ namespace Assets.Scripts.BUExtensions
 
         private BulletSharp.Math.Vector3 _pivotInB;
 
+        /// <summary>
+        /// The local pivot point relative to body B.
+        /// </summary>
         public BulletSharp.Math.Vector3 PivotInB
         {
             get
@@ -58,6 +64,10 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Builds the constraint.
+        /// </summary>
+        /// <returns></returns>
         internal override bool _BuildConstraint()
         {
             BPhysicsWorld world = BPhysicsWorld.Get();
@@ -107,7 +117,7 @@ namespace Assets.Scripts.BUExtensions
             }
             else
             {
-                m_constraintPtr = new Point2PointConstraint(rba, _pivotInA/*m_localConstraintPoint.ToBullet()*/);
+                m_constraintPtr = new Point2PointConstraint(rba, _pivotInA);
             }
             m_constraintPtr.Userobject = this;
             m_constraintPtr.BreakingImpulseThreshold = m_breakingImpulseThreshold;
