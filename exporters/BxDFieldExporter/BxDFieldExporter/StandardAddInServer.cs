@@ -217,7 +217,7 @@ namespace BxDFieldExporter
                     try
                     {// if no browser pane previously created then create a new one
                         ClientNodeResources oRscs = oPanes.ClientNodeResources;
-                        oRsc = oRscs.Add(m_ClientId, 1, null);// creat new client node resources
+                        oRsc = oRscs.Add(m_ClientId, 1, null);// create new client node resources
                         oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Field Components", 3, null);// create the top node for the browser pane
                         oPane = oPanes.AddTreeBrowserPane("Field Exporter", m_ClientId, oDef);// add a new tree browser
                         oPane.Activate();// make the pane be shown to the user
@@ -249,7 +249,7 @@ namespace BxDFieldExporter
                 }
                 else
                 {
-                    MessageBox.Show("Please close out of the robot exporter in the other assembly");
+                    MessageBox.Show("Please close out of the field exporter in the other assembly");
                 }
             }
             catch (Exception)
