@@ -31,7 +31,8 @@ namespace WindowsFormsApp1
             String path = txtBrowse.Text;
 
             //don't do anything if the user hasn't entered a path yet
-            if(path == "") {
+            if(path == "")
+            {
                 return;
             }
 
