@@ -482,6 +482,7 @@ public class DynamicCamera : MonoBehaviour
                 else
                 {
                     rotateVector = robot.transform.GetChild(0).TransformPoint(lockedVector);
+                    rotateVector.y = targetVector.y + Mathf.Abs(rotateVector.y - targetVector.y);
                 }
 
                 // Calculate smooth camera movement
