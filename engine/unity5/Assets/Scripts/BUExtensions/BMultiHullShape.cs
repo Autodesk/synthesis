@@ -16,6 +16,10 @@ public class BMultiHullShape : BCollisionShape
 
     [SerializeField]
     protected Vector3 m_localScaling = Vector3.one;
+
+    /// <summary>
+    /// The local scaling of the BMultiHullShape.
+    /// </summary>
     public Vector3 LocalScaling
     {
         get { return m_localScaling; }
@@ -34,11 +38,20 @@ public class BMultiHullShape : BCollisionShape
         // Unimplemented.
     }
 
+    /// <summary>
+    /// Returns the BulletSharp <see cref="CollisionShape"/>.
+    /// </summary>
+    /// <returns></returns>
     public override CollisionShape GetCollisionShape()
     {
         return compoundShape;
     }
 
+    /// <summary>
+    /// Adds a <see cref="ConvexHullShape"/> to the multi hull shape.
+    /// </summary>
+    /// <param name="hullShape"></param>
+    /// <param name="offset"></param>
     public void AddHullShape(ConvexHullShape hullShape, BulletSharp.Math.Matrix offset)
     {
         if (hullShapes.Contains(hullShape))
@@ -48,6 +61,10 @@ public class BMultiHullShape : BCollisionShape
         compoundShape.AddChildShape(offset, hullShape);
     }
 
+    /// <summary>
+    /// Removes a <see cref="ConvexHullShape"/> from the multi hull shape.
+    /// </summary>
+    /// <param name="hullShape"></param>
     public void RemoveHullShape(ConvexHullShape hullShape)
     {
         if (!hullShapes.Contains(hullShape))
@@ -57,6 +74,10 @@ public class BMultiHullShape : BCollisionShape
         compoundShape.RemoveChildShape(hullShape);
     }
 
+    /// <summary>
+    /// Not implemented - do not use.
+    /// </summary>
+    /// <returns></returns>
     public override CollisionShape CopyCollisionShape()
     {
         return null;
