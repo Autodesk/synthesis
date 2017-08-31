@@ -188,6 +188,9 @@ public class MainState : SimState
         }
     }
 
+    /// <summary>
+    /// Called at a fixed rate - updates robot packet information.
+    /// </summary>
     public override void FixedUpdate()
     {
         //This line is essential for the reset to work accurately
@@ -545,6 +548,9 @@ public class MainState : SimState
         Tracking = false;
     }
 
+    /// <summary>
+    /// Starts the replay state.
+    /// </summary>
     public void EnterReplayState()
     {
         if (!ActiveRobot.IsResetting)

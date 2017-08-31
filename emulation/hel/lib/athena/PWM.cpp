@@ -46,10 +46,6 @@ static inline int32_t GetFullRangeScaleFactor(DigitalPort* port) {
 extern "C" {
 	HAL_DigitalHandle HAL_InitializePWMPort(HAL_PortHandle portHandle,
 		int32_t* status) {
-		/*initializeDigital(status);
-
-		if (*status != 0) return HAL_kInvalidHandle;*/
-
 		int16_t channel = getPortHandleChannel(portHandle);
 		if (channel == InvalidHandleIndex || channel >= kNumPWMChannels) {
 			*status = PARAMETER_OUT_OF_RANGE;
@@ -80,10 +76,6 @@ extern "C" {
 		port->channel = origChannel;
 
 		int32_t bitToSet = 1 << remapMXPPWMChannel(port->channel);
-		/*uint16_t specialFunctions =
-			digitalSystem->readEnableMXPSpecialFunction(status);
-		digitalSystem->writeEnableMXPSpecialFunction(specialFunctions | bitToSet,
-													 status);*/
 
 		return handle;
 	}
@@ -94,15 +86,6 @@ extern "C" {
 			*status = HAL_HANDLE_ERROR;
 			return;
 		}
-
-		/*if (port->channel > tPWM::kNumHdrRegisters - 1) {
-		  int32_t bitToUnset = 1 << remapMXPPWMChannel(port->channel);
-		  uint16_t specialFunctions =
-			  digitalSystem->readEnableMXPSpecialFunction(status);
-		  digitalSystem->writeEnableMXPSpecialFunction(specialFunctions & ~bitToUnset,
-													   status);
-		}*/
-
 		digitalChannelHandles.Free(pwmPortHandle, HAL_HandleEnum::PWM);
 	}
 
@@ -141,8 +124,6 @@ extern "C" {
 		port->centerPwm = centerPwm;
 		port->minPwm = minPwm;
 		port->configSet = true;
-
-    //printf("%d %d\n", minPwm, maxPwm);
 	}
 
 	void HAL_SetPWMConfigRaw(HAL_DigitalHandle pwmPortHandle, int32_t maxPwm,
@@ -214,12 +195,6 @@ extern "C" {
 			*status = HAL_HANDLE_ERROR;
 			return;
 		}
-
-		/*if (port->channel < tPWM::kNumHdrRegisters) {
-		  pwmSystem->writeHdr(port->channel, value, status);
-		} else {
-		  pwmSystem->writeMXP(port->channel - tPWM::kNumHdrRegisters, value, status);
-		}*/
 	}
 
 	/**
@@ -272,7 +247,6 @@ extern "C" {
 				static_cast<double>(GetMaxNegativePwm(dPort)) + 0.5);
 		}
 
-    //printf("%d\n", GetMaxPositivePwm(dPort));
 		if (!((rawValue >= GetMinNegativePwm(dPort)) &&
 			(rawValue <= GetMaxPositivePwm(dPort))) ||
 			rawValue == kPwmDisabled) {
@@ -323,13 +297,9 @@ extern "C" {
 			*status = HAL_PWM_SCALE_ERROR;
 			return;
 		}
-
-		//HAL_SetPWMRaw(pwmPortHandle, rawValue, status);
 	}
 
-	void HAL_SetPWMDisabled(HAL_DigitalHandle pwmPortHandle, int32_t* status) {
-		//HAL_SetPWMRaw(pwmPortHandle, kPwmDisabled, status);
-	}
+	void HAL_SetPWMDisabled(HAL_DigitalHandle pwmPortHandle, int32_t* status) {}
 
 	/**
 	 * Get a value from a PWM channel. The values range from 0 to 255.
@@ -343,12 +313,6 @@ extern "C" {
 			*status = HAL_HANDLE_ERROR;
 			return 0;
 		}
-
-		/*if (port->channel < tPWM::kNumHdrRegisters) {
-		  return pwmSystem->readHdr(port->channel, status);
-		} else {
-		  return pwmSystem->readMXP(port->channel - tPWM::kNumHdrRegisters, status);
-		}*/
 		return 0;
 	}
 
@@ -368,26 +332,6 @@ extern "C" {
 			*status = INCOMPATIBLE_STATE;
 			return 0;
 		}
-
-		/*int32_t value = HAL_GetPWMRaw(pwmPortHandle, status);
-		if (*status != 0) return 0;
-		DigitalPort* dPort = port.get();
-
-		if (value == kPwmDisabled) {
-		  return 0.0;
-		} else if (value > GetMaxPositivePwm(dPort)) {
-		  return 1.0;
-		} else if (value < GetMinNegativePwm(dPort)) {
-		  return -1.0;
-		} else if (value > GetMinPositivePwm(dPort)) {
-		  return static_cast<double>(value - GetMinPositivePwm(dPort)) /
-				 static_cast<double>(GetPositiveScaleFactor(dPort));
-		} else if (value < GetMaxNegativePwm(dPort)) {
-		  return static_cast<double>(value - GetMaxNegativePwm(dPort)) /
-				 static_cast<double>(GetNegativeScaleFactor(dPort));
-		} else {
-		  return 0.0;
-		}*/
 		return 0;
 	}
 
@@ -407,20 +351,6 @@ extern "C" {
 			*status = INCOMPATIBLE_STATE;
 			return 0;
 		}
-
-		/*int32_t value = HAL_GetPWMRaw(pwmPortHandle, status);
-		if (*status != 0) return 0;
-		DigitalPort* dPort = port.get();
-
-		if (value < GetMinNegativePwm(dPort)) {
-		  return 0.0;
-		} else if (value > GetMaxPositivePwm(dPort)) {
-		  return 1.0;
-		} else {
-		  return static_cast<double>(value - GetMinNegativePwm(dPort)) /
-				 static_cast<double>(GetFullRangeScaleFactor(dPort));
-		}*/
-		//return 0.0;
 	}
 
 	void HAL_LatchPWMZero(HAL_DigitalHandle pwmPortHandle, int32_t* status) {
@@ -429,9 +359,6 @@ extern "C" {
 			*status = HAL_HANDLE_ERROR;
 			return;
 		}
-
-		/*pwmSystem->writeZeroLatch(port->channel, true, status);
-		pwmSystem->writeZeroLatch(port->channel, false, status);*/
 	}
 
 	/**
@@ -447,13 +374,6 @@ extern "C" {
 			*status = HAL_HANDLE_ERROR;
 			return;
 		}
-
-		/*if (port->channel < tPWM::kNumPeriodScaleHdrElements) {
-		  pwmSystem->writePeriodScaleHdr(port->channel, squelchMask, status);
-		} else {
-		  pwmSystem->writePeriodScaleMXP(
-			  port->channel - tPWM::kNumPeriodScaleHdrElements, squelchMask, status);
-		}*/
 	}
 
 	/**
@@ -462,9 +382,6 @@ extern "C" {
 	 * @return The loop time
 	 */
 	int32_t HAL_GetLoopTiming(int32_t* status) {
-		//initializeDigital(status);
-		//if (*status != 0) return 0;
-		//return pwmSystem->readLoopTiming(status);
 		return 260;
 	}
 

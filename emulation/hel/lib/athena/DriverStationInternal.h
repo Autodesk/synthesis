@@ -1,3 +1,6 @@
+// this stuff is used internally to read driver station packets, but it isn't
+// exposed through the HAL
+
 #ifndef __FRC_DRIVER_STATION_H
 #define __FRC_DRIVER_STATION_H
 
@@ -7,10 +10,6 @@
 #include "OSAL/WaitSemaphore.h"
 #include "OSAL/OSAL.h"
 
-// To Robot
-// #include <NetworkCommunication/FRCComm.h>
-
-// To DS
 union RobotControlByte {
 	uint8_t control;
 	struct {
@@ -65,7 +64,6 @@ typedef struct
 } DynamicControlData;
 
 /*
-
 0		|	Upper byte for packet identification
 1		|	Lower byte for packet identification
 2		|	Unknown: 01
@@ -87,7 +85,6 @@ typedef struct
 18		|	sizeof pov?: 01 
 19 & 20	|	POV		|	FFFF = Center; 005A = Right; 0087 = Right-Bottom; 00B4 = Bottom; 00E1 = Left-Bottom; 010E = Left; 013B = Left-Top; 0000 = Top; 002D = Right-Top;
 Repeats 6-20 for every other controller
-
 */
 struct FRCCommonControlData2015 {
 	uint16_t packetIndex;
@@ -95,42 +92,6 @@ struct FRCCommonControlData2015 {
 	uint8_t state;
 	uint8_t command;
 	uint8_t station;
-	
-	/*uint8_t size_joystick0;
-	uint8_t size_up_to_pov0;
-	uint8_t size_axes0;
-	uint8_t axis0[4];
-	uint8_t unknown1[1];
-	uint16_t buttons0;
-	uint8_t size_pov0; // unsure
-	uint8_t pov0[2];
-	
-	uint8_t size_joystick1;
-	uint8_t size_up_to_pov1;
-	uint8_t size_axes1;
-	uint8_t axis1[6];
-	uint8_t unknown2[1];
-	uint16_t buttons1;
-	uint8_t size_pov1; // unsure
-	uint8_t pov1[2];
-
-	uint8_t size_joystick2;
-	uint8_t size_up_to_pov2;
-	uint8_t size_axes2;
-	uint8_t axis2[6];
-	uint8_t unknown3[1];
-	uint16_t buttons2;
-	uint8_t size_pov2; // unsure
-	uint8_t pov2[2];
-	
-	uint8_t size_joystick3;
-	uint8_t size_up_to_pov3;
-	uint8_t size_axes3;
-	uint8_t axis3[6];
-	uint8_t unknown4[1];
-	uint16_t buttons3;
-	uint8_t size_pov3; // unsure
-	uint8_t pov3[2];*/
 };
 
 /*
@@ -153,7 +114,6 @@ struct FRCRobotControl2015 {
 	uint8_t state;
 	uint8_t voltage_greater;
 	uint8_t voltage_lesser;
-	//uint8_t padding; // don't think this is needed
 };
 
 extern float JAG_SPEEDS[32];

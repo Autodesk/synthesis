@@ -18,7 +18,6 @@ using namespace hal;
 
 namespace {
 struct AnalogTrigger {
-  //std::unique_ptr<tAnalogTrigger> trigger;
   HAL_AnalogInputHandle analogHandle;
   uint8_t index;
 };
@@ -52,9 +51,6 @@ HAL_AnalogTriggerHandle HAL_InitializeAnalogTrigger(
   trigger->index = static_cast<uint8_t>(getHandleIndex(handle));
   *index = trigger->index;
 
-  /*trigger->trigger.reset(tAnalogTrigger::create(trigger->index, status));
-  trigger->trigger->writeSourceSelect_Channel(analog_port->channel, status);*/
-
   return handle;
 }
 
@@ -66,18 +62,7 @@ void HAL_CleanAnalogTrigger(HAL_AnalogTriggerHandle analogTriggerHandle,
 
 void HAL_SetAnalogTriggerLimitsRaw(HAL_AnalogTriggerHandle analogTriggerHandle,
                                    int32_t lower, int32_t upper,
-                                   int32_t* status) {
-  /*auto trigger = analogTriggerHandles.Get(analogTriggerHandle);
-  if (trigger == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  if (lower > upper) {
-    *status = ANALOG_TRIGGER_LIMIT_ORDER_ERROR;
-  }
-  trigger->trigger->writeLowerLimit(lower, status);
-  trigger->trigger->writeUpperLimit(upper, status);*/
-}
+                                   int32_t* status) {}
 
 /**
  * Set the upper and lower limits of the analog trigger.
@@ -85,23 +70,7 @@ void HAL_SetAnalogTriggerLimitsRaw(HAL_AnalogTriggerHandle analogTriggerHandle,
  */
 void HAL_SetAnalogTriggerLimitsVoltage(
     HAL_AnalogTriggerHandle analogTriggerHandle, double lower, double upper,
-    int32_t* status) {
-  /*auto trigger = analogTriggerHandles.Get(analogTriggerHandle);
-  if (trigger == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  if (lower > upper) {
-    *status = ANALOG_TRIGGER_LIMIT_ORDER_ERROR;
-  }
-
-  // TODO: This depends on the averaged setting.  Only raw values will work as
-  // is.
-  trigger->trigger->writeLowerLimit(
-      HAL_GetAnalogVoltsToValue(trigger->analogHandle, lower, status), status);
-  trigger->trigger->writeUpperLimit(
-      HAL_GetAnalogVoltsToValue(trigger->analogHandle, upper, status), status);*/
-}
+    int32_t* status) {}
 
 /**
  * Configure the analog trigger to use the averaged vs. raw values.
@@ -109,19 +78,7 @@ void HAL_SetAnalogTriggerLimitsVoltage(
  * trigger, otherwise the immediate value is used.
  */
 void HAL_SetAnalogTriggerAveraged(HAL_AnalogTriggerHandle analogTriggerHandle,
-                                  HAL_Bool useAveragedValue, int32_t* status) {
-  /*auto trigger = analogTriggerHandles.Get(analogTriggerHandle);
-  if (trigger == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  if (trigger->trigger->readSourceSelect_Filter(status) != 0) {
-    *status = INCOMPATIBLE_STATE;
-    // TODO: wpi_setWPIErrorWithContext(IncompatibleMode, "Hardware does not
-    // support average and filtering at the same time.");
-  }
-  trigger->trigger->writeSourceSelect_Averaged(useAveragedValue, status);*/
-}
+                                  HAL_Bool useAveragedValue, int32_t* status) {}
 
 /**
  * Configure the analog trigger to use a filtered value.
@@ -130,19 +87,7 @@ void HAL_SetAnalogTriggerAveraged(HAL_AnalogTriggerHandle analogTriggerHandle,
  * pot crosses through zero.
  */
 void HAL_SetAnalogTriggerFiltered(HAL_AnalogTriggerHandle analogTriggerHandle,
-                                  HAL_Bool useFilteredValue, int32_t* status) {
-  /*auto trigger = analogTriggerHandles.Get(analogTriggerHandle);
-  if (trigger == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return;
-  }
-  if (trigger->trigger->readSourceSelect_Averaged(status) != 0) {
-    *status = INCOMPATIBLE_STATE;
-    // TODO: wpi_setWPIErrorWithContext(IncompatibleMode, "Hardware does not "
-    // "support average and filtering at the same time.");
-  }
-  trigger->trigger->writeSourceSelect_Filter(useFilteredValue, status);*/
-}
+                                  HAL_Bool useFilteredValue, int32_t* status) {}
 
 /**
  * Return the InWindow output of the analog trigger.
@@ -151,12 +96,6 @@ void HAL_SetAnalogTriggerFiltered(HAL_AnalogTriggerHandle analogTriggerHandle,
  */
 HAL_Bool HAL_GetAnalogTriggerInWindow(
     HAL_AnalogTriggerHandle analogTriggerHandle, int32_t* status) {
-  /*auto trigger = analogTriggerHandles.Get(analogTriggerHandle);
-  if (trigger == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return false;
-  }
-  return trigger->trigger->readOutput_InHysteresis(trigger->index, status) != 0;*/
   return false;
 }
 
@@ -169,12 +108,6 @@ HAL_Bool HAL_GetAnalogTriggerInWindow(
  */
 HAL_Bool HAL_GetAnalogTriggerTriggerState(
     HAL_AnalogTriggerHandle analogTriggerHandle, int32_t* status) {
-  /*auto trigger = analogTriggerHandles.Get(analogTriggerHandle);
-  if (trigger == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return false;
-  }
-  return trigger->trigger->readOutput_OverLimit(trigger->index, status) != 0;*/
   return false;
 }
 
@@ -185,26 +118,6 @@ HAL_Bool HAL_GetAnalogTriggerTriggerState(
 HAL_Bool HAL_GetAnalogTriggerOutput(HAL_AnalogTriggerHandle analogTriggerHandle,
                                     HAL_AnalogTriggerType type,
                                     int32_t* status) {
-  /*auto trigger = analogTriggerHandles.Get(analogTriggerHandle);
-  if (trigger == nullptr) {
-    *status = HAL_HANDLE_ERROR;
-    return false;
-  }
-  bool result = false;
-  switch (type) {
-    case HAL_Trigger_kInWindow:
-      result =
-          trigger->trigger->readOutput_InHysteresis(trigger->index, status);
-      break;  // XXX: Backport
-    case HAL_Trigger_kState:
-      result = trigger->trigger->readOutput_OverLimit(trigger->index, status);
-      break;  // XXX: Backport
-    case HAL_Trigger_kRisingPulse:
-    case HAL_Trigger_kFallingPulse:
-      *status = ANALOG_TRIGGER_PULSE_OUTPUT_ERROR;
-      return false;
-  }
-  return result;*/
   return false;
 }
 }
