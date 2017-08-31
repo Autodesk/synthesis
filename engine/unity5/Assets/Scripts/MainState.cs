@@ -118,7 +118,6 @@ public class MainState : SimState
                 return;
             }
 
-            Debug.Log("Robot Type Manager isMixAndMatch:" + RobotTypeManager.IsMixAndMatch);
             if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
             {
                 AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
@@ -128,10 +127,6 @@ public class MainState : SimState
             if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
             {
                 Debug.Log(LoadManipulator(RobotTypeManager.ManipulatorPath) ? "Load manipulator success" : "Load manipulator failed");
-            }
-            else
-            {
-
             }
         }
         else
@@ -171,13 +166,13 @@ public class MainState : SimState
         //Spawn a new robot from the same path or switch active robot
         if (!ActiveRobot.IsResetting)
         {
-            if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath, false); //made parameter 0 because not sure what this is for
+            if (Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot.RobotIsMixAndMatch); 
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
 
         }
 
         // Toggles between the different camera states if the camera toggle button is pressed
-        if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)))
+        if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen)
         {
             if (DynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
@@ -478,25 +473,25 @@ public class MainState : SimState
     }
 
     /// <summary>
-    /// Loads a manipulator for Quick Swap Mode and maps it to the robot. 
+    /// Loads a manipulator for Mix and Match mode and maps it to the robot. 
     /// </summary>
     /// <param name="directory"></param>
     /// <returns></returns>
     public bool LoadManipulator(string directory)
     {
         ActiveRobot.RobotHasManipulator = true;
-        return ActiveRobot.LoadManipulator(directory, null);
+        return ActiveRobot.InitializeManipulator(directory, null);
     }
 
     /// <summary>
-    /// Loads a manipulator for Quick Swap Mode and maps it to the robot. 
+    /// Loads a manipulator for Mix and Match mode and maps it to the robot. 
     /// </summary>
     /// <param name="directory"></param>
     /// <returns></returns>
     public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
         ActiveRobot.RobotHasManipulator = true;
-        return ActiveRobot.LoadManipulator(directory, robotGameObject);
+        return ActiveRobot.InitializeManipulator(directory, robotGameObject);
     }
 
     /// <summary>
@@ -528,7 +523,7 @@ public class MainState : SimState
             robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
-            robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
+            if(!robot.InitializeManipulator(manipulatorDirectory, robot.gameObject)) return false;
             return true;
         }
         return false;
