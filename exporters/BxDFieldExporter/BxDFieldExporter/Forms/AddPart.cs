@@ -42,26 +42,33 @@ namespace BxDFieldExporter
                 }
             }
         }
-
+        /// <summary>
+        /// Closes the form and adds the last selected model to the selected component
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OKButton_OnClick(object sender, EventArgs e)
         {
             mAddInInterface.SetDone(true);
             StandardAddInServer.task.TrySetResult(true);
             Close();
         }
-
+        /// <summary>
+        /// Closes the form and doesn't add the last selected model to the selected component
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CancelButton_onClick(object sender, EventArgs e)
         {
             Close();
         }
 
-
-        private void SelectPartsLabel_onClick(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-
+        /// <summary>
+        /// Checks for keyinput and closes the form with or without saving the model to a component depending on the entered key
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Escape)
@@ -70,20 +77,19 @@ namespace BxDFieldExporter
             }
             else if (keyData == Keys.Enter)
             {
-                Close();
+                OKButton_OnClick(null, null);
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
-
+        /// <summary>
+        /// Leaves the form open and adds the last selected model to the selected component
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ApplyButton_Click(object sender, EventArgs e)
         {
             StandardAddInServer.task.TrySetResult(true);
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void AddPart_FormClosing(object sender, FormClosingEventArgs e)

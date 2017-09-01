@@ -85,6 +85,12 @@ public class DriveJoints
         return MathfExt.ToDegrees(Mathf.Acos(Vector3.Dot(childUp, parentUp) / (childUp.magnitude * parentUp.magnitude)));
     }
 
+    /// <summary>
+    /// Updates the motors on the manipulator in mix and match mode. Called every frame. 
+    /// </summary>
+    /// <param name="skeleton"></param>
+    /// <param name="dioModules"></param>
+    /// <param name="controlIndex"></param>
     public static void UpdateManipulatorMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex)
     {
         float[] pwm;
@@ -103,11 +109,10 @@ public class DriveJoints
 
             pwm[4] +=
                  (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
-        Debug.Log("PWM 4: " + pwm[4].ToString());
             pwm[5] +=
                  (InputControl.GetAxis(Controls.axes[controlIndex].pwm5Axes) * SPEED_ARROW_PWM);
 
-        pwm[6] +=
+            pwm[6] +=
                  (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
 
         listOfSubNodes.Clear();
@@ -209,13 +214,12 @@ public class DriveJoints
             pwm[(int)MecanumPorts.BACK_RIGHT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * -SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); // * SPEED_ARROW_PWM);
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); 
 
             pwm[(int)MecanumPorts.BACK_LEFT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); //SPEED_ARROW_PWM);
-
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); 
             pwm[4] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
 
