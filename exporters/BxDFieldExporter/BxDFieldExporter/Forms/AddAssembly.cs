@@ -42,72 +42,47 @@ namespace BxDFieldExporter
 
             }
         }
-
+        /// <summary>
+        /// When the okay button is pressed, closes the form and adds the last selected model to the selected component
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OKButton_OnClick(object sender, EventArgs e)
         {
             mAddInInterface.SetDone(true);
             StandardAddInServer.task.TrySetResult(true);
             Close();
         }
-
+        /// <summary>
+        /// Closes the form and does not add the last selected model to the component
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CancelButton_onClick(object sender, EventArgs e)
         {
             mAddInInterface.SetCancel(true);
             StandardAddInServer.task.TrySetResult(true);
             Close();
         }
-
+        /// <summary>
+        /// Leaves the form open and adds the last selected model to the component
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ApplyButton_OnClick(object sender, EventArgs e)
         {
             StandardAddInServer.task.TrySetResult(true);
         }
-
-        private void AddAssembly_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CancelButton_onClick(object sender, FormClosedEventArgs e)
-        {
-            Close();
-        }
-
+        /// <summary>
+        /// Properly closes the form so Standard Addin Server is aware of it closing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddAssembly_FormClosing(object sender, FormClosingEventArgs e)
         {
             mAddInInterface.SetCancel(true);
             StandardAddInServer.task.TrySetResult(true);
         }
-
-        private void AddAssembly_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode.Equals(Keys.ShiftKey))
-            {
-                MessageBox.Show("WARNING: The field exporter does not accept multiple models at this time.");
-                    
-            }
-        }
-
-        ///// <summary>
-        ///// Override ProcessCmdKey in order to collect escape and enter key input
-        ///// </summary>
-        ///// <param name="msg"></param>
-        ///// <param name="keyData"></param>
-        ///// <returns></returns>
-        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        //{
-        //    if (keyData == Keys.Escape)
-        //    {
-        //        this.Close();
-
-        //    }
-        //    else if (keyData == Keys.Enter)
-        //    {
-        //        this.Close();
-        //    }
-
-        //    return base.ProcessCmdKey(ref msg, keyData);
-        //}
-
 
     }
 }
