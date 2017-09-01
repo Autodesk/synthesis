@@ -2,11 +2,11 @@
 
 - [Project Structure](#project-structure)
   - [HELBuildTool](#hel-build-tool)
-  - [Patching System](#patching-system)
 - [Building](#building)
   - [Installing Cygwin](#installing-cygwin)
   - [Basic Cygwin Usage](#basic-cygwin-usage)
   - [Building The HEL](#building-the-hel)
+  - [Make Targets](#make-targets)
 - [Packaging Into the Installer](#packaging-into-the-installer)
   - [cygscripts](#cygscripts)
 
@@ -70,19 +70,31 @@ In Linux, the command line is always in a specific directory. Most commands use 
 
 `ls` will display the contents of the current directory as output. It's pretty simple to use, just type `ls` and it will list all the files and folders. One thing to be aware of is that, while on windows files beginning with the `.` character are fine, on Linux and Cygwin they are automatically hidden. To show files beginning with a `.` (like `.gitignore`), use `ls -a`.
 
-
-
 ### Building The HEL
 
 The HEL uses GNU Make as it's build system, which is a little different from building in visual studio. First, you need to `cd` to the HEL directory in Cygwin. The most basic way to build it is to simply run the `make` command. This is not idea because `make` uses only one core by default. Since modern computers have lots of cores, there is no reason not to take advantage of that and compile more than one file at once. If you pass the parameter `-jN` (where `N` is the number of cores to use) to `make`, it will compile multiple files in parallel. For example, `make -j8` compiles 8 files at the same time.
 
 The makefile for the HEL has four build targets which you will probably use. The first, which is used by default when you call `make`, builds both the C++ and Java wpilibs using the modified HAL. The targets `cpp`, and `java` build only the C++ or Java wpilib versions respectively. You build a particular target by passing it as a parameter to `make`. For example, `make cpp -j8` will build the C++ wpilib only with 8 cores. Finally, the `clean` target will remove all of the compiled files. This is used when something has gone wrong with the build process to the point that you want to recompile everything from scratch instead of trying to do another incremental build. In addition to being able to build only a certain part of the HEL, you can also select between debug and release builds. Debug is used by default, but to do a release build, simply pass `TARGET=release` to make like this: `make TARGET=release -j8`
 
+### Make Targets
 
+Targets from `emulation/hel/Makefile`:
+
+  - `make`: Build everything
+  - `make cpp`: Build only the c++ wpilib
+  - `make java`: Build only the java wpilib
+  - `make hal`: Build only the HAL
+  - `make clean`: Remove build files to force a clean rebuild
+  - `make patch`: Manually apply patches to wpilib (this will normally be done every time you build)
+  - `make revert_patch`: Undo the patch to wpilib (required in order to update wpilib, although it will be run automatically with the `update_wpilib` target
+  - `make update_wpilib`: Attempt to pull the latest changes to the wpilib submodules
+
+Targets from `emulation/Makefile`:
+  - `make install`: Builds and copies all files to the installer build directory
 
 ## Packaging Into the Installer
 
-Unlike the other components of Synthesis, the process for copying files to build an installer is automated for the emulator. In the `synthesis/emulator` directory, there is a makefile which will install all of the files to `../installer` by running `make install`. Before doing this, you have to build both SetupLoopbackAdapter and HELBuildTool in Visual Studio, although the makefile will warn you if you have not done this yet.
+Unlike the other components of Synthesis, the process for copying files to build an installer is automated for the emulator. In the `synthesis/emulator` directory, there is a makefile which will install all of the files to `../installer` by running `make install`. Before doing this, you have to build HELBuildTool in Visual Studio, although the makefile will warn you if you have not done this yet. It is required to build HELBuildTool in Release mode for the x64 cpu, or it may either not update in the installer, or fail to build the installer alltogether.
 
 ### cygscripts
 
