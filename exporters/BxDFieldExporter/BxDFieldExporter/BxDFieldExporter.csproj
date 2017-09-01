@@ -139,12 +139,6 @@
     <Compile Include="Forms\ComponentPropertiesForm.Designer.cs">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\EditCoordinate.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditCoordinate.Designer.cs">
-      <DependentUpon>EditCoordinate.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\EnterName.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,12 +146,6 @@
       <DependentUpon>EnterName.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldDataType.cs" />
-    <Compile Include="Forms\GetPath.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetPath.Designer.cs">
-      <DependentUpon>GetPath.cs</DependentUpon>
-    </Compile>
     <Compile Include="Components\MeshColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -199,15 +187,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\AddAssembly.resx">
       <DependentUpon>AddAssembly.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AddPart.resx">
       <DependentUpon>AddPart.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ComponentPropertiesForm.resx">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetPath.resx">
-      <DependentUpon>GetPath.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
