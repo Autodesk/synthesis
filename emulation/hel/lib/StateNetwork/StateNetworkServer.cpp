@@ -4,6 +4,7 @@
 #include <thread>
 #include <chrono>
 #include <cmath>
+#include <string.h>
 #if USE_WINAPI
 #include <Windows.h>
 #elif USE_POSIX
@@ -14,42 +15,36 @@
 #include <arpa/inet.h>
 #endif
 
-#include <string.h>
-
-StateNetworkServer::StateNetworkServer(void) {
-	udpSocket = 0;
-	udpRecvSocket = 0;
-}
-
-StateNetworkServer::~StateNetworkServer(void) {
-}
-
 void StateNetworkServer::Open() {
 #if USE_WINAPI
+	// Start the winsock API
 	WSADATA wsa;
-	WSAStartup(MAKEWORD(2,2),&wsa);		// Start the winsock API
+	WSAStartup(MAKEWORD(2,2),&wsa);
 #endif
-
-	udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);// Create a socket to yell at Unity
+	
+	// Create a socket to send data to Unity
+	udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (udpSocket < 0) {
-		fprintf(stderr, "Could not create socket!\n");
+		fprintf(stderr, "Could not create send socket!\n");
 		exit(2);
 	}
 
-	// Who cares about data!  We don't need to listen!.... but we do
-	udpRecvSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);	// Create a socket to get scolded by unity
+	// Create a socket to recieve data from Unity
+	udpRecvSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (udpRecvSocket < 0) {
 		fprintf(stderr, "Count not create receive socket.\n");
 		exit(3);
 	}
 
-	struct sockaddr_in server;		// Setup socket address
+	// Set up socket address
+	struct sockaddr_in server;
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
 	server.sin_port = htons(RECV_PORT);
 
+	// Attach socket to address
 	if (bind(udpRecvSocket, (struct sockaddr *) &server, sizeof(server))
-		== SOCKET_ERROR) { // Attach socket to address
+		== SOCKET_ERROR) {
 			fprintf(stderr, "Could not bind receive socket!\n");
 			exit(2);
 	}
@@ -64,12 +59,14 @@ void StateNetworkServer::Close() {
 }
 
 void StateNetworkServer::SendStatePacket(OutputStatePacket pack) {
-	struct sockaddr_in server;	// Send to localhost
+	// Send to localhost
+	struct sockaddr_in server;
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 	server.sin_port = htons(PORT);
+	// Send it
 	sendto(udpSocket, (char*) &pack, sizeof(pack), 0, (sockaddr*) &server,
-		sizeof(server));	// Send it
+		sizeof(server));
 }
 
 bool StateNetworkServer::ReceiveStatePacket(InputStatePacket *pack) {
@@ -80,7 +77,8 @@ bool StateNetworkServer::ReceiveStatePacket(InputStatePacket *pack) {
 	struct timeval timeout;
 	timeout.tv_sec = timeout.tv_usec = 0;
 	bool flag = false;
-	while (select(1, &set, NULL, NULL, &timeout)) {	// Only read if there is data available
+	// Only read if there is data available
+	while (select(1, &set, NULL, NULL, &timeout)) {
 		recv(udpRecvSocket, (char*) pack, sizeof(InputStatePacket), 0);
 		flag = true;
 	}
@@ -102,7 +100,6 @@ void StateNetworkThread() {
 
   OutputStatePacket packet;
   while (true) {
-    //printf("%f %f %f %f\n", pwmValues[0], pwmValues[1], pwmValues[2], pwmValues[3]);
     std::copy(pwmValues, pwmValues + 10, packet.dio[0].pwmValues);
     stateNetwork.SendStatePacket(packet);
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
