@@ -168,7 +168,6 @@
     <Compile Include="StandardAddInServer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StandardAddinServer.OldMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BxDFieldExporter.X.manifest">
