@@ -1,4 +1,4 @@
-# <img src="http://bxd.autodesk.com/synthesis/images/synthesislogo.png" alt="logo" width="50" height ="50"/>Autodesk Synthesis
+﻿# <img src="http://bxd.autodesk.com/synthesis/images/synthesislogo.png" alt="logo" width="50" height ="50"/>Autodesk Synthesis
 
 Synthesis is a robotics simulator designed to help FIRST Robotics teams design, strategize, test, and practice. Teams can import their own robot and field designs or use preexisting ones into the simulator for a variety of uses, including:
 * Testing robot designs
@@ -6,7 +6,7 @@ Synthesis is a robotics simulator designed to help FIRST Robotics teams design, 
 * Driver practice & strategy
 * Code emulation
 
-Developed solely by former FIRST students, Synthesis is built with a sole focus on the FIRST community. At the start of this year, we made the project fully open source that we can better involve the community so that they can help make Synthesis better or modify Synthesis to better suit their team’s needs.
+Developed solely by FIRST students, Synthesis is built with a direct focus on the FIRST community. At the start of this year, we made the project fully open source so that we can better involve the community. This way, contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
 
 For more information on the product itself or the team, visit http://bxd.autodesk.com/
 
@@ -25,4 +25,4 @@ Synthesis is comprised of 4 separate components that are mostly developed indepe
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This  way, we can ensure that there is no overlap between contributions and internal development work. You may contact us at frc@autodesk.com.
 
-When ready to contribute, just submit a pull request and be sure to include a clear and detailed descriptions of the changes you've made so that we can verify them and eventually merge.
+When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge.
