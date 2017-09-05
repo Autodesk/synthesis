@@ -8,11 +8,9 @@ private:
 	static const int PORT  = 2550;
 	static const int RECV_PORT = 2551;
 
-	int udpSocket;
-	int udpRecvSocket;
+	int udpSocket = 0;
+	int udpRecvSocket = 0;
 public:
-	StateNetworkServer(void);
-	~StateNetworkServer(void);
 	/// Opens the socket of this network server.
 	void Open();
 	/// Closes the socket of this network server.
@@ -28,6 +26,8 @@ public:
 };
 
 extern float pwmValues[10];
+
+// Starts the StateNetworkServer thread to talk to Unity
 extern void StartUnityThread();
 
 #endif
