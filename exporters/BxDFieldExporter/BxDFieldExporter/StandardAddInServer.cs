@@ -840,8 +840,10 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
 
             SetAllButtons(true);
         }
-
-        //Opens the "Add Part(s)" window and adds parts to a component
+        /// <summary>
+        ///Opens the "Add Part(s)" window and adds parts to a component
+        /// </summary>
+        /// <param name="Context"></param>
         public async void AddNewPart_OnExecute(NameValueMap Context)
         {
 
@@ -917,7 +919,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 }
             }
             partSet.Clear(); //Clears the highlighted set
-            
+
             SetAllButtons(true);
         }
 
@@ -1096,7 +1098,10 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
         }
 
-        //Exports the field
+        /// <summary>
+        /// Begins the field exportation procecss by opening 
+        /// the form that handles all IO procedures
+        /// </summary>
         public void ExportField_OnExecute(NameValueMap Context)
         {
             SetAllButtons(false);
@@ -1106,16 +1111,16 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 SetAllButtons(true);
                 return;
             }
-
-
-                UpdateLegacy();
-                Program.ASSEMBLY_DOCUMENT = (AssemblyDocument)InventorApplication.ActiveDocument;
-                Program.INVENTOR_APPLICATION = InventorApplication;
-                LegacyUtilities.exporter.ShowDialog();
+            UpdateLegacy();
+            Program.ASSEMBLY_DOCUMENT = (AssemblyDocument)InventorApplication.ActiveDocument;
+            Program.INVENTOR_APPLICATION = InventorApplication;
+            LegacyUtilities.exporter.ShowDialog();
             SetAllButtons(true);
         }
 
-        //Generic function for removing both parts and assemblies
+        /// <summary>
+        /// Generic function for removing both parts and assemblies
+        /// </summary
         public void RemovePartAssembly_OnExecute(NameValueMap Context)
         {
             bool IsDone = false;
@@ -1174,7 +1179,10 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
         }
 
-        //Used to enable/disable all of the buttons with only one function
+        /// <summary>
+        /// Used to enable/disable all of the buttons with only one function
+        /// </summary>
+        /// <param name="Enabled">Determines if the buttons will be enabled or disabled</param>
         private static void SetAllButtons(bool Enabled)
         {
             addNewComponent.Enabled = Enabled;
@@ -1187,7 +1195,10 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             removeAssembly.Enabled = Enabled;
             removePart.Enabled = Enabled;
         }
-
+        /// <summary>
+        /// Used to determine if a node is selected
+        /// </summary>
+        /// <returns>A boolean value representative of if a node is selected or not</returns>
         private static bool CheckComponentsSel()
         {
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
@@ -1197,7 +1208,12 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             return false;
         }
-
+        /// <summary>
+        /// Used to determine if a node is selected, if there is one selected, 
+        /// sets the value of a node to the value of the selected node
+        /// </summary>
+        /// <param name="Node">A node object that will have the selected node's data imbedded in it</param>
+        /// <returns>A boolean value representative of if a node is selected or not</returns>
         private bool CheckComponentsSel(out BrowserNode Node)
         {
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
@@ -1211,7 +1227,10 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             Node = null;
             return false;
         }
-
+        /// <summary>
+        /// Checks to see if a node is selected
+        /// </summary>
+        /// <returns>A boolean value to determine if a node has been selected</returns>
         public bool AreNodesSelected()
         {
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
@@ -1228,6 +1247,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             return false;
         }
+        /// <summary>
+        /// Sets the initial browser node icon for the top node
+        /// </summary>
         public static void BrowserNodeIcons()
         {
             Document activeDoc = InventorApplication.ActiveDocument;
