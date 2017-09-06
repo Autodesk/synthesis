@@ -18432,7 +18432,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: DRIVE OPTIONS
+  m_Text: DRIVE TYPE
 --- !u!222 &538729363
 CanvasRenderer:
   m_ObjectHideFlags: 0

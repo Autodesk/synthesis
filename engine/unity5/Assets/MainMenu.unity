@@ -7850,7 +7850,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 11.2675705, y: 314.06}
+  m_AnchoredPosition: {x: 11.2675705, y: 314}
   m_SizeDelta: {x: 335, y: 106.14}
   m_Pivot: {x: 0.53958094, y: 1.3996099}
 --- !u!114 &815203052
@@ -17716,7 +17716,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: TANK DRIVE
+  m_Text: DRIVE TYPE
 --- !u!222 &1751211433
 CanvasRenderer:
   m_ObjectHideFlags: 0
