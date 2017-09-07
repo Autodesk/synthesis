@@ -91,10 +91,7 @@ Section "Synthesis (required)"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "Publisher" "Autodesk"
-
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "Readme" "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
-
+  
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
   ; Update this on release
@@ -126,7 +123,6 @@ Section
 
   File "SynthesisLauncher.exe"
   File "Apache2.rtf"
-  File "README.pdf"
 
 SectionEnd
 
@@ -246,7 +242,7 @@ SectionEnd
 Section
 
 MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view our Readme?" IDNO NoReadme
-      ExecShell "" "$instdir\README.pdf"
+      ExecShell "open" "https://github.com/Autodesk/synthesis/blob/master/README.md"
     NoReadme:
 
 
@@ -254,7 +250,7 @@ MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view 
 
     MessageBox MB_OK "Synthesis has been installed succsessfully!"
 
-    MessageBox MB_OK "In order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. This information is not used to identify or contact you. You can turn data collection off from the Control Panel within the simulation."
+    MessageBox MB_OK "In order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulation."
 
     Quit
 SectionEnd
