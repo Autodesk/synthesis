@@ -23,7 +23,7 @@ Section
 
 ;Where we can read registry data if we need it
 IfFileExists "$INSTDIR" +1 +28
-    MessageBox MB_YESNO "You appear to have synthesis installed, would you like to reinstall it?" IDYES true IDNO false
+    MessageBox MB_YESNO "You appear to have Synthesis installed, would you like to reinstall it?" IDYES true IDNO false
       ; Remove registry keys
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
