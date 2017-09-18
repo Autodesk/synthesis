@@ -107,14 +107,14 @@ Section "Synthesis (required)"
   WriteUninstaller "uninstall.exe"
 
 SectionEnd
-
+/*
 Section "MixAndMatch Files"
 
 SetOutPath $DOCUMENTS\Synthesis\MixAndMatch
 
 File /r "MixAndMatch\*"
 
-SectionEnd
+SectionEnd  */
 
 Section
 
@@ -125,7 +125,7 @@ Section
   File "Apache2.rtf"
 
 SectionEnd
-
+/*
 Section /o "Standalone Robot Exporter (legacy)"
 
   ; Set output path to the installation directory.
@@ -133,7 +133,7 @@ Section /o "Standalone Robot Exporter (legacy)"
 
   File /r "RobotExporter\*"
 
-SectionEnd
+SectionEnd  
 
 Section /o "Standalone Field Exporter (legacy)"
 
@@ -144,7 +144,7 @@ Section /o "Standalone Field Exporter (legacy)"
   File /r "FieldExporter\FieldExporter.exe"
   File /r "FieldExporter\ConvexLibraryWrapper.dll"
 	
-SectionEnd
+SectionEnd  
 
 Section "Robot Exporter Plugin (reccommended)"
 
@@ -177,7 +177,7 @@ Section "Field Exporter Plugin (reccommended)"
   SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
   File /r "FieldExporter\BxDFieldExporter.dll"
 
-SectionEnd
+SectionEnd  */
 
 Section "Code Emulator (optional)"
 
@@ -192,7 +192,7 @@ Section "Code Emulator (optional)"
   ExecWait "$INSTDIR\cygscripts\cygpac.bat"
   
 SectionEnd
-
+/*
 Section "Robot Files"
 
 SetOutPath $DOCUMENTS\Synthesis\Robots
@@ -207,7 +207,7 @@ SetOutPath $DOCUMENTS\Synthesis\Fields
 
 File /r "Fields\*"
 
-SectionEnd
+SectionEnd  */
 
 Section "Uninstall"
 
@@ -241,7 +241,7 @@ SectionEnd
 
 Section
 
-MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view our Readme?" IDNO NoReadme
+MessageBox MB_YESNO "Thank you for installing  the Synthesis Emulator, would you like to view our Readme?" IDNO NoReadme
       ExecShell "open" "https://github.com/Autodesk/synthesis/blob/master/README.md"
     NoReadme:
 
@@ -249,8 +249,6 @@ MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view 
     Exec "$INSTDIR\SynthesisLauncher.exe"
 
     MessageBox MB_OK "Synthesis has been installed succsessfully!"
-
-    MessageBox MB_OK "In order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulation."
 
     Quit
 SectionEnd
