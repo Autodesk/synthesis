@@ -74,6 +74,8 @@ namespace Assets.Scripts.FEA
 
         private string fieldPath;
 
+        public int controlIndex = 0;
+
         private float rewindTime;
         private float playbackSpeed;
         private float sliderPos;
@@ -81,6 +83,8 @@ namespace Assets.Scripts.FEA
 
         private bool firstFrame;
         private bool active;
+
+        private MainState mainState;
 
         private Camera camera;
         private DynamicCamera dynamicCamera;
@@ -474,8 +478,12 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public override void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
+            //int index = mainState.controlIndex;
+
+            //if (Input.GetKeyDown(KeyCode.Tab))
+            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
                 StateMachine.Instance.PopState();
+            //Debug.Log("indexReplay: " + index);
         }
 
         /// <summary>

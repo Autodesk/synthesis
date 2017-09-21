@@ -63,6 +63,8 @@ public class MainState : SimState
 
     public bool IsMetric;
 
+    public int controlIndex = 0;
+
     /// <summary>
     /// Called when the script instance is being initialized.
     /// Initializes the bullet physics environment
@@ -166,7 +168,7 @@ public class MainState : SimState
         //Spawn a new robot from the same path or switch active robot
         if (!ActiveRobot.IsResetting)
         {
-            if (Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot.RobotIsMixAndMatch); 
+            if (Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot.RobotIsMixAndMatch);
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
 
         }
@@ -181,10 +183,12 @@ public class MainState : SimState
         }
 
         // Switches to replay mode
-        if (!ActiveRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
+        //if (!ActiveRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
+        if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
         {
             CollisionTracker.ContactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
+            //Debug.Log("controlIndex: " + controlIndex);
         }
     }
 
@@ -354,6 +358,7 @@ public class MainState : SimState
     public void ChangeControlIndex(int index)
     {
         ActiveRobot.SetControlIndex(index);
+        controlIndex = index;
     }
 
     /// <summary>
@@ -523,7 +528,7 @@ public class MainState : SimState
             robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
-            if(!robot.InitializeManipulator(manipulatorDirectory, robot.gameObject)) return false;
+            if (!robot.InitializeManipulator(manipulatorDirectory, robot.gameObject)) return false;
             return true;
         }
         return false;
@@ -574,7 +579,6 @@ public class MainState : SimState
     public void BeginRobotReset()
     {
         ActiveRobot.BeginReset();
-
     }
 
     /// <summary>
