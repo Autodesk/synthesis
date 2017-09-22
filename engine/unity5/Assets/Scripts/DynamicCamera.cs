@@ -341,7 +341,7 @@ public class DynamicCamera : MonoBehaviour
         //    // Early out if we don't have a target
         //    if (!target)
         //        return;
-            
+
         //    if (MovingEnabled)
         //    {   
         //        //Force the camera to stay above the field if the robot is flipped over at spawn
@@ -358,7 +358,7 @@ public class DynamicCamera : MonoBehaviour
 
         //            //Unbond the main camera from the robot
         //            mono.transform.parent = null;
-                    
+
         //            //Change rotation angle using left mouse
         //            if (Input.GetMouseButton(0))
         //            {
@@ -414,7 +414,7 @@ public class DynamicCamera : MonoBehaviour
         //    return output.normalized * mag + origin;
         //}
         #endregion
-        
+
         Vector3 targetVector;
         Vector3 rotateVector;
         Vector3 lagVector;
@@ -523,6 +523,7 @@ public class DynamicCamera : MonoBehaviour
     /// <summary>
     /// Derives from CameraState to create a first person view from the robot.
     /// </summary>
+    /// 
     public class FreeroamState : CameraState
     {
         Vector3 positionVector;
@@ -563,12 +564,26 @@ public class DynamicCamera : MonoBehaviour
             if (MovingEnabled && !main.ActiveRobot.IsResetting && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
             {
                 //Rotate camera when holding left mouse
+                //if (InputControl.GetMouseButton(0))
+                //{
+                //    rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
+                //    rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
+                //}
+
                 if (InputControl.GetMouseButton(0))
                 {
-                    rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
-                    rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
+                    if (GameObject.Find("ChangeRobotPanel") == true || GameObject.Find("ChangeFieldPanel"))
+                    {
+                        MovingEnabled = false;
+                    }
+                    else
+                    {
+                        rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
+                        rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
+                        MovingEnabled = true;
+                    }
                 }
-                
+
                 //Use WASD to move camera position
                 positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
                 positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;

@@ -136,7 +136,7 @@ public class MainState : SimState
             awaitingReplay = true;
             LoadReplay(selectedReplay);
         }
-
+        
         //initializes the dynamic camera
         DynamicCameraObject = GameObject.Find("Main Camera");
         dynamicCamera = DynamicCameraObject.AddComponent<DynamicCamera>();

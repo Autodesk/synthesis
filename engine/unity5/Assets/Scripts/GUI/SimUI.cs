@@ -456,13 +456,11 @@ public class SimUI : MonoBehaviour
         if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
         {
             inputManagerPanel.SetActive(false);
-            Debug.Log("false");
         }
         else
         {
             inputManagerPanel.SetActive(true);
             PlayerPrefs.SetInt("isInputManagerPanel", 0);
-            Debug.Log("true");
         }
     }
 

@@ -38,8 +38,6 @@ public class ScrollablePanel : MonoBehaviour {
         highlightStyle = new GUIStyle(listStyle);
         highlightStyle.normal.background = listStyle.active.background;
         highlightStyle.hover.background = highlightStyle.normal.background;
-
-
     }
 	
 	// Update is called once per frame
@@ -71,13 +69,14 @@ public class ScrollablePanel : MonoBehaviour {
             {
                 selectedEntry = entry;
             }
+            DynamicCamera.MovingEnabled = false;
         }
         else
         {
             GUILayout.Label(errorMessage, listStyle);
             selectedEntry = null;
+            DynamicCamera.MovingEnabled = true;
         }
-
         GUILayout.EndScrollView();
         GUILayout.EndArea();
     }
