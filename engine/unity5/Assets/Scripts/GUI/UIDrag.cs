@@ -28,7 +28,6 @@ public class UIDrag : MonoBehaviour
         {
             transform.parent.position = lastPos;
         }
-        
     }
 
     public void EndDrag()
