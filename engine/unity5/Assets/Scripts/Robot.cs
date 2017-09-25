@@ -79,6 +79,8 @@ public class Robot : MonoBehaviour
     public float AngularVelocity { get; private set; }
     public float Acceleration { get; private set; }
 
+    public int DriverStationIndex = 0;
+
     /// <summary>
     /// Called when robot is first initialized
     /// </summary>
@@ -108,7 +110,7 @@ public class Robot : MonoBehaviour
                 keyDownTime = Time.time;
             }
 
-            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&  !MixAndMatchMode.setPresetPanelOpen &&
+            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen &&
                 !mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HOLD_TIME)
@@ -290,7 +292,7 @@ public class Robot : MonoBehaviour
 
                     int k = 0;
 
-                    Vector3? offset = null; 
+                    Vector3? offset = null;
                     foreach (Mesh meshObject in meshList)
                     {
                         GameObject meshObj = new GameObject(node.MainObject.name + "_mesh");
@@ -409,11 +411,12 @@ public class Robot : MonoBehaviour
                     offset.y = float.Parse(reader.ReadLine());
                     offset.z = float.Parse(reader.ReadLine());
                 }
-            } catch
+            }
+            catch
             {
                 offset = Vector3.zero;
             }
-           
+
         }
 
         return true;
@@ -808,7 +811,7 @@ public class Robot : MonoBehaviour
             EndReset();
         }
     }
-#endregion
+    #endregion
 
     /// <summary>
     /// Returns the driver practice component of this robot
@@ -865,5 +868,10 @@ public class Robot : MonoBehaviour
     {
         ControlIndex = index;
         dpmRobot.controlIndex = index;
+    }
+
+    public void SetDriverStationIndex(int index)
+    {
+        DriverStationIndex = index;
     }
 }

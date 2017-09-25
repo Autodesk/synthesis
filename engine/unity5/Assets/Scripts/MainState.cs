@@ -276,6 +276,7 @@ public class MainState : SimState
             }
 
             robot.ControlIndex = SpawnedRobots.Count;
+            robot.DriverStationIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
             return true;
@@ -354,6 +355,14 @@ public class MainState : SimState
     public void ChangeControlIndex(int index)
     {
         ActiveRobot.SetControlIndex(index);
+    }
+
+    /// <summary>
+    /// Changes the control index of the active robot
+    /// </summary>
+    public void ChangeDriverStationIndex(int index)
+    {
+        ActiveRobot.SetDriverStationIndex(index);
     }
 
     /// <summary>
