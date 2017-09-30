@@ -164,7 +164,7 @@ public class MainState : SimState
         }
 
         //Spawn a new robot from the same path or switch active robot
-        if (!ActiveRobot.IsResetting)
+        if (!ActiveRobot.IsResetting && DynamicCameraObject.activeSelf)
         {
             if (Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot.RobotIsMixAndMatch); 
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
@@ -181,7 +181,7 @@ public class MainState : SimState
         }
 
         // Switches to replay mode
-        if (!ActiveRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
+        if (!ActiveRobot.IsResetting && DynamicCameraObject.activeSelf && Input.GetKeyDown(KeyCode.Tab))
         {
             CollisionTracker.ContactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -275,9 +275,10 @@ public class MainState : SimState
                 ActiveRobot = robot;
             }
 
+            //Make sure the newly spawned robots has a proper control index and driver station index
             robot.ControlIndex = SpawnedRobots.Count;
+            robot.DriverStationIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
-
             return true;
         }
         return false;
@@ -354,6 +355,14 @@ public class MainState : SimState
     public void ChangeControlIndex(int index)
     {
         ActiveRobot.SetControlIndex(index);
+    }
+
+    /// <summary>
+    /// Changes the control index of the active robot
+    /// </summary>
+    public void ChangeDriverStationIndex(int index)
+    {
+        ActiveRobot.SetDriverStationIndex(index);
     }
 
     /// <summary>
