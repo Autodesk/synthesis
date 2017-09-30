@@ -106,9 +106,9 @@ public class Robot : MonoBehaviour
             return;
         }
 
-        if (!IsResetting)
+        if (!IsResetting && mainState.DynamicCameraObject.activeSelf)
         {
-            if (mainState.DynamicCameraObject.activeSelf && InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
+            if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
             {
                 keyDownTime = Time.time;
             }
