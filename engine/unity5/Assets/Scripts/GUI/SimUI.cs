@@ -24,6 +24,8 @@ public class SimUI : MonoBehaviour
     RobotCameraManager robotCameraManager;
     RobotCameraGUI robotCameraGUI;
 
+    SplitViewManager splitViewManager;
+
     GameObject canvas;
 
     GameObject freeroamCameraWindow;
@@ -86,7 +88,7 @@ public class SimUI : MonoBehaviour
             dpm = GetComponent<DriverPracticeMode>();
             multiplayer = GetComponent<LocalMultiplayer>();
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
-
+            splitViewManager = GetComponent<SplitViewManager>();
             FindElements();
         }
         else if (camera == null)
@@ -99,14 +101,17 @@ public class SimUI : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
+                if (splitViewManager.SplitViewActive)
+                {
+                    splitViewManager.EndSplitView();
+                }else if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
                 {
                     if (!exitPanel.activeSelf) MainMenuExit("open");
                     else MainMenuExit("cancel");
                 }
             }
 
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.H))
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.H) && camera.gameObject.activeSelf)
             {
                 TogglePanel(toolbar);
             }

@@ -22,6 +22,12 @@ public class SplitViewManager : MonoBehaviour {
 
     private int activeCount;
     private GameObject splitViewManager;
+    public bool SplitViewActive;
+
+    private void Awake()
+    {
+        StateMachine.Instance.Link<MainState>(this);
+    }
 
     private void Start()
     {
@@ -39,7 +45,8 @@ public class SplitViewManager : MonoBehaviour {
     private void Update()
     {
         if (mainState == null) mainState = StateMachine.Instance.FindState<MainState>();
-        if (Input.GetKeyDown(KeyCode.Escape)) EndSplitView();
+        if (Input.GetKeyDown(KeyCode.Escape)) SplitViewActive = false;
+        if (Input.GetKeyDown(KeyCode.Space)) SwitchSplitView();
     }
 
     public void AssignRobotCamera(int index, GameObject target)
@@ -54,7 +61,6 @@ public class SplitViewManager : MonoBehaviour {
     public void InitiateSplitView()
     {
         List<int> indexes = new List<int>();
-        Debug.Log(mainState.SpawnedRobots[0]);
         foreach (Robot robot in mainState.SpawnedRobots)
         {
             indexes.Add(robot.DriverStationIndex);
@@ -64,17 +70,15 @@ public class SplitViewManager : MonoBehaviour {
             foreach (Robot robot in mainState.SpawnedRobots)
             {
                 AssignRobotCamera(robot.DriverStationIndex, robot.gameObject);
-
-                Debug.Log(robot.DriverStationIndex);
             }
 
             if (activeCount > 1) {
+                SplitViewActive = true;
                 GenerateSplitView();
             }
             else
             {
                 UserMessageManager.Dispatch("Please have two/more robots to use split view!", 5f);
-                //activeCount = 0;
                 ClearCameraTarget();
             }
         }
@@ -96,13 +100,13 @@ public class SplitViewManager : MonoBehaviour {
                 SetThreeCamView();
                 break;
             case 4:
-                //SetFourCamView();
+                SetFourCamView();
                 break;
             case 5:
-                //SetFiveCamView();
+                SetFiveCamView();
                 break;
             case 6:
-                //SetSixCamView();
+                SetSixCamView();
                 break;
             default:
                 break;
@@ -112,8 +116,19 @@ public class SplitViewManager : MonoBehaviour {
     public void EndSplitView()
     {
         mainCamera.SetActive(true);
+        DynamicCamera.MovingEnabled = true;
         ClearCameraTarget();
     }
+
+    public void SwitchSplitView()
+    {
+        foreach(GameObject cam in playerCameras)
+        {
+            PlayerCamera playerCam = cam.GetComponent<PlayerCamera>();
+            playerCam.ToggleCameraState(playerCam.cameraState);
+        }
+    }
+
     public void ClearCameraTarget()
     {
         foreach (GameObject cam in playerCameras)
@@ -136,8 +151,48 @@ public class SplitViewManager : MonoBehaviour {
 
     public void SetThreeCamView()
     {
-        activeCameras[0].gameObject.GetComponent<Camera>().rect = new Rect(0.3f, 0, 0.5f, 0.5f);
-        activeCameras[1].gameObject.GetComponent<Camera>().rect = new Rect(0f, 0.5f, 0.5f, 1);
-        activeCameras[2].gameObject.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 1);
+        activeCameras[0].gameObject.GetComponent<Camera>().rect = new Rect(0f, 0.5f, 1f, 0.5f);
+        activeCameras[1].gameObject.GetComponent<Camera>().rect = new Rect(0f, 0.0f, 0.5f, 0.5f);
+        activeCameras[2].gameObject.GetComponent<Camera>().rect = new Rect(0.5f, 0.0f, 0.5f, 0.5f);
     }
+
+    public void SetFourCamView()
+    {
+        activeCameras[0].gameObject.GetComponent<Camera>().rect = new Rect(0f, 0.5f, 0.5f, 0.5f);
+        activeCameras[1].gameObject.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+        activeCameras[2].gameObject.GetComponent<Camera>().rect = new Rect(0f, 0.0f, 0.5f, 0.5f);
+        activeCameras[3].gameObject.GetComponent<Camera>().rect = new Rect(0.5f, 0.0f, 0.5f, 0.5f);
+    }
+
+    public void SetFiveCamView()
+    {
+        activeCameras[0].gameObject.GetComponent<Camera>().rect = new Rect(0f, 0.5f, 0.5f, 0.5f);
+        activeCameras[1].gameObject.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+        activeCameras[2].gameObject.GetComponent<Camera>().rect = new Rect(0.0f, 0.0f, 1 / 3f, 0.5f);
+        activeCameras[3].gameObject.GetComponent<Camera>().rect = new Rect(1 / 3f, 0.0f, 1 / 3f, 0.5f);
+        activeCameras[4].gameObject.GetComponent<Camera>().rect = new Rect(2 / 3f, 0.0f, 1 / 3f, 0.5f);
+    }
+
+    public void SetSixCamView()
+    {
+        activeCameras[0].gameObject.GetComponent<Camera>().rect = new Rect(0f, 0.5f, 1 / 3f, 0.5f);
+        activeCameras[1].gameObject.GetComponent<Camera>().rect = new Rect(1 / 3f, 0.5f, 1 / 3f, 0.5f);
+        activeCameras[2].gameObject.GetComponent<Camera>().rect = new Rect(2 / 3f, 0.5f, 1 / 3f, 0.5f);
+
+        activeCameras[3].gameObject.GetComponent<Camera>().rect = new Rect(0f, 0.0f, 1 / 3f, 0.5f);
+        activeCameras[4].gameObject.GetComponent<Camera>().rect = new Rect(1 / 3f, 0.0f, 1 / 3f, 0.5f);
+        activeCameras[5].gameObject.GetComponent<Camera>().rect = new Rect(2 / 3f, 0.0f, 1 / 3f, 0.5f);
+    }
+
+    //public void ScaleCanvas()
+    //{
+    //    foreach(PlayerCamera cam in activeCameras)
+    //    {
+    //        GameObject canvas = cam.gameObject.transform.GetChild(0).gameObject;
+    //        Rect cameraRect = cam.gameObject.GetComponent<Camera>().rect;
+    //        canvas.transform.position = new Vector3(cameraRect.x * Screen.width, cameraRect.y * Screen.height, 0f);
+    //        canvas.GetComponent<RectTransform>().sizeDelta = 
+    //            new Vector2(cameraRect.width * Screen.width, cameraRect.height * Screen.height);
+    //    }
+    //}
 }

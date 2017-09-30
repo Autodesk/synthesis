@@ -105,7 +105,7 @@ public class Robot : MonoBehaviour
 
         if (!IsResetting)
         {
-            if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
+            if (mainState.DynamicCameraObject.activeSelf && InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
             {
                 keyDownTime = Time.time;
             }

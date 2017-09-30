@@ -164,7 +164,7 @@ public class MainState : SimState
         }
 
         //Spawn a new robot from the same path or switch active robot
-        if (!ActiveRobot.IsResetting)
+        if (!ActiveRobot.IsResetting && DynamicCameraObject.activeSelf)
         {
             if (Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot.RobotIsMixAndMatch); 
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
@@ -181,7 +181,7 @@ public class MainState : SimState
         }
 
         // Switches to replay mode
-        if (!ActiveRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
+        if (!ActiveRobot.IsResetting && DynamicCameraObject.activeSelf && Input.GetKeyDown(KeyCode.Tab))
         {
             CollisionTracker.ContactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -278,7 +278,7 @@ public class MainState : SimState
             robot.ControlIndex = SpawnedRobots.Count;
             robot.DriverStationIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
-
+            DynamicCamera.MovingEnabled = true;
             return true;
         }
         return false;

@@ -72,13 +72,13 @@ public class PlayerCamera : MonoBehaviour
         Quaternion lookingRotation;
         Quaternion currentRotation;
         //The default starting position of the camera
-        Vector3 Red1Position = new Vector3(2.0f, 1.5f, -9.5f);
-        Vector3 Red2Position = new Vector3(0f, 1.5f, -9.5f);
-        Vector3 Red3Position = new Vector3(-2.0f, 1.5f, -9.5f);
+        Vector3 Red1Position = new Vector3(2.0f, 1.5f, -9f);
+        Vector3 Red2Position = new Vector3(0f, 1.5f, -9f);
+        Vector3 Red3Position = new Vector3(-2.0f, 1.5f, -9f);
         //The opposite default starting position of the camera
-        Vector3 Blue1Position = new Vector3(2.0f, 1.5f, 9.5f);
-        Vector3 Blue2Position = new Vector3(0f, 1.5f, 9.5f);
-        Vector3 Blue3Position = new Vector3(-2.0f, 1.5f, 9.5f);
+        Vector3 Blue1Position = new Vector3(2.0f, 1.5f, 9f);
+        Vector3 Blue2Position = new Vector3(0f, 1.5f, 9f);
+        Vector3 Blue3Position = new Vector3(-2.0f, 1.5f, 9f);
         Vector3 currentPosition;
         int stationIndex;
         float transformSpeed;
@@ -257,16 +257,15 @@ public class PlayerCamera : MonoBehaviour
     /// <summary>
     /// Switch to orbit state when the simulator starts
     /// </summary>
-    void Start()
+    void Awake()
     {
         SwitchCameraState(new DriverStationState(this));
-        Debug.Log("Start print robot: " + cameraState.robot);
+        MovingEnabled = true;
     }
 
     void Update()
     {
         if(_cameraState == null) SwitchCameraState(new DriverStationState(this));
-        Debug.Log("Update print robot: " + cameraState.robot);
         Robot = cameraState.robot;
     }
     void LateUpdate()
@@ -284,6 +283,7 @@ public class PlayerCamera : MonoBehaviour
         {
             if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
             else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new DriverStationState(this));
+            _cameraState.SetTargetRobot(Robot);
         }
         if (_cameraState != null) _cameraState.Update();
     }
