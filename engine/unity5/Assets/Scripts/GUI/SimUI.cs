@@ -88,7 +88,7 @@ public class SimUI : MonoBehaviour
             dpm = GetComponent<DriverPracticeMode>();
             multiplayer = GetComponent<LocalMultiplayer>();
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
-            splitViewManager = GetComponent<SplitViewManager>();
+            splitViewManager = GameObject.Find("SplitViewManager").GetComponent<SplitViewManager>();
             FindElements();
         }
         else if (camera == null)
@@ -101,6 +101,7 @@ public class SimUI : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                Debug.Log(splitViewManager.SplitViewActive);
                 //If the split view is currently active, end the split view
                 if (splitViewManager.SplitViewActive)
                 {
