@@ -279,7 +279,6 @@ public class MainState : SimState
             robot.ControlIndex = SpawnedRobots.Count;
             robot.DriverStationIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
-            DynamicCamera.MovingEnabled = true;
             return true;
         }
         return false;
