@@ -275,6 +275,7 @@ public class MainState : SimState
                 ActiveRobot = robot;
             }
 
+            //Make sure the newly spawned robots has a proper control index and driver station index
             robot.ControlIndex = SpawnedRobots.Count;
             robot.DriverStationIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);

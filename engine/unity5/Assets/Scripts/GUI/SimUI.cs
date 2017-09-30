@@ -101,10 +101,14 @@ public class SimUI : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                //If the split view is currently active, end the split view
                 if (splitViewManager.SplitViewActive)
                 {
                     splitViewManager.EndSplitView();
-                }else if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
+                    
+                }
+                //Pop up the exit panel
+                else if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
                 {
                     if (!exitPanel.activeSelf) MainMenuExit("open");
                     else MainMenuExit("cancel");

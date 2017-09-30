@@ -25,7 +25,6 @@ public class LocalMultiplayer : MonoBehaviour
     private GameObject[] robotButtons = new GameObject[6];
     private int activeIndex = 0;
     private GameObject highlight;
-    private GameObject splitViewManager;
     /// <summary>
     /// FInds all the gameobjects and stores them in variables for efficiency
     /// </summary>
@@ -43,8 +42,6 @@ public class LocalMultiplayer : MonoBehaviour
         simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
         highlight = AuxFunctions.FindObject(canvas, "HighlightActiveRobot");
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
-
-        splitViewManager = GameObject.Find("SplitViewManager");
     }
 
     /// <summary>

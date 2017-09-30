@@ -79,6 +79,9 @@ public class Robot : MonoBehaviour
     public float AngularVelocity { get; private set; }
     public float Acceleration { get; private set; }
 
+    /// <summary>
+    /// The driver station index- which camera is taking it as a target
+    /// </summary>
     public int DriverStationIndex = 0;
 
     /// <summary>

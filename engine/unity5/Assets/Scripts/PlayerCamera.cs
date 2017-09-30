@@ -3,12 +3,17 @@ using System.Collections;
 using System;
 using Assets.Scripts.FSM;
 
+/// <summary>
+/// This class has a similar structure as Dynamic Camera but only keeps the Driver Station state
+/// and Orbit state. It is used to control each individual driver station/player cameras.
+/// </summary>
 public class PlayerCamera : MonoBehaviour
 {
     /// <summary>
-    /// The scrolling enabled.
+    /// The scrolling enabled
     /// </summary>
     public bool MovingEnabled { get; set; }
+    //Store the target robot here for camera state reference
     public GameObject Robot;
 
     /// <summary>
@@ -28,6 +33,10 @@ public class PlayerCamera : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// The index of the driver station, 0-5 is Red1, Red2, Red3, Blue1, Blue2, Blue3
+    /// this is set in each camera under PlayerCamera script
+    /// </summary>
     public int StationIndex;
     public bool IsActive { get; set; }
     /// <summary>
@@ -36,10 +45,7 @@ public class PlayerCamera : MonoBehaviour
     public abstract class CameraState
     {
         public GameObject robot;
-        /// <summary>
-        /// The index of the driver station, 0-5 is Red1, Red2, Red3, Blue1, Blue2, Blue3
-        /// </summary>
-
+        
         protected PlayerCamera mono;
 
         /// <summary>
