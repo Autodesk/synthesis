@@ -75,8 +75,8 @@ public class ScrollablePanel : MonoBehaviour {
         {
             GUILayout.Label(errorMessage, listStyle);
             selectedEntry = null;
-            DynamicCamera.MovingEnabled = true;
         }
+
         GUILayout.EndScrollView();
         GUILayout.EndArea();
     }
