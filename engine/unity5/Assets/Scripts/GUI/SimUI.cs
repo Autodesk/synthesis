@@ -563,7 +563,6 @@ public class SimUI : MonoBehaviour
         switch (i)
         {
             case 1:
-                EndOtherProcesses();
                 main.BeginRobotReset();
                 main.EndRobotReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;

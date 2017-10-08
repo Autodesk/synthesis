@@ -183,12 +183,11 @@ public class MainState : SimState
         }
 
         // Switches to replay mode
-        //if (!ActiveRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
-        if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
+        if (!ActiveRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
+        //if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
         {
             CollisionTracker.ContactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
-            //Debug.Log("controlIndex: " + controlIndex);
         }
     }
 
@@ -358,7 +357,6 @@ public class MainState : SimState
     public void ChangeControlIndex(int index)
     {
         ActiveRobot.SetControlIndex(index);
-        controlIndex = index;
     }
 
     /// <summary>
