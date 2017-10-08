@@ -65,7 +65,7 @@ public class Controls
         //Other controls
         public KeyMapping resetRobot;
         public KeyMapping cameraToggle;
-        public KeyMapping replayMode;
+        //public KeyMapping replayMode;
         public KeyMapping pickupPrimary;
         public KeyMapping releasePrimary;
         public KeyMapping spawnPrimary;
@@ -331,7 +331,7 @@ public class Controls
         //Other Controls
         buttons[0].resetRobot = InputControl.setKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1), false);
         buttons[0].cameraToggle = InputControl.setKey("1: Camera Toggle", PlayerOneIndex, KeyCode.C, new JoystickInput(JoystickButton.Button7, Joystick.Joystick1), false);
-        buttons[0].replayMode = InputControl.setKey("1: Replay Mode", PlayerOneIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
+        //buttons[0].replayMode = InputControl.setKey("1: Replay Mode", PlayerOneIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
         buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), false);
         buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
         buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.LeftBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
@@ -373,7 +373,7 @@ public class Controls
         //Other Controls
         buttons[1].resetRobot = InputControl.setKey("2: Reset Robot", PlayerTwoIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick2), false);
         buttons[1].cameraToggle = InputControl.setKey("2: Camera Toggle", PlayerTwoIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick2), false);
-        buttons[1].replayMode = InputControl.setKey("2: Replay Mode", PlayerTwoIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
+        //buttons[1].replayMode = InputControl.setKey("2: Replay Mode", PlayerTwoIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
         buttons[1].pickupPrimary = InputControl.setKey("2: Pick Up Primary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick2), false);
         buttons[1].releasePrimary = InputControl.setKey("2: Release Primary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick2), false);
         buttons[1].spawnPrimary = InputControl.setKey("2: Spawn Primary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick2), false);
@@ -415,7 +415,7 @@ public class Controls
         //Other Controls
         buttons[2].resetRobot = InputControl.setKey("3: Reset Robot", PlayerThreeIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick3), false);
         buttons[2].cameraToggle = InputControl.setKey("3: Camera Toggle", PlayerThreeIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick3), false);
-        buttons[2].replayMode = InputControl.setKey("3: Replay Mode", PlayerThreeIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
+        //buttons[2].replayMode = InputControl.setKey("3: Replay Mode", PlayerThreeIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
         buttons[2].pickupPrimary = InputControl.setKey("3: Pick Up Primary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick3), false);
         buttons[2].releasePrimary = InputControl.setKey("3: Release Primary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick3), false);
         buttons[2].spawnPrimary = InputControl.setKey("3: Spawn Primary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick3), false);
@@ -457,7 +457,7 @@ public class Controls
         //Other Controls
         buttons[3].resetRobot = InputControl.setKey("4: Reset Robot", PlayerFourIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick4), false);
         buttons[3].cameraToggle = InputControl.setKey("4: Camera Toggle", PlayerFourIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick4), false);
-        buttons[3].replayMode = InputControl.setKey("4: Replay Mode", PlayerFourIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
+        //buttons[3].replayMode = InputControl.setKey("4: Replay Mode", PlayerFourIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
         buttons[3].pickupPrimary = InputControl.setKey("4: Pick Up Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick4), false);
         buttons[3].releasePrimary = InputControl.setKey("4: Release Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick4), false);
         buttons[3].spawnPrimary = InputControl.setKey("4: Spawn Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick4), false);
@@ -499,7 +499,7 @@ public class Controls
         //Other Controls
         buttons[4].resetRobot = InputControl.setKey("5: Reset Robot", PlayerFiveIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick5), false);
         buttons[4].cameraToggle = InputControl.setKey("5: Camera Toggle", PlayerFiveIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick5), false);
-        buttons[4].replayMode = InputControl.setKey("5: Replay Mode", PlayerFiveIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
+        //buttons[4].replayMode = InputControl.setKey("5: Replay Mode", PlayerFiveIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
         buttons[4].pickupPrimary = InputControl.setKey("5: Pick Up Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick5), false);
         buttons[4].releasePrimary = InputControl.setKey("5: Release Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick5), false);
         buttons[4].spawnPrimary = InputControl.setKey("5: Spawn Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick5), false);
@@ -541,7 +541,7 @@ public class Controls
         //Other Controls
         buttons[5].resetRobot = InputControl.setKey("6: Reset Robot", PlayerSixIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick6), false);
         buttons[5].cameraToggle = InputControl.setKey("6: Camera Toggle", PlayerSixIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick6), false);
-        buttons[5].replayMode = InputControl.setKey("6: Replay Mode", PlayerSixIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
+        //buttons[5].replayMode = InputControl.setKey("6: Replay Mode", PlayerSixIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), false);
         buttons[5].pickupPrimary = InputControl.setKey("6: Pick Up Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick6), false);
         buttons[5].releasePrimary = InputControl.setKey("6: Release Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick6), false);
         buttons[5].spawnPrimary = InputControl.setKey("6: Spawn Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), false);
@@ -590,7 +590,7 @@ public class Controls
         //Other Controls
         buttons[0].resetRobot = InputControl.setKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1), true);
         buttons[0].cameraToggle = InputControl.setKey("1: Camera Toggle", PlayerOneIndex, KeyCode.C, new JoystickInput(JoystickButton.Button7, Joystick.Joystick1), true);
-        buttons[0].replayMode = InputControl.setKey("1: Replay Mode", PlayerOneIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
+        //buttons[0].replayMode = InputControl.setKey("1: Replay Mode", PlayerOneIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
         buttons[0].pickupPrimary = InputControl.setKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1), true);
         buttons[0].releasePrimary = InputControl.setKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
         buttons[0].spawnPrimary = InputControl.setKey("1: Spawn Primary Gamepiece", PlayerOneIndex, KeyCode.LeftBracket, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
@@ -632,7 +632,7 @@ public class Controls
         //Other Controls
         buttons[1].resetRobot = InputControl.setKey("2: Reset Robot", PlayerTwoIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick2), true);
         buttons[1].cameraToggle = InputControl.setKey("2: Camera Toggle", PlayerTwoIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick2), true);
-        buttons[1].replayMode = InputControl.setKey("2: Replay Mode", PlayerTwoIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
+        //buttons[1].replayMode = InputControl.setKey("2: Replay Mode", PlayerTwoIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
         buttons[1].pickupPrimary = InputControl.setKey("2: Pick Up Primary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick2), true);
         buttons[1].releasePrimary = InputControl.setKey("2: Release Primary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick2), true);
         buttons[1].spawnPrimary = InputControl.setKey("2: Spawn Primary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick2), true);
@@ -674,7 +674,7 @@ public class Controls
         //Other Controls
         buttons[2].resetRobot = InputControl.setKey("3: Reset Robot", PlayerThreeIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick3), true);
         buttons[2].cameraToggle = InputControl.setKey("3: Camera Toggle", PlayerThreeIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick3), true);
-        buttons[2].replayMode = InputControl.setKey("3: Replay Mode", PlayerThreeIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
+        //buttons[2].replayMode = InputControl.setKey("3: Replay Mode", PlayerThreeIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
         buttons[2].pickupPrimary = InputControl.setKey("3: Pick Up Primary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick3), true);
         buttons[2].releasePrimary = InputControl.setKey("3: Release Primary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick3), true);
         buttons[2].spawnPrimary = InputControl.setKey("3: Spawn Primary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick3), true);
@@ -716,7 +716,7 @@ public class Controls
         //Other Controls
         buttons[3].resetRobot = InputControl.setKey("4: Reset Robot", PlayerFourIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick4), true);
         buttons[3].cameraToggle = InputControl.setKey("4: Camera Toggle", PlayerFourIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick4), true);
-        buttons[3].replayMode = InputControl.setKey("4: Replay Mode", PlayerFourIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
+        //buttons[3].replayMode = InputControl.setKey("4: Replay Mode", PlayerFourIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
         buttons[3].pickupPrimary = InputControl.setKey("4: Pick Up Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick4), true);
         buttons[3].releasePrimary = InputControl.setKey("4: Release Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick4), true);
         buttons[3].spawnPrimary = InputControl.setKey("4: Spawn Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick4), true);
@@ -758,7 +758,7 @@ public class Controls
         //Other Controls
         buttons[4].resetRobot = InputControl.setKey("5: Reset Robot", PlayerFiveIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick5), true);
         buttons[4].cameraToggle = InputControl.setKey("5: Camera Toggle", PlayerFiveIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick5), true);
-        buttons[4].replayMode = InputControl.setKey("5: Replay Mode", PlayerFiveIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
+        //buttons[4].replayMode = InputControl.setKey("5: Replay Mode", PlayerFiveIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
         buttons[4].pickupPrimary = InputControl.setKey("5: Pick Up Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick5), true);
         buttons[4].releasePrimary = InputControl.setKey("5: Release Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick5), true);
         buttons[4].spawnPrimary = InputControl.setKey("5: Spawn Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick5), true);
@@ -800,7 +800,7 @@ public class Controls
         //Other Controls
         buttons[5].resetRobot = InputControl.setKey("6: Reset Robot", PlayerSixIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick6), true);
         buttons[5].cameraToggle = InputControl.setKey("6: Camera Toggle", PlayerSixIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick6), true);
-        buttons[5].replayMode = InputControl.setKey("6: Replay Mode", PlayerSixIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
+        //buttons[5].replayMode = InputControl.setKey("6: Replay Mode", PlayerSixIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
         buttons[5].pickupPrimary = InputControl.setKey("6: Pick Up Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick6), true);
         buttons[5].releasePrimary = InputControl.setKey("6: Release Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick6), true);
         buttons[5].spawnPrimary = InputControl.setKey("6: Spawn Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), true);
