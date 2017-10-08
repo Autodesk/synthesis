@@ -166,6 +166,7 @@ public class LocalMultiplayer : MonoBehaviour {
         if (addRobotWindow.activeSelf)
         {
             addRobotWindow.SetActive(false);
+            DynamicCamera.MovingEnabled = true;
         }
         else
         {

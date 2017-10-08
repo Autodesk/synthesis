@@ -237,6 +237,7 @@ public class SimUI : MonoBehaviour
         if (changeRobotPanel.activeSelf)
         {
             changeRobotPanel.SetActive(false);
+            DynamicCamera.MovingEnabled = true;
         }
         else
         {
@@ -279,6 +280,7 @@ public class SimUI : MonoBehaviour
         if (changeFieldPanel.activeSelf)
         {
             changeFieldPanel.SetActive(false);
+            DynamicCamera.MovingEnabled = true;
         }
         else
         {
