@@ -121,6 +121,48 @@
     <value>17, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>103, 22</value>
+  </data>
+  <data name="closeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 20</value>
+  </data>
+  <data name="fileToolStripMenuItem.Text" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="robotExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>142, 22</value>
+  </data>
+  <data name="robotExportToolStripMenuItem.Text" xml:space="preserve">
+    <value>Robot Export</value>
+  </data>
+  <data name="fieldExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>142, 22</value>
+  </data>
+  <data name="fieldExportToolStripMenuItem.Text" xml:space="preserve">
+    <value>Field Export</value>
+  </data>
+  <data name="simulatorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>142, 22</value>
+  </data>
+  <data name="simulatorToolStripMenuItem.Text" xml:space="preserve">
+    <value>Simulator</value>
+  </data>
+  <data name="emulatorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>142, 22</value>
+  </data>
+  <data name="emulatorToolStripMenuItem.Text" xml:space="preserve">
+    <value>Emulator</value>
+  </data>
+  <data name="tutorialsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 20</value>
+  </data>
+  <data name="tutorialsToolStripMenuItem.Text" xml:space="preserve">
+    <value>Tutorials</value>
+  </data>
   <data name="menuStrip1.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -149,48 +191,6 @@
   </data>
   <data name="&gt;&gt;menuStrip1.ZOrder" xml:space="preserve">
     <value>9</value>
-  </data>
-  <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>37, 20</value>
-  </data>
-  <data name="fileToolStripMenuItem.Text" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>103, 22</value>
-  </data>
-  <data name="closeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="tutorialsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 20</value>
-  </data>
-  <data name="tutorialsToolStripMenuItem.Text" xml:space="preserve">
-    <value>Tutorials</value>
-  </data>
-  <data name="robotExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
-  </data>
-  <data name="robotExportToolStripMenuItem.Text" xml:space="preserve">
-    <value>Robot Export</value>
-  </data>
-  <data name="fieldExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
-  </data>
-  <data name="fieldExportToolStripMenuItem.Text" xml:space="preserve">
-    <value>Field Export</value>
-  </data>
-  <data name="simulatorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
-  </data>
-  <data name="simulatorToolStripMenuItem.Text" xml:space="preserve">
-    <value>Simulator</value>
-  </data>
-  <data name="emulatorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
-  </data>
-  <data name="emulatorToolStripMenuItem.Text" xml:space="preserve">
-    <value>Emulator</value>
   </data>
   <data name="synthesisButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -460,16 +460,16 @@
     <value>NoControl</value>
   </data>
   <data name="updateLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>46, 493</value>
+    <value>24, 492</value>
   </data>
   <data name="updateLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>35, 13</value>
+    <value>317, 13</value>
   </data>
   <data name="updateLabel.TabIndex" type="System.Int32, mscorlib">
     <value>17</value>
   </data>
   <data name="updateLabel.Text" xml:space="preserve">
-    <value>label1</value>
+    <value>For a change log to be displayed, establish a network connection.</value>
   </data>
   <data name="&gt;&gt;updateLabel.Name" xml:space="preserve">
     <value>updateLabel</value>

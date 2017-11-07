@@ -26,6 +26,7 @@ namespace SynthesisLauncher
         string webVersion;
 
         string exePath = Application.StartupPath;
+        
         public LaunchForm()
         {
             InitializeComponent();
@@ -56,7 +57,7 @@ namespace SynthesisLauncher
         {
             try
             {
-                Process.Start(exePath + "\\Synthesis\\Synthesis_Bullet.exe");
+                Process.Start(Application.StartupPath + "\\Synthesis\\Synthesis_Bullet.exe");
             }
             catch(Exception ex)
             {
@@ -70,84 +71,93 @@ namespace SynthesisLauncher
             }
         }
 
-        /// <summary>
-        /// Queries http://bxd.autodesk.com/ChangeLog.txt to get the current changelog
-        /// </summary>
+        // <summary>
+        // Queries http://bxd.autodesk.com/ChangeLog.txt to get the current changelog
+        // </summary>
         public void GetChanges()
         {
-            WebClient client = new WebClient { BaseAddress = "http://bxd.autodesk.com/Downloadables/" };
-            buildLabel.Text = AssemblyName.GetAssemblyName("SynthesisLauncher.exe").Version.ToString(4);
-
-            string update = "";
-
-            using (var reader = new StreamReader(new MemoryStream(client.DownloadData("ChangeLog.txt"))))
+            try
             {
-                string first = reader.ReadLine();
-                update = first + "\n";
-                Regex versionRegex = new Regex("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+");
-                var match = versionRegex.Match(first);
-                if (match.Success)
+                WebClient client = new WebClient { BaseAddress = "http://bxd.autodesk.com/Downloadables/" };
+                buildLabel.Text = AssemblyName.GetAssemblyName("SynthesisLauncher.exe").Version.ToString(4);
+
+                string update = "";
+
+                using (var reader = new StreamReader(new MemoryStream(client.DownloadData("ChangeLog.txt"))))
                 {
-                    webVersion = match.Value;
+                    string first = reader.ReadLine();
+                    update = first + "\n";
+                    Regex versionRegex = new Regex("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+");
+                    var match = versionRegex.Match(first);
+                    if (match.Success)
+                    {
+                        webVersion = match.Value;
+                    }
+                    if (webVersion != asmVersion)
+                    {
+                        if (MessageBox.Show("There is an update for this product, would you like to download it?",
+                            "Update avaliable", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        {
+                            //Get the installer from the server and run it.
+                            Process.Start("http://bxd.autodesk.com/Downloadables/Synthesis%20Installer.exe");
+                            Environment.Exit(1);
+                        }
+                    }
+                    while (!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(line))
+                        {
+                            update += line + "\n";
+                        }
+                        else
+                            break;
+                    }
                 }
-                if (webVersion != asmVersion)
+                updateLabel.Text = update;
+                int lineCount = update.Count(x => x == '\n');
+                Size = new Size(Size.Width, Size.Height + (13 * (lineCount - 1)));
+            }
+            catch {}
+           
+        }
+
+        public void updateStream()
+        {
+            try
+            {
+                string streamResults = "Changes in " + //BuildCurrent +
+                ": \n -Added support for local multiplayer" +
+                ": \n -Greatly improved driving physics" +
+                ": \n -Added new exporter Inventor plugins" +
+                ": \n -Revamped UI" +
+                ": \n -New field and robot deliver system" +
+                ": \n -Added sensor support";
+                buildLabel.Text = streamResults;
+                string build = Page_Load();
+
+
+                if (build == null)
+                    return;
+
+                if (asmVersion.Equals(build))
                 {
-                    if (MessageBox.Show("There is an update for this product, would you like to download it?",
-                        "Update avaliable", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    //Write loop with stream reader to read all of the info from the text changelog.
+                    buildLabel.Text = asmVersion;
+                }
+                else
+                {
+                    DialogResult dialogResult = MessageBox.Show("There is an update for this product, would you like to download it?", "Update avaliable", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
                     {
                         //Get the installer from the server and run it.
                         Process.Start("http://bxd.autodesk.com/Downloadables/Synthesis%20Installer.exe");
                         Environment.Exit(1);
                     }
                 }
-                while (!reader.EndOfStream)
-                {
-                    string line = reader.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(line))
-                    {
-                        update += line + "\n";
-                    }
-                    else
-                        break;
-                }
             }
-            updateLabel.Text = update;
-            int lineCount = update.Count(x => x == '\n');
-            Size = new Size(Size.Width, Size.Height + (13 * (lineCount - 1)));
+            catch { }
         }
-
-        //public void updateStream()
-        //{
-        //    string streamResults = "Changes in " + //BuildCurrent +
-        //        ": \n -Added support for local multiplayer" +
-        //        ": \n -Greatly improved driving physics" +
-        //        ": \n -Added new exporter Inventor plugins" +
-        //        ": \n -Revamped UI" +
-        //        ": \n -New field and robot deliver system" +
-        //        ": \n -Added sensor support";
-        //    changesLabel.Text = streamResults;
-        //    string build = Page_Load();
-
-
-        //    if (build == null)
-        //        return;
-
-        //    if (asmVersion.Equals(build))
-        //    {
-        //        //Write loop with stream reader to read all of the info from the text changelog.
-        //        buildLabel.Text = asmVersion;
-        //    }
-        //    else
-        //    {
-        //        DialogResult dialogResult = MessageBox.Show("There is an update for this product, would you like to download it?", "Update avaliable", MessageBoxButtons.YesNo);
-        //        if (dialogResult == DialogResult.Yes)
-        //        {
-        //            //Get the installer from the server and run it.
-        //            Process.Start("http://bxd.autodesk.com/Downloadables/Synthesis%20Installer.exe");
-        //            Environment.Exit(1);
-        //        }
-        //    }
-        //}
 
         private void rExporter_Click(object sender, EventArgs e)
         {
