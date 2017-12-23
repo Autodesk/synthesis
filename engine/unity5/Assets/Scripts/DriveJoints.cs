@@ -107,13 +107,13 @@ public class DriveJoints
             can = new float[10];
         }
 
-            pwm[4] +=
-                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
-            pwm[5] +=
-                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm5Axes) * SPEED_ARROW_PWM);
+        pwm[4] +=
+             (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
+        pwm[5] +=
+             (InputControl.GetAxis(Controls.axes[controlIndex].pwm5Axes) * SPEED_ARROW_PWM);
 
-            pwm[6] +=
-                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
+        pwm[6] +=
+             (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
 
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
@@ -198,12 +198,12 @@ public class DriveJoints
         }
 
         if (IsMecanum)
-        {   
+        {
             #region Mecanum Drive
             pwm[(int)MecanumPorts.FRONT_RIGHT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * - SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) *  -SPEED_ARROW_PWM);
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * -SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * -SPEED_ARROW_PWM);
 
             pwm[(int)MecanumPorts.FRONT_LEFT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
@@ -214,12 +214,12 @@ public class DriveJoints
             pwm[(int)MecanumPorts.BACK_RIGHT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * -SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); 
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f);
 
             pwm[(int)MecanumPorts.BACK_LEFT] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM) +
-                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f); 
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f);
             pwm[4] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
 
@@ -228,6 +228,15 @@ public class DriveJoints
 
             pwm[6] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
+
+            pwm[7] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm7Axes) * SPEED_ARROW_PWM);
+
+            pwm[8] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm8Axes) * SPEED_ARROW_PWM);
+
+            pwm[9] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm9Axes) * SPEED_ARROW_PWM);
             #endregion
         }
 
@@ -262,6 +271,15 @@ public class DriveJoints
 
             pwm[6] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
+
+            pwm[7] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm7Axes) * SPEED_ARROW_PWM);
+
+            pwm[8] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm8Axes) * SPEED_ARROW_PWM);
+
+            pwm[9] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm9Axes) * SPEED_ARROW_PWM);
             #endregion
         }
         else
@@ -301,6 +319,15 @@ public class DriveJoints
 
             pwm[6] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
+
+            pwm[7] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm7Axes) * SPEED_ARROW_PWM);
+
+            pwm[8] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm8Axes) * SPEED_ARROW_PWM);
+
+            pwm[9] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].pwm9Axes) * SPEED_ARROW_PWM);
             #endregion
         }
 
