@@ -537,12 +537,12 @@ public class MainMenu : MonoBehaviour
 
     public void OpenRobotExportTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/tutorial-robot.html");
+        Application.OpenURL("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
     }
 
     public void OpenFieldExportTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/tutorial-field.html");
+        Application.OpenURL("http://bxd.autodesk.com/synthesis/tutorials-field.html");
     }
 
     /// <summary>
