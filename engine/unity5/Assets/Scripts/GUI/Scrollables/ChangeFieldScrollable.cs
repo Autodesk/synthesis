@@ -24,7 +24,7 @@ public class ChangeFieldScrollable : ScrollablePanel
 
     void OnEnable()
     {
-        directory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//fields"));
+        directory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//fields"));
         items = new List<string>();
         items.Clear();
     }
