@@ -33,7 +33,7 @@ namespace Assets.Scripts.FEA
             contacts = new List<List<KeyValuePair<ContactDescriptor, int>>>();
 
             using (XmlReader reader = XmlReader.Create(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\" + fileName + ".replay"))
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\" + fileName + ".replay"))
             {
                 foreach (string name in AllElements(reader))
                 {

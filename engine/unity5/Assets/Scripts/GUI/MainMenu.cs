@@ -628,7 +628,7 @@ public class MainMenu : MonoBehaviour
 
         if (entry != null)
         {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\" + entry + ".replay");
+            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\" + entry + ".replay");
             replayList.SetActive(false);
             replayList.SetActive(true);
         }
@@ -647,23 +647,23 @@ public class MainMenu : MonoBehaviour
         robots = new ArrayList();
 
         //Creates the replay directory
-        FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\");
+        FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\");
         file.Directory.Create();
 
         //Assigns the currently store registry values or default file path to the proper variables if they exist.
-        robotDirectory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
-        fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
+        robotDirectory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
+        fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields"));
 
         //If the directory doesn't exist, create it.
         if (!Directory.Exists(robotDirectory))
         {
-            file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Robots\\");
+            file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Robots\\");
             file.Directory.Create();
             robotDirectory = file.Directory.FullName;
         }
         if (!Directory.Exists(fieldDirectory))
         {
-            file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Fields\\");
+            file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Fields\\");
             file.Directory.Create();
             fieldDirectory = file.Directory.FullName;
         }
