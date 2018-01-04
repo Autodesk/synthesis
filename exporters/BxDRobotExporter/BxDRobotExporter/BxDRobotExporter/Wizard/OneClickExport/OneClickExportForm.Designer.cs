@@ -36,12 +36,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.OneClickInfoLabel = new System.Windows.Forms.Label();
             this.ExportParametersGroupBox = new System.Windows.Forms.GroupBox();
+            this.MergeNodesCheckBox = new System.Windows.Forms.CheckBox();
             this.FieldSelectComboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.LaunchSynthesisCheckBox = new System.Windows.Forms.CheckBox();
             this.ExportButton = new System.Windows.Forms.Button();
             this.CancelExportButton = new System.Windows.Forms.Button();
-            this.MergeNodesCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.WheelCountUpDown)).BeginInit();
             this.ExportParametersGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -120,6 +120,16 @@
             this.ExportParametersGroupBox.TabStop = false;
             this.ExportParametersGroupBox.Text = "Export Settings";
             // 
+            // MergeNodesCheckBox
+            // 
+            this.MergeNodesCheckBox.AutoSize = true;
+            this.MergeNodesCheckBox.Location = new System.Drawing.Point(295, 19);
+            this.MergeNodesCheckBox.Name = "MergeNodesCheckBox";
+            this.MergeNodesCheckBox.Size = new System.Drawing.Size(130, 17);
+            this.MergeNodesCheckBox.TabIndex = 7;
+            this.MergeNodesCheckBox.Text = "Merge Unused Nodes";
+            this.MergeNodesCheckBox.UseVisualStyleBackColor = true;
+            // 
             // FieldSelectComboBox
             // 
             this.FieldSelectComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -170,16 +180,6 @@
             this.CancelExportButton.Text = "Cancel";
             this.CancelExportButton.UseVisualStyleBackColor = true;
             this.CancelExportButton.Click += new System.EventHandler(this.CancelExportButton_Click);
-            // 
-            // MergeNodesCheckBox
-            // 
-            this.MergeNodesCheckBox.AutoSize = true;
-            this.MergeNodesCheckBox.Location = new System.Drawing.Point(295, 19);
-            this.MergeNodesCheckBox.Name = "MergeNodesCheckBox";
-            this.MergeNodesCheckBox.Size = new System.Drawing.Size(130, 17);
-            this.MergeNodesCheckBox.TabIndex = 7;
-            this.MergeNodesCheckBox.Text = "Merge Unused Nodes";
-            this.MergeNodesCheckBox.UseVisualStyleBackColor = true;
             // 
             // OneClickExportForm
             // 
