@@ -192,7 +192,6 @@
   <data name="&gt;&gt;menuStrip1.ZOrder" xml:space="preserve">
     <value>9</value>
   </data>
-<<<<<<< HEAD
   <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>37, 20</value>
   </data>
@@ -235,8 +234,6 @@
   <data name="emulatorToolStripMenuItem.Text" xml:space="preserve">
     <value>Emulator</value>
   </data>
-=======
->>>>>>> 27d04612b308b99e781bfa2c67d76ac9210741ed
   <data name="synthesisButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
