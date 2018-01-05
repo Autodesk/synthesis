@@ -46,6 +46,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.buildLabel = new System.Windows.Forms.Label();
             this.updateLabel = new System.Windows.Forms.Label();
+            this.lblCurrentExporter = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -159,10 +160,17 @@
             resources.ApplyResources(this.updateLabel, "updateLabel");
             this.updateLabel.Name = "updateLabel";
             // 
+            // lblCurrentExporter
+            // 
+            resources.ApplyResources(this.lblCurrentExporter, "lblCurrentExporter");
+            this.lblCurrentExporter.Name = "lblCurrentExporter";
+            this.lblCurrentExporter.Click += new System.EventHandler(this.label1_Click);
+            // 
             // LaunchForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lblCurrentExporter);
             this.Controls.Add(this.updateLabel);
             this.Controls.Add(this.buildLabel);
             this.Controls.Add(this.label5);
@@ -204,6 +212,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label buildLabel;
         private System.Windows.Forms.Label updateLabel;
+        private System.Windows.Forms.Label lblCurrentExporter;
     }
 }
 
