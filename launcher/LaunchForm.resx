@@ -190,9 +190,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;menuStrip1.ZOrder" xml:space="preserve">
-<<<<<<< HEAD
     <value>10</value>
-=======
     <value>9</value>
   </data>
   <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
@@ -236,7 +234,6 @@
   </data>
   <data name="emulatorToolStripMenuItem.Text" xml:space="preserve">
     <value>Emulator</value>
->>>>>>> d497605876396aae593d8a16a41e86d9d2cb115e
   </data>
   <data name="synthesisButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
