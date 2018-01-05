@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DebugHighlightForm));
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.Ok = new System.Windows.Forms.Button();
             this.Cancel = new System.Windows.Forms.Button();
@@ -62,7 +63,7 @@
             this.Cancel.Text = "Cancel";
             this.Cancel.UseVisualStyleBackColor = true;
             // 
-            // LowerLimitLabel
+            // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 13);
@@ -82,6 +83,7 @@
             this.Controls.Add(this.Cancel);
             this.Controls.Add(this.Ok);
             this.Controls.Add(this.textBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(350, 135);
             this.MinimumSize = new System.Drawing.Size(350, 135);
             this.Name = "DebugHighlightForm";
