@@ -33,7 +33,7 @@ IfFileExists "$INSTDIR" +1 +28
         Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDFieldExporter.inventor.addin"
         Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
-        RMDIR /r /REBOOTOK $DOCUMENTS\RobotViewer
+        RMDIR /r /REBOOTOK $APPDATA\RobotViewer
         ; Remove files and uninstaller
         Delete $INSTDIR\Synthesis.nsi
         Delete $INSTDIR\uninstall.exe
@@ -96,7 +96,7 @@ Section "Synthesis (required)"
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
   ; Update this on release
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "4.0.0.0"
+                 "DisplayVersion" "4.1.0.0"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -110,7 +110,7 @@ SectionEnd
 
 Section "MixAndMatch Files"
 
-SetOutPath $DOCUMENTS\Synthesis\MixAndMatch
+SetOutPath $APPDATA\Synthesis\MixAndMatch
 
 File /r "MixAndMatch\*"
 
@@ -157,7 +157,7 @@ Section "Robot Exporter Plugin (reccommended)"
   SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
   File /r "RobotExporter\BxDRobotExporter.dll"
  
-  SetOutPath "$DOCUMENTS\RobotViewer"
+  SetOutPath "$APPDATA\RobotViewer"
   File /r "RobotExporter\Viewer\RobotViewer.exe"
   File /r "RobotExporter\Viewer\OpenTK.dll"
   File /r "RobotExporter\Viewer\OpenTK.GLControl.dll"
@@ -195,7 +195,7 @@ SectionEnd
 
 Section "Robot Files"
 
-SetOutPath $DOCUMENTS\Synthesis\Robots
+SetOutPath $APPDATA\Synthesis\Robots
 
 File /r "Robots\*"
 
@@ -203,7 +203,7 @@ SectionEnd
 
 Section "Field Files"
 
-SetOutPath $DOCUMENTS\Synthesis\Fields
+SetOutPath $APPDATA\Synthesis\Fields
 
 File /r "Fields\*"
 

@@ -83,7 +83,7 @@ namespace SynthesisLauncher
 
                 //Get index of local robot/field files
                 List<FileInfo> localFiles = new List<FileInfo>();
-                foreach (string fieldFolder in Directory.EnumerateDirectories(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\synthesis\fields"))
+                foreach (string fieldFolder in Directory.EnumerateDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\synthesis\fields"))
                 {
                     if (File.Exists(fieldFolder + @"\definition.bxdf"))
                     {
@@ -94,7 +94,7 @@ namespace SynthesisLauncher
                         });
                     }
                 }
-                foreach (string robotFolder in Directory.EnumerateDirectories(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\synthesis\robots"))
+                foreach (string robotFolder in Directory.EnumerateDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\synthesis\robots"))
                 {
                     if (File.Exists(robotFolder + @"\skeleton.bxdj"))
                     {
@@ -110,8 +110,8 @@ namespace SynthesisLauncher
                 List<FileInfo> getQueue = new List<FileInfo>();
                 foreach (FileInfo file in webFiles)
                 {
-                    if ((file.type == FileType.ROBOT && File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Robots\" + file.name + @"\skeleton.bxdj")) ||
-                        (file.type == FileType.FIELD && File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Fields\" + file.name + @"\definition.bxdf")))
+                    if ((file.type == FileType.ROBOT && File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Robots\" + file.name + @"\skeleton.bxdj")) ||
+                        (file.type == FileType.FIELD && File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Fields\" + file.name + @"\definition.bxdf")))
                     {
                         Debug.WriteLine("{0} {1} checked out successfully.", (file.type == FileType.FIELD) ? "Field " : "Robot ", file.name);
                     }
