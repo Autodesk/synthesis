@@ -25,7 +25,7 @@ public class ChangeRobotScrollable : ScrollablePanel
 
     void OnEnable()
     {
-        directory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
+        directory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
         items = new List<string>();
         items.Clear();
 

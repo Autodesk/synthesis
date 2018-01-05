@@ -59,7 +59,7 @@ class FileBrowser : OverlayWindow
     /// <summary>
     /// Default Directory Path
     /// </summary>
-    private string directoryPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+    private string directoryPath = System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
     private string backupPath = new DirectoryInfo(Application.dataPath).FullName;
 
     /// <summary>
