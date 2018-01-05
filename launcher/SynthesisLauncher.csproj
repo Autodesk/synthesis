@@ -50,7 +50,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>plantlogo%28NoBack%29.ico</ApplicationIcon>
+    <ApplicationIcon>SynthesisPNG.ICO</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>D85BC0C5111F436D0FB5C018AD6A028F978E6EBD</ManifestCertificateThumbprint>
@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="plantlogo%28NoBack%29.ico" />
+    <Content Include="SynthesisPNG.ICO" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

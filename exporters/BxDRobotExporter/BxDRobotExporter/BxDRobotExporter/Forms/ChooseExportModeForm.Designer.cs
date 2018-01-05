@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChooseExportModeForm));
             this.OneClickExportButton = new System.Windows.Forms.Button();
             this.GuidedExportButton = new System.Windows.Forms.Button();
             this.AdvancedExportButton = new System.Windows.Forms.Button();
@@ -108,6 +109,7 @@
             this.Controls.Add(this.AdvancedExportButton);
             this.Controls.Add(this.GuidedExportButton);
             this.Controls.Add(this.OneClickExportButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ChooseExportModeForm";
             this.Text = "Choose Export Mode";
             this.groupBox1.ResumeLayout(false);
