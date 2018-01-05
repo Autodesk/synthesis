@@ -35,10 +35,10 @@
             this.ChildHighlight = new System.Windows.Forms.Button();
             this.ChildLabel = new System.Windows.Forms.Label();
             this.groupboxGeneral = new System.Windows.Forms.GroupBox();
+            this.UseFancyColorsCheckBox = new System.Windows.Forms.CheckBox();
             this.SaveLocationLabel = new System.Windows.Forms.Label();
             this.buttonBrowse = new System.Windows.Forms.Button();
             this.SaveLocationTextBox = new System.Windows.Forms.TextBox();
-            this.UseFancyColorsCheckBox = new System.Windows.Forms.CheckBox();
             this.groupboxColor.SuspendLayout();
             this.groupboxGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -117,6 +117,17 @@
             this.groupboxGeneral.TabStop = false;
             this.groupboxGeneral.Text = "General";
             // 
+            // UseFancyColorsCheckBox
+            // 
+            this.UseFancyColorsCheckBox.AutoSize = true;
+            this.UseFancyColorsCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.UseFancyColorsCheckBox.Name = "UseFancyColorsCheckBox";
+            this.UseFancyColorsCheckBox.Size = new System.Drawing.Size(119, 17);
+            this.UseFancyColorsCheckBox.TabIndex = 3;
+            this.UseFancyColorsCheckBox.Text = "Fancy Colors (Slow)";
+            this.UseFancyColorsCheckBox.UseVisualStyleBackColor = true;
+            this.UseFancyColorsCheckBox.CheckedChanged += new System.EventHandler(this.UseFancyColorsCheckBox_CheckedChanged);
+            // 
             // SaveLocationLabel
             // 
             this.SaveLocationLabel.AutoSize = true;
@@ -143,17 +154,6 @@
             this.SaveLocationTextBox.ReadOnly = true;
             this.SaveLocationTextBox.Size = new System.Drawing.Size(219, 20);
             this.SaveLocationTextBox.TabIndex = 0;
-            // 
-            // UseFancyColorsCheckBox
-            // 
-            this.UseFancyColorsCheckBox.AutoSize = true;
-            this.UseFancyColorsCheckBox.Location = new System.Drawing.Point(6, 65);
-            this.UseFancyColorsCheckBox.Name = "UseFancyColorsCheckBox";
-            this.UseFancyColorsCheckBox.Size = new System.Drawing.Size(119, 17);
-            this.UseFancyColorsCheckBox.TabIndex = 3;
-            this.UseFancyColorsCheckBox.Text = "Fancy Colors (Slow)";
-            this.UseFancyColorsCheckBox.UseVisualStyleBackColor = true;
-            this.UseFancyColorsCheckBox.CheckedChanged += new System.EventHandler(this.UseFancyColorsCheckBox_CheckedChanged);
             // 
             // PluginSettingsForm
             // 
