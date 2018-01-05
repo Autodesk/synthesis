@@ -92,11 +92,11 @@ namespace SynthesisLauncher
                     UpdateTextExtracting();
                     if (fileInfo.type == ContentDistributor.FileType.ROBOT)
                     {
-                        ZipFile.ExtractToDirectory(targetDir + "\\" + Path.GetFileName(fileInfo.path), Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Robots\" + fileInfo.name);
+                        ZipFile.ExtractToDirectory(targetDir + "\\" + Path.GetFileName(fileInfo.path), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Robots\" + fileInfo.name);
                     }
                     else
                     {
-                        ZipFile.ExtractToDirectory(targetDir + "\\" + Path.GetFileName(fileInfo.path), Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Fields\" + fileInfo.name);
+                        ZipFile.ExtractToDirectory(targetDir + "\\" + Path.GetFileName(fileInfo.path), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Fields\" + fileInfo.name);
                     }
                     File.Delete(targetDir + "\\" + Path.GetFileName(fileInfo.path));
                     ProgressStep();
