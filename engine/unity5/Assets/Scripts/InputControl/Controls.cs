@@ -61,6 +61,12 @@ public class Controls
         public KeyMapping pwm5Neg;
         public KeyMapping pwm6Plus;
         public KeyMapping pwm6Neg;
+        public KeyMapping pwm7Plus;
+        public KeyMapping pwm7Neg;
+        public KeyMapping pwm8Plus;
+        public KeyMapping pwm8Neg;
+        public KeyMapping pwm9Plus;
+        public KeyMapping pwm9Neg;
 
         //Other controls
         public KeyMapping resetRobot;
@@ -93,6 +99,9 @@ public class Controls
         public Axis pwm4Axes;
         public Axis pwm5Axes;
         public Axis pwm6Axes;
+        public Axis pwm7Axes;
+        public Axis pwm8Axes;
+        public Axis pwm9Axes;
     }
 
     /// <summary>
@@ -327,6 +336,12 @@ public class Controls
         buttons[0].pwm5Neg = InputControl.setKey("1: PWM 5 Negative", PlayerOneIndex, KeyCode.Alpha8, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick1), false);
         buttons[0].pwm6Plus = InputControl.setKey("1: PWM 6 Positive", PlayerOneIndex, KeyCode.Alpha9, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick1), false);
         buttons[0].pwm6Neg = InputControl.setKey("1: PWM 6 Negative", PlayerOneIndex, KeyCode.Alpha0, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick1), false);
+        buttons[0].pwm7Plus = InputControl.setKey("1: PWM 7 Positive", PlayerOneIndex, KeyCode.Slash, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick1), false);
+        buttons[0].pwm7Neg = InputControl.setKey("1: PWM 7 Negative", PlayerOneIndex, KeyCode.Period, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick1), false);
+        buttons[0].pwm8Plus = InputControl.setKey("1: PWM 8 Positive", PlayerOneIndex, KeyCode.Comma, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick1), false);
+        buttons[0].pwm8Neg = InputControl.setKey("1: PWM 8 Negative", PlayerOneIndex, KeyCode.M, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick1), false);
+        buttons[0].pwm9Plus = InputControl.setKey("1: PWM 9 Positive", PlayerOneIndex, KeyCode.N, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick1), false);
+        buttons[0].pwm9Neg = InputControl.setKey("1: PWM 9 Negative", PlayerOneIndex, KeyCode.B, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick1), false);
 
         //Other Controls
         buttons[0].resetRobot = InputControl.setKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1), false);
@@ -349,6 +364,9 @@ public class Controls
         axes[0].pwm4Axes = InputControl.setAxis("1: PWM 4 Axis 6", PlayerOneIndex, buttons[0].pwm4Neg, buttons[0].pwm4Plus, false);
         axes[0].pwm5Axes = InputControl.setAxis("1: PWM 5 Axis 7", PlayerOneIndex, buttons[0].pwm5Neg, buttons[0].pwm5Plus, false);
         axes[0].pwm6Axes = InputControl.setAxis("1: PWM 6 Axis 8", PlayerOneIndex, buttons[0].pwm6Neg, buttons[0].pwm6Plus, false);
+        axes[0].pwm7Axes = InputControl.setAxis("1: PWM 7 Axis 9", PlayerOneIndex, buttons[0].pwm7Neg, buttons[0].pwm7Plus, false);
+        axes[0].pwm8Axes = InputControl.setAxis("1: PWM 8 Axis 10", PlayerOneIndex, buttons[0].pwm8Neg, buttons[0].pwm8Plus, false);
+        axes[0].pwm9Axes = InputControl.setAxis("1: PWM 9 Axis 11", PlayerOneIndex, buttons[0].pwm9Neg, buttons[0].pwm9Plus, false);
         #endregion
 
         #region Player 2 Controls
@@ -369,7 +387,13 @@ public class Controls
         buttons[1].pwm5Neg = InputControl.setKey("2: PWM 5 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick2), false);
         buttons[1].pwm6Plus = InputControl.setKey("2: PWM 6 Positive", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick2), false);
         buttons[1].pwm6Neg = InputControl.setKey("2: PWM 6 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick2), false);
-
+        buttons[1].pwm7Plus = InputControl.setKey("2: PWM 7 Positive", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick2), false);
+        buttons[1].pwm7Neg = InputControl.setKey("2: PWM 7 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick2), false);
+        buttons[1].pwm8Plus = InputControl.setKey("2: PWM 8 Positive", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick2), false);
+        buttons[1].pwm8Neg = InputControl.setKey("2: PWM 8 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick2), false);
+        buttons[1].pwm9Plus = InputControl.setKey("2: PWM 9 Positive", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick2), false);
+        buttons[1].pwm9Neg = InputControl.setKey("2: PWM 9 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick2), false);
+        
         //Other Controls
         buttons[1].resetRobot = InputControl.setKey("2: Reset Robot", PlayerTwoIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick2), false);
         buttons[1].cameraToggle = InputControl.setKey("2: Camera Toggle", PlayerTwoIndex, new JoystickInput(JoystickButton.Button7, Joystick.Joystick2), false);
@@ -391,6 +415,9 @@ public class Controls
         axes[1].pwm4Axes = InputControl.setAxis("2: PWM 4 Axis 6", PlayerOneIndex, buttons[1].pwm4Neg, buttons[1].pwm4Plus, false);
         axes[1].pwm5Axes = InputControl.setAxis("2: PWM 5 Axis 7", PlayerOneIndex, buttons[1].pwm5Neg, buttons[1].pwm5Plus, false);
         axes[1].pwm6Axes = InputControl.setAxis("2: PWM 6 Axis 8", PlayerOneIndex, buttons[1].pwm6Neg, buttons[1].pwm6Plus, false);
+        axes[1].pwm7Axes = InputControl.setAxis("2: PWM 7 Axis 9", PlayerOneIndex, buttons[1].pwm7Neg, buttons[1].pwm7Plus, false);
+        axes[1].pwm8Axes = InputControl.setAxis("2: PWM 8 Axis 10", PlayerOneIndex, buttons[1].pwm8Neg, buttons[1].pwm8Plus, false);
+        axes[1].pwm9Axes = InputControl.setAxis("2: PWM 9 Axis 11", PlayerOneIndex, buttons[1].pwm9Neg, buttons[1].pwm9Plus, false);
         #endregion
 
         #region Player 3 Controls
@@ -411,6 +438,12 @@ public class Controls
         buttons[2].pwm5Neg = InputControl.setKey("3: PWM 5 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick3), false);
         buttons[2].pwm6Plus = InputControl.setKey("3: PWM 6 Positive", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick3), false);
         buttons[2].pwm6Neg = InputControl.setKey("3: PWM 6 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick3), false);
+        buttons[2].pwm7Plus = InputControl.setKey("3: PWM 7 Positive", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick3), false);
+        buttons[2].pwm7Neg = InputControl.setKey("3: PWM 7 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick3), false);
+        buttons[2].pwm8Plus = InputControl.setKey("3: PWM 8 Positive", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick3), false);
+        buttons[2].pwm8Neg = InputControl.setKey("3: PWM 8 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick3), false);
+        buttons[2].pwm9Plus = InputControl.setKey("3: PWM 9 Positive", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick3), false);
+        buttons[2].pwm9Neg = InputControl.setKey("3: PWM 9 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick3), false);
 
         //Other Controls
         buttons[2].resetRobot = InputControl.setKey("3: Reset Robot", PlayerThreeIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick3), false);
@@ -433,6 +466,9 @@ public class Controls
         axes[2].pwm4Axes = InputControl.setAxis("3: PWM 4 Axis 6", PlayerOneIndex, buttons[2].pwm4Neg, buttons[2].pwm4Plus, false);
         axes[2].pwm5Axes = InputControl.setAxis("3: PWM 5 Axis 7", PlayerOneIndex, buttons[2].pwm5Neg, buttons[2].pwm5Plus, false);
         axes[2].pwm6Axes = InputControl.setAxis("3: PWM 6 Axis 8", PlayerOneIndex, buttons[2].pwm6Neg, buttons[2].pwm6Plus, false);
+        axes[2].pwm7Axes = InputControl.setAxis("3: PWM 7 Axis 9", PlayerOneIndex, buttons[2].pwm7Neg, buttons[2].pwm7Plus, false);
+        axes[2].pwm8Axes = InputControl.setAxis("3: PWM 8 Axis 10", PlayerOneIndex, buttons[2].pwm8Neg, buttons[2].pwm8Plus, false);
+        axes[2].pwm9Axes = InputControl.setAxis("3: PWM 9 Axis 11", PlayerOneIndex, buttons[2].pwm9Neg, buttons[2].pwm9Plus, false);
         #endregion
 
         #region Player 4 Controls
@@ -453,6 +489,12 @@ public class Controls
         buttons[3].pwm5Neg = InputControl.setKey("4: PWM 5 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick4), false);
         buttons[3].pwm6Plus = InputControl.setKey("4: PWM 6 Positive", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick4), false);
         buttons[3].pwm6Neg = InputControl.setKey("4: PWM 6 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick4), false);
+        buttons[3].pwm7Plus = InputControl.setKey("4: PWM 7 Positive", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick4), false);
+        buttons[3].pwm7Neg = InputControl.setKey("4: PWM 7 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick4), false);
+        buttons[3].pwm8Plus = InputControl.setKey("4: PWM 8 Positive", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick4), false);
+        buttons[3].pwm8Neg = InputControl.setKey("4: PWM 8 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick4), false);
+        buttons[3].pwm9Plus = InputControl.setKey("4: PWM 9 Positive", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick4), false);
+        buttons[3].pwm9Neg = InputControl.setKey("4: PWM 9 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick4), false);
 
         //Other Controls
         buttons[3].resetRobot = InputControl.setKey("4: Reset Robot", PlayerFourIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick4), false);
@@ -475,6 +517,9 @@ public class Controls
         axes[3].pwm4Axes = InputControl.setAxis("4: PWM 4 Axis 6", PlayerOneIndex, buttons[3].pwm4Neg, buttons[3].pwm4Plus, false);
         axes[3].pwm5Axes = InputControl.setAxis("4: PWM 5 Axis 7", PlayerOneIndex, buttons[3].pwm5Neg, buttons[3].pwm5Plus, false);
         axes[3].pwm6Axes = InputControl.setAxis("4: PWM 6 Axis 8", PlayerOneIndex, buttons[3].pwm6Neg, buttons[3].pwm6Plus, false);
+        axes[3].pwm7Axes = InputControl.setAxis("4: PWM 7 Axis 9", PlayerOneIndex, buttons[3].pwm7Neg, buttons[3].pwm7Plus, false);
+        axes[3].pwm8Axes = InputControl.setAxis("4: PWM 8 Axis 10", PlayerOneIndex, buttons[3].pwm8Neg, buttons[3].pwm8Plus, false);
+        axes[3].pwm9Axes = InputControl.setAxis("4: PWM 9 Axis 11", PlayerOneIndex, buttons[3].pwm9Neg, buttons[3].pwm9Plus, false);
         #endregion
 
         #region Player 5 Controls
@@ -495,6 +540,12 @@ public class Controls
         buttons[4].pwm5Neg = InputControl.setKey("5: PWM 5 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick5), false);
         buttons[4].pwm6Plus = InputControl.setKey("5: PWM 6 Positive", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick5), false);
         buttons[4].pwm6Neg = InputControl.setKey("5: PWM 6 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick5), false);
+        buttons[4].pwm7Plus = InputControl.setKey("5: PWM 7 Positive", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick5), false);
+        buttons[4].pwm7Neg = InputControl.setKey("5: PWM 7 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick5), false);
+        buttons[4].pwm8Plus = InputControl.setKey("5: PWM 8 Positive", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick5), false);
+        buttons[4].pwm8Neg = InputControl.setKey("5: PWM 8 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick5), false);
+        buttons[4].pwm9Plus = InputControl.setKey("5: PWM 9 Positive", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick5), false);
+        buttons[4].pwm9Neg = InputControl.setKey("5: PWM 9 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick5), false);
 
         //Other Controls
         buttons[4].resetRobot = InputControl.setKey("5: Reset Robot", PlayerFiveIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick5), false);
@@ -517,6 +568,9 @@ public class Controls
         axes[4].pwm4Axes = InputControl.setAxis("5: PWM 4 Axis 6", PlayerOneIndex, buttons[4].pwm4Neg, buttons[4].pwm4Plus, false);
         axes[4].pwm5Axes = InputControl.setAxis("5: PWM 5 Axis 7", PlayerOneIndex, buttons[4].pwm5Neg, buttons[4].pwm5Plus, false);
         axes[4].pwm6Axes = InputControl.setAxis("5: PWM 6 Axis 8", PlayerOneIndex, buttons[4].pwm6Neg, buttons[4].pwm6Plus, false);
+        axes[4].pwm7Axes = InputControl.setAxis("5: PWM 7 Axis 9", PlayerOneIndex, buttons[4].pwm7Neg, buttons[4].pwm7Plus, false);
+        axes[4].pwm8Axes = InputControl.setAxis("5: PWM 8 Axis 10", PlayerOneIndex, buttons[4].pwm8Neg, buttons[4].pwm8Plus, false);
+        axes[4].pwm9Axes = InputControl.setAxis("5: PWM 9 Axis 11", PlayerOneIndex, buttons[4].pwm9Neg, buttons[4].pwm9Plus, false);
         #endregion
 
         #region Player 6 Controls
@@ -537,6 +591,12 @@ public class Controls
         buttons[5].pwm5Neg = InputControl.setKey("6: PWM 5 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick6), false);
         buttons[5].pwm6Plus = InputControl.setKey("6: PWM 6 Positive", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick6), false);
         buttons[5].pwm6Neg = InputControl.setKey("6: PWM 6 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick6), false);
+        buttons[5].pwm7Plus = InputControl.setKey("6: PWM 7 Positive", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick6), false);
+        buttons[5].pwm7Neg = InputControl.setKey("6: PWM 7 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick6), false);
+        buttons[5].pwm8Plus = InputControl.setKey("6: PWM 8 Positive", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick6), false);
+        buttons[5].pwm8Neg = InputControl.setKey("6: PWM 8 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick6), false);
+        buttons[5].pwm9Plus = InputControl.setKey("6: PWM 9 Positive", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick6), false);
+        buttons[5].pwm9Neg = InputControl.setKey("6: PWM 9 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick6), false);
 
         //Other Controls
         buttons[5].resetRobot = InputControl.setKey("6: Reset Robot", PlayerSixIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick6), false);
@@ -559,6 +619,9 @@ public class Controls
         axes[5].pwm4Axes = InputControl.setAxis("6: PWM 4 Axis 6", PlayerOneIndex, buttons[5].pwm4Neg, buttons[5].pwm4Plus, false);
         axes[5].pwm5Axes = InputControl.setAxis("6: PWM 5 Axis 7", PlayerOneIndex, buttons[5].pwm5Neg, buttons[5].pwm5Plus, false);
         axes[5].pwm6Axes = InputControl.setAxis("6: PWM 6 Axis 8", PlayerOneIndex, buttons[5].pwm6Neg, buttons[5].pwm6Plus, false);
+        axes[5].pwm7Axes = InputControl.setAxis("6: PWM 7 Axis 9", PlayerOneIndex, buttons[5].pwm7Neg, buttons[5].pwm7Plus, false);
+        axes[5].pwm8Axes = InputControl.setAxis("6: PWM 8 Axis 10", PlayerOneIndex, buttons[5].pwm8Neg, buttons[5].pwm8Plus, false);
+        axes[5].pwm9Axes = InputControl.setAxis("6: PWM 9 Axis 11", PlayerOneIndex, buttons[5].pwm9Neg, buttons[5].pwm9Plus, false);
         #endregion
     }
 
@@ -586,6 +649,12 @@ public class Controls
         buttons[0].pwm5Neg = InputControl.setKey("1: PWM 5 Negative", PlayerOneIndex, KeyCode.Alpha8, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick1), true);
         buttons[0].pwm6Plus = InputControl.setKey("1: PWM 6 Positive", PlayerOneIndex, KeyCode.Alpha9, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick1), true);
         buttons[0].pwm6Neg = InputControl.setKey("1: PWM 6 Negative", PlayerOneIndex, KeyCode.Alpha0, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick1), true);
+        buttons[0].pwm7Plus = InputControl.setKey("1: PWM 7 Positive", PlayerOneIndex, KeyCode.Slash, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick1), true);
+        buttons[0].pwm7Neg = InputControl.setKey("1: PWM 7 Negative", PlayerOneIndex, KeyCode.Period, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick1), true);
+        buttons[0].pwm8Plus = InputControl.setKey("1: PWM 8 Positive", PlayerOneIndex, KeyCode.Comma, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick1), true);
+        buttons[0].pwm8Neg = InputControl.setKey("1: PWM 8 Negative", PlayerOneIndex, KeyCode.M, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick1), true);
+        buttons[0].pwm9Plus = InputControl.setKey("1: PWM 9 Positive", PlayerOneIndex, KeyCode.N, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick1), true);
+        buttons[0].pwm9Neg = InputControl.setKey("1: PWM 9 Negative", PlayerOneIndex, KeyCode.B, new JoystickInput(JoystickAxis.Axis12Negative, Joystick.Joystick1), true);
 
         //Other Controls
         buttons[0].resetRobot = InputControl.setKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1), true);
@@ -608,6 +677,9 @@ public class Controls
         axes[0].pwm4Axes = InputControl.setAxis("1: PWM 4 Axis 6", PlayerOneIndex, buttons[0].pwm4Neg, buttons[0].pwm4Plus, true);
         axes[0].pwm5Axes = InputControl.setAxis("1: PWM 5 Axis 7", PlayerOneIndex, buttons[0].pwm5Neg, buttons[0].pwm5Plus, true);
         axes[0].pwm6Axes = InputControl.setAxis("1: PWM 6 Axis 8", PlayerOneIndex, buttons[0].pwm6Neg, buttons[0].pwm6Plus, true);
+        axes[0].pwm7Axes = InputControl.setAxis("1: PWM 7 Axis 9", PlayerOneIndex, buttons[0].pwm7Neg, buttons[0].pwm7Plus, true);
+        axes[0].pwm8Axes = InputControl.setAxis("1: PWM 8 Axis 10", PlayerOneIndex, buttons[0].pwm8Neg, buttons[0].pwm8Plus, true);
+        axes[0].pwm9Axes = InputControl.setAxis("1: PWM 9 Axis 11", PlayerOneIndex, buttons[0].pwm9Neg, buttons[0].pwm9Plus, true);
         #endregion
 
         #region Player 2 Controls
@@ -628,6 +700,12 @@ public class Controls
         buttons[1].pwm5Neg = InputControl.setKey("2: PWM 5 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick2), true);
         buttons[1].pwm6Plus = InputControl.setKey("2: PWM 6 Positive", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick2), true);
         buttons[1].pwm6Neg = InputControl.setKey("2: PWM 6 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick2), true);
+        buttons[1].pwm7Plus = InputControl.setKey("2: PWM 7 Positive", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick2), true);
+        buttons[1].pwm7Neg = InputControl.setKey("2: PWM 7 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick2), true);
+        buttons[1].pwm8Plus = InputControl.setKey("2: PWM 8 Positive", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick2), true);
+        buttons[1].pwm8Neg = InputControl.setKey("2: PWM 8 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick2), true);
+        buttons[1].pwm9Plus = InputControl.setKey("2: PWM 9 Positive", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick2), true);
+        buttons[1].pwm9Neg = InputControl.setKey("2: PWM 9 Negative", PlayerTwoIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick2), true);
 
         //Other Controls
         buttons[1].resetRobot = InputControl.setKey("2: Reset Robot", PlayerTwoIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick2), true);
@@ -650,6 +728,9 @@ public class Controls
         axes[1].pwm4Axes = InputControl.setAxis("2: PWM 4 Axis 6", PlayerOneIndex, buttons[1].pwm4Neg, buttons[1].pwm4Plus, true);
         axes[1].pwm5Axes = InputControl.setAxis("2: PWM 5 Axis 7", PlayerOneIndex, buttons[1].pwm5Neg, buttons[1].pwm5Plus, true);
         axes[1].pwm6Axes = InputControl.setAxis("2: PWM 6 Axis 8", PlayerOneIndex, buttons[1].pwm6Neg, buttons[1].pwm6Plus, true);
+        axes[1].pwm7Axes = InputControl.setAxis("2: PWM 7 Axis 9", PlayerOneIndex, buttons[1].pwm7Neg, buttons[1].pwm7Plus, true);
+        axes[1].pwm8Axes = InputControl.setAxis("2: PWM 8 Axis 10", PlayerOneIndex, buttons[1].pwm8Neg, buttons[1].pwm8Plus, true);
+        axes[1].pwm9Axes = InputControl.setAxis("2: PWM 9 Axis 11", PlayerOneIndex, buttons[1].pwm9Neg, buttons[1].pwm9Plus, true);
         #endregion
 
         #region Player 3 Controls
@@ -670,6 +751,12 @@ public class Controls
         buttons[2].pwm5Neg = InputControl.setKey("3: PWM 5 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick3), true);
         buttons[2].pwm6Plus = InputControl.setKey("3: PWM 6 Positive", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick3), true);
         buttons[2].pwm6Neg = InputControl.setKey("3: PWM 6 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick3), true);
+        buttons[2].pwm7Plus = InputControl.setKey("3: PWM 7 Positive", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick3), true);
+        buttons[2].pwm7Neg = InputControl.setKey("3: PWM 7 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick3), true);
+        buttons[2].pwm8Plus = InputControl.setKey("3: PWM 8 Positive", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick3), true);
+        buttons[2].pwm8Neg = InputControl.setKey("3: PWM 8 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick3), true);
+        buttons[2].pwm9Plus = InputControl.setKey("3: PWM 9 Positive", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick3), true);
+        buttons[2].pwm9Neg = InputControl.setKey("3: PWM 9 Negative", PlayerThreeIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick3), true);
 
         //Other Controls
         buttons[2].resetRobot = InputControl.setKey("3: Reset Robot", PlayerThreeIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick3), true);
@@ -692,6 +779,9 @@ public class Controls
         axes[2].pwm4Axes = InputControl.setAxis("3: PWM 4 Axis 6", PlayerOneIndex, buttons[2].pwm4Neg, buttons[2].pwm4Plus, true);
         axes[2].pwm5Axes = InputControl.setAxis("3: PWM 5 Axis 7", PlayerOneIndex, buttons[2].pwm5Neg, buttons[2].pwm5Plus, true);
         axes[2].pwm6Axes = InputControl.setAxis("3: PWM 6 Axis 8", PlayerOneIndex, buttons[2].pwm6Neg, buttons[2].pwm6Plus, true);
+        axes[2].pwm7Axes = InputControl.setAxis("3: PWM 7 Axis 9", PlayerOneIndex, buttons[2].pwm7Neg, buttons[2].pwm7Plus, true);
+        axes[2].pwm8Axes = InputControl.setAxis("3: PWM 8 Axis 10", PlayerOneIndex, buttons[2].pwm8Neg, buttons[2].pwm8Plus, true);
+        axes[2].pwm9Axes = InputControl.setAxis("3: PWM 9 Axis 11", PlayerOneIndex, buttons[2].pwm9Neg, buttons[2].pwm9Plus, true);
         #endregion
 
         #region Player 4 Controls
@@ -712,6 +802,12 @@ public class Controls
         buttons[3].pwm5Neg = InputControl.setKey("4: PWM 5 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick4), true);
         buttons[3].pwm6Plus = InputControl.setKey("4: PWM 6 Positive", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick4), true);
         buttons[3].pwm6Neg = InputControl.setKey("4: PWM 6 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick4), true);
+        buttons[3].pwm7Plus = InputControl.setKey("4: PWM 7 Positive", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick4), true);
+        buttons[3].pwm7Neg = InputControl.setKey("4: PWM 7 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick4), true);
+        buttons[3].pwm8Plus = InputControl.setKey("4: PWM 8 Positive", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick4), true);
+        buttons[3].pwm8Neg = InputControl.setKey("4: PWM 8 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick4), true);
+        buttons[3].pwm9Plus = InputControl.setKey("4: PWM 9 Positive", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick4), true);
+        buttons[3].pwm9Neg = InputControl.setKey("4: PWM 9 Negative", PlayerFourIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick4), true);
 
         //Other Controls
         buttons[3].resetRobot = InputControl.setKey("4: Reset Robot", PlayerFourIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick4), true);
@@ -734,6 +830,9 @@ public class Controls
         axes[3].pwm4Axes = InputControl.setAxis("4: PWM 4 Axis 6", PlayerOneIndex, buttons[3].pwm4Neg, buttons[3].pwm4Plus, true);
         axes[3].pwm5Axes = InputControl.setAxis("4: PWM 5 Axis 7", PlayerOneIndex, buttons[3].pwm5Neg, buttons[3].pwm5Plus, true);
         axes[3].pwm6Axes = InputControl.setAxis("4: PWM 6 Axis 8", PlayerOneIndex, buttons[3].pwm6Neg, buttons[3].pwm6Plus, true);
+        axes[3].pwm7Axes = InputControl.setAxis("4: PWM 7 Axis 9", PlayerOneIndex, buttons[3].pwm7Neg, buttons[3].pwm7Plus, true);
+        axes[3].pwm8Axes = InputControl.setAxis("4: PWM 8 Axis 10", PlayerOneIndex, buttons[3].pwm8Neg, buttons[3].pwm8Plus, true);
+        axes[3].pwm9Axes = InputControl.setAxis("4: PWM 9 Axis 11", PlayerOneIndex, buttons[3].pwm9Neg, buttons[3].pwm9Plus, true);
         #endregion
 
         #region Player 5 Controls
@@ -754,6 +853,12 @@ public class Controls
         buttons[4].pwm5Neg = InputControl.setKey("5: PWM 5 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick5), true);
         buttons[4].pwm6Plus = InputControl.setKey("5: PWM 6 Positive", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick5), true);
         buttons[4].pwm6Neg = InputControl.setKey("5: PWM 6 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick5), true);
+        buttons[4].pwm7Plus = InputControl.setKey("5: PWM 7 Positive", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick5), true);
+        buttons[4].pwm7Neg = InputControl.setKey("5: PWM 7 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick5), true);
+        buttons[4].pwm8Plus = InputControl.setKey("5: PWM 8 Positive", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick5), true);
+        buttons[4].pwm8Neg = InputControl.setKey("5: PWM 8 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick5), true);
+        buttons[4].pwm9Plus = InputControl.setKey("5: PWM 9 Positive", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick5), true);
+        buttons[4].pwm9Neg = InputControl.setKey("5: PWM 9 Negative", PlayerFiveIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick5), true);
 
         //Other Controls
         buttons[4].resetRobot = InputControl.setKey("5: Reset Robot", PlayerFiveIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick5), true);
@@ -776,6 +881,9 @@ public class Controls
         axes[4].pwm4Axes = InputControl.setAxis("5: PWM 4 Axis 6", PlayerOneIndex, buttons[4].pwm4Neg, buttons[4].pwm4Plus, true);
         axes[4].pwm5Axes = InputControl.setAxis("5: PWM 5 Axis 7", PlayerOneIndex, buttons[4].pwm5Neg, buttons[4].pwm5Plus, true);
         axes[4].pwm6Axes = InputControl.setAxis("5: PWM 6 Axis 8", PlayerOneIndex, buttons[4].pwm6Neg, buttons[4].pwm6Plus, true);
+        axes[4].pwm7Axes = InputControl.setAxis("5: PWM 7 Axis 9", PlayerOneIndex, buttons[4].pwm7Neg, buttons[4].pwm7Plus, true);
+        axes[4].pwm8Axes = InputControl.setAxis("5: PWM 8 Axis 10", PlayerOneIndex, buttons[4].pwm8Neg, buttons[4].pwm8Plus, true);
+        axes[4].pwm9Axes = InputControl.setAxis("5: PWM 9 Axis 11", PlayerOneIndex, buttons[4].pwm9Neg, buttons[4].pwm9Plus, true);
         #endregion
 
         #region Player 6 Controls
@@ -796,6 +904,12 @@ public class Controls
         buttons[5].pwm5Neg = InputControl.setKey("6: PWM 5 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis7Negative, Joystick.Joystick6), true);
         buttons[5].pwm6Plus = InputControl.setKey("6: PWM 6 Positive", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis8Positive, Joystick.Joystick6), true);
         buttons[5].pwm6Neg = InputControl.setKey("6: PWM 6 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick6), true);
+        buttons[5].pwm7Plus = InputControl.setKey("6: PWM 7 Positive", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis9Positive, Joystick.Joystick6), true);
+        buttons[5].pwm7Neg = InputControl.setKey("6: PWM 7 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis9Negative, Joystick.Joystick6), true);
+        buttons[5].pwm8Plus = InputControl.setKey("6: PWM 8 Positive", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis10Positive, Joystick.Joystick6), true);
+        buttons[5].pwm8Neg = InputControl.setKey("6: PWM 8 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis10Negative, Joystick.Joystick6), true);
+        buttons[5].pwm9Plus = InputControl.setKey("6: PWM 9 Positive", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis11Positive, Joystick.Joystick6), true);
+        buttons[5].pwm9Neg = InputControl.setKey("6: PWM 9 Negative", PlayerSixIndex, new JoystickInput(JoystickAxis.Axis11Negative, Joystick.Joystick6), true);
 
         //Other Controls
         buttons[5].resetRobot = InputControl.setKey("6: Reset Robot", PlayerSixIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick6), true);
@@ -818,6 +932,9 @@ public class Controls
         axes[5].pwm4Axes = InputControl.setAxis("6: PWM 4 Axis 6", PlayerOneIndex, buttons[5].pwm4Neg, buttons[5].pwm4Plus, true);
         axes[5].pwm5Axes = InputControl.setAxis("6: PWM 5 Axis 7", PlayerOneIndex, buttons[5].pwm5Neg, buttons[5].pwm5Plus, true);
         axes[5].pwm6Axes = InputControl.setAxis("6: PWM 6 Axis 8", PlayerOneIndex, buttons[5].pwm6Neg, buttons[5].pwm6Plus, true);
+        axes[5].pwm7Axes = InputControl.setAxis("6: PWM 7 Axis 9", PlayerOneIndex, buttons[5].pwm7Neg, buttons[5].pwm7Plus, true);
+        axes[5].pwm8Axes = InputControl.setAxis("6: PWM 8 Axis 10", PlayerOneIndex, buttons[5].pwm8Neg, buttons[5].pwm8Plus, true);
+        axes[5].pwm9Axes = InputControl.setAxis("6: PWM 9 Axis 11", PlayerOneIndex, buttons[5].pwm9Neg, buttons[5].pwm9Plus, true);
         #endregion
     }
 }
