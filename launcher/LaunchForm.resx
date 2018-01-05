@@ -190,53 +190,8 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;menuStrip1.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>10</value>
   </data>
-<<<<<<< HEAD
-  <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>37, 20</value>
-  </data>
-  <data name="fileToolStripMenuItem.Text" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>103, 22</value>
-  </data>
-  <data name="closeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="tutorialsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 20</value>
-  </data>
-  <data name="tutorialsToolStripMenuItem.Text" xml:space="preserve">
-    <value>Tutorials</value>
-  </data>
-  <data name="robotExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>142, 22</value>
-  </data>
-  <data name="robotExportToolStripMenuItem.Text" xml:space="preserve">
-    <value>Robot Export</value>
-  </data>
-  <data name="fieldExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>142, 22</value>
-  </data>
-  <data name="fieldExportToolStripMenuItem.Text" xml:space="preserve">
-    <value>Field Export</value>
-  </data>
-  <data name="simulatorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>142, 22</value>
-  </data>
-  <data name="simulatorToolStripMenuItem.Text" xml:space="preserve">
-    <value>Simulator</value>
-  </data>
-  <data name="emulatorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>142, 22</value>
-  </data>
-  <data name="emulatorToolStripMenuItem.Text" xml:space="preserve">
-    <value>Emulator</value>
-  </data>
-=======
->>>>>>> 27d04612b308b99e781bfa2c67d76ac9210741ed
   <data name="synthesisButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -244,7 +199,7 @@
     <value>NoControl</value>
   </data>
   <data name="synthesisButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>49, 100</value>
+    <value>49, 70</value>
   </data>
   <data name="synthesisButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -268,7 +223,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;synthesisButton.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>9</value>
   </data>
   <data name="fExporterButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -298,7 +253,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;fExporterButton.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>8</value>
   </data>
   <data name="rExporterButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -307,7 +262,7 @@
     <value>NoControl</value>
   </data>
   <data name="rExporterButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>49, 223</value>
+    <value>49, 233</value>
   </data>
   <data name="rExporterButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -331,7 +286,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;rExporterButton.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>7</value>
   </data>
   <data name="codeViewerButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -340,7 +295,7 @@
     <value>NoControl</value>
   </data>
   <data name="codeViewerButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>49, 416</value>
+    <value>49, 412</value>
   </data>
   <data name="codeViewerButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -364,7 +319,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;codeViewerButton.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>6</value>
   </data>
   <data name="label3.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -373,7 +328,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>47, 65</value>
+    <value>45, 39</value>
   </data>
   <data name="label3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -397,7 +352,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="label4.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -406,7 +361,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>47, 190</value>
+    <value>45, 150</value>
   </data>
   <data name="label4.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -430,7 +385,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label4.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="label5.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -439,7 +394,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>45, 384</value>
+    <value>45, 380</value>
   </data>
   <data name="label5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -463,7 +418,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label5.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="buildLabel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom, Right</value>
@@ -472,7 +427,7 @@
     <value>True</value>
   </data>
   <data name="buildLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>301, 517</value>
+    <value>300, 521</value>
   </data>
   <data name="buildLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -496,7 +451,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buildLabel.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="updateLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -526,6 +481,36 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;updateLabel.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="lblCurrentExporter.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblCurrentExporter.Location" type="System.Drawing.Point, System.Drawing">
+    <value>46, 185</value>
+  </data>
+  <data name="lblCurrentExporter.MaximumSize" type="System.Drawing.Size, System.Drawing">
+    <value>250, 30</value>
+  </data>
+  <data name="lblCurrentExporter.Size" type="System.Drawing.Size, System.Drawing">
+    <value>249, 26</value>
+  </data>
+  <data name="lblCurrentExporter.TabIndex" type="System.Int32, mscorlib">
+    <value>18</value>
+  </data>
+  <data name="lblCurrentExporter.Text" xml:space="preserve">
+    <value>Current exporters can be found in the Environments tab of the Inventor application.</value>
+  </data>
+  <data name="&gt;&gt;lblCurrentExporter.Name" xml:space="preserve">
+    <value>lblCurrentExporter</value>
+  </data>
+  <data name="&gt;&gt;lblCurrentExporter.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblCurrentExporter.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;lblCurrentExporter.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -538,7 +523,7 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>352, 539</value>
+    <value>352, 543</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
