@@ -16,7 +16,7 @@ are the steps to do so:
 * Import all included assets and ignore warning message
 * Bullet Physics should now be integrated within the project!
 
-If you want to test, you need to open the MainMenu.unity scene and run it from there as you will need to select and load a robot and field for the simulator to properly intialize.
+If you want to test, you will need to open the MainMenu.unity scene by double clicking the scene or dragging the scene to the 'Hiearchy' (the upper left hand column.) You can run it from there as you will need to select and load a robot and field for the simulator to properly intialize.
 
 ![synthesiscompiling](https://user-images.githubusercontent.com/6741771/35821700-bd18230a-0a5e-11e8-97b4-87d1d8ec96ac.png)
 
