@@ -21,7 +21,7 @@ If you want to test, you need to open the MainMenu.unity scene and run it from t
 ![synthesiscompiling](https://user-images.githubusercontent.com/6741771/35821700-bd18230a-0a5e-11e8-97b4-87d1d8ec96ac.png)
 
 * Remember to click Assets and then double click MainMenu with the viewcube in order to compile it correctly.
-** This will come after importing of the Bullet Asset files.
+* This will come after importing of the Bullet Asset files.
 
 ### Sample Robots and Fields for Testing
 
