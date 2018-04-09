@@ -2,14 +2,16 @@
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
 #include <CAM/CAMAll.h>
-
+#include <string>
 
 using namespace adsk::core;
 using namespace adsk::fusion;
 using namespace adsk::cam;
+using namespace std;
 
 Ptr<Application> app;
 Ptr<UserInterface> ui;
+Ptr<Components> comps;
 
 extern "C" XI_EXPORT bool run(const char* context)
 {
@@ -22,7 +24,17 @@ extern "C" XI_EXPORT bool run(const char* context)
 		return false;
 
 	ui->messageBox("Hello addin");
-
+    
+    Ptr<FusionDocument> doc = app->activeDocument();
+    
+    string a = "";
+    
+    for (Ptr<Joint> j : doc->design()->rootComponent()->allJoints()){
+        a += j->name() + " ";
+    }
+    
+    ui->messageBox(a);
+    
 	return true;
 }
 
