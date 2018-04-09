@@ -23,7 +23,7 @@ extern "C" XI_EXPORT bool run(const char* context)
 	if (!ui)
 		return false;
 
-	ui->messageBox("Hello addin");
+	ui->messageBox("Started Exporting");
     
     Ptr<FusionDocument> doc = app->activeDocument();
     
@@ -31,6 +31,7 @@ extern "C" XI_EXPORT bool run(const char* context)
     
     for (Ptr<Joint> j : doc->design()->rootComponent()->allJoints()){
         a += j->name() + " ";
+        doc->design()->activeComponent() = j->parentComponent();
     }
     
     ui->messageBox(a);
