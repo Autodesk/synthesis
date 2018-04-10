@@ -91,7 +91,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EUI.cpp">
+    <ClCompile Include="Exporter.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="FusionSynth.cpp">
@@ -106,7 +106,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EUI.h" />
+    <ClInclude Include="Exporter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

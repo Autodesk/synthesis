@@ -1,43 +1,24 @@
-#include "EUI.h"
+#include "Exporter.h"
 
-Ptr<Application> app;
-Ptr<UserInterface> ui;
-Ptr<Components> comps;
-Ptr<CommandDefinition> exp_cmd;
+Ptr<Application> _app;
+Exporter * e;
 
 extern "C" XI_EXPORT bool run(const char* context)
 {
-	app = Application::get();
-	if (!app)
+	_app = Application::get();
+	if (!_app)
 		return false;
 
-	ui = app->userInterface();
-	if (!ui)
-		return false;
+	e = new Exporter(_app);
 
-	ui->messageBox("Started Exporting");
-    
-    Ptr<FusionDocument> doc = app->activeDocument();
-    
-    string a = "";
-    
-    for (Ptr<Joint> j : doc->design()->rootComponent()->allJoints()){
-        a += j->name() + " ";
-        doc->design()->activeComponent() = j->parentComponent();
-    }
-    
-    ui->messageBox(a);
-    
+	e->test();
+
 	return true;
 }
 
 extern "C" XI_EXPORT bool stop(const char* context)
 {
-	if (ui)
-	{
-		ui->messageBox("Stop addin");
-		ui = nullptr;
-	}
+	delete(e);
 
 	return true;
 }

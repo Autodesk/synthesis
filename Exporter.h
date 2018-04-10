@@ -12,13 +12,16 @@ using namespace adsk::cam;
 using namespace std;
 
 
-class EUI {
+class Exporter {
 public:
-	EUI();
-	~EUI();
+	Exporter(Ptr<Application>);
+	Exporter();
+	~Exporter();
 
 	void buttonListener();
+	void test();
 
 private:
-
+	Ptr<Application> app;
+	Ptr<UserInterface> ui;
 };
