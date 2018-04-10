@@ -1,17 +1,9 @@
-
-#include <Core/CoreAll.h>
-#include <Fusion/FusionAll.h>
-#include <CAM/CAMAll.h>
-#include <string>
-
-using namespace adsk::core;
-using namespace adsk::fusion;
-using namespace adsk::cam;
-using namespace std;
+#include "EUI.h"
 
 Ptr<Application> app;
 Ptr<UserInterface> ui;
 Ptr<Components> comps;
+Ptr<CommandDefinition> exp_cmd;
 
 extern "C" XI_EXPORT bool run(const char* context)
 {
