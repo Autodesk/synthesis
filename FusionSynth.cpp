@@ -1,15 +1,15 @@
 #include "Exporter.h"
 
-Ptr<Application> _app;
+Ptr<Application> app;
 Exporter * e;
 
 extern "C" XI_EXPORT bool run(const char* context)
 {
-	_app = Application::get();
-	if (!_app)
+	app = Application::get();
+	if (!app)
 		return false;
 
-	e = new Exporter(_app);
+	e = new Exporter(app);
 
 	e->test();
 

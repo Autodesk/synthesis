@@ -1,5 +1,4 @@
 #pragma once
-
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
 #include <CAM/CAMAll.h>
@@ -21,7 +20,9 @@ public:
 	void buttonListener();
 	void test();
 
+	Ptr<CommandDefinition> expCommand();
+
 private:
-	Ptr<Application> app;
-	Ptr<UserInterface> ui;
+	Ptr<Application> _app;
+	Ptr<UserInterface> _ui;
 };

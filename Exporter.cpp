@@ -1,7 +1,7 @@
 #include "Exporter.h"
 
-Exporter::Exporter(Ptr<Application> _app) : app(_app) {
-	ui = app->userInterface();
+Exporter::Exporter(Ptr<Application> app) : _app(app) {
+	_ui = _app->userInterface();
 }
 
 Exporter::Exporter() {
@@ -14,14 +14,12 @@ Exporter::~Exporter() {
 
 
 void Exporter::test() {
-
-	
-	if (!ui)
+	if (!_ui)
 		//return false;
 
-	ui->messageBox("Started Exporting");
+	_ui->messageBox("Started Exporting");
 
-	Ptr<FusionDocument> doc = app->activeDocument();
+	Ptr<FusionDocument> doc = _app->activeDocument();
 
 	string a = "";
 
@@ -30,5 +28,9 @@ void Exporter::test() {
 		doc->design()->activeComponent() = j->parentComponent();
 	}
 
-	ui->messageBox(a);
+	_ui->messageBox(a);
+}
+
+Ptr<CommandDefinition> Exporter::expCommand() {
+	//Ptr<>
 }
