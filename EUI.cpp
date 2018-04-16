@@ -23,7 +23,7 @@ EUI::~EUI(){
 bool EUI::CreateWorkspace(){
     try {
         _WorkSpace = _UI->workspaces()->add("Fusion Synthesis", "1001", "Synthesis", "Fision");
-        _WorkSpace->activate();
+        _WorkSpace->activate(); // this actually crashes fusion pretty hard regardless of exception handling
         _UI->messageBox("Adding workspace");
         return true;
     } catch (exception e) {
