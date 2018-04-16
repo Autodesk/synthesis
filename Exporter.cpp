@@ -18,6 +18,8 @@ void Exporter::Test() {
 		//return false;
 
 	_ui->messageBox("Started Exporting");
+    
+    EUI* _eui = new EUI(_ui);
 
 	Ptr<FusionDocument> doc = _app->activeDocument();
 
@@ -28,7 +30,7 @@ void Exporter::Test() {
 		doc->design()->activeComponent() = j->parentComponent();
 	}
 
-	_ui->messageBox(a);
+	//_ui->messageBox(a);
 }
 
 /*

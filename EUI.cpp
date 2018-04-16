@@ -12,10 +12,24 @@ EUI::EUI(){
     
 }
 
-EUI::EUI(Ptr<UserInterface> UI) : _UI(UI){};
+EUI::EUI(Ptr<UserInterface> UI) : _UI(UI){
+    CreateWorkspace();
+};
 
 EUI::~EUI(){
     
+}
+
+bool EUI::CreateWorkspace(){
+    try {
+        _WorkSpace = _UI->workspaces()->add("Fusion Synthesis", "1001", "Synthesis", "Fision");
+        _WorkSpace->activate();
+        _UI->messageBox("Adding workspace");
+        return true;
+    } catch (exception e) {
+        _UI->messageBox(e.what());
+        return false;
+    }
 }
 
 

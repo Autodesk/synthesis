@@ -22,8 +22,13 @@ public:
     EUI(Ptr<UserInterface>);
     ~EUI();
     
+    
+    
 private:
     Ptr<UserInterface> _UI;
+    Ptr<Workspace> _WorkSpace;
+    Ptr<Workspaces> _WorkSpaces;
+    bool CreateWorkspace();
     
 };
 
