@@ -13,7 +13,7 @@ Exporter::~Exporter() {
 }
 
 
-void Exporter::test() {
+void Exporter::Test() {
 	if (!_ui)
 		//return false;
 

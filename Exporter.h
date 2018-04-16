@@ -4,6 +4,7 @@
 #include <CAM/CAMAll.h>
 #include <string>
 #include <Core/UserInterface/ToolbarControls.h>
+#include "EUI.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;
@@ -17,12 +18,14 @@ public:
 	Exporter();
 	~Exporter();
 
-	void buttonListener();
-	void test();
+	void ButtonListener();
+	void Test();
 
 	Ptr<CommandDefinition> expCommand();
 
 private:
 	Ptr<Application> _app;
 	Ptr<UserInterface> _ui;
+    
+    bool StartUI();
 };

@@ -11,7 +11,7 @@ extern "C" XI_EXPORT bool run(const char* context)
 
 	e = new Exporter(app);
 
-	e->test();
+	e->Test();
 
 	return true;
 }
