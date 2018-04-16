@@ -31,6 +31,8 @@ void Exporter::test() {
 	_ui->messageBox(a);
 }
 
+/*
 Ptr<CommandDefinition> Exporter::expCommand() {
 	//Ptr<>
 }
+ */
