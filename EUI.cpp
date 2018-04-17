@@ -30,7 +30,9 @@ bool EUI::CreateWorkspace(){
         /// Returns the created workspace or null if the creation failed.
         //inline Ptr<Workspace> Workspaces::add(const std::string& productType, const std::string& id, const std::string& name, const std::string& resourceFolder)
         _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "1001", "Synthesis", "Resources");
-        _WorkSpace->activate(); // this actually crashes fusion pretty hard regardless of exception handling
+        _WorkSpace->tooltip("Workspace for exporting fusion robot files");
+        _Toolbar = _WorkSpace->toolbarPanels()->add("1001" , "ExportingToolbar");
+        _WorkSpace->activate();
         _UI->messageBox("Adding workspace");
         return true;
     } catch (exception e) {

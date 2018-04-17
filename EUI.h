@@ -29,6 +29,8 @@ private:
     Ptr<UserInterface> _UI;
     Ptr<Workspace> _WorkSpace;
     Ptr<Workspaces> _WorkSpaces;
+    Ptr<Toolbar> _Toolbar;
+    
     bool CreateWorkspace();
     
 };
