@@ -5,6 +5,7 @@
 #include <string>
 #include <Core/UserInterface/ToolbarControls.h>
 #include "EUI.h"
+#include "CustomTypes.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;
