@@ -19,12 +19,13 @@ using namespace std;
 class EUI{
 public:
     EUI();
-    EUI(Ptr<UserInterface>);
+    EUI(Ptr<UserInterface>, Ptr<Application>);
     ~EUI();
     
     
     
 private:
+    Ptr<Application> _APP;
     Ptr<UserInterface> _UI;
     Ptr<Workspace> _WorkSpace;
     Ptr<Workspaces> _WorkSpaces;
