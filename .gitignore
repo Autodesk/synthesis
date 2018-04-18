@@ -8,6 +8,7 @@ FusionSynth.build*/
 FusionSynth.build/
 FusionSynth.build/*
 [Bb]in
+[Bb]in*/
 [Dd]ebug*/
 [Rr]elease*/
 *.dll
