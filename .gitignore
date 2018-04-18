@@ -15,3 +15,5 @@ FusionSynth.build/*
 !SimulaterAPI.dll
 .vs*/
 .vs/
+DS_Store/
+DS_Store
