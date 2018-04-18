@@ -7,7 +7,7 @@
 //
 #include "Exporter.h"
 
-#using "\DebugSimulaterFileIO\SimulaterAPI.dll"
+#using "SimulatorAPI.dll"
 
 using namespace adsk::core;
 using namespace adsk::fusion;

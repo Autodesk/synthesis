@@ -19,5 +19,5 @@ void Synthesis::CommandEventHandler::notify(const Ptr<CommandEventArgs> &eventAr
 }
 
 Button::Button(){
-    
+	BXDAMesh bIO;
 }

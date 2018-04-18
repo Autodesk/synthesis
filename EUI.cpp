@@ -8,8 +8,6 @@
 
 #include "EUI.h"
 
-#include "SimulatorAPI.dll"
-
 EUI::EUI(){
     
 }
