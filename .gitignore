@@ -4,12 +4,9 @@
 *.userosscache
 *.sln.docstates
 
-# User-specific files (MonoDevelop/Xamarin Studio)
-*.userprefs
-
 FusionSynth.build/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/
-!SimulaterAPI.dll
 *.dll
+!SimulaterAPI.dll
