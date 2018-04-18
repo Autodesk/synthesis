@@ -31,7 +31,7 @@ bool EUI::CreateWorkspace(){
         //inline Ptr<Workspace> Workspaces::add(const std::string& productType, const std::string& id, const std::string& name, const std::string& resourceFolder)
         
         //Need to add check if workspace already exists and get reference to it
-        _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "1001", "Synthesis", "./Resources");
+        _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "1001", "Synthesis", "Resources");
         
         _WorkSpace->tooltip("Workspace for exporting fusion robot files");
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
@@ -39,9 +39,9 @@ bool EUI::CreateWorkspace(){
         _ToolbarControls = _ToolbarPanel->controls();
         configButtonWheel();
         configButtonExporter();
-        _ToolbarControls->addCommand(_AddWheelCommandDef);
+        _ToolbarControls->addCommand(_AddWheelCommandDef)->isPromoted(true);
         _ToolbarControls->addSeparator();
-        _ToolbarControls->addCommand(_ExportCommandDef);
+        _ToolbarControls->addCommand(_ExportCommandDef)->isPromoted(true);
         //_ToolbarControls->addSeparator();
         //_WorkSpace->activate();
         _UI->messageBox("Adding workspace");
@@ -54,12 +54,12 @@ bool EUI::CreateWorkspace(){
 
 void EUI::configButtonWheel(){
     _AddWheelCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config");
-    _AddWheelCommandDef->resourceFolder("./Resources");
+    _AddWheelCommandDef->resourceFolder("Resources");
 }
 
 void EUI::configButtonExporter(){
     _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddExportButtonDefinition", "Export", "This will start the exporting process which will take approximately 5-10 minutes");
-    _ExportCommandDef->resourceFolder("./Resources");
+    _ExportCommandDef->resourceFolder("Resources");
 }
 
 
