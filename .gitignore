@@ -13,3 +13,5 @@ FusionSynth.build/*
 [Rr]elease*/
 *.dll
 !SimulaterAPI.dll
+.vs*/
+.vs/
