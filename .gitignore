@@ -4,7 +4,9 @@
 *.userosscache
 *.sln.docstates
 
+FusionSynth.build*/
 FusionSynth.build/
+FusionSynth.build/*
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/
