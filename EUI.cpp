@@ -38,7 +38,10 @@ bool EUI::CreateWorkspace(){
         _ToolbarPanel = _WorkSpace->toolbarPanels()->add("1001" , "ExportingToolbar");
         _ToolbarControls = _ToolbarPanel->controls();
         configButtonWheel();
+        configButtonExporter();
         _ToolbarControls->addCommand(_AddWheelCommandDef);
+        _ToolbarControls->addSeparator();
+        _ToolbarControls->addCommand(_ExportCommandDef);
         //_ToolbarControls->addSeparator();
         _WorkSpace->activate();
         _UI->messageBox("Adding workspace");
@@ -50,12 +53,13 @@ bool EUI::CreateWorkspace(){
 }
 
 void EUI::configButtonWheel(){
-    Ptr<CommandDefinitions> CommandDefs = _UI->commandDefinitions();
-    _AddWheelCommandDef = CommandDefs->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config");
+    _AddWheelCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config");
+    _AddWheelCommandDef->resourceFolder("Resources");
 }
 
 void EUI::configButtonExporter(){
-    
+    _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddExportButtonDefinition", "Export", "This will start the exporting process which will take approximately 5-10 minutes");
+    _ExportCommandDef->resourceFolder("Resources");
 }
 
 
