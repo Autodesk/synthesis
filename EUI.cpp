@@ -31,7 +31,10 @@ bool EUI::CreateWorkspace(){
         //inline Ptr<Workspace> Workspaces::add(const std::string& productType, const std::string& id, const std::string& name, const std::string& resourceFolder)
         
         //Need to add check if workspace already exists and get reference to it
-        _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "1001", "Synthesis", "Resources");
+        
+        //(_UI->workspaces()->itemById("BXD:Synthesis").get() != NULL) ? (_WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "BXD:Synthesis", "Synthesis", "Resources")) : (_WorkSpace = _UI->workspaces()->itemById("BXD:Synthesis"));
+        
+        _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "BXD:Synthesis", "Synthesis", "Resources");
         
         _WorkSpace->tooltip("Workspace for exporting fusion robot files");
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
