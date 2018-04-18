@@ -29,9 +29,15 @@ bool EUI::CreateWorkspace(){
         /// resourceFolder : The resource folder should contain two files; 49X31.png and 98x62.png. The larger is used for the Apple Retina display.
         /// Returns the created workspace or null if the creation failed.
         //inline Ptr<Workspace> Workspaces::add(const std::string& productType, const std::string& id, const std::string& name, const std::string& resourceFolder)
+        
+        //Need to add check if workspace already exists and get reference to it
         _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "1001", "Synthesis", "Resources");
+        
         _WorkSpace->tooltip("Workspace for exporting fusion robot files");
-        _Toolbar = _WorkSpace->toolbarPanels()->add("1001" , "ExportingToolbar");
+        Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
+        _ToolbarPanel = _WorkSpace->toolbarPanels()->add("1001" , "ExportingToolbar");
+        _ToolbarControls = _ToolbarPanel->controls();
+        //_ToolbarControls->addSeparator();
         _WorkSpace->activate();
         _UI->messageBox("Adding workspace");
         return true;

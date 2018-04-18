@@ -29,7 +29,8 @@ private:
     Ptr<UserInterface> _UI;
     Ptr<Workspace> _WorkSpace;
     Ptr<Workspaces> _WorkSpaces;
-    Ptr<Toolbar> _Toolbar;
+    Ptr<ToolbarPanel> _ToolbarPanel;
+    Ptr<ToolbarControls> _ToolbarControls;
     
     bool CreateWorkspace();
     
