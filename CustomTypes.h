@@ -21,6 +21,20 @@ namespace Synthesis{
             void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
         private:
     };
+    
+    class CommandEventHandler : public adsk::core::CommandEventHandler{
+    public:
+        void notify(const Ptr<CommandEventArgs>& eventArgs) override;
+    };
+    
+    class Button{
+    public:
+        Button();
+        ~Button();
+        
+    private:
+        
+    };
 }
 
 

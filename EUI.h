@@ -24,6 +24,8 @@ public:
     
     
     
+    
+    
 private:
     Ptr<Application> _APP;
     Ptr<UserInterface> _UI;
@@ -31,6 +33,13 @@ private:
     Ptr<Workspaces> _WorkSpaces;
     Ptr<ToolbarPanel> _ToolbarPanel;
     Ptr<ToolbarControls> _ToolbarControls;
+    
+    Ptr<CommandDefinition> _AddWheelCommandDef;
+    Ptr<CommandDefinition> _ExportCommandDef;
+    
+    void configButtonWheel();
+    void configButtonExporter();
+    
     
     bool CreateWorkspace();
     

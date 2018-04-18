@@ -37,6 +37,8 @@ bool EUI::CreateWorkspace(){
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
         _ToolbarPanel = _WorkSpace->toolbarPanels()->add("1001" , "ExportingToolbar");
         _ToolbarControls = _ToolbarPanel->controls();
+        configButtonWheel();
+        _ToolbarControls->addCommand(_AddWheelCommandDef);
         //_ToolbarControls->addSeparator();
         _WorkSpace->activate();
         _UI->messageBox("Adding workspace");
@@ -45,6 +47,15 @@ bool EUI::CreateWorkspace(){
         _UI->messageBox(e.what());
         return false;
     }
+}
+
+void EUI::configButtonWheel(){
+    Ptr<CommandDefinitions> CommandDefs = _UI->commandDefinitions();
+    _AddWheelCommandDef = CommandDefs->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config");
+}
+
+void EUI::configButtonExporter(){
+    
 }
 
 

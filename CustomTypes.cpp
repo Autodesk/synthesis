@@ -11,5 +11,13 @@
 using namespace Synthesis;
 
 void Synthesis::CommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs){
+    //code react
+}
+
+void Synthesis::CommandEventHandler::notify(const Ptr<CommandEventArgs> &eventArgs){
+    //code react
+}
+
+Button::Button(){
     
 }

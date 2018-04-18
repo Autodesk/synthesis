@@ -4,6 +4,10 @@
 #include <CAM/CAMAll.h>
 #include <string>
 #include <Core/UserInterface/ToolbarControls.h>
+#include <Core/UserInterface/Command.h>
+#include <Core/UserInterface/CommandEvent.h>
+#include <Core/UserInterface/CommandEventHandler.h>
+#include <Core/UserInterface/CommandEventArgs.h>
 #include "EUI.h"
 #include "CustomTypes.h"
 
