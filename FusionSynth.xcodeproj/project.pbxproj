@@ -182,7 +182,10 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(USER_LIBRARY_DIR)/Application\\ Support/Autodesk/Autodesk\\ Fusion\\ 360/API/CPP/include",
 				);
-				LIBRARY_SEARCH_PATHS = "$(USER_LIBRARY_DIR)/Application\\ Support/Autodesk/Autodesk\\ Fusion\\ 360/API/CPP/lib";
+				LIBRARY_SEARCH_PATHS = (
+					"$(USER_LIBRARY_DIR)/Application\\ Support/Autodesk/Autodesk\\ Fusion\\ 360/API/CPP/lib",
+					"Users/mad/Home/Documents/git/FusionSynth/ReleaseSimulatorFileIO/**",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
