@@ -77,9 +77,5 @@ void Synthesis::CommandEventHandler::notify(const Ptr<CommandEventArgs> &eventAr
     //code react
 }
 
-Button::Button(){
-    //BXDAMesh bIO;
-}
-
 
 
