@@ -8,6 +8,10 @@
 
 #include "EUI.h"
 
+
+using namespace Synthesis;
+
+
 EUI::EUI(){
     
 }
@@ -63,6 +67,18 @@ void EUI::configButtonWheel(){
 void EUI::configButtonExporter(){
     _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddExportButtonDefinition", "Export", "This will start the exporting process which will take approximately 5-10 minutes");
     _ExportCommandDef->resourceFolder("Resources");
+}
+
+void Synthesis::CommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs){
+    //code react
+}
+
+void Synthesis::CommandEventHandler::notify(const Ptr<CommandEventArgs> &eventArgs){
+    //code react
+}
+
+Button::Button(){
+    //BXDAMesh bIO;
 }
 
 
