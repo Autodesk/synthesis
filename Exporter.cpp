@@ -19,7 +19,7 @@ void Exporter::Test() {
 
 	_ui->messageBox("Started Exporting");
     
-    EUI* _eui = new EUI(_ui, _app);
+    Synthesis::EUI* _eui = new Synthesis::EUI(_ui, _app);
 
 	Ptr<FusionDocument> doc = _app->activeDocument();
 
