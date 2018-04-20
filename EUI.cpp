@@ -38,7 +38,7 @@ bool EUI::CreateWorkspace(){
         
         //(_UI->workspaces()->itemById("BXD:Synthesis").get() != NULL) ? (_WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "BXD:Synthesis", "Synthesis", "Resources")) : (_WorkSpace = _UI->workspaces()->itemById("BXD:Synthesis"));
         
-        _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "BXD:Synthesis", "Synthesis", "Resources");
+        _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "1001", "Synthesis", "Resources");
         
         _WorkSpace->tooltip("Workspace for exporting fusion robot files");
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
@@ -50,7 +50,7 @@ bool EUI::CreateWorkspace(){
         _ToolbarControls->addSeparator();
         _ToolbarControls->addCommand(_ExportCommandDef)->isPromoted(true);
         //_ToolbarControls->addSeparator();
-        //_WorkSpace->activate();
+        _WorkSpace->activate();
         _UI->messageBox("Adding workspace");
         return true;
     } catch (exception e) {
