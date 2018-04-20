@@ -95,7 +95,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CustomTypes.cpp" />
     <ClCompile Include="EUI.cpp" />
     <ClCompile Include="Exporter.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -112,7 +111,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CustomTypes.h" />
     <ClInclude Include="EUI.h" />
     <ClInclude Include="Exporter.h" />
   </ItemGroup>
