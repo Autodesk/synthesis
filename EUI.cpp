@@ -38,7 +38,9 @@ bool EUI::CreateWorkspace(){
         
         //(_UI->workspaces()->itemById("BXD:Synthesis").get() != NULL) ? (_WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "BXD:Synthesis", "Synthesis", "Resources")) : (_WorkSpace = _UI->workspaces()->itemById("BXD:Synthesis"));
         
-        _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "1001", "Synthesis", "Resources");
+        
+        //GUID = sha256(Synthesis:workspace) = 58D6985C9E7C0A2D731CC2141775F86F163FBA96CA871E8EC2840DF1FBEA2C0D
+        _WorkSpace = _UI->workspaces()->add(_APP->supportedProductTypes()[0], "58D6985C9E7C0A2D731CC2141775F86F163FBA96CA871E8EC2840DF1FBEA2C0D", "Synthesis", "Resources");
         
         _WorkSpace->tooltip("Workspace for exporting fusion robot files");
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
