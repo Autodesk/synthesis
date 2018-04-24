@@ -8,10 +8,11 @@ extern "C" XI_EXPORT bool run(const char* context)
 	app = Application::get();
 	if (!app)
 		return false;
-
-	e = new Exporter(app);
-
-	e->Test();
+    
+    if (!e){
+        e = new Exporter(app);
+        e->Test();
+    }
 
 	return true;
 }

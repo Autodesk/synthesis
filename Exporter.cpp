@@ -30,7 +30,7 @@ void Exporter::Test() {
 		doc->design()->activeComponent() = j->parentComponent();
 	}
 
-	//_ui->messageBox(a);
+	_ui->messageBox(a);
 }
 
 /*

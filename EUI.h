@@ -8,13 +8,15 @@
 
 #include "Exporter.h"
 
+#ifndef EUI_h
+#define EUI_h
+
 using namespace adsk::core;
 using namespace adsk::fusion;
 using namespace adsk::cam;
 using namespace std;
 
-#ifndef EUI_h
-#define EUI_h
+
 namespace Synthesis{
     
     class EUI{
