@@ -40,7 +40,7 @@ bool EUI::CreateWorkspace(){
         
         
         //GUID = sha256(Synthesis:workspace) = 58D6985C9E7C0A2D731CC2141775F86F163FBA96CA871E8EC2840DF1FBEA2C0D
-        _WorkSpace = _UI->workspaces()->add(_APP->activeProduct()->productType(), "10001", "Synthesis", "Resources");
+        _WorkSpace = _UI->workspaces()->add(_APP->activeProduct()->productType(), "10001", "Synthesis", "./Resources");
         
         _WorkSpace->tooltip("Workspace for exporting fusion robot files");
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
@@ -56,7 +56,9 @@ bool EUI::CreateWorkspace(){
         _UI->messageBox("Adding workspace");
         return true;
     } catch (exception e) {
-        _UI->messageBox(e.what());
+		string * lastError;
+		int error = _APP->getLastError(lastError);
+        _UI->messageBox(*lastError);
         return false;
     }
 }
