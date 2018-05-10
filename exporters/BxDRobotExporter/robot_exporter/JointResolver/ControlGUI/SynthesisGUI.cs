@@ -619,7 +619,7 @@ public partial class SynthesisGUI : Form
 
     private void HelpTutorials_Click(object sender, EventArgs e)
     {
-        Process.Start("http://bxd.autodesk.com/tutorial-robot.html");
+        Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
     }
 
     #endregion

@@ -586,7 +586,7 @@ namespace BxDRobotExporter
         /// </summary>
         private void HelpButton_OnExecute(NameValueMap Context)
         {
-            Process.Start("http://bxd.autodesk.com/tutorial-robot.html");
+            Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
         }
 
         /// <summary>
@@ -596,7 +596,7 @@ namespace BxDRobotExporter
         /// <param name="HandlingCode"></param>
         private void _OnHelp(NameValueMap Context, out HandlingCodeEnum HandlingCode)
         {
-            Process.Start("http://bxd.autodesk.com/tutorial-robot.html");
+            Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
             HandlingCode = HandlingCodeEnum.kEventHandled;
         } 
         #endregion
