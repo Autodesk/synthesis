@@ -57,7 +57,7 @@ bool EUI::CreateWorkspace(){
         return true;
     } catch (exception e) {
 		string * lastError;
-		int error = _APP->getLastError(lastError);
+		_APP->getLastError(lastError);
         _UI->messageBox(*lastError);
         return false;
     }
@@ -65,7 +65,13 @@ bool EUI::CreateWorkspace(){
 
 void EUI::configButtonWheel(){
     _AddWheelCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config");
-    _AddWheelCommandDef->resourceFolder("Resources");
+    _AddWheelCommandDef->resourceFolder("./Resources");
+    
+    Ptr<CommandEvent> executeEvent = _AddWheelCommandDef->();
+    OnExecuteEventHandler * _handler;
+    
+    //executeEvent->add(_handler);
+    _AddWheelCommandDef->execute();
 }
 
 void EUI::configButtonExporter(){
@@ -73,13 +79,17 @@ void EUI::configButtonExporter(){
     _ExportCommandDef->resourceFolder("Resources");
 }
 
-void Synthesis::CommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs){
-    //code react
+void Synthesis::OnExecuteEventHandler::notify(const Ptr<CommandEventArgs> &eventArgs){
+    if (eventArgs)
+    {
+        // Get the command that was created.
+        Ptr<Command> command = eventArgs->command();
+        if (command)
+        {
+            Exporter().Test();
+            //Do something about the command that was called
+        }
+    }
 }
-
-void Synthesis::CommandEventHandler::notify(const Ptr<CommandEventArgs> &eventArgs){
-    //code react
-}
-
 
 
