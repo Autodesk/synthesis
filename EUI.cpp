@@ -66,8 +66,17 @@ bool EUI::CreateWorkspace(){
 void EUI::configButtonWheel(){
     _AddWheelCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config");
     _AddWheelCommandDef->resourceFolder("./Resources");
+
+	Ptr<CommandCreatedEvent> commandCreatedEvent = _AddWheelCommandDef->commandCreated();
+	if (!commandCreatedEvent)
+		return;	//fix this
+	MyCommandCreatedEventHandler _commandCreatedEvent;
+	_commandCreatedEvent._app = _APP;	//copy references
+	bool isOk = commandCreatedEvent->add(&_commandCreatedEvent);
+	if (!isOk)
+		return;
     
-    Ptr<CommandEvent> executeEvent = _AddWheelCommandDef->();
+    //Ptr<CommandEvent> executeEvent = _AddWheelCommandDef->();
     OnExecuteEventHandler * _handler;
     
     //executeEvent->add(_handler);

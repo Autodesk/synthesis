@@ -7,6 +7,7 @@
 //
 
 #include "Exporter.h"
+#include "CustomHandlers.h"
 
 #ifndef EUI_h
 #define EUI_h
