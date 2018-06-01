@@ -42,13 +42,14 @@ namespace Synthesis{
         
     };
 
-    class CommandCreatedEventHandler : public adsk::core::CommandCreatedEventHandler{
-    public:
-        void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
-    private:
-    };
-
     class CommandEventHandler : public adsk::core::CommandEventHandler{
+    public:
+        void notify(const Ptr<CommandEventArgs>& eventArgs) override;
+    private:
+        //OnExecuteEventHander onExecuteHandler;
+    };
+    
+    class OnExecuteEventHandler : public adsk::core::CommandEventHandler{
     public:
         void notify(const Ptr<CommandEventArgs>& eventArgs) override;
     };

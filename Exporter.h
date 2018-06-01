@@ -15,21 +15,23 @@ using namespace adsk::fusion;
 using namespace adsk::cam;
 using namespace std;
 
+namespace Synthesis {
 
-class Exporter {
-public:
-	Exporter(Ptr<Application>);
-	Exporter();
-	~Exporter();
+    class Exporter {
+    public:
+        Exporter(Ptr<Application>);
+        Exporter();
+        ~Exporter();
 
-	void ButtonListener();
-	void Test();
+        void ButtonListener();
+        void Test();
 
-	Ptr<CommandDefinition> expCommand();
+        Ptr<CommandDefinition> expCommand();
 
-private:
-	Ptr<Application> _app;
-	Ptr<UserInterface> _ui;
-    
-    bool StartUI();
-};
+    private:
+        Ptr<Application> _app;
+        Ptr<UserInterface> _ui;
+        
+        bool StartUI();
+    };
+}

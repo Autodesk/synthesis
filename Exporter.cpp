@@ -1,7 +1,11 @@
 #include "Exporter.h"
 
+using namespace Synthesis;
+
 Exporter::Exporter(Ptr<Application> app) : _app(app) {
 	_ui = _app->userInterface();
+    
+    Synthesis::EUI* _eui = new Synthesis::EUI(_ui, _app);
 }
 
 Exporter::Exporter() {
@@ -18,8 +22,6 @@ void Exporter::Test() {
 		//return false;
 
 	_ui->messageBox("Started Exporting");
-    
-    Synthesis::EUI* _eui = new Synthesis::EUI(_ui, _app);
 
 	Ptr<FusionDocument> doc = _app->activeDocument();
 

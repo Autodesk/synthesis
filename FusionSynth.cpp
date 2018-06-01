@@ -1,7 +1,7 @@
 #include "Exporter.h"
 
 Ptr<Application> app;
-Exporter * e;
+Synthesis::Exporter * e;
 
 extern "C" XI_EXPORT bool run(const char* context)
 {
@@ -10,8 +10,7 @@ extern "C" XI_EXPORT bool run(const char* context)
 		return false;
     
     if (!e){
-        e = new Exporter(app);
-        e->Test();
+        e = new Synthesis::Exporter(app);
     }
 
 	return true;
@@ -20,6 +19,9 @@ extern "C" XI_EXPORT bool run(const char* context)
 extern "C" XI_EXPORT bool stop(const char* context)
 {
 	delete(e);
+
+	//DLL needs to be unloaded.
+	//make sure the items that are createdin the UI get destroyed on call to stop the addin.
 
 	return true;
 }
