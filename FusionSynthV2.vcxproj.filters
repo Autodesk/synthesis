@@ -164,5 +164,16 @@
     <Filter Include="h\spdlog">
       <UniqueIdentifier>{22a7ff5a-beca-45ff-aab4-4edb8fb0cd09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="C#Libs">
+      <UniqueIdentifier>{d11ea0c3-b8c1-48d6-b35b-ef845997c027}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DebugSimulatorFileIO\SimulatorAPI.dll">
+      <Filter>C#Libs</Filter>
+    </None>
+    <None Include="DebugSimulatorFileIO\SimulatorAPI.pdb">
+      <Filter>C#Libs</Filter>
+    </None>
   </ItemGroup>
 </Project>

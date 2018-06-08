@@ -16,12 +16,15 @@ int Exporter::exportCommon() {
 
 	string a = "";
 
+	Ptr<TriangleMeshCalculator> calc;
+
 	for (Ptr<Component> comp : doc->design()->allComponents()) {
 		a += "name : " + comp->name() + "\n";
-		a += "Total bodies in component : " + (int)comp->bRepBodies()->count();
 		for (Ptr<BRepBody> m_bod : comp->bRepBodies()) {
-			a += "\t";
-			Ptr<TriangleMesh> mesh = m_bod->meshManager()->createMeshCalculator()->calculate();
+
+			calc = m_bod->meshManager()->createMeshCalculator();
+			calc->setQuality(LowQualityTriangleMesh);
+			Ptr<TriangleMesh> mesh = calc->calculate();
 			a += "Mesh index : " + mesh->nodeCount();
 			/*a += "Volume : " + m_bod->physicalProperties()->volume;
 			a += "Material : " + m_bod->physicalProperties.material;
@@ -31,7 +34,7 @@ int Exporter::exportCommon() {
 		a += "\n";
 	}
 
-	//_ui->messageBox(a);
+	_ui->messageBox(a);
 	//writeToFile(a, info);
 
 	return 0;
