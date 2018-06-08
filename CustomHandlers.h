@@ -7,19 +7,20 @@ using namespace adsk::fusion;
 using namespace adsk::cam;
 using namespace std;
 
-class EUI_Handlers {
-public:
-	EUI_Handlers(Ptr<Application>);
-	~EUI_Handlers();
+namespace Synthesis {
+	class ExportCommandCreatedEventHandler : public adsk::core::CommandCreatedEventHandler {
+	public:
+		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+		Ptr<Application> _APP;
+	private:
 
-	MyCommandCreatedEventHandler _commandCreated;
-private:
-};
+	};
 
-class MyCommandCreatedEventHandler : public adsk::core::CommandCreatedEventHandler {
-public:
-	void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
-	Ptr<Application> _app;
-private:
+	class ExportWheelCommandCreatedEventHandler : public adsk::core::CommandCreatedEventHandler {
+	public:
+		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+		Ptr<Application> _APP;
+	private:
 
-};
+	};
+}
