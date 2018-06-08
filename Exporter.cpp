@@ -16,21 +16,50 @@ int Exporter::exportCommon() {
 
 	string a = "";
 
+	
+
+	BXDAMesh outMesh;
+	//outMesh.meshes[0]->norms();
+
+	int i, v, n;
+
 	Ptr<TriangleMeshCalculator> calc;
 
 	for (Ptr<Component> comp : doc->design()->allComponents()) {
 		a += "name : " + comp->name() + "\n";
+		i = 0;
 		for (Ptr<BRepBody> m_bod : comp->bRepBodies()) {
-
+			v = 0;
+			n = 0;
 			calc = m_bod->meshManager()->createMeshCalculator();
 			calc->setQuality(LowQualityTriangleMesh);
 			Ptr<TriangleMesh> mesh = calc->calculate();
+			for (Ptr<Vector3D> ve : mesh->normalVectors()) {
+				outMesh.meshes[i]->norms[v+0] = ve->x();
+				outMesh.meshes[i]->norms[v+1] = ve->y();
+				outMesh.meshes[i]->norms[v+2] = ve->z();
+				v++;
+			}
+
+			for (Ptr<Vector3D> no : mesh->nodeCoordinates()) {
+				outMesh.meshes[i]->verts[n + 0] = no->x();
+				outMesh.meshes[i]->verts[n + 1] = no->y();
+				outMesh.meshes[i]->verts[n + 2] = no->z();
+				n++;
+			}
+
+			//ADD SECITON FOR outMesh.meshes[i]->surfaces
+
+			//outMesh.meshes[i]->surfaces[0].
 			//a += "Mesh index : " + mesh->nodeCount();
 			size_t count = mesh->nodeCount();
+			i++;
 		}
 
 		a += "\n";
 	}
+
+
 
 	_ui->messageBox(a);
 	//writeToFile(a, info);
