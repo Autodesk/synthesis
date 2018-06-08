@@ -50,7 +50,6 @@ int Exporter::exportWheel() {
 	string a = "";
 
 
-
 	for (Ptr<Component> comp : doc->design()->allComponents()) {
 		a += "Component : " + comp->name() + "\n";
 		for (Ptr<Joint> j : comp->joints()) {
