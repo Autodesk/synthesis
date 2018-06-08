@@ -1,5 +1,4 @@
 #pragma once
-#include <spdlog.h>
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
 #include <CAM/CAMAll.h>
@@ -11,11 +10,12 @@
 #include <Core/UserInterface/CommandEventArgs.h>
 #include "EUI.h"
 
+#using "SimulatorAPI.dll"
+
 using namespace adsk::core;
 using namespace adsk::fusion;
 using namespace adsk::cam;
 using namespace std;
-using namespace spdlog;
 
 
 
