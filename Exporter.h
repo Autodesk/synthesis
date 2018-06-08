@@ -15,6 +15,7 @@ using namespace adsk::core;
 using namespace adsk::fusion;
 using namespace adsk::cam;
 using namespace std;
+using namespace spdlog;
 
 
 
@@ -35,5 +36,7 @@ namespace Synthesis {
     private:
         Ptr<Application> _app;
         Ptr<UserInterface> _ui;
+
+		Ptr<logger> outFile;
     };
 }

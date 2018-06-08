@@ -4,6 +4,7 @@ using namespace Synthesis;
 
 Exporter::Exporter(Ptr<Application> app) : _app(app) {
 	_ui = _app->userInterface();
+	//outFile = spdlog::stdout_color_mt("console");
 }
 
 Exporter::~Exporter() {
