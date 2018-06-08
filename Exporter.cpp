@@ -25,10 +25,8 @@ int Exporter::exportCommon() {
 			calc = m_bod->meshManager()->createMeshCalculator();
 			calc->setQuality(LowQualityTriangleMesh);
 			Ptr<TriangleMesh> mesh = calc->calculate();
-			a += "Mesh index : " + mesh->nodeCount();
-			/*a += "Volume : " + m_bod->physicalProperties()->volume;
-			a += "Material : " + m_bod->physicalProperties.material;
-			a += "Mass : " + m_bod->physicalProperties()->mass;*/
+			//a += "Mesh index : " + mesh->nodeCount();
+			size_t count = mesh->nodeCount();
 		}
 
 		a += "\n";
