@@ -6,12 +6,8 @@ Exporter::Exporter(Ptr<Application> app) : _app(app) {
 	_ui = _app->userInterface();
 }
 
-Exporter::Exporter() {
-
-}
-
 Exporter::~Exporter() {
-
+	
 }
 
 int Exporter::exportCommon() {
@@ -34,7 +30,8 @@ int Exporter::exportCommon() {
 		a += "\n";
 	}
 
-	_ui->messageBox(a);
+	//_ui->messageBox(a);
+	//writeToFile(a, info);
 
 	return 0;
 }
@@ -61,6 +58,25 @@ int Exporter::exportWheel() {
 	_ui->messageBox(a);
 
 	return 0;
+}
+
+void Exporter::writeToFile(string a, logLevels lvl) {
+
+	switch (lvl)
+	{
+	case Synthesis::info:
+		//console->info(a);
+		break;
+	case Synthesis::warn:
+		//console->warn(a);
+		break;
+	case Synthesis::critikal:
+		//console->critical(a);
+		break;
+	default:
+		//console->info(a);
+		break;
+	}
 }
 
 /*

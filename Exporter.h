@@ -1,4 +1,5 @@
 #pragma once
+#include <spdlog.h>
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
 #include <CAM/CAMAll.h>
@@ -15,20 +16,24 @@ using namespace adsk::fusion;
 using namespace adsk::cam;
 using namespace std;
 
+
+
 namespace Synthesis {
+
+	enum logLevels { info, warn, critikal };
 
     class Exporter {
     public:
         Exporter(Ptr<Application>);
-        Exporter();
         ~Exporter();
 
 		int exportCommon();
         int exportWheel();
 
+		void writeToFile(string a, logLevels lvl); 
+
     private:
         Ptr<Application> _app;
         Ptr<UserInterface> _ui;
-        
     };
 }
