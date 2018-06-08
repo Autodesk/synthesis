@@ -82,7 +82,7 @@ void EUI::configButtonExporter(){
     _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddExportButtonDefinition", "Export", "This will start the exporting process which will take approximately 5-10 minutes");
     _ExportCommandDef->resourceFolder("Resources");
 
-	Ptr<CommandCreatedEvent> commandCreatedEvent = _AddWheelCommandDef->commandCreated();
+	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDef->commandCreated();
 	if (!commandCreatedEvent)
 		return;	//fix this
 	ExportWheelCommandCreatedEventHandler * _commandCreatedEvent = new ExportWheelCommandCreatedEventHandler;
