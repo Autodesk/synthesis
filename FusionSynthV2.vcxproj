@@ -98,6 +98,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="spdlog\include\spdlog\fmt\bundled\format.cc" />
+    <ClCompile Include="spdlog\include\spdlog\fmt\bundled\ostream.cc" />
+    <ClCompile Include="spdlog\include\spdlog\fmt\bundled\posix.cc" />
+    <ClCompile Include="spdlog\include\spdlog\fmt\bundled\printf.cc" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="FusionSynthV2.manifest">
@@ -109,6 +113,44 @@
     <ClInclude Include="CustomHandlers.h" />
     <ClInclude Include="EUI.h" />
     <ClInclude Include="Exporter.h" />
+    <ClInclude Include="spdlog\include\spdlog\async_logger.h" />
+    <ClInclude Include="spdlog\include\spdlog\common.h" />
+    <ClInclude Include="spdlog\include\spdlog\contrib\sinks\step_file_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\async_logger_impl.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\async_log_helper.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\file_helper.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\logger_impl.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\log_msg.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\mpmc_blocking_q.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\null_mutex.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\os.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\pattern_formatter_impl.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\registry.h" />
+    <ClInclude Include="spdlog\include\spdlog\details\spdlog_impl.h" />
+    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\format.h" />
+    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\ostream.h" />
+    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\posix.h" />
+    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\printf.h" />
+    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\time.h" />
+    <ClInclude Include="spdlog\include\spdlog\fmt\fmt.h" />
+    <ClInclude Include="spdlog\include\spdlog\fmt\ostr.h" />
+    <ClInclude Include="spdlog\include\spdlog\formatter.h" />
+    <ClInclude Include="spdlog\include\spdlog\logger.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\android_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\ansicolor_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\base_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\dist_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\file_sinks.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\msvc_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\null_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\ostream_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\stdout_sinks.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\syslog_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\wincolor_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\sinks\windebug_sink.h" />
+    <ClInclude Include="spdlog\include\spdlog\spdlog.h" />
+    <ClInclude Include="spdlog\include\spdlog\tweakme.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
