@@ -23,15 +23,12 @@ namespace Synthesis {
         Exporter();
         ~Exporter();
 
-        void ButtonListener();
-        void Test();
-
-        Ptr<CommandDefinition> expCommand();
+		int exportCommon();
+        int exportWheel();
 
     private:
         Ptr<Application> _app;
         Ptr<UserInterface> _ui;
         
-        bool StartUI();
     };
 }

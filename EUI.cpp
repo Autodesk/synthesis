@@ -16,7 +16,9 @@ EUI::EUI(){
     
 }
 
-EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> APP) : _UI(UI) , _APP(APP){
+EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> APP){
+	_UI = UI;
+	_APP = APP;
     CreateWorkspace();
 };
 
@@ -56,9 +58,8 @@ bool EUI::CreateWorkspace(){
         _UI->messageBox("Adding workspace");
         return true;
     } catch (exception e) {
-		string * lastError;
-		_APP->getLastError(lastError);
-        _UI->messageBox(*lastError);
+		//string * lastError;
+        //_UI->messageBox(*lastError);
         return false;
     }
 }
@@ -70,35 +71,25 @@ void EUI::configButtonWheel(){
 	Ptr<CommandCreatedEvent> commandCreatedEvent = _AddWheelCommandDef->commandCreated();
 	if (!commandCreatedEvent)
 		return;	//fix this
-	MyCommandCreatedEventHandler _commandCreatedEvent;
-	_commandCreatedEvent._app = _APP;	//copy references
-	bool isOk = commandCreatedEvent->add(&_commandCreatedEvent);
+	ExportCommandCreatedEventHandler * _commandCreatedEvent = new ExportCommandCreatedEventHandler;
+	_commandCreatedEvent->_APP = _APP;	//copy references
+	bool isOk = commandCreatedEvent->add(_commandCreatedEvent);
 	if (!isOk)
 		return;
-    
-    //Ptr<CommandEvent> executeEvent = _AddWheelCommandDef->();
-    OnExecuteEventHandler * _handler;
-    
-    //executeEvent->add(_handler);
-    _AddWheelCommandDef->execute();
 }
 
 void EUI::configButtonExporter(){
     _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddExportButtonDefinition", "Export", "This will start the exporting process which will take approximately 5-10 minutes");
     _ExportCommandDef->resourceFolder("Resources");
-}
 
-void Synthesis::OnExecuteEventHandler::notify(const Ptr<CommandEventArgs> &eventArgs){
-    if (eventArgs)
-    {
-        // Get the command that was created.
-        Ptr<Command> command = eventArgs->command();
-        if (command)
-        {
-            Exporter().Test();
-            //Do something about the command that was called
-        }
-    }
+	Ptr<CommandCreatedEvent> commandCreatedEvent = _AddWheelCommandDef->commandCreated();
+	if (!commandCreatedEvent)
+		return;	//fix this
+	ExportWheelCommandCreatedEventHandler * _commandCreatedEvent = new ExportWheelCommandCreatedEventHandler;
+	_commandCreatedEvent->_APP = _APP;	//copy references
+	bool isOk = commandCreatedEvent->add(_commandCreatedEvent);
+	if (!isOk)
+		return;
 }
 
 

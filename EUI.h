@@ -5,7 +5,7 @@
 //  Created by Madvisitor on 4/16/18.
 //  Copyright © 2018 Autodesk. All rights reserved. // How did they even generate this wtf
 //
-
+#pragma once
 #include "Exporter.h"
 #include "CustomHandlers.h"
 
@@ -41,18 +41,6 @@ namespace Synthesis{
         void configButtonExporter();
         bool CreateWorkspace();
         
-    };
-
-    class CommandEventHandler : public adsk::core::CommandEventHandler{
-    public:
-        void notify(const Ptr<CommandEventArgs>& eventArgs) override;
-    private:
-        //OnExecuteEventHander onExecuteHandler;
-    };
-    
-    class OnExecuteEventHandler : public adsk::core::CommandEventHandler{
-    public:
-        void notify(const Ptr<CommandEventArgs>& eventArgs) override;
     };
 }
 

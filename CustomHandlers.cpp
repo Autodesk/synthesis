@@ -1,16 +1,20 @@
 #include "CustomHandlers.h"
 
-EUI_Handlers::EUI_Handlers(Ptr<Application> _app) {
-	//_commandCreated = new MyCommandCreatedEventHandler();
+using namespace Synthesis;
 
-}
-
-EUI_Handlers::~EUI_Handlers() {
-
-}
-
-void MyCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs) {
+void ExportCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs) {
 	// Code to react to the event.
-	_app->userInterface.messageBox("In MyCommandCreatedEventHandler event handler.");
+	//_app->userInterface.messageBox("test");
+	//_UI->messageBox("Test Export");
+	Exporter * e = new Exporter(_APP);
+	e->exportCommon();
+}
+
+void ExportWheelCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs) {
+	// Code to react to the event.
+	//_app->userInterface.messageBox("test");
+	//_UI->messageBox("Test Export");
+	Exporter * e = new Exporter(_APP);
+	e->exportWheel();
 }
 
