@@ -36,7 +36,5 @@ namespace Synthesis {
     private:
         Ptr<Application> _app;
         Ptr<UserInterface> _ui;
-
-		Ptr<logger> outFile;
     };
 }

@@ -153,6 +153,10 @@
     <ClInclude Include="spdlog\include\spdlog\spdlog.h" />
     <ClInclude Include="spdlog\include\spdlog\tweakme.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="DebugSimulatorFileIO\SimulatorAPI.dll" />
+    <None Include="DebugSimulatorFileIO\SimulatorAPI.pdb" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
