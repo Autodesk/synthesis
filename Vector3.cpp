@@ -26,6 +26,12 @@ Vector3::Vector3(Vector3* v) {
 	this->x = v->x;
 	this->y = v->y;
 	this->z = v->z;
-	v->prev->next = this;
-	v->next->prev = this;
+
+	if (v->prev) {
+		v->prev->next = this;
+	}
+	
+	if (v->next) {
+		v->next->prev = this;
+	}
 }
