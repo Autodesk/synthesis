@@ -1,4 +1,4 @@
-
+#include "Physics.h"
 
 /*
 public BXDVector3 centerOfMass = new BXDVector3();
@@ -24,3 +24,15 @@ public void ReadBinaryData(BinaryReader reader)
 	mass = reader.ReadSingle();
 }
 */
+
+Physics::Physics() {
+
+}
+
+Physics::Physics(Vector3 * v) {
+	COM = new Vector3(v);
+}
+
+Physics::~Physics() {
+
+}
