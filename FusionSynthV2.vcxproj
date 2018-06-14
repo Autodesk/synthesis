@@ -64,7 +64,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(APPDATA)/Autodesk/Autodesk Fusion 360/API/CPP/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>core.lib;fusion.lib;cam.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>core.lib;fusion.lib;cam.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /R /Y "$(SolutionDir)$(Configuration)\$(ProjectName).dll" "$(SolutionDir)"</Command>
@@ -105,6 +105,7 @@
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Submesh.cpp" />
     <ClCompile Include="Surface.cpp" />
+    <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="FusionSynthV2.manifest">
@@ -121,6 +122,7 @@
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Submesh.h" />
     <ClInclude Include="Surface.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DebugSimulatorFileIO\SimulatorAPI.dll" />

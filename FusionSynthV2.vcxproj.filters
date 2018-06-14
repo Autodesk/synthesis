@@ -28,6 +28,9 @@
     <ClCompile Include="Physics.cpp">
       <Filter>src\Data</Filter>
     </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomHandlers.h">
@@ -52,6 +55,9 @@
       <Filter>h\Data</Filter>
     </ClInclude>
     <ClInclude Include="Surface.h">
+      <Filter>h\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
       <Filter>h\Data</Filter>
     </ClInclude>
   </ItemGroup>

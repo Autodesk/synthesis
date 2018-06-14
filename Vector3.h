@@ -1,5 +1,8 @@
 #pragma once
 
+#define EPSILON 1.0E-6F;					//This is a tool that will come in handy later
+
+//Data Layer
 class Vector3 {
 public:
 	Vector3();
@@ -8,6 +11,8 @@ public:
 	~Vector3();
 
 	bool add(float, float, float);			//Add a new vector to the dynamic list
+
+	//add operators for multiply and add and write
 private:
 	Vector3 * next;
 	Vector3 * prev;
