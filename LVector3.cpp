@@ -1,5 +1,7 @@
 #include "LVector3.h"
 
+using namespace BXDATA;
+
 #define NULL 0
 
 LVector3::LVector3() {

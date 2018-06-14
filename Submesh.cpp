@@ -1,4 +1,5 @@
 #include "Submesh.h"
+using namespace BXDATA;
 
 Submesh::Submesh() {
 

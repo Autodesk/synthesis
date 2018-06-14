@@ -1,5 +1,7 @@
 #include "Surface.h"
 
+using namespace BXDATA;
+
 Surface::Surface() {
 	HasColor = 0;
 	color = 0xFFFFFFFF;

@@ -77,22 +77,11 @@
     <Filter Include="h">
       <UniqueIdentifier>{58596907-4b28-4772-a8b2-bd9bfffea86d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="C#Libs">
-      <UniqueIdentifier>{d11ea0c3-b8c1-48d6-b35b-ef845997c027}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Data">
       <UniqueIdentifier>{bdc7c325-cdbf-496d-bbec-8b90c3b770f7}</UniqueIdentifier>
     </Filter>
     <Filter Include="h\Data">
       <UniqueIdentifier>{a4512d90-3aaa-4ae3-8e19-88bceca3869d}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DebugSimulatorFileIO\SimulatorAPI.dll">
-      <Filter>C#Libs</Filter>
-    </None>
-    <None Include="DebugSimulatorFileIO\SimulatorAPI.pdb">
-      <Filter>C#Libs</Filter>
-    </None>
   </ItemGroup>
 </Project>

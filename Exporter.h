@@ -9,6 +9,7 @@
 #include <Core/UserInterface/CommandEventHandler.h>
 #include <Core/UserInterface/CommandEventArgs.h>
 #include "EUI.h"
+#include "BXDA.h"
 
 //#using "SimulatorAPI.dll"
 
