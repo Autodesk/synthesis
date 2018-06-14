@@ -1,18 +1,22 @@
 #pragma once
-#include "Vector3.h"
+#include "LVector3.h"
 #include "Surface.h"
+#include <list>
+
+using namespace std;
 
 class Submesh {
 public:
 	Submesh();
 	~Submesh();
 
-	Submesh(Vector3*, Vector3*);
+	//Constructor for the whole mesh
+	Submesh(LVector3, LVector3, Surface*);
 
 ;private:
-	Vector3 * verts;
-	Vector3 * norms;
+	LVector3 * verts;
+	LVector3 * norms;
 
-	Surface * surfaces;
+	list <Surface*> surfaces;
 
 };

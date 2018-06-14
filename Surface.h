@@ -14,7 +14,7 @@ private:
 	//HEX color
 	unsigned int color;
 
-	//
+	//Random stuff
 	float transparency;
 	float translucency;
 	float specular;
