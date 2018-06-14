@@ -22,6 +22,7 @@ int Exporter::exportCommon() {
 	//outMesh.meshes[0]->norms();
 
 
+
 	int i, v, n;
 
 	Ptr<TriangleMeshCalculator> calc;

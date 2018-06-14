@@ -1,5 +1,7 @@
 #include "Vector3.h"
 
+using namespace BXDATA;
+
 #define NULL 0
 
 //default constructor

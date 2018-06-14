@@ -1,5 +1,7 @@
 #include "Physics.h"
 
+using namespace BXDATA;
+
 /*
 public BXDVector3 centerOfMass = new BXDVector3();
 public float mass;

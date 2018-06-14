@@ -126,10 +126,6 @@
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="DebugSimulatorFileIO\SimulatorAPI.dll" />
-    <None Include="DebugSimulatorFileIO\SimulatorAPI.pdb" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
