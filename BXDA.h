@@ -5,35 +5,38 @@
 
 using namespace std;
 
-namespace BXDATA {
+/*
 #ifdef WIN32
 #include <Rpc.h>
 #else
 #include <uuid/uuid.h>
 #endif
 
-	//credit for this platform independent generation goes to https://stackoverflow.com/users/196807/ubik
-	std::string newUUID()
-	{
+//credit for this platform independent generation goes to https://stackoverflow.com/users/196807/ubik
+std::string newUUID()
+{
 #ifdef WIN32
-		UUID uuid;
-		UuidCreate(&uuid);
+	UUID uuid;
+	UuidCreate(&uuid);
 
-		unsigned char * str;
-		UuidToStringA(&uuid, &str);
+	unsigned char * str;
+	UuidToStringA(&uuid, &str);
 
-		std::string s((char*)str);
+	std::string s((char*)str);
 
-		RpcStringFreeA(&str);
+	RpcStringFreeA(&str);
 #else
-		uuid_t uuid;
-		uuid_generate_random(uuid);
-		char s[37];
-		uuid_unparse(uuid, s);
+	uuid_t uuid;
+	uuid_generate_random(uuid);
+	char s[37];
+	uuid_unparse(uuid, s);
 #endif
-		return s;
-	}
+	return s;
+}
+*/
 
+
+namespace BXDATA {
 	class BXDA {
 	public:
 		BXDA();
