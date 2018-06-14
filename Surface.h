@@ -1,9 +1,13 @@
 #pragma once
-
+#include "LVector3.h"
 
 class Surface {
 public:
 	Surface();
+
+	Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular, LVector3* lv);
+	
+	Surface(Surface*);
 	~Surface();			//For unloading the array JIC
 
 
@@ -20,5 +24,5 @@ private:
 	float specular;
 
 	//Inidicies ?
-	int * indicies;
+	LVector3* facet;
 };

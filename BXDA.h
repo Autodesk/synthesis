@@ -38,10 +38,12 @@ public:
 	BXDA();
 	~BXDA();
 
-private:
+
 	unsigned int Version;		//Version is just 1;
-	string GUID = newUUID();	//GUID
-	Physics physics;			//physical properties
+	string GUID;				//GUID
+	Physics* physics;			//physical properties
 	Submesh* meshes;			//visual mesh - contains surface
 	Submesh* colliders;			//collider mesh - contains surface
+
+private:
 };
