@@ -15,7 +15,6 @@ public:
 
 private:
 	Vector3 * Head;
-	Vector3 * Last;
 
 	void add(Vector3*, Vector3*);
 };
