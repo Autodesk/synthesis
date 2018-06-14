@@ -11,12 +11,13 @@ public:
 	~Submesh();
 
 	//Constructor for the whole mesh
-	Submesh(LVector3, LVector3, Surface*);
+	Submesh(LVector3*, LVector3*);
 
-;private:
-	LVector3 * verts;
-	LVector3 * norms;
+	void addSurface(Surface*);
 
-	list <Surface*> surfaces;
 
+	LVector3 * verts;				//Should be private
+	LVector3 * norms;				//Should be private
+
+	list <Surface*> surfaces;		//Should be private
 };
