@@ -27,11 +27,3 @@ Vector3::Vector3(Vector3* v) {
 	v->prev->next = this;
 	v->next->prev = this;
 }
-
-void Vector3::setNext(Vector3* v) {
-	this->next = v;
-}
-
-void Vector3::setPrev(Vector3* v) {
-	this->prev = v;
-}

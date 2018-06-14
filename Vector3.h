@@ -14,13 +14,13 @@ public:
 	//Add * operator
 	//Add >> operator
 
-	void setNext(Vector3*);
-	void setPrev(Vector3*);
 
-private:
 	Vector3 * next;
 	Vector3 * prev;
 	float x;								//X coordinate for the vector
 	float y;								//Y coordinate 
 	float z;								//Z coordiante
+
+private:
+
 };
