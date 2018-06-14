@@ -9,7 +9,9 @@ namespace BXDATA {
 		LVector3(const LVector3*);
 		~LVector3();
 
-		LVector3* operator+(const Vector3*) const;		//Add a Vector3
+		LVector3* operator+(Vector3&) const;		//Add a Vector3 //I somehow really fuxked this up
+
+		void add(Vector3*);
 
 		//add [] operator
 		//add >> operator
