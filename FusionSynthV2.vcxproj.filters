@@ -16,6 +16,18 @@
     <ClCompile Include="BinaryRWObject.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="BXDA.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Submesh.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomHandlers.h">
@@ -30,6 +42,18 @@
     <ClInclude Include="BinaryRWObject.h">
       <Filter>h</Filter>
     </ClInclude>
+    <ClInclude Include="BXDA.h">
+      <Filter>h\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>h\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Submesh.h">
+      <Filter>h\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface.h">
+      <Filter>h\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="FusionSynthV2.manifest" />
@@ -43,6 +67,12 @@
     </Filter>
     <Filter Include="C#Libs">
       <UniqueIdentifier>{d11ea0c3-b8c1-48d6-b35b-ef845997c027}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Data">
+      <UniqueIdentifier>{bdc7c325-cdbf-496d-bbec-8b90c3b770f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h\Data">
+      <UniqueIdentifier>{a4512d90-3aaa-4ae3-8e19-88bceca3869d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
