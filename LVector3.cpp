@@ -33,13 +33,16 @@ void LVector3::add(Vector3* v) {
 	if (Head != NULL)
 		this->add(v, Head);
 	else
-		Head = v;
+		Head = new Vector3(v);
 }
 
 void LVector3::add(Vector3* v2, Vector3* tempHead) {
-	if (tempHead->next != NULL)
+	if (tempHead->next != NULL) {
 		return(add(v2, tempHead->next));
+	}
+	else {
 
-	tempHead->next = v2;
-	v2->prev = tempHead;
+		v2->prev = tempHead;
+		tempHead->next = new Vector3(v2);
+	}
 }
