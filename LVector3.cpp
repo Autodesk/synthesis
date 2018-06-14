@@ -3,7 +3,7 @@
 #define NULL 0
 
 LVector3::LVector3() {
-
+	this->Head = NULL;
 }
 
 LVector3::LVector3(const LVector3* v) {
@@ -21,15 +21,16 @@ LVector3* LVector3::operator+ (const Vector3* v) const {
 
 	if(Head != NULL)
 		a->add(v2, Head);
-
-	if (Head == NULL) {
+	else
 		a->Head = v2;
-	}
+
+	return a;
 }
 
-void LVector3::add(Vector3* v, Vector3* tempHead) {
+void LVector3::add(Vector3* v2, Vector3* tempHead) {
 	if (tempHead->next != NULL)
-		return(add(v, tempHead->next));
+		return(add(v2, tempHead->next));
 
-	tempHead->next = v;
+	tempHead->next = v2;
+	v2->prev = tempHead;
 }

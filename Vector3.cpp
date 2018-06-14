@@ -23,7 +23,7 @@ Vector3::Vector3(Vector3* v) {
 	this->prev = v->prev;
 	this->x = v->x;
 	this->y = v->y;
-	this->z - v->z;
+	this->z = v->z;
 	v->prev->next = this;
 	v->next->prev = this;
 }
