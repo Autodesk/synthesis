@@ -8,7 +8,7 @@ void ExportCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>
 	//_UI->messageBox("Test Export");
 	Exporter * e = new Exporter(_APP);
 	e->exportCommon();
-	e->~Exporter();
+	//e->~Exporter();
 }
 
 void ExportWheelCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs) {

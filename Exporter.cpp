@@ -15,11 +15,12 @@ int Exporter::exportCommon() {
 	Ptr<FusionDocument> doc = _app->activeDocument();
 
 	string a = "";
-
+	double* arry;
 	
 
-	BXDAMesh outMesh;
+	//BXDAMesh outMesh;
 	//outMesh.meshes[0]->norms();
+
 
 	int i, v, n;
 
@@ -35,16 +36,16 @@ int Exporter::exportCommon() {
 			calc->setQuality(LowQualityTriangleMesh);
 			Ptr<TriangleMesh> mesh = calc->calculate();
 			for (Ptr<Vector3D> ve : mesh->normalVectors()) {
-				outMesh.meshes[i]->norms[v+0] = ve->x();
-				outMesh.meshes[i]->norms[v+1] = ve->y();
-				outMesh.meshes[i]->norms[v+2] = ve->z();
+				//outMesh.meshes[i]->norms[v+0] = ve->x();
+				//outMesh.meshes[i]->norms[v+1] = ve->y();
+				//outMesh.meshes[i]->norms[v+2] = ve->z();
 				v++;
 			}
 
 			for (Ptr<Vector3D> no : mesh->nodeCoordinates()) {
-				outMesh.meshes[i]->verts[n + 0] = no->x();
-				outMesh.meshes[i]->verts[n + 1] = no->y();
-				outMesh.meshes[i]->verts[n + 2] = no->z();
+				//outMesh.meshes[i]->verts[n + 0] = no->x();
+				//outMesh.meshes[i]->verts[n + 1] = no->y();
+				//outMesh.meshes[i]->verts[n + 2] = no->z();
 				n++;
 			}
 
