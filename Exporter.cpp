@@ -58,7 +58,7 @@ int Exporter::exportCommon() {
 	}
 
 	binary->Write(bxda);
-	delete binary;
+	delete binary;					//Close the stream
 
 
 	//delete _temp;
