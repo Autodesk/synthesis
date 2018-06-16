@@ -10,6 +10,7 @@
 #include <Core/UserInterface/CommandEventArgs.h>
 #include "EUI.h"
 #include "BXDA.h"
+#include "BinaryRWObject.h"
 
 //#using "SimulatorAPI.dll"
 

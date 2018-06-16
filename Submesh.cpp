@@ -14,6 +14,12 @@ Submesh::Submesh(LVector3* _verts, LVector3* _norms){
 	norms = new LVector3(_norms);
 }
 
+Submesh::Submesh(LVector3* _verts, LVector3* _norms, list<Surface*> _surfaces) {
+	verts = new LVector3(_verts);
+	norms = new LVector3(_norms);
+	surfaces = _surfaces;
+}
+
 void Submesh::addSurface(Surface* s) {
 	surfaces.push_back(s);
 }

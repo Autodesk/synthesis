@@ -16,8 +16,12 @@ int Exporter::exportCommon() {
 
 	string a = "";
 
+	BXDA * bxda = new BXDA();
+
 	LVector3 * _verts = new LVector3();
 	LVector3 * _norms = new LVector3();
+
+	BinaryWriter * binary = new BinaryWriter("out.txt");
 
 	Vector3 * _temp = new Vector3();
 
@@ -46,10 +50,18 @@ int Exporter::exportCommon() {
 			}
 		}
 
+		if (_temp != 0) {
+			bxda->meshes.push_back(new Submesh(_verts, _norms));
+			bxda->colliders.push_back(new Submesh(_verts, _norms));
+		}
+
 		a += "\n";
 	}
 
+	binary->Write(bxda);
 
+
+	//delete _temp;
 	
 	_ui->messageBox(a);
 

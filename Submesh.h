@@ -11,7 +11,9 @@ namespace BXDATA {
 		~Submesh();
 
 		//Constructor for the whole mesh
-		Submesh(LVector3*, LVector3*);
+		Submesh(LVector3* verts, LVector3* norms);
+
+		Submesh(LVector3* verts, LVector3* norms, list<Surface*> surfaces);
 
 		void addSurface(Surface*);
 
