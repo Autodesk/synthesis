@@ -52,7 +52,6 @@ int Exporter::exportCommon() {
 
 	
 	_ui->messageBox(a);
-	//writeToFile(a, info);
 
 	return 0;
 }
