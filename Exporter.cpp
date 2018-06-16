@@ -24,6 +24,7 @@ int Exporter::exportCommon() {
 	BinaryWriter * binary = new BinaryWriter("out.txt");
 
 	Vector3 * _temp = new Vector3();
+	Vector3 * _temp2 = new Vector3();
 
 	Ptr<TriangleMeshCalculator> calc;
 
@@ -42,15 +43,13 @@ int Exporter::exportCommon() {
 				_verts->add(_temp);
 			}
 
-			for (Ptr<Vector3D> no : mesh->nodeCoordinates()) {
-				_temp->x = no->x();
-				_temp->y = no->y();
-				_temp->z = no->z();
+			for (Ptr<Point3D> no : mesh->nodeCoordinates()) {
+				_temp2->x = no->x();
+				_temp2->y = no->y();
+				_temp2->z = no->z();
 				_norms->add(_temp);
 			}
-		}
 
-		if (_temp != 0) {
 			bxda->meshes.push_back(new Submesh(_verts, _norms));
 			bxda->colliders.push_back(new Submesh(_verts, _norms));
 		}
@@ -59,6 +58,7 @@ int Exporter::exportCommon() {
 	}
 
 	binary->Write(bxda);
+	delete binary;
 
 
 	//delete _temp;
