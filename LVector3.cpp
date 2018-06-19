@@ -2,7 +2,7 @@
 
 using namespace BXDATA;
 
-#define NULL 0
+#define NULL nullptr
 
 LVector3::LVector3() {
 	this->Head = NULL;
@@ -45,4 +45,20 @@ void LVector3::add(Vector3* v2, Vector3* tempHead) {
 		v2->prev = tempHead;
 		tempHead->next = new Vector3(v2);
 	}
+}
+
+int LVector3::count() {
+	if (Head != NULL) {
+		return count(Head);
+	}
+	else {
+		return 0;
+	}
+}
+
+int LVector3::count(Vector3* n) {
+	if (n != nullptr)
+		return 1 + count(n->next);
+	else
+		return 0;
 }

@@ -1,5 +1,8 @@
 #pragma once
 #include "LVector3.h"
+#include <list>
+
+using namespace std;
 
 namespace BXDATA{
 	class Surface {
@@ -25,6 +28,8 @@ namespace BXDATA{
 		float specular;
 
 		//Inidicies ?
-		LVector3* facet;
+		//LVector3* facet;
+
+		list<double> facet;
 	};
 }

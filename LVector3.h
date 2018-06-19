@@ -13,6 +13,8 @@ namespace BXDATA {
 
 		void add(Vector3*);
 
+		int count();
+
 		//add [] operator
 		//add >> operator
 
@@ -20,5 +22,7 @@ namespace BXDATA {
 		Vector3 * Head;
 
 		void add(Vector3*, Vector3*);
+
+		int count(Vector3*);
 	};
 }
