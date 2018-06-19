@@ -14,7 +14,7 @@ Surface::Surface(bool _hasColor, unsigned int _color, float _transparency, float
 	transparency = _transparency;
 	translucency = _translucency;
 	specular = _specular;
-	facet = new LVector3(lv);
+	//facet = new LVector3(lv);
 }
 
 Surface::Surface(Surface* s) {
@@ -24,7 +24,7 @@ Surface::Surface(Surface* s) {
 	this->translucency = s->translucency;
 	this->transparency = s->transparency;
 	this->specular = s->specular;
-	this->facet = new LVector3(s->facet);						// May need a deep copy we will see
+	//this->facet = new LVector3(s->facet);						// May need a deep copy we will see
 }
 
 Surface::~Surface() {

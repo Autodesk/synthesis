@@ -18,13 +18,15 @@ int Exporter::exportCommon() {
 
 	BXDA * bxda = new BXDA();
 
-	LVector3 * _verts = new LVector3();
-	LVector3 * _norms = new LVector3();
+	//LVector3 * _verts = new LVector3();
+	//LVector3 * _norms = new LVector3();
 
 	BinaryWriter * binary = new BinaryWriter("out.txt");
 
-	Vector3 * _temp = new Vector3();
-	Vector3 * _temp2 = new Vector3();
+	//Vector3 * _temp = new Vector3();
+	//Vector3 * _temp2 = new Vector3();
+
+	Submesh * _tempS = new Submesh();
 
 	Ptr<TriangleMeshCalculator> calc;
 
@@ -37,21 +39,19 @@ int Exporter::exportCommon() {
 			Ptr<TriangleMesh> mesh = calc->calculate();
 
 			for (Ptr<Vector3D> ve : mesh->normalVectors()) {
-				_temp->x = ve->x();
-				_temp->y = ve->y();
-				_temp->z = ve->z();
-				_verts->add(_temp);
+				_tempS->verts.push_back(ve->x());
+				_tempS->verts.push_back(ve->y());
+				_tempS->verts.push_back(ve->z());
 			}
 
 			for (Ptr<Point3D> no : mesh->nodeCoordinates()) {
-				_temp2->x = no->x();
-				_temp2->y = no->y();
-				_temp2->z = no->z();
-				_norms->add(_temp);
+				_tempS->norms.push_back(no->x());
+				_tempS->norms.push_back(no->y());
+				_tempS->norms.push_back(no->z());
 			}
 
-			bxda->meshes.push_back(new Submesh(_verts, _norms));
-			bxda->colliders.push_back(new Submesh(_verts, _norms));
+			bxda->meshes.push_back(new Submesh(_tempS));
+			bxda->colliders.push_back(new Submesh(_tempS));
 		}
 
 		a += "\n";

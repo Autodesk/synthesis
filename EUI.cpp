@@ -55,7 +55,10 @@ bool EUI::CreateWorkspace(){
         _ToolbarControls->addCommand(_ExportCommandDef)->isPromoted(true);
         //_ToolbarControls->addSeparator();
         _WorkSpace->activate();
-        _UI->messageBox("Adding workspace");
+
+		//Write messagebox stuff here
+
+
         return true;
     } catch (exception e) {
 		//string * lastError;
