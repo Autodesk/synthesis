@@ -10,7 +10,7 @@ BinaryWriter::~BinaryWriter() {
 	ofs.close();
 }
 
-bool BinaryWriter::Write(BXDA * bxda) {
+bool BinaryWriter::Write(BXDA * & bxda) {
 	/*
 			int vertCount = verts.Length / 3;
             byte meshFlags = (byte)((norms != null ? 1 : 0));
