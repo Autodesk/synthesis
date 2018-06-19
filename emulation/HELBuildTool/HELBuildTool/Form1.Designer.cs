@@ -47,36 +47,38 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 48);
+            this.label2.Location = new System.Drawing.Point(12, 59);
             this.label2.Margin = new System.Windows.Forms.Padding(0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(152, 13);
+            this.label2.Size = new System.Drawing.Size(203, 17);
             this.label2.TabIndex = 24;
             this.label2.Text = "Select Programming Language";
             // 
             // txtBrowseJava
             // 
-            this.txtBrowseJava.Location = new System.Drawing.Point(12, 139);
+            this.txtBrowseJava.Location = new System.Drawing.Point(16, 171);
+            this.txtBrowseJava.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtBrowseJava.Name = "txtBrowseJava";
-            this.txtBrowseJava.Size = new System.Drawing.Size(460, 20);
+            this.txtBrowseJava.Size = new System.Drawing.Size(612, 22);
             this.txtBrowseJava.TabIndex = 23;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 123);
+            this.label1.Location = new System.Drawing.Point(12, 151);
             this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(109, 13);
+            this.label1.Size = new System.Drawing.Size(143, 17);
             this.label1.TabIndex = 22;
             this.label1.Text = "Java Main Class Path";
             // 
             // javaButton
             // 
             this.javaButton.AutoSize = true;
-            this.javaButton.Location = new System.Drawing.Point(64, 64);
+            this.javaButton.Location = new System.Drawing.Point(85, 79);
+            this.javaButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.javaButton.Name = "javaButton";
-            this.javaButton.Size = new System.Drawing.Size(48, 17);
+            this.javaButton.Size = new System.Drawing.Size(59, 21);
             this.javaButton.TabIndex = 21;
             this.javaButton.TabStop = true;
             this.javaButton.Text = "Java";
@@ -86,9 +88,10 @@
             // 
             this.cppButton.AutoSize = true;
             this.cppButton.Checked = true;
-            this.cppButton.Location = new System.Drawing.Point(12, 64);
+            this.cppButton.Location = new System.Drawing.Point(16, 79);
+            this.cppButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cppButton.Name = "cppButton";
-            this.cppButton.Size = new System.Drawing.Size(44, 17);
+            this.cppButton.Size = new System.Drawing.Size(54, 21);
             this.cppButton.TabIndex = 20;
             this.cppButton.TabStop = true;
             this.cppButton.Text = "C++";
@@ -97,9 +100,10 @@
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(397, 99);
+            this.btnBrowse.Location = new System.Drawing.Point(529, 122);
+            this.btnBrowse.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btnBrowse.Size = new System.Drawing.Size(100, 28);
             this.btnBrowse.TabIndex = 19;
             this.btnBrowse.Text = "Browse";
             this.btnBrowse.UseVisualStyleBackColor = true;
@@ -107,28 +111,30 @@
             // 
             // txtBrowse
             // 
-            this.txtBrowse.Location = new System.Drawing.Point(12, 100);
+            this.txtBrowse.Location = new System.Drawing.Point(16, 123);
+            this.txtBrowse.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtBrowse.Name = "txtBrowse";
-            this.txtBrowse.Size = new System.Drawing.Size(379, 20);
+            this.txtBrowse.Size = new System.Drawing.Size(504, 22);
             this.txtBrowse.TabIndex = 18;
             // 
             // lbBrowse
             // 
             this.lbBrowse.AutoSize = true;
-            this.lbBrowse.Location = new System.Drawing.Point(9, 84);
+            this.lbBrowse.Location = new System.Drawing.Point(12, 103);
             this.lbBrowse.Margin = new System.Windows.Forms.Padding(0);
             this.lbBrowse.Name = "lbBrowse";
             this.lbBrowse.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lbBrowse.Size = new System.Drawing.Size(109, 13);
+            this.lbBrowse.Size = new System.Drawing.Size(144, 17);
             this.lbBrowse.TabIndex = 17;
             this.lbBrowse.Text = "Robot Code Directory";
             this.lbBrowse.Click += new System.EventHandler(this.lbBrowse_Click);
             // 
             // btnSetup
             // 
-            this.btnSetup.Location = new System.Drawing.Point(12, 165);
+            this.btnSetup.Location = new System.Drawing.Point(16, 203);
+            this.btnSetup.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSetup.Name = "btnSetup";
-            this.btnSetup.Size = new System.Drawing.Size(225, 23);
+            this.btnSetup.Size = new System.Drawing.Size(300, 28);
             this.btnSetup.TabIndex = 16;
             this.btnSetup.Text = "Remove Compiled Binaries";
             this.btnSetup.UseVisualStyleBackColor = true;
@@ -136,9 +142,10 @@
             // 
             // btnRunCode
             // 
-            this.btnRunCode.Location = new System.Drawing.Point(247, 165);
+            this.btnRunCode.Location = new System.Drawing.Point(329, 203);
+            this.btnRunCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnRunCode.Name = "btnRunCode";
-            this.btnRunCode.Size = new System.Drawing.Size(225, 23);
+            this.btnRunCode.Size = new System.Drawing.Size(300, 28);
             this.btnRunCode.TabIndex = 15;
             this.btnRunCode.Text = "Build and Run Code";
             this.btnRunCode.UseVisualStyleBackColor = true;
@@ -146,26 +153,27 @@
             // 
             // txtNumber
             // 
-            this.txtNumber.Location = new System.Drawing.Point(12, 25);
+            this.txtNumber.Location = new System.Drawing.Point(16, 31);
+            this.txtNumber.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtNumber.Name = "txtNumber";
-            this.txtNumber.Size = new System.Drawing.Size(99, 20);
+            this.txtNumber.Size = new System.Drawing.Size(131, 22);
             this.txtNumber.TabIndex = 14;
             // 
             // lbNumber
             // 
             this.lbNumber.AutoSize = true;
-            this.lbNumber.Location = new System.Drawing.Point(9, 9);
+            this.lbNumber.Location = new System.Drawing.Point(12, 11);
             this.lbNumber.Margin = new System.Windows.Forms.Padding(0);
             this.lbNumber.Name = "lbNumber";
-            this.lbNumber.Size = new System.Drawing.Size(102, 13);
+            this.lbNumber.Size = new System.Drawing.Size(136, 17);
             this.lbNumber.TabIndex = 13;
             this.lbNumber.Text = "Enter Team Number";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 197);
+            this.ClientSize = new System.Drawing.Size(645, 242);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtBrowseJava);
             this.Controls.Add(this.label1);
@@ -178,7 +186,10 @@
             this.Controls.Add(this.btnRunCode);
             this.Controls.Add(this.txtNumber);
             this.Controls.Add(this.lbNumber);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Run User Code";
             this.Load += new System.EventHandler(this.Form1_Load);
