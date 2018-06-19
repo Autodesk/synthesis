@@ -34,6 +34,11 @@ int Exporter::exportCommon() {
 		a += "name : " + comp->name() + "\n";
 		for (Ptr<BRepBody> m_bod : comp->bRepBodies()) {
 
+			_tempS->verts.clear();
+			_tempS->verts.shrink_to_fit();
+			_tempS->norms.clear();
+			_tempS->norms.shrink_to_fit();
+
 			calc = m_bod->meshManager()->createMeshCalculator();
 			calc->setQuality(LowQualityTriangleMesh);
 			Ptr<TriangleMesh> mesh = calc->calculate();
