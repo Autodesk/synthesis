@@ -46,8 +46,8 @@ namespace BXDATA {
 		unsigned int Version;		//Version is just 1;
 		string GUID;				//GUID
 		Physics* physics;			//physical properties
-		list <Submesh*> meshes;			//visual mesh - contains surface
-		list <Submesh*> colliders;			//collider mesh - contains surface
+		vector <Submesh*> meshes;			//visual mesh - contains surface
+		vector <Submesh*> colliders;			//collider mesh - contains surface
 
 	private:
 	};

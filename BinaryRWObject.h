@@ -1,6 +1,7 @@
 #pragma once
 #include "BXDA.h"
 #include <fstream>
+#include <Windows.h>
 
 using namespace std;
 
@@ -13,7 +14,7 @@ namespace BXDATA {
 		bool Write(BXDA * obj);			//Original write operation to be overriden
 
 	private:
-		ofstream OUT;
+		ofstream ofs;
 	};
 
 	class BinaryReader {
