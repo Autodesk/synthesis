@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>E:\Program Files\Autodesk\Inventor 2018\Bin\BxDRobotExporter\</OutputPath>
+    <OutputPath>C:\Program Files\Autodesk\Inventor 2019\Bin\BxDRobotExporter\</OutputPath>
     <DefineConstants>TRACE;DEBUG;LITEMODE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,7 +50,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>E:\Program Files\Autodesk\Inventor 2018\Bin\BxDRobotExporter\</OutputPath>
+    <OutputPath>C:\Program Files\Autodesk\Inventor 2019\Bin\BxDRobotExporter\</OutputPath>
     <DefineConstants>TRACE;LITEMODE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
