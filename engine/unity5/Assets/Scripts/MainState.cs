@@ -270,7 +270,8 @@ public class MainState : SimState
             robot.RobotHasManipulator = false; //Defaults to false
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
-            if (!robot.InitializeRobot(robotPath, this)) return false;
+            if (!robot.InitializeRobot(robotPath))
+                return false;
 
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (ActiveRobot == null)
@@ -303,7 +304,7 @@ public class MainState : SimState
         }
 
         ActiveRobot.RobotIsMixAndMatch = isMixAndMatch;
-        return ActiveRobot.InitializeRobot(directory, this);
+        return ActiveRobot.InitializeRobot(directory);
     }
 
     /// <summary>
@@ -513,7 +514,7 @@ public class MainState : SimState
             robot.RobotIsMixAndMatch = true;
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
-            if (!robot.InitializeRobot(baseDirectory, this)) return false;
+            if (!robot.InitializeRobot(baseDirectory)) return false;
 
             robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
 

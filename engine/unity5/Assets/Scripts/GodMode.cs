@@ -13,20 +13,12 @@ namespace Assets.Scripts
     /// <summary>
     /// This script is used for controlling objects in a scene by dragging them around with the mouse.
     /// </summary>
-    public class GodMode : MonoBehaviour
+    public class GodMode : StateBehaviour<MainState>
     {
         BBallSocketConstraintEx constraint;
         ActivationState initialState;
         float initialDamping;
         float rayDistance;
-
-        /// <summary>
-        /// Links this MonoBehaviour to the MainState.
-        /// </summary>
-        private void Awake()
-        {
-            StateMachine.Instance.Link<MainState>(this);
-        }
 
         /// <summary>
         /// Updates constraint information for the active object, if applicable.

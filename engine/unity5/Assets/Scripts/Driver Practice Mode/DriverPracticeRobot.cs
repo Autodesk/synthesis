@@ -14,9 +14,8 @@ using Assets.Scripts.FSM;
 /// To be added to all robots, this class 'cheats physics' to overcome the limitations that our current simulation has to create a beter environment for drivers to practice and interact with game objects.
 /// 
 /// </summary>
-public class DriverPracticeRobot : MonoBehaviour
+public class DriverPracticeRobot : StateBehaviour<MainState>
 {
-
     public UnityEngine.Vector3[] positionOffset; //position offset vectors for gamepiece while its being held
     public List<float[]> releaseVelocity; //release velocity vectors for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
     public float[] primaryVelocity = new float[3];
@@ -69,11 +68,6 @@ public class DriverPracticeRobot : MonoBehaviour
     private DynamicCamera.CameraState lastCameraState;
 
     public int controlIndex;
-
-    private void Awake()
-    {
-        StateMachine.Instance.Link<MainState>(this);
-    }
 
     /// <summary>
     /// If configuration file exists, loads information and auto-configures robot.

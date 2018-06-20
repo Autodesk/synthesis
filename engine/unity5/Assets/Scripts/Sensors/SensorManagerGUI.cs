@@ -7,7 +7,7 @@ using UnityEngine.Analytics;
 /// <summary>
 /// This class handles every sensor-related GUI elements in Unity
 /// </summary>
-class SensorManagerGUI : MonoBehaviour
+class SensorManagerGUI : StateBehaviour<MainState>
 {
     Toolkit toolkit;
     GameObject canvas;
@@ -16,7 +16,6 @@ class SensorManagerGUI : MonoBehaviour
     DynamicCamera.CameraState preConfigState;
     DynamicCamera dynamicCamera;
     RobotCameraGUI robotCameraGUI;
-    MainState main;
 
     GameObject sensorOptionPanel;
     GameObject sensorTypePanel;
@@ -76,24 +75,15 @@ class SensorManagerGUI : MonoBehaviour
     //A list of all output panels instantiated
     private List<GameObject> sensorOutputPanels = new List<GameObject>();
 
-    /// <summary>
-    /// Link the sensor GUI to main state
-    /// </summary>
-    private void Awake()
+    protected override void Start()
     {
-        StateMachine.Instance.Link<MainState>(this);
-    }
-    private void Start()
-    {
+        base.Start();
+
         FindElements();
     }
 
     private void Update()
     {
-        if(main == null)
-        {
-            main = StateMachine.Instance.FindState<MainState>();
-        }
         //Find the dynamic camera
         if (dynamicCamera == null)
         {
@@ -645,7 +635,7 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void UpdateSensorRangePanel()
     {
-        if (main.IsMetric) rangeUnit.text = "Range (meters)";
+        if (State.IsMetric) rangeUnit.text = "Range (meters)";
         else rangeUnit.text = "Range (feet)";
         if (!isEditingRange)
         {

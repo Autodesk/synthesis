@@ -6,8 +6,7 @@ using BulletUnity;
 using Assets.Scripts.FSM;
 using System.IO;
 
-public class MaMSimUI : MonoBehaviour {
-    MainState main;
+public class MaMSimUI : StateBehaviour<MainState> {
     GameObject canvas;
 
     GameObject mixAndMatchPanel;
@@ -15,8 +14,9 @@ public class MaMSimUI : MonoBehaviour {
 
     private SimUI simUI;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         FindElements();
     }
 

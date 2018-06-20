@@ -5,10 +5,9 @@ using Assets.Scripts.FSM;
 /// <summary>
 /// This class handles all GUI elements related to robot camera in Unity
 /// </summary>
-class RobotCameraGUI : MonoBehaviour
+class RobotCameraGUI : StateBehaviour<MainState>
 {
     //Stuff needed to make gui work
-    MainState main;
     GameObject canvas;
     DynamicCamera dynamicCamera;
     DynamicCamera.CameraState preConfigCamState;
@@ -56,29 +55,19 @@ class RobotCameraGUI : MonoBehaviour
     private bool isEditingAngle;
     private bool isEditingFOV;
 
-    /// <summary>
-    /// Link the robot camera GUI to main state
-    /// </summary>
-    private void Awake()
+    protected override void Start()
     {
-        StateMachine.Instance.Link<MainState>(this);
-    }
+        base.Start();
 
-    private void Start()
-    {
         FindGUIElements();
+        dynamicCamera = State.DynamicCameraObject.GetComponent<DynamicCamera>();
     }
 
     private void Update()
     {
         //Make sure main state and dynamic camera get initialized
-        if (main == null)
-        {
-            main = StateMachine.Instance.FindState<MainState>();
-            dynamicCamera = main.DynamicCameraObject.GetComponent<DynamicCamera>();
-        }
         //Update gui about robot camera once main and dynamic camera is ready
-        else if (main != null && dynamicCamera != null)
+        if (dynamicCamera != null)
         {
             UpdateCameraWindow();
             if (indicatorActive)
@@ -152,7 +141,7 @@ class RobotCameraGUI : MonoBehaviour
     private void UpdateCameraWindow()
     {
         //Can use robot view when dynamicCamera is active
-        if (usingRobotView && main.DynamicCameraObject.activeSelf)
+        if (usingRobotView && State.DynamicCameraObject.activeSelf)
         {
             //Make sure there is camera on robot
             if (robotCameraManager.CurrentCamera != null)

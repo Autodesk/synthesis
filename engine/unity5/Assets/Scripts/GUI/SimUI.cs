@@ -8,13 +8,14 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 
+// TODO: Add breakpoints to make sure this is actually working, then add the new StateBehaviour to every other applicable behaivour.
+
 /// <summary>
 /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
 /// It acomplishes this by having a public function for each button that interacts with the Main State to complete various tasks.
 /// </summary>
-public class SimUI : MonoBehaviour
+public class SimUI : StateBehaviour<MainState>
 {
-    MainState main;
     DynamicCamera camera;
     Toolkit toolkit;
     DriverPracticeMode dpm;
@@ -64,21 +65,9 @@ public class SimUI : MonoBehaviour
 
     private bool oppositeSide = false;
 
-    /// <summary>
-    /// Link the SimUI to main state
-    /// </summary>
-    private void Awake()
-    {
-        StateMachine.Instance.Link<MainState>(this);
-    }
-
     private void Update()
     {
-        if (main == null)
-        {
-            main = StateMachine.Instance.FindState<MainState>();
-        }
-        else if (dpm == null)
+        if (dpm == null)
         {
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
 
@@ -165,7 +154,7 @@ public class SimUI : MonoBehaviour
 
     private void UpdateWindows()
     {
-        if (main != null)
+        if (State != null)
             UpdateFreeroamWindow();
         UpdateSpawnpointWindow();
         UpdateDriverStationPanel();
@@ -193,10 +182,10 @@ public class SimUI : MonoBehaviour
                 });
             }
 
-            robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
-            sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
+            robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
+            sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
-            main.ChangeRobot(directory, false);
+            State.ChangeRobot(directory, false);
 
         }
         else
@@ -210,26 +199,20 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void MaMChangeRobot(string robotDirectory, string manipulatorDirectory)
     {
-        robotCameraManager.DetachCamerasFromRobot(main.ActiveRobot);
-        sensorManager.RemoveSensorsFromRobot(main.ActiveRobot);
+        robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
+        sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
         //If the current robot has a manipulator, destroy the manipulator
-        if (main.ActiveRobot.RobotHasManipulator)
-        {
-            main.DeleteManipulatorNodes();
-        }
+        if (State.ActiveRobot.RobotHasManipulator)
+            State.DeleteManipulatorNodes();
 
-        main.ChangeRobot(robotDirectory, true);
+        State.ChangeRobot(robotDirectory, true);
 
         //If the new robot has a manipulator, load the manipulator
         if (RobotTypeManager.HasManipulator)
-        {
-            main.LoadManipulator(manipulatorDirectory, main.ActiveRobot.gameObject);
-        }
+            State.LoadManipulator(manipulatorDirectory, State.ActiveRobot.gameObject);
         else
-        {
-            main.ActiveRobot.RobotHasManipulator = false;
-        }
+            State.ActiveRobot.RobotHasManipulator = false;
     }
 
     public void ToggleChangeRobotPanel()
@@ -295,10 +278,10 @@ public class SimUI : MonoBehaviour
     /// <summary>
     /// Toggles between different dynamic camera states
     /// </summary>
-    /// <param name="joe"></param>
-    public void SwitchCameraView(int joe)
+    /// <param name="mode"></param>
+    public void SwitchCameraView(int mode)
     {
-        switch (joe)
+        switch (mode)
         {
             case 1:
                 camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
@@ -383,34 +366,34 @@ public class SimUI : MonoBehaviour
     #region orient button functions
     public void OrientLeft()
     {
-        main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
+        State.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
     }
     public void OrientRight()
     {
-        main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
+        State.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
     }
     public void OrientForward()
     {
-        main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
+        State.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
     }
     public void OrientBackward()
     {
-        main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
+        State.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
     }
 
     public void DefaultOrientation()
     {
-        main.ResetRobotOrientation();
+        State.ResetRobotOrientation();
     }
 
     public void SaveOrientation()
     {
-        main.SaveRobotOrientation();
+        State.SaveRobotOrientation();
     }
 
     public void CancelOrientation()
     {
-        main.CancelRobotOrientation();
+        State.CancelRobotOrientation();
     }
 
     #endregion
@@ -505,7 +488,7 @@ public class SimUI : MonoBehaviour
         {
             unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
             int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-            main.IsMetric = (i == 1 ? true : false);
+            State.IsMetric = (i == 1 ? true : false);
             PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
             //Debug.Log("Metric: " + main.IsMetric);
         }
@@ -542,7 +525,7 @@ public class SimUI : MonoBehaviour
     /// </summary>
     private void UpdateSpawnpointWindow()
     {
-        if (main.ActiveRobot.IsResetting)
+        if (State.ActiveRobot.IsResetting)
         {
             spawnpointWindow.SetActive(true);
             orientWindow.SetActive(true);
@@ -563,13 +546,13 @@ public class SimUI : MonoBehaviour
         switch (i)
         {
             case 1:
-                main.BeginRobotReset();
-                main.EndRobotReset();
+                State.BeginRobotReset();
+                State.EndRobotReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
             case 2:
                 EndOtherProcesses();
-                main.BeginRobotReset();
+                State.BeginRobotReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
         }
@@ -654,7 +637,7 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void EnterReplayMode()
     {
-        main.EnterReplayState();
+        State.EnterReplayState();
     }
 
     public void TogglePanel(GameObject panel)
