@@ -30,7 +30,6 @@ namespace SynthesisLauncher
         {
             InitializeComponent();
             GetChanges();
-
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -42,32 +41,24 @@ namespace SynthesisLauncher
         {
             try
             {
-                Process.Start(exePath + "\\Synthesis\\Synthesis.exe");
+                Process[] pname = Process.GetProcessesByName("Synthesis");
+                if (pname.Length > 0)
+                    MessageBox.Show("An instance of Synthesis is already running!", "Whoa There!");
+                else {Process.Start(exePath + "\\Synthesis\\Synthesis.exe");}
             }
-            catch
+
+            catch (Win32Exception ex)
             {
-                MessageBox.Show(this, "Couldn't start Synthesis!");
+                MessageBox.Show(this, "Failed to start Synthesis!" + Environment.NewLine
+                    + "Check to ensure that Synthesis installed correctly.", ex.GetType().Name);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Failed to start Synthesis!" + Environment.NewLine + ex.Message, ex.GetType().Name);
             }
 
             Focus();
-        }
-
-        private void synthesisBulletButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(exePath + "\\Synthesis\\Synthesis_Bullet.exe");
-            }
-            catch(Exception ex)
-            {
-                #region DEBUG SWITCH
-#if DEBUG
-                MessageBox.Show(ex.ToString());
-#else
-                MessageBox.Show(this, "Couldn't start Synthesis with Bullet Physics!\n" + ex.Message);
-#endif 
-                #endregion
-            }
         }
 
         /// <summary>
@@ -163,9 +154,16 @@ namespace SynthesisLauncher
             {
                 Process.Start(exePath + "\\RobotExporter\\Inventor_Exporter.exe");
             }
-            catch
+
+            catch (Win32Exception ex)
             {
-                MessageBox.Show(this, "Failed to start the Robot exporter!");
+                MessageBox.Show(this, "Failed to start Robot Exporter!" + Environment.NewLine
+                    + "Check to ensure that this component installed correctly.", ex.GetType().Name);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Failed to start the Robot Exporter!" + Environment.NewLine + ex.Message, ex.GetType().Name);
             }
         }
 
@@ -175,9 +173,16 @@ namespace SynthesisLauncher
             {
                 Process.Start(exePath + "\\FieldExporter\\FieldExporter.exe");
             }
-            catch
+
+            catch (Win32Exception ex)
             {
-                MessageBox.Show(this, "Failed to start the field exporter!");
+                MessageBox.Show(this, "Failed to start Field Exporter!" + Environment.NewLine
+                    + "Check to ensure that this component installed correctly.", ex.GetType().Name);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Failed to start the Field Exporter!" + Environment.NewLine + ex.Message, ex.GetType().Name);
             }
         }
 
@@ -187,9 +192,16 @@ namespace SynthesisLauncher
             {
                 Process.Start(exePath + "\\SynthesisDrive\\HELBuildTool\\HELBuildTool.exe");
             }
-            catch
+
+            catch (Win32Exception ex)
             {
-                MessageBox.Show(this, "Failed to start the Code Viewer!");
+                MessageBox.Show(this, "Failed to start the Code Viewer!" + Environment.NewLine
+                    + "Check to ensure that this component installed correctly.", ex.GetType().Name);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Failed to start the Code Viewer!" + Environment.NewLine + ex.Message, ex.GetType().Name);
             }
         }
 
