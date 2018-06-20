@@ -34,4 +34,4 @@ Autodesk Fusion 360 Robot exporter using the Fusion 360 API for cpp
 ### Fusion API Object Model:
 *  https://help.autodesk.com/cloudhelp/ENU/Fusion-360-API/images/Fusion.pdf
 
-[FusionObjectModel.pdf](/uploads/aeb38fa7434322fbe862ba7af7568b20/FusionObjectModel.pdf)
+[FusionObjectModel.pdf](https://github.com/HiceS/FusionRobotExporter/files/2121083/FusionObjectModel.pdf)
