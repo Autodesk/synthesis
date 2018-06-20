@@ -59,8 +59,7 @@ bool BinaryWriter::Write(BXDA * & bxda) {
 		//		ofs.write(((char*)((int)n)), sizeof(double));		//loss of precision
 		//	}
 		//	delete temp;
-
-		}
+		//}
 
 		return 1;
 	}
