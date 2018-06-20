@@ -33,32 +33,32 @@ bool BinaryWriter::Write(BXDA * & bxda) {
 		//OUT.write((char*)&bxda, sizeof(BXDA));
 		ofs.write((char*)bxda->Version, sizeof(unsigned int));
 		int countV, countN, countI;
-		int countS = bxda->meshes.size();
-		for (int i = 0; i < countS; i++) {
-			Submesh * temp = bxda->meshes[i];
-			//int count = s->verts->count();
-			countV = temp->verts.size() / 3;
-			countN = temp->norms.size() / 3;
-			countI = 0;
+		//int countS = bxda->meshes.size();
+		//for (int i = 0; i < countS; i++) {
+		//	Submesh * temp = bxda->meshes[i];
+		//	//int count = s->verts->count();
+		//	countV = temp->verts.size() / 3;
+		//	countN = temp->norms.size() / 3;
+		//	countI = 0;
 
-			unsigned char meshflag = countN > 0 ? 1 : 0;
+		//	unsigned char meshflag = countN > 0 ? 1 : 0;
 
-			ofs.write((char*)meshflag, sizeof(unsigned char));
+		//	ofs.write((char*)meshflag, sizeof(unsigned char));
 
-			//byte * buf = new byte[(countV*3) * sizeof(double)];
+		//	//byte * buf = new byte[(countV*3) * sizeof(double)];
 
-			ofs.write((char*)(countV * 3), sizeof(int));
-			for (double d : temp->verts) {
-				//buf[countI] = d;
-				ofs.write(((char*)((int)d)), sizeof(double));		//loss of precision
-			}
+		//	ofs.write((char*)(countV * 3), sizeof(int));
+		//	for (double d : temp->verts) {
+		//		//buf[countI] = d;
+		//		ofs.write(((char*)((int)d)), sizeof(double));		//loss of precision
+		//	}
 
-			ofs.write((char*)(countN * 3), sizeof(int));
-			for (double n : temp->norms) {
-				//buf[countI] = d;
-				ofs.write(((char*)((int)n)), sizeof(double));		//loss of precision
-			}
-			delete temp;
+		//	ofs.write((char*)(countN * 3), sizeof(int));
+		//	for (double n : temp->norms) {
+		//		//buf[countI] = d;
+		//		ofs.write(((char*)((int)n)), sizeof(double));		//loss of precision
+		//	}
+		//	delete temp;
 
 		}
 
