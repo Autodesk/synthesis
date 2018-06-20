@@ -40,6 +40,7 @@ namespace Synthesis{
         void configButtonWheel();
         void configButtonExporter();
         bool CreateWorkspace();
+		void configPalette();
         
     };
 }
