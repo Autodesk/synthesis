@@ -10,10 +10,9 @@ using UnityEngine.Analytics;
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer
 /// </summary>
-public class LocalMultiplayer : MonoBehaviour {
+public class LocalMultiplayer : StateBehaviour<MainState> {
 
     private GameObject canvas;
-    private MainState mainState;
     private SimUI simUI;
 
     private GameObject multiplayerWindow;
@@ -28,7 +27,9 @@ public class LocalMultiplayer : MonoBehaviour {
     /// <summary>
     /// FInds all the gameobjects and stores them in variables for efficiency
     /// </summary>
-    void Start () {
+    protected override void Start () {
+        base.Start();
+
         canvas = GameObject.Find("Canvas");
         multiplayerWindow = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
         addRobotWindow = AuxFunctions.FindObject(canvas, "AddRobotPanel");
@@ -43,25 +44,13 @@ public class LocalMultiplayer : MonoBehaviour {
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
     }
 	
-	/// <summary>
-    /// Since main state is not initialized immediately (after a frame or two), we look for it in the update function which is called every step
-    /// </summary>
-	void Update () {
-        if (mainState == null)
-        {
-            mainState = StateMachine.Instance.FindState<MainState>();
-        }
-    }
     
     /// <summary>
     /// Updates the multiplayer window after enabling it
     /// </summary>
     private void OnEnable()
     {
-        if (mainState != null)
-        {
-            UpdateUI();
-        }
+        UpdateUI();
     }
 
     /// <summary>
@@ -87,9 +76,9 @@ public class LocalMultiplayer : MonoBehaviour {
     /// <param name="index">the index of the new active robot</param>
     public void ChangeActiveRobot(int index)
     {
-        if (index < mainState.SpawnedRobots.Count)
+        if (index < State.SpawnedRobots.Count)
         {
-            mainState.SwitchActiveRobot(index);
+            State.SwitchActiveRobot(index);
             activeIndex = index;
             UpdateUI();
 
@@ -113,7 +102,7 @@ public class LocalMultiplayer : MonoBehaviour {
         if (Directory.Exists(directory))
         {
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
-            mainState.LoadRobot(directory, false);
+            State.LoadRobot(directory, false);
         }
         else
         {
@@ -137,12 +126,9 @@ public class LocalMultiplayer : MonoBehaviour {
     public void AddMaMRobot(string baseDirectory, string manipulatorDirectory, bool hasManipulator)
     {
         if (hasManipulator)
-        {
-            mainState.LoadRobotWithManipulator(baseDirectory, manipulatorDirectory);
-        } else
-        {
-            mainState.LoadRobot(baseDirectory, true);
-        }
+            State.LoadRobotWithManipulator(baseDirectory, manipulatorDirectory);
+        else
+            State.LoadRobot(baseDirectory, true);
 
         UpdateUI();
     }
@@ -152,8 +138,8 @@ public class LocalMultiplayer : MonoBehaviour {
     /// </summary>
     public void RemoveRobot()
     {
-        mainState.RemoveRobot(activeIndex);
-        activeIndex = mainState.SpawnedRobots.IndexOf(mainState.ActiveRobot);
+        State.RemoveRobot(activeIndex);
+        activeIndex = State.SpawnedRobots.IndexOf(State.ActiveRobot);
         GetComponent<DriverPracticeMode>().ChangeActiveRobot(activeIndex);
         UpdateUI();
     }
@@ -181,7 +167,7 @@ public class LocalMultiplayer : MonoBehaviour {
     {
         for (int i = 0; i < 6; i++)
         {
-            if (i < mainState.SpawnedRobots.Count)
+            if (i < State.SpawnedRobots.Count)
             {
                 //robotButtons[i].GetComponent<Image>().color = new Color(1,1,1,1);
                 robotButtons[i].GetComponent<Button>().interactable = true;
@@ -197,8 +183,8 @@ public class LocalMultiplayer : MonoBehaviour {
 
         highlight.transform.position = robotButtons[activeIndex].transform.position;
 
-        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ActiveRobotText")).First().GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
-        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ControlIndexDropdown")).First().GetComponent<Dropdown>().value = mainState.ActiveRobot.ControlIndex;
+        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ActiveRobotText")).First().GetComponent<Text>().text = "Robot: " + State.SpawnedRobots[activeIndex].RobotName;
+        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ControlIndexDropdown")).First().GetComponent<Dropdown>().value = State.ActiveRobot.ControlIndex;
         // GameObject.Find("ActiveRobotText").GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
         //GameObject.Find("ControlIndexDropdown").GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
     }
@@ -216,7 +202,7 @@ public class LocalMultiplayer : MonoBehaviour {
     /// </summary>
     public void ChangeControlIndex(int index)
     {
-        mainState.ChangeControlIndex(index);
+        State.ChangeControlIndex(index);
         UpdateUI();
     }
 

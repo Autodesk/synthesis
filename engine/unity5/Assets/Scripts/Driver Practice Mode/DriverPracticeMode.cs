@@ -4,11 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
 
-public class DriverPracticeMode : MonoBehaviour {
+public class DriverPracticeMode : StateBehaviour<MainState> {
 
     private DriverPracticeRobot dpmRobot;
     private SimUI simUI;
-    private MainState mainState;
 
     GameObject canvas;
 
@@ -70,21 +69,17 @@ public class DriverPracticeMode : MonoBehaviour {
 
     bool isEditing = false;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         InitializeTrajectories();
-        StateMachine.Instance.Link<MainState>(this);
     }
 
     private void Update()
     {
-        if (mainState == null)
+        if (dpmRobot == null)
         {
-            mainState = StateMachine.Instance.FindState<MainState>();
-        }
-        else if (dpmRobot == null)
-        {
-            dpmRobot = mainState.ActiveRobot.GetDriverPractice();
+            dpmRobot = State.ActiveRobot.GetDriverPractice();
             FindElements();
         }
         else
@@ -529,12 +524,11 @@ public class DriverPracticeMode : MonoBehaviour {
             return;
         }
 
-
         foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
         {
             if (Input.GetKeyDown(vKey))
             {
-                int index = mainState.ActiveRobot.ControlIndex;
+                int index = State.ActiveRobot.ControlIndex;
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
@@ -582,14 +576,12 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void ChangeActiveRobot(int index)
     {
-
-        DriverPracticeRobot newRobot = mainState.SpawnedRobots[index].GetComponent<DriverPracticeRobot>();
+        DriverPracticeRobot newRobot = State.SpawnedRobots[index].GetComponent<DriverPracticeRobot>();
         dpmRobot.displayTrajectories[0] = false;
         dpmRobot.displayTrajectories[1] = false;
 
         UpdateDPMValues();
         dpmRobot = newRobot;
-
     }
 
     private void InitializeTrajectories()

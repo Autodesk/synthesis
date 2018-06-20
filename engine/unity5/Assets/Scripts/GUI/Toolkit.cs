@@ -11,13 +11,11 @@ using UnityEngine.Analytics;
 /// <summary>
 /// Helps the user with various helper functions such as stopwatch, and ruler
 /// </summary>
-public class Toolkit : MonoBehaviour
+public class Toolkit : StateBehaviour<MainState>
 {
-
     private bool ignoreClick = true;
 
     private GameObject canvas;
-    private MainState mainState;
     private GameObject toolkitWindow;
     private SensorManagerGUI sensorManagerGUI;
 
@@ -59,14 +57,6 @@ public class Toolkit : MonoBehaviour
     bool controllingDummy = false;
     private GameObject dummyIndicator;
 
-    /// <summary>
-    /// Link the toolkit to main state
-    /// </summary>
-    private void Awake()
-    {
-        StateMachine.Instance.Link<MainState>(this);
-    }
-
     // Use this for initialization
     void Start()
     {
@@ -103,7 +93,6 @@ public class Toolkit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (mainState == null) mainState = StateMachine.Instance.FindState<MainState>();
         if (usingRuler)
         {
             if (ignoreClick) ignoreClick = false;
@@ -240,7 +229,7 @@ public class Toolkit : MonoBehaviour
                 rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
             }
             //Display different values based on the measure system it's currently using
-            else if (!mainState.IsMetric)
+            else if (!State.IsMetric)
             {
                 rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f) / 100 + "ft";
                 rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f) / 100 + "ft";
@@ -387,12 +376,12 @@ public class Toolkit : MonoBehaviour
     /// </summary>
     public void UpdateStatsWindow()
     {
-        speedEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Speed.ToString();
-        accelerationEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Acceleration.ToString();
-        angularVelocityEntry.GetComponent<InputField>().text = mainState.ActiveRobot.AngularVelocity.ToString();
-        weightEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Weight.ToString();
+        speedEntry.GetComponent<InputField>().text = State.ActiveRobot.Speed.ToString();
+        accelerationEntry.GetComponent<InputField>().text = State.ActiveRobot.Acceleration.ToString();
+        angularVelocityEntry.GetComponent<InputField>().text = State.ActiveRobot.AngularVelocity.ToString();
+        weightEntry.GetComponent<InputField>().text = State.ActiveRobot.Weight.ToString();
         //Use correct units depending on the measure system used
-        if (mainState.IsMetric)
+        if (State.IsMetric)
         {
             speedUnit.text = "m/s";
             accelerationUnit.text = "m/s^2";
