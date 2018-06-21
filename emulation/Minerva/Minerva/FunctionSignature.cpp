@@ -6,46 +6,93 @@
 
 using namespace std;
 
-minerva::ParameterInfo::ParameterInfo(string n, string t):name(n),type(t){}
-minerva::ParameterInfo::ParameterInfo():ParameterInfo("",""){}
+minerva::FunctionSignature::ParameterNameInfo::ParameterNameInfo(string n, string t):name(n),type(t){}
+minerva::FunctionSignature::ParameterNameInfo::ParameterNameInfo():ParameterNameInfo("",""){}
 
-ostream& operator<<(ostream& o, const minerva::ParameterInfo SIMPLE_TYPE_INFO){
-	o<<"name: \""<<SIMPLE_TYPE_INFO.name<<"\"   type:\""<<SIMPLE_TYPE_INFO.type<<"\"";
+ostream& minerva::operator<<(ostream& o, const minerva::FunctionSignature::ParameterNameInfo PARAMETER_NAME_INFO){
+	o<<"name: \""<<PARAMETER_NAME_INFO.name<<"\"   type:\""<<PARAMETER_NAME_INFO.type<<"\"";
+	return o;
+}
+
+bool minerva::operator<(const minerva::FunctionSignature::ParameterNameInfo a, const minerva::FunctionSignature::ParameterNameInfo b){
+	if(a.name < b.name){
+		return true;
+	} 
+	if(a.name > b.name){
+		return false;
+	}
+	return a.type < b.name;
+}
+
+minerva::FunctionSignature::ParameterValueInfo::ParameterValueInfo():ParameterValueInfo("",""){}
+
+ostream& minerva::operator<<(ostream& o, const minerva::FunctionSignature::ParameterValueInfo PARAMETER_VALUE_INFO){
+	o<<"type: \""<<PARAMETER_VALUE_INFO.type<<"\"   value:\""<<PARAMETER_VALUE_INFO.value<<"\"";
 	return o;
 }
 
 //Function signatures in the RoboRIO HAL follow this naming convention
-const string minerva::FunctionSignature::FUNC_START_INDICATOR = " HAL_";
-const string minerva::FunctionSignature::FUNC_NAME_END_INDICATOR = "(";
-const string minerva::FunctionSignature::FUNC_END_INDICATOR = ");";
+const string minerva::FunctionSignature::FUNC_NAME_PREFIX = " HAL_";
+const string minerva::FunctionSignature::FUNC_NAME_SUFFIX = "(";
+const string minerva::FunctionSignature::FUNC_SIGNATURE_END_INDICATOR = ");";
 
 minerva::FunctionSignature::FunctionSignature():name(""),return_type(""),parameters(){}
 
-ostream& operator<<(ostream& o, minerva::FunctionSignature FUNCTION_SIGNATURE){
+string minerva::FunctionSignature::toString()const{
+	string str = "";
+	str += return_type + " " + name + "(";
+	for(unsigned i = 0; i < parameters.size(); i++){
+		minerva::FunctionSignature::ParameterNameInfo parameter = parameters[i];
+		str += parameter.type + " " + parameter.name;
+		if((i + 1) < parameters.size()){
+			str += ", ";
+		}
+	}
+	str += ")";
+	return str;
+}
+
+ostream& minerva::operator<<(ostream& o, minerva::FunctionSignature FUNCTION_SIGNATURE){
 	o<<"[\n";
 	o<<"\tname: \""<<FUNCTION_SIGNATURE.name<<"\"\n";
 	o<<"\treturn_type: \""<<FUNCTION_SIGNATURE.return_type<<"\"\n";
 	o<<"\tparameters: \n";
-	for(minerva::ParameterInfo parameter: FUNCTION_SIGNATURE.parameters){
+	for(minerva::FunctionSignature::ParameterNameInfo parameter: FUNCTION_SIGNATURE.parameters){
 		o<<"\t\t"<<parameter<<"\n";
 	}
 	o<<"]\n";
 	return o;
 }
 
+bool minerva::operator<(const minerva::FunctionSignature a, const minerva::FunctionSignature b){
+	if(a.name < b.name){
+		return true;
+	} 
+	if(a.name > b.name){
+		return false;
+	}
+	if(a.return_type < b.return_type){
+		return true;
+	}
+	if(a.return_type > b.return_type){
+		return false;
+	}
+	return a.parameters < b.parameters;
+}
+
 minerva::FunctionSignature minerva::FunctionSignature::parse(const string RAW_FUNCTION_SIGNATURE){
 	minerva::FunctionSignature function_signature;
 	
-	if(RAW_FUNCTION_SIGNATURE.find(minerva::FunctionSignature::FUNC_START_INDICATOR) != string::npos){
-		function_signature.return_type = RAW_FUNCTION_SIGNATURE.substr(0,RAW_FUNCTION_SIGNATURE.find(minerva::FunctionSignature::FUNC_START_INDICATOR));//return type is everything before the name of the function
+	if(RAW_FUNCTION_SIGNATURE.find(minerva::FunctionSignature::FUNC_NAME_PREFIX) != string::npos){
+		function_signature.return_type = RAW_FUNCTION_SIGNATURE.substr(0,RAW_FUNCTION_SIGNATURE.find(minerva::FunctionSignature::FUNC_NAME_PREFIX));//return type is everything before the name of the function
 		
-		if(RAW_FUNCTION_SIGNATURE.find(minerva::FunctionSignature::FUNC_NAME_END_INDICATOR) != string::npos){
+		if(RAW_FUNCTION_SIGNATURE.find(minerva::FunctionSignature::FUNC_NAME_SUFFIX) != string::npos){
 			unsigned name_start_os = function_signature.return_type.size() + 1;//add one to start position since search includes the space between return type and function name
-			function_signature.name = RAW_FUNCTION_SIGNATURE.substr(name_start_os,RAW_FUNCTION_SIGNATURE.find(minerva::FunctionSignature::FUNC_NAME_END_INDICATOR) - name_start_os);//name of the function is everything between the return type and the first open parenthesis
+			function_signature.name = RAW_FUNCTION_SIGNATURE.substr(name_start_os,RAW_FUNCTION_SIGNATURE.find(minerva::FunctionSignature::FUNC_NAME_SUFFIX,name_start_os) - name_start_os);//name of the function is everything between the return type and the first open parenthesis after the name starts
 			{
 				string raw_parameters = RAW_FUNCTION_SIGNATURE.substr(RAW_FUNCTION_SIGNATURE.find(function_signature.name) + function_signature.name.size());//clip off the return type and name of the function
 				raw_parameters = raw_parameters.substr(1);//remove initial parenthesis 
-				raw_parameters = raw_parameters.substr(0,raw_parameters.size() - minerva::FunctionSignature::FUNC_END_INDICATOR.size());//remove final parenthesis
+				raw_parameters = raw_parameters.substr(0,raw_parameters.size() - minerva::FunctionSignature::FUNC_SIGNATURE_END_INDICATOR.size());//remove final parenthesis
 
 				if(trim(raw_parameters) != "" && trim(raw_parameters).find_last_of(' ') != string::npos){//skip if function takes no parameters
 					vector<string> splitParameters = split(raw_parameters,minerva::FunctionSignature::FUNC_PARAMETER_DELIMITER);
@@ -58,10 +105,10 @@ minerva::FunctionSignature minerva::FunctionSignature::parse(const string RAW_FU
 				}
 			}
 		} else {
-			throw minerva::ParseException();
+			throw minerva::FunctionSignature::ParseException();
 		}
 	} else {
-		throw minerva::ParseException();
+		throw minerva::FunctionSignature::ParseException();
 	}
 
 	return function_signature;
@@ -90,14 +137,14 @@ vector<string> captureRawFunctionSignatures(const string INPUT_FILE_NAME){
 				function_signature_buffer = "";
 			}
 			
-			if(chars_to_add.find(minerva::FunctionSignature::FUNC_START_INDICATOR) != string::npos && chars_to_add.find(minerva::FunctionSignature::FUNC_NAME_END_INDICATOR) != string::npos){//use FUNC_NAME_END_INDICATOR to confirm that it's a function rather than an enum or whatever (assuming the whole line containing the start of the function consists of just parts of that function signature)
+			if(chars_to_add.find(minerva::FunctionSignature::FUNC_NAME_PREFIX) != string::npos && chars_to_add.find(minerva::FunctionSignature::FUNC_NAME_SUFFIX,chars_to_add.find(minerva::FunctionSignature::FUNC_NAME_PREFIX)) != string::npos){//use FUNC_NAME_SUFFIX to confirm that it's a function rather than an enum or whatever (currently assuming the  line containing the start of the function only consists of parts of that function's signature)
 				capture_new = true;
 			}
 		}
 		
 		if(capture_new){
-			if(chars_to_add.find(minerva::FunctionSignature::FUNC_END_INDICATOR) != string::npos){//stop line capture when function finishes (assuming another function doesn't start on the same line)
-				chars_to_add = chars_to_add.substr(0,chars_to_add.find(minerva::FunctionSignature::FUNC_END_INDICATOR) + minerva::FunctionSignature::FUNC_END_INDICATOR.size());
+			if(chars_to_add.find(minerva::FunctionSignature::FUNC_SIGNATURE_END_INDICATOR) != string::npos){//stop line capture when function finishes (currently assuming another function doesn't start on the same line)
+				chars_to_add = chars_to_add.substr(0,chars_to_add.find(minerva::FunctionSignature::FUNC_SIGNATURE_END_INDICATOR) + minerva::FunctionSignature::FUNC_SIGNATURE_END_INDICATOR.size());
 				capture_new = false;
 			} 
 			
@@ -150,7 +197,7 @@ int main(){
 	cout<<"\n=============================\n\n";
 	
 	for(minerva::FunctionSignature function_signature: minerva::parseFunctionSignatures(test_source)){
-		cout<<function_signature;
+		cout<<function_signature<<"\n";
 	}
 }
 
