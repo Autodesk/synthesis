@@ -42,11 +42,11 @@ bool EUI::CreateWorkspace(){
         
         
         //GUID = sha256(Synthesis:workspace) = 58D6985C9E7C0A2D731CC2141775F86F163FBA96CA871E8EC2840DF1FBEA2C0D
-        _WorkSpace = _UI->workspaces()->add(_APP->activeProduct()->productType(), "10001", "Synthesis", "./Resources");
+        _WorkSpace = _UI->workspaces()->add(_APP->activeProduct()->productType(), "10001", "Synthesis", "Resources/Sample");
         
         _WorkSpace->tooltip("Workspace for exporting fusion robot files");
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
-        _ToolbarPanel = _WorkSpace->toolbarPanels()->add("10002" , "ExportingToolbar");
+        _ToolbarPanel = _WorkSpace->toolbarPanels()->add("SynthesisToolbar" , "Robot");
         _ToolbarControls = _ToolbarPanel->controls();
         configButtonWheel();
         configButtonExporter();
@@ -68,9 +68,7 @@ bool EUI::CreateWorkspace(){
 }
 
 void EUI::configButtonWheel(){
-    _AddWheelCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config");
-	string propertyValue = _AddWheelCommandDef->resourceFolder();
-    _AddWheelCommandDef->resourceFolder("Resources");
+    _AddWheelCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config", "Resources/Sample");
 
 	Ptr<CommandCreatedEvent> commandCreatedEvent = _AddWheelCommandDef->commandCreated();
 	if (!commandCreatedEvent)
@@ -84,7 +82,7 @@ void EUI::configButtonWheel(){
 
 void EUI::configButtonExporter(){
     _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("Custom Panel Export", "Export", "This will open the export palette which will allow you to set theexport settings for your robot.");
-    _ExportCommandDef->resourceFolder("/Resources");
+    _ExportCommandDef->resourceFolder("resources/");
 
 	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDef->commandCreated();
 	if (!commandCreatedEvent)
