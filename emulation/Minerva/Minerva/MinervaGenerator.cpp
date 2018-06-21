@@ -150,7 +150,8 @@ const string minerva::MinervaGenerator::MINERVA_FILE_PREFIX = "\
 #include <thread>\n\
 #include <unistd.h>\n\
 \n\
-#include <FunctionSignature.h> // ParameterValueInfo\n\
+#include \"FunctionSignature.h\" // ParameterValueInfo\n\
+#include \"Channel.h\"\n\
 \n\
 using namespace hal;\n\
 \n\
@@ -187,10 +188,10 @@ void minerva::MinervaGenerator::generateMinerva(const string HAL_HEADER_PATH){
 			minerva_file<<"\tparameters.push_back({\""<<parameter_name_info.type<<"\","<<parameter_name_info.name<<"});\n";
 		}
 		if(function_signature.return_type == "void"){
-			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",params);\n";
+			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters);\n";
 		} else {
 			minerva_file<<"\tChannel<"<<function_signature.return_type<<"> c;\n";
-			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",params,c);\n";
+			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters,c);\n";
 			minerva_file<<"\treturn c.get();\n";
 		}
 		minerva_file<<"}\n\n";
