@@ -60,7 +60,7 @@ const string minerva::MinervaGenerator::MINERVA_FILE_PREFIX = "\
 \n\
 #pragma once\n\
 \n\
-#include \"../visa/visa.h\"\n\
+#include \"visa/visa.h\"\n\
 #include \"AnalogInternal.h\"\n\
 #include \"ConstantsInternal.h\"\n\
 #include \"DigitalInternal.h\"\n\
