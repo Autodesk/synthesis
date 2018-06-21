@@ -1,0 +1,10 @@
+
+matrix:
+  include:
+    - language: csharp
+      before_script:
+      - cd exporter/BxDRobotExporter
+
+    - language: csharp
+      before_Script:
+      - cd exporter/BxDFieldExporter
