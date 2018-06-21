@@ -70,9 +70,29 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 }
 
 void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs) {
+	Ptr<UserInterface> _ui = _APP->userInterface();
+	Ptr<Command> command = eventArgs->command();
+	if (!command)
+		return;
+	Ptr<CommandEvent> exec = command->execute();
+	if (!exec)
+		return;
 
+	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted_ = new ShowPaletteCommandExecuteHandler;
+	onShowPaletteCommandExecuted_->_APP = _APP;
+	exec->add(onShowPaletteCommandExecuted_);
 }
 
 void SendInfoCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs) {
+	// Send information to the palette.
+	Ptr<UserInterface> _ui = _APP->userInterface();
+	Ptr<Palettes> palettes = _ui->palettes();
+	if (!palettes)
+		return;
 
+	Ptr<Palette> palette = palettes->itemById("myPalette");
+	if (!palette)
+		return;
+
+	palette->sendInfoToHTML("send", "This is a message sent to the palette from Fusion. It has been sent times.");
 }
