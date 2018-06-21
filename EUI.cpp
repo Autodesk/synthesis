@@ -69,7 +69,8 @@ bool EUI::CreateWorkspace(){
 
 void EUI::configButtonWheel(){
     _AddWheelCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config");
-    _AddWheelCommandDef->resourceFolder("./Resources");
+	string propertyValue = _AddWheelCommandDef->resourceFolder();
+    _AddWheelCommandDef->resourceFolder("Resources");
 
 	Ptr<CommandCreatedEvent> commandCreatedEvent = _AddWheelCommandDef->commandCreated();
 	if (!commandCreatedEvent)
@@ -82,13 +83,15 @@ void EUI::configButtonWheel(){
 }
 
 void EUI::configButtonExporter(){
-    _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddExportButtonDefinition", "Export", "This will start the exporting process which will take approximately 5-10 minutes");
-    _ExportCommandDef->resourceFolder("Resources");
+    _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("Custom Panel Export", "Export", "This will open the export palette which will allow you to set theexport settings for your robot.");
+    _ExportCommandDef->resourceFolder("/Resources");
 
 	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDef->commandCreated();
 	if (!commandCreatedEvent)
 		return;	//fix this
-	ExportWheelCommandCreatedEventHandler * _commandCreatedEvent = new ExportWheelCommandCreatedEventHandler;
+	//ExportWheelCommandCreatedEventHandler * _commandCreatedEvent = new ExportWheelCommandCreatedEventHandler;
+	
+	ShowPaletteCommandCreatedHandler* _commandCreatedEvent = new ShowPaletteCommandCreatedHandler;
 	_commandCreatedEvent->_APP = _APP;	//copy references
 	bool isOk = commandCreatedEvent->add(_commandCreatedEvent);
 	if (!isOk)
