@@ -190,7 +190,7 @@ void minerva::MinervaGenerator::generateMinerva(const string HAL_HEADER_PATH){
 		if(function_signature.return_type == "void"){
 			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters);\n";
 		} else {
-			minerva_file<<"\tChannel<"<<function_signature.return_type<<"> c;\n";
+			minerva_file<<"\tminerva::Channel<"<<function_signature.return_type<<"> c;\n";
 			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters,c);\n";
 			minerva_file<<"\treturn c.get();\n";
 		}
