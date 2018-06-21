@@ -62,7 +62,7 @@ int Exporter::exportCommon() {
 		a += "\n";
 	}
 
-	binary->Write(bxda);
+	//binary->Write(bxda);
 	delete binary;					//Close the stream
 
 
