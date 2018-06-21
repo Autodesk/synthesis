@@ -49,4 +49,20 @@ namespace Synthesis {
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
 		Ptr<Application> _APP;
 	};
+
+	class ShowPaletteCommandCreatedHandler : public adsk::core::CommandCreatedEventHandler
+	{
+	public:
+		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+		Ptr<Application> _APP;
+	};
+
+
+	// Event handler for the commandExecuted event to send info to the palette.
+	class SendInfoCommandExecuteHandler : public adsk::core::CommandEventHandler
+	{
+	public:
+		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
+		Ptr<Application> _APP;
+	};
 }
