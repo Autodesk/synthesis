@@ -332,7 +332,7 @@ public class RobotCameraManager : MonoBehaviour
 
                 //Limit fov to range from 0 to 180
                 float fov = CurrentCamera.GetComponent<Camera>().fieldOfView;
-                if (fov >= 180) fov = 179; //Not quite 180 because at 180 it has this weird circle thing
+                if (fov > 179) fov = 179; //Not quite 180 because at 180 it has this weird circle thing
                 else if (fov < 0) fov = 0;
                 CurrentCamera.GetComponent<Camera>().fieldOfView = fov;
             }
