@@ -31,14 +31,23 @@ namespace Synthesis{
         Ptr<UserInterface> _UI;
         Ptr<Workspace> _WorkSpace;
         Ptr<Workspaces> _WorkSpaces;
-        Ptr<ToolbarPanel> _ToolbarPanel;
-        Ptr<ToolbarControls> _ToolbarControls;
+        Ptr<ToolbarPanel> _ToolbarPanelExport;
+		Ptr<ToolbarPanel> _ToolbarPanelLoad;
+		Ptr<ToolbarPanel> _ToolbarPanelHelp;
+
+        Ptr<ToolbarControls> _ToolbarControlsExport;
+		Ptr<ToolbarControls> _ToolbarControlsLoad;
+		Ptr<ToolbarControls> _ToolbarControlsHelp;
         
-        Ptr<CommandDefinition> _AddWheelCommandDef;
+        Ptr<CommandDefinition> _ExportCommandDefQuick;
         Ptr<CommandDefinition> _ExportCommandDef;
+		Ptr<CommandDefinition> _ExportCommandLoad;
+		Ptr<CommandDefinition> _ExportCommandHelp;
         
-        void configButtonWheel();
-        void configButtonExporter();
+        void configButtonQuickExport();
+        void configButtonExport();
+		void configButtonLoad();
+		void configButtonHelp();
         bool CreateWorkspace();
 		void configPalette();
         
