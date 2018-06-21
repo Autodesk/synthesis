@@ -3,10 +3,38 @@
     <head>
     </head>
     <body>
-        <p id='p1'>Click the button below or use the "Send info to HTML" command in the ADD-INS panel.</p>
+
+        <p id='exportSettings'>
+
+            Robot Name:  <input type="text" name="name"><br>
+            Team Number: <input type="text" name="number"><br>
+            Mass:        <input type="text" name="mass"><br>
+
+            <br>
+            <div class="dropdown">
+              <button class="dropbtn">Visual Mesh Accuracy</button>
+              <div class="dropdown-content">
+                <a href="#">Low</a>
+                <a href="#">Medium</a>
+                <a href="#">High</a>
+              </div>
+            </div>
+            <br>
+            <div class="dropdown">
+              <button class="dropbtn">Physical Mesh Accuracy</button>
+              <div class="dropdown-content">
+                <a href="#">Low</a>
+                <a href="#">Medium</a>
+                <a href="#">High</a>
+              </div>
+            </div>
+        </p>
+
         <button type='button' onclick='sendInfoToFusion()'>Click to send info to Fusion</button> 
         <br /><br />
+        
     </body>
+
     <script>
         function sendInfoToFusion(){
             var args = {
@@ -20,7 +48,7 @@
             try {
                 if (action == 'send') {
 					// Update a paragraph with the data passed in.
-					document.getElementById('p1').innerHTML = data;
+					document.getElementById('exporterSettings').innerHTML = data;
 				}
 				else if (action == 'debugger') {
                     debugger;

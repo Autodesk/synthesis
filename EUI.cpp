@@ -46,14 +46,29 @@ bool EUI::CreateWorkspace(){
         
         _WorkSpace->tooltip("Workspace for exporting fusion robot files");
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
-        _ToolbarPanel = _WorkSpace->toolbarPanels()->add("SynthesisToolbar" , "Robot");
-        _ToolbarControls = _ToolbarPanel->controls();
-        configButtonWheel();
-        configButtonExporter();
-        _ToolbarControls->addCommand(_AddWheelCommandDef)->isPromoted(true);
-        _ToolbarControls->addSeparator();
-        _ToolbarControls->addCommand(_ExportCommandDef)->isPromoted(true);
+        _ToolbarPanelExport = _WorkSpace->toolbarPanels()->add("SynthesisToolbarExport" , "Export");
+		_ToolbarControlsExport = _ToolbarPanelExport->controls();
+		int error = _APP->getLastError();
+		configButtonQuickExport();
+        configButtonExport();
+		configButtonLoad();
+		configButtonHelp();
+		_ToolbarControlsExport->addCommand(_ExportCommandDefQuick)->isPromoted(true);
+		_ToolbarControlsExport->addSeparator();
+		_ToolbarControlsExport->addCommand(_ExportCommandDef)->isPromoted(true);
+		//_ToolbarControlsExport->addCommand(_ExportCommandHelp)->isPromoted(true);
+		//_ToolbarControlsExport->addCommand(_ExportCommandLoad)->isPromoted(true);
         //_ToolbarControls->addSeparator();
+
+		//_ToolbarPanelLoad = _WorkSpace->toolbarPanels()->add("SynthesisToolbarLoad", "Load");
+		//configButtonLoad();
+		//_ToolbarPanelLoad->controls()->addCommand(_ExportCommandLoad)->isPromoted(true);
+
+		//_ToolbarPanelHelp = _WorkSpace->toolbarPanels()->add("SynthesisToolbarHelp", "Help");
+		//_ToolbarControlsHelp = _ToolbarPanelHelp->controls();
+		//configButtonHelp();
+		//_ToolbarControlsHelp->addCommand(_ExportCommandHelp)->isPromoted(true);
+
         _WorkSpace->activate();
 
 		//Write messagebox stuff here
@@ -67,10 +82,10 @@ bool EUI::CreateWorkspace(){
     }
 }
 
-void EUI::configButtonWheel(){
-    _AddWheelCommandDef = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config", "Resources/Sample");
+void EUI::configButtonQuickExport(){
+	_ExportCommandDefQuick = _UI->commandDefinitions()->addButtonDefinition("AddWheelButtonDefinition", "WheelExport", "Wheel Config", "Resources/Sample");
 
-	Ptr<CommandCreatedEvent> commandCreatedEvent = _AddWheelCommandDef->commandCreated();
+	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDefQuick->commandCreated();
 	if (!commandCreatedEvent)
 		return;	//fix this
 	ExportCommandCreatedEventHandler * _commandCreatedEvent = new ExportCommandCreatedEventHandler;
@@ -80,15 +95,43 @@ void EUI::configButtonWheel(){
 		return;
 }
 
-void EUI::configButtonExporter(){
-    _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("Custom Panel Export", "Export", "This will open the export palette which will allow you to set theexport settings for your robot.");
-    _ExportCommandDef->resourceFolder("resources/");
+void EUI::configButtonExport(){
+    _ExportCommandDef = _UI->commandDefinitions()->addButtonDefinition("CustomPanelExport", "Export", "This will open the export palette which will allow you to set theexport settings for your robot.", "Resources/Sample");
 
 	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDef->commandCreated();
 	if (!commandCreatedEvent)
 		return;	//fix this
 	//ExportWheelCommandCreatedEventHandler * _commandCreatedEvent = new ExportWheelCommandCreatedEventHandler;
 	
+	ShowPaletteCommandCreatedHandler* _commandCreatedEvent = new ShowPaletteCommandCreatedHandler;
+	_commandCreatedEvent->_APP = _APP;	//copy references
+	bool isOk = commandCreatedEvent->add(_commandCreatedEvent);
+	if (!isOk)
+		return;
+}
+
+void EUI::configButtonHelp() {
+	_ExportCommandHelp = _UI->commandDefinitions()->addButtonDefinition("ExportHelpButton", "Help", "Links you to our webpage where you can find information on the exporting steps.", "Resources/Sample");
+
+	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDef->commandCreated();
+	if (!commandCreatedEvent)
+		return;	//fix this
+
+	ShowPaletteCommandCreatedHandler* _commandCreatedEvent = new ShowPaletteCommandCreatedHandler;
+	_commandCreatedEvent->_APP = _APP;	//copy references
+	bool isOk = commandCreatedEvent->add(_commandCreatedEvent);
+	if (!isOk)
+		return;
+
+}
+
+void EUI::configButtonLoad() {
+	_ExportCommandLoad = _UI->commandDefinitions()->addButtonDefinition("ExportLoadButton", "Load", "Links you to our webpage where you can find information on the exporting steps.", "Resources/Export");
+
+	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDef->commandCreated();
+	if (!commandCreatedEvent)
+		return;	//fix this
+
 	ShowPaletteCommandCreatedHandler* _commandCreatedEvent = new ShowPaletteCommandCreatedHandler;
 	_commandCreatedEvent->_APP = _APP;	//copy references
 	bool isOk = commandCreatedEvent->add(_commandCreatedEvent);
