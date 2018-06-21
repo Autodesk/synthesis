@@ -159,32 +159,11 @@ namespace BxDRobotExporter
             #endregion
 
             #region Setup Buttons
-            //Generic Begin Export
-            GenericExportButton = ControlDefs.AddButtonDefinition("Begin Export", "BxD:RobotExporter:BeginExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens a window with information on each export mode", ExportRobotIconSmall, ExportRobotIconLarge);
-            GenericExportButton.OnExecute += BeginGenericExport_OnExecute;
-            GenericExportButton.OnHelp += _OnHelp;
-
-            //Begin Advanced Export
-            AdvancedExportButton = ControlDefs.AddButtonDefinition("Begin Advanced Export", "BxD:RobotExporter:BeginAdvancedExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports your robot in advanced mode. Recommended if you intend to emulate code.", ExportRobotIconSmall, ExportRobotIconLarge);
-            AdvancedExportButton.OnExecute += BeginAdvancedExport_OnExecute;
-            AdvancedExportButton.OnHelp += _OnHelp;
-
             //Begin Wizard Export
             WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Export", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports the robot with the aid of a wizard to guide you through the process.", WizardExportIconSmall, WizardExportIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
-
-            //Begin One Click Export
-            OneClickExportButton = ControlDefs.AddButtonDefinition("Begin One Click Export", "BxD:RobotExporter:BeginOneClickExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports the robot with minimal user input. (Recommended for beginners)", OneClickExportIconSmall, OneClickExportIconLarge);
-            OneClickExportButton.OnExecute += BeginOneClickExport_OnExecute;
-            OneClickExportButton.OnHelp += _OnHelp;
-
-            //Begin Export Control Definition
-            ExportButtonCollection = MainApplication.TransientObjects.CreateObjectCollection();
-            ExportButtonCollection.Add(WizardExportButton);
-            ExportButtonCollection.Add(OneClickExportButton);
-            ExportButtonCollection.Add(AdvancedExportButton);
-            BeginPanel.CommandControls.AddSplitButton(GenericExportButton, ExportButtonCollection, true);
+            BeginPanel.CommandControls.AddButton(WizardExportButton, true);
             
             //Load Exported Robot
             LoadExportedRobotButton = ControlDefs.AddButtonDefinition("Load Exported Robot", "BxD:RobotExporter:LoadExportedRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Loads a robot you have already exported for further editing.", LoadExportedRobotIconSmall, LoadExportedRobotIconLarge);
