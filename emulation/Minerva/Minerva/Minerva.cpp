@@ -115,32 +115,40 @@ void HAL_SetAccelerometerRange(HAL_AccelerometerRange range){
 
 double HAL_GetAccelerometerX(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAccelerometerX",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetAccelerometerY(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAccelerometerY",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetAccelerometerZ(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAccelerometerZ",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_IsAccumulatorChannel(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_IsAccumulatorChannel",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_InitAccumulator(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
@@ -177,18 +185,22 @@ int64_t HAL_GetAccumulatorValue(HAL_AnalogInputHandle analogPortHandle, int32_t*
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_GetAccumulatorValue",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int64_t HAL_GetAccumulatorCount(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_GetAccumulatorCount",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_GetAccumulatorOutput(HAL_AnalogInputHandle analogPortHandle, int64_t* value, int64_t* count, int32_t* status){
@@ -204,9 +216,11 @@ HAL_GyroHandle HAL_InitializeAnalogGyro(HAL_AnalogInputHandle handle, int32_t* s
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",handle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_GyroHandle> c;
+	minerva::Channel<HAL_GyroHandle> c;
 	callFunc("HAL_InitializeAnalogGyro",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetupAnalogGyro(HAL_GyroHandle handle, int32_t* status){
@@ -266,45 +280,55 @@ double HAL_GetAnalogGyroAngle(HAL_GyroHandle handle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_GyroHandle",handle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAnalogGyroAngle",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetAnalogGyroRate(HAL_GyroHandle handle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_GyroHandle",handle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAnalogGyroRate",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetAnalogGyroOffset(HAL_GyroHandle handle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_GyroHandle",handle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAnalogGyroOffset",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetAnalogGyroCenter(HAL_GyroHandle handle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_GyroHandle",handle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAnalogGyroCenter",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_AnalogInputHandle HAL_InitializeAnalogInputPort(HAL_PortHandle portHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_PortHandle",portHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_AnalogInputHandle> c;
+	minerva::Channel<HAL_AnalogInputHandle> c;
 	callFunc("HAL_InitializeAnalogInputPort",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeAnalogInputPort(HAL_AnalogInputHandle analogPortHandle){
@@ -316,17 +340,21 @@ void HAL_FreeAnalogInputPort(HAL_AnalogInputHandle analogPortHandle){
 HAL_Bool HAL_CheckAnalogModule(int32_t module){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckAnalogModule",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_CheckAnalogInputChannel(int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckAnalogInputChannel",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetAnalogSampleRate(double samplesPerSecond, int32_t* status){
@@ -339,9 +367,11 @@ void HAL_SetAnalogSampleRate(double samplesPerSecond, int32_t* status){
 double HAL_GetAnalogSampleRate(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAnalogSampleRate",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetAnalogAverageBits(HAL_AnalogInputHandle analogPortHandle, int32_t bits, int32_t* status){
@@ -356,9 +386,11 @@ int32_t HAL_GetAnalogAverageBits(HAL_AnalogInputHandle analogPortHandle, int32_t
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAnalogAverageBits",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetAnalogOversampleBits(HAL_AnalogInputHandle analogPortHandle, int32_t bits, int32_t* status){
@@ -373,27 +405,33 @@ int32_t HAL_GetAnalogOversampleBits(HAL_AnalogInputHandle analogPortHandle, int3
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAnalogOversampleBits",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetAnalogValue(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAnalogValue",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetAnalogAverageValue(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAnalogAverageValue",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetAnalogVoltsToValue(HAL_AnalogInputHandle analogPortHandle, double voltage, int32_t* status){
@@ -401,54 +439,66 @@ int32_t HAL_GetAnalogVoltsToValue(HAL_AnalogInputHandle analogPortHandle, double
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"double",voltage});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAnalogVoltsToValue",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetAnalogVoltage(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAnalogVoltage",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetAnalogAverageVoltage(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAnalogAverageVoltage",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetAnalogLSBWeight(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAnalogLSBWeight",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetAnalogOffset(HAL_AnalogInputHandle analogPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogInputHandle",analogPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAnalogOffset",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_AnalogOutputHandle HAL_InitializeAnalogOutputPort(HAL_PortHandle portHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_PortHandle",portHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_AnalogOutputHandle> c;
+	minerva::Channel<HAL_AnalogOutputHandle> c;
 	callFunc("HAL_InitializeAnalogOutputPort",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeAnalogOutputPort(HAL_AnalogOutputHandle analogOutputHandle){
@@ -469,17 +519,21 @@ double HAL_GetAnalogOutput(HAL_AnalogOutputHandle analogOutputHandle, int32_t* s
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogOutputHandle",analogOutputHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetAnalogOutput",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_CheckAnalogOutputChannel(int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckAnalogOutputChannel",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_AnalogTriggerHandle HAL_InitializeAnalogTrigger(HAL_AnalogInputHandle portHandle, int32_t* index, int32_t* status){
@@ -487,9 +541,11 @@ HAL_AnalogTriggerHandle HAL_InitializeAnalogTrigger(HAL_AnalogInputHandle portHa
 	parameters.push_back({"HAL_AnalogInputHandle",portHandle});
 	parameters.push_back({"int32_t*",index});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_AnalogTriggerHandle> c;
+	minerva::Channel<HAL_AnalogTriggerHandle> c;
 	callFunc("HAL_InitializeAnalogTrigger",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_CleanAnalogTrigger(HAL_AnalogTriggerHandle analogTriggerHandle, int32_t* status){
@@ -537,18 +593,22 @@ HAL_Bool HAL_GetAnalogTriggerInWindow(HAL_AnalogTriggerHandle analogTriggerHandl
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogTriggerHandle",analogTriggerHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetAnalogTriggerInWindow",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetAnalogTriggerTriggerState(HAL_AnalogTriggerHandle analogTriggerHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_AnalogTriggerHandle",analogTriggerHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetAnalogTriggerTriggerState",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetAnalogTriggerOutput(HAL_AnalogTriggerHandle analogTriggerHandle, HAL_AnalogTriggerType type, int32_t* status){
@@ -556,35 +616,43 @@ HAL_Bool HAL_GetAnalogTriggerOutput(HAL_AnalogTriggerHandle analogTriggerHandle,
 	parameters.push_back({"HAL_AnalogTriggerHandle",analogTriggerHandle});
 	parameters.push_back({"HAL_AnalogTriggerType",type});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetAnalogTriggerOutput",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_CompressorHandle HAL_InitializeCompressor(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_CompressorHandle> c;
+	minerva::Channel<HAL_CompressorHandle> c;
 	callFunc("HAL_InitializeCompressor",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_CheckCompressorModule(int32_t module){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckCompressorModule",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCompressor(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressor",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetCompressorClosedLoopControl(HAL_CompressorHandle compressorHandle, HAL_Bool value, int32_t* status){
@@ -599,88 +667,108 @@ HAL_Bool HAL_GetCompressorClosedLoopControl(HAL_CompressorHandle compressorHandl
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressorClosedLoopControl",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCompressorPressureSwitch(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressorPressureSwitch",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetCompressorCurrent(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetCompressorCurrent",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCompressorCurrentTooHighFault(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressorCurrentTooHighFault",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCompressorCurrentTooHighStickyFault(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressorCurrentTooHighStickyFault",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCompressorShortedStickyFault(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressorShortedStickyFault",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCompressorShortedFault(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressorShortedFault",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCompressorNotConnectedStickyFault(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressorNotConnectedStickyFault",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCompressorNotConnectedFault(HAL_CompressorHandle compressorHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CompressorHandle",compressorHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCompressorNotConnectedFault",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetSystemClockTicksPerMicrosecond(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetSystemClockTicksPerMicrosecond",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_CounterHandle HAL_InitializeCounter(HAL_Counter_Mode mode, int32_t* index, int32_t* status){
@@ -688,9 +776,11 @@ HAL_CounterHandle HAL_InitializeCounter(HAL_Counter_Mode mode, int32_t* index, i
 	parameters.push_back({"HAL_Counter_Mode",mode});
 	parameters.push_back({"int32_t*",index});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_CounterHandle> c;
+	minerva::Channel<HAL_CounterHandle> c;
 	callFunc("HAL_InitializeCounter",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeCounter(HAL_CounterHandle counterHandle, int32_t* status){
@@ -792,9 +882,11 @@ int32_t HAL_GetCounterSamplesToAverage(HAL_CounterHandle counterHandle, int32_t*
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CounterHandle",counterHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetCounterSamplesToAverage",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetCounterSamplesToAverage(HAL_CounterHandle counterHandle, int32_t samplesToAverage, int32_t* status){
@@ -816,18 +908,22 @@ int32_t HAL_GetCounter(HAL_CounterHandle counterHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CounterHandle",counterHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetCounter",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetCounterPeriod(HAL_CounterHandle counterHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CounterHandle",counterHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetCounterPeriod",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetCounterMaxPeriod(HAL_CounterHandle counterHandle, double maxPeriod, int32_t* status){
@@ -850,18 +946,22 @@ HAL_Bool HAL_GetCounterStopped(HAL_CounterHandle counterHandle, int32_t* status)
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CounterHandle",counterHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCounterStopped",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetCounterDirection(HAL_CounterHandle counterHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_CounterHandle",counterHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetCounterDirection",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetCounterReverseDirection(HAL_CounterHandle counterHandle, HAL_Bool reverseDirection, int32_t* status){
@@ -877,9 +977,11 @@ HAL_NotifierHandle HAL_InitializeNotifierNonThreadedUnsafe(HAL_NotifierProcessFu
 	parameters.push_back({"HAL_NotifierProcessFunction",process});
 	parameters.push_back({"void*",param});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_NotifierHandle> c;
+	minerva::Channel<HAL_NotifierHandle> c;
 	callFunc("HAL_InitializeNotifierNonThreadedUnsafe",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_DigitalHandle HAL_InitializeDIOPort(HAL_PortHandle portHandle, HAL_Bool input, int32_t* status){
@@ -887,17 +989,21 @@ HAL_DigitalHandle HAL_InitializeDIOPort(HAL_PortHandle portHandle, HAL_Bool inpu
 	parameters.push_back({"HAL_PortHandle",portHandle});
 	parameters.push_back({"HAL_Bool",input});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_DigitalHandle> c;
+	minerva::Channel<HAL_DigitalHandle> c;
 	callFunc("HAL_InitializeDIOPort",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_CheckDIOChannel(int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckDIOChannel",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeDIOPort(HAL_DigitalHandle dioPortHandle){
@@ -909,9 +1015,11 @@ void HAL_FreeDIOPort(HAL_DigitalHandle dioPortHandle){
 HAL_DigitalPWMHandle HAL_AllocateDigitalPWM(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_DigitalPWMHandle> c;
+	minerva::Channel<HAL_DigitalPWMHandle> c;
 	callFunc("HAL_AllocateDigitalPWM",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeDigitalPWM(HAL_DigitalPWMHandle pwmGenerator, int32_t* status){
@@ -956,18 +1064,22 @@ HAL_Bool HAL_GetDIO(HAL_DigitalHandle dioPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_DigitalHandle",dioPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetDIO",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetDIODirection(HAL_DigitalHandle dioPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_DigitalHandle",dioPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetDIODirection",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_Pulse(HAL_DigitalHandle dioPortHandle, double pulseLength, int32_t* status){
@@ -982,17 +1094,21 @@ HAL_Bool HAL_IsPulsing(HAL_DigitalHandle dioPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_DigitalHandle",dioPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_IsPulsing",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_IsAnyPulsing(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_IsAnyPulsing",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetFilterSelect(HAL_DigitalHandle dioPortHandle, int32_t filterIndex, int32_t* status){
@@ -1007,9 +1123,11 @@ int32_t HAL_GetFilterSelect(HAL_DigitalHandle dioPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_DigitalHandle",dioPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetFilterSelect",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetFilterPeriod(int32_t filterIndex, int64_t value, int32_t* status){
@@ -1024,9 +1142,11 @@ int64_t HAL_GetFilterPeriod(int32_t filterIndex, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",filterIndex});
 	parameters.push_back({"int32_t*",status});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_GetFilterPeriod",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_SetErrorData(const char* errors, int32_t errorsLength, int32_t waitMs){
@@ -1034,9 +1154,11 @@ int32_t HAL_SetErrorData(const char* errors, int32_t errorsLength, int32_t waitM
 	parameters.push_back({"const char*",errors});
 	parameters.push_back({"int32_t",errorsLength});
 	parameters.push_back({"int32_t",waitMs});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_SetErrorData",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_SendError(HAL_Bool isError, int32_t errorCode, HAL_Bool isLVCode, const char* details, const char* location, const char* callStack, HAL_Bool printMsg){
@@ -1048,85 +1170,105 @@ int32_t HAL_SendError(HAL_Bool isError, int32_t errorCode, HAL_Bool isLVCode, co
 	parameters.push_back({"const char*",location});
 	parameters.push_back({"const char*",callStack});
 	parameters.push_back({"HAL_Bool",printMsg});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_SendError",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetControlWord(HAL_ControlWord* controlWord){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_ControlWord*",controlWord});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetControlWord",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_AllianceStationID HAL_GetAllianceStation(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_AllianceStationID> c;
+	minerva::Channel<HAL_AllianceStationID> c;
 	callFunc("HAL_GetAllianceStation",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",joystickNum});
 	parameters.push_back({"HAL_JoystickAxes*",axes});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetJoystickAxes",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetJoystickPOVs(int32_t joystickNum, HAL_JoystickPOVs* povs){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",joystickNum});
 	parameters.push_back({"HAL_JoystickPOVs*",povs});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetJoystickPOVs",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetJoystickButtons(int32_t joystickNum, HAL_JoystickButtons* buttons){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",joystickNum});
 	parameters.push_back({"HAL_JoystickButtons*",buttons});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetJoystickButtons",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetJoystickDescriptor(int32_t joystickNum, HAL_JoystickDescriptor* desc){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",joystickNum});
 	parameters.push_back({"HAL_JoystickDescriptor*",desc});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetJoystickDescriptor",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetJoystickIsXbox(int32_t joystickNum){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",joystickNum});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetJoystickIsXbox",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetJoystickType(int32_t joystickNum){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",joystickNum});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetJoystickType",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 char* HAL_GetJoystickName(int32_t joystickNum){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",joystickNum});
-	Channel<char*> c;
+	minerva::Channel<char*> c;
 	callFunc("HAL_GetJoystickName",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeJoystickName(char* name){
@@ -1139,9 +1281,11 @@ int32_t HAL_GetJoystickAxisType(int32_t joystickNum, int32_t axis){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",joystickNum});
 	parameters.push_back({"int32_t",axis});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetJoystickAxisType",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_SetJoystickOutputs(int32_t joystickNum, int64_t outputs, int32_t leftRumble, int32_t rightRumble){
@@ -1150,17 +1294,21 @@ int32_t HAL_SetJoystickOutputs(int32_t joystickNum, int64_t outputs, int32_t lef
 	parameters.push_back({"int64_t",outputs});
 	parameters.push_back({"int32_t",leftRumble});
 	parameters.push_back({"int32_t",rightRumble});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_SetJoystickOutputs",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetMatchTime(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetMatchTime",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_ReleaseDSMutex(){
@@ -1170,9 +1318,11 @@ void HAL_ReleaseDSMutex(){
 
 bool HAL_IsNewControlData(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<bool> c;
+	minerva::Channel<bool> c;
 	callFunc("HAL_IsNewControlData",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_WaitForDSData(){
@@ -1183,9 +1333,11 @@ void HAL_WaitForDSData(){
 HAL_Bool HAL_WaitForDSDataTimeout(double timeout){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"double",timeout});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_WaitForDSDataTimeout",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_InitializeDriverStation(){
@@ -1227,9 +1379,11 @@ HAL_EncoderHandle HAL_InitializeEncoder(HAL_Handle digitalSourceHandleA, HAL_Ana
 	parameters.push_back({"HAL_Bool",reverseDirection});
 	parameters.push_back({"HAL_EncoderEncodingType",encodingType});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_EncoderHandle> c;
+	minerva::Channel<HAL_EncoderHandle> c;
 	callFunc("HAL_InitializeEncoder",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeEncoder(HAL_EncoderHandle encoderHandle, int32_t* status){
@@ -1243,27 +1397,33 @@ int32_t HAL_GetEncoder(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetEncoder",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetEncoderRaw(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetEncoderRaw",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetEncoderEncodingScale(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetEncoderEncodingScale",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_ResetEncoder(HAL_EncoderHandle encoderHandle, int32_t* status){
@@ -1277,9 +1437,11 @@ double HAL_GetEncoderPeriod(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetEncoderPeriod",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetEncoderMaxPeriod(HAL_EncoderHandle encoderHandle, double maxPeriod, int32_t* status){
@@ -1294,36 +1456,44 @@ HAL_Bool HAL_GetEncoderStopped(HAL_EncoderHandle encoderHandle, int32_t* status)
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetEncoderStopped",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetEncoderDirection(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetEncoderDirection",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetEncoderDistance(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetEncoderDistance",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetEncoderRate(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetEncoderRate",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetEncoderMinRate(HAL_EncoderHandle encoderHandle, double minRate, int32_t* status){
@@ -1362,9 +1532,11 @@ int32_t HAL_GetEncoderSamplesToAverage(HAL_EncoderHandle encoderHandle, int32_t*
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetEncoderSamplesToAverage",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetEncoderIndexSource(HAL_EncoderHandle encoderHandle, HAL_Handle digitalSourceHandle, HAL_AnalogTriggerType analogTriggerType, HAL_EncoderIndexingType type, int32_t* status){
@@ -1381,91 +1553,113 @@ int32_t HAL_GetEncoderFPGAIndex(HAL_EncoderHandle encoderHandle, int32_t* status
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetEncoderFPGAIndex",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetEncoderDecodingScaleFactor(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetEncoderDecodingScaleFactor",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetEncoderDistancePerPulse(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetEncoderDistancePerPulse",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_EncoderEncodingType HAL_GetEncoderEncodingType(HAL_EncoderHandle encoderHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_EncoderHandle",encoderHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_EncoderEncodingType> c;
+	minerva::Channel<HAL_EncoderEncodingType> c;
 	callFunc("HAL_GetEncoderEncodingType",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 const char* HAL_GetErrorMessage(int32_t code){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",code});
-	Channel<const char*> c;
+	minerva::Channel<const char*> c;
 	callFunc("HAL_GetErrorMessage",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetFPGAVersion(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetFPGAVersion",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int64_t HAL_GetFPGARevision(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_GetFPGARevision",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_RuntimeType HAL_GetRuntimeType(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<HAL_RuntimeType> c;
+	minerva::Channel<HAL_RuntimeType> c;
 	callFunc("HAL_GetRuntimeType",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetFPGAButton(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetFPGAButton",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetSystemActive(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetSystemActive",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetBrownedOut(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetBrownedOut",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_BaseInitialize(int32_t* status){
@@ -1477,35 +1671,43 @@ void HAL_BaseInitialize(int32_t* status){
 HAL_PortHandle HAL_GetPort(int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_PortHandle> c;
+	minerva::Channel<HAL_PortHandle> c;
 	callFunc("HAL_GetPort",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_PortHandle HAL_GetPortWithModule(int32_t module, int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_PortHandle> c;
+	minerva::Channel<HAL_PortHandle> c;
 	callFunc("HAL_GetPortWithModule",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 uint64_t HAL_GetFPGATime(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<uint64_t> c;
+	minerva::Channel<uint64_t> c;
 	callFunc("HAL_GetFPGATime",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_Initialize(int32_t timeout, int32_t mode){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",timeout});
 	parameters.push_back({"int32_t",mode});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_Initialize",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context = 0, const char* feature = nullptr){
@@ -1514,9 +1716,11 @@ int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context = 0
 	parameters.push_back({"int32_t",instanceNumber});
 	parameters.push_back({"int32_t context =",0});
 	parameters.push_back({"const char* feature =",nullptr});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_Report",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context, const char* feature){
@@ -1525,17 +1729,21 @@ int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context, co
 	parameters.push_back({"int32_t",instanceNumber});
 	parameters.push_back({"int32_t",context});
 	parameters.push_back({"const char*",feature});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_Report",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 static inline HAL_HandleEnum getHandleType(HAL_Handle handle) { // mask first 8 bits and cast to enum return static_cast<HAL_HandleEnum>((handle >> 24) & 0xff){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_Handle handle) { // mask first 8 bits and cast to enum return static_cast<HAL_HandleEnum>((handle >> 24) &",0xff});
-	Channel<static inline> c;
+	minerva::Channel<static inline> c;
 	callFunc("HAL_HandleEnum getHandleType",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_InitializeI2C(HAL_I2CPort port, int32_t* status){
@@ -1553,9 +1761,11 @@ int32_t HAL_TransactionI2C(HAL_I2CPort port, int32_t deviceAddress, uint8_t* dat
 	parameters.push_back({"int32_t",sendSize});
 	parameters.push_back({"uint8_t*",dataReceived});
 	parameters.push_back({"int32_t",receiveSize});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_TransactionI2C",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_WriteI2C(HAL_I2CPort port, int32_t deviceAddress, uint8_t* dataToSend, int32_t sendSize){
@@ -1564,9 +1774,11 @@ int32_t HAL_WriteI2C(HAL_I2CPort port, int32_t deviceAddress, uint8_t* dataToSen
 	parameters.push_back({"int32_t",deviceAddress});
 	parameters.push_back({"uint8_t*",dataToSend});
 	parameters.push_back({"int32_t",sendSize});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_WriteI2C",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_ReadI2C(HAL_I2CPort port, int32_t deviceAddress, uint8_t* buffer, int32_t count){
@@ -1575,9 +1787,11 @@ int32_t HAL_ReadI2C(HAL_I2CPort port, int32_t deviceAddress, uint8_t* buffer, in
 	parameters.push_back({"int32_t",deviceAddress});
 	parameters.push_back({"uint8_t*",buffer});
 	parameters.push_back({"int32_t",count});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_ReadI2C",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_CloseI2C(HAL_I2CPort port){
@@ -1590,9 +1804,11 @@ HAL_InterruptHandle HAL_InitializeInterrupts(HAL_Bool watcher, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_Bool",watcher});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_InterruptHandle> c;
+	minerva::Channel<HAL_InterruptHandle> c;
 	callFunc("HAL_InitializeInterrupts",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_CleanInterrupts(HAL_InterruptHandle interruptHandle, int32_t* status){
@@ -1608,9 +1824,11 @@ int64_t HAL_WaitForInterrupt(HAL_InterruptHandle interruptHandle, double timeout
 	parameters.push_back({"double",timeout});
 	parameters.push_back({"HAL_Bool",ignorePrevious});
 	parameters.push_back({"int32_t*",status});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_WaitForInterrupt",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_EnableInterrupts(HAL_InterruptHandle interruptHandle, int32_t* status){
@@ -1631,18 +1849,22 @@ double HAL_ReadInterruptRisingTimestamp(HAL_InterruptHandle interruptHandle, int
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_InterruptHandle",interruptHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_ReadInterruptRisingTimestamp",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_ReadInterruptFallingTimestamp(HAL_InterruptHandle interruptHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_InterruptHandle",interruptHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_ReadInterruptFallingTimestamp",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_RequestInterrupts(HAL_InterruptHandle interruptHandle, HAL_Handle digitalSourceHandle, HAL_AnalogTriggerType analogTriggerType, int32_t* status){
@@ -1686,9 +1908,11 @@ HAL_NotifierHandle HAL_InitializeNotifier(HAL_NotifierProcessFunction process, v
 	parameters.push_back({"HAL_NotifierProcessFunction",process});
 	parameters.push_back({"void*",param});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_NotifierHandle> c;
+	minerva::Channel<HAL_NotifierHandle> c;
 	callFunc("HAL_InitializeNotifier",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_CleanNotifier(HAL_NotifierHandle notifierHandle, int32_t* status){
@@ -1702,9 +1926,11 @@ void* HAL_GetNotifierParam(HAL_NotifierHandle notifierHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_NotifierHandle",notifierHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<void*> c;
+	minerva::Channel<void*> c;
 	callFunc("HAL_GetNotifierParam",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_UpdateNotifierAlarm(HAL_NotifierHandle notifierHandle, uint64_t triggerTime, int32_t* status){
@@ -1820,9 +2046,11 @@ int32_t HAL_GetOSSerialBytesReceived(HAL_SerialPort port, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_SerialPort",port});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetOSSerialBytesReceived",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_ReadOSSerial(HAL_SerialPort port, char* buffer, int32_t count, int32_t* status){
@@ -1831,9 +2059,11 @@ int32_t HAL_ReadOSSerial(HAL_SerialPort port, char* buffer, int32_t count, int32
 	parameters.push_back({"char*",buffer});
 	parameters.push_back({"int32_t",count});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_ReadOSSerial",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_WriteOSSerial(HAL_SerialPort port, const char* buffer, int32_t count, int32_t* status){
@@ -1842,9 +2072,11 @@ int32_t HAL_WriteOSSerial(HAL_SerialPort port, const char* buffer, int32_t count
 	parameters.push_back({"const char*",buffer});
 	parameters.push_back({"int32_t",count});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_WriteOSSerial",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FlushOSSerial(HAL_SerialPort port, int32_t* status){
@@ -1878,35 +2110,43 @@ void HAL_InitializePDP(int32_t module, int32_t* status){
 HAL_Bool HAL_CheckPDPChannel(int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckPDPChannel",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_CheckPDPModule(int32_t module){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckPDPModule",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetPDPTemperature(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetPDPTemperature",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetPDPVoltage(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetPDPVoltage",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetPDPChannelCurrent(int32_t module, int32_t channel, int32_t* status){
@@ -1914,36 +2154,44 @@ double HAL_GetPDPChannelCurrent(int32_t module, int32_t channel, int32_t* status
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t",channel});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetPDPChannelCurrent",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetPDPTotalCurrent(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetPDPTotalCurrent",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetPDPTotalPower(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetPDPTotalPower",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetPDPTotalEnergy(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetPDPTotalEnergy",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_ResetPDPTotalEnergy(int32_t module, int32_t* status){
@@ -1962,249 +2210,315 @@ void HAL_ClearPDPStickyFaults(int32_t module, int32_t* status){
 
 int32_t HAL_GetNumAccumulators(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumAccumulators",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumAnalogTriggers(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumAnalogTriggers",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumAnalogInputs(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumAnalogInputs",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumAnalogOutputs(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumAnalogOutputs",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumCounters(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumCounters",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumDigitalHeaders(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumDigitalHeaders",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumPWMHeaders(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumPWMHeaders",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumDigitalChannels(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumDigitalChannels",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumPWMChannels(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumPWMChannels",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumDigitalPWMOutputs(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumDigitalPWMOutputs",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumEncoders(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumEncoders",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumInterrupts(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumInterrupts",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumRelayChannels(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumRelayChannels",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumRelayHeaders(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumRelayHeaders",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumPCMModules(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumPCMModules",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumSolenoidChannels(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumSolenoidChannels",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumPDPModules(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumPDPModules",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetNumPDPChannels(){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetNumPDPChannels",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetVinVoltage(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetVinVoltage",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetVinCurrent(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetVinCurrent",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetUserVoltage6V(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetUserVoltage6V",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetUserCurrent6V(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetUserCurrent6V",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetUserActive6V(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetUserActive6V",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetUserCurrentFaults6V(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetUserCurrentFaults6V",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetUserVoltage5V(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetUserVoltage5V",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetUserCurrent5V(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetUserCurrent5V",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetUserActive5V(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetUserActive5V",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetUserCurrentFaults5V(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetUserCurrentFaults5V",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetUserVoltage3V3(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetUserVoltage3V3",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetUserCurrent3V3(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetUserCurrent3V3",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetUserActive3V3(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetUserActive3V3",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetUserCurrentFaults3V3(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetUserCurrentFaults3V3",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_DigitalHandle HAL_InitializePWMPort(HAL_PortHandle portHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_PortHandle",portHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_DigitalHandle> c;
+	minerva::Channel<HAL_DigitalHandle> c;
 	callFunc("HAL_InitializePWMPort",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreePWMPort(HAL_DigitalHandle pwmPortHandle, int32_t* status){
@@ -2217,9 +2531,11 @@ void HAL_FreePWMPort(HAL_DigitalHandle pwmPortHandle, int32_t* status){
 HAL_Bool HAL_CheckPWMChannel(int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckPWMChannel",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetPWMConfig(HAL_DigitalHandle pwmPortHandle, double maxPwm, double deadbandMaxPwm, double centerPwm, double deadbandMinPwm, double minPwm, int32_t* status){
@@ -2270,9 +2586,11 @@ HAL_Bool HAL_GetPWMEliminateDeadband(HAL_DigitalHandle pwmPortHandle, int32_t* s
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_DigitalHandle",pwmPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetPWMEliminateDeadband",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetPWMRaw(HAL_DigitalHandle pwmPortHandle, int32_t value, int32_t* status){
@@ -2310,27 +2628,33 @@ int32_t HAL_GetPWMRaw(HAL_DigitalHandle pwmPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_DigitalHandle",pwmPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetPWMRaw",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetPWMSpeed(HAL_DigitalHandle pwmPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_DigitalHandle",pwmPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetPWMSpeed",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetPWMPosition(HAL_DigitalHandle pwmPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_DigitalHandle",pwmPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetPWMPosition",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_LatchPWMZero(HAL_DigitalHandle pwmPortHandle, int32_t* status){
@@ -2351,9 +2675,11 @@ void HAL_SetPWMPeriodScale(HAL_DigitalHandle pwmPortHandle, int32_t squelchMask,
 int32_t HAL_GetLoopTiming(int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetLoopTiming",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_RelayHandle HAL_InitializeRelayPort(HAL_PortHandle portHandle, HAL_Bool fwd, int32_t* status){
@@ -2361,9 +2687,11 @@ HAL_RelayHandle HAL_InitializeRelayPort(HAL_PortHandle portHandle, HAL_Bool fwd,
 	parameters.push_back({"HAL_PortHandle",portHandle});
 	parameters.push_back({"HAL_Bool",fwd});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_RelayHandle> c;
+	minerva::Channel<HAL_RelayHandle> c;
 	callFunc("HAL_InitializeRelayPort",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeRelayPort(HAL_RelayHandle relayPortHandle){
@@ -2375,9 +2703,11 @@ void HAL_FreeRelayPort(HAL_RelayHandle relayPortHandle){
 HAL_Bool HAL_CheckRelayChannel(int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckRelayChannel",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetRelay(HAL_RelayHandle relayPortHandle, HAL_Bool on, int32_t* status){
@@ -2392,9 +2722,11 @@ HAL_Bool HAL_GetRelay(HAL_RelayHandle relayPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_RelayHandle",relayPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetRelay",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_InitializeSerialPort(HAL_SerialPort port, int32_t* status){
@@ -2495,9 +2827,11 @@ int32_t HAL_GetSerialBytesReceived(HAL_SerialPort port, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_SerialPort",port});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetSerialBytesReceived",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_ReadSerial(HAL_SerialPort port, char* buffer, int32_t count, int32_t* status){
@@ -2506,9 +2840,11 @@ int32_t HAL_ReadSerial(HAL_SerialPort port, char* buffer, int32_t count, int32_t
 	parameters.push_back({"char*",buffer});
 	parameters.push_back({"int32_t",count});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_ReadSerial",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_WriteSerial(HAL_SerialPort port, const char* buffer, int32_t count, int32_t* status){
@@ -2517,9 +2853,11 @@ int32_t HAL_WriteSerial(HAL_SerialPort port, const char* buffer, int32_t count, 
 	parameters.push_back({"const char*",buffer});
 	parameters.push_back({"int32_t",count});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_WriteSerial",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FlushSerial(HAL_SerialPort port, int32_t* status){
@@ -2547,9 +2885,11 @@ HAL_SolenoidHandle HAL_InitializeSolenoidPort(HAL_PortHandle portHandle, int32_t
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_PortHandle",portHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_SolenoidHandle> c;
+	minerva::Channel<HAL_SolenoidHandle> c;
 	callFunc("HAL_InitializeSolenoidPort",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_FreeSolenoidPort(HAL_SolenoidHandle solenoidPortHandle){
@@ -2561,35 +2901,43 @@ void HAL_FreeSolenoidPort(HAL_SolenoidHandle solenoidPortHandle){
 HAL_Bool HAL_CheckSolenoidModule(int32_t module){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckSolenoidModule",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_CheckSolenoidChannel(int32_t channel){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",channel});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_CheckSolenoidChannel",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetSolenoid(HAL_SolenoidHandle solenoidPortHandle, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_SolenoidHandle",solenoidPortHandle});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetSolenoid",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetAllSolenoids(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetAllSolenoids",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetSolenoid(HAL_SolenoidHandle solenoidPortHandle, HAL_Bool value, int32_t* status){
@@ -2612,27 +2960,33 @@ int32_t HAL_GetPCMSolenoidBlackList(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetPCMSolenoidBlackList",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetPCMSolenoidVoltageStickyFault(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetPCMSolenoidVoltageStickyFault",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_GetPCMSolenoidVoltageFault(int32_t module, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",module});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_GetPCMSolenoidVoltageFault",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_ClearAllPCMStickyFaults(int32_t module, int32_t* status){
@@ -2655,9 +3009,11 @@ int32_t HAL_TransactionSPI(HAL_SPIPort port, uint8_t* dataToSend, uint8_t* dataR
 	parameters.push_back({"uint8_t*",dataToSend});
 	parameters.push_back({"uint8_t*",dataReceived});
 	parameters.push_back({"int32_t",size});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_TransactionSPI",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_WriteSPI(HAL_SPIPort port, uint8_t* dataToSend, int32_t sendSize){
@@ -2665,9 +3021,11 @@ int32_t HAL_WriteSPI(HAL_SPIPort port, uint8_t* dataToSend, int32_t sendSize){
 	parameters.push_back({"HAL_SPIPort",port});
 	parameters.push_back({"uint8_t*",dataToSend});
 	parameters.push_back({"int32_t",sendSize});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_WriteSPI",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_ReadSPI(HAL_SPIPort port, uint8_t* buffer, int32_t count){
@@ -2675,9 +3033,11 @@ int32_t HAL_ReadSPI(HAL_SPIPort port, uint8_t* buffer, int32_t count){
 	parameters.push_back({"HAL_SPIPort",port});
 	parameters.push_back({"uint8_t*",buffer});
 	parameters.push_back({"int32_t",count});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_ReadSPI",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_CloseSPI(HAL_SPIPort port){
@@ -2719,9 +3079,11 @@ void HAL_SetSPIChipSelectActiveLow(HAL_SPIPort port, int32_t* status){
 int32_t HAL_GetSPIHandle(HAL_SPIPort port){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_SPIPort",port});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetSPIHandle",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_SetSPIHandle(HAL_SPIPort port, int32_t handle){
@@ -2781,36 +3143,44 @@ int32_t HAL_GetSPIAccumulatorLastValue(HAL_SPIPort port, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_SPIPort",port});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetSPIAccumulatorLastValue",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int64_t HAL_GetSPIAccumulatorValue(HAL_SPIPort port, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_SPIPort",port});
 	parameters.push_back({"int32_t*",status});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_GetSPIAccumulatorValue",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int64_t HAL_GetSPIAccumulatorCount(HAL_SPIPort port, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_SPIPort",port});
 	parameters.push_back({"int32_t*",status});
-	Channel<int64_t> c;
+	minerva::Channel<int64_t> c;
 	callFunc("HAL_GetSPIAccumulatorCount",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 double HAL_GetSPIAccumulatorAverage(HAL_SPIPort port, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_SPIPort",port});
 	parameters.push_back({"int32_t*",status});
-	Channel<double> c;
+	minerva::Channel<double> c;
 	callFunc("HAL_GetSPIAccumulatorAverage",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 void HAL_GetSPIAccumulatorOutput(HAL_SPIPort port, int64_t* value, int64_t* count, int32_t* status){
@@ -2827,18 +3197,22 @@ int32_t HAL_GetThreadPriority(NativeThreadHandle handle, HAL_Bool* isRealTime, i
 	parameters.push_back({"NativeThreadHandle",handle});
 	parameters.push_back({"HAL_Bool*",isRealTime});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetThreadPriority",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 int32_t HAL_GetCurrentThreadPriority(HAL_Bool* isRealTime, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_Bool*",isRealTime});
 	parameters.push_back({"int32_t*",status});
-	Channel<int32_t> c;
+	minerva::Channel<int32_t> c;
 	callFunc("HAL_GetCurrentThreadPriority",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_SetThreadPriority(NativeThreadHandle handle, HAL_Bool realTime, int32_t priority, int32_t* status){
@@ -2847,9 +3221,11 @@ HAL_Bool HAL_SetThreadPriority(NativeThreadHandle handle, HAL_Bool realTime, int
 	parameters.push_back({"HAL_Bool",realTime});
 	parameters.push_back({"int32_t",priority});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_SetThreadPriority",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 HAL_Bool HAL_SetCurrentThreadPriority(HAL_Bool realTime, int32_t priority, int32_t* status){
@@ -2857,9 +3233,11 @@ HAL_Bool HAL_SetCurrentThreadPriority(HAL_Bool realTime, int32_t priority, int32
 	parameters.push_back({"HAL_Bool",realTime});
 	parameters.push_back({"int32_t",priority});
 	parameters.push_back({"int32_t*",status});
-	Channel<HAL_Bool> c;
+	minerva::Channel<HAL_Bool> c;
 	callFunc("HAL_SetCurrentThreadPriority",parameters,c);
-	return c.get();
+	auto val;
+	c.get(val);
+	return val;
 }
 
 #ifdef __cplusplus
