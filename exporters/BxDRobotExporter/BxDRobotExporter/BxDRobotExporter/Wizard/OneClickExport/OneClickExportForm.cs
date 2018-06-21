@@ -55,7 +55,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void OneClickExportForm_Load(object sender, EventArgs e)
         {
-            var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\synthesis\fields");
+            var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Fields");
             foreach (var dir in dirs)
             {
                 fields.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last(), dir);
