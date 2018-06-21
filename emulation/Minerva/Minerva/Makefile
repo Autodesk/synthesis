@@ -1,4 +1,4 @@
-all: FunctionSignature MinervaGenerator
+all: FunctionSignature MinervaGenerator Minerva
 
 FunctionSignature: FunctionSignature.cpp
 	g++ FunctionSignature.cpp Util.cpp -DFUNCTION_SIGNATURE_TEST -std=c++14 -o "FunctionSignature"
