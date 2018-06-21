@@ -9,6 +9,7 @@ namespace minerva{
 		enum Direction { kBothDirections, kForwardOnly, kReverseOnly };
 		
 		void Set(Value);
+		Value Get()const;
 		
 		Direction m_direction;
 		HAL_RelayHandle m_forwardHandle = HAL_kInvalidHandle;
