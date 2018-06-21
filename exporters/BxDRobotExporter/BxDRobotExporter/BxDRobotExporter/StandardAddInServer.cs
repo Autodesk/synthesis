@@ -61,11 +61,7 @@ namespace BxDRobotExporter
         ButtonDefinition PreviewRobotButton;
 
         //Dropdown buttons
-        ObjectCollection ExportButtonCollection;
-        ButtonDefinition GenericExportButton;
-        ButtonDefinition AdvancedExportButton;
         ButtonDefinition WizardExportButton;
-        ButtonDefinition OneClickExportButton;
 
         ObjectCollection SaveButtonCollection;
         ButtonDefinition SaveButton;
@@ -303,7 +299,6 @@ namespace BxDRobotExporter
             {
                 EnvironmentEnabled = true;
                 StartExporter();
-
             }
         }
 
@@ -327,6 +322,9 @@ namespace BxDRobotExporter
             PreviewRobotButton.Enabled = false;
             SaveAsButton.Enabled = false;
             SaveButton.Enabled = false;
+
+            // Immediately start the "advanced export" when the exporter is opened. TODO: Rename this as ExporterSetup, as it applies to all exporting modes.
+            BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
         }
 
         /// <summary>
@@ -425,17 +423,6 @@ namespace BxDRobotExporter
         #endregion
 
         #region Custom Button Events
-
-        //Begin
-        /// <summary>
-        /// Opens the <see cref="Forms.ChooseExportModeForm"/> and prompts the user to select an export mode.
-        /// </summary>
-        /// <param name="Context"></param>
-        private void BeginGenericExport_OnExecute(NameValueMap Context)
-        {
-            Forms.ChooseExportModeForm exportChoose = new Forms.ChooseExportModeForm();
-            exportChoose.ShowDialog();
-        }
 
         /// <summary>
         /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>
