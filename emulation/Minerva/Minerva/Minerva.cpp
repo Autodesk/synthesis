@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../visa/visa.h"
+#include "visa/visa.h"
 #include "AnalogInternal.h"
 #include "ConstantsInternal.h"
 #include "DigitalInternal.h"
