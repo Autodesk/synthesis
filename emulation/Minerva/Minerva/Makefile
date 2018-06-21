@@ -1,12 +1,14 @@
-all: FunctionSignature MinervaGenerator Minerva
+all: FunctionSignature MinervaGenerator Test Minerva
 
 FunctionSignature: FunctionSignature.cpp
 	g++ FunctionSignature.cpp Util.cpp -DFUNCTION_SIGNATURE_TEST -std=c++17 -o "FunctionSignature"
 
-	
 MinervaGenerator: MinervaGenerator.cpp
 	g++ MinervaGenerator.cpp FunctionSignature.cpp Util.cpp -DMINERVA_GENERATOR_TEST -std=c++17 -o "MinervaGenerator"
-	
+
+Test: Test.cpp
+	g++ Test.cpp -DTEST_TEST -I../../hel/allwpilib/hal/src/main/native/include/ -std=c++17 -o "Test"
+
 Minerva: Minerva.cpp
 	g++ Minerva.cpp FunctionSignature.cpp -I../../hel/allwpilib/hal/src/main/native/include/ -I../../hel/allwpilib/hal/src/main/native/athena/ -I../../hel/allwpilib/ni-libraries/include -I../../hel/wpiutil/src/main/native/include
 	
