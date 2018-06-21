@@ -192,7 +192,7 @@ void minerva::MinervaGenerator::generateMinerva(const string HAL_HEADER_PATH){
 		} else {
 			minerva_file<<"\tminerva::Channel<"<<function_signature.return_type<<"> c;\n";
 			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters,c);\n";
-			minerva_file<<"\tauto val;\n";
+			minerva_file<<"\t"<<function_signature.return_type<<" val;\n";
 			minerva_file<<"\tc.get(val);\n";
 			minerva_file<<"\treturn val;\n";
 		}
