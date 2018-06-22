@@ -27,10 +27,10 @@ bool minerva::operator<(const minerva::FunctionSignature::ParameterNameInfo a, c
 
 minerva::FunctionSignature::ParameterValueInfo::ParameterValueInfo():ParameterValueInfo("",""){}
 
-ostream& minerva::operator<<(ostream& o, const minerva::FunctionSignature::ParameterValueInfo PARAMETER_VALUE_INFO){
+/*ostream& minerva::operator<<(ostream& o, minerva::FunctionSignature::ParameterValueInfo PARAMETER_VALUE_INFO){
 	o<<"type: \""<<PARAMETER_VALUE_INFO.type<<"\"   value:\""<<PARAMETER_VALUE_INFO.value<<"\"";
 	return o;
-}
+}*/
 
 //Function signatures in the RoboRIO HAL follow this naming convention
 const string minerva::FunctionSignature::FUNC_NAME_PREFIX = " HAL_";
