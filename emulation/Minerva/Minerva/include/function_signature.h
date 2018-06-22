@@ -6,6 +6,8 @@
 #include <exception>
 #include <sstream>
 
+#include "types.h"
+
 namespace minerva{
 	
 	/**
@@ -50,11 +52,11 @@ namespace minerva{
 		/**
 		 * \brief The class ParameterValueInfo represents information about a variable's value in string form
 		 * 
-		 * Stores its type and its value in string form
+		 * Stores its type and its value in string form - currently only supports types covered by minerva::HALType
 		 */
 		struct ParameterValueInfo{
 			std::string type;
-			std::string value;
+			minerva::HALType value;
 			
 			/**
 			 * \brief Constructs a ParameterValueInfo
@@ -68,19 +70,7 @@ namespace minerva{
 			 * @param The value of the parameter 
 			 */
 			template <typename T>
-			ParameterValueInfo(std::string t,T v){
-				type = t;
-				
-				if(std::is_same<decltype(v), void*>()){//prevent nullptr operator overloading error with stringstream
-					value = "invalid";
-				} else if((std::is_same<decltype(v), std::nullptr_t>())){
-					value = "invalid";
-				} else {
-					std::stringstream ss;
-					ss<<v;
-					value = ss.str();
-				}
-			}
+			ParameterValueInfo(std::string t,T v):type(t),value(v){}
 		};
 		
 		//These constants are used to parse function signatures for the RoboRIO HAL which follow a consistent naming scheme
@@ -124,7 +114,7 @@ namespace minerva{
 
 	std::ostream& operator<<(std::ostream&, const minerva::FunctionSignature::ParameterNameInfo);
 	bool operator<(const minerva::FunctionSignature::ParameterNameInfo,const minerva::FunctionSignature::ParameterNameInfo);
-	std::ostream& operator<<(std::ostream&, const minerva::FunctionSignature::ParameterValueInfo);
+	std::ostream& operator<<(std::ostream&, minerva::FunctionSignature::ParameterValueInfo);
 	std::ostream& operator<<(std::ostream&, const minerva::FunctionSignature);
 	bool operator<(const minerva::FunctionSignature,const minerva::FunctionSignature);
 
