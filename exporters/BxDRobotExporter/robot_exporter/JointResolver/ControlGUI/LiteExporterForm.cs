@@ -11,6 +11,7 @@ using System.IO;
 using System.Diagnostics;
 using Inventor;
 using System.Threading;
+using OGLViewer;
 
 public enum ProgressTextType { Normal, ShortTaskBegin, ShortTaskEnd }
 
@@ -192,6 +193,30 @@ public partial class LiteExporterForm : Form
         for (int i = 0; i < meshes.Count; i++)
         {
            meshes[i].physics.mass = totalMass * (float)(meshes[i].physics.mass / totalDefaultMass);
+        }
+
+        // Add meshes to all nodes
+        for (int i = 0; i < meshes.Count; i++)
+        {
+            ((OGL_RigidNode)nodes[i]).loadMeshes(meshes[i]);
+        }
+
+        // Get wheel information (radius, center, etc.) for all wheels
+        foreach (RigidNode_Base node in nodes)
+        {
+            SkeletalJoint_Base joint = node.GetSkeletalJoint();
+
+            if (joint != null)
+            {
+                WheelDriverMeta wheelDriver = (WheelDriverMeta)joint.cDriver.GetInfo(typeof(WheelDriverMeta));
+
+                (node as OGLViewer.OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+                wheelDriver.radius = radius;
+                wheelDriver.center = center;
+                wheelDriver.width = width;
+
+                joint.cDriver.AddInfo(wheelDriver);
+            }
         }
 
         return meshes;

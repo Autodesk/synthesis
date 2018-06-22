@@ -571,18 +571,6 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Used to load <see cref="BXDAMesh"/>es into their corresponding <see cref="OGL_RigidNode"/>s
-    /// </summary>
-    public void LoadMeshes()
-    {
-        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-        for (int i = 0; i < Meshes.Count; i++)
-        {
-            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
-        }
-    }
-
-    /// <summary>
     /// Merges a node into the parent. Used during the one click export and the wizard.
     /// </summary>
     /// <param name="node"></param>

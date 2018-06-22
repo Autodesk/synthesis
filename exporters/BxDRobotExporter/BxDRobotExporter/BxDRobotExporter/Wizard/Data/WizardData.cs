@@ -131,7 +131,6 @@ namespace BxDRobotExporter.Wizard
                 }
                 wheelDriver.type = (global::WheelType)WheelType;
                 wheelDriver.isDriveWheel = true;
-                //Utilities.GUI.LoadMeshes();
                 Node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
 
                 wheelDriver = (WheelDriverMeta)Node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta));
