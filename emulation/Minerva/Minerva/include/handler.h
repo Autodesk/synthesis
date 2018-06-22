@@ -108,7 +108,7 @@ void printType(minerva::HALType ht) {
         if constexpr (std::is_same_v<T, HAL_Bool>)
             std::cout << "Shouldn't Happen";
         else
-            std::cout << typeid(T).name();
+    	    throw std::exception();
     }, ht);
 
 }
