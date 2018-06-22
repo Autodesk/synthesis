@@ -99,13 +99,13 @@ public partial class LiteExporterForm : Form
         }
 
         InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
-        
-        RigidNode_Base Skeleton = ExportSkeleteonLite(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
 
-        List<BXDAMesh> Meshes = ExportMeshesLite(Skeleton);
+        if (SynthesisGUI.Instance.SkeletonBase == null)
+            return; // Skeleton has not been built
+
+        List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase);
 
         SynthesisGUI.Instance.Meshes = Meshes;
-        SynthesisGUI.Instance.SkeletonBase = Skeleton;
     }
 
     private void ExitButton_Click(object sender, EventArgs e)
@@ -138,69 +138,6 @@ public partial class LiteExporterForm : Form
             ProgressLabel.Text = "Export Completed Successfully";
             Close();
         }
-    }
-
-    /// <summary>
-    /// The lightweight equivalent of the 'Add From Inventor' button in the <see cref="ExporterForm"/>. Used in <see cref="ExportMeshesLite(RigidNode_Base)"/>
-    /// </summary>
-    /// <param name="occurrences"></param>
-    /// <returns></returns>
-    public RigidNode_Base ExportSkeleteonLite(List<ComponentOccurrence> occurrences)
-    {
-        if (occurrences.Count == 0)
-        {
-            throw new ArgumentException("ERROR: 0 Occurrences passed to ExportSkeletonLite", "occurrences");
-        }
-
-        #region CenterJoints
-        int NumCentered = 0;
-
-        SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
-        foreach (ComponentOccurrence component in occurrences)
-        {
-            Exporter.CenterAllJoints(component);
-            NumCentered++;
-            SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
-        }
-#endregion
-
-        #region Build Models
-        //Getting Rigid Body Info...
-        SetProgressText("Getting Rigid Body Info...", ProgressTextType.ShortTaskBegin);
-        NameValueMap RigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
-
-        RigidGetOptions.Add("DoubleBearing", false);
-        RigidBodyResults RawRigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(RigidGetOptions);
-
-        //Getting Rigid Body Info...Done
-        SetProgressText(null, ProgressTextType.ShortTaskEnd);
-        CustomRigidResults RigidResults = new CustomRigidResults(RawRigidResults);
-
-
-        //Building Model...
-        SetProgressText("Building Model...", ProgressTextType.ShortTaskBegin);
-        RigidBodyCleaner.CleanGroundedBodies(RigidResults);
-        RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(RigidResults);
-
-        //Building Model...Done
-        SetProgressText(null, ProgressTextType.ShortTaskEnd);
-#endregion
-
-        #region Cleaning Up
-        //Cleaning Up...
-        LiteExporterForm.Instance.SetProgressText("Cleaning Up...", ProgressTextType.ShortTaskBegin);
-        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        baseNode.ListAllNodes(nodes);
-
-        foreach (RigidNode_Base node in nodes)
-        {
-            node.ModelFileName = ((RigidNode)node).group.ToString();
-            node.ModelFullID = node.GetModelID();
-        }
-        //Cleaning Up...Done
-        LiteExporterForm.Instance.SetProgressText(null, ProgressTextType.ShortTaskEnd);
-#endregion
-        return baseNode;
     }
 
     /// <summary>
