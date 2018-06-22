@@ -1,0 +1,23 @@
+
+before_install:
+- echo -e "machine github.com\n  login $GITHUB_TOKEN" >> ~/.netrc
+- git lfs pull
+
+git:
+  submodules: false
+
+matrix:
+  include:
+    - language: csharp
+      solution: BxDRobotExporter
+      before_script:
+      - cd exporter/BxDRobotExporter
+      script:
+        - xbuild /p:Configuration=Release BxDRobotExporter.sln
+
+    - language: csharp
+      solution: BxDFieldExporter
+      before_Script:
+      - cd exporter/BxDFieldExporter
+      script:
+      - xbuild /p:Configuration=Release BxDFieldExporter.sln
