@@ -13,3 +13,6 @@
 *.swp
 *.swn
 *~
+
+# Misc
+*.exe.stackdump

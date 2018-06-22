@@ -70,15 +70,15 @@ namespace minerva{
 			ParameterValueInfo(std::string t,T v){
 				type = t;
 				
-				if (std::is_same<decltype(v), void*>()){//prevent nullptr operator overloading error with stringstream
-					value = "nullptr";
-					return;
-				} else if ((std::is_same<decltype(v), std::nullptr_t>())) {
-					return;
-				}	
-				std::stringstream ss;
-				ss<<v;
-				value = ss.str();
+				if(std::is_same<decltype(v), void*>()){//prevent nullptr operator overloading error with stringstream
+					value = "invalid";
+				} else if((std::is_same<decltype(v), std::nullptr_t>())){
+					value = "invalid";
+				} else {
+					std::stringstream ss;
+					ss<<v;
+					value = ss.str();
+				}
 			}
 		};
 		
