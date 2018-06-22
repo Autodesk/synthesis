@@ -1,15 +1,17 @@
-#include "FunctionSignature.h"
 #include <vector>
 #include <map>
-#include "Channel.h"
 #include <variant>
 #include <functional>
 #include <string>
 #include <iostream>
 #include <type_traits>
+
 #include <HAL/Encoder.h>
 #include <HAL/HAL.h>
 #include <HAL/handles/HandlesInternal.h>
+
+#include "function_signature.h"
+#include "channel.h"
 
 using namespace std;
 

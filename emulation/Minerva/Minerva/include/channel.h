@@ -4,8 +4,8 @@
 
 #include <list>
 #include <thread>
-#include<mutex>
-#include<condition_variable>
+#include <mutex>
+#include <condition_variable>
  
 namespace minerva{
 	 

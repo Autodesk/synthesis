@@ -1,25 +1,24 @@
-all: FunctionSignature MinervaGenerator Test Minerva
+all: make_folders function_signature minerva_generator test minerva
 
-FunctionSignature: FunctionSignature.cpp
-	g++ FunctionSignature.cpp Util.cpp -DFUNCTION_SIGNATURE_TEST -std=c++17 -o "FunctionSignature"
+make_folders:
+	mkdir -p build
 
-MinervaGenerator: MinervaGenerator.cpp
-	g++ MinervaGenerator.cpp FunctionSignature.cpp Util.cpp -DMINERVA_GENERATOR_TEST -std=c++17 -o "MinervaGenerator"
+function_signature: src/function_signature.cpp
+	g++ -Iinclude/ src/function_signature.cpp src/util.cpp -DFUNCTION_SIGNATURE_TEST -std=c++17 -o "build/function_signature"
 
-Test: Minerva
-	g++ Test.cpp -L. -l:libminerva.a -DTEST_TEST -I../../external/allwpilib/hal/src/main/native/include/ -std=c++17 -o "Test"
+minerva_generator: src/minerva_generator.cpp
+	g++ -Iinclude/ src/minerva_generator.cpp src/function_signature.cpp src/util.cpp -DMINERVA_GENERATOR_TEST -std=c++17 -o "build/minerva_generator"
 
-Minerva: MinervaGenerator
-	./MinervaGenerator
-	g++ -I../../external/allwpilib/hal/src/main/native/include/ -I../../external/allwpilib/hal/src/main/native/athena/ -I../../external/allwpilib/ni-libraries/include -I../../external/wpiutil/src/main/native/include -I../../external/allwpilib/wpiutil/src/main/native/include/ -std=c++17 -Wall -Werror -c Minerva.cpp
-	g++ -I../../external/allwpilib/hal/src/main/native/include/ -I../../external/allwpilib/hal/src/main/native/athena/ -I../../external/allwpilib/ni-libraries/include -I../../external/wpiutil/src/main/native/include -I../../external/allwpilib/wpiutil/src/main/native/include/ -std=c++17 -Wall -Werror -c Util.cpp
-	g++ -I../../external/allwpilib/hal/src/main/native/include/ -I../../external/allwpilib/hal/src/main/native/athena/ -I../../external/allwpilib/ni-libraries/include -I../../external/wpiutil/src/main/native/include -I../../external/allwpilib/wpiutil/src/main/native/include/ -std=c++17 -Wall -Werror -c FunctionSignature.cpp
-	ar rcs libminerva.a Util.o FunctionSignature.o Minerva.o 
+test: minerva
+	g++ -Iinclude/ src/test.cpp -Lbuild -l:libminerva.a -DTEST_TEST -I../../external/allwpilib/hal/src/main/native/include/ -std=c++17 -o "build/test"
+
+minerva: minerva_generator
+	build/minerva_generator
+	g++ -Iinclude/ -I../../external/allwpilib/hal/src/main/native/include/ -I../../external/allwpilib/hal/src/main/native/athena/ -I../../external/allwpilib/ni-libraries/include -I../../external/wpiutil/src/main/native/include -I../../external/allwpilib/wpiutil/src/main/native/include/ -std=c++17 -Wall -Werror -c src/minerva.cpp -o build/minerva.o
+	g++ -Iinclude/ -I../../external/allwpilib/hal/src/main/native/include/ -I../../external/allwpilib/hal/src/main/native/athena/ -I../../external/allwpilib/ni-libraries/include -I../../external/wpiutil/src/main/native/include -I../../external/allwpilib/wpiutil/src/main/native/include/ -std=c++17 -Wall -Werror -c src/util.cpp -o build/util.o
+	g++ -Iinclude/ -I../../external/allwpilib/hal/src/main/native/include/ -I../../external/allwpilib/hal/src/main/native/athena/ -I../../external/allwpilib/ni-libraries/include -I../../external/wpiutil/src/main/native/include -I../../external/allwpilib/wpiutil/src/main/native/include/ -std=c++17 -Wall -Werror -c src/function_signature.cpp -o build/function_signature.o
+	ar rcs build/libminerva.a build/util.o build/function_signature.o build/minerva.o 
 
 .PHONY: clean
 clean:	
-	rm -rf FunctionSignature;
-	rm -rf MinervaGenerator;
-	rm -rf Minerva;
-	rm -rf minerva.o;
-	rm -rf FunctionSignature.o Util.o Minerva.o Minerva.cpp;
+	rm -rf build/*;
