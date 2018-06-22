@@ -38,7 +38,7 @@ const array<string,minerva::MinervaGenerator::HAL_HEADER_COUNT> minerva::Minerva
 	"SPI.h",
 	"Threads.h",
 	"Types.h"
-	};
+};
 
 const string minerva::MinervaGenerator::MINERVA_FILE_NAME = "src/minerva.cpp";
 
