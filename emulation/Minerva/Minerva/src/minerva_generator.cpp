@@ -151,7 +151,7 @@ void minerva::MinervaGenerator::generateMinerva(const string HAL_HEADER_PATH){
 	for(minerva::FunctionSignature function_signature: minerva::MinervaGenerator::parseHALFunctionSignatures(HAL_HEADER_PATH)){
 		bool skip_function = false;
 		for(minerva::FunctionSignature::ParameterNameInfo parameter_name_info: function_signature.parameters){
-			if(parameter_name_info.type.find("=") != string::npos){
+			if(parameter_name_info.type.find("=") != string::npos || function_signature.return_type == "void*"){
 				skip_function = true; //exclude parameters with default values
 			}
 		}
