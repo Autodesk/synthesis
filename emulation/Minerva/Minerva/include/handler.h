@@ -1,22 +1,13 @@
 #include <vector>
 #include <map>
-#include <variant>
 #include <functional>
 #include <string>
 #include <iostream>
 #include <type_traits>
 
-#include <HAL/Encoder.h>
-#include <HAL/HAL.h>
-#include <HAL/handles/HandlesInternal.h>
-
+#include "types.h"
 #include "function_signature.h"
 #include "channel.h"
-
-using namespace std;
-
-using HALType = std::variant<int, unsigned int, int*, unsigned long int, double, char*, bool, HAL_EncoderEncodingType, long, HAL_RuntimeType, const char *, hal::HAL_HandleEnum, HAL_AllianceStationID>;
-using StatusFrame = map<string, HALType>;
 
 unsigned constexpr hasher(char const *input) {
     return *input ?
@@ -24,16 +15,15 @@ unsigned constexpr hasher(char const *input) {
         5381;
 }
 
-HALType convertType(string type, string value);
-void callFunc(string function_name, vector<minerva::FunctionSignature::ParameterValueInfo> params);
+minerva::HALType convertType(std::string type, std::string value);
+void callFunc(std::string function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params);
 template<typename T>
-void callFunc(string function_name, vector<minerva::FunctionSignature::ParameterValueInfo> params, minerva::Channel<T> &chan);
+void callFunc(std::string function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params, minerva::Channel<T> &chan);
 
 
-StatusFrame __current_status_frame;
+minerva::StatusFrame __current_status_frame;
 
-HALType convertType(string type, string value) {
-    
+minerva::HALType convertType(std::string type, std::string value) {
     switch(hasher(type.c_str())) {
         case(hasher("bool")):
             return value == "true"? true: false;
@@ -88,7 +78,7 @@ HALType convertType(string type, string value) {
     }
 }
 
-void printType(HALType ht) {
+void printType(minerva::HALType ht) {
     std::visit([](auto&& arg){
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, int>)
@@ -123,7 +113,7 @@ void printType(HALType ht) {
 
 }
 
-void callFunc(const char * function_name, vector<minerva::FunctionSignature::ParameterValueInfo> params) {
+void callFunc(const char * function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params) {
     switch(hasher(function_name)) {
         case(hasher("HAL_SetRelay")):
             //__current_status_frame["Relay " + 1] = convertType(params[1].type, params[1].value);
@@ -132,7 +122,7 @@ void callFunc(const char * function_name, vector<minerva::FunctionSignature::Par
 }
 
 template<typename T>
-void callFunc(const char *function_name, vector<minerva::FunctionSignature::ParameterValueInfo> params, minerva::Channel<T> &chan) {
+void callFunc(const char *function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params, minerva::Channel<T> &chan) {
     printType(convertType(params[1].type, params[1].value));
 
     switch(hasher(function_name)) {
