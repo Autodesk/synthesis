@@ -1,4 +1,5 @@
 #include "Test.h"
+#include <cstdio>
 
 using namespace std;
 
@@ -87,6 +88,7 @@ int main(){
 	minerva::Relay relay;
 	relay.Set(minerva::Relay::kForward);
 	minerva::Relay::Value value = relay.Get();
+	printf("%d\n", value);
 }
 
 #endif
