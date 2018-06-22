@@ -7,3 +7,9 @@
 [submodule "emulation/hel/allwpilib"]
 	path = emulation/hel/allwpilib
 url = https://github.com/wpilibsuite/allwpilib
+[submodule "emulation/external/wpiutil"]
+	path = emulation/external/wpiutil
+	url = https://github.com/wpilibsuite/wpiutil
+[submodule "emulation/external/allwpilib"]
+	path = emulation/external/allwpilib
+	url = https://github.com/wpilibsuite/allwpilib/

@@ -181,7 +181,7 @@ vector<minerva::FunctionSignature> minerva::parseFunctionSignatures(const string
 #ifdef FUNCTION_SIGNATURE_TEST
 
 int main(){
-	string test_source = "../../hel/allwpilib/wpilibc/src/main/native/include/PWM.h";
+	string test_source = "../../external/allwpilib/hal/src/main/native/include/HAL/PWM.h";
 	
 	cout<<"Testing with target "<<test_source<<"\n\n=============================\n\n";
 	
