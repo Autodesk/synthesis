@@ -12,6 +12,7 @@ namespace minerva{
 	 * \brief The class FunctionSignature represents information about a function signature in string form
 	 * 
 	 * Stores its name, return type, and parameters
+	 * It's currently completely configured to support RoboRIO HAL headers
 	 */
 	struct FunctionSignature{
 		/**
