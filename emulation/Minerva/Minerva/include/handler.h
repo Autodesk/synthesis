@@ -15,68 +15,12 @@ unsigned constexpr hasher(char const *input) {
         5381;
 }
 
-minerva::HALType convertType(std::string type, std::string value);
 void callFunc(std::string function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params);
 template<typename T>
 void callFunc(std::string function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params, minerva::Channel<T> &chan);
 
 
 minerva::StatusFrame __current_status_frame;
-
-minerva::HALType convertType(std::string type, std::string value) {
-    switch(hasher(type.c_str())) {
-        case(hasher("bool")):
-            return value == "true"? true: false;
-        case(hasher("char *")):
-            return value.c_str();
-        case(hasher("const char *")):
-            return value.c_str();
-        case(hasher("double")):
-            return stod(value);
-        case(hasher("HAL_AllianceStationID")):
-            return stoi(value);
-        case(hasher("HAL_AnalogInputHandle")):
-            return stoi(value);        
-        case(hasher("HAL_AnalogOutputHandle")):
-            return stoi(value);
-        case(hasher("HAL_Bool")):
-            return stoi(value);
-        case(hasher("HAL_CompressorHandle")):
-            return stoi(value);
-        case(hasher("HAL_CounterHandle")):
-            return stoi(value);
-        case(hasher("HAL_DigitalHandle")):
-            return stoi(value);
-        case(hasher("HAL_DigitalPWMHandle")):
-            return stoi(value);
-        case(hasher("HAL_EncoderEncodingType")):
-            return stoi(value);
-        case(hasher("HAL_EncoderHandle")):
-            return stoi(value);
-        case(hasher("HAL_GyroHandle")):
-            return stoi(value);
-        case(hasher("HAL_InterruptHandle")):
-            return stoi(value);
-        case(hasher("HAL_NotifierHandle")):
-            return stoi(value);
-        case(hasher("HAL_PortHandle")):
-            return stoi(value);
-        case(hasher("HAL_RelayHandle")):
-            return stoi(value);
-        case(hasher("HAL_RuntimeType")):
-            return stoi(value);
-        case(hasher("HAL_SolenoidHandle")):
-            return stoi(value);
-        case(hasher("int32_t")):
-            return stoi(value);
-        case(hasher("int64_t")):
-            return stol(value);
-        case(hasher("uint64_t")):
-            return (unsigned long) stol(value);
-        default:
-            return value.c_str();
-    }
-}
 
 void printType(minerva::HALType ht) {
     std::visit([](auto&& arg){
@@ -116,20 +60,20 @@ void printType(minerva::HALType ht) {
 void callFunc(const char * function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params) {
     switch(hasher(function_name)) {
         case(hasher("HAL_SetRelay")):
-            //__current_status_frame["Relay " + 1] = convertType(params[1].type, params[1].value);
+            std::string array_index = "Relay ";
+            array_index += std::get<int>(params[0].value);
+            __current_status_frame[array_index] = params[1].value;
             return;
     }
 }
 
 template<typename T>
 void callFunc(const char *function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params, minerva::Channel<T> &chan) {
-    printType(convertType(params[1].type, params[1].value));
-
     switch(hasher(function_name)) {
         case(hasher("HAL_GetRelay")):
-            //chan.put(get<T>(__current_status_frame["Relay " + 1]));
+            std::string array_index = "Relay ";
+            array_index += std::get<HAL_Bool>(params[0].value);
+            chan.put(std::get<T>(__current_status_frame[array_index]));
             return;
-        default:
-            throw std::exception();
     }
 }

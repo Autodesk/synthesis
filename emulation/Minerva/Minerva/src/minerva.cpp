@@ -1940,17 +1940,6 @@ HAL_InterruptHandle HAL_InitializeInterrupts(HAL_Bool watcher, int32_t* status){
 	return x;
 }
 
-void* HAL_CleanInterrupts(HAL_InterruptHandle interruptHandle, int32_t* status){
-	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	parameters.push_back({"HAL_InterruptHandle",interruptHandle});
-	parameters.push_back({"int32_t*",status});
-	minerva::Channel<void*> c;
-	callFunc("HAL_CleanInterrupts",parameters,c);
-	void* x;
-	c.get(x);
-	return x;
-}
-
 int64_t HAL_WaitForInterrupt(HAL_InterruptHandle interruptHandle, double timeout, HAL_Bool ignorePrevious, int32_t* status){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"HAL_InterruptHandle",interruptHandle});
