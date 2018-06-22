@@ -12,20 +12,21 @@ const array<string,minerva::MinervaGenerator::HAL_HEADER_COUNT> minerva::Minerva
 	"AnalogInput.h",
 	"AnalogOutput.h",
 	"AnalogTrigger.h",
+	"CAN.h",
+	"CANAPI.h",
 	"ChipObject.h",
 	"Compressor.h",
 	"Constants.h",
 	"Counter.h",
-	"cpp/NotifierInternal.h",
 	"DIO.h",
 	"DriverStation.h",
 	"Encoder.h",
 	"Errors.h",
+	"Extensions.h",
 	"HAL.h",
 	"I2C.h",
 	"Interrupts.h",
 	"Notifier.h",
-	"OSSerialPort.h",
 	"PDP.h",
 	"Ports.h",
 	"Power.h",
@@ -36,7 +37,7 @@ const array<string,minerva::MinervaGenerator::HAL_HEADER_COUNT> minerva::Minerva
 	"SPI.h",
 	"Threads.h",
 	"Types.h",
-	"UsageReporting.h",
+	"UsageReporting.h"
 };
 
 const string minerva::MinervaGenerator::MINERVA_FILE_NAME = "Minerva.cpp";
@@ -191,7 +192,7 @@ void minerva::MinervaGenerator::generateMinerva(const string HAL_HEADER_PATH){
 #ifdef MINERVA_GENERATOR_TEST
 
 int main(){
-	const string HAL_HEADER_PATH = "../../hel/allwpilib/hal/src/main/native/include/HAL/";
+	const string HAL_HEADER_PATH = "../../external/allwpilib/hal/src/main/native/include/HAL/";
 	
 	/*
 	for(minerva::FunctionSignature function_signature: minerva::MinervaGenerator::parseHALFunctionSignatures(HAL_HEADER_PATH)){
