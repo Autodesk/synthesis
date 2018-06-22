@@ -233,6 +233,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Apply()
         {
+            // TODO: Masses will need to be calculated after exporting the mesh
             switch (massMode)
             {
                 default:
