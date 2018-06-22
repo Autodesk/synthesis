@@ -74,7 +74,7 @@ namespace JointResolver.ControlGUI
             #region CenterJoints
             int NumCentered = 0;
 
-            SetProgress("Analyzing joints...", NumCentered, occurrences.Count);
+            SetProgress("Processing joints...", NumCentered, occurrences.Count);
             foreach (ComponentOccurrence component in occurrences)
             {
                 Exporter.CenterAllJoints(component);

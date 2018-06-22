@@ -268,6 +268,7 @@ namespace BxDRobotExporter.Wizard
         public void OnNext()
         {
             WizardData.Instance.robotName = RobotNameTextBox.Text;
+            Utilities.GUI.RMeta.ActiveRobotName = RobotNameTextBox.Text;
             WizardData.Instance.analytics_TeamNumber = TeamNumberTextBox.Text;
             WizardData.Instance.analytics_TeamLeague = (FTCRadioButton.Checked) ? "FTC" : "FRC";
             WizardData.Instance.driveTrain = (WizardData.WizardDriveTrain)DriveTrainDropdown.SelectedIndex;
