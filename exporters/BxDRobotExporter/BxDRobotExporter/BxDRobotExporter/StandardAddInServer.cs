@@ -59,8 +59,6 @@ namespace BxDRobotExporter
         ButtonDefinition ExporterSettingsButton;
         ButtonDefinition HelpButton;
         ButtonDefinition PreviewRobotButton;
-
-        //Dropdown buttons
         ButtonDefinition WizardExportButton;
 
         ObjectCollection SaveButtonCollection;
@@ -332,11 +330,14 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
+            // Export mesh as exporter is finished
+            Utilities.GUI.ExportMeshes();
+
             AsmDocument = null;
             Utilities.DisposeDockableWindows();
             ChildHighlight = null;
 
-            foreach(var doc in DisabledCommandDocuments)
+            foreach (var doc in DisabledCommandDocuments)
             {
                 doc.Key.DisabledCommandList.Remove(doc.Value);
             }
@@ -430,7 +431,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginAdvancedExport_OnExecute(NameValueMap Context)
         {
-            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.ExportMeshes())
+            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.BuildRobotSkeleton())
             {
                 PreviewRobotButton.Enabled = true;
                 SaveAsButton.Enabled = true;
@@ -451,7 +452,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.ExportMeshes())
+            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.BuildRobotSkeleton())
             {
                 PreviewRobotButton.Enabled = true;
                 SaveAsButton.Enabled = true;

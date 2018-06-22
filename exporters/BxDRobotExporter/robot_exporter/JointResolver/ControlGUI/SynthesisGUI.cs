@@ -62,6 +62,7 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
 
+    private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
 
     static SynthesisGUI()
@@ -161,6 +162,44 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Build the node tree of the robot from Inventor
+    /// </summary>
+    public bool BuildRobotSkeleton(bool warnUnsaved = false)
+    {
+        if (SkeletonBase != null && warnUnsaved && !WarnUnsaved()) return false;
+
+        try
+        {
+            var exporterThread = new Thread(() =>
+            {
+                skeletonExporter = new SkeletonExporterForm();
+                skeletonExporter.ShowDialog();
+            });
+
+            exporterThread.SetApartmentState(ApartmentState.STA);
+            exporterThread.Start();
+
+            exporterThread.Join();
+
+            GC.Collect();
+        }
+        catch (InvalidComObjectException)
+        {
+        }
+        catch (TaskCanceledException)
+        {
+            return true;
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show(e.Message);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Export a robot from Inventor
     /// </summary>
     public bool ExportMeshes(bool warnUnsaved = false)
@@ -172,8 +211,14 @@ public partial class SynthesisGUI : Form
             var exporterThread = new Thread(() =>
             {
 #if LITEMODE
+                if (SkeletonBase == null)
+                {
+                    skeletonExporter = new SkeletonExporterForm();
+                    skeletonExporter.ShowDialog();
+                }
+                    
                 liteExporter = new LiteExporterForm();
-                liteExporter.ShowDialog();
+                liteExporter.ShowDialog(); // Remove node building
 #else
                 exporter = new ExporterForm(PluginSettings);
                 exporter.ShowDialog();
@@ -207,7 +252,7 @@ public partial class SynthesisGUI : Form
         }
         RobotSaveAs(NameRobotForm.NameMode.Initial);
 
-        ReloadPanels();
+        //ReloadPanels();
         return true;
     }
 
