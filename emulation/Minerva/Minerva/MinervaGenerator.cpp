@@ -50,15 +50,13 @@ const array<string,minerva::MinervaGenerator::HAL_HEADER_COUNT> minerva::Minerva
 	"SPI.h",
 	"Threads.h",
 	"Types.h",
-	"UsageReporting.h"
+	"UsageReporting.h",
 };
 
 const string minerva::MinervaGenerator::MINERVA_FILE_NAME = "Minerva.cpp";
 
 const string minerva::MinervaGenerator::MINERVA_FILE_PREFIX = "\
 //Auto-generated HAL interface for emulation\n\
-\n\
-#pragma once\n\
 \n\
 #include \"visa/visa.h\"\n\
 #include \"AnalogInternal.h\"\n\
@@ -152,7 +150,7 @@ const string minerva::MinervaGenerator::MINERVA_FILE_PREFIX = "\
 \n\
 #include \"FunctionSignature.h\" // ParameterValueInfo\n\
 #include \"Channel.h\"\n\
-\n\
+#include \"Handler.h\"\n\
 using namespace hal;\n\
 \n\
 #ifdef __cplusplus\n\
@@ -188,13 +186,13 @@ void minerva::MinervaGenerator::generateMinerva(const string HAL_HEADER_PATH){
 			minerva_file<<"\tparameters.push_back({\""<<parameter_name_info.type<<"\","<<parameter_name_info.name<<"});\n";
 		}
 		if(function_signature.return_type == "void"){
-			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters);\n";
+			minerva_file<<"\tcallFunc(std::string(\""<<function_signature.name<<"\"),parameters);\n";
 		} else {
 			minerva_file<<"\tminerva::Channel<"<<function_signature.return_type<<"> c;\n";
-			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters,c);\n";
-			minerva_file<<"\t"<<function_signature.return_type<<" val;\n";
-			minerva_file<<"\tc.get(val);\n";
-			minerva_file<<"\treturn val;\n";
+			minerva_file<<"\tcallFunc(std::string(\""<<function_signature.name<<"\"),parameters,c);\n";
+			minerva_file<<"\t"<<function_signature.return_type<<" x;\n";
+			minerva_file<<"\tc.get(x);\n";
+			minerva_file<<"\treturn x;\n";
 		}
 		minerva_file<<"}\n\n";
 	}
