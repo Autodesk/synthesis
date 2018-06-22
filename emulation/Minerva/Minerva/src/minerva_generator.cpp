@@ -1,7 +1,8 @@
-#include "MinervaGenerator.h"
 
 #include <iostream>
 #include <fstream>
+
+#include "minerva_generator.h"
 
 using namespace std;
 
@@ -36,11 +37,10 @@ const array<string,minerva::MinervaGenerator::HAL_HEADER_COUNT> minerva::Minerva
 	"Solenoid.h",
 	"SPI.h",
 	"Threads.h",
-	"Types.h",
-	"HAL/.h"
-};
+	"Types.h"
+	};
 
-const string minerva::MinervaGenerator::MINERVA_FILE_NAME = "Minerva.cpp";
+const string minerva::MinervaGenerator::MINERVA_FILE_NAME = "src/minerva.cpp";
 
 const string minerva::MinervaGenerator::MINERVA_FILE_PREFIX = "\
 //Auto-generated HAL interface for emulation\n\
@@ -117,9 +117,9 @@ const string minerva::MinervaGenerator::MINERVA_FILE_PREFIX = "\
 #include <wpi/mutex.h>\n\
 #include <wpi/raw_ostream.h>\n\
 \n\
-#include \"FunctionSignature.h\" // ParameterValueInfo\n\
-#include \"Channel.h\"\n\
-#include \"Handler.h\"\n\
+#include \"function_signature.h\" // ParameterValueInfo\n\
+#include \"channel.h\"\n\
+#include \"handler.h\"\n\
 using namespace hal;\n\
 \n\
 #ifdef __cplusplus\n\
@@ -164,10 +164,10 @@ void minerva::MinervaGenerator::generateMinerva(const string HAL_HEADER_PATH){
 			minerva_file<<"\tparameters.push_back({\""<<parameter_name_info.type<<"\","<<parameter_name_info.name<<"});\n";
 		}
 		if(function_signature.return_type == "void"){
-			minerva_file<<"\tcallFunc(std::string(\""<<function_signature.name<<"\"),parameters);\n";
+			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters);\n";
 		} else {
 			minerva_file<<"\tminerva::Channel<"<<function_signature.return_type<<"> c;\n";
-			minerva_file<<"\tcallFunc(std::string(\""<<function_signature.name<<"\"),parameters,c);\n";
+			minerva_file<<"\tcallFunc(\""<<function_signature.name<<"\",parameters,c);\n";
 			minerva_file<<"\t"<<function_signature.return_type<<" x;\n";
 			minerva_file<<"\tc.get(x);\n";
 			minerva_file<<"\treturn x;\n";

@@ -16,3 +16,14 @@
 
 # Misc
 *.exe.stackdump
+
+# Specific Executables
+FunctionSignature
+libminerva.so
+libminerva.a
+MinervaGenerator
+Test
+build/*
+test
+minerva_generator
+function_signature
