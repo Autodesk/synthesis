@@ -11,7 +11,7 @@ namespace minerva{
 	 * \brief The class MinervaGenerator houses the functions needed to generate the RoboRIO HAL interface cpp
 	 */
 	struct MinervaGenerator{
-		static const unsigned HAL_HEADER_COUNT = 45;
+		static const unsigned HAL_HEADER_COUNT = 31;
 		static const std::array<std::string,HAL_HEADER_COUNT> HAL_HEADER_NAMES;
 		
 		static const std::string MINERVA_FILE_NAME;

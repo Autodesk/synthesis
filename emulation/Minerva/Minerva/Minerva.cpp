@@ -1708,6 +1708,19 @@ HAL_Bool HAL_Initialize(int32_t timeout, int32_t mode){
 	return x;
 }
 
+int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context = 0, const char* feature = nullptr){
+	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
+	parameters.push_back({"int32_t",resource});
+	parameters.push_back({"int32_t",instanceNumber});
+	parameters.push_back({"int32_t context =",0});
+	parameters.push_back({"const char* feature =",nullptr});
+	minerva::Channel<int64_t> c;
+	callFunc(std::string("HAL_Report"),parameters,c);
+	int64_t x;
+	c.get(x);
+	return x;
+}
+
 int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context, const char* feature){
 	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
 	parameters.push_back({"int32_t",resource});
@@ -1717,16 +1730,6 @@ int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context, co
 	minerva::Channel<int64_t> c;
 	callFunc(std::string("HAL_Report"),parameters,c);
 	int64_t x;
-	c.get(x);
-	return x;
-}
-
-static inline HAL_HandleEnum getHandleType(HAL_Handle handle) { // mask first 8 bits and cast to enum return static_cast<HAL_HandleEnum>((handle >> 24) & 0xff){
-	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	parameters.push_back({"HAL_Handle handle) { // mask first 8 bits and cast to enum return static_cast<HAL_HandleEnum>((handle >> 24) &",0xff});
-	minerva::Channel<HAL_HandleEnum> c;
-	callFunc(std::string("HAL_HandleEnum getHandleType"),parameters,c);
-	HAL_HandleEnum x;
 	c.get(x);
 	return x;
 }
