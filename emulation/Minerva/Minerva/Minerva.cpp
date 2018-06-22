@@ -1,32 +1,23 @@
 //Auto-generated HAL interface for emulation
 
-#include "visa/visa.h"
-#include "AnalogInternal.h"
-#include "ConstantsInternal.h"
-#include "DigitalInternal.h"
-#include "EncoderInternal.h"
-#include "FPGAEncoder.h"
-#include "FRC_NetworkCommunication/CANSessionMux.h"	//CAN Comm
-#include "FRC_NetworkCommunication/CANSessionMux.h"
 #include "HAL/Accelerometer.h"
 #include "HAL/AnalogAccumulator.h"
 #include "HAL/AnalogGyro.h"
 #include "HAL/AnalogInput.h"
 #include "HAL/AnalogOutput.h"
 #include "HAL/AnalogTrigger.h"
+#include "HAL/CAN.h"
 #include "HAL/ChipObject.h"
 #include "HAL/Compressor.h"
 #include "HAL/Constants.h"
 #include "HAL/Counter.h"
 #include "HAL/DIO.h"
 #include "HAL/DriverStation.h"
-#include "HAL/Encoder.h"
 #include "HAL/Errors.h"
 #include "HAL/HAL.h"
 #include "HAL/I2C.h"
 #include "HAL/Interrupts.h"
 #include "HAL/Notifier.h"
-#include "HAL/OSSerialPort.h"
 #include "HAL/PDP.h"
 #include "HAL/PWM.h"
 #include "HAL/Ports.h"
@@ -35,60 +26,51 @@
 #include "HAL/SPI.h"
 #include "HAL/SerialPort.h"
 #include "HAL/Solenoid.h"
+#include "HAL/Types.h"
 #include "HAL/Threads.h"
-#include "HAL/cpp/NotifierInternal.h"
-#include "HAL/cpp/SerialHelper.h"
-#include "HAL/cpp/make_unique.h"
-#include "HAL/cpp/priority_condition_variable.h"
-#include "HAL/cpp/priority_mutex.h"
+#include "HAL/CANAPI.h"
 #include "HAL/handles/HandlesInternal.h"
-#include "HAL/handles/IndexedHandleResource.h"
-#include "HAL/handles/LimitedClassedHandleResource.h"
-#include "HAL/handles/LimitedHandleResource.h"
-#include "HAL/handles/UnlimitedHandleResource.h"
-#include "PCMInternal.h"
-#include "PortsInternal.h"
-#include "ctre/CtreCanNode.h"
-#include "ctre/PCM.h"
-#include "ctre/PCM.h"
-#include "ctre/PDP.h"
-#include "ctre/PDP.h"
-#include "ctre/ctre.h"
-#include "support/SafeThread.h"
-#include "visa/visa.h"
-#include <FRC_NetworkCommunication/AICalibration.h>
-#include <FRC_NetworkCommunication/CANSessionMux.h>
-#include <FRC_NetworkCommunication/FRCComm.h>
-#include <FRC_NetworkCommunication/LoadOut.h>
-#include <algorithm>
-#include <atomic>
-#include <cassert>
+#include "HAL/UsageReporting.h"
+#include <FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/nInterfaceGlobals.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAI.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAO.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccel.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccumulator.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAlarm.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAnalogTrigger.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tBIST.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tCounter.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tDIO.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tDMA.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tEncoder.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tGlobal.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tInterrupt.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tPWM.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tPower.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tRelay.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tSPI.h>
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tSysWatchdog.h>
+#include <FRC_FPGA_ChipObject/tDMAChannelDescriptor.h>
+#include <FRC_FPGA_ChipObject/tDMAManager.h>
+#include <FRC_FPGA_ChipObject/tInterruptManager.h>
+#include <FRC_FPGA_ChipObject/tSystem.h>
+#include <FRC_FPGA_ChipObject/tSystemInterface.h>
+#include <array>
 #include <chrono>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <fcntl.h>
-#include <fstream>
-#include <i2clib/i2c-lib.h>
+#include <cstddef>
 #include <limits>
-#include <llvm/StringRef.h>
-#include <llvm/raw_ostream.h>
 #include <memory>
-#include <mutex>
 #include <pthread.h>
-#include <sched.h>
-#include <signal.h>  // linux for kill
-#include <spilib/spi-lib.h>
 #include <stdint.h>
-#include <string.h> // memset
+#include <stdlib.h>
 #include <string>
-#include <support/SafeThread.h>
-#include <sys/ioctl.h>
-#include <sys/prctl.h>
-#include <termios.h>
-#include <thread>
-#include <unistd.h>
+#include <utility>
+#include <vector>
+#include <wpi/SmallString.h>
+#include <wpi/SmallVector.h>
+#include <wpi/mutex.h>
+#include <wpi/raw_ostream.h>
 
 #include "FunctionSignature.h" // ParameterValueInfo
 #include "Channel.h"
@@ -1876,19 +1858,6 @@ HAL_Bool HAL_Initialize(int32_t timeout, int32_t mode){
 	minerva::Channel<HAL_Bool> c;
 	callFunc(std::string("HAL_Initialize"),parameters,c);
 	HAL_Bool x;
-	c.get(x);
-	return x;
-}
-
-int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context = 0, const char* feature = nullptr){
-	std::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;
-	parameters.push_back({"int32_t",resource});
-	parameters.push_back({"int32_t",instanceNumber});
-	parameters.push_back({"int32_t context =",0});
-	parameters.push_back({"const char* feature =",nullptr});
-	minerva::Channel<int64_t> c;
-	callFunc(std::string("HAL_Report"),parameters,c);
-	int64_t x;
 	c.get(x);
 	return x;
 }

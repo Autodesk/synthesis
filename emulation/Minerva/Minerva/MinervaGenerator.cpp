@@ -37,7 +37,7 @@ const array<string,minerva::MinervaGenerator::HAL_HEADER_COUNT> minerva::Minerva
 	"SPI.h",
 	"Threads.h",
 	"Types.h",
-	"UsageReporting.h"
+	"HAL/.h"
 };
 
 const string minerva::MinervaGenerator::MINERVA_FILE_NAME = "Minerva.cpp";
@@ -45,33 +45,24 @@ const string minerva::MinervaGenerator::MINERVA_FILE_NAME = "Minerva.cpp";
 const string minerva::MinervaGenerator::MINERVA_FILE_PREFIX = "\
 //Auto-generated HAL interface for emulation\n\
 \n\
-#include \"visa/visa.h\"\n\
-#include \"AnalogInternal.h\"\n\
-#include \"ConstantsInternal.h\"\n\
-#include \"DigitalInternal.h\"\n\
-#include \"EncoderInternal.h\"\n\
-#include \"FPGAEncoder.h\"\n\
-#include \"FRC_NetworkCommunication/CANSessionMux.h\"	//CAN Comm\n\
-#include \"FRC_NetworkCommunication/CANSessionMux.h\"\n\
 #include \"HAL/Accelerometer.h\"\n\
 #include \"HAL/AnalogAccumulator.h\"\n\
 #include \"HAL/AnalogGyro.h\"\n\
 #include \"HAL/AnalogInput.h\"\n\
 #include \"HAL/AnalogOutput.h\"\n\
 #include \"HAL/AnalogTrigger.h\"\n\
+#include \"HAL/CAN.h\"\n\
 #include \"HAL/ChipObject.h\"\n\
 #include \"HAL/Compressor.h\"\n\
 #include \"HAL/Constants.h\"\n\
 #include \"HAL/Counter.h\"\n\
 #include \"HAL/DIO.h\"\n\
 #include \"HAL/DriverStation.h\"\n\
-#include \"HAL/Encoder.h\"\n\
 #include \"HAL/Errors.h\"\n\
 #include \"HAL/HAL.h\"\n\
 #include \"HAL/I2C.h\"\n\
 #include \"HAL/Interrupts.h\"\n\
 #include \"HAL/Notifier.h\"\n\
-#include \"HAL/OSSerialPort.h\"\n\
 #include \"HAL/PDP.h\"\n\
 #include \"HAL/PWM.h\"\n\
 #include \"HAL/Ports.h\"\n\
@@ -80,60 +71,51 @@ const string minerva::MinervaGenerator::MINERVA_FILE_PREFIX = "\
 #include \"HAL/SPI.h\"\n\
 #include \"HAL/SerialPort.h\"\n\
 #include \"HAL/Solenoid.h\"\n\
+#include \"HAL/Types.h\"\n\
 #include \"HAL/Threads.h\"\n\
-#include \"HAL/cpp/NotifierInternal.h\"\n\
-#include \"HAL/cpp/SerialHelper.h\"\n\
-#include \"HAL/cpp/make_unique.h\"\n\
-#include \"HAL/cpp/priority_condition_variable.h\"\n\
-#include \"HAL/cpp/priority_mutex.h\"\n\
+#include \"HAL/CANAPI.h\"\n\
 #include \"HAL/handles/HandlesInternal.h\"\n\
-#include \"HAL/handles/IndexedHandleResource.h\"\n\
-#include \"HAL/handles/LimitedClassedHandleResource.h\"\n\
-#include \"HAL/handles/LimitedHandleResource.h\"\n\
-#include \"HAL/handles/UnlimitedHandleResource.h\"\n\
-#include \"PCMInternal.h\"\n\
-#include \"PortsInternal.h\"\n\
-#include \"ctre/CtreCanNode.h\"\n\
-#include \"ctre/PCM.h\"\n\
-#include \"ctre/PCM.h\"\n\
-#include \"ctre/PDP.h\"\n\
-#include \"ctre/PDP.h\"\n\
-#include \"ctre/ctre.h\"\n\
-#include \"support/SafeThread.h\"\n\
-#include \"visa/visa.h\"\n\
-#include <FRC_NetworkCommunication/AICalibration.h>\n\
-#include <FRC_NetworkCommunication/CANSessionMux.h>\n\
-#include <FRC_NetworkCommunication/FRCComm.h>\n\
-#include <FRC_NetworkCommunication/LoadOut.h>\n\
-#include <algorithm>\n\
-#include <atomic>\n\
-#include <cassert>\n\
+#include \"HAL/UsageReporting.h\"\n\
+#include <FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/nInterfaceGlobals.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAI.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAO.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccel.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccumulator.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAlarm.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAnalogTrigger.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tBIST.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tCounter.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tDIO.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tDMA.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tEncoder.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tGlobal.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tInterrupt.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tPWM.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tPower.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tRelay.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tSPI.h>\n\
+#include <FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tSysWatchdog.h>\n\
+#include <FRC_FPGA_ChipObject/tDMAChannelDescriptor.h>\n\
+#include <FRC_FPGA_ChipObject/tDMAManager.h>\n\
+#include <FRC_FPGA_ChipObject/tInterruptManager.h>\n\
+#include <FRC_FPGA_ChipObject/tSystem.h>\n\
+#include <FRC_FPGA_ChipObject/tSystemInterface.h>\n\
+#include <array>\n\
 #include <chrono>\n\
-#include <cmath>\n\
-#include <cstdio>\n\
-#include <cstdlib>\n\
-#include <cstring>\n\
-#include <fcntl.h>\n\
-#include <fstream>\n\
-#include <i2clib/i2c-lib.h>\n\
+#include <cstddef>\n\
 #include <limits>\n\
-#include <llvm/StringRef.h>\n\
-#include <llvm/raw_ostream.h>\n\
 #include <memory>\n\
-#include <mutex>\n\
 #include <pthread.h>\n\
-#include <sched.h>\n\
-#include <signal.h>  // linux for kill\n\
-#include <spilib/spi-lib.h>\n\
 #include <stdint.h>\n\
-#include <string.h> // memset\n\
+#include <stdlib.h>\n\
 #include <string>\n\
-#include <support/SafeThread.h>\n\
-#include <sys/ioctl.h>\n\
-#include <sys/prctl.h>\n\
-#include <termios.h>\n\
-#include <thread>\n\
-#include <unistd.h>\n\
+#include <utility>\n\
+#include <vector>\n\
+#include <wpi/SmallString.h>\n\
+#include <wpi/SmallVector.h>\n\
+#include <wpi/mutex.h>\n\
+#include <wpi/raw_ostream.h>\n\
 \n\
 #include \"FunctionSignature.h\" // ParameterValueInfo\n\
 #include \"Channel.h\"\n\
@@ -167,6 +149,15 @@ void minerva::MinervaGenerator::generateMinerva(const string HAL_HEADER_PATH){
 	minerva_file<<MINERVA_FILE_PREFIX<<"\n";
 	
 	for(minerva::FunctionSignature function_signature: minerva::MinervaGenerator::parseHALFunctionSignatures(HAL_HEADER_PATH)){
+		bool skip_function = false;
+		for(minerva::FunctionSignature::ParameterNameInfo parameter_name_info: function_signature.parameters){
+			if(parameter_name_info.type.find("=") != string::npos){
+				skip_function = true; //exclude parameters with default values
+			}
+		}
+		if(skip_function){
+			continue;
+		}
 		minerva_file<<function_signature.toString()<<"{\n";
 		minerva_file<<"\tstd::vector<minerva::FunctionSignature::ParameterValueInfo> parameters;\n";
 		for(minerva::FunctionSignature::ParameterNameInfo parameter_name_info: function_signature.parameters){

@@ -11,8 +11,8 @@ namespace minerva{
 		void Set(Value);
 		Value Get()const;
 		
-		Direction m_direction;
-		HAL_RelayHandle m_forwardHandle = HAL_kInvalidHandle;
+		Direction m_direction = kBothDirections;
+		HAL_RelayHandle m_forwardHandle = 1;
 		HAL_RelayHandle m_reverseHandle = HAL_kInvalidHandle;
 	};
 }
