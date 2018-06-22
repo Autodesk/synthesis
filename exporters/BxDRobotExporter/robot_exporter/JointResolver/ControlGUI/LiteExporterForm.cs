@@ -103,7 +103,7 @@ public partial class LiteExporterForm : Form
         if (SynthesisGUI.Instance.SkeletonBase == null)
             return; // Skeleton has not been built
 
-        List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase);
+        List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase, SynthesisGUI.Instance.TotalMass);
 
         SynthesisGUI.Instance.Meshes = Meshes;
     }
@@ -146,7 +146,7 @@ public partial class LiteExporterForm : Form
     /// <seealso cref="ExporterWorker_DoWork"/>
     /// <param name="baseNode"></param>
     /// <returns></returns>
-    public List<BXDAMesh> ExportMeshesLite(RigidNode_Base baseNode)
+    public List<BXDAMesh> ExportMeshesLite(RigidNode_Base baseNode, float totalMass)
     {
         SurfaceExporter surfs = new SurfaceExporter();
         BXDJSkeleton.SetupFileNames(baseNode, true);
@@ -181,6 +181,17 @@ public partial class LiteExporterForm : Form
                     throw new Exception("Error exporting mesh: " + node.GetModelID(), e);
                 }
             }
+        }
+        
+        // Apply masses to mesh
+        float totalDefaultMass = 0;
+        foreach (BXDAMesh mesh in meshes)
+        {
+            totalDefaultMass += mesh.physics.mass;
+        }
+        for (int i = 0; i < meshes.Count; i++)
+        {
+           meshes[i].physics.mass = totalMass * (float)(meshes[i].physics.mass / totalDefaultMass);
         }
 
         return meshes;

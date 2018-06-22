@@ -331,7 +331,11 @@ namespace BxDRobotExporter
         private void EndExporter()
         {
             // Export mesh as exporter is finished
-            Utilities.GUI.ExportMeshes();
+            if (Utilities.GUI.SkeletonBase != null)
+            {
+                Utilities.GUI.ExportMeshes();
+                Utilities.GUI.RobotSave();
+            }
 
             AsmDocument = null;
             Utilities.DisposeDockableWindows();
@@ -462,7 +466,6 @@ namespace BxDRobotExporter
                 Utilities.HideDockableWindows();
                 wizard.ShowDialog();
                 Utilities.ShowDockableWindows();
-                Utilities.GUI.RobotSave();
             }
             else if (Utilities.GUI.SkeletonBase != null)
             {
@@ -474,7 +477,6 @@ namespace BxDRobotExporter
                 Utilities.HideDockableWindows();
                 wizard.ShowDialog();
                 Utilities.ShowDockableWindows();
-                Utilities.GUI.RobotSave();
             }
         }
 

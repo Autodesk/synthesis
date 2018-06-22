@@ -61,6 +61,7 @@ public partial class SynthesisGUI : Form
 
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
+    public float TotalMass = 0;
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
