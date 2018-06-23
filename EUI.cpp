@@ -48,26 +48,24 @@ bool EUI::CreateWorkspace(){
         Ptr<ToolbarPanels> toolbarPanels = _WorkSpace->toolbarPanels();
         _ToolbarPanelExport = _WorkSpace->toolbarPanels()->add("SynthesisToolbarExport" , "Export");
 		_ToolbarControlsExport = _ToolbarPanelExport->controls();
-		int error = _APP->getLastError();
+
+
 		configButtonQuickExport();
         configButtonExport();
 		configButtonLoad();
 		configButtonHelp();
+
+
 		_ToolbarControlsExport->addCommand(_ExportCommandDefQuick)->isPromoted(true);
 		_ToolbarControlsExport->addSeparator();
 		_ToolbarControlsExport->addCommand(_ExportCommandDef)->isPromoted(true);
-		_ToolbarControlsExport->addCommand(_ExportCommandHelp)->isPromoted(true);
-		_ToolbarControlsExport->addCommand(_ExportCommandLoad)->isPromoted(true);
-        //_ToolbarControls->addSeparator();
 
-		//_ToolbarPanelLoad = _WorkSpace->toolbarPanels()->add("SynthesisToolbarLoad", "Load");
-		//configButtonLoad();
-		//_ToolbarPanelLoad->controls()->addCommand(_ExportCommandLoad)->isPromoted(true);
+		_ToolbarPanelHelp = _WorkSpace->toolbarPanels()->add("SynthesisToolbarHelp", "Help");
+		_ToolbarControlsHelp->addCommand(_ExportCommandHelp)->isPromoted(true);
 
-		//_ToolbarPanelHelp = _WorkSpace->toolbarPanels()->add("SynthesisToolbarHelp", "Help");
-		//_ToolbarControlsHelp = _ToolbarPanelHelp->controls();
-		//configButtonHelp();
-		//_ToolbarControlsHelp->addCommand(_ExportCommandHelp)->isPromoted(true);
+		_ToolbarPanelLoad = _WorkSpace->toolbarPanels()->add("SynthesisToolbarLoad", "Load");
+		_ToolbarPanelLoad->controls()->addCommand(_ExportCommandLoad)->isPromoted(true);
+		
 
         _WorkSpace->activate();
 
