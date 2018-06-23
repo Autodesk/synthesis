@@ -56,8 +56,8 @@ bool EUI::CreateWorkspace(){
 		_ToolbarControlsExport->addCommand(_ExportCommandDefQuick)->isPromoted(true);
 		_ToolbarControlsExport->addSeparator();
 		_ToolbarControlsExport->addCommand(_ExportCommandDef)->isPromoted(true);
-		//_ToolbarControlsExport->addCommand(_ExportCommandHelp)->isPromoted(true);
-		//_ToolbarControlsExport->addCommand(_ExportCommandLoad)->isPromoted(true);
+		_ToolbarControlsExport->addCommand(_ExportCommandHelp)->isPromoted(true);
+		_ToolbarControlsExport->addCommand(_ExportCommandLoad)->isPromoted(true);
         //_ToolbarControls->addSeparator();
 
 		//_ToolbarPanelLoad = _WorkSpace->toolbarPanels()->add("SynthesisToolbarLoad", "Load");
@@ -113,7 +113,7 @@ void EUI::configButtonExport(){
 void EUI::configButtonHelp() {
 	_ExportCommandHelp = _UI->commandDefinitions()->addButtonDefinition("ExportHelpButton", "Help", "Links you to our webpage where you can find information on the exporting steps.", "Resources/Sample");
 
-	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDef->commandCreated();
+	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandHelp->commandCreated();
 	if (!commandCreatedEvent)
 		return;	//fix this
 
@@ -128,7 +128,7 @@ void EUI::configButtonHelp() {
 void EUI::configButtonLoad() {
 	_ExportCommandLoad = _UI->commandDefinitions()->addButtonDefinition("ExportLoadButton", "Load", "Links you to our webpage where you can find information on the exporting steps.", "Resources/Export");
 
-	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandDef->commandCreated();
+	Ptr<CommandCreatedEvent> commandCreatedEvent = _ExportCommandLoad->commandCreated();
 	if (!commandCreatedEvent)
 		return;	//fix this
 
