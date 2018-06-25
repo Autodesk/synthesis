@@ -38,7 +38,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(9, 46);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(194, 20);
             this.textBox1.TabIndex = 0;
@@ -56,7 +56,7 @@
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(130, 96);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(72, 26);
             this.button1.TabIndex = 2;
@@ -67,7 +67,7 @@
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(9, 96);
-            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(72, 26);
             this.button2.TabIndex = 3;
@@ -84,8 +84,11 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "JointGroupNameEditorForm";
             this.Text = "JointGroupNameEditorForm";
             this.ResumeLayout(false);
