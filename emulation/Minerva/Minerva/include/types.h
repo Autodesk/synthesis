@@ -11,10 +11,10 @@
 
 namespace minerva{
 	using HALType = std::variant<
-		int, 
-		unsigned int, 
-		int*, 
-		unsigned long int, 
+		int32_t, 
+		uint32_t, 
+		int32_t*, 
+		uint64_t, 
 		double, 
 		char*, 
 		bool, 
