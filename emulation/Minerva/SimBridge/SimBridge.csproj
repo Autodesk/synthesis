@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="DeserializerJSON.cs" />
-    <Compile Include="JSONdata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
