@@ -58,11 +58,11 @@ public class Toolkit : StateBehaviour<MainState>
     private GameObject dummyIndicator;
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
         canvas = GameObject.Find("Canvas");
         toolkitWindow = AuxFunctions.FindObject(canvas, "ToolkitPanel");
-        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
+        sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
         //Ruler Objects
         rulerStartPoint = GameObject.Find("RulerStartPoint");

@@ -20,9 +20,8 @@ using Assets.Scripts.Utils;
 /// Handles replay tracking and loading
 /// Handles interfaces between the SimUI and the active robot such as resetting, orienting, etc.
 /// </summary>
-public class MainState : SimState
+public class MainState : State
 {
-
     private const int SolverIterations = 100;
 
     private BPhysicsWorld physicsWorld;
@@ -76,6 +75,10 @@ public class MainState : SimState
         BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
         BPhysicsWorld.Get().DoDebugDraw = false;
         ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
+
+        CollisionTracker = new CollisionTracker(this);
+        unityPacket = new UnityPacket();
+        SpawnedRobots = new List<Robot>();
     }
 
     /// <summary>
@@ -95,11 +98,7 @@ public class MainState : SimState
         BPhysicsTickListener.Instance.OnTick -= BRobotManager.Instance.UpdateRaycastRobots;
         BPhysicsTickListener.Instance.OnTick += BRobotManager.Instance.UpdateRaycastRobots;
 
-        //setting up replay
-        CollisionTracker = new CollisionTracker(this);
-
         //starts a new instance of unity packet which receives packets from the driver station
-        unityPacket = new UnityPacket();
         unityPacket.Start();
 
         //loads all the controls
@@ -107,8 +106,6 @@ public class MainState : SimState
 
         //If a replay has been selected, load the replay. Otherwise, load the field and robot.
         string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
-
-        SpawnedRobots = new List<Robot>();
 
         if (string.IsNullOrEmpty(selectedReplay))
         {
@@ -143,15 +140,15 @@ public class MainState : SimState
         DynamicCamera.MovingEnabled = true;
 
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
-        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
+        sensorManagerGUI = StateMachine.Instance.gameObject.GetComponent<SensorManagerGUI>();
 
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
 
         IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
 
         StateMachine.Instance.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
-        StateMachine.Instance.Link<ReplayState>(Resources.FindObjectsOfTypeAll<GameObject>().First(x => x.name.Equals("ReplayUI")));
-        StateMachine.Instance.Link<SaveReplayState>(Resources.FindObjectsOfTypeAll<GameObject>().First(x => x.name.Equals("SaveReplayUI")));
+        StateMachine.Instance.Link<ReplayState>(AuxFunctions.FindGameObject("ReplayUI"));
+        StateMachine.Instance.Link<SaveReplayState>(AuxFunctions.FindGameObject("SaveReplayUI"));
     }
 
     /// <summary>

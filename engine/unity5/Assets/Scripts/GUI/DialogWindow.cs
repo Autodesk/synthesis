@@ -5,23 +5,12 @@ using System.Collections.Generic;
 
 public class DialogWindow : OverlayWindow
 {
-	private bool _active = false;
-	public bool Active
-	{
-		get
-		{
-			return _active;
-		}
-		set
-		{
-			_active = value;
-		}
-	}
+    public bool Active { get; set; } = false;
 
-	/// <summary>
-	/// The windowRect.
-	/// </summary>
-	private Rect windowRect;
+    /// <summary>
+    /// The windowRect.
+    /// </summary>
+    private Rect windowRect;
 	
 	/// <summary>
 	/// Passes option selected.
@@ -107,7 +96,7 @@ public class DialogWindow : OverlayWindow
 
         windowRect = new Rect ((Screen.width / 2 - (50 + labels.Length * 250) / 2), Screen.height / 2 - 100, 50 + labels.Length * 250, 200);
 
-		if (_active)
+		if (Active)
 		{
 			GUI.Window(0, windowRect, (int windowID) =>
 			{
@@ -115,10 +104,9 @@ public class DialogWindow : OverlayWindow
 				{
 					if (GUI.Button(new Rect(50 + i * 250, 85, 200, 50), labels[i], button))
 					{
-						_active = false;
-						if (OnComplete != null)
-							OnComplete(i);
-					}
+						Active = false;
+                        OnComplete?.Invoke(i);
+                    }
 				}
 			}, title, window);
 		}

@@ -10,41 +10,32 @@ using System.Collections.Generic;
 /// </summary>
 public class SelectRobotScrollable : ScrollablePanel
 {
+    public void Refresh(string directory)
+    {
+        string[] folders = Directory.GetDirectories(directory);
 
-    private MainMenu mainMenu;
+        items.Clear();
+
+        foreach (string robot in folders)
+            if (File.Exists(robot + "\\skeleton.bxdj"))
+                items.Add(new DirectoryInfo(robot).Name);
+
+        if (items.Count > 0)
+            selectedEntry = items[0];
+
+        position = Camera.main.WorldToScreenPoint(transform.position);
+    }
 
     // Use this for initialization
     protected override void Start()
     {
         base.Start();
         errorMessage = "No robots found in directory!";
-
-        mainMenu = canvas.GetComponent<MainMenu>();
     }
 
     void OnEnable()
     {
         items = new List<string>();
         items.Clear();
-
-    }
-
-    // Update is called once per frame
-    protected override void OnGUI()
-    {
-        if (mainMenu.robotDirectory != null && items.Count == 0)
-        {
-            string[] folders = System.IO.Directory.GetDirectories(mainMenu.robotDirectory);
-            foreach (string robot in folders)
-            {
-                if (File.Exists(robot + "\\skeleton.bxdj")) items.Add(new DirectoryInfo(robot).Name);
-            }
-            if (items.Count > 0) selectedEntry = items[0];
-        }
-
-        position = Camera.main.WorldToScreenPoint(transform.position);
-
-        base.OnGUI();
-
     }
 }

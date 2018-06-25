@@ -75,10 +75,8 @@ class SensorManagerGUI : StateBehaviour<MainState>
     //A list of all output panels instantiated
     private List<GameObject> sensorOutputPanels = new List<GameObject>();
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-
         FindElements();
     }
 
@@ -112,7 +110,7 @@ class SensorManagerGUI : StateBehaviour<MainState>
         canvas = GameObject.Find("Canvas");
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
-        toolkit = GameObject.Find("StateMachine").GetComponent<Toolkit>();
+        toolkit = GetComponent<Toolkit>();
 
         sensorOptionPanel = AuxFunctions.FindObject(canvas, "SensorOptionPanel");
         sensorTypePanel = AuxFunctions.FindObject(canvas, "SensorTypePanel");
@@ -159,7 +157,7 @@ class SensorManagerGUI : StateBehaviour<MainState>
 
         showSensorButton = AuxFunctions.FindObject(canvas, "ShowOutputButton");
         sensorOutputPanel = AuxFunctions.FindObject(canvas, "SensorOutputBorder");
-        robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
+        robotCameraGUI = GetComponent<RobotCameraGUI>();
         
     }
 

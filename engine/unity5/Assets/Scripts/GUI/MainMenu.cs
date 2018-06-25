@@ -6,13 +6,18 @@ using System;
 using UnityEngine.SceneManagement;
 using Assets.Scripts;
 using Assets.Scripts.Utils;
+using Assets.Scripts.FSM;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
+
+// TODO: Have some sort of message dispatching system so there is a single MainMenu function that sends info about the button pressed to the active state.
 
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
 public class MainMenu : MonoBehaviour
 {
-
     //This refers to what tab the main menu is currently in.
     public enum Tab { Main, Sim, Options, FieldDir, RobotDir, ErrorScreen };
     public static Tab currentTab = Tab.Main;
@@ -87,7 +92,6 @@ public class MainMenu : MonoBehaviour
 
     private Canvas canvas; //canvas component of this object--used for scaling user message manager to size
 
-
     /// <summary>
     /// Runs every frame to update the GUI elements.
     /// </summary>
@@ -139,13 +143,14 @@ public class MainMenu : MonoBehaviour
     {
         if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir) //checks if directory browser is active
         {
-            currentTab = Tab.Main;
+            StateMachine.Instance.ChangeState(new HomeTabState());
+            //currentTab = Tab.Main;
 
-            errorScreen.SetActive(false);
-            simTab.SetActive(false);
-            optionsTab.SetActive(false);
-            navigationPanel.SetActive(true);
-            homeTab.SetActive(true);
+            //errorScreen.SetActive(false);
+            //simTab.SetActive(false);
+            //optionsTab.SetActive(false);
+            //navigationPanel.SetActive(true);
+            //homeTab.SetActive(true);
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
@@ -156,7 +161,7 @@ public class MainMenu : MonoBehaviour
     public void SwitchErrorScreen()
     {
         currentTab = Tab.ErrorScreen;
-
+        
         navigationPanel.SetActive(false);
         homeTab.SetActive(false);
         optionsTab.SetActive(false);
@@ -174,11 +179,12 @@ public class MainMenu : MonoBehaviour
     {
         if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir) //checks if directory browser is active
         {
-            currentTab = Tab.Sim;
+            StateMachine.Instance.ChangeState(new SimTabState());
+            //    currentTab = Tab.Sim;
 
-            homeTab.SetActive(false);
-            optionsTab.SetActive(false);
-            simTab.SetActive(true);
+            //    homeTab.SetActive(false);
+            //    optionsTab.SetActive(false);
+            //    simTab.SetActive(true);
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
@@ -206,18 +212,19 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchSimSelection()
     {
-        currentSim = Sim.Selection;
+        // TODO: Figure out a replacement for this.
+        //currentSim = Sim.Selection;
 
-        defaultSimulator.SetActive(false);
+        //defaultSimulator.SetActive(false);
 
-        simLoadField.SetActive(false);
-        simLoadRobot.SetActive(false);
-        simLoadReplay.SetActive(false);
-        mixAndMatchMode.SetActive(false);
+        //simLoadField.SetActive(false);
+        //simLoadRobot.SetActive(false);
+        //simLoadReplay.SetActive(false);
+        //mixAndMatchMode.SetActive(false);
 
-        selectionPanel.SetActive(true);
+        //selectionPanel.SetActive(true);
 
-        isMixAndMatchTab = false;
+        //isMixAndMatchTab = false;
     }
 
     /// <summary>
@@ -574,7 +581,6 @@ public class MainMenu : MonoBehaviour
         {
             UserMessageManager.Dispatch("No Field Selected!", 2);
         }
-        
     }
 
     /// <summary>
@@ -640,7 +646,9 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     void Start()
     {
+        LinkTabs();
         FindAllGameObjects();
+        RegisterButtonCallbacks();
         splashScreen.SetActive(true); //Turns on the loading screen while initializing
         InitGraphicsSettings();
         fields = new ArrayList();
@@ -732,6 +740,8 @@ public class MainMenu : MonoBehaviour
                 StartDefaultSim();
                 return;
             }
+
+            StateMachine.Instance.PushState(new HomeTabState());
         }
 
         //This makes it so that if the user exits from the simulator, 
@@ -752,6 +762,61 @@ public class MainMenu : MonoBehaviour
             SwitchSimSelection();
             SwitchTabHome();
         }
+    }
+
+    /// <summary>
+    /// Links individual tab components with their respective <see cref="State"/>s.
+    /// </summary>
+    private void LinkTabs()
+    {
+        LinkTab<HomeTabState>("HomeTab");
+        LinkTab<SimTabState>("SimTab", false);
+        LinkTab<OptionsTabState>("OptionsTab");
+        LinkTab<ErrorScreenState>("ErrorScreen");
+        LinkTab<SelectionState>("SelectionPanel");
+        LinkTab<DefaultSimulatorState>("DefaultSimulator");
+        LinkTab<MixAndMatchState>("MixAndMatchMode");
+        LinkTab<LoadRobotState>("SimLoadRobot");
+        LinkTab<LoadFieldState>("SimLoadField");
+    }
+
+    /// <summary>
+    /// Links a tab to the provided <see cref="State"/> type from the tab's name.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="tabName"></param>
+    private void LinkTab<T>(string tabName, bool strict = true) where T : State
+    {
+        GameObject tab = AuxFunctions.FindGameObject(tabName);
+
+        if (tab != null)
+            StateMachine.Instance.Link<T>(tab, strict);
+    }
+
+    /// <summary>
+    /// Finds each Button component in the main menu that doesn't already have a
+    /// listener and registers it with a callback.
+    /// </summary>
+    private void RegisterButtonCallbacks()
+    {
+        foreach (Button b in GetComponentsInChildren<Button>(true))
+            if (b.onClick.GetPersistentEventCount() == 0)
+                b.onClick.AddListener(() => InvokeCallback("On" + b.name + "Pressed"));
+    }
+
+    /// <summary>
+    /// Invokes a method in the active <see cref="State"/> by the given method name.
+    /// </summary>
+    /// <param name="methodName"></param>
+    private void InvokeCallback(string methodName)
+    {
+        State currentState = StateMachine.Instance.CurrentState;
+        MethodInfo info = currentState.GetType().GetMethod(methodName);
+
+        if (info == null)
+            Debug.LogWarning("Method " + methodName + " does not have a listener in " + currentState.GetType().ToString());
+        else
+            info.Invoke(currentState, null);
     }
 
     /// <summary>
@@ -830,9 +895,11 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void ChangeQualitySettings()
     {
-        if (QualitySettings.GetQualityLevel() < QualitySettings.names.Length - 1) QualitySettings.SetQualityLevel(QualitySettings.GetQualityLevel() + 1);
-        else QualitySettings.SetQualityLevel(0);
-        GameObject.Find("QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+        if (QualitySettings.GetQualityLevel() < QualitySettings.names.Length - 1)
+             QualitySettings.SetQualityLevel(QualitySettings.GetQualityLevel() + 1);
+        else
+            QualitySettings.SetQualityLevel(0);
 
+        GameObject.Find("QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
     }
 }

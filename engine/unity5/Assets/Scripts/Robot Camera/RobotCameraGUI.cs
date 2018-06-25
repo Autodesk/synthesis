@@ -55,10 +55,8 @@ class RobotCameraGUI : StateBehaviour<MainState>
     private bool isEditingAngle;
     private bool isEditingFOV;
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-
         FindGUIElements();
         dynamicCamera = State.DynamicCameraObject.GetComponent<DynamicCamera>();
     }
@@ -92,7 +90,7 @@ class RobotCameraGUI : StateBehaviour<MainState>
     public void FindGUIElements()
     {
         canvas = GameObject.Find("Canvas");
-        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
+        sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
         //For robot camera view window
         robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;

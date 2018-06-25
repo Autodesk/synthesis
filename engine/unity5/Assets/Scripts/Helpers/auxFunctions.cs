@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using BulletSharp;
 using BulletUnity;
 using Assets.Scripts.Utils;
+using System.Linq;
 
 public class AuxFunctions
 {
@@ -278,6 +279,11 @@ public class AuxFunctions
             }
         }
         return new GameObject("COULDNOTFIND" + name);
+    }
+
+    public static GameObject FindGameObject(string name)
+    {
+        return Resources.FindObjectsOfTypeAll<GameObject>().First(o => o.name.Equals(name));
     }
 
     public static float ToFeet(float meter)
