@@ -75,7 +75,7 @@ void callFunc(const char * function_name, std::vector<minerva::FunctionSignature
 		case hasher("HAL_SetPWMDisabled"):
 			{
 				HAL_SetPWMRaw(std::get<int>(params[0].value),minerva::constants::HAL::kPwmDisabled,std::get<int*>(params[1].value));
-				return;//TODO
+				return;
 			}
 		case hasher("HAL_SetPWMElimintateDeadband"):
 			{
