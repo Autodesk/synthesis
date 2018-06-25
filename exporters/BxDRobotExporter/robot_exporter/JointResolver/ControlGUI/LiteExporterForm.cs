@@ -12,8 +12,6 @@ using System.Diagnostics;
 using Inventor;
 using System.Threading;
 
-public enum ProgressTextType { Normal, ShortTaskBegin, ShortTaskEnd }
-
 public partial class LiteExporterForm : Form
 {
     public bool Exporting = false;
@@ -55,28 +53,68 @@ public partial class LiteExporterForm : Form
         };
     }
 
-    public void SetProgressText(string text, ProgressTextType ProgressType = ProgressTextType.Normal)
+    /// <summary>
+    /// Updates the progress bar with an unknown state of progress, displaying a specific message.
+    /// </summary>
+    /// <param name="message">Message to display next to progress bar.</param>
+    public void SetProgress(string message)
     {
-        if(InvokeRequired)
+        if (InvokeRequired)
         {
-            BeginInvoke((Action<string, ProgressTextType>)SetProgressText, text, ProgressType);
+            BeginInvoke((Action<string>)SetProgress, message);
             return;
         }
-        switch (ProgressType)
+
+        ProgressLabel.Text = message;
+        ProgressBar.Style = ProgressBarStyle.Marquee;
+    }
+
+    /// <summary>
+    /// Updates the progress bar with a specific state (i.e. 5/10 complete) and message (i.e. "Building model...").
+    /// </summary>
+    /// <param name="current">Current progress.</param>
+    /// <param name="max">Maximum value for progress (what it will be when the process is complete). Uses previous value if less than 0.</param> 
+    /// <param name="message">Message to display next to progress bar. Does not change text if message is null.</param>
+    public void SetProgress(int current, int max = -1, string message = null)
+    {
+        if (InvokeRequired)
         {
-            case ProgressTextType.Normal:
-                text = text ?? "";
-                ProgressLabel.Text = "Progress: " + text;
-                break;
-            case ProgressTextType.ShortTaskBegin:
-                ProgressLabel.Text = "Progress: " + text;
-                break;
-            case ProgressTextType.ShortTaskEnd:
-                text = text ?? "Done";
-                ProgressLabel.Text += text;
-                break;
+            BeginInvoke((Action<int, int, string>)SetProgress, current, max, message);
+            return;
         }
 
+        if (message != null)
+            ProgressLabel.Text = message;
+
+        ProgressBar.Style = ProgressBarStyle.Continuous;
+
+        if (max >= 0)
+            ProgressBar.Maximum = max;
+
+        if (current <= ProgressBar.Maximum)
+            ProgressBar.Value = current;
+        else
+            ProgressBar.Value = ProgressBar.Maximum;
+    }
+
+    /// <summary>
+    /// Updates the progress bar with a specific state (i.e. 50% complete) and message (i.e. "Building model...").
+    /// </summary>
+    /// <param name="current">Current progress as a percent (0 to 1).</param>
+    /// <param name="message">Message to display next to progress bar. Does not change text if message is null.</param>
+    public void SetProgress(double current, string message = null)
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke((Action<double, string>)SetProgress, current, message);
+            return;
+        }
+
+        if (message != null)
+            ProgressLabel.Text = message;
+        ProgressBar.Style = ProgressBarStyle.Continuous;
+        ProgressBar.Maximum = 10000;
+        ProgressBar.Value = (int) (current * 10000);
     }
 
     /// <summary>
@@ -155,40 +193,35 @@ public partial class LiteExporterForm : Form
         #region CenterJoints
         int NumCentered = 0;
 
-        SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
+        LiteExporterForm.Instance.SetProgress(NumCentered, occurrences.Count, "Centering Joints");
         foreach (ComponentOccurrence component in occurrences)
         {
             Exporter.CenterAllJoints(component);
             NumCentered++;
-            SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
+            LiteExporterForm.Instance.SetProgress(NumCentered, occurrences.Count);
         }
-#endregion
+        #endregion
 
         #region Build Models
         //Getting Rigid Body Info...
-        SetProgressText("Getting Rigid Body Info...", ProgressTextType.ShortTaskBegin);
+        LiteExporterForm.Instance.SetProgress("Getting Rigid Body Info...");
         NameValueMap RigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
 
         RigidGetOptions.Add("DoubleBearing", false);
         RigidBodyResults RawRigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(RigidGetOptions);
-
-        //Getting Rigid Body Info...Done
-        SetProgressText(null, ProgressTextType.ShortTaskEnd);
+        
         CustomRigidResults RigidResults = new CustomRigidResults(RawRigidResults);
 
 
         //Building Model...
-        SetProgressText("Building Model...", ProgressTextType.ShortTaskBegin);
+        LiteExporterForm.Instance.SetProgress("Building Model...");
         RigidBodyCleaner.CleanGroundedBodies(RigidResults);
         RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(RigidResults);
-
-        //Building Model...Done
-        SetProgressText(null, ProgressTextType.ShortTaskEnd);
 #endregion
 
         #region Cleaning Up
         //Cleaning Up...
-        LiteExporterForm.Instance.SetProgressText("Cleaning Up...", ProgressTextType.ShortTaskBegin);
+        LiteExporterForm.Instance.SetProgress("Cleaning Up...");
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
@@ -197,8 +230,6 @@ public partial class LiteExporterForm : Form
             node.ModelFileName = ((RigidNode)node).group.ToString();
             node.ModelFullID = node.GetModelID();
         }
-        //Cleaning Up...Done
-        LiteExporterForm.Instance.SetProgressText(null, ProgressTextType.ShortTaskEnd);
 #endregion
         return baseNode;
     }
@@ -219,9 +250,11 @@ public partial class LiteExporterForm : Form
 
         List<BXDAMesh> meshes = new List<BXDAMesh>();
 
-        foreach (RigidNode_Base node in nodes)
+        SetProgress(0, "Exporting Parts");
+
+        for (int i = 0; i < nodes.Count; i++)
         {
-            SetProgressText("Exporting " + node.ModelFileName);
+            RigidNode_Base node = nodes[i];
 
             if (node is RigidNode && node.GetModel() != null && node.ModelFileName != null && node.GetModel() is CustomRigidGroup)
             {
@@ -231,7 +264,7 @@ public partial class LiteExporterForm : Form
                     surfs.Reset(node.GUID);
                     surfs.ExportAll(group, (long progress, long total) =>
                     {
-                        SetProgressText(String.Format("Export {0} / {1}", progress, total));
+                        SetProgress((double) progress / total / nodes.Count + (double) i / nodes.Count);
                     });
                     BXDAMesh output = surfs.GetOutput();
                     output.colliders.Clear();
