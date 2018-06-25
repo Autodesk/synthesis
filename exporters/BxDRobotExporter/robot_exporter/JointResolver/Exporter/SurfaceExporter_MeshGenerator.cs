@@ -127,7 +127,7 @@ public partial class SurfaceExporter
             foreach (Face f in surf.Faces)
             {
 #if LITEMODE
-                LiteExporterForm.Instance.SetProgressText("Face " + i + "/" + surf.Faces.Count);
+                LiteExporterForm.Instance.SetProgress(i, surf.Faces.Count);
 #else
                 SynthesisGUI.Instance.ExporterSetSubText("Face " + i + "/" + surf.Faces.Count);
 #endif
