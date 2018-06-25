@@ -249,7 +249,8 @@ namespace BxDRobotExporter
         public void Deactivate()
         {
             Marshal.ReleaseComObject(MainApplication);
-            Marshal.ReleaseComObject(AsmDocument);
+            if (AsmDocument != null)
+                Marshal.ReleaseComObject(AsmDocument);
             MainApplication = null;
             FilePanel.Parent.Delete();
             ExporterEnv.Delete();
