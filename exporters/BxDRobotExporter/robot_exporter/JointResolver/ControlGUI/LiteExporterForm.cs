@@ -41,15 +41,24 @@ public partial class LiteExporterForm : Form
         ExporterWorker.DoWork += ExporterWorker_DoWork;
         ExporterWorker.RunWorkerCompleted += ExporterWorker_RunWorkerCompleted;
 
-        FormClosing += delegate (object sender, FormClosingEventArgs e)
-        {
-            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
-        };
         Shown += delegate (object sender, EventArgs e)
         {
+            if (InventorManager.Instance == null)
+            {
+                MessageBox.Show("Couldn't detect a running instance of Inventor.");
+                return;
+            }
+
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
+
             Exporting = true;
             OnStartExport();
             ExporterWorker.RunWorkerAsync();
+        };
+
+        FormClosing += delegate (object sender, FormClosingEventArgs e)
+        {
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
         };
     }
 
@@ -124,19 +133,11 @@ public partial class LiteExporterForm : Form
     /// <param name="e"></param>
     private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
     {
-        if (InventorManager.Instance == null)
-        {
-            MessageBox.Show("Couldn't detect a running instance of Inventor.");
-            return;
-        }
-
         if (InventorManager.Instance.ActiveDocument == null || !(InventorManager.Instance.ActiveDocument is AssemblyDocument))
         {
             MessageBox.Show("Couldn't detect an open assembly");
             return;
         }
-
-        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
         
         RigidNode_Base Skeleton = ExportSkeleteonLite(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
 
@@ -158,6 +159,7 @@ public partial class LiteExporterForm : Form
     private void ExporterWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
         Exporting = false;
+
         if (e.Cancelled)
             ProgressLabel.Text = "Export Cancelled";
         else if (e.Error != null)
@@ -173,7 +175,6 @@ public partial class LiteExporterForm : Form
         #endregion
         else
         {
-            ProgressLabel.Text = "Export Completed Successfully";
             Close();
         }
     }
@@ -250,7 +251,7 @@ public partial class LiteExporterForm : Form
 
         List<BXDAMesh> meshes = new List<BXDAMesh>();
 
-        SetProgress(0, "Exporting Parts");
+        SetProgress(0, "Exporting Model");
 
         for (int i = 0; i < nodes.Count; i++)
         {
