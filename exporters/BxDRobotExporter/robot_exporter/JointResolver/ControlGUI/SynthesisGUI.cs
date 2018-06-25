@@ -32,6 +32,8 @@ public partial class SynthesisGUI : Form
         public bool UseSettingsDir;
         public string ActiveDir;
         public string ActiveRobotName;
+        public bool OpenSynthesis;
+        public string FieldName;
 
         public static RuntimeMeta CreateRuntimeMeta()
         {
@@ -39,7 +41,9 @@ public partial class SynthesisGUI : Form
             {
                 UseSettingsDir = true,
                 ActiveDir = null,
-                ActiveRobotName = null
+                ActiveRobotName = null,
+                OpenSynthesis = false,
+                FieldName = null
             };
         }
     }
@@ -380,6 +384,28 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Prompts the user for the name of the robot, as well as other information.
+    /// </summary>
+    /// <returns>True if user pressed okay, false if they pressed cancel</returns>
+    public bool PromptSaveSettings()
+    {
+        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        {
+            RMeta.UseSettingsDir = true;
+            RMeta.ActiveDir = null;
+            RMeta.ActiveRobotName = robotName;
+            RMeta.OpenSynthesis = openSynthesis;
+            RMeta.FieldName = field;
+
+            PluginSettings.GeneralUseFancyColors = colors;
+            PluginSettings.OnSettingsChanged(PluginSettings.InventorChildColor, PluginSettings.GeneralUseFancyColors, PluginSettings.GeneralSaveLocation);
+
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
@@ -416,36 +442,13 @@ public partial class SynthesisGUI : Form
     /// Saves the robot to the currently set robot directory.
     /// </summary>
     /// <param name="robotName"></param>
-    public bool RobotSaveAs(NameRobotForm.NameMode mode = NameRobotForm.NameMode.SaveAs)
+    public bool RobotSaveAs()
     {
-        if (NameRobotForm.NameRobot(out string robotName, mode) == DialogResult.OK)
+        if (PromptSaveSettings())
         {
-            try
-            {
-                if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + robotName))
-                    Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + robotName);
+            RobotSave();
 
-                BXDJSkeleton.WriteSkeleton(PluginSettings.GeneralSaveLocation + "\\" + robotName + "\\skeleton.bxdj", SkeletonBase);
-
-                for (int i = 0; i < Meshes.Count; i++)
-                {
-                    Meshes[i].WriteToFile(PluginSettings.GeneralSaveLocation + "\\" + robotName + "\\node_" + i + ".bxda");
-                }
-
-                MessageBox.Show("Saved");
-
-                RMeta.UseSettingsDir = true;
-                RMeta.ActiveDir = null;
-                RMeta.ActiveRobotName = robotName;
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                //TODO: Create a form that displays a simple error message with an option to expand it and view the exception info
-                MessageBox.Show("Error saving robot: " + e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
+            return true;
         }
         return false;
     }
