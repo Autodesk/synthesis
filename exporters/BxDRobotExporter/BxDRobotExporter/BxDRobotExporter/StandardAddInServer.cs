@@ -334,8 +334,8 @@ namespace BxDRobotExporter
             // Export mesh as exporter is finished
             if (Utilities.GUI.SkeletonBase != null)
             {
-                if (Utilities.GUI.PromptSaveSettings())
-                    if (Utilities.GUI.ExportMeshes())
+                if (Utilities.GUI.PromptSaveSettings(true))
+                    if (Utilities.GUI.Meshes != null || Utilities.GUI.ExportMeshes())
                         if (Utilities.GUI.RobotSave())
                             if (Utilities.GUI.RMeta.OpenSynthesis)
                                  OpenSynthesis(Utilities.GUI.RMeta.ActiveRobotName, Utilities.GUI.RMeta.FieldName);
