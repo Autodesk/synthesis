@@ -20,7 +20,7 @@ namespace JointResolver.ControlGUI
             InitializeComponent();
             InitializeFields();
 
-            RobotNameLabel.Text = initialRobotName;
+            RobotNameTextBox.Text = initialRobotName;
             ColorBox.Checked = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
         }
 
