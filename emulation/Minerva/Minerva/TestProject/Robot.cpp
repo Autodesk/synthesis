@@ -20,7 +20,7 @@ class Robot : public frc::IterativeRobot {
 	frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
 	frc::Joystick m_stick{0};
 
-public:
+   public:
 	void TeleopPeriodic() {
 		// drive with arcade style
 		m_robotDrive.ArcadeDrive(m_stick.GetY(), m_stick.GetX());
