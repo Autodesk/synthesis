@@ -1,0 +1,12 @@
+-I../../../external/allwpilib/hal/src/main/native/include/
+-I../../include/
+-DFUNCTION_SIGNATURE_TEST
+-std=c++17
+-DMINERVA_GENERATOR_TEST
+-I../../../external/allwpilib/hal/src/main/native/athena/
+-I../../../external/allwpilib/ni-libraries/include
+-I../../../external/wpiutil/src/main/native/include
+-I../../../external/allwpilib/wpiutil/src/main/native/include/
+-Wall
+-Werror
+-DTEST_TEST
