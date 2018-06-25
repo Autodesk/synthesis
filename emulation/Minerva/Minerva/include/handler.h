@@ -22,6 +22,7 @@ template<typename T>
 void callFunc(std::string function_name, std::vector<minerva::FunctionSignature::ParameterValueInfo> params, minerva::Channel<T> &chan);
 
 minerva::StatusFrame __current_status_frame;
+minerva::StatusFrame __decoded_status_frame;
 
 void printType(minerva::HALType ht) {
     std::visit([](auto&& arg){
@@ -153,6 +154,10 @@ void callFunc(const char * function_name, std::vector<minerva::FunctionSignature
 			{
 				return;//TODO
 			}
+		case hasher("HAL_BaseInitialize"):
+			{
+				return;
+			}
 	}
 }
 
@@ -246,6 +251,19 @@ void callFunc(const char *function_name, std::vector<minerva::FunctionSignature:
 		case hasher("HAL_InitializeRelayPort"):
 			{
 				return;//TODO
+			}
+		case hasher("HAL_Initialize"):
+			{
+				HAL_BaseInitialize(0);//expects a new status to modify, but we aren't using that
+				HAL_InitializeDriverStation();
+				channelReturn(chan,true);//return HAL initialized successfully
+				return;
+			}
+		case hasher("HAL_SetJoystickOutputs"):
+			{
+				channelReturn(chan,0);//return 0 since it expects an int return value,but WPILib does nothing with it
+				//TODO
+				return;
 			}
 		case hasher("HAL_GetNumAccumulators"):
 			{
