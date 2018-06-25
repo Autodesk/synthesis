@@ -61,7 +61,9 @@ public partial class SynthesisGUI : Form
 
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
+    public float TotalMass = 0;
 
+    private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
 
     static SynthesisGUI()
@@ -161,6 +163,44 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Build the node tree of the robot from Inventor
+    /// </summary>
+    public bool BuildRobotSkeleton(bool warnUnsaved = false)
+    {
+        if (SkeletonBase != null && warnUnsaved && !WarnUnsaved()) return false;
+
+        try
+        {
+            var exporterThread = new Thread(() =>
+            {
+                skeletonExporter = new SkeletonExporterForm();
+                skeletonExporter.ShowDialog();
+            });
+
+            exporterThread.SetApartmentState(ApartmentState.STA);
+            exporterThread.Start();
+
+            exporterThread.Join();
+
+            GC.Collect();
+        }
+        catch (InvalidComObjectException)
+        {
+        }
+        catch (TaskCanceledException)
+        {
+            return true;
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show(e.Message);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Export a robot from Inventor
     /// </summary>
     public bool ExportMeshes(bool warnUnsaved = false)
@@ -172,8 +212,14 @@ public partial class SynthesisGUI : Form
             var exporterThread = new Thread(() =>
             {
 #if LITEMODE
+                if (SkeletonBase == null)
+                {
+                    skeletonExporter = new SkeletonExporterForm();
+                    skeletonExporter.ShowDialog();
+                }
+                    
                 liteExporter = new LiteExporterForm();
-                liteExporter.ShowDialog();
+                liteExporter.ShowDialog(); // Remove node building
 #else
                 exporter = new ExporterForm(PluginSettings);
                 exporter.ShowDialog();
@@ -205,9 +251,8 @@ public partial class SynthesisGUI : Form
         {
             ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
         }
-        RobotSaveAs(NameRobotForm.NameMode.Initial);
 
-        ReloadPanels();
+        //ReloadPanels();
         return true;
     }
 
@@ -521,18 +566,6 @@ public partial class SynthesisGUI : Form
         else
         {
             Process.Start(Utilities.VIEWER_PATH, "-path \"" + settingsDir + "\\" + RMeta.ActiveRobotName + "\"");
-        }
-    }
-
-    /// <summary>
-    /// Used to load <see cref="BXDAMesh"/>es into their corresponding <see cref="OGL_RigidNode"/>s
-    /// </summary>
-    public void LoadMeshes()
-    {
-        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-        for (int i = 0; i < Meshes.Count; i++)
-        {
-            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
         }
     }
 
