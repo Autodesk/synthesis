@@ -15,6 +15,11 @@ minerva_generator: src/minerva_generator.cpp
 test: minerva
 	$(CXX) $(CXXFLAGS) src/test.cpp -Lbuild -l:libminerva.a -DTEST_TEST -o "build/test"
 
+network:
+	$(CXX) $(CXXFLAGS) -Iinclude src/net/socket.cpp -c -o build/socket.o
+	$(CXX) $(CXXFLAGS) -Iinclude src/net/udp_socket.cpp -c -o build/udp_socket.o
+	ar rcs build/libnetwork.a build/socket.o build/udp_socket.o
+
 minerva: minerva_generator
 	build/minerva_generator
 	$(CXX) $(CXXFLAGS) -I../../external/allwpilib/hal/src/main/native/athena/ -I../../external/allwpilib/ni-libraries/include -I../../external/wpiutil/src/main/native/include -I../../external/allwpilib/wpiutil/src/main/native/include/ -Wall -Werror -c src/minerva.cpp -o build/minerva.o
