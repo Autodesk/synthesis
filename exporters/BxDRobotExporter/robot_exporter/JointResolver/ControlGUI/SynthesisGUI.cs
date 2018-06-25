@@ -251,7 +251,6 @@ public partial class SynthesisGUI : Form
         {
             ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
         }
-        RobotSaveAs(NameRobotForm.NameMode.Initial);
 
         //ReloadPanels();
         return true;
