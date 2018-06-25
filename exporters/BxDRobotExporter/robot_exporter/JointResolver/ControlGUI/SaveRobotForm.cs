@@ -15,13 +15,27 @@ namespace JointResolver.ControlGUI
     {
         static Dictionary<string, string> fields = new Dictionary<string, string>();
 
-        public SaveRobotForm(string initialRobotName)
+        public SaveRobotForm(string initialRobotName, bool allowOpeningSynthesis)
         {
             InitializeComponent();
             InitializeFields();
 
             RobotNameTextBox.Text = initialRobotName;
             ColorBox.Checked = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
+
+            if (!allowOpeningSynthesis)
+            {
+                OpenSynthesisBox.Checked = false;
+                OpenSynthesisBox.Visible = false;
+                FieldLabel.Visible = false;
+                FieldSelectComboBox.Visible = false;
+            }
+            else
+            {
+                OpenSynthesisBox.Visible = true;
+                FieldLabel.Visible = true;
+                FieldSelectComboBox.Visible = true;
+            }
         }
 
         /// <summary>
@@ -48,11 +62,11 @@ namespace JointResolver.ControlGUI
             }
         }
 
-        public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field)
+        public static DialogResult Prompt(string initialRobotName, bool allowOpeningSynthesis, out string robotName, out bool colors, out bool openSynthesis, out string field)
         {
             try
             {
-                SaveRobotForm form = new SaveRobotForm(initialRobotName);
+                SaveRobotForm form = new SaveRobotForm(initialRobotName, allowOpeningSynthesis);
                 form.ShowDialog();
                 robotName = form.RobotNameTextBox.Text;
                 colors = form.ColorBox.Checked;

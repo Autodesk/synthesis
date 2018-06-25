@@ -65,6 +65,7 @@ public partial class SynthesisGUI : Form
 
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
+    public bool MeshesAreColored = false;
     public float TotalMass = 0;
 
     private SkeletonExporterForm skeletonExporter;
@@ -207,10 +208,8 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Export a robot from Inventor
     /// </summary>
-    public bool ExportMeshes(bool warnUnsaved = false)
+    public bool ExportMeshes()
     {
-        if (SkeletonBase != null && warnUnsaved && !WarnUnsaved()) return false;
-
         try
         {
             var exporterThread = new Thread(() =>
@@ -236,6 +235,8 @@ public partial class SynthesisGUI : Form
             exporterThread.Join();
 
             GC.Collect();
+
+            MeshesAreColored = PluginSettings.GeneralUseFancyColors;
         }
         catch (InvalidComObjectException)
         {
@@ -387,9 +388,9 @@ public partial class SynthesisGUI : Form
     /// Prompts the user for the name of the robot, as well as other information.
     /// </summary>
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
-    public bool PromptSaveSettings()
+    public bool PromptSaveSettings(bool allowOpeningSynthesis)
     {
-        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, allowOpeningSynthesis, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
         {
             RMeta.UseSettingsDir = true;
             RMeta.ActiveDir = null;
@@ -415,6 +416,10 @@ public partial class SynthesisGUI : Form
         {
             if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName))
                 Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName);
+
+            if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
+                ExportMeshes();
+
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
             for (int i = 0; i < Meshes.Count; i++)
@@ -444,7 +449,7 @@ public partial class SynthesisGUI : Form
     /// <param name="robotName"></param>
     public bool RobotSaveAs()
     {
-        if (PromptSaveSettings())
+        if (PromptSaveSettings(false))
         {
             RobotSave();
 
