@@ -15,7 +15,7 @@ using UnityEngine.Analytics;
 
 namespace Assets.Scripts.FEA
 {
-    public class ReplayState : SimState
+    public class ReplayState : State
     {
         private const float CircleRenderDistance = 10f;
         private const float ConsolidationEpsilon = 0.25f;

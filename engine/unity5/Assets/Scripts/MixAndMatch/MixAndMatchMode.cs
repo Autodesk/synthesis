@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Analytics;
+using Assets.Scripts.FSM;
 
 public class MixAndMatchMode : MonoBehaviour
 {
@@ -266,9 +267,7 @@ public class MixAndMatchMode : MonoBehaviour
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel),
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelLateralFriction(SelectedWheel));
 
-        GameObject stateMachine = GameObject.Find("StateMachine");
-
-        stateMachine.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
+        StateMachine.Instance.gameObject.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
 
         if (SimUI.changeAnalytics) //For analytics tracking
         {
@@ -306,9 +305,8 @@ public class MixAndMatchMode : MonoBehaviour
 
 
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
-        GameObject stateMachine = GameObject.Find("StateMachine");
 
-        stateMachine.GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, RobotTypeManager.HasManipulator);
+        GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, RobotTypeManager.HasManipulator);
     }
 #endregion
    

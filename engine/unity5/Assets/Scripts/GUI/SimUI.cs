@@ -142,7 +142,7 @@ public class SimUI : StateBehaviour<MainState>
 
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
-        robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
+        robotCameraGUI = GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
 
         toolbar = AuxFunctions.FindObject(canvas, "Toolbar");

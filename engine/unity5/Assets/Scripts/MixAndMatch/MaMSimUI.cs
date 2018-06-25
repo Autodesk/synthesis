@@ -14,9 +14,8 @@ public class MaMSimUI : StateBehaviour<MainState> {
 
     private SimUI simUI;
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
         FindElements();
     }
 

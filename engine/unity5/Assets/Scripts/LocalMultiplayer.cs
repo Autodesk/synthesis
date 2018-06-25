@@ -27,9 +27,7 @@ public class LocalMultiplayer : StateBehaviour<MainState> {
     /// <summary>
     /// FInds all the gameobjects and stores them in variables for efficiency
     /// </summary>
-    protected override void Start () {
-        base.Start();
-
+    private void Start () {
         canvas = GameObject.Find("Canvas");
         multiplayerWindow = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
         addRobotWindow = AuxFunctions.FindObject(canvas, "AddRobotPanel");
@@ -43,16 +41,7 @@ public class LocalMultiplayer : StateBehaviour<MainState> {
         highlight = AuxFunctions.FindObject(canvas, "HighlightActiveRobot");
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
     }
-	
     
-    /// <summary>
-    /// Updates the multiplayer window after enabling it
-    /// </summary>
-    private void OnEnable()
-    {
-        UpdateUI();
-    }
-
     /// <summary>
     /// Toggles the multiplayer window
     /// </summary>

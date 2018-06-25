@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public abstract class StateBehaviour<T> : MonoBehaviour where T : SimState
+public abstract class StateBehaviour<T> : MonoBehaviour where T : State
 {
     /// <summary>
     /// The state associated with this StateBehaviour.
@@ -13,7 +13,7 @@ public abstract class StateBehaviour<T> : MonoBehaviour where T : SimState
     protected T State { get; private set; }
 
     /// <summary>
-    /// Links this instance to the given SimState type.
+    /// Links this instance to the given State type.
     /// </summary>
     protected virtual void Awake()
     {
@@ -21,9 +21,9 @@ public abstract class StateBehaviour<T> : MonoBehaviour where T : SimState
     }
 
     /// <summary>
-    /// Assigns the State property to the current SimState in the StateMachine
+    /// Assigns the State property to the current State in the StateMachine
     /// </summary>
-    protected virtual void Start()
+    protected virtual void OnEnable()
     {
         if ((State = StateMachine.Instance.CurrentState as T) == null)
             Debug.LogError("Component \"" + name +

@@ -10,7 +10,7 @@ using UnityEngine.Analytics;
 
 namespace Assets.Scripts.FEA
 {
-    public class SaveReplayState : SimState
+    public class SaveReplayState : State
     {
         string fieldPath;
 
@@ -39,9 +39,6 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public override void Start()
         {
-            //canvas = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("SaveReplayCanvas")).First();
-            //canvas.SetActive(true);
-
             saveButton = GameObject.Find("SaveButton").GetComponent<Button>();
             saveButton.onClick.RemoveAllListeners();
             saveButton.onClick.AddListener(Save);
