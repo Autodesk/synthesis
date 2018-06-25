@@ -11,6 +11,7 @@ using System.IO;
 using System.Diagnostics;
 using Inventor;
 using System.Threading;
+using OGLViewer;
 
 public enum ProgressTextType { Normal, ShortTaskBegin, ShortTaskEnd }
 
@@ -99,13 +100,13 @@ public partial class LiteExporterForm : Form
         }
 
         InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
-        
-        RigidNode_Base Skeleton = ExportSkeleteonLite(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
 
-        List<BXDAMesh> Meshes = ExportMeshesLite(Skeleton);
+        if (SynthesisGUI.Instance.SkeletonBase == null)
+            return; // Skeleton has not been built
+
+        List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase, SynthesisGUI.Instance.TotalMass);
 
         SynthesisGUI.Instance.Meshes = Meshes;
-        SynthesisGUI.Instance.SkeletonBase = Skeleton;
     }
 
     private void ExitButton_Click(object sender, EventArgs e)
@@ -141,75 +142,12 @@ public partial class LiteExporterForm : Form
     }
 
     /// <summary>
-    /// The lightweight equivalent of the 'Add From Inventor' button in the <see cref="ExporterForm"/>. Used in <see cref="ExportMeshesLite(RigidNode_Base)"/>
-    /// </summary>
-    /// <param name="occurrences"></param>
-    /// <returns></returns>
-    public RigidNode_Base ExportSkeleteonLite(List<ComponentOccurrence> occurrences)
-    {
-        if (occurrences.Count == 0)
-        {
-            throw new ArgumentException("ERROR: 0 Occurrences passed to ExportSkeletonLite", "occurrences");
-        }
-
-        #region CenterJoints
-        int NumCentered = 0;
-
-        SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
-        foreach (ComponentOccurrence component in occurrences)
-        {
-            Exporter.CenterAllJoints(component);
-            NumCentered++;
-            SetProgressText(string.Format("Centering Joints {0} / {1}", NumCentered, occurrences.Count));
-        }
-#endregion
-
-        #region Build Models
-        //Getting Rigid Body Info...
-        SetProgressText("Getting Rigid Body Info...", ProgressTextType.ShortTaskBegin);
-        NameValueMap RigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
-
-        RigidGetOptions.Add("DoubleBearing", false);
-        RigidBodyResults RawRigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(RigidGetOptions);
-
-        //Getting Rigid Body Info...Done
-        SetProgressText(null, ProgressTextType.ShortTaskEnd);
-        CustomRigidResults RigidResults = new CustomRigidResults(RawRigidResults);
-
-
-        //Building Model...
-        SetProgressText("Building Model...", ProgressTextType.ShortTaskBegin);
-        RigidBodyCleaner.CleanGroundedBodies(RigidResults);
-        RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(RigidResults);
-
-        //Building Model...Done
-        SetProgressText(null, ProgressTextType.ShortTaskEnd);
-#endregion
-
-        #region Cleaning Up
-        //Cleaning Up...
-        LiteExporterForm.Instance.SetProgressText("Cleaning Up...", ProgressTextType.ShortTaskBegin);
-        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        baseNode.ListAllNodes(nodes);
-
-        foreach (RigidNode_Base node in nodes)
-        {
-            node.ModelFileName = ((RigidNode)node).group.ToString();
-            node.ModelFullID = node.GetModelID();
-        }
-        //Cleaning Up...Done
-        LiteExporterForm.Instance.SetProgressText(null, ProgressTextType.ShortTaskEnd);
-#endregion
-        return baseNode;
-    }
-
-    /// <summary>
     /// The lite equivalent of the 'Start Exporter' <see cref="Button"/> in the <see cref="ExporterForm"/>. Used in <see cref="ExporterWorker_DoWork(Object, "/>
     /// </summary>
     /// <seealso cref="ExporterWorker_DoWork"/>
     /// <param name="baseNode"></param>
     /// <returns></returns>
-    public List<BXDAMesh> ExportMeshesLite(RigidNode_Base baseNode)
+    public List<BXDAMesh> ExportMeshesLite(RigidNode_Base baseNode, float totalMass)
     {
         SurfaceExporter surfs = new SurfaceExporter();
         BXDJSkeleton.SetupFileNames(baseNode, true);
@@ -242,6 +180,47 @@ public partial class LiteExporterForm : Form
                 catch (Exception e)
                 {
                     throw new Exception("Error exporting mesh: " + node.GetModelID(), e);
+                }
+            }
+        }
+        
+        // Apply masses to mesh
+        float totalDefaultMass = 0;
+        foreach (BXDAMesh mesh in meshes)
+        {
+            totalDefaultMass += mesh.physics.mass;
+        }
+        for (int i = 0; i < meshes.Count; i++)
+        {
+           meshes[i].physics.mass = totalMass * (float)(meshes[i].physics.mass / totalDefaultMass);
+        }
+
+        // Add meshes to all nodes
+        for (int i = 0; i < meshes.Count; i++)
+        {
+            ((OGL_RigidNode)nodes[i]).loadMeshes(meshes[i]);
+        }
+
+        // Get wheel information (radius, center, etc.) for all wheels
+        foreach (RigidNode_Base node in nodes)
+        {
+            SkeletalJoint_Base joint = node.GetSkeletalJoint();
+
+            // Joint will be null if the node has no connection.
+            // cDriver will be null if there is no driver connected to the joint.
+            if (joint != null && joint.cDriver != null)
+            {
+                WheelDriverMeta wheelDriver = (WheelDriverMeta)joint.cDriver.GetInfo(typeof(WheelDriverMeta));
+
+                // Drivers without wheel metadata do not need radius, center, or width info.
+                if (wheelDriver != null)
+                {
+                    (node as OGLViewer.OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+                    wheelDriver.radius = radius;
+                    wheelDriver.center = center;
+                    wheelDriver.width = width;
+
+                    joint.cDriver.AddInfo(wheelDriver);
                 }
             }
         }

@@ -83,9 +83,9 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void MassModeDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (MassModeDropdown.SelectedIndex)
-            {
-                case 0:
+            //switch (MassModeDropdown.SelectedIndex)
+            //{
+            //    case 0:
                     ClearPanel();
                     totalMass = 0.0f;
 
@@ -95,7 +95,7 @@ namespace BxDRobotExporter.Wizard
                     MassPropertyTitleLabel.Text = "Selected Mode: Single User Defined (Recommended)";
                     MassPropertyInfoLabel.Text = "In this mode, you input the mass of your robot and the exporter will distribute the mass evenly throughout the robot. Slightly less accurate than the Complex User Defined mode, but far easier.";
 
-                    break;
+            /*        break;
                 case 1:
                     ClearPanel();
                     totalMass = 0.0f;
@@ -133,7 +133,7 @@ namespace BxDRobotExporter.Wizard
 
                     TotalMassLabel.Text = string.Format("Total Mass: {0} {1}", (decimal)totalMass, (MetricCheckBox.Checked) ? "kg" : "lbs");
                     break;
-            }
+            }*/
 
             ValidateInput();
         }
@@ -268,20 +268,12 @@ namespace BxDRobotExporter.Wizard
         public void OnNext()
         {
             WizardData.Instance.robotName = RobotNameTextBox.Text;
+            Utilities.GUI.RMeta.ActiveRobotName = RobotNameTextBox.Text;
             WizardData.Instance.analytics_TeamNumber = TeamNumberTextBox.Text;
             WizardData.Instance.analytics_TeamLeague = (FTCRadioButton.Checked) ? "FTC" : "FRC";
             WizardData.Instance.driveTrain = (WizardData.WizardDriveTrain)DriveTrainDropdown.SelectedIndex;
             WizardData.Instance.wheelCount = (int)WheelCountUpDown.Value;
-            WizardData.Instance.massMode = (WizardData.WizardMassMode)MassModeDropdown.SelectedIndex;
             WizardData.Instance.mass = totalMass;
-            if (MassModeDropdown.SelectedIndex == 1)
-            {
-                WizardData.Instance.masses = new float[Utilities.GUI.SkeletonBase.ListAllNodes().Count];
-                for (int i = 0; i < WizardData.Instance.masses.Length; i++)
-                {
-                    WizardData.Instance.masses[i] = (MetricCheckBox.Checked) ? ((MassDataRow)MassPanel.Controls[i]).Value : ((MassDataRow)MassPanel.Controls[i]).Value / 2.20462f;
-                }
-            }
         }
         
         public event Action ActivateNext;

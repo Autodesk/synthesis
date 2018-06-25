@@ -96,6 +96,12 @@
     <Compile Include="ControlGUI\NodeEditorPane.Designer.cs">
       <DependentUpon>NodeEditorPane.cs</DependentUpon>
     </Compile>
+    <Compile Include="ControlGUI\SkeletonExporterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonExporterForm.Designer.cs">
+      <DependentUpon>SkeletonExporterForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlGUI\SynthesisGUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -251,6 +257,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\NodeEditorPane.resx">
       <DependentUpon>NodeEditorPane.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\SkeletonExporterForm.resx">
+      <DependentUpon>SkeletonExporterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\SynthesisGUI.resx">
       <DependentUpon>SynthesisGUI.cs</DependentUpon>
