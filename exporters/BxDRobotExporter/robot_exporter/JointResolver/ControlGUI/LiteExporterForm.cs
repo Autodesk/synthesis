@@ -206,16 +206,22 @@ public partial class LiteExporterForm : Form
         {
             SkeletalJoint_Base joint = node.GetSkeletalJoint();
 
-            if (joint != null)
+            // Joint will be null if the node has no connection.
+            // cDriver will be null if there is no driver connected to the joint.
+            if (joint != null && joint.cDriver != null)
             {
                 WheelDriverMeta wheelDriver = (WheelDriverMeta)joint.cDriver.GetInfo(typeof(WheelDriverMeta));
 
-                (node as OGLViewer.OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
-                wheelDriver.radius = radius;
-                wheelDriver.center = center;
-                wheelDriver.width = width;
+                // Drivers without wheel metadata do not need radius, center, or width info.
+                if (wheelDriver != null)
+                {
+                    (node as OGLViewer.OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+                    wheelDriver.radius = radius;
+                    wheelDriver.center = center;
+                    wheelDriver.width = width;
 
-                joint.cDriver.AddInfo(wheelDriver);
+                    joint.cDriver.AddInfo(wheelDriver);
+                }
             }
         }
 
