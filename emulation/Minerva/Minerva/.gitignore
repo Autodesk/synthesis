@@ -27,3 +27,4 @@ build/*
 test
 minerva_generator
 function_signature
+src/minerva.cpp
