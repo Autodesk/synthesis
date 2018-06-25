@@ -5,7 +5,7 @@
 using namespace std;
 
 void minerva::Relay::Set(Relay::Value value) {
-	//if (StatusIsFatal()) return;
+	// if (StatusIsFatal()) return;
 
 	int32_t status = 0;
 
@@ -85,7 +85,7 @@ minerva::Relay::Value minerva::Relay::Get() const {
 
 #ifdef TEST_TEST
 
-int main(){
+int main() {
 	minerva::Relay relay;
 	relay.Set(minerva::Relay::kForward);
 	minerva::Relay::Value value = relay.Get();
