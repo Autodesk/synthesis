@@ -78,7 +78,7 @@ namespace JointResolver.ControlGUI
 
                 field = null;
 
-                if (openSynthesis)
+                if (openSynthesis && form.FieldSelectComboBox.SelectedItem != null)
                     field = fields[(string)form.FieldSelectComboBox.SelectedItem];
 
                 return form.DialogResult;
@@ -116,13 +116,14 @@ namespace JointResolver.ControlGUI
 
         private void SaveRobotForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (DialogResult == DialogResult.None)
+            if (DialogResult == DialogResult.Cancel)
             {
                 if (_isFinal && MessageBox.Show("Are you sure you want to cancel? (All export progress would be lost)",
                                                 "Cancel", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                {
                     e.Cancel = true;
-                else
-                    DialogResult = DialogResult.Cancel;
+                    DialogResult = DialogResult.None;
+                }
             }
         }
 
