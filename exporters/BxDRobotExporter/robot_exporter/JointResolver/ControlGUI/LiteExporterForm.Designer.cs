@@ -51,7 +51,7 @@
             this.ProgressBar.Name = "ProgressBar";
             this.ProgressBar.Size = new System.Drawing.Size(353, 23);
             this.ProgressBar.Step = 1;
-            this.ProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.ProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.ProgressBar.TabIndex = 1;
             // 
             // ProgressLabel
@@ -59,7 +59,7 @@
             this.ProgressLabel.AutoSize = true;
             this.ProgressLabel.Location = new System.Drawing.Point(13, 373);
             this.ProgressLabel.Name = "ProgressLabel";
-            this.ProgressLabel.Size = new System.Drawing.Size(73, 17);
+            this.ProgressLabel.Size = new System.Drawing.Size(69, 16);
             this.ProgressLabel.TabIndex = 2;
             this.ProgressLabel.Text = "Progress: ";
             // 
