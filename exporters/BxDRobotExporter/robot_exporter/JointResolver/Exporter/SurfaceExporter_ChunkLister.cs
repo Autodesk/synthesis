@@ -90,7 +90,7 @@ public partial class SurfaceExporter
         {
             if (!adaptiveIgnoring || Utilities.BoxVolume(occ.RangeBox) >= totalVolume)
             {
-                plannedExports.AddRange(GenerateExportList(occ, group.hint.HighResolution, group.hint.MultiColor));
+                plannedExports.AddRange(GenerateExportList(occ, group.hint.HighResolution, SynthesisGUI.PluginSettings.GeneralUseFancyColors)); // group.hint.MultiColor));
             }
         }
         return plannedExports;
