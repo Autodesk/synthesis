@@ -469,6 +469,7 @@ namespace BxDRobotExporter
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
                 Utilities.HideDockableWindows();
                 wizard.ShowDialog();
+                Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
             }
             else if (Utilities.GUI.SkeletonBase != null)
@@ -480,6 +481,7 @@ namespace BxDRobotExporter
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
                 Utilities.HideDockableWindows();
                 wizard.ShowDialog();
+                Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
             }
         }
