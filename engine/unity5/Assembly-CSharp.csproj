@@ -216,8 +216,6 @@
     <Compile Include="Assets\Scripts\GUI\Scrollables\DummyScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\SelectFieldScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\SelectRobotScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
@@ -283,6 +281,7 @@
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
     <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
     <Compile Include="Assets\Scripts\States\LoadFieldState.cs" />
+    <Compile Include="Assets\Scripts\States\LoadReplayState.cs" />
     <Compile Include="Assets\Scripts\States\LoadRobotState.cs" />
     <Compile Include="Assets\Scripts\States\MainState.cs" />
     <Compile Include="Assets\Scripts\States\MixAndMatchState.cs" />

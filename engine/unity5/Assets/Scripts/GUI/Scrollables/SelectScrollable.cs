@@ -6,20 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public abstract class SelectScrollable : ScrollablePanel
+public class SelectScrollable : ScrollablePanel
 {
-    private readonly string targetFilename;
-
-    /// <summary>
-    /// Initializes the <see cref="SelectScrollable"/> with the given
-    /// target file name.
-    /// </summary>
-    /// <param name="targetFilename"></param>
-    protected SelectScrollable(string targetFilename, string errorMessage)
-    {
-        this.targetFilename = targetFilename;
-        this.errorMessage = errorMessage;
-    }
+    public string TargetFilename;
+    public string ErrorMessage;
 
     /// <summary>
     /// Refreshes the scrollable with the directory provided.
@@ -32,7 +22,7 @@ public abstract class SelectScrollable : ScrollablePanel
         items.Clear();
 
         foreach (string robot in folders)
-            if (File.Exists(robot + "\\" + targetFilename))
+            if (File.Exists(robot + "\\" + TargetFilename))
                 items.Add(new DirectoryInfo(robot).Name);
 
         if (items.Count > 0)
@@ -47,6 +37,8 @@ public abstract class SelectScrollable : ScrollablePanel
     /// </summary>
     void OnEnable()
     {
+        errorMessage = ErrorMessage;
+
         items = new List<string>();
         items.Clear();
     }

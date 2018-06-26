@@ -11,4 +11,9 @@ public class MixAndMatchState : State
     {
         StateMachine.Instance.PopState();
     }
+
+    public void OnNextButtonPressed()
+    {
+        StateMachine.Instance.PushState(new LoadFieldState());
+    }
 }

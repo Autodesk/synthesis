@@ -656,7 +656,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectManipulator
         m_Mode: 3
         m_Arguments:
@@ -4841,7 +4841,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectWheel
         m_Mode: 3
         m_Arguments:
@@ -7511,17 +7511,17 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 228876068}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0030953498}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1816809326}
-  m_RootOrder: 0
+  m_Father: {fileID: 1623226555}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 628.1201, y: -317.99994}
+  m_SizeDelta: {x: -1375.45, y: -663}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &228876070
 MonoBehaviour:
@@ -10673,7 +10673,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectManipulator
         m_Mode: 3
         m_Arguments:
@@ -11888,8 +11888,6 @@ MonoBehaviour:
     - m_Text: Quick Reset
       m_Image: {fileID: 21300000, guid: 0b46a02922478d04d856febaaee26ec7, type: 3}
     - m_Text: Reset Spawn Point
-      m_Image: {fileID: 21300000, guid: 0b46a02922478d04d856febaaee26ec7, type: 3}
-    - m_Text: Reset Field
       m_Image: {fileID: 21300000, guid: 0b46a02922478d04d856febaaee26ec7, type: 3}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18644,7 +18642,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectDriveBase
         m_Mode: 3
         m_Arguments:
@@ -20481,7 +20479,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectWheel
         m_Mode: 3
         m_Arguments:
@@ -20936,7 +20934,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Field of View (degrees)
+  m_Text: Field of View (meters)
 --- !u!222 &603553676
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21599,7 +21597,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectWheel
         m_Mode: 3
         m_Arguments:
@@ -28974,7 +28972,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: ToggleSetPresetPanel
         m_Mode: 1
         m_Arguments:
@@ -28985,7 +28983,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SetPresetName
         m_Mode: 1
         m_Arguments:
@@ -31355,7 +31353,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectManipulator
         m_Mode: 3
         m_Arguments:
@@ -34724,7 +34722,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectManipulator
         m_Mode: 3
         m_Arguments:
@@ -37615,9 +37613,7 @@ MonoBehaviour:
 
     Long hold R or other RESET key: configure spawnpoint and robot orientation
 
-    F: reset field
-
-    ALT + LEFT MOUSE: click and drag gamepieces around (God Mode)
+    ALT + LEFT MOUSE: Click and drag gamepieces around (God Mode)
 
     U: Spawn a new robot
 
@@ -37629,7 +37625,7 @@ MonoBehaviour:
 
     ] : Spawn secondary gamepiece
 
-    ESCAPE: exit to main menu'
+    ESCAPE: Exit to main menu'
 --- !u!222 &1102676361
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38813,7 +38809,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectWheel
         m_Mode: 3
         m_Arguments:
@@ -43582,7 +43578,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: DeletePreset
         m_Mode: 1
         m_Arguments:
@@ -48042,7 +48038,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectDriveBase
         m_Mode: 3
         m_Arguments:
@@ -48518,7 +48514,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: ChangeMaMClicked
         m_Mode: 1
         m_Arguments:
@@ -49096,7 +49092,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: AddMaMClicked
         m_Mode: 1
         m_Arguments:
@@ -49441,7 +49437,7 @@ RectTransform:
   - {fileID: 1687844772}
   - {fileID: 327737640}
   m_Father: {fileID: 1623226555}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -52741,7 +52737,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectDriveBase
         m_Mode: 3
         m_Arguments:
@@ -53413,8 +53409,9 @@ RectTransform:
   - {fileID: 131551818}
   - {fileID: 2087427964}
   - {fileID: 2051394719}
-  - {fileID: 1816809326}
+  - {fileID: 228876069}
   - {fileID: 2081073945}
+  - {fileID: 1816809326}
   - {fileID: 1503373158}
   m_Father: {fileID: 1234831590}
   m_RootOrder: 28
@@ -55766,7 +55763,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: ToggleSetPresetPanel
         m_Mode: 1
         m_Arguments:
@@ -58057,6 +58054,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1741231143}
   - component: {fileID: 1741231144}
+  - component: {fileID: 1741231152}
   - component: {fileID: 1741231145}
   - component: {fileID: 1741231146}
   - component: {fileID: 1741231147}
@@ -58065,7 +58063,6 @@ GameObject:
   - component: {fileID: 1741231150}
   - component: {fileID: 1741231151}
   - component: {fileID: 1741231153}
-  - component: {fileID: 1741231152}
   m_Layer: 0
   m_Name: Simulator
   m_TagString: Untagged
@@ -59878,10 +59875,9 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 228876069}
+  m_Children: []
   m_Father: {fileID: 1623226555}
-  m_RootOrder: 7
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -59927,8 +59923,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
-        m_MethodName: ChangeOrAddMaMRobot
+      - m_Target: {fileID: 1741231153}
+        m_MethodName: ToggleMaMPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -59938,8 +59934,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1741231153}
-        m_MethodName: ToggleMaMPanel
+      - m_Target: {fileID: 2081073941}
+        m_MethodName: ChangeOrAddMaMRobot
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -63434,7 +63430,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -23, y: -24.099998}
-  m_SizeDelta: {x: 153.9, y: 96.15}
+  m_SizeDelta: {x: 153.9, y: 66.3}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1941047082
 MonoBehaviour:
@@ -65108,7 +65104,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Reset
+  m_Text: Reset Robot
 --- !u!222 &2002520315
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -66544,7 +66540,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: ToggleSetPresetPanel
         m_Mode: 1
         m_Arguments:
@@ -67697,7 +67693,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: SelectDriveBase
         m_Mode: 3
         m_Arguments:
@@ -68316,7 +68312,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2081073941}
+      - m_Target: {fileID: 0}
         m_MethodName: ChangeMaMClicked
         m_Mode: 1
         m_Arguments:
@@ -68437,7 +68433,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2081073940}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0025688196}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1623226555}
@@ -68445,7 +68441,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.00008392334}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2085500484

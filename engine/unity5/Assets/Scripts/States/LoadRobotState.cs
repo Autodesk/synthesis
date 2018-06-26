@@ -5,7 +5,7 @@ using UnityEngine;
 public class LoadRobotState : State
 {
     private string robotDirectory;
-    private SelectRobotScrollable robotList;
+    private SelectScrollable robotList;
 
     /// <summary>
     /// Initializes the <see cref="LoadRobotState"/>.
@@ -13,7 +13,7 @@ public class LoadRobotState : State
     public override void Start()
     {
         robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
-        robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectRobotScrollable>();
+        robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectScrollable>();
     }
 
     /// <summary>
@@ -39,10 +39,10 @@ public class LoadRobotState : State
     public void OnSelectRobotButtonPressed()
     {
         GameObject robotList = GameObject.Find("SimLoadRobotList");
-        string entry = (robotList.GetComponent<SelectRobotScrollable>().selectedEntry);
+        string entry = (robotList.GetComponent<SelectScrollable>().selectedEntry);
         if (entry != null)
         {
-            string simSelectedRobotName = robotList.GetComponent<SelectRobotScrollable>().selectedEntry;
+            string simSelectedRobotName = robotList.GetComponent<SelectScrollable>().selectedEntry;
 
             PlayerPrefs.SetString("simSelectedRobot", robotDirectory + "\\" + simSelectedRobotName + "\\");
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);

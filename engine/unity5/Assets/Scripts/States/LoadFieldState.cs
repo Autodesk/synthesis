@@ -7,7 +7,7 @@ public class LoadFieldState : State
     private string fieldDirectory;
     private GameObject mixAndMatchModeScript;
     private GameObject splashScreen;
-    private SelectFieldScrollable fieldList;
+    private SelectScrollable fieldList;
 
     /// <summary>
     /// Initializes required <see cref="GameObject"/> references.
@@ -17,7 +17,7 @@ public class LoadFieldState : State
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields"));
         mixAndMatchModeScript = AuxFunctions.FindGameObject("MixAndMatchModeScript");
         splashScreen = AuxFunctions.FindGameObject("LoadSplash");
-        fieldList = GameObject.Find("SimLoadFieldList").GetComponent<SelectFieldScrollable>();
+        fieldList = GameObject.Find("SimLoadFieldList").GetComponent<SelectScrollable>();
     }
 
     /// <summary>
@@ -43,10 +43,10 @@ public class LoadFieldState : State
     public void OnSelectFieldButtonPressed()
     {
         GameObject fieldList = GameObject.Find("SimLoadFieldList");
-        string entry = (fieldList.GetComponent<SelectFieldScrollable>().selectedEntry);
+        string entry = (fieldList.GetComponent<SelectScrollable>().selectedEntry);
         if (entry != null)
         {
-            string simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
+            string simSelectedFieldName = fieldList.GetComponent<SelectScrollable>().selectedEntry;
             string simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
 
             if (StateMachine.Instance.FindState<MixAndMatchState>() != null) //Starts the MixAndMatch scene

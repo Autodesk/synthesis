@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 
-// TODO: Have some sort of message dispatching system so there is a single MainMenu function that sends info about the button pressed to the active state.
-
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
@@ -161,15 +159,17 @@ public class MainMenu : MonoBehaviour
     public void SwitchErrorScreen()
     {
         currentTab = Tab.ErrorScreen;
-        
-        navigationPanel.SetActive(false);
-        homeTab.SetActive(false);
-        optionsTab.SetActive(false);
-        simTab.SetActive(false);
-        errorText.text = AppModel.ErrorMessage;
-        errorScreen.SetActive(true);
 
-        AppModel.ClearError();
+        StateMachine.Instance.PushState(new ErrorScreenState());
+        
+        //navigationPanel.SetActive(false);
+        //homeTab.SetActive(false);
+        //optionsTab.SetActive(false);
+        //simTab.SetActive(false);
+        //errorText.text = AppModel.ErrorMessage;
+        //errorScreen.SetActive(true);
+
+        //AppModel.ClearError();
     }
 
     /// <summary>
@@ -198,11 +198,11 @@ public class MainMenu : MonoBehaviour
         {
             currentTab = Tab.Options;
 
-            homeTab.SetActive(false);
-            simTab.SetActive(false);
-            optionsTab.SetActive(true);
-            settingsMode.SetActive(true);
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().GetLastSavedControls();
+            //homeTab.SetActive(false);
+            //simTab.SetActive(false);
+            //optionsTab.SetActive(true);
+            //settingsMode.SetActive(true);
+            StateMachine.Instance.ChangeState(new OptionsTabState());
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
@@ -560,10 +560,10 @@ public class MainMenu : MonoBehaviour
     public void SelectSimField()
     {
         GameObject fieldList = GameObject.Find("SimLoadFieldList");
-        string entry = (fieldList.GetComponent<SelectFieldScrollable>().selectedEntry);
+        string entry = (fieldList.GetComponent<SelectScrollable>().selectedEntry);
         if (entry != null)
         {
-            simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
+            simSelectedFieldName = fieldList.GetComponent<SelectScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
 
             if (isMixAndMatchTab) //Starts the MixAndMatch scene
@@ -590,10 +590,10 @@ public class MainMenu : MonoBehaviour
     public void SelectSimRobot()
     {
         GameObject robotList = GameObject.Find("SimLoadRobotList");
-        string entry = (robotList.GetComponent<SelectRobotScrollable>().selectedEntry);
+        string entry = (robotList.GetComponent<SelectScrollable>().selectedEntry);
         if (entry != null)
         {
-            simSelectedRobotName = robotList.GetComponent<SelectRobotScrollable>().selectedEntry;
+            simSelectedRobotName = robotList.GetComponent<SelectScrollable>().selectedEntry;
             simSelectedRobot = robotDirectory + "\\" + simSelectedRobotName + "\\";
             SwitchSimDefault();
         }
@@ -776,6 +776,7 @@ public class MainMenu : MonoBehaviour
         LinkTab<SelectionState>("SelectionPanel");
         LinkTab<DefaultSimulatorState>("DefaultSimulator");
         LinkTab<MixAndMatchState>("MixAndMatchMode");
+        LinkTab<LoadReplayState>("SimLoadReplay");
         LinkTab<LoadRobotState>("SimLoadRobot");
         LinkTab<LoadFieldState>("SimLoadField");
     }
