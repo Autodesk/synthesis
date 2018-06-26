@@ -30,55 +30,29 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SaveRobotForm));
             this.RobotNameLabel = new System.Windows.Forms.Label();
-            this.ButtonOk = new System.Windows.Forms.Button();
-            this.ButtonCancel = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.FieldLabel = new System.Windows.Forms.Label();
             this.OpenSynthesisBox = new System.Windows.Forms.CheckBox();
             this.ColorBox = new System.Windows.Forms.CheckBox();
             this.RobotNameTextBox = new System.Windows.Forms.TextBox();
             this.FieldSelectComboBox = new System.Windows.Forms.ComboBox();
+            this.ButtonCancel = new System.Windows.Forms.Button();
+            this.ButtonOk = new System.Windows.Forms.Button();
+            this.windowControlPanel = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.windowControlPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // RobotNameLabel
             // 
             this.RobotNameLabel.AutoSize = true;
             this.RobotNameLabel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.RobotNameLabel.Location = new System.Drawing.Point(19, 15);
-            this.RobotNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.RobotNameLabel.Location = new System.Drawing.Point(18, 15);
             this.RobotNameLabel.Name = "RobotNameLabel";
-            this.RobotNameLabel.Size = new System.Drawing.Size(85, 30);
+            this.RobotNameLabel.Size = new System.Drawing.Size(67, 26);
             this.RobotNameLabel.TabIndex = 2;
             this.RobotNameLabel.Text = "Robot Name";
             this.RobotNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // ButtonOk
-            // 
-            this.ButtonOk.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ButtonOk.Location = new System.Drawing.Point(250, 4);
-            this.ButtonOk.Margin = new System.Windows.Forms.Padding(4);
-            this.ButtonOk.Name = "ButtonOk";
-            this.ButtonOk.Size = new System.Drawing.Size(239, 28);
-            this.ButtonOk.TabIndex = 5;
-            this.ButtonOk.Text = "OK";
-            this.ButtonOk.UseVisualStyleBackColor = true;
-            this.ButtonOk.Click += new System.EventHandler(this.ButtonOK_Click);
-            // 
-            // ButtonCancel
-            // 
-            this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.ButtonCancel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ButtonCancel.Location = new System.Drawing.Point(4, 4);
-            this.ButtonCancel.Margin = new System.Windows.Forms.Padding(4);
-            this.ButtonCancel.Name = "ButtonCancel";
-            this.ButtonCancel.Size = new System.Drawing.Size(238, 28);
-            this.ButtonCancel.TabIndex = 6;
-            this.ButtonCancel.Text = "Cancel";
-            this.ButtonCancel.UseVisualStyleBackColor = true;
-            this.ButtonCancel.Click += new System.EventHandler(this.ButtonCancel_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -91,7 +65,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 15F));
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.windowControlPanel, 1, 7);
             this.tableLayoutPanel1.Controls.Add(this.RobotNameLabel, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.FieldLabel, 3, 5);
             this.tableLayoutPanel1.Controls.Add(this.OpenSynthesisBox, 1, 5);
@@ -100,8 +74,9 @@
             this.tableLayoutPanel1.Controls.Add(this.FieldSelectComboBox, 4, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 11;
+            this.tableLayoutPanel1.RowCount = 9;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
@@ -110,39 +85,19 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(529, 203);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(397, 180);
             this.tableLayoutPanel1.TabIndex = 7;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.AutoSize = true;
-            this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel1.SetColumnSpan(this.tableLayoutPanel2, 4);
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.ButtonOk, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.ButtonCancel, 0, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(18, 149);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(493, 36);
-            this.tableLayoutPanel2.TabIndex = 3;
             // 
             // FieldLabel
             // 
             this.FieldLabel.AutoSize = true;
             this.FieldLabel.Dock = System.Windows.Forms.DockStyle.Left;
             this.FieldLabel.Enabled = false;
-            this.FieldLabel.Location = new System.Drawing.Point(169, 101);
+            this.FieldLabel.Location = new System.Drawing.Point(145, 92);
+            this.FieldLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.FieldLabel.Name = "FieldLabel";
-            this.FieldLabel.Size = new System.Drawing.Size(38, 30);
+            this.FieldLabel.Size = new System.Drawing.Size(29, 25);
             this.FieldLabel.TabIndex = 6;
             this.FieldLabel.Text = "Field";
             this.FieldLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -151,9 +106,10 @@
             // 
             this.OpenSynthesisBox.AutoSize = true;
             this.OpenSynthesisBox.Dock = System.Windows.Forms.DockStyle.Left;
-            this.OpenSynthesisBox.Location = new System.Drawing.Point(18, 104);
+            this.OpenSynthesisBox.Location = new System.Drawing.Point(17, 94);
+            this.OpenSynthesisBox.Margin = new System.Windows.Forms.Padding(2);
             this.OpenSynthesisBox.Name = "OpenSynthesisBox";
-            this.OpenSynthesisBox.Size = new System.Drawing.Size(121, 24);
+            this.OpenSynthesisBox.Size = new System.Drawing.Size(100, 21);
             this.OpenSynthesisBox.TabIndex = 4;
             this.OpenSynthesisBox.Text = "Open Synthesis";
             this.OpenSynthesisBox.UseVisualStyleBackColor = true;
@@ -162,9 +118,10 @@
             // ColorBox
             // 
             this.ColorBox.AutoSize = true;
-            this.ColorBox.Location = new System.Drawing.Point(18, 63);
+            this.ColorBox.Location = new System.Drawing.Point(17, 58);
+            this.ColorBox.Margin = new System.Windows.Forms.Padding(2);
             this.ColorBox.Name = "ColorBox";
-            this.ColorBox.Size = new System.Drawing.Size(130, 20);
+            this.ColorBox.Size = new System.Drawing.Size(109, 17);
             this.ColorBox.TabIndex = 7;
             this.ColorBox.Text = "Export with colors";
             this.ColorBox.UseVisualStyleBackColor = true;
@@ -173,10 +130,9 @@
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.RobotNameTextBox, 2);
             this.RobotNameTextBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.RobotNameTextBox.Location = new System.Drawing.Point(170, 19);
-            this.RobotNameTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.RobotNameTextBox.Location = new System.Drawing.Point(146, 18);
             this.RobotNameTextBox.Name = "RobotNameTextBox";
-            this.RobotNameTextBox.Size = new System.Drawing.Size(340, 22);
+            this.RobotNameTextBox.Size = new System.Drawing.Size(233, 20);
             this.RobotNameTextBox.TabIndex = 1;
             this.RobotNameTextBox.WordWrap = false;
             // 
@@ -186,32 +142,74 @@
             this.FieldSelectComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.FieldSelectComboBox.Enabled = false;
             this.FieldSelectComboBox.FormattingEnabled = true;
-            this.FieldSelectComboBox.Location = new System.Drawing.Point(213, 104);
+            this.FieldSelectComboBox.Location = new System.Drawing.Point(178, 94);
+            this.FieldSelectComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.FieldSelectComboBox.Name = "FieldSelectComboBox";
-            this.FieldSelectComboBox.Size = new System.Drawing.Size(298, 24);
+            this.FieldSelectComboBox.Size = new System.Drawing.Size(202, 21);
             this.FieldSelectComboBox.TabIndex = 8;
+            // 
+            // ButtonCancel
+            // 
+            this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.ButtonCancel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ButtonCancel.Location = new System.Drawing.Point(3, 3);
+            this.ButtonCancel.Name = "ButtonCancel";
+            this.ButtonCancel.Size = new System.Drawing.Size(175, 23);
+            this.ButtonCancel.TabIndex = 6;
+            this.ButtonCancel.Text = "Cancel";
+            this.ButtonCancel.UseVisualStyleBackColor = true;
+            // 
+            // ButtonOk
+            // 
+            this.ButtonOk.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ButtonOk.Location = new System.Drawing.Point(184, 3);
+            this.ButtonOk.Name = "ButtonOk";
+            this.ButtonOk.Size = new System.Drawing.Size(176, 23);
+            this.ButtonOk.TabIndex = 5;
+            this.ButtonOk.Text = "OK";
+            this.ButtonOk.UseVisualStyleBackColor = true;
+            this.ButtonOk.Click += new System.EventHandler(this.ButtonOK_Click);
+            // 
+            // windowControlPanel
+            // 
+            this.windowControlPanel.AutoSize = true;
+            this.windowControlPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.windowControlPanel.ColumnCount = 2;
+            this.tableLayoutPanel1.SetColumnSpan(this.windowControlPanel, 4);
+            this.windowControlPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.windowControlPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.windowControlPanel.Controls.Add(this.ButtonOk, 1, 0);
+            this.windowControlPanel.Controls.Add(this.ButtonCancel, 0, 0);
+            this.windowControlPanel.Location = new System.Drawing.Point(17, 134);
+            this.windowControlPanel.Margin = new System.Windows.Forms.Padding(2);
+            this.windowControlPanel.Name = "windowControlPanel";
+            this.windowControlPanel.RowCount = 1;
+            this.windowControlPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.windowControlPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.windowControlPanel.Size = new System.Drawing.Size(363, 29);
+            this.windowControlPanel.TabIndex = 3;
             // 
             // SaveRobotForm
             // 
             this.AcceptButton = this.ButtonOk;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.CancelButton = this.ButtonCancel;
-            this.ClientSize = new System.Drawing.Size(529, 199);
+            this.ClientSize = new System.Drawing.Size(397, 180);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SaveRobotForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Save Robot";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SaveRobotForm_FormClosing);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.tableLayoutPanel2.ResumeLayout(false);
+            this.windowControlPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -219,14 +217,14 @@
 
         #endregion
         private System.Windows.Forms.Label RobotNameLabel;
-        private System.Windows.Forms.Button ButtonOk;
-        private System.Windows.Forms.Button ButtonCancel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.CheckBox OpenSynthesisBox;
         private System.Windows.Forms.Label FieldLabel;
         private System.Windows.Forms.CheckBox ColorBox;
         private System.Windows.Forms.TextBox RobotNameTextBox;
         private System.Windows.Forms.ComboBox FieldSelectComboBox;
+        private System.Windows.Forms.Button ButtonCancel;
+        private System.Windows.Forms.Button ButtonOk;
+        private System.Windows.Forms.TableLayoutPanel windowControlPanel;
     }
 }

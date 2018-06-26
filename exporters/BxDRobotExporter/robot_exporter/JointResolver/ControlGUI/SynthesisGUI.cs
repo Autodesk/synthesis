@@ -388,9 +388,9 @@ public partial class SynthesisGUI : Form
     /// Prompts the user for the name of the robot, as well as other information.
     /// </summary>
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
-    public bool PromptSaveSettings(bool allowOpeningSynthesis)
+    public bool PromptSaveSettings(bool allowOpeningSynthesis, bool isFinal)
     {
-        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, allowOpeningSynthesis, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, allowOpeningSynthesis, isFinal, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
         {
             RMeta.UseSettingsDir = true;
             RMeta.ActiveDir = null;
@@ -449,7 +449,7 @@ public partial class SynthesisGUI : Form
     /// <param name="robotName"></param>
     public bool RobotSaveAs()
     {
-        if (PromptSaveSettings(false))
+        if (PromptSaveSettings(false, false))
         {
             RobotSave();
 
