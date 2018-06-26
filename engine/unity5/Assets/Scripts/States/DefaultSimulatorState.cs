@@ -38,6 +38,14 @@ public class DefaultSimulatorState : State
     }
 
     /// <summary>
+    /// Pushes a new <see cref="LoadReplayState"/> when the replays button is pressed.
+    /// </summary>
+    public void OnReplaysButtonPressed()
+    {
+        StateMachine.Instance.PushState(new LoadReplayState());
+    }
+
+    /// <summary>
     /// Pushes a new <see cref="LoadFieldState"/> when the change field button is pressed.
     /// </summary>
     public void OnChangeFieldButtonPressed()
@@ -64,6 +72,7 @@ public class DefaultSimulatorState : State
         if (Directory.Exists(selectedField) && Directory.Exists(selectedRobot))
         {
             splashScreen.SetActive(true);
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             SceneManager.LoadScene("Scene");
             RobotTypeManager.SetProperties(false);
         }

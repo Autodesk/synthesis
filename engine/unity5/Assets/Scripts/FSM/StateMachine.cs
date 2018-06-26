@@ -165,6 +165,8 @@ namespace Assets.Scripts.FSM
             if (CurrentState == null)
                 return false;
 
+            // TODO: This throws an exception if the behaviour is null? Investigate. When that is fixed then
+            // make sure everything else works, then work on the new graphics settings UI.
             SetEnabled(stateBehaviours, force, (behaviour) => behaviour.enabled = objectsEnabled);
             SetEnabled(stateGameObjects, force, (gameObject) => gameObject.SetActive(objectsEnabled));
 
