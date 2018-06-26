@@ -37,6 +37,7 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
+    GameObject bindedKeyPanel;
     GameObject checkSavePanel;
     GameObject unitConversionSwitch;
     GameObject hotKeyButton;
@@ -63,6 +64,8 @@ public class SimUI : MonoBehaviour
     private bool freeroamWindowClosed = false;
 
     private bool oppositeSide = false;
+
+    public static bool inputPanelOn = false;
 
     /// <summary>
     /// Link the SimUI to main state
@@ -111,6 +114,11 @@ public class SimUI : MonoBehaviour
                 TogglePanel(toolbar);
             }
 
+            if (KeyButton.Binded() && inputPanelOn)
+            {
+                ShowBindedInfoPanel();
+            }
+
         }
     }
 
@@ -138,6 +146,7 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
+        bindedKeyPanel = AuxFunctions.FindObject(canvas, "BindedKeyPanel");
         checkSavePanel = AuxFunctions.FindObject(canvas, "CheckSavePanel");
         unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
         hotKeyPanel = AuxFunctions.FindObject(canvas, "HotKeyPanel");
@@ -265,8 +274,8 @@ public class SimUI : MonoBehaviour
             {
                 Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                 {
-                });              
-                    SceneManager.LoadScene("Scene");           
+                });
+                SceneManager.LoadScene("Scene");
             }
             else
             {
@@ -425,6 +434,7 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             inputManagerPanel.SetActive(true);
+            inputPanelOn = true;
 
             Controls.Load();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
@@ -432,6 +442,8 @@ public class SimUI : MonoBehaviour
         else
         {
             inputManagerPanel.SetActive(false);
+            bindedKeyPanel.SetActive(false);
+            inputPanelOn = false;
             ToggleHotKeys(false);
 
             if (Controls.CheckIfSaved())
@@ -447,6 +459,22 @@ public class SimUI : MonoBehaviour
     public void ShowControlPanel()
     {
         ShowControlPanel(!inputManagerPanel.activeSelf);
+    }
+
+    /// <summary>
+    /// Pop up error-panel if user enters WASD for robot controls
+    /// </summary>
+    public void ShowBindedInfoPanel()
+    {
+        if (KeyButton.Binded())
+        {
+            bindedKeyPanel.SetActive(true);
+        }
+        else
+        {
+            bindedKeyPanel.SetActive(false);
+            ToggleHotKeys(false);
+        }
     }
 
     /// <summary>
