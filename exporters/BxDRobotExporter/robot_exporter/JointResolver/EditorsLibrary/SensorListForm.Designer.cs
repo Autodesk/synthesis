@@ -130,6 +130,7 @@
             this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MinimumSize = new System.Drawing.Size(416, 251);
             this.Name = "SensorListForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SensorListForm";
             this.Load += new System.EventHandler(this.SensorListForm_Load);
             this.SizeChanged += new System.EventHandler(this.window_SizeChanged);
