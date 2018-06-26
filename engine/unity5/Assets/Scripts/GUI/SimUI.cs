@@ -572,6 +572,12 @@ public class SimUI : MonoBehaviour
                 main.BeginRobotReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
+            case 3:
+                AuxFunctions.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
+                AuxFunctions.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                SceneManager.LoadScene("Scene");
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
         }
     }
     #endregion
