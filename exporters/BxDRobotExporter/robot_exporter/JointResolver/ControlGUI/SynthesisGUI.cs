@@ -66,7 +66,7 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
-    public float TotalMass = 0;
+    public float TotalMass = 120;
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
