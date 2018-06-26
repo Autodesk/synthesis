@@ -251,14 +251,20 @@ public partial class SynthesisGUI : Form
             return false;
         }
 
-        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-        for (int i = 0; i < Meshes.Count; i++)
+        // Exporter completed successfully
+        if (liteExporter.DialogResult == DialogResult.OK)
         {
-            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
+            List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
+            for (int i = 0; i < Meshes.Count; i++)
+            {
+                ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
+            }
+            
+            return true;
         }
-
-        //ReloadPanels();
-        return true;
+        // Exporter failed
+        else
+            return false;
     }
 
     /// <summary>
