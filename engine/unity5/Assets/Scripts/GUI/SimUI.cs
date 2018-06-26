@@ -569,7 +569,15 @@ public class SimUI : MonoBehaviour
                 break;
             case 2:
                 EndOtherProcesses();
+                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
+                DynamicCamera.MovingEnabled = true;
                 main.BeginRobotReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+            case 3:
+                AuxFunctions.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
+                AuxFunctions.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                SceneManager.LoadScene("Scene");
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
         }
