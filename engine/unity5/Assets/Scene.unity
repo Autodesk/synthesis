@@ -11889,6 +11889,8 @@ MonoBehaviour:
       m_Image: {fileID: 21300000, guid: 0b46a02922478d04d856febaaee26ec7, type: 3}
     - m_Text: Reset Spawn Point
       m_Image: {fileID: 21300000, guid: 0b46a02922478d04d856febaaee26ec7, type: 3}
+    - m_Text: Reset Field
+      m_Image: {fileID: 21300000, guid: 0b46a02922478d04d856febaaee26ec7, type: 3}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -37613,7 +37615,9 @@ MonoBehaviour:
 
     Long hold R or other RESET key: configure spawnpoint and robot orientation
 
-    ALT + LEFT MOUSE: Click and drag gamepieces around (God Mode)
+    F: reset field
+
+    ALT + LEFT MOUSE: click and drag gamepieces around (God Mode)
 
     U: Spawn a new robot
 
@@ -37625,7 +37629,7 @@ MonoBehaviour:
 
     ] : Spawn secondary gamepiece
 
-    ESCAPE: Exit to main menu'
+    ESCAPE: exit to main menu'
 --- !u!222 &1102676361
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -63418,7 +63422,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -23, y: -24.099998}
-  m_SizeDelta: {x: 153.9, y: 66.3}
+  m_SizeDelta: {x: 153.9, y: 96.15}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1941047082
 MonoBehaviour:
@@ -65092,7 +65096,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Reset Robot
+  m_Text: Reset
 --- !u!222 &2002520315
 CanvasRenderer:
   m_ObjectHideFlags: 0
