@@ -8,34 +8,12 @@ using System.Collections.Generic;
 /// <summary>
 /// Meant to be used for selecting a robot in the main menu
 /// </summary>
-public class SelectRobotScrollable : ScrollablePanel
+public class SelectRobotScrollable : SelectScrollable
 {
-    public void Refresh(string directory)
+    /// <summary>
+    /// Initializes a new <see cref="SelectRobotScrollable"/> instance.
+    /// </summary>
+    public SelectRobotScrollable() : base("skeleton.bxdj", "No robots found in directory!")
     {
-        string[] folders = Directory.GetDirectories(directory);
-
-        items.Clear();
-
-        foreach (string robot in folders)
-            if (File.Exists(robot + "\\skeleton.bxdj"))
-                items.Add(new DirectoryInfo(robot).Name);
-
-        if (items.Count > 0)
-            selectedEntry = items[0];
-
-        position = Camera.main.WorldToScreenPoint(transform.position);
-    }
-
-    // Use this for initialization
-    protected override void Start()
-    {
-        base.Start();
-        errorMessage = "No robots found in directory!";
-    }
-
-    void OnEnable()
-    {
-        items = new List<string>();
-        items.Clear();
     }
 }

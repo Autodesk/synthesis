@@ -1,13 +1,10 @@
 ﻿using Assets.Scripts.FSM;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 public class SimTabState : State
 {
+    /// <summary>
+    /// Immediately pushes a new <see cref="SelectionState"/> (the default substate).
+    /// </summary>
     public override void Start()
     {
         StateMachine.Instance.PushState(new SelectionState());
