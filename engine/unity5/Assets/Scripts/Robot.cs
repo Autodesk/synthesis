@@ -11,6 +11,7 @@ using Assets.Scripts.BUExtensions;
 using Assets.Scripts.FSM;
 using Assets.Scripts;
 using Assets.Scripts.Utils;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// To be attached to all robot parent objects.
@@ -106,6 +107,11 @@ public class Robot : MonoBehaviour
             if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
             {
                 keyDownTime = Time.time;
+            }
+            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetField))
+            {
+                AuxFunctions.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                SceneManager.LoadScene("Scene");
             }
 
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&  !MixAndMatchMode.setPresetPanelOpen &&
