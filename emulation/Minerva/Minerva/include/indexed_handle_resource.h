@@ -60,9 +60,9 @@ namespace minerva {
     template<typename T, typename R, int16_t size, hal::HAL_HandleEnum enum_value>
     void IndexedHandleResource<T, R, size, enum_value>::resetHandles() {
 
-        for (int i = 0; i < size, i++) {
+        for (int i = 0; i < size; i++) {
             std::lock_guard<wpi::mutex> lock(handle_mutexes[i]);
-            items[i].reset();;
+            items[i].reset();
         }
     }
 
