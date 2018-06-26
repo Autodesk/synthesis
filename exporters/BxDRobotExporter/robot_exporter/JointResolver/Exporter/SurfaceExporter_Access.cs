@@ -31,12 +31,6 @@ public partial class SurfaceExporter
     /// <param name="reporter">Progress reporter</param>
     public void ExportAll(CustomRigidGroup group, BXDIO.ProgressReporter reporter = null)
     {
-#if LITEMODE
-        LiteExporterForm.Instance.SetProgressText("Including parts...");
-#else
-        SynthesisGUI.Instance.ExporterSetSubText("Including parts");
-#endif
-
         List<ExportPlan> plans = GenerateExportList(group);
         Console.WriteLine();
         reporter?.Invoke(0, plans.Count);
