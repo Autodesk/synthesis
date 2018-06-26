@@ -57,6 +57,8 @@ public class MainMenu : MonoBehaviour
 
     private GameObject graphics; //The Graphics GUI Objects
     private GameObject input; //The Input GUI Objects
+    private GameObject bindedKeyPanel; //Error panel for binded WASD keys
+    private static bool inputPanelOn = false;
 
     private GameObject settingsMode; //The InputManager Objects
     private Text errorText; // The text of the error message
@@ -348,6 +350,8 @@ public class MainMenu : MonoBehaviour
     {
         graphics.SetActive(true);
         input.SetActive(false);
+        inputPanelOn = false;
+        bindedKeyPanel.SetActive(false);
         settingsMode.SetActive(true);
     }
 
@@ -358,6 +362,7 @@ public class MainMenu : MonoBehaviour
     {
         graphics.SetActive(false);
         input.SetActive(true);
+        inputPanelOn = true;
         settingsMode.SetActive(true);
     }
 
@@ -773,6 +778,7 @@ public class MainMenu : MonoBehaviour
 
         graphics = AuxFunctions.FindObject(gameObject, "Graphics");
         input = AuxFunctions.FindObject(gameObject, "Input");
+        bindedKeyPanel = AuxFunctions.FindObject(gameObject, "BindedKeyPanel");
 
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
         errorText = AuxFunctions.FindObject(errorScreen, "ErrorText").GetComponent<Text>();
