@@ -3,7 +3,7 @@ CXXFLAGS       = -std=c++17 -g -I../../external/allwpilib/hal/src/main/native/in
 #Assuming WPILib shared object library directories are placed one directory up from Synthesis
 WPILIB_SO_PATH = ../../../../
 
-all: make_folders function_signature minerva_generator test minerva FRCUserProgram
+all: make_folders function_signature minerva_generator test network minerva FRCUserProgram
 
 make_folders:
 	mkdir -p build
