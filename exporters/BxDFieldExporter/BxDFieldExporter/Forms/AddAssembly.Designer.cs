@@ -40,19 +40,17 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::BxDFieldExporter.Resource.Pointer;
-            this.pictureBox1.Location = new System.Drawing.Point(67, 31);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureBox1.Location = new System.Drawing.Point(50, 25);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(32, 30);
+            this.pictureBox1.Size = new System.Drawing.Size(24, 24);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(21, 103);
-            this.okButton.Margin = new System.Windows.Forms.Padding(4);
+            this.okButton.Location = new System.Drawing.Point(16, 84);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(85, 28);
+            this.okButton.Size = new System.Drawing.Size(64, 23);
             this.okButton.TabIndex = 1;
             this.okButton.Text = "OK";
             this.okButton.UseMnemonic = false;
@@ -62,20 +60,18 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(113, 37);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(85, 30);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(114, 17);
+            this.label1.Size = new System.Drawing.Size(84, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Add Assembly(s)";
             // 
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(116, 103);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
+            this.btnCancel.Location = new System.Drawing.Point(87, 84);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(84, 28);
+            this.btnCancel.Size = new System.Drawing.Size(63, 23);
             this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -83,10 +79,10 @@
             // 
             // btnApply
             // 
-            this.btnApply.Location = new System.Drawing.Point(207, 103);
-            this.btnApply.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnApply.Location = new System.Drawing.Point(155, 84);
+            this.btnApply.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnApply.Name = "btnApply";
-            this.btnApply.Size = new System.Drawing.Size(85, 30);
+            this.btnApply.Size = new System.Drawing.Size(64, 24);
             this.btnApply.TabIndex = 4;
             this.btnApply.Text = "Apply";
             this.btnApply.UseVisualStyleBackColor = true;
@@ -95,10 +91,10 @@
             // AddAssembly
             // 
             this.AcceptButton = this.okButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(309, 159);
+            this.ClientSize = new System.Drawing.Size(232, 129);
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.label1);
@@ -106,7 +102,8 @@
             this.Controls.Add(this.pictureBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "AddAssembly";
             this.Text = "Add Assembly";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddAssembly_FormClosing);

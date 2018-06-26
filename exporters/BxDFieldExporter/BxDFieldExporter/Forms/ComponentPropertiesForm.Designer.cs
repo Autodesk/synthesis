@@ -336,6 +336,7 @@ namespace BxDFieldExporter {
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ComponentPropertiesForm";
+            this.Text = "Component Properties";
             this.physicalPropertiesGroupBox.ResumeLayout(false);
             this.physicalPropertiesGroupBox.PerformLayout();
             this.frictionLabelsLayoutPanel.ResumeLayout(false);
