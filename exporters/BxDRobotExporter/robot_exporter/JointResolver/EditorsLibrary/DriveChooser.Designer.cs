@@ -556,6 +556,7 @@ partial class DriveChooser
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DriveChooser";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Configure Joint";
             this.Load += new System.EventHandler(this.DriveChooser_Load);
             this.grpChooseDriver.ResumeLayout(false);

@@ -13,8 +13,6 @@ using Inventor;
 using System.Threading;
 using OGLViewer;
 
-public enum ProgressTextType { Normal, ShortTaskBegin, ShortTaskEnd }
-
 public partial class LiteExporterForm : Form
 {
     public bool Exporting = false;
@@ -44,40 +42,89 @@ public partial class LiteExporterForm : Form
         ExporterWorker.DoWork += ExporterWorker_DoWork;
         ExporterWorker.RunWorkerCompleted += ExporterWorker_RunWorkerCompleted;
 
-        FormClosing += delegate (object sender, FormClosingEventArgs e)
-        {
-            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
-        };
         Shown += delegate (object sender, EventArgs e)
         {
+            if (InventorManager.Instance == null)
+            {
+                MessageBox.Show("Couldn't detect a running instance of Inventor.");
+                return;
+            }
+
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
+
             Exporting = true;
             OnStartExport();
             ExporterWorker.RunWorkerAsync();
         };
+
+        FormClosing += delegate (object sender, FormClosingEventArgs e)
+        {
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
+        };
     }
 
-    public void SetProgressText(string text, ProgressTextType ProgressType = ProgressTextType.Normal)
+    /// <summary>
+    /// Updates the progress bar with an unknown state of progress, displaying a specific message.
+    /// </summary>
+    /// <param name="message">Message to display next to progress bar.</param>
+    public void SetProgress(string message)
     {
-        if(InvokeRequired)
+        if (InvokeRequired)
         {
-            BeginInvoke((Action<string, ProgressTextType>)SetProgressText, text, ProgressType);
+            BeginInvoke((Action<string>)SetProgress, message);
             return;
         }
-        switch (ProgressType)
+
+        ProgressLabel.Text = message;
+        ProgressBar.Style = ProgressBarStyle.Marquee;
+    }
+
+    /// <summary>
+    /// Updates the progress bar with a specific state (i.e. 5/10 complete) and message (i.e. "Building model...").
+    /// </summary>
+    /// <param name="current">Current progress.</param>
+    /// <param name="max">Maximum value for progress (what it will be when the process is complete). Uses previous value if less than 0.</param> 
+    /// <param name="message">Message to display next to progress bar. Does not change text if message is null.</param>
+    public void SetProgress(int current, int max = -1, string message = null)
+    {
+        if (InvokeRequired)
         {
-            case ProgressTextType.Normal:
-                text = text ?? "";
-                ProgressLabel.Text = "Progress: " + text;
-                break;
-            case ProgressTextType.ShortTaskBegin:
-                ProgressLabel.Text = "Progress: " + text;
-                break;
-            case ProgressTextType.ShortTaskEnd:
-                text = text ?? "Done";
-                ProgressLabel.Text += text;
-                break;
+            BeginInvoke((Action<int, int, string>)SetProgress, current, max, message);
+            return;
         }
 
+        if (message != null)
+            ProgressLabel.Text = message;
+
+        ProgressBar.Style = ProgressBarStyle.Continuous;
+
+        if (max >= 0)
+            ProgressBar.Maximum = max;
+
+        if (current <= ProgressBar.Maximum)
+            ProgressBar.Value = current;
+        else
+            ProgressBar.Value = ProgressBar.Maximum;
+    }
+
+    /// <summary>
+    /// Updates the progress bar with a specific state (i.e. 50% complete) and message (i.e. "Building model...").
+    /// </summary>
+    /// <param name="current">Current progress as a percent (0 to 1).</param>
+    /// <param name="message">Message to display next to progress bar. Does not change text if message is null.</param>
+    public void SetProgress(double current, string message = null)
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke((Action<double, string>)SetProgress, current, message);
+            return;
+        }
+
+        if (message != null)
+            ProgressLabel.Text = message;
+        ProgressBar.Style = ProgressBarStyle.Continuous;
+        ProgressBar.Maximum = 10000;
+        ProgressBar.Value = (int) (current * 10000);
     }
 
     /// <summary>
@@ -87,19 +134,11 @@ public partial class LiteExporterForm : Form
     /// <param name="e"></param>
     private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
     {
-        if (InventorManager.Instance == null)
-        {
-            MessageBox.Show("Couldn't detect a running instance of Inventor.");
-            return;
-        }
-
         if (InventorManager.Instance.ActiveDocument == null || !(InventorManager.Instance.ActiveDocument is AssemblyDocument))
         {
             MessageBox.Show("Couldn't detect an open assembly");
             return;
         }
-
-        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
         if (SynthesisGUI.Instance.SkeletonBase == null)
             return; // Skeleton has not been built
@@ -121,6 +160,7 @@ public partial class LiteExporterForm : Form
     private void ExporterWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
         Exporting = false;
+
         if (e.Cancelled)
             ProgressLabel.Text = "Export Cancelled";
         else if (e.Error != null)
@@ -136,7 +176,6 @@ public partial class LiteExporterForm : Form
         #endregion
         else
         {
-            ProgressLabel.Text = "Export Completed Successfully";
             Close();
         }
     }
@@ -157,9 +196,11 @@ public partial class LiteExporterForm : Form
 
         List<BXDAMesh> meshes = new List<BXDAMesh>();
 
-        foreach (RigidNode_Base node in nodes)
+        SetProgress(0, "Exporting Model");
+
+        for (int i = 0; i < nodes.Count; i++)
         {
-            SetProgressText("Exporting " + node.ModelFileName);
+            RigidNode_Base node = nodes[i];
 
             if (node is RigidNode && node.GetModel() != null && node.ModelFileName != null && node.GetModel() is CustomRigidGroup)
             {
@@ -169,7 +210,7 @@ public partial class LiteExporterForm : Form
                     surfs.Reset(node.GUID);
                     surfs.ExportAll(group, (long progress, long total) =>
                     {
-                        SetProgressText(String.Format("Export {0} / {1}", progress, total));
+                        SetProgress((double) progress / total / nodes.Count + (double) i / nodes.Count);
                     });
                     BXDAMesh output = surfs.GetOutput();
                     output.colliders.Clear();
