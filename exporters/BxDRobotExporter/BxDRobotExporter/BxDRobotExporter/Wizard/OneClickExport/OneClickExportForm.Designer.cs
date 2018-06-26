@@ -77,7 +77,9 @@
             this.DriveTrainComboBox.FormattingEnabled = true;
             this.DriveTrainComboBox.Items.AddRange(new object[] {
             "Western",
-            "Mecanum"});
+            "Mecanum",
+            "Swerve",
+            "H-Drive"});
             this.DriveTrainComboBox.Location = new System.Drawing.Point(193, 16);
             this.DriveTrainComboBox.Name = "DriveTrainComboBox";
             this.DriveTrainComboBox.Size = new System.Drawing.Size(96, 21);
@@ -207,7 +209,7 @@
             this.PerformLayout();
 
         }
-
+        
         #endregion
 
         private System.Windows.Forms.Label WheelCountLabel;
