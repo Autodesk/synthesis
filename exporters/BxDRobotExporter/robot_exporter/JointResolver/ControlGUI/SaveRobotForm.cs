@@ -15,10 +15,14 @@ namespace JointResolver.ControlGUI
     {
         static Dictionary<string, string> fields = new Dictionary<string, string>();
 
-        public SaveRobotForm(string initialRobotName, bool allowOpeningSynthesis)
+        private bool _isFinal;
+
+        public SaveRobotForm(string initialRobotName, bool allowOpeningSynthesis, bool isFinal)
         {
             InitializeComponent();
             InitializeFields();
+
+            _isFinal = isFinal;
 
             RobotNameTextBox.Text = initialRobotName;
             ColorBox.Checked = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
@@ -62,11 +66,11 @@ namespace JointResolver.ControlGUI
             }
         }
 
-        public static DialogResult Prompt(string initialRobotName, bool allowOpeningSynthesis, out string robotName, out bool colors, out bool openSynthesis, out string field)
+        public static DialogResult Prompt(string initialRobotName, bool allowOpeningSynthesis, bool isFinal, out string robotName, out bool colors, out bool openSynthesis, out string field)
         {
             try
             {
-                SaveRobotForm form = new SaveRobotForm(initialRobotName, allowOpeningSynthesis);
+                SaveRobotForm form = new SaveRobotForm(initialRobotName, allowOpeningSynthesis, isFinal);
                 form.ShowDialog();
                 robotName = form.RobotNameTextBox.Text;
                 colors = form.ColorBox.Checked;
@@ -110,14 +114,13 @@ namespace JointResolver.ControlGUI
             }
         }
 
-        private void ButtonCancel_Click(object sender, EventArgs e)
+        private void SaveRobotForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if((MessageBox.Show("Are you sure you want to cancel? (All export progress would be lost)", 
-                "Cancel", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes))
-            {
+            if (_isFinal && MessageBox.Show("Are you sure you want to cancel? (All export progress would be lost)",
+                                            "Cancel", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                e.Cancel = true;
+            else
                 DialogResult = DialogResult.Cancel;
-                Close();
-            }
         }
 
         private void OpenSynthesisBox_CheckedChanged(object sender, EventArgs e)
