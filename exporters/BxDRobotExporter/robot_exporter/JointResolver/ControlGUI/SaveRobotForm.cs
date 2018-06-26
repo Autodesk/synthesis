@@ -116,11 +116,14 @@ namespace JointResolver.ControlGUI
 
         private void SaveRobotForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_isFinal && MessageBox.Show("Are you sure you want to cancel? (All export progress would be lost)",
-                                            "Cancel", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-                e.Cancel = true;
-            else
-                DialogResult = DialogResult.Cancel;
+            if (DialogResult == DialogResult.None)
+            {
+                if (_isFinal && MessageBox.Show("Are you sure you want to cancel? (All export progress would be lost)",
+                                                "Cancel", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    e.Cancel = true;
+                else
+                    DialogResult = DialogResult.Cancel;
+            }
         }
 
         private void OpenSynthesisBox_CheckedChanged(object sender, EventArgs e)
