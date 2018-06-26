@@ -33,7 +33,7 @@ public class MainMenu : MonoBehaviour
         Selection, DefaultSimulator, MixAndMatchMode, SimLoadRobot,
         SimLoadField, CustomFieldLoader, SimLoadReplay
     }
-   
+
     public static Sim currentSim = Sim.Selection;
     Sim lastSim;
 
@@ -58,7 +58,7 @@ public class MainMenu : MonoBehaviour
     private GameObject graphics; //The Graphics GUI Objects
     private GameObject input; //The Input GUI Objects
     private GameObject bindedKeyPanel; //Error panel for binded WASD keys
-    private static bool inputPanelOn = false;
+    private static bool inputPanelOn;
 
     private GameObject settingsMode; //The InputManager Objects
     private Text errorText; // The text of the error message
@@ -122,6 +122,18 @@ public class MainMenu : MonoBehaviour
                     customroboton = false;
                 }
                 break;
+        }
+
+        if (KeyButton.Binded() && inputPanelOn)
+        {
+            if (KeyButton.Binded())
+            {
+                bindedKeyPanel.SetActive(true);
+            }
+            else
+            {
+                bindedKeyPanel.SetActive(false);
+            }
         }
 
         //Initializes and renders the Field Browser
@@ -258,7 +270,7 @@ public class MainMenu : MonoBehaviour
     public void SwitchMixAndMatch()
     {
         currentSim = Sim.MixAndMatchMode;
-        
+
         selectionPanel.SetActive(false);
         simLoadField.SetActive(false);
         simLoadRobot.SetActive(false);
@@ -350,9 +362,9 @@ public class MainMenu : MonoBehaviour
     {
         graphics.SetActive(true);
         input.SetActive(false);
-        inputPanelOn = false;
-        bindedKeyPanel.SetActive(false);
         settingsMode.SetActive(true);
+        bindedKeyPanel.SetActive(false);
+        inputPanelOn = false;
     }
 
     /// <summary>
@@ -362,8 +374,26 @@ public class MainMenu : MonoBehaviour
     {
         graphics.SetActive(false);
         input.SetActive(true);
-        inputPanelOn = true;
         settingsMode.SetActive(true);
+        inputPanelOn = true;
+
+        if (KeyButton.Binded() && inputPanelOn)
+        {
+            bindedKeyPanel.SetActive(true);
+        }
+        else
+        {
+            bindedKeyPanel.SetActive(false);
+        }
+    }
+
+    public void SwitchInputOkButton()
+    {
+        graphics.SetActive(false);
+        input.SetActive(true);
+        bindedKeyPanel.SetActive(false);
+        settingsMode.SetActive(true);
+        inputPanelOn = true;
     }
 
     /// <summary>
@@ -417,8 +447,8 @@ public class MainMenu : MonoBehaviour
             {
                 fieldBrowser.Active = true;
                 string fileLocation = (string)obj;
-                // If dir was selected...
-                DirectoryInfo directory = new DirectoryInfo(fileLocation);
+                    // If dir was selected...
+                    DirectoryInfo directory = new DirectoryInfo(fileLocation);
                 if (directory != null && directory.Exists)
                 {
                     Debug.Log(directory);
@@ -464,8 +494,8 @@ public class MainMenu : MonoBehaviour
             {
                 robotBrowser.Active = true;
                 string fileLocation = (string)obj;
-                // If dir was selected...
-                DirectoryInfo directory = new DirectoryInfo(fileLocation);
+                    // If dir was selected...
+                    DirectoryInfo directory = new DirectoryInfo(fileLocation);
                 if (directory != null && directory.Exists)
                 {
                     robotDirectory = (directory.FullName);
@@ -570,16 +600,17 @@ public class MainMenu : MonoBehaviour
                 fieldList.SetActive(false);
                 splashScreen.SetActive(true);
                 mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartMaMSim();
-            } else
+            }
+            else
             {
                 SwitchSimDefault();
-            }            
+            }
         }
         else
         {
             UserMessageManager.Dispatch("No Field Selected!", 2);
         }
-        
+
     }
 
     /// <summary>
