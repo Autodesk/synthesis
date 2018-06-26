@@ -124,9 +124,6 @@ public class Controls
         ArcadeControls();
     }
 
-    /// <summary>
-    /// Nothing. It just call static constructor if needed.
-    /// </summary>
     public static void Init()
     {
         // Nothing. It just call static constructor if needed
