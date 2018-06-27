@@ -305,8 +305,9 @@ public class MixAndMatchMode : MonoBehaviour
 
 
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+        GameObject simulatorObject = GameObject.Find("Simulator");
 
-        GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, RobotTypeManager.HasManipulator);
+        simulatorObject.GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, RobotTypeManager.HasManipulator);
     }
 #endregion
    
