@@ -44,7 +44,7 @@ public class Exporter
                 else
                 {
                     //No robot would have a piece that would just keep going.
-                    throw new InvalidJointException("Your assembly contains a linear joint without limits.\nPlease add limits to this joint to continue.", joint);
+                    throw new InvalidJointException(String.Format("Please close the exporter and add limits to \"{0}\" before exporting your robot.", joint.Name), joint);
                 }
             }
         }
