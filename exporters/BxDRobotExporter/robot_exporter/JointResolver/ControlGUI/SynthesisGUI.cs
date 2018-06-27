@@ -556,7 +556,8 @@ public partial class SynthesisGUI : Form
 
             massForm.ShowDialog();
 
-            TotalMass = massForm.TotalMass;
+            if (massForm.DialogResult == DialogResult.OK)
+                TotalMass = massForm.TotalMass;
         }
         catch (Exception ex)
         {

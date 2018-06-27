@@ -22,9 +22,11 @@ namespace EditorsLibrary
             MassBox.Value = (decimal) TotalMass;
         }
 
-        private void MassBox_ValueChanged(object sender, EventArgs e)
+        private void SaveButton_Click(object sender, EventArgs e)
         {
-            TotalMass = (float) MassBox.Value;
+            TotalMass = (float)MassBox.Value;
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }
