@@ -33,13 +33,13 @@ partial class DriveChooser
             this.grpDriveOptions = new System.Windows.Forms.GroupBox();
             this.rbPWM = new System.Windows.Forms.RadioButton();
             this.rbCAN = new System.Windows.Forms.RadioButton();
-            this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
             this.txtHighLimit = new System.Windows.Forms.NumericUpDown();
             this.lblLimits = new System.Windows.Forms.Label();
             this.txtLowLimit = new System.Windows.Forms.NumericUpDown();
             this.txtPortB = new System.Windows.Forms.NumericUpDown();
             this.lblPort = new System.Windows.Forms.Label();
             this.txtPortA = new System.Windows.Forms.NumericUpDown();
+            this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
@@ -64,6 +64,8 @@ partial class DriveChooser
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
             this.metaElevatorStages = new System.Windows.Forms.TabPage();
             this.cmbStages = new System.Windows.Forms.ComboBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
@@ -78,27 +80,29 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).BeginInit();
             this.metaElevatorStages.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmbJointDriver
             // 
             this.cmbJointDriver.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbJointDriver.FormattingEnabled = true;
-            this.cmbJointDriver.Location = new System.Drawing.Point(11, 17);
+            this.cmbJointDriver.Location = new System.Drawing.Point(4, 17);
             this.cmbJointDriver.Margin = new System.Windows.Forms.Padding(2);
             this.cmbJointDriver.Name = "cmbJointDriver";
-            this.cmbJointDriver.Size = new System.Drawing.Size(297, 21);
+            this.cmbJointDriver.Size = new System.Drawing.Size(316, 21);
             this.cmbJointDriver.TabIndex = 0;
             this.cmbJointDriver.SelectedIndexChanged += new System.EventHandler(this.cmbJointDriver_SelectedIndexChanged);
             // 
             // grpChooseDriver
             // 
             this.grpChooseDriver.Controls.Add(this.cmbJointDriver);
-            this.grpChooseDriver.Location = new System.Drawing.Point(9, 10);
+            this.grpChooseDriver.Location = new System.Drawing.Point(2, 2);
             this.grpChooseDriver.Margin = new System.Windows.Forms.Padding(2);
             this.grpChooseDriver.Name = "grpChooseDriver";
             this.grpChooseDriver.Padding = new System.Windows.Forms.Padding(2);
-            this.grpChooseDriver.Size = new System.Drawing.Size(312, 46);
+            this.grpChooseDriver.Size = new System.Drawing.Size(324, 44);
             this.grpChooseDriver.TabIndex = 1;
             this.grpChooseDriver.TabStop = false;
             this.grpChooseDriver.Text = "Joint Driver";
@@ -106,20 +110,15 @@ partial class DriveChooser
             // 
             // grpDriveOptions
             // 
-            this.grpDriveOptions.Controls.Add(this.rbPWM);
-            this.grpDriveOptions.Controls.Add(this.rbCAN);
-            this.grpDriveOptions.Controls.Add(this.chkBoxDriveWheel);
-            this.grpDriveOptions.Controls.Add(this.txtHighLimit);
-            this.grpDriveOptions.Controls.Add(this.lblLimits);
-            this.grpDriveOptions.Controls.Add(this.txtLowLimit);
-            this.grpDriveOptions.Controls.Add(this.txtPortB);
-            this.grpDriveOptions.Controls.Add(this.lblPort);
-            this.grpDriveOptions.Controls.Add(this.txtPortA);
-            this.grpDriveOptions.Location = new System.Drawing.Point(10, 61);
+            this.grpDriveOptions.AutoSize = true;
+            this.grpDriveOptions.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.grpDriveOptions.Controls.Add(this.tableLayoutPanel2);
+            this.grpDriveOptions.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpDriveOptions.Location = new System.Drawing.Point(2, 147);
             this.grpDriveOptions.Margin = new System.Windows.Forms.Padding(2);
             this.grpDriveOptions.Name = "grpDriveOptions";
             this.grpDriveOptions.Padding = new System.Windows.Forms.Padding(2);
-            this.grpDriveOptions.Size = new System.Drawing.Size(311, 58);
+            this.grpDriveOptions.Size = new System.Drawing.Size(324, 103);
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
             this.grpDriveOptions.Text = "Joint Options";
@@ -127,48 +126,43 @@ partial class DriveChooser
             // rbPWM
             // 
             this.rbPWM.AutoSize = true;
-            this.rbPWM.Location = new System.Drawing.Point(260, 41);
+            this.rbPWM.Dock = System.Windows.Forms.DockStyle.Right;
+            this.rbPWM.Location = new System.Drawing.Point(266, 21);
             this.rbPWM.Margin = new System.Windows.Forms.Padding(2);
             this.rbPWM.Name = "rbPWM";
-            this.rbPWM.Size = new System.Drawing.Size(52, 17);
+            this.rbPWM.Size = new System.Drawing.Size(52, 20);
             this.rbPWM.TabIndex = 7;
             this.rbPWM.TabStop = true;
             this.rbPWM.Text = "PWM";
+            this.rbPWM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.rbPWM.UseVisualStyleBackColor = true;
             // 
             // rbCAN
             // 
             this.rbCAN.AutoSize = true;
-            this.rbCAN.Location = new System.Drawing.Point(260, 25);
+            this.rbCAN.Dock = System.Windows.Forms.DockStyle.Right;
+            this.rbCAN.Location = new System.Drawing.Point(212, 21);
             this.rbCAN.Margin = new System.Windows.Forms.Padding(2);
             this.rbCAN.Name = "rbCAN";
-            this.rbCAN.Size = new System.Drawing.Size(47, 17);
+            this.rbCAN.Padding = new System.Windows.Forms.Padding(2, 0, 0, 0);
+            this.rbCAN.Size = new System.Drawing.Size(49, 20);
             this.rbCAN.TabIndex = 6;
             this.rbCAN.TabStop = true;
             this.rbCAN.Text = "CAN";
+            this.rbCAN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.rbCAN.UseVisualStyleBackColor = true;
             this.rbCAN.CheckedChanged += new System.EventHandler(this.rbCAN_CheckedChanged);
-            // 
-            // chkBoxDriveWheel
-            // 
-            this.chkBoxDriveWheel.AutoSize = true;
-            this.chkBoxDriveWheel.Location = new System.Drawing.Point(224, 0);
-            this.chkBoxDriveWheel.Margin = new System.Windows.Forms.Padding(2);
-            this.chkBoxDriveWheel.Name = "chkBoxDriveWheel";
-            this.chkBoxDriveWheel.Size = new System.Drawing.Size(88, 17);
-            this.chkBoxDriveWheel.TabIndex = 5;
-            this.chkBoxDriveWheel.Text = "Drive Wheel ";
-            this.chkBoxDriveWheel.UseVisualStyleBackColor = true;
             // 
             // txtHighLimit
             // 
             this.txtHighLimit.DecimalPlaces = 4;
+            this.txtHighLimit.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtHighLimit.Increment = new decimal(new int[] {
             1,
             0,
             0,
             65536});
-            this.txtHighLimit.Location = new System.Drawing.Point(105, 75);
+            this.txtHighLimit.Location = new System.Drawing.Point(107, 64);
             this.txtHighLimit.Margin = new System.Windows.Forms.Padding(2);
             this.txtHighLimit.Minimum = new decimal(new int[] {
             100,
@@ -176,15 +170,15 @@ partial class DriveChooser
             0,
             -2147483648});
             this.txtHighLimit.Name = "txtHighLimit";
-            this.txtHighLimit.Size = new System.Drawing.Size(90, 20);
+            this.txtHighLimit.Size = new System.Drawing.Size(101, 20);
             this.txtHighLimit.TabIndex = 4;
             this.txtHighLimit.Visible = false;
             // 
             // lblLimits
             // 
             this.lblLimits.AutoSize = true;
-            this.lblLimits.Location = new System.Drawing.Point(8, 58);
-            this.lblLimits.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblLimits.Location = new System.Drawing.Point(3, 46);
+            this.lblLimits.Margin = new System.Windows.Forms.Padding(3);
             this.lblLimits.Name = "lblLimits";
             this.lblLimits.Size = new System.Drawing.Size(58, 13);
             this.lblLimits.TabIndex = 4;
@@ -194,12 +188,13 @@ partial class DriveChooser
             // txtLowLimit
             // 
             this.txtLowLimit.DecimalPlaces = 4;
+            this.txtLowLimit.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtLowLimit.Increment = new decimal(new int[] {
             1,
             0,
             0,
             65536});
-            this.txtLowLimit.Location = new System.Drawing.Point(10, 75);
+            this.txtLowLimit.Location = new System.Drawing.Point(2, 64);
             this.txtLowLimit.Margin = new System.Windows.Forms.Padding(2);
             this.txtLowLimit.Minimum = new decimal(new int[] {
             100,
@@ -207,13 +202,14 @@ partial class DriveChooser
             0,
             -2147483648});
             this.txtLowLimit.Name = "txtLowLimit";
-            this.txtLowLimit.Size = new System.Drawing.Size(90, 20);
+            this.txtLowLimit.Size = new System.Drawing.Size(101, 20);
             this.txtLowLimit.TabIndex = 3;
             this.txtLowLimit.Visible = false;
             // 
             // txtPortB
             // 
-            this.txtPortB.Location = new System.Drawing.Point(105, 34);
+            this.txtPortB.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPortB.Location = new System.Drawing.Point(107, 21);
             this.txtPortB.Margin = new System.Windows.Forms.Padding(2);
             this.txtPortB.Minimum = new decimal(new int[] {
             1,
@@ -221,7 +217,7 @@ partial class DriveChooser
             0,
             0});
             this.txtPortB.Name = "txtPortB";
-            this.txtPortB.Size = new System.Drawing.Size(90, 20);
+            this.txtPortB.Size = new System.Drawing.Size(101, 20);
             this.txtPortB.TabIndex = 2;
             this.txtPortB.Value = new decimal(new int[] {
             1,
@@ -232,8 +228,8 @@ partial class DriveChooser
             // lblPort
             // 
             this.lblPort.AutoSize = true;
-            this.lblPort.Location = new System.Drawing.Point(8, 18);
-            this.lblPort.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPort.Location = new System.Drawing.Point(3, 3);
+            this.lblPort.Margin = new System.Windows.Forms.Padding(3);
             this.lblPort.Name = "lblPort";
             this.lblPort.Size = new System.Drawing.Size(40, 13);
             this.lblPort.TabIndex = 1;
@@ -241,7 +237,8 @@ partial class DriveChooser
             // 
             // txtPortA
             // 
-            this.txtPortA.Location = new System.Drawing.Point(10, 34);
+            this.txtPortA.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPortA.Location = new System.Drawing.Point(2, 21);
             this.txtPortA.Margin = new System.Windows.Forms.Padding(2);
             this.txtPortA.Minimum = new decimal(new int[] {
             1,
@@ -249,7 +246,7 @@ partial class DriveChooser
             0,
             0});
             this.txtPortA.Name = "txtPortA";
-            this.txtPortA.Size = new System.Drawing.Size(90, 20);
+            this.txtPortA.Size = new System.Drawing.Size(101, 20);
             this.txtPortA.TabIndex = 1;
             this.txtPortA.Value = new decimal(new int[] {
             1,
@@ -257,12 +254,23 @@ partial class DriveChooser
             0,
             0});
             // 
+            // chkBoxDriveWheel
+            // 
+            this.chkBoxDriveWheel.AutoSize = true;
+            this.chkBoxDriveWheel.Location = new System.Drawing.Point(197, 29);
+            this.chkBoxDriveWheel.Margin = new System.Windows.Forms.Padding(2);
+            this.chkBoxDriveWheel.Name = "chkBoxDriveWheel";
+            this.chkBoxDriveWheel.Size = new System.Drawing.Size(88, 17);
+            this.chkBoxDriveWheel.TabIndex = 5;
+            this.chkBoxDriveWheel.Text = "Drive Wheel ";
+            this.chkBoxDriveWheel.UseVisualStyleBackColor = true;
+            // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(9, 214);
+            this.btnSave.Location = new System.Drawing.Point(2, 254);
             this.btnSave.Margin = new System.Windows.Forms.Padding(2);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(312, 23);
+            this.btnSave.Size = new System.Drawing.Size(324, 22);
             this.btnSave.TabIndex = 11;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -306,23 +314,24 @@ partial class DriveChooser
             this.tabsMeta.Controls.Add(this.metaGearing);
             this.tabsMeta.Controls.Add(this.metaElevatorBrake);
             this.tabsMeta.Controls.Add(this.metaElevatorStages);
-            this.tabsMeta.Location = new System.Drawing.Point(10, 125);
-            this.tabsMeta.Margin = new System.Windows.Forms.Padding(2);
+            this.tabsMeta.Location = new System.Drawing.Point(2, 50);
+            this.tabsMeta.Margin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.tabsMeta.Name = "tabsMeta";
             this.tabsMeta.SelectedIndex = 0;
-            this.tabsMeta.Size = new System.Drawing.Size(311, 86);
+            this.tabsMeta.Size = new System.Drawing.Size(324, 93);
             this.tabsMeta.TabIndex = 11;
             // 
             // metaWheel
             // 
             this.metaWheel.Controls.Add(this.lblFriction);
             this.metaWheel.Controls.Add(this.lblType);
+            this.metaWheel.Controls.Add(this.chkBoxDriveWheel);
             this.metaWheel.Controls.Add(this.cmbFrictionLevel);
             this.metaWheel.Controls.Add(this.cmbWheelType);
             this.metaWheel.Location = new System.Drawing.Point(4, 22);
             this.metaWheel.Margin = new System.Windows.Forms.Padding(2);
             this.metaWheel.Name = "metaWheel";
-            this.metaWheel.Size = new System.Drawing.Size(303, 60);
+            this.metaWheel.Size = new System.Drawing.Size(316, 67);
             this.metaWheel.TabIndex = 0;
             this.metaWheel.Text = "Wheel";
             this.metaWheel.UseVisualStyleBackColor = true;
@@ -370,7 +379,7 @@ partial class DriveChooser
             this.metaPneumatic.Location = new System.Drawing.Point(4, 22);
             this.metaPneumatic.Margin = new System.Windows.Forms.Padding(2);
             this.metaPneumatic.Name = "metaPneumatic";
-            this.metaPneumatic.Size = new System.Drawing.Size(303, 60);
+            this.metaPneumatic.Size = new System.Drawing.Size(316, 67);
             this.metaPneumatic.TabIndex = 1;
             this.metaPneumatic.Text = "Pneumatic";
             this.metaPneumatic.UseVisualStyleBackColor = true;
@@ -418,7 +427,7 @@ partial class DriveChooser
             this.metaGearing.Location = new System.Drawing.Point(4, 22);
             this.metaGearing.Margin = new System.Windows.Forms.Padding(2);
             this.metaGearing.Name = "metaGearing";
-            this.metaGearing.Size = new System.Drawing.Size(303, 60);
+            this.metaGearing.Size = new System.Drawing.Size(316, 67);
             this.metaGearing.TabIndex = 2;
             this.metaGearing.Text = "Gear Ratio";
             this.metaGearing.UseVisualStyleBackColor = true;
@@ -471,7 +480,7 @@ partial class DriveChooser
             this.metaElevatorBrake.Location = new System.Drawing.Point(4, 22);
             this.metaElevatorBrake.Margin = new System.Windows.Forms.Padding(2);
             this.metaElevatorBrake.Name = "metaElevatorBrake";
-            this.metaElevatorBrake.Size = new System.Drawing.Size(303, 60);
+            this.metaElevatorBrake.Size = new System.Drawing.Size(316, 67);
             this.metaElevatorBrake.TabIndex = 3;
             this.metaElevatorBrake.Text = "Break Info";
             this.metaElevatorBrake.UseVisualStyleBackColor = true;
@@ -521,7 +530,7 @@ partial class DriveChooser
             this.metaElevatorStages.Location = new System.Drawing.Point(4, 22);
             this.metaElevatorStages.Margin = new System.Windows.Forms.Padding(2);
             this.metaElevatorStages.Name = "metaElevatorStages";
-            this.metaElevatorStages.Size = new System.Drawing.Size(303, 60);
+            this.metaElevatorStages.Size = new System.Drawing.Size(316, 67);
             this.metaElevatorStages.TabIndex = 4;
             this.metaElevatorStages.Text = "Stages";
             this.metaElevatorStages.UseVisualStyleBackColor = true;
@@ -542,19 +551,67 @@ partial class DriveChooser
             this.cmbStages.Size = new System.Drawing.Size(164, 21);
             this.cmbStages.TabIndex = 0;
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.Controls.Add(this.grpChooseDriver, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.grpDriveOptions, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.btnSave, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.tabsMeta, 0, 1);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(328, 278);
+            this.tableLayoutPanel1.TabIndex = 12;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.AutoSize = true;
+            this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.Controls.Add(this.txtHighLimit, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblPort, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtLowLimit, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txtPortA, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtPortB, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblLimits, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.rbCAN, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.rbPWM, 3, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(2, 15);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(320, 86);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
             // DriveChooser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(332, 248);
-            this.Controls.Add(this.tabsMeta);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.grpDriveOptions);
-            this.Controls.Add(this.grpChooseDriver);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.HelpButton = true;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(373, 324);
+            this.Controls.Add(this.tableLayoutPanel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "DriveChooser";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Configure Joint";
@@ -578,7 +635,12 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).EndInit();
             this.metaElevatorStages.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
     }
 
@@ -620,4 +682,6 @@ partial class DriveChooser
     private System.Windows.Forms.ComboBox cmbStages;
     private System.Windows.Forms.RadioButton rbPWM;
     private System.Windows.Forms.RadioButton rbCAN;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
 }
