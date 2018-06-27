@@ -165,8 +165,6 @@ namespace Assets.Scripts.FSM
             if (CurrentState == null)
                 return false;
 
-            // TODO: This throws an exception if the behaviour is null? Investigate. When that is fixed then
-            // make sure everything else works, then work on the new graphics settings UI.
             SetEnabled(stateBehaviours, force, (behaviour) => behaviour.enabled = objectsEnabled);
             SetEnabled(stateGameObjects, force, (gameObject) => gameObject.SetActive(objectsEnabled));
 
@@ -185,10 +183,16 @@ namespace Assets.Scripts.FSM
             Type currentType = CurrentState.GetType();
             Tuple<bool, HashSet<T>> currentItems;
 
-            if (items.ContainsKey(currentType) && (currentItems = items[currentType]) != null)
-                foreach (T value in currentItems.Item2)
-                    if (value != null && (force || currentItems.Item1))
-                        setItemEnabled(value);
+            if (!items.ContainsKey(currentType) || (currentItems = items[currentType]) == null)
+                return;
+
+            currentItems.Item2.RemoveWhere(o => o.Equals(null));
+
+            if (!force && !currentItems.Item1)
+                return;
+
+            foreach (T value in currentItems.Item2)
+                setItemEnabled(value);
         }
 
         /// <summary>

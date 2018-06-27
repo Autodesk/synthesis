@@ -2716,7 +2716,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00015258789}
+  m_AnchoredPosition: {x: 0, y: -0.00017961733}
   m_SizeDelta: {x: -28, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &250185197
@@ -6905,7 +6905,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 758318691}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9999998
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6959,7 +6959,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &733606799
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7163,8 +7163,8 @@ RectTransform:
   m_Father: {fileID: 2106162985}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.00000017881393}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0.99999976}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -8212,12 +8212,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c4953847945db49995aedafcbde146, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mixAndMatchModeScript: {fileID: 0}
-  homeTab: {fileID: 1769824028}
-  simTab: {fileID: 733606798}
-  optionsTab: {fileID: 811653938}
-  fieldDirectory: 
-  robotDirectory: 
 --- !u!114 &860403446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9077,7 +9071,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &911553511
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13943,6 +13937,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 1532488197}
     m_Modifications:
+    - target: {fileID: 114933091240371482, guid: d0b50c0aa1eae7a4ebad445a411fc746,
+        type: 2}
+      propertyPath: list.Array.size
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 224492744229175914, guid: d0b50c0aa1eae7a4ebad445a411fc746,
         type: 2}
       propertyPath: m_LocalPosition.x
@@ -14050,6 +14049,11 @@ Prefab:
         type: 2}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114933091240371482, guid: d0b50c0aa1eae7a4ebad445a411fc746,
+        type: 2}
+      propertyPath: list.Array.data[8].m_Text
+      value: 1920x1080
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d0b50c0aa1eae7a4ebad445a411fc746, type: 2}
@@ -15388,7 +15392,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1532488197
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17717,7 +17721,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1769824029
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19636,7 +19640,7 @@ GameObject:
   - component: {fileID: 1935116729}
   - component: {fileID: 1935116728}
   m_Layer: 0
-  m_Name: Button
+  m_Name: InputButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19699,18 +19703,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1935116729}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchInput
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1935116729
@@ -19940,7 +19933,7 @@ GameObject:
   - component: {fileID: 1961457968}
   - component: {fileID: 1961457967}
   m_Layer: 0
-  m_Name: Button
+  m_Name: GraphicsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20003,18 +19996,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1961457968}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SwitchGraphics
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1961457968
