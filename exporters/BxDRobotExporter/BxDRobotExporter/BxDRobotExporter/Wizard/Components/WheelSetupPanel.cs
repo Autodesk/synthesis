@@ -15,15 +15,17 @@ namespace BxDRobotExporter.Wizard
     /// </summary>
     public partial class WheelSetupPanel : UserControl
     {
-        public bool Valid { get => LeftRadioButton.Checked || RightRadioButton.Checked; }
-
+        public static event OnWheelSetupPanelRemove remove;
+        public static event OnWheelSetupPanelHover hover;
+        public String name;
         public WheelSetupPanel()
         {
             InitializeComponent();
         }
 
-        public WheelSetupPanel(RigidNode_Base node, WizardData.WizardWheelType WheelType = WizardData.WizardWheelType.NORMAL)
+        public WheelSetupPanel(RigidNode_Base node, String name, WizardData.WizardWheelType WheelType = WizardData.WizardWheelType.NORMAL)
         {
+            this.name = name;
             InitializeComponent();
 
             WheelTypeComboBox.SelectedIndex = ((int)WheelType) - 1;
@@ -43,15 +45,7 @@ namespace BxDRobotExporter.Wizard
 
         public RigidNode_Base node;
 
-        private void LeftRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            RightRadioButton.Checked = false;
-        }
-
-        private void RightRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            LeftRadioButton.Checked = false;
-        }
+        
 
         /// <summary>
         /// Gets the <see cref="WizardData.WheelSetupData"/> for this panel. The parent page then adds it to <see cref="WizardData.wheels"/>
@@ -63,7 +57,7 @@ namespace BxDRobotExporter.Wizard
             {
                 FrictionLevel = (WizardData.WizardFrictionLevel)this.FrictionComboBox.SelectedIndex,
                 WheelType = (WizardData.WizardWheelType)(this.WheelTypeComboBox.SelectedIndex + 1),
-                PWMPort = (RightRadioButton.Checked) ? (byte)0x02 : (byte)0x01,
+                //PWMPort = (RightRadioButton.Checked) ? (byte)0x02 : (byte)0x01,
                 Node = this.node
             };
         }
@@ -92,5 +86,17 @@ namespace BxDRobotExporter.Wizard
         {
             StandardAddInServer.Instance.WizardSelect(node);
         }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            remove(name);
+        }
+
+        private void WheelSetupPanel_MouseHover(object sender, EventArgs e)
+        {
+            hover(name);
+        }
     }
+
+    public delegate string OnWheelSetupPanelRemove(string str);
+    public delegate string OnWheelSetupPanelHover(string str);
 }

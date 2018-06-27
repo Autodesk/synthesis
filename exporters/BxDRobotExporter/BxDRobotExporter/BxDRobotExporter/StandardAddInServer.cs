@@ -235,7 +235,7 @@ namespace BxDRobotExporter
             DedectionTestButton = ControlDefs.AddButtonDefinition("Detection Test", "BxD:RobotExporter:DetectionTestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
             DedectionTestButton.OnExecute += delegate (NameValueMap context)
             {
-                Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, Wizard.WizardData.WizardDriveTrain.WESTERN, 6);
+                Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, Wizard.WizardData.WizardDriveTrain.TANK, 6);
             };
             DebugPanel.CommandControls.AddButton(DedectionTestButton, true);
             //UI Test
