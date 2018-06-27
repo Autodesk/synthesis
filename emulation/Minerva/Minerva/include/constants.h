@@ -44,6 +44,9 @@ namespace minerva::constants{
 		constexpr double kDefaultPwmCenter = 1.5;
 		constexpr int32_t kDefaultPwmStepsDown = 1000;
 		constexpr int32_t kPwmDisabled = 0;
+
+		//From athena HandlesInternal.h
+		constexpr int16_t InvalidHandleIndex = -1;
 	}
 }
 
