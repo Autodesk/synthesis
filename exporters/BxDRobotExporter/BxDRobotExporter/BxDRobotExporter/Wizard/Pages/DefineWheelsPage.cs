@@ -208,7 +208,6 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
-            WizardData.Instance.massMode = WizardData.WizardMassMode.SIMPLE_USER;
             WizardData.Instance.mass = totalMass;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
