@@ -252,6 +252,8 @@ public class DriverPracticeRobot : MonoBehaviour
                 orb.angularVelocity = UnityEngine.Vector3.zero;
                 orb.angularFactor = UnityEngine.Vector3.zero;
 
+                //set rotation
+                orb.SetRotation(nrb.transform.rotation);
             }
         }
     }
