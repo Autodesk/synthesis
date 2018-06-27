@@ -35,12 +35,6 @@ namespace BxDRobotExporter.Wizard
             H_DRIVE,
             CUSTOM
         }
-        public enum WizardMassMode
-        {
-            SIMPLE_USER,
-            COMPLEX_USER,
-            MATERIAL_BASED
-        } 
         public enum WizardWheelType
         {
             NORMAL = 1,
@@ -137,7 +131,6 @@ namespace BxDRobotExporter.Wizard
                 }
                 wheelDriver.type = (global::WheelType)WheelType;
                 wheelDriver.isDriveWheel = true;
-                Utilities.GUI.LoadMeshes();
                 Node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
 
                 wheelDriver = (WheelDriverMeta)Node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta));
@@ -171,17 +164,9 @@ namespace BxDRobotExporter.Wizard
 
         //Mass Info
         /// <summary>
-        /// The mode by which the mass is calculated.
-        /// </summary>
-        public WizardMassMode massMode;
-        /// <summary>
-        /// Only assigned if <see cref="massMode"/> is set to <see cref="WizardMassMode.SIMPLE_USER"/>
+        /// The total mass of the robot
         /// </summary>
         public float mass;
-        /// <summary>
-        /// Only assigned if <see cref="massMode"/> is set to <see cref="WizardMassMode.COMPLEX_USER"/>
-        /// </summary>
-        public float[] masses;
         #endregion
 
         #region DefineWheelsPage
@@ -225,34 +210,11 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Apply()
         {
-            switch (massMode)
-            {
-                default:
-                    break;
-                case WizardMassMode.SIMPLE_USER:
-                    //Get node volumes
-                    List<float> nodeMasses = new List<float>();
-                    float totalDefaultMass = 0;
-                    foreach(BXDAMesh mesh in Utilities.GUI.Meshes)
-                    {
-                        nodeMasses.Add(mesh.physics.mass);
-                        totalDefaultMass += mesh.physics.mass;
-                    }
-                    for(int i = 0; i < Utilities.GUI.Meshes.Count; i++)
-                    {
-                        Utilities.GUI.Meshes[i].physics.mass = this.mass * (float)(nodeMasses[i] / totalDefaultMass);
-                    }
-                    break;
-                case WizardMassMode.COMPLEX_USER:
-                    for (int j = 0; j < masses.Length; j++)
-                    {
-                        Utilities.GUI.Meshes[j].physics.mass = masses[j];
-                    }
-                    break;
-            }
+            // TODO: Masses will need to be calculated after exporting the mesh
+            Utilities.GUI.TotalMass = this.mass;
 
             //WheelSetupPage
-            foreach(WheelSetupData data in wheels)
+            foreach (WheelSetupData data in wheels)
             {
                 data.ApplyToNode();
             }

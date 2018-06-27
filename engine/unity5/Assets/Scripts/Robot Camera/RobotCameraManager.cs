@@ -329,6 +329,12 @@ public class RobotCameraManager : MonoBehaviour
             if (IsChangingFOV) //Control fov
             {
                 CurrentCamera.GetComponent<Camera>().fieldOfView += Input.GetAxis("CameraVertical");
+
+                //Limit fov to range from 0 to 180
+                float fov = CurrentCamera.GetComponent<Camera>().fieldOfView;
+                if (fov > 179) fov = 179; //Not quite 180 because at 180 it has this weird circle thing
+                else if (fov < 0) fov = 0;
+                CurrentCamera.GetComponent<Camera>().fieldOfView = fov;
             }
             else if (IsShowingAngle) //Control rotation (only when the angle panel is active)
             {

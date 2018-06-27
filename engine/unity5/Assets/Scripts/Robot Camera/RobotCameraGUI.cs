@@ -189,6 +189,7 @@ class RobotCameraGUI : MonoBehaviour
         if (usingRobotView)
         {
             robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+            ToggleCameraIndicator();
         }
         else
         {

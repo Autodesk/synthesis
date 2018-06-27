@@ -44,6 +44,8 @@ namespace BxDRobotExporter.Wizard
                         return WizardData.WizardDriveTrain.MECANUM;
                     case 2:
                         return WizardData.WizardDriveTrain.SWERVE;
+                    case 3:
+                        return WizardData.WizardDriveTrain.H_DRIVE;
                 }
             }
         }
@@ -112,6 +114,7 @@ namespace BxDRobotExporter.Wizard
                             wheelData.ApplyToNode();
                         }
                         break;
+
                     case WizardData.WizardDriveTrain.MECANUM:
                         oneClickWheels = new List<WizardData.WheelSetupData>();
                         for (int i = 0; i < (wheelsRaw.Count / 2); i++)
@@ -136,6 +139,64 @@ namespace BxDRobotExporter.Wizard
                             wheelData.ApplyToNode();
                         }
                         break;
+
+                    case WizardData.WizardDriveTrain.SWERVE:
+                        oneClickWheels = new List<WizardData.WheelSetupData>();
+                        for (int i = 0; i < (wheelsRaw.Count / 2); i++)
+                        {
+                            oneClickWheels.Add(new WizardData.WheelSetupData
+                            {
+                                Node = wheelsSorted[0][i],
+                                FrictionLevel = WizardData.WizardFrictionLevel.LOW,
+                                PWMPort = 0x01,
+                                WheelType = WizardData.WizardWheelType.NORMAL
+                            });
+                            oneClickWheels.Add(new WizardData.WheelSetupData
+                            {
+                                Node = wheelsSorted[1][i],
+                                FrictionLevel = WizardData.WizardFrictionLevel.LOW,
+                                PWMPort = 0x02,
+                                WheelType = WizardData.WizardWheelType.NORMAL
+                            });
+                        }
+                        foreach (var wheelData in oneClickWheels)
+                        {
+                            wheelData.ApplyToNode();
+                        }
+                        break;
+
+                    case WizardData.WizardDriveTrain.H_DRIVE:
+                        oneClickWheels = new List<WizardData.WheelSetupData>();
+                        for (int i = 0; i < (wheelsRaw.Count / 2); i++)
+                        {
+                            oneClickWheels.Add(new WizardData.WheelSetupData
+                            {
+                                Node = wheelsSorted [0][i],
+                                FrictionLevel = WizardData.WizardFrictionLevel.HIGH,
+                                PWMPort = 0x01,
+                                WheelType = WizardData.WizardWheelType.OMNI
+                            });
+                            oneClickWheels.Add(new WizardData.WheelSetupData
+                            {
+                                Node = wheelsSorted[1][i],
+                                FrictionLevel = WizardData.WizardFrictionLevel.HIGH,
+                                PWMPort = 0x02,
+                                WheelType = WizardData.WizardWheelType.OMNI
+                            });
+                        }
+                        //5th wheel
+                        oneClickWheels.Add(new WizardData.WheelSetupData{
+                            Node = wheelsSorted [4][3],
+                            FrictionLevel = WizardData.WizardFrictionLevel.HIGH,
+                            PWMPort = 0x03,
+                            WheelType = WizardData.WizardWheelType.OMNI
+                        });
+                        foreach(var wheelData in oneClickWheels)
+                        {
+                            wheelData.ApplyToNode();
+                        }
+                        break;
+
                 }
                 if(MergeNodesCheckBox.Checked)
                 {
@@ -154,8 +215,11 @@ namespace BxDRobotExporter.Wizard
             else
                 DialogResult = DialogResult.None;
             Close();
+            /// <summary>
+            /// Defines nodes, friction values, PWM ports used, and wheel type for selectible AutoFill drivetrains
+            /// </summary>
         }
-        
+
         private void DriveTrainComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch(DriveTrainComboBox.SelectedIndex)
@@ -166,10 +230,19 @@ namespace BxDRobotExporter.Wizard
                     WheelCountUpDown.Value = 6;
                     break;
                 case 1:
-                case 2:
                     WheelCountUpDown.Minimum = 4;
                     WheelCountUpDown.Maximum = 4;
                     WheelCountUpDown.Value = 4;
+                    break;
+                case 2:
+                    WheelCountUpDown.Minimum = 4;
+                    WheelCountUpDown.Maximum = 8;
+                    WheelCountUpDown.Value = 4;
+                    break;
+                case 3:
+                    WheelCountUpDown.Minimum = 5;
+                    WheelCountUpDown.Maximum = 5;
+                    WheelCountUpDown.Value = 5;
                     break;
 
             }

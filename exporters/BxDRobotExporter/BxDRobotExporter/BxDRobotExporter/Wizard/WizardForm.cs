@@ -56,7 +56,6 @@ namespace BxDRobotExporter.Wizard
             WizardPages.FinishClicked += delegate ()
             {
                 WizardData.Instance.Apply();
-                Utilities.GUI.ReloadPanels();
                 Close();
             };
         }
@@ -70,11 +69,10 @@ namespace BxDRobotExporter.Wizard
         {
             WizardPages.WizardNavigator.NextButton.Enabled = true;
         }
+
         private void DeactivateNext()
         {
             WizardPages.WizardNavigator.NextButton.Enabled = false;
         }
-
-
     }
 }

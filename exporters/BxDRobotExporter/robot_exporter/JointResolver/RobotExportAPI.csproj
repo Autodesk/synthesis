@@ -84,17 +84,23 @@
     <Compile Include="ControlGUI\LiteExporterForm.Designer.cs">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\NameRobotForm.cs">
+    <Compile Include="ControlGUI\SaveRobotForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlGUI\NameRobotForm.Designer.cs">
-      <DependentUpon>NameRobotForm.cs</DependentUpon>
+    <Compile Include="ControlGUI\SaveRobotForm.Designer.cs">
+      <DependentUpon>SaveRobotForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlGUI\NodeEditorPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ControlGUI\NodeEditorPane.Designer.cs">
       <DependentUpon>NodeEditorPane.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonExporterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonExporterForm.Designer.cs">
+      <DependentUpon>SkeletonExporterForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlGUI\SynthesisGUI.cs">
       <SubType>Form</SubType>
@@ -246,11 +252,14 @@
     <EmbeddedResource Include="ControlGUI\LiteExporterForm.resx">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\NameRobotForm.resx">
-      <DependentUpon>NameRobotForm.cs</DependentUpon>
+    <EmbeddedResource Include="ControlGUI\SaveRobotForm.resx">
+      <DependentUpon>SaveRobotForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\NodeEditorPane.resx">
       <DependentUpon>NodeEditorPane.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\SkeletonExporterForm.resx">
+      <DependentUpon>SkeletonExporterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\SynthesisGUI.resx">
       <DependentUpon>SynthesisGUI.cs</DependentUpon>
