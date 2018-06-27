@@ -85,6 +85,7 @@
             this.ClientSize = new System.Drawing.Size(248, 71);
             this.ControlBox = false;
             this.Controls.Add(this.tableLayoutPanel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "SkeletonExporterForm";
             this.ShowIcon = false;
