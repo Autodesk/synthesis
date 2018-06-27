@@ -39,7 +39,7 @@ namespace BxDRobotExporter.Wizard
                 {
                     default:
                     case 0:
-                        return WizardData.WizardDriveTrain.WESTERN;
+                        return WizardData.WizardDriveTrain.TANK;
                     case 1:
                         return WizardData.WizardDriveTrain.MECANUM;
                     case 2:
@@ -88,7 +88,7 @@ namespace BxDRobotExporter.Wizard
                 switch (DriveTrain)
                 {
                     default:
-                    case WizardData.WizardDriveTrain.WESTERN:
+                    case WizardData.WizardDriveTrain.TANK:
                         List<WizardData.WheelSetupData> oneClickWheels = new List<WizardData.WheelSetupData>();
                         for (int i = 0; i < (wheelsRaw.Count / 2); i++)
                         {
