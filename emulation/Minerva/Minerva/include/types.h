@@ -27,8 +27,8 @@ namespace minerva{
      	HAL_AllianceStationID
 	>;
 	using StatusFrame = std::map<std::string, HALType>;
-	/*
-	struct DigitalPort {
+	
+	struct DigitalPort{//TODO change names to match naming conventions?
 		uint8_t channel;
 		bool configSet = false;
 		bool eliminateDeadband = false;
@@ -37,8 +37,15 @@ namespace minerva{
 		int32_t centerPwm = 0;
 		int32_t deadbandMinPwm = 0;
 		int32_t minPwm = 0;
+
+		int32_t maxNegativePwm()const;
+		int32_t minPositivePwm()const;
+		int32_t positiveScaleFactor()const;
+		int32_t negativeScaleFactor()const;
+		int32_t fullRangeScaleFactor()const;
 	};
 
+	/*
 	struct AnalogPort {
 		uint8_t channel;
 		std::unique_ptr<tAccumulator> accumulator;
