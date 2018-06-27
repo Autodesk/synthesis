@@ -328,18 +328,7 @@ namespace BxDRobotExporter
             SaveButton.Enabled = false;
 
             // Immediately start the "advanced export" when the exporter is opened. TODO: Rename this as ExporterSetup, as it applies to all exporting modes.
-            try
-            {
-                BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
-            }
-            catch (ExporterFailedException)
-            {
-                // Exporter failed, close addin
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
         }
 
         /// <summary>
