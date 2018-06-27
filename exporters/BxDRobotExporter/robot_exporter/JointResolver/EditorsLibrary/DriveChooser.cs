@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.Globalization;
 
 
 public partial class DriveChooser : Form
@@ -46,11 +47,14 @@ public partial class DriveChooser : Form
         this.nodes = nodes;
         typeOptions = JointDriver.GetAllowedDrivers(joint);
 
+        // Used for capitalization
+        TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
+
         cmbJointDriver.Items.Clear();
         cmbJointDriver.Items.Add("No Driver");
         foreach (JointDriverType type in typeOptions)
         {
-            cmbJointDriver.Items.Add(Enum.GetName(typeof(JointDriverType), type).Replace('_', ' ').ToLowerInvariant());
+            cmbJointDriver.Items.Add(textInfo.ToTitleCase(Enum.GetName(typeof(JointDriverType), type).Replace('_', ' ').ToLowerInvariant()));
         }
         if (joint.cDriver != null)
         {
@@ -243,8 +247,6 @@ public partial class DriveChooser : Form
         }
         // Set window size
         tabsMeta.Visible = tabsMeta.TabPages.Count > 0;
-        btnSave.Top = tabsMeta.TabPages.Count > 0 ? tabsMeta.Bottom + 3 : (grpDriveOptions.Visible ? grpDriveOptions.Bottom + 3 : grpChooseDriver.Bottom + 3);
-        base.Height = btnSave.Bottom + 3 + (base.Height - base.ClientSize.Height);
     }
 
     private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
