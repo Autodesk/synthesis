@@ -196,6 +196,7 @@ public partial class DriveChooser : Form
         chkBoxHasBrake.Hide();
         rbCAN.Hide();
         rbPWM.Hide();
+
         if (cmbJointDriver.SelectedIndex <= 0)      //If the joint is not driven
         {
             grpDriveOptions.Visible = false;
@@ -208,6 +209,7 @@ public partial class DriveChooser : Form
             txtPortB.Visible = cType.HasTwoPorts();
             txtPortA.Maximum = txtPortB.Maximum = cType.GetPortMax();
             grpDriveOptions.Visible = true;
+
             if (cType.IsMotor())
             {
                 tabsMeta.Visible = true;
@@ -236,6 +238,7 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Add(metaElevatorBrake);
                 tabsMeta.TabPages.Add(metaElevatorStages);
                 tabsMeta.TabPages.Add(metaGearing);
+
                 if(cmbStages.SelectedIndex == -1)
                     cmbStages.SelectedIndex = 0;
             }
@@ -477,6 +480,11 @@ public partial class DriveChooser : Form
     #endregion
 
     private void grpChooseDriver_Enter(object sender, EventArgs e)
+    {
+
+    }
+
+    private void cmbPneumaticDiameter_SelectedIndexChanged(object sender, EventArgs e)
     {
 
     }
