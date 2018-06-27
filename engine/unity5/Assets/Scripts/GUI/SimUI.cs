@@ -37,6 +37,7 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
+    GameObject bindedKeyPanel;
     GameObject checkSavePanel;
     GameObject unitConversionSwitch;
     GameObject hotKeyButton;
@@ -47,6 +48,8 @@ public class SimUI : MonoBehaviour
     GameObject mixAndMatchPanel;
     GameObject changePanel;
     GameObject addPanel;
+    GameObject toolkitPanel;
+    GameObject driverStationSettingsPanel;
 
     GameObject toolbar;
 
@@ -60,9 +63,13 @@ public class SimUI : MonoBehaviour
 
     GameObject loadingPanel;
 
+    HashSet<GameObject> panels = new HashSet<GameObject>();
+
     private bool freeroamWindowClosed = false;
 
     private bool oppositeSide = false;
+
+    public static bool inputPanelOn = false;
 
     /// <summary>
     /// Link the SimUI to main state
@@ -101,14 +108,41 @@ public class SimUI : MonoBehaviour
             {
                 if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
                 {
-                    if (!exitPanel.activeSelf) MainMenuExit("open");
-                    else MainMenuExit("cancel");
+                    if (!exitPanel.activeSelf)
+                    {
+                        bool a = false;
+                        foreach (GameObject o in panels)
+                        {
+                            if (o.activeSelf)
+                            {
+                                a = true;
+                                break;
+                            }
+                        }
+                        if (a)
+                        {
+                            EndOtherProcesses();
+                        }
+                        else
+                        {
+                            MainMenuExit("open");
+                        }
+                    }
+                    else
+                    {
+                        MainMenuExit("cancel");
+                    }
                 }
             }
 
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.H))
             {
                 TogglePanel(toolbar);
+            }
+
+            if (KeyButton.Binded() && inputPanelOn)
+            {
+                ShowBindedInfoPanel();
             }
 
         }
@@ -128,18 +162,16 @@ public class SimUI : MonoBehaviour
 
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
-
         multiplayerPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
-
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         robotListPanel = AuxFunctions.FindObject(changeRobotPanel, "RobotListPanel");
-
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
-
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
+        bindedKeyPanel = AuxFunctions.FindObject(canvas, "BindedKeyPanel");
         checkSavePanel = AuxFunctions.FindObject(canvas, "CheckSavePanel");
         unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
+
         hotKeyPanel = AuxFunctions.FindObject(canvas, "HotKeyPanel");
         hotKeyButton = AuxFunctions.FindObject(canvas, "DisplayHotKeyButton");
 
@@ -148,17 +180,35 @@ public class SimUI : MonoBehaviour
 
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
         loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
-
         analyticsPanel = AuxFunctions.FindObject(canvas, "AnalyticsPanel");
-
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
-
         toolbar = AuxFunctions.FindObject(canvas, "Toolbar");
         changePanel = AuxFunctions.FindObject(canvas, "ChangePanel");
         addPanel = AuxFunctions.FindObject(canvas, "AddPanel");
+        toolkitPanel = AuxFunctions.FindObject(canvas, "ToolkitPanel");
+        driverStationSettingsPanel = AuxFunctions.FindObject(canvas, "DPMPanel");
+
+        //Fix this - temporary workaround
+        panels.Add(freeroamCameraWindow);
+        panels.Add(spawnpointWindow);
+        panels.Add(multiplayerPanel);
+        panels.Add(driverStationPanel);
+        panels.Add(changeRobotPanel);
+        panels.Add(changeFieldPanel);
+        panels.Add(inputManagerPanel);
+        panels.Add(checkSavePanel);
+        panels.Add(hotKeyPanel);
+        panels.Add(orientWindow);
+        panels.Add(analyticsPanel);
+        panels.Add(mixAndMatchPanel);
+        panels.Add(changePanel);
+        panels.Add(addPanel);
+        panels.Add(toolkitPanel);
+        panels.Add(driverStationSettingsPanel);
+        //Fix this - temporary workaround
 
         CheckControlPanel();
     }
@@ -265,8 +315,8 @@ public class SimUI : MonoBehaviour
             {
                 Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                 {
-                });              
-                    SceneManager.LoadScene("Scene");           
+                });
+                SceneManager.LoadScene("Scene");
             }
             else
             {
@@ -425,6 +475,7 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             inputManagerPanel.SetActive(true);
+            inputPanelOn = true;
 
             Controls.Load();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
@@ -432,6 +483,8 @@ public class SimUI : MonoBehaviour
         else
         {
             inputManagerPanel.SetActive(false);
+            bindedKeyPanel.SetActive(false);
+            inputPanelOn = false;
             ToggleHotKeys(false);
 
             if (Controls.CheckIfSaved())
@@ -447,6 +500,22 @@ public class SimUI : MonoBehaviour
     public void ShowControlPanel()
     {
         ShowControlPanel(!inputManagerPanel.activeSelf);
+    }
+
+    /// <summary>
+    /// Pop up error-panel if user enters WASD for robot controls
+    /// </summary>
+    public void ShowBindedInfoPanel()
+    {
+        if (KeyButton.Binded())
+        {
+            bindedKeyPanel.SetActive(true);
+        }
+        else
+        {
+            bindedKeyPanel.SetActive(false);
+            ToggleHotKeys(false);
+        }
     }
 
     /// <summary>
@@ -569,7 +638,15 @@ public class SimUI : MonoBehaviour
                 break;
             case 2:
                 EndOtherProcesses();
+                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
+                DynamicCamera.MovingEnabled = true;
                 main.BeginRobotReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+            case 3:
+                AuxFunctions.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
+                AuxFunctions.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                SceneManager.LoadScene("Scene");
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
         }

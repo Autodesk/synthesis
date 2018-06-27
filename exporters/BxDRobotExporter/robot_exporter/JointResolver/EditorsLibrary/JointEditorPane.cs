@@ -56,11 +56,7 @@ namespace EditorsLibrary
                     RigidNode_Base node = nodes[0];
                     if (node != null && node.GetSkeletalJoint() != null)
                     {
-                        EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint())
-                        {
-                            StartPosition = FormStartPosition.Manual,
-                            Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10)
-                        };
+                        EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());
                         limitEditor.ShowDialog(ParentForm);
                     }
                 });
@@ -148,11 +144,7 @@ namespace EditorsLibrary
             if (node == null) return;
 
             currentlyEditing = true;
-            SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint())
-            {
-                StartPosition = FormStartPosition.Manual,
-                Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10)
-            };
+            SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
             listForm.ShowDialog(ParentForm);
             ModifiedJoint?.Invoke(nodes);
             this.UpdateJointList();
@@ -169,8 +161,6 @@ namespace EditorsLibrary
 
             currentlyEditing = true;
 
-            driveChooserDialog.StartPosition = FormStartPosition.Manual;
-            driveChooserDialog.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10);
             driveChooserDialog.ShowDialog(nodes[0].GetSkeletalJoint(), nodes, ParentForm);
 
             if (ModifiedJoint != null && driveChooserDialog.Saved)
@@ -242,9 +232,10 @@ namespace EditorsLibrary
                         }
 
                         ListViewItem item = new ListViewItem(new string[] {
-                    Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
-                        node.GetParent().ModelFileName,
-                        node.ModelFileName, joint.cDriver!=null ? joint.cDriver.ToString() : "No driver",
+                        Utilities.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()), true),
+                        Utilities.CapitalizeFirstLetter(node.GetParent().ModelFileName.Replace('_', ' ').Replace(".bxda", " ")),
+                        Utilities.CapitalizeFirstLetter(node.ModelFileName.Replace('_', ' ').Replace(".bxda", " ")),
+                        joint.cDriver != null ? joint.cDriver.ToString() : "No Driver",
                         wheelData!=null ? wheelData.GetTypeString() : "No Wheel",
                         joint.attachedSensors.Count.ToString()})
                         {

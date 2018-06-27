@@ -83,8 +83,11 @@
             this.Controls.Add(this.Cancel);
             this.Controls.Add(this.Ok);
             this.Controls.Add(this.textBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(350, 135);
+            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(350, 135);
             this.Name = "DebugHighlightForm";
             this.Text = "DebugHighlightForm";

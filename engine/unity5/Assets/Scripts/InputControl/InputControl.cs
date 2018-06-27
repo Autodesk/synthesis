@@ -1521,16 +1521,6 @@ public static class InputControl
     }
 
     /// <summary>
-    /// Gets the list of keys.
-    /// </summary>
-    /// <returns>List of keys.</returns>
-    [Obsolete("Please use getKeysList instead of this. Obsoletion date: 2014-12-28. It will be removed after 1 year")]
-    public static List<KeyMapping> getKeys()
-    {
-        return mKeysList;
-    }
-
-    /// <summary>
     /// Gets the list of keys. FOR USE IF NOT USING SYNTHESIS KEYS
     /// </summary>
     /// <returns>List of keys.</returns>
@@ -1899,9 +1889,7 @@ public static class InputControl
         {
             KeyCode key = (KeyCode)value;
 
-            if (
-                (
-                 !useModifiers
+            if ((!useModifiers
                  ||
                  (
                   key != KeyCode.LeftControl
