@@ -89,7 +89,7 @@
             // textBoxResolution
             // 
             this.textBoxResolution.Location = new System.Drawing.Point(128, 11);
-            this.textBoxResolution.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxResolution.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxResolution.Name = "textBoxResolution";
             this.textBoxResolution.Size = new System.Drawing.Size(76, 20);
             this.textBoxResolution.TabIndex = 8;
@@ -97,7 +97,7 @@
             // textBoxDepth
             // 
             this.textBoxDepth.Location = new System.Drawing.Point(128, 34);
-            this.textBoxDepth.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxDepth.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxDepth.Name = "textBoxDepth";
             this.textBoxDepth.Size = new System.Drawing.Size(76, 20);
             this.textBoxDepth.TabIndex = 9;
@@ -105,7 +105,7 @@
             // textBoxConcavity
             // 
             this.textBoxConcavity.Location = new System.Drawing.Point(128, 58);
-            this.textBoxConcavity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxConcavity.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxConcavity.Name = "textBoxConcavity";
             this.textBoxConcavity.Size = new System.Drawing.Size(76, 20);
             this.textBoxConcavity.TabIndex = 10;
@@ -113,7 +113,7 @@
             // textBoxVerts
             // 
             this.textBoxVerts.Location = new System.Drawing.Point(128, 80);
-            this.textBoxVerts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxVerts.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxVerts.Name = "textBoxVerts";
             this.textBoxVerts.Size = new System.Drawing.Size(76, 20);
             this.textBoxVerts.TabIndex = 11;
@@ -121,7 +121,7 @@
             // textBoxVolume
             // 
             this.textBoxVolume.Location = new System.Drawing.Point(128, 103);
-            this.textBoxVolume.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxVolume.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxVolume.Name = "textBoxVolume";
             this.textBoxVolume.Size = new System.Drawing.Size(76, 20);
             this.textBoxVolume.TabIndex = 12;
@@ -129,7 +129,7 @@
             // textBoxPlane
             // 
             this.textBoxPlane.Location = new System.Drawing.Point(128, 126);
-            this.textBoxPlane.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxPlane.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxPlane.Name = "textBoxPlane";
             this.textBoxPlane.Size = new System.Drawing.Size(76, 20);
             this.textBoxPlane.TabIndex = 13;
@@ -137,7 +137,7 @@
             // textBoxHull
             // 
             this.textBoxHull.Location = new System.Drawing.Point(128, 149);
-            this.textBoxHull.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxHull.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxHull.Name = "textBoxHull";
             this.textBoxHull.Size = new System.Drawing.Size(76, 20);
             this.textBoxHull.TabIndex = 14;
@@ -185,7 +185,7 @@
             // textBoxRevolution
             // 
             this.textBoxRevolution.Location = new System.Drawing.Point(128, 194);
-            this.textBoxRevolution.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxRevolution.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxRevolution.Name = "textBoxRevolution";
             this.textBoxRevolution.Size = new System.Drawing.Size(76, 20);
             this.textBoxRevolution.TabIndex = 19;
@@ -193,7 +193,7 @@
             // textBoxSymmetry
             // 
             this.textBoxSymmetry.Location = new System.Drawing.Point(128, 171);
-            this.textBoxSymmetry.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxSymmetry.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxSymmetry.Name = "textBoxSymmetry";
             this.textBoxSymmetry.Size = new System.Drawing.Size(76, 20);
             this.textBoxSymmetry.TabIndex = 20;
@@ -221,7 +221,7 @@
             // textBoxMerge
             // 
             this.textBoxMerge.Location = new System.Drawing.Point(128, 217);
-            this.textBoxMerge.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxMerge.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxMerge.Name = "textBoxMerge";
             this.textBoxMerge.Size = new System.Drawing.Size(76, 20);
             this.textBoxMerge.TabIndex = 23;
@@ -241,7 +241,7 @@
             this.checkBoxNormalize.AutoSize = true;
             this.checkBoxNormalize.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBoxNormalize.Location = new System.Drawing.Point(189, 243);
-            this.checkBoxNormalize.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxNormalize.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxNormalize.Name = "checkBoxNormalize";
             this.checkBoxNormalize.Size = new System.Drawing.Size(15, 14);
             this.checkBoxNormalize.TabIndex = 25;
@@ -254,7 +254,7 @@
             this.checkBoxVoxel.Checked = true;
             this.checkBoxVoxel.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxVoxel.Location = new System.Drawing.Point(189, 266);
-            this.checkBoxVoxel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxVoxel.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxVoxel.Name = "checkBoxVoxel";
             this.checkBoxVoxel.Size = new System.Drawing.Size(15, 14);
             this.checkBoxVoxel.TabIndex = 26;
@@ -263,7 +263,7 @@
             // buttonCancel
             // 
             this.buttonCancel.Location = new System.Drawing.Point(9, 311);
-            this.buttonCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonCancel.Margin = new System.Windows.Forms.Padding(2);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(82, 26);
             this.buttonCancel.TabIndex = 27;
@@ -273,7 +273,7 @@
             // buttonOK
             // 
             this.buttonOK.Location = new System.Drawing.Point(120, 311);
-            this.buttonOK.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonOK.Margin = new System.Windows.Forms.Padding(2);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(82, 26);
             this.buttonOK.TabIndex = 28;
@@ -332,11 +332,12 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ParametersEditor";
             this.ShowIcon = false;
+            this.Text = "Parameters Editor";
             this.ResumeLayout(false);
             this.PerformLayout();
 
