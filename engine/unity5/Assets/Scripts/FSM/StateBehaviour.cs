@@ -17,7 +17,7 @@ public abstract class StateBehaviour<T> : MonoBehaviour where T : State
     /// </summary>
     protected virtual void Awake()
     {
-        StateMachine.Instance.Link<MainState>(this);
+        StateMachine.Instance.Link<T>(this);
     }
 
     /// <summary>

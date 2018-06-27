@@ -11,16 +11,25 @@ public class LoadReplayState : State
 {
     private GameObject splashScreen;
 
+    /// <summary>
+    /// Initializes references to requried <see cref="GameObject"/>s.
+    /// </summary>
     public override void Start()
     {
         splashScreen = AuxFunctions.FindGameObject("LoadSplash");
     }
 
+    /// <summary>
+    /// Pops the current <see cref="State"/> when the back button is pressed.
+    /// </summary>
     public void OnBackButtonPressed()
     {
         StateMachine.Instance.PopState();
     }
 
+    /// <summary>
+    /// Deletes the selected replay when the delete button is pressed.
+    /// </summary>
     public void OnDeleteButtonPressed()
     {
         GameObject replayList = GameObject.Find("SimLoadReplayList");
@@ -34,6 +43,9 @@ public class LoadReplayState : State
         }
     }
 
+    /// <summary>
+    /// Launches the selected replay when the launch replay button is pressed.
+    /// </summary>
     public void OnLaunchButtonPressed()
     {
         GameObject replayList = GameObject.Find("SimLoadReplayList");

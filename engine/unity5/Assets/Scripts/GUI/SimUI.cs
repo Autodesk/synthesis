@@ -8,8 +8,6 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 
-// TODO: Add breakpoints to make sure this is actually working, then add the new StateBehaviour to every other applicable behaivour.
-
 /// <summary>
 /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
 /// It acomplishes this by having a public function for each button that interacts with the Main State to complete various tasks.
