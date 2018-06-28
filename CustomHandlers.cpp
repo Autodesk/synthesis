@@ -37,7 +37,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 
 	Ptr<Palette> palette = palettes->itemById("myPalette");
 	if (!palette) {
-		palette = palettes->add("myPalette", "My Palette", "palette.html", true, true, true, 300, 200);
+		palette = palettes->add("myPalette", "My Palette", "palette/palette.html", true, true, true, 300, 200);
 		if (!palette)
 			return;
 
