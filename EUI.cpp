@@ -59,12 +59,19 @@ bool EUI::CreateWorkspace(){
 		_ToolbarControlsExport->addCommand(_ExportCommandDefQuick)->isPromoted(true);
 		_ToolbarControlsExport->addSeparator();
 		_ToolbarControlsExport->addCommand(_ExportCommandDef)->isPromoted(true);
+		//_ToolbarControlsExport->addCommand(_ExportCommandLoad)->isPromoted(true);
+		//_ToolbarControlsExport->addCommand(_ExportCommandHelp)->isPromoted(true);
+
+		int error = _APP->getLastError();
 
 		_ToolbarPanelHelp = _WorkSpace->toolbarPanels()->add("SynthesisToolbarHelp", "Help");
-		_ToolbarControlsHelp->addCommand(_ExportCommandHelp)->isPromoted(true);
+		Ptr<ToolbarControls> help = _ToolbarPanelHelp->controls();
+		help->addCommand(_ExportCommandHelp)->isPromoted(true);
 
 		_ToolbarPanelLoad = _WorkSpace->toolbarPanels()->add("SynthesisToolbarLoad", "Load");
+		//Ptr<ToolbarControls> load = _ToolbarPanelLoad->controls();
 		_ToolbarPanelLoad->controls()->addCommand(_ExportCommandLoad)->isPromoted(true);
+
 		
 
         _WorkSpace->activate();
