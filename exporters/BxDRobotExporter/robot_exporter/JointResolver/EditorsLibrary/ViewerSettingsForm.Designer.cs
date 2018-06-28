@@ -62,9 +62,9 @@
             this.groupBox1.Controls.Add(this.labelSensitivity);
             this.groupBox1.ForeColor = System.Drawing.Color.Gray;
             this.groupBox1.Location = new System.Drawing.Point(9, 10);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(268, 168);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
@@ -75,7 +75,7 @@
             this.checkboxDebug.AutoSize = true;
             this.checkboxDebug.ForeColor = System.Drawing.Color.Black;
             this.checkboxDebug.Location = new System.Drawing.Point(4, 136);
-            this.checkboxDebug.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkboxDebug.Margin = new System.Windows.Forms.Padding(2);
             this.checkboxDebug.Name = "checkboxDebug";
             this.checkboxDebug.Size = new System.Drawing.Size(121, 17);
             this.checkboxDebug.TabIndex = 4;
@@ -110,7 +110,7 @@
             // 
             this.trackbarCameraSen.LargeChange = 2;
             this.trackbarCameraSen.Location = new System.Drawing.Point(4, 74);
-            this.trackbarCameraSen.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.trackbarCameraSen.Margin = new System.Windows.Forms.Padding(2);
             this.trackbarCameraSen.Maximum = 11;
             this.trackbarCameraSen.Minimum = 1;
             this.trackbarCameraSen.Name = "trackbarCameraSen";
@@ -143,9 +143,9 @@
             this.groupBox2.Controls.Add(this.checkboxHighlight);
             this.groupBox2.ForeColor = System.Drawing.Color.Gray;
             this.groupBox2.Location = new System.Drawing.Point(10, 183);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(268, 205);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
@@ -170,7 +170,7 @@
             "Pounds (lb)",
             "Kilograms (kg)"});
             this.comboBoxUnits.Location = new System.Drawing.Point(78, 171);
-            this.comboBoxUnits.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBoxUnits.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxUnits.Name = "comboBoxUnits";
             this.comboBoxUnits.Size = new System.Drawing.Size(116, 21);
             this.comboBoxUnits.TabIndex = 11;
@@ -180,7 +180,7 @@
             this.buttonChooseTint.BackColor = System.Drawing.Color.Black;
             this.buttonChooseTint.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonChooseTint.Location = new System.Drawing.Point(109, 95);
-            this.buttonChooseTint.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonChooseTint.Margin = new System.Windows.Forms.Padding(2);
             this.buttonChooseTint.Name = "buttonChooseTint";
             this.buttonChooseTint.Size = new System.Drawing.Size(76, 20);
             this.buttonChooseTint.TabIndex = 10;
@@ -205,7 +205,7 @@
             this.checkboxActuate.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkboxActuate.ForeColor = System.Drawing.Color.Black;
             this.checkboxActuate.Location = new System.Drawing.Point(7, 141);
-            this.checkboxActuate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkboxActuate.Margin = new System.Windows.Forms.Padding(2);
             this.checkboxActuate.Name = "checkboxActuate";
             this.checkboxActuate.Size = new System.Drawing.Size(90, 17);
             this.checkboxActuate.TabIndex = 6;
@@ -217,7 +217,7 @@
             this.checkboxDrawAxes.AutoSize = true;
             this.checkboxDrawAxes.ForeColor = System.Drawing.Color.Black;
             this.checkboxDrawAxes.Location = new System.Drawing.Point(30, 119);
-            this.checkboxDrawAxes.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkboxDrawAxes.Margin = new System.Windows.Forms.Padding(2);
             this.checkboxDrawAxes.Name = "checkboxDrawAxes";
             this.checkboxDrawAxes.Size = new System.Drawing.Size(179, 17);
             this.checkboxDrawAxes.TabIndex = 5;
@@ -231,7 +231,7 @@
             this.checkboxTint.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkboxTint.ForeColor = System.Drawing.Color.Black;
             this.checkboxTint.Location = new System.Drawing.Point(30, 73);
-            this.checkboxTint.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkboxTint.Margin = new System.Windows.Forms.Padding(2);
             this.checkboxTint.Name = "checkboxTint";
             this.checkboxTint.Size = new System.Drawing.Size(114, 17);
             this.checkboxTint.TabIndex = 4;
@@ -244,7 +244,7 @@
             this.buttonChooseHighlight.BackColor = System.Drawing.Color.Black;
             this.buttonChooseHighlight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonChooseHighlight.Location = new System.Drawing.Point(109, 49);
-            this.buttonChooseHighlight.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonChooseHighlight.Margin = new System.Windows.Forms.Padding(2);
             this.buttonChooseHighlight.Name = "buttonChooseHighlight";
             this.buttonChooseHighlight.Size = new System.Drawing.Size(76, 20);
             this.buttonChooseHighlight.TabIndex = 3;
@@ -269,7 +269,7 @@
             this.checkboxHighlight.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkboxHighlight.ForeColor = System.Drawing.Color.Black;
             this.checkboxHighlight.Location = new System.Drawing.Point(7, 27);
-            this.checkboxHighlight.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkboxHighlight.Margin = new System.Windows.Forms.Padding(2);
             this.checkboxHighlight.Name = "checkboxHighlight";
             this.checkboxHighlight.Size = new System.Drawing.Size(146, 17);
             this.checkboxHighlight.TabIndex = 0;
@@ -280,7 +280,7 @@
             // buttonOK
             // 
             this.buttonOK.Location = new System.Drawing.Point(158, 412);
-            this.buttonOK.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonOK.Margin = new System.Windows.Forms.Padding(2);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(120, 29);
             this.buttonOK.TabIndex = 0;
@@ -290,7 +290,7 @@
             // buttonCancel
             // 
             this.buttonCancel.Location = new System.Drawing.Point(9, 412);
-            this.buttonCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonCancel.Margin = new System.Windows.Forms.Padding(2);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(120, 29);
             this.buttonCancel.TabIndex = 3;
@@ -306,8 +306,11 @@
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ViewerSettingsForm";
             this.Text = "Viewer Settings";
             this.groupBox1.ResumeLayout(false);
