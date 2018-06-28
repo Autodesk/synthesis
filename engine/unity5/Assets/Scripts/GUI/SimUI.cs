@@ -86,18 +86,14 @@ public class SimUI : StateBehaviour<MainState>
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
-                {
-                    if (!exitPanel.activeSelf) MainMenuExit("open");
-                    else MainMenuExit("cancel");
-                }
+                if (!exitPanel.activeSelf) MainMenuExit("open");
+                else MainMenuExit("cancel");
             }
 
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.H))
             {
                 TogglePanel(toolbar);
             }
-
         }
     }
 
