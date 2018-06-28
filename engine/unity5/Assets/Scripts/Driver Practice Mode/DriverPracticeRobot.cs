@@ -253,7 +253,14 @@ public class DriverPracticeRobot : MonoBehaviour
                 orb.angularFactor = UnityEngine.Vector3.zero;
 
                 //set rotation
+                //UnityEngine.Quaternion oldRotation = new UnityEngine.Quaternion(orb.transform.rotation.x, orb.transform.rotation.y,
+                //    orb.transform.rotation.z, orb.transform.rotation.w);
+                //UnityEngine.Quaternion oldRotation = Instantiate(orb.transform.rotation);
+                //UnityEngine.Vector3 rotationOffset = (Instantiate(orb.transform.rotation)).ToEuler();
+                //UnityEngine.Vector3 rotationOffset = Instantiate(orb.transform).rotation.eulerAngles;
+                //orb.SetRotation(UnityEngine.Quaternion.Euler(nrb.transform.rotation.eulerAngles + oldRotation.eulerAngles));
                 orb.SetRotation(nrb.transform.rotation);
+                //orb.transform.Rotate(rotationOffset);
             }
         }
     }
