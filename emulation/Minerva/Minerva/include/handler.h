@@ -71,7 +71,6 @@ void printType(minerva::HALType ht) {
 		else
 			throw std::exception();
 	}, ht);
-
 }
 
 //handles all of the HAL functions that return void
@@ -204,7 +203,7 @@ void callFunc(const char * function_name, std::vector<minerva::FunctionSignature
 				
 				return;
 			}
-		case hasher("HAL_SetPWMPeriodicScale"):
+		case hasher("HAL_SetPWMPeriodScale"):
 			{
 				HAL_DigitalHandle port_handle = std::get<HAL_DigitalHandle>(params[0].value);
 				std::shared_ptr<minerva::DigitalPort> port = minerva::digitalChannelHandles.Get(port_handle,hal::HAL_HandleEnum::PWM);
@@ -250,7 +249,6 @@ void callFunc(const char * function_name, std::vector<minerva::FunctionSignature
 				double deadbandMin = std::get<double>(params[4].value);
 				double min = std::get<double>(params[5].value);
 
-				
 				double loopTime = minerva::constants::HAL::kExpectedLoopTiming / (minerva::constants::HAL::kSystemClockTicksPerMicrosecond * 1e3); //assuming loop time is expected loop time
 
 				int32_t maxPwm = static_cast<int32_t>((max - minerva::constants::HAL::kDefaultPwmCenter) / loopTime + minerva::constants::HAL::kDefaultPwmStepsDown - 1);
