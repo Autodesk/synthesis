@@ -186,6 +186,12 @@
     <Compile Include="EditorsLibrary\SensorListForm.Designer.cs">
       <DependentUpon>SensorListForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditorsLibrary\SetMassForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorsLibrary\SetMassForm.Designer.cs">
+      <DependentUpon>SetMassForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorsLibrary\ViewerSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -302,6 +308,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\SensorListForm.resx">
       <DependentUpon>SensorListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorsLibrary\SetMassForm.resx">
+      <DependentUpon>SetMassForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\ViewerSettingsForm.resx">
       <DependentUpon>ViewerSettingsForm.cs</DependentUpon>
