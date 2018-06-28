@@ -14,7 +14,7 @@ namespace minerva::constants{
 		}
 	}
 
-	namespace HAL{
+	namespace HAL{//TODO rename to lowercase for consistency?
 		//From athena PortsInternal.h
 		constexpr int32_t kNumAccumulators = 2;
 		constexpr int32_t kNumAnalogTriggers = 8;
@@ -47,6 +47,9 @@ namespace minerva::constants{
 
 		//From athena HandlesInternal.h
 		constexpr int16_t InvalidHandleIndex = -1;
+
+		//From athena ConstantsInternal.h
+		constexpr int32_t kSystemClockTicksPerMicrosecond = 40;
 	}
 }
 
