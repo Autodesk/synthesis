@@ -488,4 +488,9 @@ public partial class DriveChooser : Form
     {
 
     }
+
+    private void brakePortA_ValueChanged(object sender, EventArgs e)
+    {
+
+    }
 }
