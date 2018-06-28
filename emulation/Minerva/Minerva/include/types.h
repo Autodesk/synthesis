@@ -45,8 +45,13 @@ namespace minerva{
 		int32_t fullRangeScaleFactor()const;
 	};
 
+	struct Relay{
+		uint8_t channel;
+		bool fwd;	
+	};
+
 	/*
-	struct AnalogPort {
+	struct AnalogPort{
 		uint8_t channel;
 		std::unique_ptr<tAccumulator> accumulator;
 	};
