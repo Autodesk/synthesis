@@ -41,7 +41,7 @@ partial class DriveChooser
             this.rbCAN = new System.Windows.Forms.RadioButton();
             this.rbPWM = new System.Windows.Forms.RadioButton();
             this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
-            this.btnSave = new System.Windows.Forms.Button();
+            this.SaveButton = new System.Windows.Forms.Button();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
             this.tabsMeta = new System.Windows.Forms.TabControl();
@@ -56,20 +56,20 @@ partial class DriveChooser
             this.cmbPneumaticDiameter = new System.Windows.Forms.ComboBox();
             this.lblDiameter = new System.Windows.Forms.Label();
             this.metaGearing = new System.Windows.Forms.TabPage();
+            this.GearLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.txtGearRationDenom = new System.Windows.Forms.TextBox();
+            this.txtGearRationNum = new System.Windows.Forms.TextBox();
             this.lblOutputGear = new System.Windows.Forms.Label();
             this.lblInputGear = new System.Windows.Forms.Label();
-            this.txtGearRationNum = new System.Windows.Forms.TextBox();
-            this.txtGearRationDenom = new System.Windows.Forms.TextBox();
             this.metaElevatorBrake = new System.Windows.Forms.TabPage();
+            this.BreakLayout = new System.Windows.Forms.TableLayoutPanel();
             this.brakePortB = new System.Windows.Forms.NumericUpDown();
-            this.brakePortA = new System.Windows.Forms.NumericUpDown();
             this.lblBrakePort = new System.Windows.Forms.Label();
+            this.brakePortA = new System.Windows.Forms.NumericUpDown();
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
             this.metaElevatorStages = new System.Windows.Forms.TabPage();
             this.cmbStages = new System.Windows.Forms.ComboBox();
             this.ConfigJointLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.GearLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.BreakLayout = new System.Windows.Forms.TableLayoutPanel();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             this.JointOptionsLayout.SuspendLayout();
@@ -83,13 +83,13 @@ partial class DriveChooser
             this.metaPneumatic.SuspendLayout();
             this.PneumaticLayout.SuspendLayout();
             this.metaGearing.SuspendLayout();
+            this.GearLayout.SuspendLayout();
             this.metaElevatorBrake.SuspendLayout();
+            this.BreakLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).BeginInit();
             this.metaElevatorStages.SuspendLayout();
             this.ConfigJointLayout.SuspendLayout();
-            this.GearLayout.SuspendLayout();
-            this.BreakLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmbJointDriver
@@ -114,7 +114,6 @@ partial class DriveChooser
             this.grpChooseDriver.TabIndex = 1;
             this.grpChooseDriver.TabStop = false;
             this.grpChooseDriver.Text = "Joint Driver";
-            this.grpChooseDriver.Enter += new System.EventHandler(this.grpChooseDriver_Enter);
             // 
             // grpDriveOptions
             // 
@@ -302,16 +301,16 @@ partial class DriveChooser
             this.chkBoxDriveWheel.Text = "Drive Wheel ";
             this.chkBoxDriveWheel.UseVisualStyleBackColor = true;
             // 
-            // btnSave
+            // SaveButton
             // 
-            this.btnSave.Location = new System.Drawing.Point(2, 236);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(2);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(324, 22);
-            this.btnSave.TabIndex = 11;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.SaveButton.Location = new System.Drawing.Point(2, 236);
+            this.SaveButton.Margin = new System.Windows.Forms.Padding(2);
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(324, 23);
+            this.SaveButton.TabIndex = 11;
+            this.SaveButton.Text = "Save";
+            this.SaveButton.UseVisualStyleBackColor = true;
+            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // cmbWheelType
             // 
@@ -484,7 +483,6 @@ partial class DriveChooser
             this.cmbPneumaticDiameter.Name = "cmbPneumaticDiameter";
             this.cmbPneumaticDiameter.Size = new System.Drawing.Size(154, 21);
             this.cmbPneumaticDiameter.TabIndex = 12;
-            this.cmbPneumaticDiameter.SelectedIndexChanged += new System.EventHandler(this.cmbPneumaticDiameter_SelectedIndexChanged);
             // 
             // lblDiameter
             // 
@@ -508,6 +506,46 @@ partial class DriveChooser
             this.metaGearing.Text = "Gear Ratio";
             this.metaGearing.UseVisualStyleBackColor = true;
             // 
+            // GearLayout
+            // 
+            this.GearLayout.AutoSize = true;
+            this.GearLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.GearLayout.ColumnCount = 2;
+            this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.GearLayout.Controls.Add(this.txtGearRationDenom, 1, 1);
+            this.GearLayout.Controls.Add(this.txtGearRationNum, 0, 1);
+            this.GearLayout.Controls.Add(this.lblOutputGear, 1, 0);
+            this.GearLayout.Controls.Add(this.lblInputGear, 0, 0);
+            this.GearLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.GearLayout.Location = new System.Drawing.Point(0, 0);
+            this.GearLayout.Name = "GearLayout";
+            this.GearLayout.RowCount = 2;
+            this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.GearLayout.Size = new System.Drawing.Size(316, 47);
+            this.GearLayout.TabIndex = 13;
+            // 
+            // txtGearRationDenom
+            // 
+            this.txtGearRationDenom.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtGearRationDenom.Location = new System.Drawing.Point(160, 25);
+            this.txtGearRationDenom.Margin = new System.Windows.Forms.Padding(2);
+            this.txtGearRationDenom.Name = "txtGearRationDenom";
+            this.txtGearRationDenom.Size = new System.Drawing.Size(154, 20);
+            this.txtGearRationDenom.TabIndex = 13;
+            this.txtGearRationDenom.Text = "1";
+            // 
+            // txtGearRationNum
+            // 
+            this.txtGearRationNum.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtGearRationNum.Location = new System.Drawing.Point(2, 25);
+            this.txtGearRationNum.Margin = new System.Windows.Forms.Padding(2);
+            this.txtGearRationNum.Name = "txtGearRationNum";
+            this.txtGearRationNum.Size = new System.Drawing.Size(154, 20);
+            this.txtGearRationNum.TabIndex = 12;
+            this.txtGearRationNum.Text = "1";
+            // 
             // lblOutputGear
             // 
             this.lblOutputGear.AutoSize = true;
@@ -529,26 +567,6 @@ partial class DriveChooser
             this.lblInputGear.TabIndex = 11;
             this.lblInputGear.Text = "Input Gear";
             // 
-            // txtGearRationNum
-            // 
-            this.txtGearRationNum.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtGearRationNum.Location = new System.Drawing.Point(2, 25);
-            this.txtGearRationNum.Margin = new System.Windows.Forms.Padding(2);
-            this.txtGearRationNum.Name = "txtGearRationNum";
-            this.txtGearRationNum.Size = new System.Drawing.Size(154, 20);
-            this.txtGearRationNum.TabIndex = 12;
-            this.txtGearRationNum.Text = "1";
-            // 
-            // txtGearRationDenom
-            // 
-            this.txtGearRationDenom.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtGearRationDenom.Location = new System.Drawing.Point(160, 25);
-            this.txtGearRationDenom.Margin = new System.Windows.Forms.Padding(2);
-            this.txtGearRationDenom.Name = "txtGearRationDenom";
-            this.txtGearRationDenom.Size = new System.Drawing.Size(154, 20);
-            this.txtGearRationDenom.TabIndex = 13;
-            this.txtGearRationDenom.Text = "1";
-            // 
             // metaElevatorBrake
             // 
             this.metaElevatorBrake.Controls.Add(this.BreakLayout);
@@ -560,6 +578,26 @@ partial class DriveChooser
             this.metaElevatorBrake.Text = "Break Info";
             this.metaElevatorBrake.UseVisualStyleBackColor = true;
             // 
+            // BreakLayout
+            // 
+            this.BreakLayout.AutoSize = true;
+            this.BreakLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BreakLayout.ColumnCount = 2;
+            this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.BreakLayout.Controls.Add(this.brakePortB, 1, 1);
+            this.BreakLayout.Controls.Add(this.lblBrakePort, 0, 0);
+            this.BreakLayout.Controls.Add(this.brakePortA, 0, 1);
+            this.BreakLayout.Controls.Add(this.chkBoxHasBrake, 1, 0);
+            this.BreakLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.BreakLayout.Location = new System.Drawing.Point(0, 0);
+            this.BreakLayout.Name = "BreakLayout";
+            this.BreakLayout.RowCount = 2;
+            this.BreakLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.BreakLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.BreakLayout.Size = new System.Drawing.Size(316, 47);
+            this.BreakLayout.TabIndex = 13;
+            // 
             // brakePortB
             // 
             this.brakePortB.Dock = System.Windows.Forms.DockStyle.Top;
@@ -568,16 +606,6 @@ partial class DriveChooser
             this.brakePortB.Name = "brakePortB";
             this.brakePortB.Size = new System.Drawing.Size(154, 20);
             this.brakePortB.TabIndex = 3;
-            // 
-            // brakePortA
-            // 
-            this.brakePortA.Dock = System.Windows.Forms.DockStyle.Top;
-            this.brakePortA.Location = new System.Drawing.Point(2, 25);
-            this.brakePortA.Margin = new System.Windows.Forms.Padding(2);
-            this.brakePortA.Name = "brakePortA";
-            this.brakePortA.Size = new System.Drawing.Size(154, 20);
-            this.brakePortA.TabIndex = 2;
-            this.brakePortA.ValueChanged += new System.EventHandler(this.brakePortA_ValueChanged);
             // 
             // lblBrakePort
             // 
@@ -588,7 +616,15 @@ partial class DriveChooser
             this.lblBrakePort.Size = new System.Drawing.Size(57, 13);
             this.lblBrakePort.TabIndex = 1;
             this.lblBrakePort.Text = "Brake Port";
-            this.lblBrakePort.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // brakePortA
+            // 
+            this.brakePortA.Dock = System.Windows.Forms.DockStyle.Top;
+            this.brakePortA.Location = new System.Drawing.Point(2, 25);
+            this.brakePortA.Margin = new System.Windows.Forms.Padding(2);
+            this.brakePortA.Name = "brakePortA";
+            this.brakePortA.Size = new System.Drawing.Size(154, 20);
+            this.brakePortA.TabIndex = 2;
             // 
             // chkBoxHasBrake
             // 
@@ -637,7 +673,7 @@ partial class DriveChooser
             this.ConfigJointLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.ConfigJointLayout.Controls.Add(this.grpChooseDriver, 0, 0);
             this.ConfigJointLayout.Controls.Add(this.grpDriveOptions, 0, 2);
-            this.ConfigJointLayout.Controls.Add(this.btnSave, 0, 3);
+            this.ConfigJointLayout.Controls.Add(this.SaveButton, 0, 3);
             this.ConfigJointLayout.Controls.Add(this.tabsMeta, 0, 1);
             this.ConfigJointLayout.Location = new System.Drawing.Point(3, 3);
             this.ConfigJointLayout.Name = "ConfigJointLayout";
@@ -646,51 +682,12 @@ partial class DriveChooser
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.ConfigJointLayout.Size = new System.Drawing.Size(328, 260);
+            this.ConfigJointLayout.Size = new System.Drawing.Size(328, 261);
             this.ConfigJointLayout.TabIndex = 12;
-            // 
-            // GearLayout
-            // 
-            this.GearLayout.AutoSize = true;
-            this.GearLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.GearLayout.ColumnCount = 2;
-            this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.GearLayout.Controls.Add(this.txtGearRationDenom, 1, 1);
-            this.GearLayout.Controls.Add(this.txtGearRationNum, 0, 1);
-            this.GearLayout.Controls.Add(this.lblOutputGear, 1, 0);
-            this.GearLayout.Controls.Add(this.lblInputGear, 0, 0);
-            this.GearLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.GearLayout.Location = new System.Drawing.Point(0, 0);
-            this.GearLayout.Name = "GearLayout";
-            this.GearLayout.RowCount = 2;
-            this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.GearLayout.Size = new System.Drawing.Size(316, 47);
-            this.GearLayout.TabIndex = 13;
-            // 
-            // BreakLayout
-            // 
-            this.BreakLayout.AutoSize = true;
-            this.BreakLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BreakLayout.ColumnCount = 2;
-            this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.BreakLayout.Controls.Add(this.brakePortB, 1, 1);
-            this.BreakLayout.Controls.Add(this.lblBrakePort, 0, 0);
-            this.BreakLayout.Controls.Add(this.brakePortA, 0, 1);
-            this.BreakLayout.Controls.Add(this.chkBoxHasBrake, 1, 0);
-            this.BreakLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.BreakLayout.Location = new System.Drawing.Point(0, 0);
-            this.BreakLayout.Name = "BreakLayout";
-            this.BreakLayout.RowCount = 2;
-            this.BreakLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.BreakLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.BreakLayout.Size = new System.Drawing.Size(316, 47);
-            this.BreakLayout.TabIndex = 13;
             // 
             // DriveChooser
             // 
+            this.AcceptButton = this.SaveButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
@@ -704,8 +701,7 @@ partial class DriveChooser
             this.MinimizeBox = false;
             this.Name = "DriveChooser";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Joint Configuration";
-            this.Load += new System.EventHandler(this.DriveChooser_Load);
+            this.Text = "Driver Configuration";
             this.grpChooseDriver.ResumeLayout(false);
             this.grpDriveOptions.ResumeLayout(false);
             this.grpDriveOptions.PerformLayout();
@@ -726,17 +722,17 @@ partial class DriveChooser
             this.PneumaticLayout.PerformLayout();
             this.metaGearing.ResumeLayout(false);
             this.metaGearing.PerformLayout();
+            this.GearLayout.ResumeLayout(false);
+            this.GearLayout.PerformLayout();
             this.metaElevatorBrake.ResumeLayout(false);
             this.metaElevatorBrake.PerformLayout();
+            this.BreakLayout.ResumeLayout(false);
+            this.BreakLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).EndInit();
             this.metaElevatorStages.ResumeLayout(false);
             this.ConfigJointLayout.ResumeLayout(false);
             this.ConfigJointLayout.PerformLayout();
-            this.GearLayout.ResumeLayout(false);
-            this.GearLayout.PerformLayout();
-            this.BreakLayout.ResumeLayout(false);
-            this.BreakLayout.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -750,7 +746,7 @@ partial class DriveChooser
     private System.Windows.Forms.NumericUpDown txtPortB;
     private System.Windows.Forms.Label lblPort;
     private System.Windows.Forms.NumericUpDown txtPortA;
-    private System.Windows.Forms.Button btnSave;
+    private System.Windows.Forms.Button SaveButton;
     private System.Windows.Forms.ComboBox cmbWheelType;
     private System.Windows.Forms.ComboBox cmbPneumaticPressure;
     private System.Windows.Forms.TabControl tabsMeta;
