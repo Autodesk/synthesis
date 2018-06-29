@@ -181,13 +181,15 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
 
     public override string ToString()
     {
-        string info = System.Enum.GetName(typeof(JointDriverType), GetDriveType()).Replace('_', ' ').ToLowerInvariant();
-        info += "\nPorts: " + type.GetPortType() + "(" + portA + (type.HasTwoPorts() ? "," + portB : "") + ")";
-        info += "\nMeta: ";
-        foreach (KeyValuePair<System.Type, JointDriverMeta> meta in MetaInfo)
-        {
-            info += "\n\t" + meta.Value.ToString();
-        }
+        string info = "";
+
+        // Joint type
+        string jointType = System.Enum.GetName(typeof(JointDriverType), GetDriveType()).Replace('_', ' ').ToLowerInvariant();
+        info += jointType.Substring(0, 1).ToUpper() + jointType.Substring(1); // Capitalize first letter
+
+        // Port information
+        info += ", Ports: " + type.GetPortType() + " " + portA + (type.HasTwoPorts() ? " and " + portB : "");
+
         return info;
     }
 

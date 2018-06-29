@@ -43,6 +43,8 @@
             this.RobotNameToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.DriveTrainLabel = new System.Windows.Forms.Label();
             this.WheelCountLabel = new System.Windows.Forms.Label();
+            this.MetricCheckBox = new System.Windows.Forms.CheckBox();
+            this.MassModeLabel = new System.Windows.Forms.Label();
             this.RobotInfoGroupBox = new System.Windows.Forms.GroupBox();
             this.WheelCountUpDown = new System.Windows.Forms.NumericUpDown();
             this.DriveTrainDropdown = new System.Windows.Forms.ComboBox();
@@ -51,8 +53,6 @@
             this.MassPropertyInfoLabel = new System.Windows.Forms.Label();
             this.MassPropertyTitleLabel = new System.Windows.Forms.Label();
             this.MassPanel = new System.Windows.Forms.Panel();
-            this.MetricCheckBox = new System.Windows.Forms.CheckBox();
-            this.MassModeLabel = new System.Windows.Forms.Label();
             this.MassModeDropdown = new System.Windows.Forms.ComboBox();
             this.GeneralInfoGroupBox.SuspendLayout();
             this.RobotInfoGroupBox.SuspendLayout();
@@ -64,10 +64,9 @@
             // 
             this.BasicInfoTitleLabel.AutoSize = true;
             this.BasicInfoTitleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BasicInfoTitleLabel.Location = new System.Drawing.Point(-5, 0);
-            this.BasicInfoTitleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.BasicInfoTitleLabel.Location = new System.Drawing.Point(-4, 0);
             this.BasicInfoTitleLabel.Name = "BasicInfoTitleLabel";
-            this.BasicInfoTitleLabel.Size = new System.Drawing.Size(345, 25);
+            this.BasicInfoTitleLabel.Size = new System.Drawing.Size(290, 20);
             this.BasicInfoTitleLabel.TabIndex = 1;
             this.BasicInfoTitleLabel.Text = "Step One: Basic Robot Information";
             // 
@@ -83,11 +82,9 @@
             this.GeneralInfoGroupBox.Controls.Add(this.TeamNumberLabel);
             this.GeneralInfoGroupBox.Controls.Add(this.RobotNameTextBox);
             this.GeneralInfoGroupBox.Controls.Add(this.RobotNameLabel);
-            this.GeneralInfoGroupBox.Location = new System.Drawing.Point(0, 91);
-            this.GeneralInfoGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GeneralInfoGroupBox.Location = new System.Drawing.Point(0, 74);
             this.GeneralInfoGroupBox.Name = "GeneralInfoGroupBox";
-            this.GeneralInfoGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.GeneralInfoGroupBox.Size = new System.Drawing.Size(613, 80);
+            this.GeneralInfoGroupBox.Size = new System.Drawing.Size(460, 65);
             this.GeneralInfoGroupBox.TabIndex = 2;
             this.GeneralInfoGroupBox.TabStop = false;
             this.GeneralInfoGroupBox.Text = "General Information";
@@ -95,20 +92,18 @@
             // RoboticsLeagueLabel
             // 
             this.RoboticsLeagueLabel.AutoSize = true;
-            this.RoboticsLeagueLabel.Location = new System.Drawing.Point(400, 54);
-            this.RoboticsLeagueLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.RoboticsLeagueLabel.Location = new System.Drawing.Point(300, 44);
             this.RoboticsLeagueLabel.Name = "RoboticsLeagueLabel";
-            this.RoboticsLeagueLabel.Size = new System.Drawing.Size(60, 17);
+            this.RoboticsLeagueLabel.Size = new System.Drawing.Size(46, 13);
             this.RoboticsLeagueLabel.TabIndex = 8;
             this.RoboticsLeagueLabel.Text = "League:";
             // 
             // FTCRadioButton
             // 
             this.FTCRadioButton.AutoSize = true;
-            this.FTCRadioButton.Location = new System.Drawing.Point(539, 52);
-            this.FTCRadioButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FTCRadioButton.Location = new System.Drawing.Point(404, 42);
             this.FTCRadioButton.Name = "FTCRadioButton";
-            this.FTCRadioButton.Size = new System.Drawing.Size(55, 21);
+            this.FTCRadioButton.Size = new System.Drawing.Size(45, 17);
             this.FTCRadioButton.TabIndex = 7;
             this.FTCRadioButton.TabStop = true;
             this.FTCRadioButton.Text = "FTC";
@@ -118,10 +113,9 @@
             // FRCRadioButton
             // 
             this.FRCRadioButton.AutoSize = true;
-            this.FRCRadioButton.Location = new System.Drawing.Point(469, 52);
-            this.FRCRadioButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FRCRadioButton.Location = new System.Drawing.Point(352, 42);
             this.FRCRadioButton.Name = "FRCRadioButton";
-            this.FRCRadioButton.Size = new System.Drawing.Size(56, 21);
+            this.FRCRadioButton.Size = new System.Drawing.Size(46, 17);
             this.FRCRadioButton.TabIndex = 6;
             this.FRCRadioButton.TabStop = true;
             this.FRCRadioButton.Text = "FRC";
@@ -133,10 +127,9 @@
             this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.BackColor = System.Drawing.Color.Transparent;
-            this.linkLabel1.Location = new System.Drawing.Point(229, 54);
-            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.linkLabel1.Location = new System.Drawing.Point(172, 44);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(81, 17);
+            this.linkLabel1.Size = new System.Drawing.Size(61, 13);
             this.linkLabel1.TabIndex = 5;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Learn More";
@@ -146,10 +139,9 @@
             this.AnalyticsToggleCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.AnalyticsToggleCheckBox.AutoSize = true;
             this.AnalyticsToggleCheckBox.BackColor = System.Drawing.Color.Transparent;
-            this.AnalyticsToggleCheckBox.Location = new System.Drawing.Point(9, 53);
-            this.AnalyticsToggleCheckBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.AnalyticsToggleCheckBox.Location = new System.Drawing.Point(7, 43);
             this.AnalyticsToggleCheckBox.Name = "AnalyticsToggleCheckBox";
-            this.AnalyticsToggleCheckBox.Size = new System.Drawing.Size(224, 21);
+            this.AnalyticsToggleCheckBox.Size = new System.Drawing.Size(172, 17);
             this.AnalyticsToggleCheckBox.TabIndex = 4;
             this.AnalyticsToggleCheckBox.Text = "Send Anonymous Usage Data.";
             this.AnalyticsToggleCheckBox.UseVisualStyleBackColor = false;
@@ -158,42 +150,37 @@
             // TeamNumberTextBox
             // 
             this.TeamNumberTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.TeamNumberTextBox.Location = new System.Drawing.Point(519, 21);
-            this.TeamNumberTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TeamNumberTextBox.Location = new System.Drawing.Point(389, 17);
             this.TeamNumberTextBox.Mask = "0000";
             this.TeamNumberTextBox.Name = "TeamNumberTextBox";
             this.TeamNumberTextBox.PromptChar = ' ';
-            this.TeamNumberTextBox.Size = new System.Drawing.Size(79, 22);
+            this.TeamNumberTextBox.Size = new System.Drawing.Size(60, 20);
             this.TeamNumberTextBox.TabIndex = 3;
             // 
             // TeamNumberLabel
             // 
             this.TeamNumberLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.TeamNumberLabel.AutoSize = true;
-            this.TeamNumberLabel.Location = new System.Drawing.Point(411, 25);
-            this.TeamNumberLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.TeamNumberLabel.Location = new System.Drawing.Point(308, 20);
             this.TeamNumberLabel.Name = "TeamNumberLabel";
-            this.TeamNumberLabel.Size = new System.Drawing.Size(102, 17);
+            this.TeamNumberLabel.Size = new System.Drawing.Size(77, 13);
             this.TeamNumberLabel.TabIndex = 2;
             this.TeamNumberLabel.Text = "Team Number:";
             this.RobotNameToolTip.SetToolTip(this.TeamNumberLabel, "Your FRC Team number (optional)");
             // 
             // RobotNameTextBox
             // 
-            this.RobotNameTextBox.Location = new System.Drawing.Point(101, 21);
-            this.RobotNameTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RobotNameTextBox.Location = new System.Drawing.Point(76, 17);
             this.RobotNameTextBox.Name = "RobotNameTextBox";
-            this.RobotNameTextBox.ReadOnly = true;
-            this.RobotNameTextBox.Size = new System.Drawing.Size(297, 22);
+            this.RobotNameTextBox.Size = new System.Drawing.Size(224, 20);
             this.RobotNameTextBox.TabIndex = 1;
             // 
             // RobotNameLabel
             // 
             this.RobotNameLabel.AutoSize = true;
-            this.RobotNameLabel.Location = new System.Drawing.Point(5, 25);
-            this.RobotNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.RobotNameLabel.Location = new System.Drawing.Point(4, 20);
             this.RobotNameLabel.Name = "RobotNameLabel";
-            this.RobotNameLabel.Size = new System.Drawing.Size(91, 17);
+            this.RobotNameLabel.Size = new System.Drawing.Size(70, 13);
             this.RobotNameLabel.TabIndex = 0;
             this.RobotNameLabel.Text = "Robot Name:";
             this.RobotNameToolTip.SetToolTip(this.RobotNameLabel, "The name of your robot that will show up in the simulator.");
@@ -201,10 +188,9 @@
             // DriveTrainLabel
             // 
             this.DriveTrainLabel.AutoSize = true;
-            this.DriveTrainLabel.Location = new System.Drawing.Point(9, 25);
-            this.DriveTrainLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.DriveTrainLabel.Location = new System.Drawing.Point(7, 20);
             this.DriveTrainLabel.Name = "DriveTrainLabel";
-            this.DriveTrainLabel.Size = new System.Drawing.Size(82, 17);
+            this.DriveTrainLabel.Size = new System.Drawing.Size(62, 13);
             this.DriveTrainLabel.TabIndex = 0;
             this.DriveTrainLabel.Text = "Drive Train:";
             this.RobotNameToolTip.SetToolTip(this.DriveTrainLabel, "Your robot\'s drive train. Select Other / Custom if you don\'t know.");
@@ -212,13 +198,34 @@
             // WheelCountLabel
             // 
             this.WheelCountLabel.AutoSize = true;
-            this.WheelCountLabel.Location = new System.Drawing.Point(269, 25);
-            this.WheelCountLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.WheelCountLabel.Location = new System.Drawing.Point(202, 20);
             this.WheelCountLabel.Name = "WheelCountLabel";
-            this.WheelCountLabel.Size = new System.Drawing.Size(93, 17);
+            this.WheelCountLabel.Size = new System.Drawing.Size(72, 13);
             this.WheelCountLabel.TabIndex = 3;
             this.WheelCountLabel.Text = "Wheel Count:";
             this.RobotNameToolTip.SetToolTip(this.WheelCountLabel, "The number of wheels on your robot\'s drive base.");
+            // 
+            // MetricCheckBox
+            // 
+            this.MetricCheckBox.AutoSize = true;
+            this.MetricCheckBox.Location = new System.Drawing.Point(339, 21);
+            this.MetricCheckBox.Name = "MetricCheckBox";
+            this.MetricCheckBox.Size = new System.Drawing.Size(82, 17);
+            this.MetricCheckBox.TabIndex = 3;
+            this.MetricCheckBox.Text = "Metric Units";
+            this.RobotNameToolTip.SetToolTip(this.MetricCheckBox, "Toggles the usage of the superior system of measurement,");
+            this.MetricCheckBox.UseVisualStyleBackColor = true;
+            this.MetricCheckBox.CheckedChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
+            // 
+            // MassModeLabel
+            // 
+            this.MassModeLabel.AutoSize = true;
+            this.MassModeLabel.Location = new System.Drawing.Point(6, 22);
+            this.MassModeLabel.Name = "MassModeLabel";
+            this.MassModeLabel.Size = new System.Drawing.Size(120, 13);
+            this.MassModeLabel.TabIndex = 1;
+            this.MassModeLabel.Text = "Mass Calculation Mode:";
+            this.RobotNameToolTip.SetToolTip(this.MassModeLabel, "The method by which the mass of each robot is calculated.");
             // 
             // RobotInfoGroupBox
             // 
@@ -227,11 +234,9 @@
             this.RobotInfoGroupBox.Controls.Add(this.WheelCountUpDown);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainDropdown);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainLabel);
-            this.RobotInfoGroupBox.Location = new System.Drawing.Point(0, 180);
-            this.RobotInfoGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RobotInfoGroupBox.Location = new System.Drawing.Point(0, 146);
             this.RobotInfoGroupBox.Name = "RobotInfoGroupBox";
-            this.RobotInfoGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.RobotInfoGroupBox.Size = new System.Drawing.Size(613, 62);
+            this.RobotInfoGroupBox.Size = new System.Drawing.Size(460, 50);
             this.RobotInfoGroupBox.TabIndex = 3;
             this.RobotInfoGroupBox.TabStop = false;
             this.RobotInfoGroupBox.Text = "Drive Information";
@@ -239,15 +244,14 @@
             // WheelCountUpDown
             // 
             this.WheelCountUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.WheelCountUpDown.Location = new System.Drawing.Point(368, 22);
-            this.WheelCountUpDown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.WheelCountUpDown.Location = new System.Drawing.Point(276, 18);
             this.WheelCountUpDown.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
             this.WheelCountUpDown.Name = "WheelCountUpDown";
-            this.WheelCountUpDown.Size = new System.Drawing.Size(56, 22);
+            this.WheelCountUpDown.Size = new System.Drawing.Size(42, 20);
             this.WheelCountUpDown.TabIndex = 2;
             this.WheelCountUpDown.Value = new decimal(new int[] {
             4,
@@ -266,10 +270,9 @@
             "Swerve",
             "H-Drive",
             "Other/Custom"});
-            this.DriveTrainDropdown.Location = new System.Drawing.Point(95, 21);
-            this.DriveTrainDropdown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.DriveTrainDropdown.Location = new System.Drawing.Point(71, 17);
             this.DriveTrainDropdown.Name = "DriveTrainDropdown";
-            this.DriveTrainDropdown.Size = new System.Drawing.Size(160, 24);
+            this.DriveTrainDropdown.Size = new System.Drawing.Size(121, 21);
             this.DriveTrainDropdown.TabIndex = 1;
             this.DriveTrainDropdown.SelectedIndexChanged += new System.EventHandler(this.DriveTrainDropdown_SelectedIndexChanged);
             // 
@@ -283,11 +286,9 @@
             this.RobotMassGroupBox.Controls.Add(this.MetricCheckBox);
             this.RobotMassGroupBox.Controls.Add(this.MassModeLabel);
             this.RobotMassGroupBox.Controls.Add(this.MassModeDropdown);
-            this.RobotMassGroupBox.Location = new System.Drawing.Point(0, 250);
-            this.RobotMassGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RobotMassGroupBox.Location = new System.Drawing.Point(0, 203);
             this.RobotMassGroupBox.Name = "RobotMassGroupBox";
-            this.RobotMassGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.RobotMassGroupBox.Size = new System.Drawing.Size(613, 322);
+            this.RobotMassGroupBox.Size = new System.Drawing.Size(460, 262);
             this.RobotMassGroupBox.TabIndex = 4;
             this.RobotMassGroupBox.TabStop = false;
             this.RobotMassGroupBox.Text = "Robot Mass";
@@ -295,29 +296,26 @@
             // TotalMassLabel
             // 
             this.TotalMassLabel.AutoSize = true;
-            this.TotalMassLabel.Location = new System.Drawing.Point(433, 176);
-            this.TotalMassLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.TotalMassLabel.Location = new System.Drawing.Point(325, 143);
             this.TotalMassLabel.Name = "TotalMassLabel";
-            this.TotalMassLabel.Size = new System.Drawing.Size(127, 17);
+            this.TotalMassLabel.Size = new System.Drawing.Size(96, 13);
             this.TotalMassLabel.TabIndex = 7;
             this.TotalMassLabel.Text = "Total Mass: 0.0 lbs";
             // 
             // MassPropertyInfoLabel
             // 
-            this.MassPropertyInfoLabel.Location = new System.Drawing.Point(4, 223);
-            this.MassPropertyInfoLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.MassPropertyInfoLabel.Location = new System.Drawing.Point(3, 181);
             this.MassPropertyInfoLabel.Name = "MassPropertyInfoLabel";
-            this.MassPropertyInfoLabel.Size = new System.Drawing.Size(589, 96);
+            this.MassPropertyInfoLabel.Size = new System.Drawing.Size(442, 78);
             this.MassPropertyInfoLabel.TabIndex = 6;
             this.MassPropertyInfoLabel.Text = "N/A";
             // 
             // MassPropertyTitleLabel
             // 
             this.MassPropertyTitleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MassPropertyTitleLabel.Location = new System.Drawing.Point(4, 204);
-            this.MassPropertyTitleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.MassPropertyTitleLabel.Location = new System.Drawing.Point(3, 166);
             this.MassPropertyTitleLabel.Name = "MassPropertyTitleLabel";
-            this.MassPropertyTitleLabel.Size = new System.Drawing.Size(585, 18);
+            this.MassPropertyTitleLabel.Size = new System.Drawing.Size(439, 15);
             this.MassPropertyTitleLabel.TabIndex = 5;
             this.MassPropertyTitleLabel.Text = "Selected Mode: ";
             // 
@@ -325,35 +323,10 @@
             // 
             this.MassPanel.AutoScroll = true;
             this.MassPanel.BackColor = System.Drawing.Color.White;
-            this.MassPanel.Location = new System.Drawing.Point(9, 78);
-            this.MassPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MassPanel.Location = new System.Drawing.Point(7, 63);
             this.MassPanel.Name = "MassPanel";
-            this.MassPanel.Size = new System.Drawing.Size(589, 95);
+            this.MassPanel.Size = new System.Drawing.Size(442, 77);
             this.MassPanel.TabIndex = 4;
-            // 
-            // MetricCheckBox
-            // 
-            this.MetricCheckBox.AutoSize = true;
-            this.MetricCheckBox.Location = new System.Drawing.Point(452, 26);
-            this.MetricCheckBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MetricCheckBox.Name = "MetricCheckBox";
-            this.MetricCheckBox.Size = new System.Drawing.Size(104, 21);
-            this.MetricCheckBox.TabIndex = 3;
-            this.MetricCheckBox.Text = "Metric Units";
-            this.RobotNameToolTip.SetToolTip(this.MetricCheckBox, "Toggles the usage of the superior system of measurement,");
-            this.MetricCheckBox.UseVisualStyleBackColor = true;
-            this.MetricCheckBox.CheckedChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
-            // 
-            // MassModeLabel
-            // 
-            this.MassModeLabel.AutoSize = true;
-            this.MassModeLabel.Location = new System.Drawing.Point(8, 27);
-            this.MassModeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.MassModeLabel.Name = "MassModeLabel";
-            this.MassModeLabel.Size = new System.Drawing.Size(157, 17);
-            this.MassModeLabel.TabIndex = 1;
-            this.MassModeLabel.Text = "Mass Calculation Mode:";
-            this.RobotNameToolTip.SetToolTip(this.MassModeLabel, "The method by which the mass of each robot is calculated.");
             // 
             // MassModeDropdown
             // 
@@ -363,24 +336,22 @@
             "Simple User Defined (Recommended)",
             "Complex User Defined",
             "Materials Based"});
-            this.MassModeDropdown.Location = new System.Drawing.Point(176, 23);
-            this.MassModeDropdown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MassModeDropdown.Location = new System.Drawing.Point(132, 19);
             this.MassModeDropdown.Name = "MassModeDropdown";
-            this.MassModeDropdown.Size = new System.Drawing.Size(267, 24);
+            this.MassModeDropdown.Size = new System.Drawing.Size(201, 21);
             this.MassModeDropdown.TabIndex = 0;
             this.MassModeDropdown.SelectedIndexChanged += new System.EventHandler(this.MassModeDropdown_SelectedIndexChanged);
             // 
             // BasicRobotInfoPage
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.RobotMassGroupBox);
             this.Controls.Add(this.RobotInfoGroupBox);
             this.Controls.Add(this.GeneralInfoGroupBox);
             this.Controls.Add(this.BasicInfoTitleLabel);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "BasicRobotInfoPage";
-            this.Size = new System.Drawing.Size(613, 804);
+            this.Size = new System.Drawing.Size(460, 653);
             this.GeneralInfoGroupBox.ResumeLayout(false);
             this.GeneralInfoGroupBox.PerformLayout();
             this.RobotInfoGroupBox.ResumeLayout(false);

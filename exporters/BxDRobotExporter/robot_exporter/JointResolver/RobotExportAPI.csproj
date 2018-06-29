@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>E:\Program Files\Autodesk\Inventor 2018\Bin\BxDRobotExporter\</OutputPath>
+    <OutputPath>C:\Program Files\Autodesk\Inventor 2019\Bin\BxDRobotExporter\</OutputPath>
     <DefineConstants>TRACE;DEBUG;LITEMODE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,7 +50,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>E:\Program Files\Autodesk\Inventor 2018\Bin\BxDRobotExporter\</OutputPath>
+    <OutputPath>C:\Program Files\Autodesk\Inventor 2019\Bin\BxDRobotExporter\</OutputPath>
     <DefineConstants>TRACE;LITEMODE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -84,17 +84,23 @@
     <Compile Include="ControlGUI\LiteExporterForm.Designer.cs">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\NameRobotForm.cs">
+    <Compile Include="ControlGUI\SaveRobotForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlGUI\NameRobotForm.Designer.cs">
-      <DependentUpon>NameRobotForm.cs</DependentUpon>
+    <Compile Include="ControlGUI\SaveRobotForm.Designer.cs">
+      <DependentUpon>SaveRobotForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlGUI\NodeEditorPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ControlGUI\NodeEditorPane.Designer.cs">
       <DependentUpon>NodeEditorPane.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonExporterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonExporterForm.Designer.cs">
+      <DependentUpon>SkeletonExporterForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlGUI\SynthesisGUI.cs">
       <SubType>Form</SubType>
@@ -180,6 +186,12 @@
     <Compile Include="EditorsLibrary\SensorListForm.Designer.cs">
       <DependentUpon>SensorListForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditorsLibrary\SetMassForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorsLibrary\SetMassForm.Designer.cs">
+      <DependentUpon>SetMassForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorsLibrary\ViewerSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -246,11 +258,14 @@
     <EmbeddedResource Include="ControlGUI\LiteExporterForm.resx">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\NameRobotForm.resx">
-      <DependentUpon>NameRobotForm.cs</DependentUpon>
+    <EmbeddedResource Include="ControlGUI\SaveRobotForm.resx">
+      <DependentUpon>SaveRobotForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\NodeEditorPane.resx">
       <DependentUpon>NodeEditorPane.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\SkeletonExporterForm.resx">
+      <DependentUpon>SkeletonExporterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\SynthesisGUI.resx">
       <DependentUpon>SynthesisGUI.cs</DependentUpon>
@@ -293,6 +308,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\SensorListForm.resx">
       <DependentUpon>SensorListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorsLibrary\SetMassForm.resx">
+      <DependentUpon>SetMassForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\ViewerSettingsForm.resx">
       <DependentUpon>ViewerSettingsForm.cs</DependentUpon>

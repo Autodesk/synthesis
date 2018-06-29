@@ -59,13 +59,8 @@ namespace BxDRobotExporter
         ButtonDefinition ExporterSettingsButton;
         ButtonDefinition HelpButton;
         ButtonDefinition PreviewRobotButton;
-
-        //Dropdown buttons
-        ObjectCollection ExportButtonCollection;
-        ButtonDefinition GenericExportButton;
-        ButtonDefinition AdvancedExportButton;
         ButtonDefinition WizardExportButton;
-        ButtonDefinition OneClickExportButton;
+        ButtonDefinition SetMassButton;
 
         ObjectCollection SaveButtonCollection;
         ButtonDefinition SaveButton;
@@ -159,32 +154,11 @@ namespace BxDRobotExporter
             #endregion
 
             #region Setup Buttons
-            //Generic Begin Export
-            GenericExportButton = ControlDefs.AddButtonDefinition("Begin Export", "BxD:RobotExporter:BeginExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens a window with information on each export mode", ExportRobotIconSmall, ExportRobotIconLarge);
-            GenericExportButton.OnExecute += BeginGenericExport_OnExecute;
-            GenericExportButton.OnHelp += _OnHelp;
-
-            //Begin Advanced Export
-            AdvancedExportButton = ControlDefs.AddButtonDefinition("Begin Advanced Export", "BxD:RobotExporter:BeginAdvancedExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports your robot in advanced mode. Recommended if you intend to emulate code.", ExportRobotIconSmall, ExportRobotIconLarge);
-            AdvancedExportButton.OnExecute += BeginAdvancedExport_OnExecute;
-            AdvancedExportButton.OnHelp += _OnHelp;
-
             //Begin Wizard Export
             WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Export", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports the robot with the aid of a wizard to guide you through the process.", WizardExportIconSmall, WizardExportIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
-
-            //Begin One Click Export
-            OneClickExportButton = ControlDefs.AddButtonDefinition("Begin One Click Export", "BxD:RobotExporter:BeginOneClickExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports the robot with minimal user input. (Recommended for beginners)", OneClickExportIconSmall, OneClickExportIconLarge);
-            OneClickExportButton.OnExecute += BeginOneClickExport_OnExecute;
-            OneClickExportButton.OnHelp += _OnHelp;
-
-            //Begin Export Control Definition
-            ExportButtonCollection = MainApplication.TransientObjects.CreateObjectCollection();
-            ExportButtonCollection.Add(WizardExportButton);
-            ExportButtonCollection.Add(OneClickExportButton);
-            ExportButtonCollection.Add(AdvancedExportButton);
-            BeginPanel.CommandControls.AddSplitButton(GenericExportButton, ExportButtonCollection, true);
+            BeginPanel.CommandControls.AddButton(WizardExportButton, true);
             
             //Load Exported Robot
             LoadExportedRobotButton = ControlDefs.AddButtonDefinition("Load Exported Robot", "BxD:RobotExporter:LoadExportedRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Loads a robot you have already exported for further editing.", LoadExportedRobotIconSmall, LoadExportedRobotIconLarge);
@@ -197,6 +171,12 @@ namespace BxDRobotExporter
             PreviewRobotButton.OnExecute += PreviewRobotButton_OnExecute;
             PreviewRobotButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(PreviewRobotButton, true);
+
+            //Set Mass
+            SetMassButton = ControlDefs.AddButtonDefinition("Set Mass", "BxD:RobotExporter:SetMass", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the Mass of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            SetMassButton.OnExecute += SetMass_OnExecute;
+            SetMassButton.OnHelp += _OnHelp;
+            SettingsPanel.CommandControls.AddButton(SetMassButton, true);
 
             //Exporter Settings
             ExporterSettingsButton = ControlDefs.AddButtonDefinition("Exporter Settings", "BxD:RobotExporter:ExporterSettings", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens the settings menu.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
@@ -276,7 +256,8 @@ namespace BxDRobotExporter
         public void Deactivate()
         {
             Marshal.ReleaseComObject(MainApplication);
-            Marshal.ReleaseComObject(AsmDocument);
+            if (AsmDocument != null)
+                Marshal.ReleaseComObject(AsmDocument);
             MainApplication = null;
             FilePanel.Parent.Delete();
             ExporterEnv.Delete();
@@ -324,7 +305,6 @@ namespace BxDRobotExporter
             {
                 EnvironmentEnabled = true;
                 StartExporter();
-
             }
         }
 
@@ -348,6 +328,9 @@ namespace BxDRobotExporter
             PreviewRobotButton.Enabled = false;
             SaveAsButton.Enabled = false;
             SaveButton.Enabled = false;
+
+            // Immediately start the "advanced export" when the exporter is opened. TODO: Rename this as ExporterSetup, as it applies to all exporting modes.
+            BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
         }
 
         /// <summary>
@@ -355,11 +338,21 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
+            // Export mesh as exporter is finished
+            if (Utilities.GUI.SkeletonBase != null)
+            {
+                if (Utilities.GUI.PromptSaveSettings(true, true))
+                    if (Utilities.GUI.Meshes != null || Utilities.GUI.ExportMeshes())
+                        if (Utilities.GUI.RobotSave())
+                            if (Utilities.GUI.RMeta.OpenSynthesis)
+                                 OpenSynthesis(Utilities.GUI.RMeta.ActiveRobotName, Utilities.GUI.RMeta.FieldName);
+            }
+
             AsmDocument = null;
             Utilities.DisposeDockableWindows();
             ChildHighlight = null;
 
-            foreach(var doc in DisabledCommandDocuments)
+            foreach (var doc in DisabledCommandDocuments)
             {
                 doc.Key.DisabledCommandList.Remove(doc.Value);
             }
@@ -447,24 +440,13 @@ namespace BxDRobotExporter
 
         #region Custom Button Events
 
-        //Begin
-        /// <summary>
-        /// Opens the <see cref="Forms.ChooseExportModeForm"/> and prompts the user to select an export mode.
-        /// </summary>
-        /// <param name="Context"></param>
-        private void BeginGenericExport_OnExecute(NameValueMap Context)
-        {
-            Forms.ChooseExportModeForm exportChoose = new Forms.ChooseExportModeForm();
-            exportChoose.ShowDialog();
-        }
-
         /// <summary>
         /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>
         /// </summary>
         /// <param name="Context"></param>
         public void BeginAdvancedExport_OnExecute(NameValueMap Context)
         {
-            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.ExportMeshes())
+            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.BuildRobotSkeleton())
             {
                 PreviewRobotButton.Enabled = true;
                 SaveAsButton.Enabled = true;
@@ -485,7 +467,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.ExportMeshes())
+            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.BuildRobotSkeleton())
             {
                 PreviewRobotButton.Enabled = true;
                 SaveAsButton.Enabled = true;
@@ -494,8 +476,8 @@ namespace BxDRobotExporter
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
                 Utilities.HideDockableWindows();
                 wizard.ShowDialog();
+                Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
-                Utilities.GUI.RobotSave();
             }
             else if (Utilities.GUI.SkeletonBase != null)
             {
@@ -506,8 +488,8 @@ namespace BxDRobotExporter
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
                 Utilities.HideDockableWindows();
                 wizard.ShowDialog();
+                Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
-                Utilities.GUI.RobotSave();
             }
         }
 
@@ -566,6 +548,17 @@ namespace BxDRobotExporter
         private void SaveAsButton_OnExecute(NameValueMap Context)
         {
             Utilities.GUI.RobotSaveAs();
+        }
+
+
+        //Settings
+        /// <summary>
+        /// Opens the <see cref="SetMassForm"/> form to allow the user to set the Mass of their robot.
+        /// </summary>
+        /// <param name="Context"></param>
+        private void SetMass_OnExecute(NameValueMap Context)
+        {
+            Utilities.GUI.PromptRobotMass();
         }
 
 
@@ -648,6 +641,7 @@ namespace BxDRobotExporter
             Properties.Settings.Default.ChildColor = Child;
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
+            Properties.Settings.Default.ConfigVersion = 1; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Properties.Settings.Default.Save();
         } 
         #endregion
@@ -904,6 +898,15 @@ namespace BxDRobotExporter
                 }
                 ViewOccurrences(occurrences, 15, ViewDirection.Y, false);
             }
+        }
+        
+        /// <summary>
+        /// Open Synthesis to a specific robot and field.
+        /// </summary>
+        /// <param name="node"></param>
+        public void OpenSynthesis(string robotName, string fieldName)
+        {
+            Process.Start(Utilities.SYTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + robotName, fieldName));
         }
 
         /// <summary>

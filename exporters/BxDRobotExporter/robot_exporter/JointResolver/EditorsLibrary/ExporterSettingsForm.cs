@@ -70,7 +70,7 @@ namespace EditorsLibrary
             {
                 InventorChildColor = Color.FromArgb(255, 0, 125, 255),
                 GeneralUseFancyColors = false,
-                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Robots"
+                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Robots"
             };
         }
 

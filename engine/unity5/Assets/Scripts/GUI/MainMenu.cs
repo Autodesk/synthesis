@@ -55,7 +55,7 @@ public class MainMenu : MonoBehaviour
     {
         StateMachine.Instance.ChangeState(new OptionsTabState());
     }
-
+    
     //Exits the program
     public void Exit()
     {
