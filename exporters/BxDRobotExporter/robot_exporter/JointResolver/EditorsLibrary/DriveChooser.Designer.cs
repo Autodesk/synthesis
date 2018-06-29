@@ -128,7 +128,7 @@ partial class DriveChooser
             this.grpDriveOptions.Size = new System.Drawing.Size(324, 103);
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
-            this.grpDriveOptions.Text = "Joint Options";
+            this.grpDriveOptions.Text = "Other";
             // 
             // JointOptionsLayout
             // 
@@ -145,8 +145,8 @@ partial class DriveChooser
             this.JointOptionsLayout.Controls.Add(this.txtPortA, 0, 1);
             this.JointOptionsLayout.Controls.Add(this.txtPortB, 1, 1);
             this.JointOptionsLayout.Controls.Add(this.lblLimits, 0, 2);
-            this.JointOptionsLayout.Controls.Add(this.rbCAN, 2, 1);
-            this.JointOptionsLayout.Controls.Add(this.rbPWM, 3, 1);
+            this.JointOptionsLayout.Controls.Add(this.rbCAN, 3, 1);
+            this.JointOptionsLayout.Controls.Add(this.rbPWM, 2, 1);
             this.JointOptionsLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.JointOptionsLayout.Location = new System.Drawing.Point(2, 15);
             this.JointOptionsLayout.Name = "JointOptionsLayout";
@@ -263,7 +263,7 @@ partial class DriveChooser
             // 
             this.rbCAN.AutoSize = true;
             this.rbCAN.Dock = System.Windows.Forms.DockStyle.Right;
-            this.rbCAN.Location = new System.Drawing.Point(212, 21);
+            this.rbCAN.Location = new System.Drawing.Point(269, 21);
             this.rbCAN.Margin = new System.Windows.Forms.Padding(2);
             this.rbCAN.Name = "rbCAN";
             this.rbCAN.Padding = new System.Windows.Forms.Padding(2, 0, 0, 0);
@@ -279,7 +279,7 @@ partial class DriveChooser
             // 
             this.rbPWM.AutoSize = true;
             this.rbPWM.Dock = System.Windows.Forms.DockStyle.Right;
-            this.rbPWM.Location = new System.Drawing.Point(266, 21);
+            this.rbPWM.Location = new System.Drawing.Point(212, 21);
             this.rbPWM.Margin = new System.Windows.Forms.Padding(2);
             this.rbPWM.Name = "rbPWM";
             this.rbPWM.Size = new System.Drawing.Size(52, 20);
