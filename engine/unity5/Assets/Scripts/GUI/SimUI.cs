@@ -638,7 +638,7 @@ public class SimUI : MonoBehaviour
                 break;
             case 2:
                 EndOtherProcesses();
-                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
+                camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
                 DynamicCamera.MovingEnabled = true;
                 main.BeginRobotReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;

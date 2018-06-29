@@ -65,6 +65,7 @@ namespace BxDRobotExporter
         ButtonDefinition HelpButton;
         ButtonDefinition PreviewRobotButton;
         ButtonDefinition WizardExportButton;
+        ButtonDefinition SetMassButton;
 
         ObjectCollection SaveButtonCollection;
         ButtonDefinition SaveButton;
@@ -175,6 +176,12 @@ namespace BxDRobotExporter
             PreviewRobotButton.OnExecute += PreviewRobotButton_OnExecute;
             PreviewRobotButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(PreviewRobotButton, true);
+
+            //Set Mass
+            SetMassButton = ControlDefs.AddButtonDefinition("Set Mass", "BxD:RobotExporter:SetMass", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the Mass of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            SetMassButton.OnExecute += SetMass_OnExecute;
+            SetMassButton.OnHelp += _OnHelp;
+            SettingsPanel.CommandControls.AddButton(SetMassButton, true);
 
             //Exporter Settings
             ExporterSettingsButton = ControlDefs.AddButtonDefinition("Exporter Settings", "BxD:RobotExporter:ExporterSettings", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens the settings menu.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
@@ -540,6 +547,17 @@ namespace BxDRobotExporter
         private void SaveAsButton_OnExecute(NameValueMap Context)
         {
             Utilities.GUI.RobotSaveAs();
+        }
+
+
+        //Settings
+        /// <summary>
+        /// Opens the <see cref="SetMassForm"/> form to allow the user to set the Mass of their robot.
+        /// </summary>
+        /// <param name="Context"></param>
+        private void SetMass_OnExecute(NameValueMap Context)
+        {
+            Utilities.GUI.PromptRobotMass();
         }
 
 

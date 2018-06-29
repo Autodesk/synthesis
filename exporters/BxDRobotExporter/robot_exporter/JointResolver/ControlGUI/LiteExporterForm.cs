@@ -152,7 +152,7 @@ public partial class LiteExporterForm : Form
     {
         if (ExporterWorker.IsBusy)
             ExporterWorker.CancelAsync();
-        Close();
+        
         if (ExporterWorker.CancellationPending)
             Dispose();
     }
@@ -176,6 +176,7 @@ public partial class LiteExporterForm : Form
         #endregion
         else
         {
+            DialogResult = DialogResult.OK;
             Close();
         }
     }
