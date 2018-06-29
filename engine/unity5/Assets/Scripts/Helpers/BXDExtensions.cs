@@ -17,11 +17,6 @@ public static class BXDExtensions
         return new Vector3(v.x * 0.01f, v.y * 0.01f, v.z * 0.01f);
     }
 
-    public static BXDVector3 AsBV3(this Vector3 v)
-    {
-        return new BXDVector3(v.x / 0.01f, v.y / 0.01f, v.z / 0.01f);
-    }
-
     public static Material AsMaterial(this BXDAMesh.BXDASurface surf, bool emissive = false)
     {
         uint val = surf.hasColor ? surf.color : 0xFFFFFFFF;

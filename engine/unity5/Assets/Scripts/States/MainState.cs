@@ -147,8 +147,8 @@ public class MainState : State
         IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
 
         StateMachine.Instance.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
-        StateMachine.Instance.Link<ReplayState>(AuxFunctions.FindGameObject("ReplayUI"));
-        StateMachine.Instance.Link<SaveReplayState>(AuxFunctions.FindGameObject("SaveReplayUI"));
+        StateMachine.Instance.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
+        StateMachine.Instance.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
     }
 
     /// <summary>

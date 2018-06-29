@@ -18,10 +18,10 @@ public class ErrorScreenState : State
     /// </summary>
     public override void Start()
     {
-        navigationPanel = AuxFunctions.FindGameObject("NavigationPanel");
+        navigationPanel = Auxiliary.FindGameObject("NavigationPanel");
         navigationPanel.SetActive(false);
 
-        AuxFunctions.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
+        Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
         AppModel.ClearError();
     }
 

@@ -135,7 +135,7 @@ public class MainMenu : MonoBehaviour
     /// <param name="tabName"></param>
     private void LinkTab<T>(string tabName, bool strict = true) where T : State
     {
-        GameObject tab = AuxFunctions.FindGameObject(tabName);
+        GameObject tab = Auxiliary.FindGameObject(tabName);
 
         if (tab != null)
             StateMachine.Instance.Link<T>(tab, strict);
@@ -172,7 +172,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     void FindAllGameObjects()
     {
-        splashScreen = AuxFunctions.FindObject(gameObject, "LoadSplash");
-        AuxFunctions.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+        splashScreen = Auxiliary.FindObject(gameObject, "LoadSplash");
+        Auxiliary.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
     }
 }

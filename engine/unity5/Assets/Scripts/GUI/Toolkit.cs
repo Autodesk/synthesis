@@ -55,33 +55,33 @@ public class Toolkit : StateBehaviour<MainState>
     private void Start()
     {
         canvas = GameObject.Find("Canvas");
-        toolkitWindow = AuxFunctions.FindObject(canvas, "ToolkitPanel");
+        toolkitWindow = Auxiliary.FindObject(canvas, "ToolkitPanel");
         sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
         //Ruler Objects
         rulerStartPoint = GameObject.Find("RulerStartPoint");
         rulerEndPoint = GameObject.Find("RulerEndPoint");
-        rulerWindow = AuxFunctions.FindObject(canvas, "RulerPanel");
-        rulerText = AuxFunctions.FindObject(canvas, "RulerText").GetComponent<Text>();
-        rulerXText = AuxFunctions.FindObject(canvas, "RulerXAxisText").GetComponent<Text>();
-        rulerYText = AuxFunctions.FindObject(canvas, "RulerYAxisText").GetComponent<Text>();
-        rulerZText = AuxFunctions.FindObject(canvas, "RulerZAxisText").GetComponent<Text>();
+        rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
+        rulerText = Auxiliary.FindObject(canvas, "RulerText").GetComponent<Text>();
+        rulerXText = Auxiliary.FindObject(canvas, "RulerXAxisText").GetComponent<Text>();
+        rulerYText = Auxiliary.FindObject(canvas, "RulerYAxisText").GetComponent<Text>();
+        rulerZText = Auxiliary.FindObject(canvas, "RulerZAxisText").GetComponent<Text>();
 
         //Stopwatch Objects
-        stopwatchWindow = AuxFunctions.FindObject(canvas, "StopwatchPanel");
-        stopwatchText = AuxFunctions.FindObject(canvas, "StopwatchText").GetComponent<Text>();
-        stopwatchStartButtonText = AuxFunctions.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
-        stopwatchPauseButtonText = AuxFunctions.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
+        stopwatchWindow = Auxiliary.FindObject(canvas, "StopwatchPanel");
+        stopwatchText = Auxiliary.FindObject(canvas, "StopwatchText").GetComponent<Text>();
+        stopwatchStartButtonText = Auxiliary.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
+        stopwatchPauseButtonText = Auxiliary.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
 
         //Stats Objects
-        statsWindow = AuxFunctions.FindObject(canvas, "StatsPanel");
-        speedEntry = AuxFunctions.FindObject(statsWindow, "SpeedEntry");
-        speedUnit = AuxFunctions.FindObject(speedEntry, "Unit").GetComponent<Text>();
-        accelerationEntry = AuxFunctions.FindObject(statsWindow, "AccelerationEntry");
-        accelerationUnit = AuxFunctions.FindObject(accelerationEntry, "Unit").GetComponent<Text>();
-        angularVelocityEntry = AuxFunctions.FindObject(statsWindow, "AngularVelocityEntry");
-        weightEntry = AuxFunctions.FindObject(statsWindow, "WeightEntry");
-        weightUnit = AuxFunctions.FindObject(weightEntry, "Unit").GetComponent<Text>();
+        statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
+        speedEntry = Auxiliary.FindObject(statsWindow, "SpeedEntry");
+        speedUnit = Auxiliary.FindObject(speedEntry, "Unit").GetComponent<Text>();
+        accelerationEntry = Auxiliary.FindObject(statsWindow, "AccelerationEntry");
+        accelerationUnit = Auxiliary.FindObject(accelerationEntry, "Unit").GetComponent<Text>();
+        angularVelocityEntry = Auxiliary.FindObject(statsWindow, "AngularVelocityEntry");
+        weightEntry = Auxiliary.FindObject(statsWindow, "WeightEntry");
+        weightUnit = Auxiliary.FindObject(weightEntry, "Unit").GetComponent<Text>();
     }
 
     // Update is called once per frame
@@ -173,8 +173,8 @@ public class Toolkit : StateBehaviour<MainState>
     {
         usingRuler = true;
         rulerStartPoint.SetActive(true);
-        AuxFunctions.FindObject(canvas, "RulerStartButton").SetActive(false);
-        AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(true);
+        Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(false);
+        Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(true);
         if (SimUI.changeAnalytics)
         {
             Analytics.CustomEvent("Used Ruler", new Dictionary<string, object> //for analytics tracking
@@ -255,8 +255,8 @@ public class Toolkit : StateBehaviour<MainState>
         rulerStartPoint.GetComponent<LineRenderer>().enabled = false;
         rulerStartPoint.SetActive(false);
         rulerEndPoint.SetActive(false);
-        AuxFunctions.FindObject(canvas, "RulerStartButton").SetActive(true);
-        AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(false);
+        Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(true);
+        Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(false);
     }
     #endregion
     #region Stopwatch Functions

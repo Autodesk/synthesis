@@ -16,7 +16,7 @@ public class LoadReplayState : State
     /// </summary>
     public override void Start()
     {
-        splashScreen = AuxFunctions.FindGameObject("LoadSplash");
+        splashScreen = Auxiliary.FindGameObject("LoadSplash");
     }
 
     /// <summary>

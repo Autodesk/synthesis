@@ -411,7 +411,7 @@ public class DriverPracticeRobot : StateBehaviour<MainState>
         {
             try //In case the game piece somehow doens't exist in the scene
             {
-                GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                GameObject gameobject = Instantiate(Auxiliary.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
                 gameobject.name = gamepieceNames[index] + "(Clone)";
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
@@ -449,7 +449,7 @@ public class DriverPracticeRobot : StateBehaviour<MainState>
                 if (spawnIndicator != null) Destroy(spawnIndicator);
                 if (spawnIndicator == null)
                 {
-                    spawnIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                    spawnIndicator = Instantiate(Auxiliary.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
                     spawnIndicator.name = "SpawnIndicator";
                     Destroy(spawnIndicator.GetComponent<BRigidBody>());
                     if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
@@ -810,12 +810,12 @@ public class DriverPracticeRobot : StateBehaviour<MainState>
                 else if (counter == 3)
                 {
                     if (line.Equals("#Release Node")) counter++;
-                    else intakeNode[index] = AuxFunctions.FindObject(gameObject, line);
+                    else intakeNode[index] = Auxiliary.FindObject(gameObject, line);
                 }
                 else if (counter == 4)
                 {
                     if (line.Equals("#Release Position")) counter++;
-                    else releaseNode[index] = AuxFunctions.FindObject(gameObject, line);
+                    else releaseNode[index] = Auxiliary.FindObject(gameObject, line);
                 }
                 else if (counter == 5)
                 {

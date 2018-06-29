@@ -31,8 +31,8 @@ public class MaMSimUI : StateBehaviour<MainState> {
     {
         canvas = GameObject.Find("Canvas");
 
-        mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
-        multiplayerPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
+        mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
+        multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
 
         simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
     }

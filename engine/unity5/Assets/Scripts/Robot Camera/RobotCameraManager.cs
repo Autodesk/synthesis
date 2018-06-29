@@ -38,7 +38,7 @@ public class RobotCameraManager : MonoBehaviour
     private void Start()
     {
         robotCameraListObject = GameObject.Find("RobotCameraList");
-        cameraIndicator = AuxFunctions.FindObject(robotCameraListObject, "CameraIndicator");
+        cameraIndicator = Auxiliary.FindObject(robotCameraListObject, "CameraIndicator");
     }
 
     private void Update()

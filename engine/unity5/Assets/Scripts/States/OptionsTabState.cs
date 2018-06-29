@@ -20,10 +20,10 @@ public class OptionsTabState : State
     /// </summary>
     public override void Start()
     {
-        graphics = AuxFunctions.FindGameObject("Graphics");
-        input = AuxFunctions.FindGameObject("Input");
-        settingsMode = AuxFunctions.FindGameObject("SettingsMode");
-        splashScreen = AuxFunctions.FindGameObject("LoadSplash");
+        graphics = Auxiliary.FindGameObject("Graphics");
+        input = Auxiliary.FindGameObject("Input");
+        settingsMode = Auxiliary.FindGameObject("SettingsMode");
+        splashScreen = Auxiliary.FindGameObject("LoadSplash");
 
         OnInputButtonPressed();
 
