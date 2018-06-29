@@ -148,7 +148,7 @@ public partial class DriveChooser : Form
         this.ShowDialog(owner);
     }
 
-    private bool shouldSave()
+    private bool ShouldSave()
     {
         if (joint.cDriver == null) return true;
 
@@ -156,35 +156,33 @@ public partial class DriveChooser : Form
         WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
-        bool shouldSave = false;
-
         if (cmbJointDriver.SelectedIndex != typeOptions.ToList().IndexOf(joint.cDriver.GetDriveType()) + 1 ||
             txtPortA.Value != joint.cDriver.portA ||
             txtPortB.Value != joint.cDriver.portB ||
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
             txtHighLimit.Value != (decimal) joint.cDriver.upperLimit)
-            shouldSave = true;
+            return true;
 
         if (pneumatic != null && 
             (cmbPneumaticDiameter.SelectedIndex != (byte) pneumatic.widthEnum ||
             cmbPneumaticPressure.SelectedIndex != (byte) pneumatic.pressureEnum))
-            shouldSave = true;
+            return true;
 
         if (wheel != null &&
             (cmbWheelType.SelectedIndex != (byte) wheel.type ||
             cmbFrictionLevel.SelectedIndex != (byte) Math.Min(Math.Floor(wheel.forwardExtremeValue / 4), 2) || //ayy lmao
             chkBoxDriveWheel.Checked != wheel.isDriveWheel))
-            shouldSave = true;
+            return true;
 
         if (elevator != null &&
             cmbStages.SelectedIndex != (byte) elevator.type)
-            shouldSave = true;
+            return true;
 
         //If going from "NOT A WHEEL" to a wheel
         if (cmbWheelType.SelectedIndex != 0 && wheel == null && joint.cDriver.GetDriveType() == JointDriverType.MOTOR)
-            shouldSave = true;
+            return true;
 
-        return shouldSave;
+        return false;
     }
 
     /// <summary>
@@ -262,11 +260,11 @@ public partial class DriveChooser : Form
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void btnSave_Click(object sender, EventArgs e)
+    private void SaveButton_Click(object sender, EventArgs e)
     {
-        if (!shouldSave())
+        if (!ShouldSave())
         {
-            Hide();
+            Close();
             return;
         }
 
@@ -429,12 +427,21 @@ public partial class DriveChooser : Form
         }
 
         Saved = true;
-        Hide();
+        Close();
     }
 
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
     {
-        cmbFrictionLevel.Visible = (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL;
+        if ((WheelType)cmbWheelType.SelectedIndex == WheelType.NOT_A_WHEEL)
+        {
+            lblFriction.Visible = false;
+            cmbFrictionLevel.Visible = false;
+        }
+        else
+        {
+            lblFriction.Visible = true;
+            cmbFrictionLevel.Visible = true;
+        }
     }
 
     private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e)
@@ -464,33 +471,5 @@ public partial class DriveChooser : Form
         {
             lblPort.Text = "PWM Port";
         }
-    }
-
-
-    #region UNUSED
-    private void label1_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void DriveChooser_Load(object sender, EventArgs e)
-    {
-
-    }
-    #endregion
-
-    private void grpChooseDriver_Enter(object sender, EventArgs e)
-    {
-
-    }
-
-    private void cmbPneumaticDiameter_SelectedIndexChanged(object sender, EventArgs e)
-    {
-
-    }
-
-    private void brakePortA_ValueChanged(object sender, EventArgs e)
-    {
-
     }
 }
