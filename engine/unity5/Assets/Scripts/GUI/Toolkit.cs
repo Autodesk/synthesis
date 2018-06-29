@@ -51,12 +51,6 @@ public class Toolkit : StateBehaviour<MainState>
     private Text weightUnit;
     private bool statsOn;
 
-    //dummy robot variables
-    private GameObject dummyWindow;
-    private DummyScrollable dummyList;
-    bool controllingDummy = false;
-    private GameObject dummyIndicator;
-
     // Use this for initialization
     private void Start()
     {
