@@ -59,160 +59,180 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 14);
+            this.label1.Location = new System.Drawing.Point(9, 11);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 17);
+            this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 5;
             this.label1.Text = "Resolution";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 42);
+            this.label2.Location = new System.Drawing.Point(9, 34);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 17);
+            this.label2.Size = new System.Drawing.Size(36, 13);
             this.label2.TabIndex = 6;
             this.label2.Text = "Depth";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 71);
+            this.label3.Location = new System.Drawing.Point(9, 58);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(98, 17);
+            this.label3.Size = new System.Drawing.Size(77, 13);
             this.label3.TabIndex = 7;
             this.label3.Text = "Max Concavity";
             // 
             // textBoxResolution
             // 
-            this.textBoxResolution.Location = new System.Drawing.Point(170, 14);
+            this.textBoxResolution.Location = new System.Drawing.Point(128, 11);
+            this.textBoxResolution.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxResolution.Name = "textBoxResolution";
-            this.textBoxResolution.Size = new System.Drawing.Size(100, 22);
+            this.textBoxResolution.Size = new System.Drawing.Size(76, 20);
             this.textBoxResolution.TabIndex = 8;
             // 
             // textBoxDepth
             // 
-            this.textBoxDepth.Location = new System.Drawing.Point(170, 42);
+            this.textBoxDepth.Location = new System.Drawing.Point(128, 34);
+            this.textBoxDepth.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxDepth.Name = "textBoxDepth";
-            this.textBoxDepth.Size = new System.Drawing.Size(100, 22);
+            this.textBoxDepth.Size = new System.Drawing.Size(76, 20);
             this.textBoxDepth.TabIndex = 9;
             // 
             // textBoxConcavity
             // 
-            this.textBoxConcavity.Location = new System.Drawing.Point(170, 71);
+            this.textBoxConcavity.Location = new System.Drawing.Point(128, 58);
+            this.textBoxConcavity.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxConcavity.Name = "textBoxConcavity";
-            this.textBoxConcavity.Size = new System.Drawing.Size(100, 22);
+            this.textBoxConcavity.Size = new System.Drawing.Size(76, 20);
             this.textBoxConcavity.TabIndex = 10;
             // 
             // textBoxVerts
             // 
-            this.textBoxVerts.Location = new System.Drawing.Point(170, 99);
+            this.textBoxVerts.Location = new System.Drawing.Point(128, 80);
+            this.textBoxVerts.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxVerts.Name = "textBoxVerts";
-            this.textBoxVerts.Size = new System.Drawing.Size(100, 22);
+            this.textBoxVerts.Size = new System.Drawing.Size(76, 20);
             this.textBoxVerts.TabIndex = 11;
             // 
             // textBoxVolume
             // 
-            this.textBoxVolume.Location = new System.Drawing.Point(170, 127);
+            this.textBoxVolume.Location = new System.Drawing.Point(128, 103);
+            this.textBoxVolume.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxVolume.Name = "textBoxVolume";
-            this.textBoxVolume.Size = new System.Drawing.Size(100, 22);
+            this.textBoxVolume.Size = new System.Drawing.Size(76, 20);
             this.textBoxVolume.TabIndex = 12;
             // 
             // textBoxPlane
             // 
-            this.textBoxPlane.Location = new System.Drawing.Point(170, 155);
+            this.textBoxPlane.Location = new System.Drawing.Point(128, 126);
+            this.textBoxPlane.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxPlane.Name = "textBoxPlane";
-            this.textBoxPlane.Size = new System.Drawing.Size(100, 22);
+            this.textBoxPlane.Size = new System.Drawing.Size(76, 20);
             this.textBoxPlane.TabIndex = 13;
             // 
             // textBoxHull
             // 
-            this.textBoxHull.Location = new System.Drawing.Point(170, 183);
+            this.textBoxHull.Location = new System.Drawing.Point(128, 149);
+            this.textBoxHull.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxHull.Name = "textBoxHull";
-            this.textBoxHull.Size = new System.Drawing.Size(100, 22);
+            this.textBoxHull.Size = new System.Drawing.Size(76, 20);
             this.textBoxHull.TabIndex = 14;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 102);
+            this.label4.Location = new System.Drawing.Point(9, 83);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(88, 17);
+            this.label4.Size = new System.Drawing.Size(68, 13);
             this.label4.TabIndex = 15;
             this.label4.Text = "Max Vertices";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 130);
+            this.label5.Location = new System.Drawing.Point(9, 106);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(81, 17);
+            this.label5.Size = new System.Drawing.Size(62, 13);
             this.label5.TabIndex = 16;
             this.label5.Text = "Min Volume";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 158);
+            this.label6.Location = new System.Drawing.Point(9, 128);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(139, 17);
+            this.label6.Size = new System.Drawing.Size(106, 13);
             this.label6.TabIndex = 17;
             this.label6.Text = "Plane Downsampling";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 186);
+            this.label7.Location = new System.Drawing.Point(9, 151);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(127, 17);
+            this.label7.Size = new System.Drawing.Size(97, 13);
             this.label7.TabIndex = 18;
             this.label7.Text = "Hull Downsampling";
             // 
             // textBoxRevolution
             // 
-            this.textBoxRevolution.Location = new System.Drawing.Point(170, 239);
+            this.textBoxRevolution.Location = new System.Drawing.Point(128, 194);
+            this.textBoxRevolution.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxRevolution.Name = "textBoxRevolution";
-            this.textBoxRevolution.Size = new System.Drawing.Size(100, 22);
+            this.textBoxRevolution.Size = new System.Drawing.Size(76, 20);
             this.textBoxRevolution.TabIndex = 19;
             // 
             // textBoxSymmetry
             // 
-            this.textBoxSymmetry.Location = new System.Drawing.Point(170, 211);
+            this.textBoxSymmetry.Location = new System.Drawing.Point(128, 171);
+            this.textBoxSymmetry.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxSymmetry.Name = "textBoxSymmetry";
-            this.textBoxSymmetry.Size = new System.Drawing.Size(100, 22);
+            this.textBoxSymmetry.Size = new System.Drawing.Size(76, 20);
             this.textBoxSymmetry.TabIndex = 20;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(12, 214);
+            this.label8.Location = new System.Drawing.Point(9, 174);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(101, 17);
+            this.label8.Size = new System.Drawing.Size(75, 13);
             this.label8.TabIndex = 21;
             this.label8.Text = "Symmetry Bias";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(12, 242);
+            this.label9.Location = new System.Drawing.Point(9, 197);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(106, 17);
+            this.label9.Size = new System.Drawing.Size(81, 13);
             this.label9.TabIndex = 22;
             this.label9.Text = "Revolution Bias";
             // 
             // textBoxMerge
             // 
-            this.textBoxMerge.Location = new System.Drawing.Point(170, 267);
+            this.textBoxMerge.Location = new System.Drawing.Point(128, 217);
+            this.textBoxMerge.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxMerge.Name = "textBoxMerge";
-            this.textBoxMerge.Size = new System.Drawing.Size(100, 22);
+            this.textBoxMerge.Size = new System.Drawing.Size(76, 20);
             this.textBoxMerge.TabIndex = 23;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(12, 270);
+            this.label10.Location = new System.Drawing.Point(9, 219);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(113, 17);
+            this.label10.Size = new System.Drawing.Size(87, 13);
             this.label10.TabIndex = 24;
             this.label10.Text = "Merge Concavity";
             // 
@@ -220,9 +240,10 @@
             // 
             this.checkBoxNormalize.AutoSize = true;
             this.checkBoxNormalize.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBoxNormalize.Location = new System.Drawing.Point(252, 299);
+            this.checkBoxNormalize.Location = new System.Drawing.Point(189, 243);
+            this.checkBoxNormalize.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxNormalize.Name = "checkBoxNormalize";
-            this.checkBoxNormalize.Size = new System.Drawing.Size(18, 17);
+            this.checkBoxNormalize.Size = new System.Drawing.Size(15, 14);
             this.checkBoxNormalize.TabIndex = 25;
             this.checkBoxNormalize.UseVisualStyleBackColor = true;
             // 
@@ -232,26 +253,29 @@
             this.checkBoxVoxel.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBoxVoxel.Checked = true;
             this.checkBoxVoxel.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxVoxel.Location = new System.Drawing.Point(252, 327);
+            this.checkBoxVoxel.Location = new System.Drawing.Point(189, 266);
+            this.checkBoxVoxel.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxVoxel.Name = "checkBoxVoxel";
-            this.checkBoxVoxel.Size = new System.Drawing.Size(18, 17);
+            this.checkBoxVoxel.Size = new System.Drawing.Size(15, 14);
             this.checkBoxVoxel.TabIndex = 26;
             this.checkBoxVoxel.UseVisualStyleBackColor = true;
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(12, 383);
+            this.buttonCancel.Location = new System.Drawing.Point(9, 311);
+            this.buttonCancel.Margin = new System.Windows.Forms.Padding(2);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(110, 32);
+            this.buttonCancel.Size = new System.Drawing.Size(82, 26);
             this.buttonCancel.TabIndex = 27;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(160, 383);
+            this.buttonOK.Location = new System.Drawing.Point(120, 311);
+            this.buttonOK.Margin = new System.Windows.Forms.Padding(2);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(110, 32);
+            this.buttonOK.Size = new System.Drawing.Size(82, 26);
             this.buttonOK.TabIndex = 28;
             this.buttonOK.Text = "OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -259,26 +283,28 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(12, 298);
+            this.label11.Location = new System.Drawing.Point(9, 242);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(109, 17);
+            this.label11.Size = new System.Drawing.Size(82, 13);
             this.label11.TabIndex = 29;
             this.label11.Text = "Normalize Mesh";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 326);
+            this.label12.Location = new System.Drawing.Point(9, 265);
+            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(168, 17);
+            this.label12.Size = new System.Drawing.Size(128, 13);
             this.label12.TabIndex = 30;
             this.label12.Text = "Use Voxel Decomposition";
             // 
             // ParametersEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 427);
+            this.ClientSize = new System.Drawing.Size(212, 347);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.buttonOK);
@@ -305,8 +331,13 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ParametersEditor";
             this.ShowIcon = false;
+            this.Text = "Parameters Editor";
             this.ResumeLayout(false);
             this.PerformLayout();
 

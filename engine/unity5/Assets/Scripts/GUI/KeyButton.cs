@@ -13,6 +13,7 @@ public class KeyButton : MonoBehaviour
     public static KeyButton selectedButton = null;
     public static bool ignoreMouseMovement = true;
     public static bool useKeyModifiers = false;
+    public static bool keyBinded = false;
 
     public KeyMapping keyMapping;
     public int keyIndex;
@@ -41,12 +42,13 @@ public class KeyButton : MonoBehaviour
 
             if (currentInput != null)
             {
-                if (
-                    currentInput.modifiers == KeyModifier.NoModifier
-                    &&
-                    currentInput is KeyboardInput
-                    &&
-                    ((KeyboardInput)currentInput).key == KeyCode.Backspace) //Allows users to use the BACKSPACE to set "None" to their controls.
+                if (currentInput.modifiers == KeyModifier.NoModifier && currentInput is KeyboardInput
+                    && ((KeyboardInput)currentInput).key == KeyCode.Backspace) //Allows users to use the BACKSPACE to set "None" to their controls.
+                {
+                    SetInput(new KeyboardInput());
+                }
+                else if (currentInput.modifiers == KeyModifier.NoModifier && currentInput is KeyboardInput
+                    && ((KeyboardInput)currentInput).key == KeyCode.Backspace || Binded())
                 {
                     SetInput(new KeyboardInput());
                 }
@@ -79,6 +81,7 @@ public class KeyButton : MonoBehaviour
                 break;
         }
     }
+    //}
 
     /// <summary>
     /// Updates the text when the user clicks the control buttons. 
@@ -86,11 +89,6 @@ public class KeyButton : MonoBehaviour
     /// </summary>
     public void OnClick()
     {
-        if (selectedButton != null)
-        {
-            selectedButton.UpdateText();
-        }
-
         selectedButton = this;
 
         if (mKeyText == null)
@@ -98,7 +96,19 @@ public class KeyButton : MonoBehaviour
             mKeyText = GetComponentInChildren<Text>();
         }
 
-        mKeyText.text = "...";
+        mKeyText.text = "Press Key";
+    }
+
+    public static bool Binded()
+    {
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /// <summary>

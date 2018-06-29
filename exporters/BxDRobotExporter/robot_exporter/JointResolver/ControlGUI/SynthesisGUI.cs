@@ -32,6 +32,8 @@ public partial class SynthesisGUI : Form
         public bool UseSettingsDir;
         public string ActiveDir;
         public string ActiveRobotName;
+        public bool OpenSynthesis;
+        public string FieldName;
 
         public static RuntimeMeta CreateRuntimeMeta()
         {
@@ -39,7 +41,9 @@ public partial class SynthesisGUI : Form
             {
                 UseSettingsDir = true,
                 ActiveDir = null,
-                ActiveRobotName = null
+                ActiveRobotName = null,
+                OpenSynthesis = false,
+                FieldName = null
             };
         }
     }
@@ -61,7 +65,10 @@ public partial class SynthesisGUI : Form
 
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
+    public bool MeshesAreColored = false;
+    public float TotalMass = 120;
 
+    private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
 
     static SynthesisGUI()
@@ -161,9 +168,9 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Export a robot from Inventor
+    /// Build the node tree of the robot from Inventor
     /// </summary>
-    public bool ExportMeshes(bool warnUnsaved = false)
+    public bool BuildRobotSkeleton(bool warnUnsaved = false)
     {
         if (SkeletonBase != null && warnUnsaved && !WarnUnsaved()) return false;
 
@@ -171,13 +178,8 @@ public partial class SynthesisGUI : Form
         {
             var exporterThread = new Thread(() =>
             {
-#if LITEMODE
-                liteExporter = new LiteExporterForm();
-                liteExporter.ShowDialog();
-#else
-                exporter = new ExporterForm(PluginSettings);
-                exporter.ShowDialog();
-#endif
+                skeletonExporter = new SkeletonExporterForm();
+                skeletonExporter.ShowDialog();
             });
 
             exporterThread.SetApartmentState(ApartmentState.STA);
@@ -200,15 +202,69 @@ public partial class SynthesisGUI : Form
             return false;
         }
 
-        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-        for (int i = 0; i < Meshes.Count; i++)
-        {
-            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
-        }
-        RobotSaveAs(NameRobotForm.NameMode.Initial);
-
-        ReloadPanels();
         return true;
+    }
+
+    /// <summary>
+    /// Export a robot from Inventor
+    /// </summary>
+    public bool ExportMeshes()
+    {
+        try
+        {
+            var exporterThread = new Thread(() =>
+            {
+#if LITEMODE
+                if (SkeletonBase == null)
+                {
+                    skeletonExporter = new SkeletonExporterForm();
+                    skeletonExporter.ShowDialog();
+                }
+                    
+                liteExporter = new LiteExporterForm();
+                liteExporter.ShowDialog(); // Remove node building
+#else
+                exporter = new ExporterForm(PluginSettings);
+                exporter.ShowDialog();
+#endif
+            });
+
+            exporterThread.SetApartmentState(ApartmentState.STA);
+            exporterThread.Start();
+
+            exporterThread.Join();
+
+            GC.Collect();
+
+            MeshesAreColored = PluginSettings.GeneralUseFancyColors;
+        }
+        catch (InvalidComObjectException)
+        {
+        }
+        catch (TaskCanceledException)
+        {
+            return true;
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show(e.Message);
+            return false;
+        }
+
+        // Exporter completed successfully
+        if (liteExporter.DialogResult == DialogResult.OK)
+        {
+            List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
+            for (int i = 0; i < Meshes.Count; i++)
+            {
+                ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
+            }
+            
+            return true;
+        }
+        // Exporter failed
+        else
+            return false;
     }
 
     /// <summary>
@@ -335,6 +391,28 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Prompts the user for the name of the robot, as well as other information.
+    /// </summary>
+    /// <returns>True if user pressed okay, false if they pressed cancel</returns>
+    public bool PromptSaveSettings(bool allowOpeningSynthesis, bool isFinal)
+    {
+        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, allowOpeningSynthesis, isFinal, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        {
+            RMeta.UseSettingsDir = true;
+            RMeta.ActiveDir = null;
+            RMeta.ActiveRobotName = robotName;
+            RMeta.OpenSynthesis = openSynthesis;
+            RMeta.FieldName = field;
+
+            PluginSettings.GeneralUseFancyColors = colors;
+            PluginSettings.OnSettingsChanged(PluginSettings.InventorChildColor, PluginSettings.GeneralUseFancyColors, PluginSettings.GeneralSaveLocation);
+
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
@@ -342,8 +420,17 @@ public partial class SynthesisGUI : Form
     {
         try
         {
+            // If robot has not been named, prompt user for information
+            if (RMeta.ActiveRobotName == null)
+                if (!PromptSaveSettings(false, false))
+                    return false;
+
             if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName))
                 Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName);
+
+            if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
+                ExportMeshes();
+
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
             for (int i = 0; i < Meshes.Count; i++)
@@ -355,8 +442,10 @@ public partial class SynthesisGUI : Form
             {
                 Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
             }
+
             if(!silent)
                 MessageBox.Show("Saved");
+
             return true;
         }
         catch (Exception e)
@@ -371,36 +460,13 @@ public partial class SynthesisGUI : Form
     /// Saves the robot to the currently set robot directory.
     /// </summary>
     /// <param name="robotName"></param>
-    public bool RobotSaveAs(NameRobotForm.NameMode mode = NameRobotForm.NameMode.SaveAs)
+    public bool RobotSaveAs()
     {
-        if (NameRobotForm.NameRobot(out string robotName, mode) == DialogResult.OK)
+        if (PromptSaveSettings(false, false))
         {
-            try
-            {
-                if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + robotName))
-                    Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + robotName);
+            RobotSave();
 
-                BXDJSkeleton.WriteSkeleton(PluginSettings.GeneralSaveLocation + "\\" + robotName + "\\skeleton.bxdj", SkeletonBase);
-
-                for (int i = 0; i < Meshes.Count; i++)
-                {
-                    Meshes[i].WriteToFile(PluginSettings.GeneralSaveLocation + "\\" + robotName + "\\node_" + i + ".bxda");
-                }
-
-                MessageBox.Show("Saved");
-
-                RMeta.UseSettingsDir = true;
-                RMeta.ActiveDir = null;
-                RMeta.ActiveRobotName = robotName;
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                //TODO: Create a form that displays a simple error message with an option to expand it and view the exception info
-                MessageBox.Show("Error saving robot: " + e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
+            return true;
         }
         return false;
     }
@@ -485,6 +551,28 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Opens the <see cref="SetMassForm"/> form
+    /// </summary>
+    public void PromptRobotMass()
+    {
+        try
+        {
+            //TODO: Implement Value saving and loading
+            SetMassForm massForm = new SetMassForm();
+
+            massForm.ShowDialog();
+
+            if (massForm.DialogResult == DialogResult.OK)
+                TotalMass = massForm.TotalMass;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Opens the <see cref="PluginSettingsForm"/> form
     /// </summary>
     /// <param name="sender"></param>
@@ -521,18 +609,6 @@ public partial class SynthesisGUI : Form
         else
         {
             Process.Start(Utilities.VIEWER_PATH, "-path \"" + settingsDir + "\\" + RMeta.ActiveRobotName + "\"");
-        }
-    }
-
-    /// <summary>
-    /// Used to load <see cref="BXDAMesh"/>es into their corresponding <see cref="OGL_RigidNode"/>s
-    /// </summary>
-    public void LoadMeshes()
-    {
-        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-        for (int i = 0; i < Meshes.Count; i++)
-        {
-            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
         }
     }
 

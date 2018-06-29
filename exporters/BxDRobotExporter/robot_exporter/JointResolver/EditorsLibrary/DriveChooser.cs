@@ -15,7 +15,6 @@ public partial class DriveChooser : Form
     public DriveChooser()
     {
         InitializeComponent();
-        base.Layout += DriveChooser_Layout;
         FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
     }
 
@@ -57,7 +56,12 @@ public partial class DriveChooser : Form
         {
             cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
             txtPortA.Value = joint.cDriver.portA;
-            txtPortB.Value = joint.cDriver.portB;
+
+            if (joint.cDriver.portB == -1)
+                txtPortB.Value = txtPortB.Minimum;
+            else
+                txtPortB.Value = joint.cDriver.portB;
+
             txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
 
@@ -134,7 +138,9 @@ public partial class DriveChooser : Form
 
             cmbStages.SelectedIndex = (byte)ElevatorType.NOT_MULTI;
         }
-        PerformLayout();
+        
+        PrepLayout();
+        base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
         this.ShowDialog(owner);
     }
 
@@ -180,9 +186,7 @@ public partial class DriveChooser : Form
     /// <summary>
     /// Changes the position of window elements based on the type of driver.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    void DriveChooser_Layout(object sender, LayoutEventArgs e)
+    void PrepLayout()
     {
         chkBoxDriveWheel.Hide();
         chkBoxHasBrake.Hide();
@@ -245,7 +249,7 @@ public partial class DriveChooser : Form
 
     private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
     {
-        PerformLayout();
+        PrepLayout();
     }
 
     /// <summary>

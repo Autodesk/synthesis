@@ -33,6 +33,7 @@ namespace WindowsFormsApp1
             //don't do anything if the user hasn't entered a path yet
             if(path == "")
             {
+                MessageBox.Show("Please complete all required fields.", "Hold Up!");
                 return;
             }
 
@@ -102,6 +103,7 @@ namespace WindowsFormsApp1
 
             //don't do anything if the user hasn't entered a path yet
             if(path == "" || number == "") {
+                MessageBox.Show("Please complete all required fields.", "Hold Up!");
                 return;
             }
 

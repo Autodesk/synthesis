@@ -47,6 +47,16 @@ public class Utilities
         double dz = b.MaxPoint.Z - b.MinPoint.Z;
         return dx * dy * dz;
     }
+
+    public static string CapitalizeFirstLetter(string str, bool onlyFirst = false)
+    {
+        if (str.Length < 2)
+            return str.ToUpperInvariant();
+        else if (onlyFirst)
+            return str.Substring(0, 1).ToUpperInvariant() + str.Substring(1).ToLowerInvariant();
+        else
+            return str.Substring(0, 1).ToUpperInvariant() + str.Substring(1);
+    }
 }
 
 namespace LegacyInterchange

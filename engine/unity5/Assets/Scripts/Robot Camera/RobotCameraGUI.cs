@@ -176,6 +176,7 @@ class RobotCameraGUI : StateBehaviour<MainState>
         if (usingRobotView)
         {
             robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+            ToggleCameraIndicator();
         }
         else
         {

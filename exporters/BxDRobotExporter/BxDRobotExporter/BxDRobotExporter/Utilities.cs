@@ -127,8 +127,10 @@ namespace BxDRobotExporter
         /// </summary>
         public static void LoadSettings()
         {
-            if (Properties.Settings.Default.SaveLocation == "" || Properties.Settings.Default.SaveLocation == "firstRun")
-                Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + @"\Synthesis\Robots";
+            // Old configurations get overriden (version numbers below 1)
+            if (Properties.Settings.Default.SaveLocation == "" || Properties.Settings.Default.SaveLocation == "firstRun" || Properties.Settings.Default.ConfigVersion < 1 )
+                Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Robots";
+
             SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
             {
                 InventorChildColor = Properties.Settings.Default.ChildColor,

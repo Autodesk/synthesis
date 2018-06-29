@@ -11,6 +11,7 @@ using Assets.Scripts.BUExtensions;
 using Assets.Scripts.FSM;
 using Assets.Scripts;
 using Assets.Scripts.Utils;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// To be attached to all robot parent objects.
@@ -95,6 +96,11 @@ public class Robot : StateBehaviour<MainState>
             if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
             {
                 keyDownTime = Time.time;
+            }
+            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetField))
+            {
+                AuxFunctions.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                SceneManager.LoadScene("Scene");
             }
 
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&  !MixAndMatchMode.setPresetPanelOpen &&
@@ -599,9 +605,9 @@ public class Robot : StateBehaviour<MainState>
         {
             //Transform position
             Vector3 transposition = new Vector3(
-                Input.GetKey(KeyCode.D) ? ResetVelocity : Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
+                Input.GetKey(KeyCode.W) ? ResetVelocity : Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f,
                 0f,
-                Input.GetKey(KeyCode.W) ? ResetVelocity : Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f);
+                Input.GetKey(KeyCode.A) ? ResetVelocity : Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f);
 
             if (!transposition.Equals(Vector3.zero))
                 TransposeRobot(transposition);
