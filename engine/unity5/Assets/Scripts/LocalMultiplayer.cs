@@ -29,17 +29,17 @@ public class LocalMultiplayer : StateBehaviour<MainState> {
     /// </summary>
     private void Start () {
         canvas = GameObject.Find("Canvas");
-        multiplayerWindow = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
-        addRobotWindow = AuxFunctions.FindObject(canvas, "AddRobotPanel");
+        multiplayerWindow = Auxiliary.FindObject(canvas, "MultiplayerPanel");
+        addRobotWindow = Auxiliary.FindObject(canvas, "AddRobotPanel");
 
         for (int i = 0; i < robotButtons.Length; i++)
         {
-            robotButtons[i] = AuxFunctions.FindObject(canvas, "Robot" + (i + 1) + "Button");
+            robotButtons[i] = Auxiliary.FindObject(canvas, "Robot" + (i + 1) + "Button");
         }
 
         simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
-        highlight = AuxFunctions.FindObject(canvas, "HighlightActiveRobot");
-        mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
+        highlight = Auxiliary.FindObject(canvas, "HighlightActiveRobot");
+        mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
     }
     
     /// <summary>

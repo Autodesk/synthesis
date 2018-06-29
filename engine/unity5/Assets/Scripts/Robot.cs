@@ -99,7 +99,7 @@ public class Robot : StateBehaviour<MainState>
             }
             else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetField))
             {
-                AuxFunctions.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 SceneManager.LoadScene("Scene");
             }
 
@@ -244,7 +244,7 @@ public class Robot : StateBehaviour<MainState>
             RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelPath + "\\skeleton.bxdj");
 
             Material[] materials = new Material[0];
-            AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+            Auxiliary.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
             {
                 meshList.Add(meshu);
 

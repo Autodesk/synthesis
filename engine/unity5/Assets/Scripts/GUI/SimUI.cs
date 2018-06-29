@@ -143,36 +143,36 @@ public class SimUI : StateBehaviour<MainState>
     {
         canvas = GameObject.Find("Canvas");
 
-        freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
-        spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
-        multiplayerPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
-        driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
-        changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
-        robotListPanel = AuxFunctions.FindObject(changeRobotPanel, "RobotListPanel");
-        changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
-        inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
-        bindedKeyPanel = AuxFunctions.FindObject(canvas, "BindedKeyPanel");
-        checkSavePanel = AuxFunctions.FindObject(canvas, "CheckSavePanel");
-        unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
+        freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
+        spawnpointWindow = Auxiliary.FindObject(canvas, "SpawnpointPanel");
+        multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
+        driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
+        changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
+        robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
+        changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
+        inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
+        bindedKeyPanel = Auxiliary.FindObject(canvas, "BindedKeyPanel");
+        checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
+        unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
 
-        hotKeyPanel = AuxFunctions.FindObject(canvas, "HotKeyPanel");
-        hotKeyButton = AuxFunctions.FindObject(canvas, "DisplayHotKeyButton");
+        hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
+        hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
-        orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
+        orientWindow = Auxiliary.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
-        exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
-        loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
-        analyticsPanel = AuxFunctions.FindObject(canvas, "AnalyticsPanel");
+        exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
+        loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
+        analyticsPanel = Auxiliary.FindObject(canvas, "AnalyticsPanel");
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         robotCameraGUI = GetComponent<RobotCameraGUI>();
-        mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
-        toolbar = AuxFunctions.FindObject(canvas, "Toolbar");
-        changePanel = AuxFunctions.FindObject(canvas, "ChangePanel");
-        addPanel = AuxFunctions.FindObject(canvas, "AddPanel");
-        toolkitPanel = AuxFunctions.FindObject(canvas, "ToolkitPanel");
-        driverStationSettingsPanel = AuxFunctions.FindObject(canvas, "DPMPanel");
+        mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
+        toolbar = Auxiliary.FindObject(canvas, "Toolbar");
+        changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
+        addPanel = Auxiliary.FindObject(canvas, "AddPanel");
+        toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
+        driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
         //Fix this - temporary workaround
         panels.Add(freeroamCameraWindow);
@@ -549,7 +549,7 @@ public class SimUI : StateBehaviour<MainState>
     {
         if (canvas != null)
         {
-            unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
+            unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
             int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
             State.IsMetric = (i == 1 ? true : false);
             PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
@@ -621,8 +621,8 @@ public class SimUI : StateBehaviour<MainState>
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
             case 3:
-                AuxFunctions.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
-                AuxFunctions.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                Auxiliary.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
+                Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 SceneManager.LoadScene("Scene");
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;

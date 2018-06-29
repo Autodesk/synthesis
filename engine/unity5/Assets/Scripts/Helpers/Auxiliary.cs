@@ -7,8 +7,11 @@ using BulletUnity;
 using Assets.Scripts.Utils;
 using System.Linq;
 
-public class AuxFunctions
+public static class Auxiliary
 {
+    public const float DegToRad = Mathf.PI / 180f;
+    public const float RadToDeg = 1f / DegToRad;
+
     public delegate void HandleMesh(int id, BXDAMesh.BXDASubMesh subMesh, Mesh mesh);
 
     public static void ReadMeshSet(List<BXDAMesh.BXDASubMesh> meshes, HandleMesh handleMesh, bool mirror = false)
@@ -48,41 +51,6 @@ public class AuxFunctions
 
             handleMesh(j, sub, unityMesh);
         }
-    }
-
-    public static void GetCombinedMesh(List<BXDAMesh.BXDASubMesh> meshes, HandleMesh handleMesh)
-    {
-        BXDAMesh.BXDASubMesh combinedMesh = new BXDAMesh.BXDASubMesh();
-        combinedMesh.verts = new double[0];
-        combinedMesh.norms = new double[0];
-        combinedMesh.surfaces = new List<BXDAMesh.BXDASurface>();
-
-        foreach (BXDAMesh.BXDASubMesh mesh in meshes)
-        {
-            double[] oldVertices = combinedMesh.verts;
-            double[] newVertices = new double[oldVertices.Length + mesh.verts.Length];
-            oldVertices.CopyTo(newVertices, 0);
-            mesh.verts.CopyTo(newVertices, oldVertices.Length);
-
-            combinedMesh.verts = newVertices;
-
-            double[] oldNorms = combinedMesh.verts;
-            double[] newNorms = new double[oldNorms.Length + mesh.norms.Length];
-            oldNorms.CopyTo(newNorms, 0);
-            mesh.norms.CopyTo(newNorms, oldNorms.Length);
-
-            combinedMesh.norms = newNorms;
-
-            combinedMesh.surfaces.AddRange(mesh.surfaces);
-        }
-
-        List<BXDAMesh.BXDASubMesh> combinedMeshes = new List<BXDAMesh.BXDASubMesh>();
-        combinedMeshes.Add(combinedMesh);
-
-        ReadMeshSet(combinedMeshes, delegate (int id, BXDAMesh.BXDASubMesh subMesh, Mesh mesh)
-        {
-            handleMesh(id, subMesh, mesh);
-        });
     }
 
     /// <summary>
@@ -156,103 +124,27 @@ public class AuxFunctions
         }
     }
 
-    public static void OrientRobot(List<GameObject> wheelcolliders, Transform parent)
+    public static Mesh GetScaledCopy(this Mesh mesh, float xScale, float yScale, float zScale)
     {
-        Quaternion q = new Quaternion();
-        List<Vector3> wheels = new List<Vector3>();
+        Mesh copy = UnityEngine.Object.Instantiate(mesh);
 
-        foreach (GameObject collider in wheelcolliders)
-            wheels.Add(collider.transform.position);
+        Vector3[] vertices = new Vector3[copy.vertices.Length];
 
-        if (wheels.Count > 2)
+        for (int i = 0; i < vertices.Length; i++)
         {
-            Vector3 a = wheels[0] - wheels[1];
-            Vector3 b = a;
-
-            for (int i = 2; Mathf.Abs(Vector3.Dot(a, b) / (a.magnitude * b.magnitude)) > .9f && i < wheels.Count; i++)
-                b = wheels[0] - wheels[i];
-
-            Vector3 norm = Vector3.Cross(a, b).normalized;
-            Debug.DrawRay(wheels[0], norm);
-
-            q.SetFromToRotation(norm, Vector3.up);
-            parent.localRotation *= q;
-
-            parent.position = new Vector3(parent.position.x, parent.position.y + .1f, parent.position.z);
+            Vector3 vertex = copy.vertices[i];
+            vertex.x = vertex.x * xScale;
+            vertex.y = vertex.y * yScale;
+            vertex.z = vertex.z * zScale;
+            vertices[i] = vertex;
         }
-        //TODO THROW WHEEL EXCEPTION
 
-    }
-    public static Boolean rightRobot(List<GameObject> wheelcolliders, Transform parent)
-    {
-        Quaternion q = new Quaternion();
-        List<Vector3> wheels = new List<Vector3>();
+        copy.vertices = vertices;
 
-        foreach (GameObject collider in wheelcolliders)
-            wheels.Add(collider.transform.position);
+        copy.RecalculateNormals();
+        copy.RecalculateBounds();
 
-        Vector3 com = AuxFunctions.TotalCenterOfMass(parent.gameObject);
-        Debug.Log(com.y < wheels[0].y);
-        q.SetFromToRotation(parent.localToWorldMatrix * Vector3.up, parent.localToWorldMatrix * Vector3.down);
-        if (com.y > wheels[0].y)
-        {
-            return false;
-        }
-        else
-        {
-            parent.localRotation *= q;
-            return true;
-        }
-    }
-
-    public static void IgnoreCollisionDetection(List<Collider> meshColliders)
-    {
-        for (int i = 0; i < meshColliders.Count; i++)
-        {
-            for (int j = i + 1; j < meshColliders.Count; j++)
-            {
-                try
-                {
-                    Physics.IgnoreCollision(meshColliders[i], meshColliders[j], true);
-                }
-                catch
-                {
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Computes the total center of mass for all children of this game object.
-    /// </summary>
-    /// <param name="gameObj">The game object</param>
-    /// <returns>The worldwide center of mass</returns>
-    public static Vector3 TotalCenterOfMass(GameObject gameObj)
-    {
-        Vector3 centerOfMass = Vector3.zero;
-        float sumOfAllWeights = 0f;
-
-        Rigidbody[] rigidBodyArray = gameObj.GetComponentsInChildren<Rigidbody>();
-
-        foreach (Rigidbody rigidBase in rigidBodyArray)
-        {
-            centerOfMass += rigidBase.worldCenterOfMass * rigidBase.mass;
-            sumOfAllWeights += rigidBase.mass;
-        }
-        centerOfMass /= sumOfAllWeights;
-        return centerOfMass;
-    }
-
-    /// <summary>
-    /// Mouses the in window.
-    /// </summary>
-    /// <returns><c>true</c>, if in window was moused, <c>false</c> otherwise.</returns>
-    /// <param name="window">Window.</param>
-    public static bool MouseInWindow(Rect window)
-    {
-        float mouseX = Input.mousePosition.x;
-        float mouseY = Screen.height - Input.mousePosition.y; // Convert mouse coordinates to unity window positions coordinates
-        return mouseX > window.x && mouseX < window.x + window.width && mouseY > window.y && mouseY < window.y + window.height;
+        return copy;
     }
 
     public static GameObject FindObject(GameObject parent, string name)
@@ -294,5 +186,15 @@ public class AuxFunctions
     public static float ToMeter(float feet)
     {
         return feet * 30.48f / 100;
+    }
+
+    public static float ToRadians(float deg)
+    {
+        return deg * DegToRad;
+    }
+
+    public static float ToDegrees(float rad)
+    {
+        return rad * RadToDeg;
     }
 }

@@ -50,7 +50,7 @@ public class BeamBreaker : SensorBase
 
         //Set the initial distance as the distance between emitter and receiver
         if (main != null && main.IsMetric) distanceToCollider = sensorOffset;
-        else distanceToCollider = AuxFunctions.ToFeet(sensorOffset);
+        else distanceToCollider = Auxiliary.ToFeet(sensorOffset);
 
         //Loop through all hitpoints (exclude the origin), if there is at least one hitpoint less than the distance between two sensors, 
         //something should block the beam between emitter and receiver
@@ -86,7 +86,7 @@ public class BeamBreaker : SensorBase
     public override float GetSensorRange()
     {
         if (main.IsMetric) return sensorOffset;
-        else return AuxFunctions.ToFeet(sensorOffset);
+        else return Auxiliary.ToFeet(sensorOffset);
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public class BeamBreaker : SensorBase
     public override void SetSensorRange(float distance, bool isEditing = false)
     {
         //Convert the distance pass in as meter so the position of emitter & transmitter will be set properly
-        if (isEditing && !main.IsMetric) distance = AuxFunctions.ToMeter(distance);
+        if (isEditing && !main.IsMetric) distance = Auxiliary.ToMeter(distance);
         Emitter.transform.localPosition = new Vector3(0, 0, -distance / 2);
         Receiver.transform.localPosition = new Vector3(0, 0, distance / 2);
         sensorOffset = distance;
@@ -119,10 +119,10 @@ public class BeamBreaker : SensorBase
         GameObject outputPanel = GameObject.Find(gameObject.name + "_Panel");
         if (outputPanel != null)
         {
-            GameObject inputField = AuxFunctions.FindObject(outputPanel, "Entry");
+            GameObject inputField = Auxiliary.FindObject(outputPanel, "Entry");
             inputField.GetComponent<InputField>().text = state;
             //Debug.Log(state);
-            GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
+            GameObject outputText = Auxiliary.FindObject(outputPanel, "Text");
             outputText.GetComponent<Text>().text = gameObject.name + " Output";
         }
     }

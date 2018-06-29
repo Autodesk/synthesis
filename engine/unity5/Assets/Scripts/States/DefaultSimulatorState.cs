@@ -15,9 +15,9 @@ public class DefaultSimulatorState : State
     /// </summary>
     public override void Start()
     {
-        simFieldSelectText = AuxFunctions.FindGameObject("SimFieldSelectText");
-        simRobotSelectText = AuxFunctions.FindGameObject("SimRobotSelectText");
-        splashScreen = AuxFunctions.FindGameObject("LoadSplash");
+        simFieldSelectText = Auxiliary.FindGameObject("SimFieldSelectText");
+        simRobotSelectText = Auxiliary.FindGameObject("SimRobotSelectText");
+        splashScreen = Auxiliary.FindGameObject("LoadSplash");
     }
 
     /// <summary>

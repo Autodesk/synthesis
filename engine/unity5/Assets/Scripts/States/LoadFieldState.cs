@@ -15,8 +15,8 @@ public class LoadFieldState : State
     public override void Start()
     {
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields"));
-        mixAndMatchModeScript = AuxFunctions.FindGameObject("MixAndMatchModeScript");
-        splashScreen = AuxFunctions.FindGameObject("LoadSplash");
+        mixAndMatchModeScript = Auxiliary.FindGameObject("MixAndMatchModeScript");
+        splashScreen = Auxiliary.FindGameObject("LoadSplash");
         fieldList = GameObject.Find("SimLoadFieldList").GetComponent<SelectScrollable>();
     }
 
