@@ -255,11 +255,11 @@ namespace BxDRobotExporter.Wizard
                 WheelSlotPanel leftPanel = new WheelSlotPanel();
                 leftPanel.WheelTypeChanged += Panel_WheelTypeChanged;
                 leftSlots.Add(leftPanel);
-                LeftWheelPropertiesPanel.Controls.Add(leftPanel);
+                LeftWheelsGroup.Controls.Add(leftPanel);
                 WheelSlotPanel righPanel = new WheelSlotPanel();
                 righPanel.WheelTypeChanged += Panel_WheelTypeChanged;
                 rightSlots.Add(righPanel);
-                RightWheelPropertiesPanel.Controls.Add(righPanel);
+                RightWheelsGroup.Controls.Add(righPanel);
             }
             _initialized = true;
 
@@ -274,7 +274,7 @@ namespace BxDRobotExporter.Wizard
                 {
                     //NodeListBox.
 
-                    LeftWheelPropertiesPanel.Controls.Remove(leftSlots.ElementAt(i));
+                    LeftWheelsGroup.Controls.Remove(leftSlots.ElementAt(i));
                     leftSlots.Remove(leftSlots.ElementAt(i));
                 }
             }
@@ -284,7 +284,7 @@ namespace BxDRobotExporter.Wizard
                 int downTo = rightSlots.Count;
                 for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
                 {
-                    RightWheelPropertiesPanel.Controls.Remove(rightSlots.ElementAt(i));
+                    RightWheelsGroup.Controls.Remove(rightSlots.ElementAt(i));
                     rightSlots.Remove(rightSlots.ElementAt(i));
                 }
             }
@@ -317,8 +317,8 @@ namespace BxDRobotExporter.Wizard
             {
                 if (!value)
                 {
-                    while (LeftWheelPropertiesPanel.Controls.Count > 0)
-                        LeftWheelPropertiesPanel.Controls[0].Dispose(); 
+                    while (LeftWheelsGroup.Controls.Count > 0)
+                        LeftWheelsGroup.Controls[0].Dispose(); 
                 }
                 _initialized = value;
             }
@@ -357,21 +357,21 @@ namespace BxDRobotExporter.Wizard
                             WheelSlotPanel panel = new WheelSlotPanel();
                             panel.WheelTypeChanged += Panel_WheelTypeChanged;
                             rightSlots.Add(panel);
-                            RightWheelPropertiesPanel.Controls.Add(panel);
+                            RightWheelsGroup.Controls.Add(panel);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r);
                             break;
                         case WizardData.WizardDriveTrain.MECANUM:
                             WheelSlotPanel panel1 = new WheelSlotPanel();
                             panel1.WheelTypeChanged += Panel_WheelTypeChanged;
                             rightSlots.Add(panel1);
-                            RightWheelPropertiesPanel.Controls.Add(panel1);
+                            RightWheelsGroup.Controls.Add(panel1);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r, WizardData.WizardWheelType.MECANUM);
                             break;
                         case WizardData.WizardDriveTrain.H_DRIVE:
                             WheelSlotPanel panel2 = new WheelSlotPanel();
                             panel2.WheelTypeChanged += Panel_WheelTypeChanged;
                             rightSlots.Add(panel2);
-                            RightWheelPropertiesPanel.Controls.Add(panel2);
+                            RightWheelsGroup.Controls.Add(panel2);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r, WizardData.WizardWheelType.OMNI);
                             break;
                         case WizardData.WizardDriveTrain.SWERVE:
@@ -379,14 +379,14 @@ namespace BxDRobotExporter.Wizard
                             WheelSlotPanel panel3 = new WheelSlotPanel();
                             panel3.WheelTypeChanged += Panel_WheelTypeChanged;
                             rightSlots.Add(panel3);
-                            RightWheelPropertiesPanel.Controls.Add(panel3);
+                            RightWheelsGroup.Controls.Add(panel3);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r);
                             break;
                         case WizardData.WizardDriveTrain.CUSTOM:
                             WheelSlotPanel panel4 = new WheelSlotPanel();
                             panel4.WheelTypeChanged += Panel_WheelTypeChanged;
                             rightSlots.Add(panel4);
-                            RightWheelPropertiesPanel.Controls.Add(panel4);
+                            RightWheelsGroup.Controls.Add(panel4);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r);
                             break;
                     }
@@ -412,21 +412,21 @@ namespace BxDRobotExporter.Wizard
                             WheelSlotPanel panel = new WheelSlotPanel();
                             panel.WheelTypeChanged += Panel_WheelTypeChanged;
                             leftSlots.Add(panel);
-                            LeftWheelPropertiesPanel.Controls.Add(panel);
+                            LeftWheelsGroup.Controls.Add(panel);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r],r );
                             break;
                         case WizardData.WizardDriveTrain.MECANUM:
                             WheelSlotPanel panel1 = new WheelSlotPanel();
                             panel1.WheelTypeChanged += Panel_WheelTypeChanged;
                             leftSlots.Add(panel1);
-                            LeftWheelPropertiesPanel.Controls.Add(panel1);
+                            LeftWheelsGroup.Controls.Add(panel1);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r], r, WizardData.WizardWheelType.MECANUM);
                             break;
                         case WizardData.WizardDriveTrain.H_DRIVE:
                             WheelSlotPanel panel2 = new WheelSlotPanel();
                             panel2.WheelTypeChanged += Panel_WheelTypeChanged;
                             leftSlots.Add(panel2);
-                            LeftWheelPropertiesPanel.Controls.Add(panel2);
+                            LeftWheelsGroup.Controls.Add(panel2);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r], r, WizardData.WizardWheelType.OMNI);
                             break;
                         case WizardData.WizardDriveTrain.SWERVE:
@@ -434,14 +434,14 @@ namespace BxDRobotExporter.Wizard
                             WheelSlotPanel panel3 = new WheelSlotPanel();
                             panel3.WheelTypeChanged += Panel_WheelTypeChanged;
                             leftSlots.Add(panel3);
-                            LeftWheelPropertiesPanel.Controls.Add(panel3);
+                            LeftWheelsGroup.Controls.Add(panel3);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r], r);
                             break;
                         case WizardData.WizardDriveTrain.CUSTOM:
                             WheelSlotPanel panel4 = new WheelSlotPanel();
                             panel4.WheelTypeChanged += Panel_WheelTypeChanged;
                             leftSlots.Add(panel4);
-                            LeftWheelPropertiesPanel.Controls.Add(panel4);
+                            LeftWheelsGroup.Controls.Add(panel4);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r], r);
                             break;
                     }
@@ -452,24 +452,24 @@ namespace BxDRobotExporter.Wizard
             }
         public String RemoveWheelSetupPanel(String s)
         {
-            foreach (Object wheel in LeftWheelPropertiesPanel.Controls)
+            foreach (Object wheel in LeftWheelsGroup.Controls)
             {
                 if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
                 {
                     if (((WheelSlotPanel)wheel).name.Equals(s))
                     {
-                        LeftWheelPropertiesPanel.Controls.Remove(((WheelSlotPanel)wheel));
+                        LeftWheelsGroup.Controls.Remove(((WheelSlotPanel)wheel));
                         leftSlots.Remove(((WheelSlotPanel)wheel));
                     }
                 }
             }
-            foreach (Object wheel in RightWheelPropertiesPanel.Controls)
+            foreach (Object wheel in RightWheelsGroup.Controls)
             {
                 if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
                 {
                     if (((WheelSlotPanel)wheel).name.Equals(s))
                     {
-                        RightWheelPropertiesPanel.Controls.Remove(((WheelSlotPanel)wheel));
+                        RightWheelsGroup.Controls.Remove(((WheelSlotPanel)wheel));
                         rightSlots.Remove(((WheelSlotPanel)wheel));
                     }
                 }
