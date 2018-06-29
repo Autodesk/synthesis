@@ -204,9 +204,7 @@
     <Compile Include="Assets\Scripts\FSM\StateBehaviour.cs" />
     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
     <Compile Include="Assets\Scripts\GodMode.cs" />
-    <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
-    <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
@@ -214,16 +212,14 @@
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\DummyScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
-    <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-    <Compile Include="Assets\Scripts\Helpers\auxFunctions.cs" />
+    <Compile Include="Assets\Scripts\Helpers\AuxFunctions.cs" />
     <Compile Include="Assets\Scripts\Helpers\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Helpers\MathfExt.cs" />
     <Compile Include="Assets\Scripts\Helpers\UnityExtensions.cs" />
@@ -500,6 +496,9 @@
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
