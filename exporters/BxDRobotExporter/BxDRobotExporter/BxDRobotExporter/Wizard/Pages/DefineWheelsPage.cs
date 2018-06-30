@@ -124,7 +124,7 @@ namespace BxDRobotExporter.Wizard
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
                     NodeListBox.Enabled = false;
                     break;
-                case 1: //Western
+                case 1: //Tank
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
                     NodeListBox.Enabled = true;
                     break;
@@ -256,10 +256,10 @@ namespace BxDRobotExporter.Wizard
                 leftPanel.WheelTypeChanged += Panel_WheelTypeChanged;
                 leftSlots.Add(leftPanel);
                 LeftWheelPropertiesPanel.Controls.Add(leftPanel);
-                WheelSlotPanel righPanel = new WheelSlotPanel();
-                righPanel.WheelTypeChanged += Panel_WheelTypeChanged;
-                rightSlots.Add(righPanel);
-                RightWheelPropertiesPanel.Controls.Add(righPanel);
+                WheelSlotPanel rightPanel = new WheelSlotPanel();
+                rightPanel.WheelTypeChanged += Panel_WheelTypeChanged;
+                rightSlots.Add(rightPanel);
+                RightWheelPropertiesPanel.Controls.Add(rightPanel);
             }
             _initialized = true;
 
@@ -351,42 +351,29 @@ namespace BxDRobotExporter.Wizard
                 foreach (String r in NodeListBox.SelectedItems)
                 {
                     OnInvalidatePage();
+                    WheelSlotPanel panel = new WheelSlotPanel();
+                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
+                    WizardData.WheelSetupData wheel = panel.WheelData;
+                    wheel.PWMPort = 1;
+                    rightSlots.Add(panel);
+                    RightWheelPropertiesPanel.Controls.Add(panel);
+                    MessageBox.Show(Convert.ToString(wheel.PWMPort));
                     switch (WizardData.Instance.driveTrain)
                     {
                         case WizardData.WizardDriveTrain.TANK:
-                            WheelSlotPanel panel = new WheelSlotPanel();
-                            panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel);
-                            RightWheelPropertiesPanel.Controls.Add(panel);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r);
                             break;
                         case WizardData.WizardDriveTrain.MECANUM:
-                            WheelSlotPanel panel1 = new WheelSlotPanel();
-                            panel1.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel1);
-                            RightWheelPropertiesPanel.Controls.Add(panel1);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r, WizardData.WizardWheelType.MECANUM);
                             break;
                         case WizardData.WizardDriveTrain.H_DRIVE:
-                            WheelSlotPanel panel2 = new WheelSlotPanel();
-                            panel2.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel2);
-                            RightWheelPropertiesPanel.Controls.Add(panel2);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r, WizardData.WizardWheelType.OMNI);
                             break;
                         case WizardData.WizardDriveTrain.SWERVE:
                             //TODO implement this crap
-                            WheelSlotPanel panel3 = new WheelSlotPanel();
-                            panel3.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel3);
-                            RightWheelPropertiesPanel.Controls.Add(panel3);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r);
                             break;
                         case WizardData.WizardDriveTrain.CUSTOM:
-                            WheelSlotPanel panel4 = new WheelSlotPanel();
-                            panel4.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel4);
-                            RightWheelPropertiesPanel.Controls.Add(panel4);
                             GetNextEmptyPanelRight().FillSlot(listItems[r], r);
                             break;
                     }
@@ -406,42 +393,28 @@ namespace BxDRobotExporter.Wizard
                 foreach (String r in NodeListBox.SelectedItems)
                 {
                     OnInvalidatePage();
+                    WheelSlotPanel panel = new WheelSlotPanel();
+                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
+                    WizardData.WheelSetupData wheel = panel.WheelData;
+                    wheel.PWMPort = 0;
+                    leftSlots.Add(panel);
+                    LeftWheelPropertiesPanel.Controls.Add(panel);
                     switch (WizardData.Instance.driveTrain)
                     {
                         case WizardData.WizardDriveTrain.TANK:
-                            WheelSlotPanel panel = new WheelSlotPanel();
-                            panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel);
-                            LeftWheelPropertiesPanel.Controls.Add(panel);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r],r );
                             break;
                         case WizardData.WizardDriveTrain.MECANUM:
-                            WheelSlotPanel panel1 = new WheelSlotPanel();
-                            panel1.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel1);
-                            LeftWheelPropertiesPanel.Controls.Add(panel1);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r], r, WizardData.WizardWheelType.MECANUM);
                             break;
                         case WizardData.WizardDriveTrain.H_DRIVE:
-                            WheelSlotPanel panel2 = new WheelSlotPanel();
-                            panel2.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel2);
-                            LeftWheelPropertiesPanel.Controls.Add(panel2);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r], r, WizardData.WizardWheelType.OMNI);
                             break;
                         case WizardData.WizardDriveTrain.SWERVE:
                             //TODO implement this crap
-                            WheelSlotPanel panel3 = new WheelSlotPanel();
-                            panel3.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel3);
-                            LeftWheelPropertiesPanel.Controls.Add(panel3);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r], r);
                             break;
                         case WizardData.WizardDriveTrain.CUSTOM:
-                            WheelSlotPanel panel4 = new WheelSlotPanel();
-                            panel4.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel4);
-                            LeftWheelPropertiesPanel.Controls.Add(panel4);
                             GetNextEmptyPanelLeft().FillSlot(listItems[r], r);
                             break;
                     }

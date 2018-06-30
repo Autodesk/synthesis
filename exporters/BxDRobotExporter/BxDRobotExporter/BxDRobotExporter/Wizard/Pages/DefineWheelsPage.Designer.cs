@@ -188,9 +188,9 @@
             this.label3.Location = new System.Drawing.Point(265, 23);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(94, 17);
+            this.label3.Size = new System.Drawing.Size(98, 17);
             this.label3.TabIndex = 2;
-            this.label3.Text = "Robo Weight:";
+            this.label3.Text = "Robot Weight:";
             // 
             // DriveTrainDropdown
             // 
@@ -198,7 +198,7 @@
             this.DriveTrainDropdown.FormattingEnabled = true;
             this.DriveTrainDropdown.Items.AddRange(new object[] {
             "Select Drive Train...",
-            "Western",
+            "Tank",
             "Mecanum",
             "Swerve",
             "H-Drive",
