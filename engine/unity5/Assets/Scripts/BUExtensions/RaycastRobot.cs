@@ -74,28 +74,18 @@ namespace Assets.Scripts.BUExtensions
             get { return wheelInfo.Length; }
         }
 
-        int indexRightAxis = 0;
-
         /// <summary>
         /// The relative right axis of the robot.
         /// </summary>
-        public int RightAxis
-        {
-            get { return indexRightAxis; }
-        }
+        public int RightAxis { get; private set; } = 0;
 
         int indexUpAxis = 2;
         int indexForwardAxis = 1;
 
-        RigidBody chassisBody;
-
         /// <summary>
         /// The <see cref="BulletSharp.RigidBody"/> associated with the parent chassis.
         /// </summary>
-        public RigidBody RigidBody
-        {
-            get { return chassisBody; }
-        }
+        public RigidBody RigidBody { get; }
 
         /// <summary>
         /// This property can be used to override the parent chassis mass used for calculations.
@@ -153,7 +143,7 @@ namespace Assets.Scripts.BUExtensions
         /// <param name="forwardIndex"></param>
         public void SetCoordinateSystem(int rightIndex, int upIndex, int forwardIndex)
         {
-            indexRightAxis = rightIndex;
+            RightAxis = rightIndex;
             indexUpAxis = upIndex;
             indexForwardAxis = forwardIndex;
         }
@@ -189,7 +179,7 @@ namespace Assets.Scripts.BUExtensions
         /// <param name="raycaster"></param>
         public RaycastRobot(VehicleTuning tuning, RigidBody chassis, IVehicleRaycaster raycaster)
         {
-            chassisBody = chassis;
+            RigidBody = chassis;
             RootRigidBody = chassis;
             vehicleRaycaster = raycaster;
 
@@ -518,9 +508,9 @@ namespace Assets.Scripts.BUExtensions
                     Matrix wheelTrans = GetWheelTransformWS(i);
 
                     axle[i] = new Vector3(
-                        wheelTrans[0, indexRightAxis],
-                        wheelTrans[1, indexRightAxis],
-                        wheelTrans[2, indexRightAxis]);
+                        wheelTrans[0, RightAxis],
+                        wheelTrans[1, RightAxis],
+                        wheelTrans[2, RightAxis]);
 
                     Vector3 surfNormalWS = wheel.RaycastInfo.ContactNormalWS;
                     float proj;
@@ -557,8 +547,8 @@ namespace Assets.Scripts.BUExtensions
 
                 if (groundObject != null)
                 {
-                    Vector3 velocity = chassisBody.GetVelocityInLocalPoint(wheel.ChassisConnectionPointCS);
-                    Vector3 localVelocity = Vector3.TransformNormal(velocity, Matrix.Invert(chassisBody.WorldTransform.Basis));
+                    Vector3 velocity = RigidBody.GetVelocityInLocalPoint(wheel.ChassisConnectionPointCS);
+                    Vector3 localVelocity = Vector3.TransformNormal(velocity, Matrix.Invert(RigidBody.WorldTransform.Basis));
                     Vector3 forwardAxis = (UnityEngine.Quaternion.AngleAxis(90f, UnityEngine.Vector3.up) *
                         wheel.WheelAxleCS.ToUnity() / (MathUtil.SIMD_PI * wheel.WheelsRadius)).ToBullet();
 
@@ -640,11 +630,11 @@ namespace Assets.Scripts.BUExtensions
                 WheelInfo wheel = wheelInfo[i];
 
                 Vector3 rel_pos = wheel.RaycastInfo.ContactPointWS -
-                        chassisBody.CenterOfMassPosition;
+                        RigidBody.CenterOfMassPosition;
 
                 if (forwardImpulse[i] != 0)
                 {
-                    chassisBody.ApplyImpulse(forwardWS[i] * forwardImpulse[i], rel_pos);
+                    RigidBody.ApplyImpulse(forwardWS[i] * forwardImpulse[i], rel_pos);
                 }
                 if (sideImpulse[i] != 0)
                 {
@@ -668,7 +658,7 @@ namespace Assets.Scripts.BUExtensions
 #else
                     rel_pos[indexUpAxis] *= wheel.RollInfluence;
 #endif
-                    chassisBody.ApplyImpulse(sideImp, rel_pos);
+                    RigidBody.ApplyImpulse(sideImp, rel_pos);
 
                     //apply friction impulse on the ground
                     groundObject.ApplyImpulse(-sideImp, rel_pos2);

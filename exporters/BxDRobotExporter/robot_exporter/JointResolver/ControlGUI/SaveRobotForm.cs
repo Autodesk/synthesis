@@ -95,6 +95,7 @@ namespace JointResolver.ControlGUI
             if(RobotNameTextBox.Text != null)
             {
                 var InvalidChars = (new string(Path.GetInvalidPathChars()) + new string(Path.GetInvalidFileNameChars())).Distinct();
+
                 foreach (char c in InvalidChars)
                 {
                     RobotNameTextBox.Text = RobotNameTextBox.Text.Replace(c.ToString(), "");
