@@ -70,6 +70,9 @@ public class DriverPracticeRobot : MonoBehaviour
 
     public int controlIndex;
 
+    private UnityEngine.Quaternion startParentRotation;
+    private UnityEngine.Quaternion startChildRotation;
+
     private void Awake()
     {
         StateMachine.Instance.Link<MainState>(this);
@@ -221,7 +224,9 @@ public class DriverPracticeRobot : MonoBehaviour
             newObject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.NoContactResponse;
 
             intakeInteractor[index].heldGamepieces.Add(newObject);
-
+            
+            startParentRotation = intakeInteractor[index].transform.rotation;
+            startChildRotation = newObject.transform.rotation;
 
             foreach (BRigidBody rb in this.GetComponentsInChildren<BRigidBody>())
             {
@@ -249,18 +254,10 @@ public class DriverPracticeRobot : MonoBehaviour
                 orb = objectsHeld[index][i].GetComponent<BRigidBody>();
                 orb.velocity = nrb.velocity;
                 orb.SetPosition(nrb.transform.position + nrb.transform.rotation * positionOffset[index]);
+                orb.SetRotation((nrb.transform.rotation * UnityEngine.Quaternion.Inverse(startParentRotation)) * startChildRotation);
                 orb.angularVelocity = UnityEngine.Vector3.zero;
                 orb.angularFactor = UnityEngine.Vector3.zero;
 
-                //set rotation
-                //UnityEngine.Quaternion oldRotation = new UnityEngine.Quaternion(orb.transform.rotation.x, orb.transform.rotation.y,
-                //    orb.transform.rotation.z, orb.transform.rotation.w);
-                //UnityEngine.Quaternion oldRotation = Instantiate(orb.transform.rotation);
-                //UnityEngine.Vector3 rotationOffset = (Instantiate(orb.transform.rotation)).ToEuler();
-                //UnityEngine.Vector3 rotationOffset = Instantiate(orb.transform).rotation.eulerAngles;
-                //orb.SetRotation(UnityEngine.Quaternion.Euler(nrb.transform.rotation.eulerAngles + oldRotation.eulerAngles));
-                orb.SetRotation(nrb.transform.rotation);
-                //orb.transform.Rotate(rotationOffset);
             }
         }
     }
