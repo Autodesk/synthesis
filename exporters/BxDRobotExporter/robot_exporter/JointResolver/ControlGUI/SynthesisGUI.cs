@@ -416,7 +416,7 @@ public partial class SynthesisGUI : Form
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
-    public bool RobotSave(bool silent = false)
+    public bool RobotSave(bool silent = true)
     {
         try
         {
