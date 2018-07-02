@@ -1,14 +1,16 @@
-WPILIB_PATH=../../external/allwpilib/
+EXTERNAL_PATH=../../external
 
 CXX            = g++
 ARMCXX         = arm-frc-linux-gnueabi-g++
-CXXFLAGS       = -std=c++17 -g -I$(WPILIB_PATH)/ni-libraries/include/ -I$(WPILIB_PATH)/hal/src/main/native/include -I$(WPILIB_PATH)/hal/src/main/native/ -Iinclude/
+CXXFLAGS       = -std=c++17 -g -I$(EXTERNAL_PATH)/allwpilib/wpiutil/src/main/native/include/ -I$(EXTERNAL_PATH)/wpiutil/src/main/native/include/ -I$(EXTERNAL_PATH)/allwpilib/ni-libraries/include/ -I$(EXTERNAL_PATH)/allwpilib/hal/src/main/native/include -I$(EXTERNAL_PATH)/allwpilib/hal/src/main/native/ -Iinclude/
 #Assuming WPILib shared object library directories are placed one directory up from Synthesis
 WPILIB_SO_PATH = ../../../../
 
-all: make_folders analog_output FRCUserProgram
+all: make_folders analog_output pwm digital_io FRCUserProgram
 
 analog_output: build/analog_output
+pwm: build/pwm
+digital_io: build/digital_io
 types: build/types
 socket: build/socket.o
 udp_socket: build/udp_socket.o
@@ -20,6 +22,12 @@ make_folders:
 
 build/analog_output: src/analog_output.cpp include/roborio.h
 	$(CXX) $(CXXFLAGS) src/analog_output.cpp -DANALOG_OUTPUT_TEST -o "build/analog_output"
+
+build/pwm: src/pwm.cpp include/roborio.h
+	$(CXX) $(CXXFLAGS) src/pwm.cpp -DPWM_TEST -o "build/pwm"
+
+build/digital_io: src/digital_io.cpp include/roborio.h
+	$(CXX) $(CXXFLAGS) src/digital_io.cpp -DDIGITAL_IO_TEST -o "build/digital_io"
 
 build/socket.o: src/net/socket.cpp include/net/socket.hpp
 	$(CXX) $(CXXFLAGS) src/net/socket.cpp -c -o "build/socket.o"
