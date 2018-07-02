@@ -83,12 +83,12 @@ public class UltraSensor : SensorBase
         }
         else
         {
-            distanceToCollider = AuxFunctions.ToFeet(MaxRange);
+            distanceToCollider = Auxiliary.ToFeet(MaxRange);
             foreach (BulletSharp.Math.Vector3 pos in colliderPositions)
             {
-                if (AuxFunctions.ToFeet((pos - fromUltra).Length) < distanceToCollider && !pos.Equals(BulletSharp.Math.Vector3.Zero))
+                if (Auxiliary.ToFeet((pos - fromUltra).Length) < distanceToCollider && !pos.Equals(BulletSharp.Math.Vector3.Zero))
                 {
-                    distanceToCollider = AuxFunctions.ToFeet((pos - fromUltra).Length);
+                    distanceToCollider = Auxiliary.ToFeet((pos - fromUltra).Length);
                     colliderPosition = pos;
                 }
             }
@@ -108,14 +108,14 @@ public class UltraSensor : SensorBase
     /// <param name="isEditing"></param>
     public override void SetSensorRange(float distance, bool isEditing)
     {
-        if (isEditing && !main.IsMetric) distance = AuxFunctions.ToMeter(distance);
+        if (isEditing && !main.IsMetric) distance = Auxiliary.ToMeter(distance);
         MaxRange = distance;
     }
 
     public override float GetSensorRange()
     {
         if (main.IsMetric) return MaxRange;
-        else return AuxFunctions.ToFeet(MaxRange);
+        else return Auxiliary.ToFeet(MaxRange);
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public class UltraSensor : SensorBase
         GameObject outputPanel = GameObject.Find(gameObject.name + "_Panel");
         if (outputPanel != null)
         {
-            GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
+            GameObject outputText = Auxiliary.FindObject(outputPanel, "Text");
             if (isMetric)
             {
                 outputText.GetComponent<Text>().text = gameObject.name + " Output (meters)";

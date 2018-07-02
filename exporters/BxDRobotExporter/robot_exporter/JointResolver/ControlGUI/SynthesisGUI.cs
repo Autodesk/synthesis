@@ -251,14 +251,20 @@ public partial class SynthesisGUI : Form
             return false;
         }
 
-        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-        for (int i = 0; i < Meshes.Count; i++)
+        // Exporter completed successfully
+        if (liteExporter.DialogResult == DialogResult.OK)
         {
-            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
+            List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
+            for (int i = 0; i < Meshes.Count; i++)
+            {
+                ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
+            }
+            
+            return true;
         }
-
-        //ReloadPanels();
-        return true;
+        // Exporter failed
+        else
+            return false;
     }
 
     /// <summary>
@@ -414,6 +420,11 @@ public partial class SynthesisGUI : Form
     {
         try
         {
+            // If robot has not been named, prompt user for information
+            if (RMeta.ActiveRobotName == null)
+                if (!PromptSaveSettings(false, false))
+                    return false;
+
             if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName))
                 Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName);
 
@@ -431,8 +442,10 @@ public partial class SynthesisGUI : Form
             {
                 Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
             }
+
             if(!silent)
                 MessageBox.Show("Saved");
+
             return true;
         }
         catch (Exception e)
@@ -535,6 +548,28 @@ public partial class SynthesisGUI : Form
         splitContainer1.Height = ClientSize.Height - 27;
 
         ResumeLayout();
+    }
+
+    /// <summary>
+    /// Opens the <see cref="SetMassForm"/> form
+    /// </summary>
+    public void PromptRobotMass()
+    {
+        try
+        {
+            //TODO: Implement Value saving and loading
+            SetMassForm massForm = new SetMassForm();
+
+            massForm.ShowDialog();
+
+            if (massForm.DialogResult == DialogResult.OK)
+                TotalMass = massForm.TotalMass;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+            throw;
+        }
     }
 
     /// <summary>

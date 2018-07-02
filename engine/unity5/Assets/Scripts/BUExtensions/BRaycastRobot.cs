@@ -109,6 +109,9 @@ namespace Assets.Scripts.BUExtensions
                 RaycastRobot.UpdateWheelTransform(i, true);
         }
 
+        /// <summary>
+        /// Deregisters this <see cref="BRaycastRobot"/> when this object is destroyed.
+        /// </summary>
         private void OnDestroy()
         {
             BRobotManager.Instance.DeregisterRaycastRobot(RaycastRobot);

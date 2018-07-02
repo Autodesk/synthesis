@@ -29,7 +29,7 @@ public partial class RigidNode : RigidNode_Base
 
         List<GameObject> meshObjects = new List<GameObject>();
 
-        AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+        Auxiliary.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             GameObject meshObject = new GameObject(MainObject.name + "_mesh");
             meshObjects.Add(meshObject);
@@ -54,7 +54,7 @@ public partial class RigidNode : RigidNode_Base
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];
 
-        AuxFunctions.ReadMeshSet(mesh.colliders, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+        Auxiliary.ReadMeshSet(mesh.colliders, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             colliders[id] = meshu;
         }, true);
