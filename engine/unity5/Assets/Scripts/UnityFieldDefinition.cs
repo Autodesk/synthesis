@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
-using Assets.Scripts.FEA;
+using Synthesis.FEA;
+using Synthesis.Utils;
 
 public class UnityFieldDefinition : FieldDefinition
 {

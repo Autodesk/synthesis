@@ -1,18 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using Synthesis.InputControl;
 
-public class Settings : MonoBehaviour
+namespace Synthesis.Settings
 {
-	// Use this for initialization
-	void Start () {
-        DontDestroyOnLoad(this);
-        Controls.Load();
-	}
-	
-	// Update is called once per frame
-	void Update ()
+    public class Settings : MonoBehaviour
     {
-	    
-	}
+        // Use this for initialization
+        void Start()
+        {
+            DontDestroyOnLoad(this);
+            Controls.Load();
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+    }
 }

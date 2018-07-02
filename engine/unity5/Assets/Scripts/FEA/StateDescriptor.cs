@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Assets.Scripts.FEA
+namespace Synthesis.FEA
 {
     /// <summary>
     /// Used for describing the state of a RigidBody for a given frame.

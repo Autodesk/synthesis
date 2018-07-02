@@ -1,12 +1,15 @@
-﻿using Assets.Scripts.FSM;
+﻿using Synthesis.FSM;
 
-public class SimTabState : State
+namespace Synthesis.States
 {
-    /// <summary>
-    /// Immediately pushes a new <see cref="SelectionState"/> (the default substate).
-    /// </summary>
-    public override void Start()
+    public class SimTabState : State
     {
-        StateMachine.Instance.PushState(new SelectionState());
+        /// <summary>
+        /// Immediately pushes a new <see cref="SelectionState"/> (the default substate).
+        /// </summary>
+        public override void Start()
+        {
+            StateMachine.PushState(new SelectionState());
+        }
     }
 }
