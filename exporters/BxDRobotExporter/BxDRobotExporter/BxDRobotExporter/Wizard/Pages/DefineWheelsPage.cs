@@ -124,7 +124,7 @@ namespace BxDRobotExporter.Wizard
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
                     NodeListBox.Enabled = false;
                     break;
-                case 1: //Western
+                case 1: //Tank
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
                     NodeListBox.Enabled = true;
                     break;
@@ -183,24 +183,6 @@ namespace BxDRobotExporter.Wizard
         /// Gets the next unfilled <see cref="WheelSlotPanel"/>. Referenced in <see cref="NodeListBox_ItemCheck(object, ItemCheckEventArgs)"/>
         /// </summary>
         /// <returns></returns>
-        private WheelSlotPanel GetNextEmptyPanelLeft()
-        {
-            for (int i = 0; i < leftSlots.Count; i++)
-            {
-                if (!leftSlots[i].IsFilled)
-                    return leftSlots[i];
-            }
-            return null;
-        }
-        private WheelSlotPanel GetNextEmptyPanelRight()
-        {
-            for (int i = 0; i < rightSlots.Count; i++)
-            {
-                if (!rightSlots[i].IsFilled)
-                    return rightSlots[i];
-            }
-            return null;
-        }
 
         #region IWizardPage Implementation
         /// <summary>
@@ -213,10 +195,12 @@ namespace BxDRobotExporter.Wizard
             foreach(var slot in rightSlots)
             {
                 WizardData.Instance.wheels.Add(slot.WheelData);
+                WizardData.WheelSetupData wheel = slot.WheelData;
             }
             foreach (var slot in leftSlots)
             {
                 WizardData.Instance.wheels.Add(slot.WheelData);
+                WizardData.WheelSetupData wheel = slot.WheelData;
             }
         }
 
@@ -256,10 +240,11 @@ namespace BxDRobotExporter.Wizard
                 leftPanel.WheelTypeChanged += Panel_WheelTypeChanged;
                 leftSlots.Add(leftPanel);
                 LeftWheelsGroup.Controls.Add(leftPanel);
-                WheelSlotPanel righPanel = new WheelSlotPanel();
-                righPanel.WheelTypeChanged += Panel_WheelTypeChanged;
-                rightSlots.Add(righPanel);
-                RightWheelsGroup.Controls.Add(righPanel);
+
+                WheelSlotPanel rightPanel = new WheelSlotPanel();
+                rightPanel.WheelTypeChanged += Panel_WheelTypeChanged;
+                rightSlots.Add(rightPanel);
+                RightWheelsGroup.Controls.Add(rightPanel);
             }
             _initialized = true;
 
@@ -325,14 +310,17 @@ namespace BxDRobotExporter.Wizard
         }
         private bool _initialized = false;
         #endregion
+
         private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             UpdateMassCount();
         }
+
         private void UpdateMassCount()
         {
              ValidateInput();
         }
+
         private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
         {
             StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.SelectedItem.ToString()]);
@@ -344,6 +332,7 @@ namespace BxDRobotExporter.Wizard
         {
             e.Effect = DragDropEffects.Copy;
         }
+
         private void RightWheelPropertiesPanel_DragDrop(object sender, DragEventArgs e)
         {
             try
@@ -351,43 +340,27 @@ namespace BxDRobotExporter.Wizard
                 foreach (String r in NodeListBox.SelectedItems)
                 {
                     OnInvalidatePage();
+                    WheelSlotPanel panel = new WheelSlotPanel();
+                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
+                    rightSlots.Add(panel);
+                    RightWheelsGroup.Controls.Add(panel);
                     switch (WizardData.Instance.driveTrain)
                     {
                         case WizardData.WizardDriveTrain.TANK:
-                            WheelSlotPanel panel = new WheelSlotPanel();
-                            panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel);
-                            RightWheelsGroup.Controls.Add(panel);
-                            GetNextEmptyPanelRight().FillSlot(listItems[r], r);
+                            panel.FillSlot(listItems[r], r, true);
                             break;
                         case WizardData.WizardDriveTrain.MECANUM:
-                            WheelSlotPanel panel1 = new WheelSlotPanel();
-                            panel1.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel1);
-                            RightWheelsGroup.Controls.Add(panel1);
-                            GetNextEmptyPanelRight().FillSlot(listItems[r], r, WizardData.WizardWheelType.MECANUM);
+                            panel.FillSlot(listItems[r], r, true, WizardData.WizardWheelType.MECANUM);
                             break;
                         case WizardData.WizardDriveTrain.H_DRIVE:
-                            WheelSlotPanel panel2 = new WheelSlotPanel();
-                            panel2.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel2);
-                            RightWheelsGroup.Controls.Add(panel2);
-                            GetNextEmptyPanelRight().FillSlot(listItems[r], r, WizardData.WizardWheelType.OMNI);
+                            panel.FillSlot(listItems[r], r, true, WizardData.WizardWheelType.OMNI);
                             break;
                         case WizardData.WizardDriveTrain.SWERVE:
                             //TODO implement this crap
-                            WheelSlotPanel panel3 = new WheelSlotPanel();
-                            panel3.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel3);
-                            RightWheelsGroup.Controls.Add(panel3);
-                            GetNextEmptyPanelRight().FillSlot(listItems[r], r);
+                            panel.FillSlot(listItems[r], r, true);
                             break;
                         case WizardData.WizardDriveTrain.CUSTOM:
-                            WheelSlotPanel panel4 = new WheelSlotPanel();
-                            panel4.WheelTypeChanged += Panel_WheelTypeChanged;
-                            rightSlots.Add(panel4);
-                            RightWheelsGroup.Controls.Add(panel4);
-                            GetNextEmptyPanelRight().FillSlot(listItems[r], r);
+                            panel.FillSlot(listItems[r], r, true);
                             break;
                     }
                     NodeListBox.Items.Remove(r);
@@ -395,10 +368,12 @@ namespace BxDRobotExporter.Wizard
             }
             catch (Exception f) { }
         }
+
         private void LeftWheelPropertiesPanel_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
         }
+
         private void LeftWheelPropertiesPanel_DragDrop(object sender, DragEventArgs e)
         {
             try
@@ -406,43 +381,27 @@ namespace BxDRobotExporter.Wizard
                 foreach (String r in NodeListBox.SelectedItems)
                 {
                     OnInvalidatePage();
+                    WheelSlotPanel panel = new WheelSlotPanel();
+                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
+                    leftSlots.Add(panel);
+                    LeftWheelsGroup.Controls.Add(panel);
                     switch (WizardData.Instance.driveTrain)
                     {
                         case WizardData.WizardDriveTrain.TANK:
-                            WheelSlotPanel panel = new WheelSlotPanel();
-                            panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel);
-                            LeftWheelsGroup.Controls.Add(panel);
-                            GetNextEmptyPanelLeft().FillSlot(listItems[r],r );
+                            panel.FillSlot(listItems[r],r, false);
                             break;
                         case WizardData.WizardDriveTrain.MECANUM:
-                            WheelSlotPanel panel1 = new WheelSlotPanel();
-                            panel1.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel1);
-                            LeftWheelsGroup.Controls.Add(panel1);
-                            GetNextEmptyPanelLeft().FillSlot(listItems[r], r, WizardData.WizardWheelType.MECANUM);
+                            panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.MECANUM);
                             break;
                         case WizardData.WizardDriveTrain.H_DRIVE:
-                            WheelSlotPanel panel2 = new WheelSlotPanel();
-                            panel2.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel2);
-                            LeftWheelsGroup.Controls.Add(panel2);
-                            GetNextEmptyPanelLeft().FillSlot(listItems[r], r, WizardData.WizardWheelType.OMNI);
+                            panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.OMNI);
                             break;
                         case WizardData.WizardDriveTrain.SWERVE:
                             //TODO implement this crap
-                            WheelSlotPanel panel3 = new WheelSlotPanel();
-                            panel3.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel3);
-                            LeftWheelsGroup.Controls.Add(panel3);
-                            GetNextEmptyPanelLeft().FillSlot(listItems[r], r);
+                            panel.FillSlot(listItems[r], r, false);
                             break;
                         case WizardData.WizardDriveTrain.CUSTOM:
-                            WheelSlotPanel panel4 = new WheelSlotPanel();
-                            panel4.WheelTypeChanged += Panel_WheelTypeChanged;
-                            leftSlots.Add(panel4);
-                            LeftWheelsGroup.Controls.Add(panel4);
-                            GetNextEmptyPanelLeft().FillSlot(listItems[r], r);
+                            panel.FillSlot(listItems[r], r, false);
                             break;
                     }
                     NodeListBox.Items.Remove(r);
@@ -450,6 +409,7 @@ namespace BxDRobotExporter.Wizard
             }
             catch (Exception f) { }
             }
+
         public String RemoveWheelSetupPanel(String s)
         {
             foreach (Object wheel in LeftWheelsGroup.Controls)
@@ -474,16 +434,17 @@ namespace BxDRobotExporter.Wizard
                     }
                 }
             }
-            //     MessageBox.Show(listItems[s].ToString());
             NodeListBox.Items.Add(s);
             return "";
         }
+
         public String WheelSetupHover(String s)
         {
 
             StandardAddInServer.Instance.WizardSelect(listItems[s]);
             return "";
         }
+
         private void NodeListBox_SelectedIndexChanged(object sender, EventArgs e)
         { 
             try
