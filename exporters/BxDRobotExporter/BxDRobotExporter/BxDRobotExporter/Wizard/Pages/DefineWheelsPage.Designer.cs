@@ -107,9 +107,10 @@
             // LeftWheelsPanel
             // 
             this.LeftWheelsPanel.AutoScroll = true;
-            this.LeftWheelsPanel.Location = new System.Drawing.Point(6, 19);
+            this.LeftWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LeftWheelsPanel.Location = new System.Drawing.Point(3, 16);
             this.LeftWheelsPanel.Name = "LeftWheelsPanel";
-            this.LeftWheelsPanel.Size = new System.Drawing.Size(223, 414);
+            this.LeftWheelsPanel.Size = new System.Drawing.Size(229, 420);
             this.LeftWheelsPanel.TabIndex = 4;
             this.LeftWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
             this.LeftWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragEnter);
@@ -211,9 +212,10 @@
             // RightWheelsPanel
             // 
             this.RightWheelsPanel.AutoScroll = true;
-            this.RightWheelsPanel.Location = new System.Drawing.Point(6, 19);
+            this.RightWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RightWheelsPanel.Location = new System.Drawing.Point(3, 16);
             this.RightWheelsPanel.Name = "RightWheelsPanel";
-            this.RightWheelsPanel.Size = new System.Drawing.Size(210, 414);
+            this.RightWheelsPanel.Size = new System.Drawing.Size(213, 420);
             this.RightWheelsPanel.TabIndex = 7;
             this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
             this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragEnter);
