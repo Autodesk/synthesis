@@ -470,7 +470,7 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Saves the joint information to the Inventor assembly file. Returns false if fails.
     /// </summary>
-    public bool JointDataSave(Inventor.Document document)
+    public bool JointDataSave(Inventor.AssemblyDocument document)
     {
         Inventor.PropertySets propertySets = document.PropertySets;
 
@@ -492,13 +492,13 @@ public partial class SynthesisGUI : Form
                 return false;
         }
 
-        return true;
+        return false; // true
     }
 
     /// <summary>
     /// Loads the joint information from the Inventor assembly file. Returns false if fails.
     /// </summary>
-    public bool JointDataLoad(Inventor.Document document)
+    public bool JointDataLoad(Inventor.AssemblyDocument document)
     {
         Inventor.PropertySets propertySets = document.PropertySets;
 
@@ -520,7 +520,7 @@ public partial class SynthesisGUI : Form
                 return false;
         }
 
-        return true;
+        return false; // true
     }
 
     /// <summary>
