@@ -34,7 +34,7 @@ public class MaMSimUI : StateBehaviour<MainState> {
         mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
         multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
 
-        simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
+        simUI = StateMachine.gameObject.GetComponent<SimUI>();
     }
 
     public void ToggleMaMPanel()

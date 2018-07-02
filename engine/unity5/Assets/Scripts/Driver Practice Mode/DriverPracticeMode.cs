@@ -591,8 +591,8 @@ public class DriverPracticeMode : StateBehaviour<MainState> {
         GameObject trajectory1 = new GameObject("DrawnTrajectory1");
         GameObject trajectory2 = new GameObject("DrawnTrajectory2");
 
-        StateMachine.Instance.Link<MainState>(trajectory1);
-        StateMachine.Instance.Link<MainState>(trajectory2);
+        StateMachine.Link<MainState>(trajectory1);
+        StateMachine.Link<MainState>(trajectory2);
 
         drawnTrajectory[0] = trajectory1.AddComponent<LineRenderer>();
         drawnTrajectory[1] = trajectory2.AddComponent<LineRenderer>();

@@ -53,9 +53,9 @@ public abstract class BrowseFileState : State
         }
 
         fileBrowser.Render();
-
+        
         if (!fileBrowser.Active)
-            StateMachine.Instance.PopState();
+            StateMachine.PopState();
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public abstract class BrowseFileState : State
         {
             PlayerPrefs.SetString(prefsKey, directory.FullName);
             PlayerPrefs.Save();
-            StateMachine.Instance.PopState();
+            StateMachine.PopState();
         }
         else
         {

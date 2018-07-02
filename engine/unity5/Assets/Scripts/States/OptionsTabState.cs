@@ -71,7 +71,7 @@ public class OptionsTabState : State
         ParseResolution(resPopup.list[PlayerPrefs.GetInt("resolution")].text, out xRes, out yRes);
 
         Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
-        StateMachine.Instance.ChangeState(new HomeTabState());
+        StateMachine.ChangeState(new HomeTabState());
     }
 
     /// <summary>

@@ -34,7 +34,7 @@ public abstract class SensorBase : MonoBehaviour
     {
         if(main == null)
         {
-            main = StateMachine.Instance.FindState<MainState>();
+            main = StateMachine.SceneGlobal.FindState<MainState>();
         }
     }
 

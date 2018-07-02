@@ -24,7 +24,7 @@ public class LoadReplayState : State
     /// </summary>
     public void OnBackButtonPressed()
     {
-        StateMachine.Instance.PopState();
+        StateMachine.PopState();
     }
 
     /// <summary>

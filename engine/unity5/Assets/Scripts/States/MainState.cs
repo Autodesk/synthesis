@@ -140,15 +140,15 @@ public class MainState : State
         DynamicCamera.MovingEnabled = true;
 
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
-        sensorManagerGUI = StateMachine.Instance.gameObject.GetComponent<SensorManagerGUI>();
+        sensorManagerGUI = StateMachine.gameObject.GetComponent<SensorManagerGUI>();
 
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
 
         IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
 
-        StateMachine.Instance.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
-        StateMachine.Instance.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
-        StateMachine.Instance.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
+        StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
+        StateMachine.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
+        StateMachine.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public class MainState : State
         //if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
         {
             CollisionTracker.ContactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
+            StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -212,7 +212,7 @@ public class MainState : State
         if (awaitingReplay)
         {
             awaitingReplay = false;
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
+            StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -557,7 +557,7 @@ public class MainState : State
         if (!ActiveRobot.IsResetting)
         {
             CollisionTracker.ContactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
+            StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
         else
         {

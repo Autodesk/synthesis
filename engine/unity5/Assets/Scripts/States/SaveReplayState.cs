@@ -81,7 +81,7 @@ namespace Assets.Scripts.FEA
             }
 
             ReplayExporter.Write(replayNameText.text, fieldPath, trackers, contacts);
-            StateMachine.Instance.PopState();
+            StateMachine.PopState();
 
             if (SimUI.changeAnalytics)
             {
@@ -96,7 +96,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public void Cancel()
         {
-            StateMachine.Instance.PopState();
+            StateMachine.PopState();
         }
     }
 }

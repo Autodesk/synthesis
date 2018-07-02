@@ -29,7 +29,7 @@ public class LoadRobotState : State
     /// </summary>
     public void OnBackButtonPressed()
     {
-        StateMachine.Instance.PopState();
+        StateMachine.PopState();
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class LoadRobotState : State
             PlayerPrefs.SetString("simSelectedRobot", robotDirectory + "\\" + simSelectedRobotName + "\\");
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
 
-            StateMachine.Instance.PopState();
+            StateMachine.PopState();
         }
         else
         {
@@ -69,6 +69,6 @@ public class LoadRobotState : State
     /// </summary>
     public void OnChangeRobotButtonPressed()
     {
-        StateMachine.Instance.PushState(new BrowseRobotState());
+        StateMachine.PushState(new BrowseRobotState());
     }
 }

@@ -44,7 +44,7 @@ class SensorManager : MonoBehaviour
     {
         if (main == null)
         {
-            main = StateMachine.Instance.FindState<MainState>();
+            main = StateMachine.SceneGlobal.FindState<MainState>();
         }
         //Handle the state where the user is selecting a node for attachment or selecting a sensor to configure
         if (SelectingNode)

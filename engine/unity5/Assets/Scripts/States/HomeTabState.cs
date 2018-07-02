@@ -8,7 +8,7 @@ public class HomeTabState : State
     /// </summary>
     public void OnStartButtonPressed()
     {
-        StateMachine.Instance.ChangeState(new SimTabState());
+        StateMachine.ChangeState(new SimTabState());
     }
 
     /// <summary>
