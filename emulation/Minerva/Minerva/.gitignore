@@ -23,8 +23,17 @@ libminerva.so
 libminerva.a
 MinervaGenerator
 Test
-build/*
 test
 minerva_generator
 function_signature
 src/minerva.cpp
+
+# Output folders
+build/*
+lib/*
+
+# CMake related stuff
+CMakeCache.txt
+cmake_install.xmake
+Makefile
+CMakeFiles/*
