@@ -29,16 +29,16 @@ namespace BxDRobotExporter.Wizard
             WizardPages.Add(startPage, WizardNavigator.WizardNavigatorState.StartEnabled);
 
             //Step 1: Basic Robot Information
-            BasicRobotInfoPage basicRobotInfoPage = new BasicRobotInfoPage();
-            basicRobotInfoPage.ActivateNext += ActivateNext;
-            basicRobotInfoPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(basicRobotInfoPage, WizardNavigator.WizardNavigatorState.NextDisabled);
+            //BasicRobotInfoPage basicRobotInfoPage = new BasicRobotInfoPage();
+            //basicRobotInfoPage.ActivateNext += ActivateNext;
+            //basicRobotInfoPage.DeactivateNext += DeactivateNext;
+            //WizardPages.Add(basicRobotInfoPage, WizardNavigator.WizardNavigatorState.NextDisabled);
             
             //Step 2: Define Wheels
             DefineWheelsPage defineWheelsPage = new DefineWheelsPage();
             defineWheelsPage.ActivateNext += ActivateNext;
             defineWheelsPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.Clean);
+            WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.NextDisabled);
 
             //Step 3: Define other moving parts
             DefineMovingPartsPage defineMovingPartsPage = new DefineMovingPartsPage();

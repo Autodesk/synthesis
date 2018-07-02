@@ -19,6 +19,7 @@ namespace BxDRobotExporter.Wizard
         /// Field containing the <see cref="WheelSetupPanel"/> in this slot.
         /// </summary>
         private WheelSetupPanel wheelSetupPanel;
+        public String name;
 
         public WheelSlotPanel()
         {
@@ -26,16 +27,12 @@ namespace BxDRobotExporter.Wizard
             IsFilled = false;
         }
 
-        /// <summary>
-        /// Fills the slot with a new <see cref="WheelSetupPanel"/> and sets its <see cref="WizardData.WizardWheelType"/> properly to <paramref name="wheelType"/>
-        /// </summary> 
-        /// <param name="node"></param>
-        /// <param name="wheelType"></param>
-        public void FillSlot(RigidNode_Base node, WizardData.WizardWheelType wheelType = WizardData.WizardWheelType.NORMAL)
+        public void FillSlot(RigidNode_Base node, String name, bool isRight, WizardData.WizardWheelType wheelType = WizardData.WizardWheelType.NORMAL)
         {
-            wheelSetupPanel = new WheelSetupPanel(node, wheelType);
+            this.name = name;
+            wheelSetupPanel = new WheelSetupPanel(node, name, wheelType);
             wheelSetupPanel.Dock = DockStyle.Fill;
-
+            wheelSetupPanel.isRightWheel = isRight;
             this.SuspendLayout();
             while (Controls.Count > 0)
             {
