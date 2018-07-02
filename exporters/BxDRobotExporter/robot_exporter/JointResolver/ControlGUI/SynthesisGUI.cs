@@ -202,6 +202,9 @@ public partial class SynthesisGUI : Form
             return false;
         }
 
+        if (SkeletonBase == null)
+            return false;
+
         return true;
     }
 
