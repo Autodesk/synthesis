@@ -3,7 +3,7 @@
 namespace nFPGA{
 	namespace nRoboRIO_FPGANamespace{
 		void writeDO(tDIO::tDO value, tRioStatusCode* status){
-			minerva::roborio.digital_system.outputs = value;
+			minerva::roborio_state.digital_system.outputs = value;
 		}
 
 		void writeDO_Headers(uint16_t value, tRioStatusCode* status){}
@@ -12,7 +12,7 @@ namespace nFPGA{
 		void writeDO_MXP(uint16_t value, tRioStatusCode* status){}
 
 		tDIO::tDO readDO(tRioStatusCode* status){
-			return minerva::roborio.digital_system.outputs;
+			return minerva::roborio_state.digital_system.outputs;
 		}
 
 		uint16_t readDO_Headers(tRioStatusCode* status){}
@@ -21,7 +21,7 @@ namespace nFPGA{
 		uint16_t readDO_MXP(tRioStatusCode* status){}
 
 		void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
-			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio.digital_system.pwm_data){
+			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio_state.digital_system.pwm_data){
 				if(pwm.id == bitfield_index){
 					pwm.duty_cycle = value;
 					return;
@@ -31,7 +31,7 @@ namespace nFPGA{
 		}
 
 		uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* status){
-			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio.digital_system.pwm_data){
+			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio_state.digital_system.pwm_data){
 				if(pwm.id == bitfield_index){
 					return pwm.duty_cycle;
 				}
@@ -56,7 +56,7 @@ namespace nFPGA{
 		}
 
 		void writeOutputEnable(tDIO::tOutputEnable value, tRioStatusCode* status){
-			minerva::roborio.digital_system.enabled_outputs = value;
+			minerva::roborio_state.digital_system.enabled_outputs = value;
 		}
 
 		void writeOutputEnable_Headers(uint16_t value, tRioStatusCode* status){}
@@ -65,7 +65,7 @@ namespace nFPGA{
 		void writeOutputEnable_MXP(uint16_t value, tRioStatusCode* status){}
 
 		tDIO::tOutputEnable readOutputEnable(tRioStatusCode* status){
-			return minerva::roborio.digital_system.enabled_outputs;
+			return minerva::roborio_state.digital_system.enabled_outputs;
 		}
 
 		uint16_t readOutputEnable_Headers(tRioStatusCode* status){}
