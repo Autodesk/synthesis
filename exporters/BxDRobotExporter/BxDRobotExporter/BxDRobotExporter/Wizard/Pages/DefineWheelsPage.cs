@@ -41,8 +41,8 @@ namespace BxDRobotExporter.Wizard
             {
                 if (Visible) ValidateInput();
             };
-            RightWheelPropertiesPanel.AllowDrop = true;
-            LeftWheelPropertiesPanel.AllowDrop = true;
+            RightWheelsPanel.AllowDrop = true;
+            LeftWheelsPanel.AllowDrop = true;
             NodeListBox.AllowDrop = true;
 
             DriveTrainDropdown.SelectedIndex = 0;
@@ -239,12 +239,12 @@ namespace BxDRobotExporter.Wizard
                 WheelSlotPanel leftPanel = new WheelSlotPanel();
                 leftPanel.WheelTypeChanged += Panel_WheelTypeChanged;
                 leftSlots.Add(leftPanel);
-                LeftWheelsGroup.Controls.Add(leftPanel);
+                LeftWheelsPanel.Controls.Add(leftPanel);
 
                 WheelSlotPanel rightPanel = new WheelSlotPanel();
                 rightPanel.WheelTypeChanged += Panel_WheelTypeChanged;
                 rightSlots.Add(rightPanel);
-                RightWheelsGroup.Controls.Add(rightPanel);
+                RightWheelsPanel.Controls.Add(rightPanel);
             }
             _initialized = true;
 
@@ -259,7 +259,7 @@ namespace BxDRobotExporter.Wizard
                 {
                     //NodeListBox.
 
-                    LeftWheelsGroup.Controls.Remove(leftSlots.ElementAt(i));
+                    LeftWheelsPanel.Controls.Remove(leftSlots.ElementAt(i));
                     leftSlots.Remove(leftSlots.ElementAt(i));
                 }
             }
@@ -269,7 +269,7 @@ namespace BxDRobotExporter.Wizard
                 int downTo = rightSlots.Count;
                 for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
                 {
-                    RightWheelsGroup.Controls.Remove(rightSlots.ElementAt(i));
+                    RightWheelsPanel.Controls.Remove(rightSlots.ElementAt(i));
                     rightSlots.Remove(rightSlots.ElementAt(i));
                 }
             }
@@ -302,8 +302,8 @@ namespace BxDRobotExporter.Wizard
             {
                 if (!value)
                 {
-                    while (LeftWheelsGroup.Controls.Count > 0)
-                        LeftWheelsGroup.Controls[0].Dispose(); 
+                    while (LeftWheelsPanel.Controls.Count > 0)
+                        LeftWheelsPanel.Controls[0].Dispose(); 
                 }
                 _initialized = value;
             }
@@ -328,12 +328,12 @@ namespace BxDRobotExporter.Wizard
                         DragDropEffects.Move);  
         }
 
-        private void RightWheelPropertiesPanel_DragEnter(object sender, DragEventArgs e)
+        private void RightWheelsPanel_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
         }
 
-        private void RightWheelPropertiesPanel_DragDrop(object sender, DragEventArgs e)
+        private void RightWheelsPanel_DragDrop(object sender, DragEventArgs e)
         {
             try
             {
@@ -343,7 +343,7 @@ namespace BxDRobotExporter.Wizard
                     WheelSlotPanel panel = new WheelSlotPanel();
                     panel.WheelTypeChanged += Panel_WheelTypeChanged;
                     rightSlots.Add(panel);
-                    RightWheelsGroup.Controls.Add(panel);
+                    RightWheelsPanel.Controls.Add(panel);
                     switch (WizardData.Instance.driveTrain)
                     {
                         case WizardData.WizardDriveTrain.TANK:
@@ -369,12 +369,12 @@ namespace BxDRobotExporter.Wizard
             catch (Exception f) { }
         }
 
-        private void LeftWheelPropertiesPanel_DragEnter(object sender, DragEventArgs e)
+        private void LeftWheelsPanel_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
         }
 
-        private void LeftWheelPropertiesPanel_DragDrop(object sender, DragEventArgs e)
+        private void LeftWheelsPanel_DragDrop(object sender, DragEventArgs e)
         {
             try
             {
@@ -384,7 +384,7 @@ namespace BxDRobotExporter.Wizard
                     WheelSlotPanel panel = new WheelSlotPanel();
                     panel.WheelTypeChanged += Panel_WheelTypeChanged;
                     leftSlots.Add(panel);
-                    LeftWheelsGroup.Controls.Add(panel);
+                    LeftWheelsPanel.Controls.Add(panel);
                     switch (WizardData.Instance.driveTrain)
                     {
                         case WizardData.WizardDriveTrain.TANK:
@@ -412,24 +412,24 @@ namespace BxDRobotExporter.Wizard
 
         public String RemoveWheelSetupPanel(String s)
         {
-            foreach (Object wheel in LeftWheelsGroup.Controls)
+            foreach (Object wheel in LeftWheelsPanel.Controls)
             {
                 if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
                 {
                     if (((WheelSlotPanel)wheel).name.Equals(s))
                     {
-                        LeftWheelsGroup.Controls.Remove(((WheelSlotPanel)wheel));
+                        LeftWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));
                         leftSlots.Remove(((WheelSlotPanel)wheel));
                     }
                 }
             }
-            foreach (Object wheel in RightWheelsGroup.Controls)
+            foreach (Object wheel in RightWheelsPanel.Controls)
             {
                 if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
                 {
                     if (((WheelSlotPanel)wheel).name.Equals(s))
                     {
-                        RightWheelsGroup.Controls.Remove(((WheelSlotPanel)wheel));
+                        RightWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));
                         rightSlots.Remove(((WheelSlotPanel)wheel));
                     }
                 }
