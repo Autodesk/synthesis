@@ -323,9 +323,13 @@ namespace BxDRobotExporter.Wizard
 
         private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
         {
-            StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.SelectedItem.ToString()]);
-            NodeListBox.DoDragDrop(NodeListBox.SelectedItems, DragDropEffects.Copy |   
-                        DragDropEffects.Move);  
+            try
+            {
+                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.SelectedItem.ToString()]);
+                NodeListBox.DoDragDrop(NodeListBox.SelectedItems, DragDropEffects.Copy |
+                            DragDropEffects.Move);
+            }
+            catch (Exception) { }
         }
 
         private void RightWheelPropertiesPanel_DragEnter(object sender, DragEventArgs e)
@@ -366,7 +370,7 @@ namespace BxDRobotExporter.Wizard
                     NodeListBox.Items.Remove(r);
                 }
             }
-            catch (Exception f) { }
+            catch (Exception) { }
         }
 
         private void LeftWheelPropertiesPanel_DragEnter(object sender, DragEventArgs e)
@@ -407,7 +411,7 @@ namespace BxDRobotExporter.Wizard
                     NodeListBox.Items.Remove(r);
                 }
             }
-            catch (Exception f) { }
+            catch (Exception) { }
             }
 
         public String RemoveWheelSetupPanel(String s)
@@ -451,7 +455,7 @@ namespace BxDRobotExporter.Wizard
             {
                 StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.Items[NodeListBox.SelectedIndex].ToString()]);
             }
-            catch (Exception f) { }
+            catch (Exception) { }
         }
        
         private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
