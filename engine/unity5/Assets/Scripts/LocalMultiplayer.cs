@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using Assets.Scripts.FSM;
+using Synthesis.FSM;
 using System.Linq;
 using UnityEngine.Analytics;
+using Synthesis.GUI;
+using Synthesis.DriverPractice;
+using Synthesis.GUI.Scrollables;
+using Synthesis.States;
+using Synthesis.Utils;
 
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer

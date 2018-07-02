@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.FSM;
+﻿using Synthesis.FSM;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,17 +7,18 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Analytics;
+using Synthesis.GUI;
+using Synthesis.FEA;
 
-namespace Assets.Scripts.FEA
+namespace Synthesis.States
 {
     public class SaveReplayState : State
     {
-        string fieldPath;
+        readonly string fieldPath;
+        readonly List<Tracker> trackers;
+        readonly List<List<ContactDescriptor>> contacts;
+        readonly GameObject canvas;
 
-        List<Tracker> trackers;
-        List<List<ContactDescriptor>> contacts;
-
-        GameObject canvas;
         Button saveButton;
         Button cancelButton;
         Text replayNameText;

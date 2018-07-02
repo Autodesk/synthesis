@@ -6,12 +6,20 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.FEA;
-using Assets.Scripts.BUExtensions;
-using Assets.Scripts.FSM;
-using Assets.Scripts;
-using Assets.Scripts.Utils;
+using Synthesis.FEA;
+using Synthesis.FSM;
 using UnityEngine.SceneManagement;
+using Synthesis.BUExtensions;
+using Synthesis.DriverPractice;
+using Synthesis.GUI;
+using Synthesis.InputControl;
+using Synthesis.MixAndMatch;
+using Synthesis.RigidNode;
+using Synthesis.RobotCamera;
+using Synthesis.Sensors;
+using Synthesis.States;
+using Synthesis.StatePacket;
+using Synthesis.Utils;
 
 /// <summary>
 /// To be attached to all robot parent objects.
@@ -19,64 +27,56 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class Robot : StateBehaviour<MainState>
 {
-    private bool isInitialized;
+    public bool IsResetting { get; private set; } = false;
+
+    public UnityPacket.OutputStatePacket Packet { get; set; }
+    
+    public int ControlIndex { get; set; } = 0;
+    
+    public string RobotDirectory { get; private set; }
+    public string RobotName { get; private set; }
+
+    public GameObject ManipulatorObject { get; private set; }
+
+    public bool RobotHasManipulator { get; set; }
+    public bool RobotIsMixAndMatch { get; set; }
+
+    public float Speed { get; private set; }
+    public float Weight { get; private set; }
+    public float AngularVelocity { get; private set; }
+    public float Acceleration { get; private set; }
 
     private const float ResetVelocity = 0.05f;
-    private const int SolverIterations = 100;
+    private const float HoldTime = 0.8f;
+
+    private readonly UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
 
     private RigidNode_Base rootNode;
 
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
-    private UnityPacket unityPacket;
-
-    private bool isResettingOrientation;
-    public bool IsResetting = false;
-
     private DriverPracticeRobot dpmRobot;
-
-    public bool ControlsEnabled = true;
 
     private Vector3 nodeToRobotOffset;
 
-    public UnityPacket.OutputStatePacket Packet;
-
-    public int ControlIndex = 0;
-
-    private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
-
-    public string RobotDirectory { get; private set; }
-    public string RobotName;
-
     private RobotCameraManager robotCameraManager;
 
-    public GameObject ManipulatorObject;
     private RigidNode_Base manipulatorNode;
 
-    UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
+    private string wheelPath;
+    
+    private float wheelRadius;
+    private float wheelFriction;
+    private float wheelLateralFriction;
+    private float wheelMass;
 
-    public bool RobotHasManipulator;
-    public bool RobotIsMixAndMatch;
-    public bool RobotIsMecanum;
+    private bool robotIsMecanum;
 
-    string wheelPath;
-    float wheelRadius;
-    float wheelFriction;
-    float wheelLateralFriction;
-    float wheelMass;
+    private Vector3 offset;
 
-    Vector3 offset;
-
-    private DynamicCamera cam;
-
-    //Robot statistics output
-    public float Speed { get; private set; }
     private float oldSpeed;
-    public float Weight { get; private set; }
-    public float AngularVelocity { get; private set; }
-    public float Acceleration { get; private set; }
 
     /// <summary>
     /// Called once per frame to ensure all rigid bodie components are activated
@@ -91,6 +91,7 @@ public class Robot : StateBehaviour<MainState>
             return;
         }
 
+        // TODO: Utilize the state machine here if possible
         if (!IsResetting)
         {
             if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
@@ -102,17 +103,12 @@ public class Robot : StateBehaviour<MainState>
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 SceneManager.LoadScene("Scene");
             }
-
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&  !MixAndMatchMode.setPresetPanelOpen &&
                 !State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
-                if (Time.time - keyDownTime > HOLD_TIME)
-                {
-                    IsResetting = true;
+                if (Time.time - keyDownTime > HoldTime)
                     BeginReset();
-                }
             }
-
             else if (InputControl.GetButtonUp(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
             {
                 BeginReset();
@@ -130,22 +126,19 @@ public class Robot : StateBehaviour<MainState>
     /// </summary>
     void FixedUpdate()
     {
-        if (rootNode != null && ControlsEnabled)
+        if (rootNode != null)
         {
-
-            if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, ControlIndex, RobotIsMecanum);
-            else DriveJoints.UpdateAllMotors(rootNode, emptyDIO, ControlIndex, RobotIsMecanum);
+            if (Packet != null)
+                DriveJoints.UpdateAllMotors(rootNode, Packet.dio, ControlIndex, robotIsMecanum);
+            else
+                DriveJoints.UpdateAllMotors(rootNode, emptyDIO, ControlIndex, robotIsMecanum);
 
             if (RobotHasManipulator)
-            {
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, ControlIndex);
-            }
         }
 
         if (IsResetting)
-        {
             Resetting();
-        }
 
         UpdateStats();
     }
@@ -157,7 +150,7 @@ public class Robot : StateBehaviour<MainState>
     /// <returns></returns>
     public bool InitializeRobot(string directory)
     {
-        RobotIsMecanum = false;
+        robotIsMecanum = false;
 
         if (RobotIsMixAndMatch)
         {
@@ -167,7 +160,7 @@ public class Robot : StateBehaviour<MainState>
             wheelRadius = RobotTypeManager.WheelRadius;
             wheelMass = RobotTypeManager.WheelMass;
 
-            RobotIsMecanum = RobotTypeManager.IsMecanum;
+            robotIsMecanum = RobotTypeManager.IsMecanum;
         }
 
         #region Robot Initialization
@@ -190,9 +183,7 @@ public class Robot : StateBehaviour<MainState>
 
         //Removes Driver Practice component if it exists
         if (dpmRobot != null)
-        {
             Destroy(dpmRobot);
-        }
 
         transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
@@ -214,7 +205,7 @@ public class Robot : StateBehaviour<MainState>
 
 
         //Initializes the nodes and creates joints for the robot
-        if (RobotIsMixAndMatch && !RobotIsMecanum) //If the user is in MaM and the robot they select is not mecanum, create the nodes and replace the wheel meshes to match those selected
+        if (RobotIsMixAndMatch && !robotIsMecanum) //If the user is in MaM and the robot they select is not mecanum, create the nodes and replace the wheel meshes to match those selected
         {
             //Load Node_0, the base of the robot
             RigidNode node = (RigidNode)nodes[0];
@@ -355,8 +346,6 @@ public class Robot : StateBehaviour<MainState>
         RotateRobot(robotStartOrientation);
 
         RobotName = new DirectoryInfo(directory).Name;
-
-        isInitialized = true;
 
         //Initializes Driver Practice component
         dpmRobot = gameObject.AddComponent<DriverPracticeRobot>();
@@ -630,7 +619,6 @@ public class Robot : StateBehaviour<MainState>
     public void EndReset()
     {
         IsResetting = false;
-        isResettingOrientation = false;
 
         foreach (RigidNode n in rootNode.ListAllNodes())
         {

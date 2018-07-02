@@ -3,65 +3,72 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using BulletUnity;
-using Assets.Scripts.FSM;
+using Synthesis.FSM;
 using System.IO;
+using Synthesis.GUI;
+using Synthesis.States;
+using Synthesis.Utils;
 
-public class MaMSimUI : StateBehaviour<MainState> {
-    GameObject canvas;
-
-    GameObject mixAndMatchPanel;
-    GameObject multiplayerPanel;
-
-    private SimUI simUI;
-
-    private void Start()
+namespace Synthesis.MixAndMatch
+{
+    public class MaMSimUI : StateBehaviour<MainState>
     {
-        FindElements();
-    }
+        GameObject canvas;
 
-    private void OnGUI()
-    {
-        UserMessageManager.Render();
-    }
+        GameObject mixAndMatchPanel;
+        GameObject multiplayerPanel;
 
-    /// <summary>
-    /// Finds all the necessary UI elements that need to be updated/modified
-    /// </summary>
-    private void FindElements()
-    {
-        canvas = GameObject.Find("Canvas");
+        private SimUI simUI;
 
-        mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
-        multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
-
-        simUI = StateMachine.gameObject.GetComponent<SimUI>();
-    }
-
-    public void ToggleMaMPanel()
-    {
-        if (mixAndMatchPanel.activeSelf)
+        private void Start()
         {
-            mixAndMatchPanel.SetActive(false);
+            FindElements();
         }
-        else
-        {
-            simUI.EndOtherProcesses();
-            mixAndMatchPanel.SetActive(true);
-        }
-    }
 
-    public void ToggleMaMInMultiplayer()
-    {
-        if (mixAndMatchPanel.activeSelf)
+        private void OnGUI()
         {
-            mixAndMatchPanel.SetActive(false);
-            multiplayerPanel.SetActive(true);
+            UserMessageManager.Render();
         }
-        else
+
+        /// <summary>
+        /// Finds all the necessary UI elements that need to be updated/modified
+        /// </summary>
+        private void FindElements()
         {
-            simUI.EndOtherProcesses();
-            mixAndMatchPanel.SetActive(true);
-            multiplayerPanel.SetActive(true);
+            canvas = GameObject.Find("Canvas");
+
+            mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
+            multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
+
+            simUI = StateMachine.gameObject.GetComponent<SimUI>();
+        }
+
+        public void ToggleMaMPanel()
+        {
+            if (mixAndMatchPanel.activeSelf)
+            {
+                mixAndMatchPanel.SetActive(false);
+            }
+            else
+            {
+                simUI.EndOtherProcesses();
+                mixAndMatchPanel.SetActive(true);
+            }
+        }
+
+        public void ToggleMaMInMultiplayer()
+        {
+            if (mixAndMatchPanel.activeSelf)
+            {
+                mixAndMatchPanel.SetActive(false);
+                multiplayerPanel.SetActive(true);
+            }
+            else
+            {
+                simUI.EndOtherProcesses();
+                mixAndMatchPanel.SetActive(true);
+                multiplayerPanel.SetActive(true);
+            }
         }
     }
 }
