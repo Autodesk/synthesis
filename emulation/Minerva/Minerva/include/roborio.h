@@ -55,7 +55,11 @@ namespace minerva{
 		struct DIOSystem{
 			tDIO::tDO outputs;
 			tDIO::tOutputEnable enabled_outputs;
-			
+			tDIO::tPulse pulses;
+			tDIO::tDI inputs;
+
+			uint8_t pulse_length;
+
 			struct PWMData{
 				uint8_t id;
 				uint8_t hardware_channel;

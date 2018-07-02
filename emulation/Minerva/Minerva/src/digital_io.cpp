@@ -74,15 +74,27 @@ namespace nFPGA{
 		uint16_t readOutputEnable_MXP(tRioStatusCode* status){}
 
 		void writePWMOutputSelect(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
-			//TODO
+			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio_state.digital_system.pwm_data){
+				if(pwm.id == bitfield_index){
+					pwm.hardware_channel = value;
+					return;
+				}
+			}
+			//TODO error handling 
 		}
 
 		uint8_t readPWMOutputSelect(uint8_t bitfield_index, tRioStatusCode* status){
-			//TODO
+			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio_state.digital_system.pwm_data){
+				if(pwm.id == bitfield_index){
+					return pwm.hardware_channel;
+				}
+			}
+			//TODO error handling 
 		}
 
 		void writePulse(tDIO::tPulse value, tRioStatusCode* status){
-			//TODO
+			minerva::roborio_state.digital_system.pulses = value;
+			//TODO this should only last for pulse_length seconds, and only one pulse should be active at a time?
 		}
 
 		void writePulse_Headers(uint16_t value, tRioStatusCode* status){}
@@ -91,7 +103,7 @@ namespace nFPGA{
 		void writePulse_MXP(uint16_t value, tRioStatusCode* status){}
 
 		tDIO::tPulse readPulse(tRioStatusCode* status){
-			//TODO
+			return minerva::roborio_state.digital_system.pulses;
 		}
 
 		uint16_t readPulse_Headers(tRioStatusCode* status){}
@@ -100,7 +112,7 @@ namespace nFPGA{
 		uint16_t readPulse_MXP(tRioStatusCode* status){}
 
 		tDIO::tDI readDI(tRioStatusCode* status){
-			//TODO
+			return minerva::roborio_state.digital_system.inputs;
 		}
 
 		uint16_t readDI_Headers(tRioStatusCode* status){}
@@ -125,11 +137,11 @@ namespace nFPGA{
 		}
 
 		void writePulseLength(uint8_t value, tRioStatusCode* status){
-			//TODO
+			minerva::roborio_state.digital_system.pulse_length = value;
 		}
 
 		uint8_t readPulseLength(tRioStatusCode* status){
-			//TODO
+			return minerva::roborio_state.digital_system.pulse_length;
 		}
 
 		void writePWMPeriodPower(uint16_t value, tRioStatusCode* status){
