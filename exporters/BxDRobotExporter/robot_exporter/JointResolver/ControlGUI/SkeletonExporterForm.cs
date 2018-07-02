@@ -53,9 +53,8 @@ namespace JointResolver.ControlGUI
             }
 
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
-
-            RigidNode_Base Skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
             
+            RigidNode_Base Skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
             SynthesisGUI.Instance.SkeletonBase = Skeleton;
         }
 
@@ -68,7 +67,7 @@ namespace JointResolver.ControlGUI
         {
             if (occurrences.Count == 0)
             {
-                throw new ArgumentException("ERROR: 0 Occurrences passed to ExportSkeletonLite", "occurrences");
+                return null;
             }
 
             #region CenterJoints
@@ -123,22 +122,7 @@ namespace JointResolver.ControlGUI
 
         private void ExporterWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Error != null)
-            {
-                ProgressLabel.Text = "An error occurred.";
-                #region DEBUG SWITCH
-#if DEBUG
-                MessageBox.Show(e.Error.ToString());
-#else
-                MessageBox.Show(e.Error.Message);
-#endif
-                #endregion
-                Close();
-            }
-            else
-            {
-                Close();
-            }
+            Close();
         }
     }
 }
