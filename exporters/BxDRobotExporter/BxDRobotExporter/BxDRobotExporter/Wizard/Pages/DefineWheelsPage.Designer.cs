@@ -106,6 +106,7 @@
             // 
             // LeftWheelsPanel
             // 
+            this.LeftWheelsPanel.AutoScroll = true;
             this.LeftWheelsPanel.Location = new System.Drawing.Point(6, 19);
             this.LeftWheelsPanel.Name = "LeftWheelsPanel";
             this.LeftWheelsPanel.Size = new System.Drawing.Size(223, 414);
@@ -209,9 +210,10 @@
             // 
             // RightWheelsPanel
             // 
+            this.RightWheelsPanel.AutoScroll = true;
             this.RightWheelsPanel.Location = new System.Drawing.Point(6, 19);
             this.RightWheelsPanel.Name = "RightWheelsPanel";
-            this.RightWheelsPanel.Size = new System.Drawing.Size(209, 414);
+            this.RightWheelsPanel.Size = new System.Drawing.Size(210, 414);
             this.RightWheelsPanel.TabIndex = 7;
             this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
             this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragEnter);
@@ -221,7 +223,7 @@
             this.RightWheelsGroup.Controls.Add(this.RightWheelsPanel);
             this.RightWheelsGroup.Location = new System.Drawing.Point(241, 214);
             this.RightWheelsGroup.Name = "RightWheelsGroup";
-            this.RightWheelsGroup.Size = new System.Drawing.Size(221, 439);
+            this.RightWheelsGroup.Size = new System.Drawing.Size(219, 439);
             this.RightWheelsGroup.TabIndex = 2;
             this.RightWheelsGroup.TabStop = false;
             this.RightWheelsGroup.Text = "Right Wheels";
