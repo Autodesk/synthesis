@@ -28,24 +28,18 @@ namespace BxDRobotExporter.Wizard
             startPage.DeactivateNext += DeactivateNext;
             WizardPages.Add(startPage, WizardNavigator.WizardNavigatorState.StartEnabled);
             
-            //Step 2: Define Wheels
+            //Step 1: Define Wheels
             DefineWheelsPage defineWheelsPage = new DefineWheelsPage();
             defineWheelsPage.ActivateNext += ActivateNext;
             defineWheelsPage.DeactivateNext += DeactivateNext;
             WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.Clean);
 
-            //Step 3: Define other moving parts
+            //Step 2: Define other moving parts
             DefineMovingPartsPage defineMovingPartsPage = new DefineMovingPartsPage();
             defineMovingPartsPage.ActivateNext += ActivateNext;
             defineMovingPartsPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(defineMovingPartsPage, WizardNavigator.WizardNavigatorState.Clean);
-
-            //Step 4: Review and finish
-            ReviewAndFinishPage reviewAndFinishPage = new ReviewAndFinishPage();
-            reviewAndFinishPage.ActivateNext += ActivateNext;
-            reviewAndFinishPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(reviewAndFinishPage, WizardNavigator.WizardNavigatorState.FinishEnabled);
-
+            WizardPages.Add(defineMovingPartsPage, WizardNavigator.WizardNavigatorState.FinishEnabled);
+            
             WizardPages.BeginWizard();
             WizardPages.FinishClicked += delegate ()
             {
