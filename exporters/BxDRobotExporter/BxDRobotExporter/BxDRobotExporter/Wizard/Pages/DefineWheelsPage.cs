@@ -20,7 +20,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         private int checkedCount = 0;
         private int totalMass = 0;
-
+        private double inputMass = 0;
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
@@ -37,10 +37,6 @@ namespace BxDRobotExporter.Wizard
             WheelSetupPanel.remove += new OnWheelSetupPanelRemove(this.RemoveWheelSetupPanel);
             WheelSetupPanel.hover += new OnWheelSetupPanelHover(this.WheelSetupHover);
             InitializeComponent();
-            this.VisibleChanged += delegate (object sender, EventArgs e)
-            {
-                if (Visible) ValidateInput();
-            };
             RightWheelsPanel.AllowDrop = true;
             LeftWheelsPanel.AllowDrop = true;
             NodeListBox.AllowDrop = true;
@@ -146,29 +142,10 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
             OnInvalidatePage();
-            ValidateInput();
             //checkedListItems.Clear();
             //UpdateWheelPanes();
         }
-
-        /// <summary>
-        /// Makes sure all of the wheels are set correctly.
-        /// </summary>
-        private void ValidateInput()
-        {
-            if (totalMass != 0.0f)
-            {
-                WarningLabel.Text = string.Empty;
-                OnActivateNext();
-            }
-            else
-            {
-                WarningLabel.Text = string.Format("Please enter a Robot Weight");
-                OnDeactivateNext();
-            }
-            
-        }
-
+        
         /// <summary>
         /// Validates input
         /// </summary>
@@ -176,7 +153,6 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void Panel_WheelTypeChanged(object sender, WheelTypeChangedEventArgs e)
         {
-            ValidateInput();
         }
 
         /// <summary>
@@ -318,7 +294,13 @@ namespace BxDRobotExporter.Wizard
 
         private void UpdateMassCount()
         {
-             ValidateInput();
+            if (this.MassTypeSelector.SelectedIndex == 0)
+            {
+                totalMass = (int)Math.Round(Convert.ToDouble(this.numericUpDown1.Value) / 2.20462);
+            } else
+            {
+                totalMass = (int)Math.Round(Convert.ToDouble(this.numericUpDown1.Value));
+            }
         }
 
         private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
@@ -460,10 +442,7 @@ namespace BxDRobotExporter.Wizard
        
         private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
         {
-
-            totalMass = (int)Math.Round(this.numericUpDown1.Value);
-            ValidateInput();
-
+            UpdateMassCount();
         }
     }
 }
