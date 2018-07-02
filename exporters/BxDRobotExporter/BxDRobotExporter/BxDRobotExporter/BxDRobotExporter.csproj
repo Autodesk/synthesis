@@ -183,12 +183,6 @@
       <DependentUpon>DefineWheelsPage.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\IWizardPage.cs" />
-    <Compile Include="Wizard\Pages\ReviewAndFinishPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Pages\ReviewAndFinishPage.Designer.cs">
-      <DependentUpon>ReviewAndFinishPage.cs</DependentUpon>
-    </Compile>
     <Compile Include="Wizard\Pages\StartPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -264,9 +258,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\DefineWheelsPage.resx">
       <DependentUpon>DefineWheelsPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Pages\ReviewAndFinishPage.resx">
-      <DependentUpon>ReviewAndFinishPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\StartPage.resx">
       <DependentUpon>StartPage.cs</DependentUpon>

@@ -27,31 +27,19 @@ namespace BxDRobotExporter.Wizard
             startPage.ActivateNext += ActivateNext;
             startPage.DeactivateNext += DeactivateNext;
             WizardPages.Add(startPage, WizardNavigator.WizardNavigatorState.StartEnabled);
-
-            //Step 1: Basic Robot Information
-            //BasicRobotInfoPage basicRobotInfoPage = new BasicRobotInfoPage();
-            //basicRobotInfoPage.ActivateNext += ActivateNext;
-            //basicRobotInfoPage.DeactivateNext += DeactivateNext;
-            //WizardPages.Add(basicRobotInfoPage, WizardNavigator.WizardNavigatorState.NextDisabled);
             
-            //Step 2: Define Wheels
+            //Step 1: Define Wheels
             DefineWheelsPage defineWheelsPage = new DefineWheelsPage();
             defineWheelsPage.ActivateNext += ActivateNext;
             defineWheelsPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.NextDisabled);
+            WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.Clean);
 
-            //Step 3: Define other moving parts
+            //Step 2: Define other moving parts
             DefineMovingPartsPage defineMovingPartsPage = new DefineMovingPartsPage();
             defineMovingPartsPage.ActivateNext += ActivateNext;
             defineMovingPartsPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(defineMovingPartsPage, WizardNavigator.WizardNavigatorState.Clean);
-
-            //Step 4: Review and finish
-            ReviewAndFinishPage reviewAndFinishPage = new ReviewAndFinishPage();
-            reviewAndFinishPage.ActivateNext += ActivateNext;
-            reviewAndFinishPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(reviewAndFinishPage, WizardNavigator.WizardNavigatorState.FinishEnabled);
-
+            WizardPages.Add(defineMovingPartsPage, WizardNavigator.WizardNavigatorState.FinishEnabled);
+            
             WizardPages.BeginWizard();
             WizardPages.FinishClicked += delegate ()
             {
