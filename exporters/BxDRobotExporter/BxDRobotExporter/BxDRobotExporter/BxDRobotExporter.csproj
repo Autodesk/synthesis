@@ -157,12 +157,6 @@
     </Compile>
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="Wizard\Pages\BasicRobotInfoPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Pages\BasicRobotInfoPage.Designer.cs">
-      <DependentUpon>BasicRobotInfoPage.cs</DependentUpon>
-    </Compile>
     <Compile Include="Wizard\Components\DefinePartPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -180,12 +174,6 @@
     </Compile>
     <Compile Include="Wizard\OneClickExport\OneClickExportForm.Designer.cs">
       <DependentUpon>OneClickExportForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\Components\DataRow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Components\DataRow.Designer.cs">
-      <DependentUpon>DataRow.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\Data\WizardData.cs" />
     <Compile Include="Wizard\Pages\DefineWheelsPage.cs">
@@ -265,9 +253,6 @@
     <EmbeddedResource Include="Wizard\Components\WheelSlot.resx">
       <DependentUpon>WheelSlot.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Pages\BasicRobotInfoPage.resx">
-      <DependentUpon>BasicRobotInfoPage.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Components\DefinePartPanel.resx">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -276,9 +261,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\OneClickExport\OneClickExportForm.resx">
       <DependentUpon>OneClickExportForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Components\DataRow.resx">
-      <DependentUpon>DataRow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\DefineWheelsPage.resx">
       <DependentUpon>DefineWheelsPage.cs</DependentUpon>
