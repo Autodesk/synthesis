@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using Assets.Scripts.FSM;
+using Synthesis.FSM;
+using Synthesis.InputControl;
+using Synthesis.RobotCamera;
+using Synthesis.States;
 
 public class DynamicCamera : MonoBehaviour
 {

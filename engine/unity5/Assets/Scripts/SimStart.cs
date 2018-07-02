@@ -1,11 +1,11 @@
-﻿using Assets.Scripts.FSM;
-using Assets.Scripts.Utils;
+﻿using Synthesis.FSM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Synthesis.States;
 
 public class SimStart : MonoBehaviour
 {

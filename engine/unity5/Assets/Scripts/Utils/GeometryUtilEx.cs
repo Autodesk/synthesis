@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Assets.Scripts.Utils
+namespace Synthesis.Utils
 {
     /// <summary>
     /// This class is used for shrinking a collision mesh to compensate for collision margins.

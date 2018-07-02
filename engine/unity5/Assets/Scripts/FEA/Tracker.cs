@@ -1,14 +1,15 @@
-﻿using Assets.Scripts.BUExtensions;
-using Assets.Scripts.FSM;
+﻿using Synthesis.FSM;
 using BulletSharp;
 using BulletUnity;
+using Synthesis.BUExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Synthesis.States;
 
-namespace Assets.Scripts.FEA
+namespace Synthesis.FEA
 {
     public class Tracker : StateBehaviour<MainState>
     {

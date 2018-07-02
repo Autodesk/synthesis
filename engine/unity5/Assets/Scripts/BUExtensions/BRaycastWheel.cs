@@ -1,16 +1,17 @@
 ﻿using BulletSharp;
 using BulletUnity;
+using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Assets.Scripts.BUExtensions
+namespace Synthesis.BUExtensions
 {
     public class BRaycastWheel : MonoBehaviour
     {
-        private RigidNode node;
+        private RigidNode.RigidNode node;
         private Vector3 axis;
         private BRaycastRobot robot;
         private BulletSharp.Math.Vector3 basePoint;
@@ -73,11 +74,11 @@ namespace Assets.Scripts.BUExtensions
         /// Creates a wheel and attaches it to the parent BRaycastVehicle.
         /// </summary>
         /// <param name="node"></param>
-        public void CreateWheel(RigidNode node)
+        public void CreateWheel(RigidNode.RigidNode node)
         {
             this.node = node;
 
-            RigidNode parent = (RigidNode)node.GetParent();
+            RigidNode.RigidNode parent = (RigidNode.RigidNode)node.GetParent();
             robot = parent.MainObject.GetComponent<BRaycastRobot>();
 
             if (robot == null)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Assets.Scripts.FSM
+namespace Synthesis.FSM
 {
     public class StateMachine : MonoBehaviour
     {

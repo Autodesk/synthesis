@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Synthesis.BUExtensions;
 using BulletSharp;
 using BulletUnity;
 using UnityEngine;
+using Synthesis.States;
 
-namespace Assets.Scripts.FEA
+namespace Synthesis.FEA
 {
     public class CollisionTracker : ICollisionCallback
     {
