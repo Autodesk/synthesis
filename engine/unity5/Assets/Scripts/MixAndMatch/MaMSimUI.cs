@@ -6,8 +6,7 @@ using BulletUnity;
 using Assets.Scripts.FSM;
 using System.IO;
 
-public class MaMSimUI : MonoBehaviour {
-    MainState main;
+public class MaMSimUI : StateBehaviour<MainState> {
     GameObject canvas;
 
     GameObject mixAndMatchPanel;
@@ -15,7 +14,7 @@ public class MaMSimUI : MonoBehaviour {
 
     private SimUI simUI;
 
-    void Start()
+    private void Start()
     {
         FindElements();
     }
@@ -32,8 +31,8 @@ public class MaMSimUI : MonoBehaviour {
     {
         canvas = GameObject.Find("Canvas");
 
-        mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
-        multiplayerPanel = AuxFunctions.FindObject(canvas, "MultiplayerPanel");
+        mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
+        multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
 
         simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
     }

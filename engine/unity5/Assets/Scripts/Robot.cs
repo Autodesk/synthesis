@@ -17,7 +17,7 @@ using UnityEngine.SceneManagement;
 /// To be attached to all robot parent objects.
 /// Handles all robot-specific interaction such as driving joints, resetting, and orienting robot.
 /// </summary>
-public class Robot : MonoBehaviour
+public class Robot : StateBehaviour<MainState>
 {
     private bool isInitialized;
 
@@ -39,8 +39,6 @@ public class Robot : MonoBehaviour
     public bool ControlsEnabled = true;
 
     private Vector3 nodeToRobotOffset;
-
-    private MainState mainState;
 
     public UnityPacket.OutputStatePacket Packet;
 
@@ -81,15 +79,6 @@ public class Robot : MonoBehaviour
     public float Acceleration { get; private set; }
 
     /// <summary>
-    /// Called when robot is first initialized
-    /// </summary>
-    void Start()
-    {
-
-        StateMachine.Instance.Link<MainState>(this);
-    }
-
-    /// <summary>
     /// Called once per frame to ensure all rigid bodie components are activated
     /// </summary>
     void Update()
@@ -110,12 +99,12 @@ public class Robot : MonoBehaviour
             }
             else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetField))
             {
-                AuxFunctions.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 SceneManager.LoadScene("Scene");
             }
 
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&  !MixAndMatchMode.setPresetPanelOpen &&
-                !mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+                !State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HOLD_TIME)
                 {
@@ -166,7 +155,7 @@ public class Robot : MonoBehaviour
     /// </summary>
     /// <param name="directory">folder directory of robot</param>
     /// <returns></returns>
-    public bool InitializeRobot(string directory, MainState source)
+    public bool InitializeRobot(string directory)
     {
         RobotIsMecanum = false;
 
@@ -199,15 +188,11 @@ public class Robot : MonoBehaviour
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sensorManager.ResetSensorLists();
 
-
-
         //Removes Driver Practice component if it exists
         if (dpmRobot != null)
         {
             Destroy(dpmRobot);
         }
-
-        mainState = source; //stores the main state object
 
         transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
@@ -259,7 +244,7 @@ public class Robot : MonoBehaviour
             RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelPath + "\\skeleton.bxdj");
 
             Material[] materials = new Material[0];
-            AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+            Auxiliary.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
             {
                 meshList.Add(meshu);
 
@@ -534,9 +519,9 @@ public class Robot : MonoBehaviour
         if (rigidBody != null && !rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
 
-        if (!mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+        if (!State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
         {
-            Debug.Log(mainState.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState);
+            Debug.Log(State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState);
             IsResetting = true;
 
             foreach (RigidNode n in rootNode.ListAllNodes())
@@ -840,7 +825,7 @@ public class Robot : MonoBehaviour
             AngularVelocity = (float)Math.Round(Math.Abs(mainNode.GetComponent<BRigidBody>().angularVelocity.magnitude), 3);
             Acceleration = (float)Math.Round((currentSpeed - oldSpeed) / Time.deltaTime, 3);
             oldSpeed = currentSpeed;
-            if (!mainState.IsMetric)
+            if (!State.IsMetric)
             {
                 Speed = (float)Math.Round(Speed * 3.28084, 3);
                 Acceleration = (float)Math.Round(Acceleration * 3.28084, 3);

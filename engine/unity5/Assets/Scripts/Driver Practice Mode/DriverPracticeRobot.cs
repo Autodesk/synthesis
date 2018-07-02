@@ -14,9 +14,8 @@ using Assets.Scripts.FSM;
 /// To be added to all robots, this class 'cheats physics' to overcome the limitations that our current simulation has to create a beter environment for drivers to practice and interact with game objects.
 /// 
 /// </summary>
-public class DriverPracticeRobot : MonoBehaviour
+public class DriverPracticeRobot : StateBehaviour<MainState>
 {
-
     public UnityEngine.Vector3[] positionOffset; //position offset vectors for gamepiece while its being held
     public List<float[]> releaseVelocity; //release velocity vectors for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
     public float[] primaryVelocity = new float[3];
@@ -69,11 +68,6 @@ public class DriverPracticeRobot : MonoBehaviour
     private DynamicCamera.CameraState lastCameraState;
 
     public int controlIndex;
-
-    private void Awake()
-    {
-        StateMachine.Instance.Link<MainState>(this);
-    }
 
     /// <summary>
     /// If configuration file exists, loads information and auto-configures robot.
@@ -417,7 +411,7 @@ public class DriverPracticeRobot : MonoBehaviour
         {
             try //In case the game piece somehow doens't exist in the scene
             {
-                GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                GameObject gameobject = Instantiate(Auxiliary.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
                 gameobject.name = gamepieceNames[index] + "(Clone)";
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
@@ -455,7 +449,7 @@ public class DriverPracticeRobot : MonoBehaviour
                 if (spawnIndicator != null) Destroy(spawnIndicator);
                 if (spawnIndicator == null)
                 {
-                    spawnIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                    spawnIndicator = Instantiate(Auxiliary.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
                     spawnIndicator.name = "SpawnIndicator";
                     Destroy(spawnIndicator.GetComponent<BRigidBody>());
                     if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
@@ -816,12 +810,12 @@ public class DriverPracticeRobot : MonoBehaviour
                 else if (counter == 3)
                 {
                     if (line.Equals("#Release Node")) counter++;
-                    else intakeNode[index] = AuxFunctions.FindObject(gameObject, line);
+                    else intakeNode[index] = Auxiliary.FindObject(gameObject, line);
                 }
                 else if (counter == 4)
                 {
                     if (line.Equals("#Release Position")) counter++;
-                    else releaseNode[index] = AuxFunctions.FindObject(gameObject, line);
+                    else releaseNode[index] = Auxiliary.FindObject(gameObject, line);
                 }
                 else if (counter == 5)
                 {

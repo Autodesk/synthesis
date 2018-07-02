@@ -63,14 +63,10 @@ namespace Assets.Scripts.FEA
             BRigidBody obA = pm.Body0.UserObject as BRigidBody;
             BRigidBody obB = pm.Body1.UserObject as BRigidBody;
             BRigidBody robotBody = obA != null && obA.gameObject.name.StartsWith("node") ? obA : obB != null && obB.gameObject.name.StartsWith("node") ? obB : null;
-
-            if (robotBody == null)
-                return;
-
-            if (pm.NumContacts < 1)
-                return;
-
             int numContacts = pm.NumContacts;
+
+            if (robotBody == null || numContacts < 1)
+                return;
 
             for (int i = 0; i < Math.Min(framesPassed, numContacts); i++)
             {

@@ -5,10 +5,9 @@ using Assets.Scripts.FSM;
 /// <summary>
 /// This class handles all GUI elements related to robot camera in Unity
 /// </summary>
-class RobotCameraGUI : MonoBehaviour
+class RobotCameraGUI : StateBehaviour<MainState>
 {
     //Stuff needed to make gui work
-    MainState main;
     GameObject canvas;
     DynamicCamera dynamicCamera;
     DynamicCamera.CameraState preConfigCamState;
@@ -56,29 +55,17 @@ class RobotCameraGUI : MonoBehaviour
     private bool isEditingAngle;
     private bool isEditingFOV;
 
-    /// <summary>
-    /// Link the robot camera GUI to main state
-    /// </summary>
-    private void Awake()
-    {
-        StateMachine.Instance.Link<MainState>(this);
-    }
-
     private void Start()
     {
         FindGUIElements();
+        dynamicCamera = State.DynamicCameraObject.GetComponent<DynamicCamera>();
     }
 
     private void Update()
     {
         //Make sure main state and dynamic camera get initialized
-        if (main == null)
-        {
-            main = StateMachine.Instance.FindState<MainState>();
-            dynamicCamera = main.DynamicCameraObject.GetComponent<DynamicCamera>();
-        }
         //Update gui about robot camera once main and dynamic camera is ready
-        else if (main != null && dynamicCamera != null)
+        if (dynamicCamera != null)
         {
             UpdateCameraWindow();
             if (indicatorActive)
@@ -103,11 +90,11 @@ class RobotCameraGUI : MonoBehaviour
     public void FindGUIElements()
     {
         canvas = GameObject.Find("Canvas");
-        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
+        sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
         //For robot camera view window
         robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
-        robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
+        robotCameraViewWindow = Auxiliary.FindObject(canvas, "RobotCameraPanelBorder");
 
         //For robot camera manager
         robotCameraListObject = GameObject.Find("RobotCameraList");
@@ -116,35 +103,35 @@ class RobotCameraGUI : MonoBehaviour
         //For camera indicator
         if (CameraIndicator == null)
         {
-            CameraIndicator = AuxFunctions.FindObject(robotCameraListObject, "CameraIndicator");
+            CameraIndicator = Auxiliary.FindObject(robotCameraListObject, "CameraIndicator");
         }
-        showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
+        showCameraButton = Auxiliary.FindObject(canvas, "ShowCameraButton");
 
         //For camera position and attachment configuration
-        configureCameraPanel = AuxFunctions.FindObject(canvas, "CameraConfigurationPanel");
-        configureRobotCameraButton = AuxFunctions.FindObject(canvas, "CameraConfigurationButton");
-        changeCameraNodeButton = AuxFunctions.FindObject(configureCameraPanel, "ChangeNodeButton");
-        cameraConfigurationModeButton = AuxFunctions.FindObject(configureCameraPanel, "ConfigurationMode");
-        cameraNodeText = AuxFunctions.FindObject(configureCameraPanel, "NodeText").GetComponent<Text>();
-        cancelNodeSelectionButton = AuxFunctions.FindObject(configureCameraPanel, "CancelNodeSelectionButton");
+        configureCameraPanel = Auxiliary.FindObject(canvas, "CameraConfigurationPanel");
+        configureRobotCameraButton = Auxiliary.FindObject(canvas, "CameraConfigurationButton");
+        changeCameraNodeButton = Auxiliary.FindObject(configureCameraPanel, "ChangeNodeButton");
+        cameraConfigurationModeButton = Auxiliary.FindObject(configureCameraPanel, "ConfigurationMode");
+        cameraNodeText = Auxiliary.FindObject(configureCameraPanel, "NodeText").GetComponent<Text>();
+        cancelNodeSelectionButton = Auxiliary.FindObject(configureCameraPanel, "CancelNodeSelectionButton");
 
         //For camera angle configuration
-        cameraAnglePanel = AuxFunctions.FindObject(canvas, "CameraAnglePanel");
-        xAngleEntry = AuxFunctions.FindObject(cameraAnglePanel, "xAngleEntry");
-        yAngleEntry = AuxFunctions.FindObject(cameraAnglePanel, "yAngleEntry");
-        zAngleEntry = AuxFunctions.FindObject(cameraAnglePanel, "zAngleEntry");
-        showAngleButton = AuxFunctions.FindObject(configureCameraPanel, "ShowCameraAngleButton");
-        editAngleButton = AuxFunctions.FindObject(cameraAnglePanel, "EditButton");
+        cameraAnglePanel = Auxiliary.FindObject(canvas, "CameraAnglePanel");
+        xAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "xAngleEntry");
+        yAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "yAngleEntry");
+        zAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "zAngleEntry");
+        showAngleButton = Auxiliary.FindObject(configureCameraPanel, "ShowCameraAngleButton");
+        editAngleButton = Auxiliary.FindObject(cameraAnglePanel, "EditButton");
 
         //For field of view configuration
-        cameraFOVPanel = AuxFunctions.FindObject(canvas, "CameraFOVPanel");
-        FOVEntry = AuxFunctions.FindObject(cameraFOVPanel, "FOVEntry");
-        showFOVButton = AuxFunctions.FindObject(configureCameraPanel, "ShowCameraFOVButton");
-        editFOVButton = AuxFunctions.FindObject(cameraFOVPanel, "EditButton");
+        cameraFOVPanel = Auxiliary.FindObject(canvas, "CameraFOVPanel");
+        FOVEntry = Auxiliary.FindObject(cameraFOVPanel, "FOVEntry");
+        showFOVButton = Auxiliary.FindObject(configureCameraPanel, "ShowCameraFOVButton");
+        editFOVButton = Auxiliary.FindObject(cameraFOVPanel, "EditButton");
         
-        lockPositionButton = AuxFunctions.FindObject(configureCameraPanel, "LockPositionButton");
-        lockAngleButton = AuxFunctions.FindObject(configureCameraPanel, "LockAngleButton");
-        lockFOVButton = AuxFunctions.FindObject(configureCameraPanel, "LockFOVButton");
+        lockPositionButton = Auxiliary.FindObject(configureCameraPanel, "LockPositionButton");
+        lockAngleButton = Auxiliary.FindObject(configureCameraPanel, "LockAngleButton");
+        lockFOVButton = Auxiliary.FindObject(configureCameraPanel, "LockFOVButton");
     }
     /// <summary>
     /// Updates the robot camera view window
@@ -152,7 +139,7 @@ class RobotCameraGUI : MonoBehaviour
     private void UpdateCameraWindow()
     {
         //Can use robot view when dynamicCamera is active
-        if (usingRobotView && main.DynamicCameraObject.activeSelf)
+        if (usingRobotView && State.DynamicCameraObject.activeSelf)
         {
             //Make sure there is camera on robot
             if (robotCameraManager.CurrentCamera != null)

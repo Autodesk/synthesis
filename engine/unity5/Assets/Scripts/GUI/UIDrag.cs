@@ -22,7 +22,7 @@ public class UIDrag : MonoBehaviour
         Rect rect = GetComponent<RectTransform>().rect;
 
         if (transform.parent.position.x < -0 ||
-            transform.parent.position.x > Screen.width  ||
+            transform.parent.position.x > Screen.width ||
             transform.parent.position.y < 0 ||
             transform.parent.position.y > Screen.width)
         {

@@ -125,7 +125,7 @@ public abstract class SensorBase : MonoBehaviour
         GameObject outputPanel = GameObject.Find(gameObject.name + "_Panel");
         if (outputPanel != null)
         {
-            GameObject inputField = AuxFunctions.FindObject(outputPanel, "Entry");
+            GameObject inputField = Auxiliary.FindObject(outputPanel, "Entry");
             inputField.GetComponent<InputField>().text = Math.Round(ReturnOutput(), 3).ToString();
         }
     }

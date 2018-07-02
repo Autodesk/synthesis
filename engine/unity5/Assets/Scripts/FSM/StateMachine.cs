@@ -1,75 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Assets.Scripts.FSM
 {
     public class StateMachine : MonoBehaviour
     {
-        private Stack<SimState> activeStates;
-        private Dictionary<Type, List<Behaviour>> stateBehaviours;
-        private Dictionary<Type, List<GameObject>> stateGameObjects;
-
+        private Stack<State> activeStates;
+        private readonly Dictionary<Type, Tuple<bool, HashSet<Behaviour>>> stateBehaviours;
+        private readonly Dictionary<Type, Tuple<bool, HashSet<GameObject>>> stateGameObjects;
+        
         /// <summary>
-        /// Used to enable and disable objects associated with the current state.
+        /// The global StateMachine instance.
         /// </summary>
-        private bool CurrentObjectsEnabled
-        {
-            set
-            {
-                if (CurrentState == null)
-                    return;
-
-                Type currentType = CurrentState.GetType();
-
-                if (stateBehaviours.ContainsKey(currentType))
-                {
-                    List<Behaviour> currentBehaviours = stateBehaviours[CurrentState.GetType()];
-
-                    if (currentBehaviours != null)
-                        foreach (Behaviour behaviour in currentBehaviours)
-                            if (behaviour != null)
-                                behaviour.enabled = value;
-                }
-
-                if (stateGameObjects.ContainsKey(currentType))
-                {
-                    List<GameObject> currentGameObjects = stateGameObjects[CurrentState.GetType()];
-
-                    if (currentGameObjects != null)
-                        foreach (GameObject gameObect in currentGameObjects)
-                            if (gameObect != null)
-                                gameObect.SetActive(value);
-                }
-            }
-        }
+        public static StateMachine Instance { get; private set; }
 
         /// <summary>
         /// The current state in the StateMachine.
         /// </summary>
-        public SimState CurrentState { get; private set; }
-
-        /// <summary>
-        /// The global StateMachine instance.
-        /// </summary>
-        public static StateMachine Instance
-        {
-            get
-            {
-                return (StateMachine)FindObjectOfType(typeof(StateMachine));
-            }
-        }
+        public State CurrentState { get; private set; }
 
         /// <summary>
         /// Initializes the StateMachine.
         /// </summary>
         private StateMachine()
         {
-            activeStates = new Stack<SimState>();
-            stateBehaviours = new Dictionary<Type, List<Behaviour>>();
-            stateGameObjects = new Dictionary<Type, List<GameObject>>();
+            activeStates = new Stack<State>();
+            stateBehaviours = new Dictionary<Type, Tuple<bool, HashSet<Behaviour>>>();
+            stateGameObjects = new Dictionary<Type, Tuple<bool, HashSet<GameObject>>>();
         }
 
         /// <summary>
@@ -77,9 +36,9 @@ namespace Assets.Scripts.FSM
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T FindState<T>() where T : SimState
+        public T FindState<T>() where T : State
         {
-            foreach (SimState state in activeStates)
+            foreach (State state in activeStates)
                 if (state is T)
                     return state as T;
             
@@ -91,15 +50,10 @@ namespace Assets.Scripts.FSM
         /// </summary>
         /// <typeparam name="T">The type of state with which to link the MonoBehaviour</typeparam>
         /// <param name="behaviour">The MonoBehaviour to link</param>
-        public void Link<T>(MonoBehaviour behaviour) where T : SimState
+        public void Link<T>(Behaviour behaviour, bool strict = true) where T : State
         {
-            if (!stateBehaviours.ContainsKey(typeof(T)))
-                stateBehaviours[typeof(T)] = new List<Behaviour>();
-            else if (stateBehaviours[typeof(T)].Contains(behaviour))
-                return;
-
-            behaviour.enabled = CurrentState is T;
-            stateBehaviours[typeof(T)].Add(behaviour);
+            if (Link<Behaviour, T>(stateBehaviours, behaviour, strict))
+                behaviour.enabled = CurrentState is T;
         }
 
         /// <summary>
@@ -107,50 +61,49 @@ namespace Assets.Scripts.FSM
         /// </summary>
         /// <typeparam name="T">The type of state with which to link the GameObject</typeparam>
         /// <param name="gameObject">The GameObject to link</param>
-        public void Link<T>(GameObject gameObject) where T : SimState
+        /// <param name="strict">When true, this GameObject should be disabled when a <see cref="State"/>
+        /// is pushed before the current one is popped.</param>
+        public void Link<T>(GameObject gameObject, bool strict = true) where T : State
         {
-            if (!stateGameObjects.ContainsKey(typeof(T)))
-                stateGameObjects[typeof(T)] = new List<GameObject>();
-            else if (stateGameObjects[typeof(T)].Contains(gameObject))
-                return;
-
-            gameObject.SetActive(CurrentState is T);
-            stateGameObjects[typeof(T)].Add(gameObject);
+            if (Link<GameObject, T>(stateGameObjects, gameObject, strict))
+                gameObject.SetActive(CurrentState is T);
         }
 
         /// <summary>
         /// Adds a new state to the StateMachine and pauses the current one if it exists.
         /// </summary>
         /// <param name="state"></param>
-        public void PushState(SimState state)
+        public void PushState(State state)
         {
             if (CurrentState != null)
                 CurrentState.Pause();
 
-            CurrentObjectsEnabled = false;
+            SetObjectsEnabled(false, false);
 
             if (!activeStates.Contains(state))
                 activeStates.Push(state);
 
             CurrentState = state;
+            CurrentState.Awake();
 
-            CurrentObjectsEnabled = true;
+            SetObjectsEnabled(true);
 
             CurrentState.Start();
+            CurrentState.Resume();
         }
 
         /// <summary>
         /// Removes the current state from the StateMachine.
         /// </summary>
-        public void PopState()
+        public bool PopState()
         {
             if (CurrentState == null)
-                return;
+                return false;
 
             CurrentState.Pause();
             CurrentState.End();
 
-            CurrentObjectsEnabled = false;
+            SetObjectsEnabled(false);
 
             activeStates.Pop();
 
@@ -158,7 +111,7 @@ namespace Assets.Scripts.FSM
             {
                 CurrentState = activeStates.First();
 
-                CurrentObjectsEnabled = true;
+                SetObjectsEnabled(true);
 
                 CurrentState.Resume();
             }
@@ -166,63 +119,120 @@ namespace Assets.Scripts.FSM
             {
                 CurrentState = null;
             }
+
+            return true;
         }
 
         /// <summary>
-        /// Creates the default state when the StateMachine is initialized.
+        /// Pops all open States and pushes the given State.
         /// </summary>
-        void Start()
+        /// <param name="state"></param>
+        public void ChangeState(State state)
         {
-            if (CurrentState != null)
+            while (PopState()) ;
+            PushState(state);
+        }
+
+        /// <summary>
+        /// Links the given item to the type of <see cref="State"/> specified.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="S"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="item"></param>
+        /// <param name="strict"></param>
+        /// <returns></returns>
+        private bool Link<T, S>(Dictionary<Type, Tuple<bool, HashSet<T>>> items, T item, bool strict)
+        {
+            if (!items.ContainsKey(typeof(S)))
+                items[typeof(S)] = Tuple.Create(strict, new HashSet<T>());
+            else if (items[typeof(S)].Item2.Contains(item))
+                return false;
+
+            items[typeof(S)].Item2.Add(item);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Used to enable and disable objects associated with the current state.
+        /// </summary>
+        /// <param name="objectsEnabled">true if the object should be enabled, otherwise false</param>
+        /// <param name="force">If true, then objects should always be disabled when
+        /// enabled = false, even if they have non-strict linking</param>
+        private bool SetObjectsEnabled(bool objectsEnabled, bool force = true)
+        {
+            if (CurrentState == null)
+                return false;
+
+            SetEnabled(stateBehaviours, force, (behaviour) => behaviour.enabled = objectsEnabled);
+            SetEnabled(stateGameObjects, force, (gameObject) => gameObject.SetActive(objectsEnabled));
+
+            return true;
+        }
+
+        /// <summary>
+        /// Enables or disables the given items via the callback method provided.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="force"></param>
+        /// <param name="setItemEnabled"></param>
+        private void SetEnabled<T>(Dictionary<Type, Tuple<bool, HashSet<T>>> items, bool force, Action<T> setItemEnabled)
+        {
+            Type currentType = CurrentState.GetType();
+            Tuple<bool, HashSet<T>> currentItems;
+
+            if (!items.ContainsKey(currentType) || (currentItems = items[currentType]) == null)
                 return;
 
-            PushState(new MainState());
+            currentItems.Item2.RemoveWhere(o => o.Equals(null));
+
+            if (!force && !currentItems.Item1)
+                return;
+
+            foreach (T value in currentItems.Item2)
+                setItemEnabled(value);
+        }
+
+        /// <summary>
+        /// Sets the Instance property to this active instance.
+        /// </summary>
+        private void Awake()
+        {
+            Instance = this;
         }
 
         /// <summary>
         /// Updates the current state.
         /// </summary>
-        void Update()
+        private void Update()
         {
-            if (CurrentState != null)
-                CurrentState.Update();
+            CurrentState?.Update();
         }
 
         /// <summary>
         /// LateUpdates the current state.
         /// </summary>
-        void LateUpdate()
+        private void LateUpdate()
         {
-            if (CurrentState != null)
-                CurrentState.LateUpdate();
+            CurrentState?.LateUpdate();
         }
 
         /// <summary>
         /// FixedUpdates the current state.
         /// </summary>
-        void FixedUpdate()
+        private void FixedUpdate()
         {
-            if (CurrentState != null)
-                CurrentState.FixedUpdate();
+            CurrentState?.FixedUpdate();
         }
 
         /// <summary>
         /// Updates the GUI of the current state.
         /// </summary>
-        [STAThread]
-        void OnGUI()
+        private void OnGUI()
         {
-            if (CurrentState != null)
-                CurrentState.OnGUI();
-        }
-
-        /// <summary>
-        /// Calls the Awake method of the current state.
-        /// </summary>
-        void Awake()
-        {
-            if (CurrentState != null)
-                CurrentState.Awake();
+            CurrentState?.OnGUI();
         }
     }
 }

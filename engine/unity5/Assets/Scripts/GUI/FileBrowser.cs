@@ -427,11 +427,7 @@ class FileBrowser : OverlayWindow
         if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
         {
             _active = false;
-            if (OnComplete != null)
-            {
-                OnComplete(directoryLocation);
-            }
-            OnComplete(selectedDirectoryLocation);
+            OnComplete?.Invoke(selectedDirectoryLocation);
         }
         if (directorySelection != null)
         {
