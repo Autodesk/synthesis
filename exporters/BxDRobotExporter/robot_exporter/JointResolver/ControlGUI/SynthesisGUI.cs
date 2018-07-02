@@ -468,6 +468,62 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Saves the joint information to the Inventor assembly file. Returns false if fails.
+    /// </summary>
+    public bool JointDataSave(Inventor.Document document)
+    {
+        Inventor.PropertySets propertySets = document.PropertySets;
+
+        return JointDataSave(propertySets, SkeletonBase);
+    }
+    
+    /// <summary>
+    /// Recursive utility for JointDataSave.
+    /// </summary>
+    private bool JointDataSave(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
+    {
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+        {
+            SkeletalJoint_Base joint = connection.Key;
+
+            // Save joint information to a new property set
+
+            if (!JointDataSave(assemblyPropertySets, connection.Value))
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Loads the joint information from the Inventor assembly file. Returns false if fails.
+    /// </summary>
+    public bool JointDataLoad(Inventor.Document document)
+    {
+        Inventor.PropertySets propertySets = document.PropertySets;
+
+        return JointDataLoad(propertySets, SkeletonBase);
+    }
+
+    /// <summary>
+    /// Recursive utility for JointDataLoad.
+    /// </summary>
+    public bool JointDataLoad(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
+    {
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+        {
+            SkeletalJoint_Base joint = connection.Key;
+            
+            // Load joint information from a new property set, if a matching one exists
+
+            if (!JointDataLoad(assemblyPropertySets, connection.Value))
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Get the desired folder to open from or save to
     /// </summary>
     /// <returns>The full path of the selected folder</returns>
