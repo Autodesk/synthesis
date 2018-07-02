@@ -7,6 +7,6 @@ public class SimTabState : State
     /// </summary>
     public override void Start()
     {
-        StateMachine.Instance.PushState(new SelectionState());
+        StateMachine.PushState(new SelectionState());
     }
 }

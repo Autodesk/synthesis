@@ -37,7 +37,7 @@ public class LocalMultiplayer : StateBehaviour<MainState> {
             robotButtons[i] = Auxiliary.FindObject(canvas, "Robot" + (i + 1) + "Button");
         }
 
-        simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
+        simUI = StateMachine.gameObject.GetComponent<SimUI>();
         highlight = Auxiliary.FindObject(canvas, "HighlightActiveRobot");
         mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
     }

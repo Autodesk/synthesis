@@ -11,6 +11,11 @@ namespace Assets.Scripts.FSM
     public abstract class State
     {
         /// <summary>
+        /// The <see cref="FSM.StateMachine"/> running this state.
+        /// </summary>
+        public StateMachine StateMachine { get; set; }
+
+        /// <summary>
         /// Called when the State is awaken.
         /// </summary>
         public virtual void Awake() { }

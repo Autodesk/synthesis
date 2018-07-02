@@ -5,8 +5,18 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+/// <summary>
+/// This class can be used to automatically attach a <see cref="MonoBehaviour"/>
+/// to a state run by <see cref="StateMachine.SceneGlobal"/>.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class StateBehaviour<T> : MonoBehaviour where T : State
 {
+    /// <summary>
+    /// The <see cref="StateMachine"/> managing this instance.
+    /// </summary>
+    protected StateMachine StateMachine { get; private set; }    
+
     /// <summary>
     /// The state associated with this StateBehaviour.
     /// </summary>
@@ -17,7 +27,8 @@ public abstract class StateBehaviour<T> : MonoBehaviour where T : State
     /// </summary>
     protected virtual void Awake()
     {
-        StateMachine.Instance.Link<T>(this);
+        StateMachine = StateMachine.SceneGlobal;
+        StateMachine.Link<T>(this);
     }
 
     /// <summary>
@@ -25,7 +36,7 @@ public abstract class StateBehaviour<T> : MonoBehaviour where T : State
     /// </summary>
     protected virtual void OnEnable()
     {
-        if ((State = StateMachine.Instance.CurrentState as T) == null)
+        if ((State = StateMachine.CurrentState as T) == null)
             Debug.LogError("Component \"" + name +
                 "\" could not establish a conection to the state " +
                 typeof(T).ToString() + ".");

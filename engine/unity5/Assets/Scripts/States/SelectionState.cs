@@ -7,7 +7,7 @@ public class SelectionState : State
     /// </summary>
     public void OnMainSimulatorButtonPressed()
     {
-        StateMachine.Instance.PushState(new DefaultSimulatorState());
+        StateMachine.PushState(new DefaultSimulatorState());
     }
 
     /// <summary>
@@ -15,6 +15,6 @@ public class SelectionState : State
     /// </summary>
     public void OnMixAndMatchButtonPressed()
     {
-        StateMachine.Instance.PushState(new MixAndMatchState());
+        StateMachine.PushState(new MixAndMatchState());
     }
 }

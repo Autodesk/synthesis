@@ -38,6 +38,6 @@ public class ErrorScreenState : State
     /// </summary>
     public void OnOkButtonPressed()
     {
-        StateMachine.Instance.ChangeState(new HomeTabState());
+        StateMachine.ChangeState(new HomeTabState());
     }
 }

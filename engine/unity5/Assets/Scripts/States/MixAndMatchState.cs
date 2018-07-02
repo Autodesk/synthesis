@@ -7,13 +7,19 @@ using System.Threading.Tasks;
 
 public class MixAndMatchState : State
 {
+    /// <summary>
+    /// Returns to the previous scene when the back button is pressed.
+    /// </summary>
     public void OnBackButtonPressed()
     {
-        StateMachine.Instance.PopState();
+        StateMachine.PopState();
     }
 
+    /// <summary>
+    /// Launches a new <see cref="LoadFieldState"/> when the next button is pressed.
+    /// </summary>
     public void OnNextButtonPressed()
     {
-        StateMachine.Instance.PushState(new LoadFieldState());
+        StateMachine.PushState(new LoadFieldState());
     }
 }

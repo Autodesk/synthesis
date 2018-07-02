@@ -29,7 +29,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchTabHome()
     {
-        StateMachine.Instance.ChangeState(new HomeTabState());
+        StateMachine.SceneGlobal.ChangeState(new HomeTabState());
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchErrorScreen()
     {
-        StateMachine.Instance.PushState(new ErrorScreenState());
+        StateMachine.SceneGlobal.PushState(new ErrorScreenState());
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchTabSim()
     {
-        StateMachine.Instance.ChangeState(new SimTabState());
+        StateMachine.SceneGlobal.ChangeState(new SimTabState());
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchTabOptions()
     {
-        StateMachine.Instance.ChangeState(new OptionsTabState());
+        StateMachine.SceneGlobal.ChangeState(new OptionsTabState());
     }
     
     //Exits the program
@@ -108,7 +108,7 @@ public class MainMenu : MonoBehaviour
         if (!string.IsNullOrEmpty(AppModel.ErrorMessage))
             SwitchErrorScreen();
         else
-            StateMachine.Instance.PushState(new HomeTabState());
+            StateMachine.SceneGlobal.PushState(new HomeTabState());
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public class MainMenu : MonoBehaviour
         GameObject tab = Auxiliary.FindGameObject(tabName);
 
         if (tab != null)
-            StateMachine.Instance.Link<T>(tab, strict);
+            StateMachine.SceneGlobal.Link<T>(tab, strict);
     }
 
     /// <summary>
@@ -158,7 +158,7 @@ public class MainMenu : MonoBehaviour
     /// <param name="methodName"></param>
     private void InvokeCallback(string methodName)
     {
-        State currentState = StateMachine.Instance.CurrentState;
+        State currentState = StateMachine.SceneGlobal.CurrentState;
         MethodInfo info = currentState.GetType().GetMethod(methodName);
 
         if (info == null)

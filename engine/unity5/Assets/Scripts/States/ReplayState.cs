@@ -449,7 +449,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         private void ReturnToMainState()
         {
-            StateMachine.Instance.PopState();
+            StateMachine.PopState();
         }
 
         /// <summary>
@@ -457,7 +457,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         private void PushSaveReplayState()
         {
-            MainState mainState = StateMachine.Instance.FindState<MainState>();
+            MainState mainState = StateMachine.FindState<MainState>();
             foreach (Robot robot in mainState.SpawnedRobots)
             {
                 if (robot.RobotIsMixAndMatch)
@@ -466,7 +466,7 @@ namespace Assets.Scripts.FEA
                     return;
                 }
             }
-            StateMachine.Instance.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
+            StateMachine.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
         }
 
         /// <summary>
@@ -476,7 +476,7 @@ namespace Assets.Scripts.FEA
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             //if (InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
-                StateMachine.Instance.PopState();
+                StateMachine.PopState();
         }
 
         /// <summary>

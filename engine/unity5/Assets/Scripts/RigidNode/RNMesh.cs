@@ -96,7 +96,7 @@ public partial class RigidNode : RigidNode_Base
             foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
                 rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
 
-            MainObject.AddComponent<BMultiCallbacks>().AddCallback((StateMachine.Instance.CurrentState as MainState).CollisionTracker);
+            MainObject.AddComponent<BMultiCallbacks>().AddCallback((StateMachine.SceneGlobal.CurrentState as MainState).CollisionTracker);
         }
 
         if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)

@@ -267,7 +267,7 @@ public class MixAndMatchMode : MonoBehaviour
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(SelectedWheel),
             mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelLateralFriction(SelectedWheel));
 
-        StateMachine.Instance.gameObject.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
+        StateMachine.SceneGlobal.gameObject.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
 
         if (SimUI.changeAnalytics) //For analytics tracking
         {

@@ -14,6 +14,11 @@ public class SimStart : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        StateMachine.Instance.PushState(new MainState());
+        StateMachine stateMachine = GetComponent<StateMachine>();
+
+        if (stateMachine == null)
+            Debug.LogError("Could not find the required StateMachine component!");
+        else
+            stateMachine.PushState(new MainState());
     }
 }

@@ -7,14 +7,35 @@ namespace Assets.Scripts.FSM
 {
     public class StateMachine : MonoBehaviour
     {
+        private static StateMachine sceneGlobal;
+
         private Stack<State> activeStates;
         private readonly Dictionary<Type, Tuple<bool, HashSet<Behaviour>>> stateBehaviours;
         private readonly Dictionary<Type, Tuple<bool, HashSet<GameObject>>> stateGameObjects;
+
+        /// <summary>
+        /// (Defined from the editor)
+        /// If true, this instance can be accessed globally from the <see cref="SceneGlobal"/> property.
+        /// </summary>
+        public bool sceneGlobalInstance;
         
         /// <summary>
         /// The global StateMachine instance.
         /// </summary>
-        public static StateMachine Instance { get; private set; }
+        public static StateMachine SceneGlobal
+        {
+            get
+            {
+                if (sceneGlobal == null)
+                    Debug.LogWarning("No global StateMachine instance has been defined!");
+
+                return sceneGlobal;
+            }
+            private set
+            {
+                sceneGlobal = value;
+            }
+        }
 
         /// <summary>
         /// The current state in the StateMachine.
@@ -48,7 +69,7 @@ namespace Assets.Scripts.FSM
         /// <summary>
         /// Links the given MonoBehaviour script to the provided state type.
         /// </summary>
-        /// <typeparam name="T">The type of state with which to link the MonoBehaviour</typeparam>
+        /// <typeparam name="T">The type of state with which to link the <see cref="Behaviour"/></typeparam>
         /// <param name="behaviour">The MonoBehaviour to link</param>
         public void Link<T>(Behaviour behaviour, bool strict = true) where T : State
         {
@@ -84,6 +105,7 @@ namespace Assets.Scripts.FSM
                 activeStates.Push(state);
 
             CurrentState = state;
+            CurrentState.StateMachine = this;
             CurrentState.Awake();
 
             SetObjectsEnabled(true);
@@ -102,6 +124,7 @@ namespace Assets.Scripts.FSM
 
             CurrentState.Pause();
             CurrentState.End();
+            CurrentState.StateMachine = null;
 
             SetObjectsEnabled(false);
 
@@ -200,7 +223,16 @@ namespace Assets.Scripts.FSM
         /// </summary>
         private void Awake()
         {
-            Instance = this;
+            if (sceneGlobalInstance)
+                SceneGlobal = this;
+        }
+
+        /// <summary>
+        /// Resets the scene global instance when the <see cref="StateMachine"/> is destroyed.
+        /// </summary>
+        private void OnDestroy()
+        {
+            SceneGlobal = null;
         }
 
         /// <summary>

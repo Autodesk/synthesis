@@ -34,7 +34,7 @@ public class DefaultSimulatorState : State
     /// </summary>
     public void OnBackButtonPressed()
     {
-        StateMachine.Instance.PopState();
+        StateMachine.PopState();
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class DefaultSimulatorState : State
     /// </summary>
     public void OnReplaysButtonPressed()
     {
-        StateMachine.Instance.PushState(new LoadReplayState());
+        StateMachine.PushState(new LoadReplayState());
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public class DefaultSimulatorState : State
     /// </summary>
     public void OnChangeFieldButtonPressed()
     {
-        StateMachine.Instance.PushState(new LoadFieldState());
+        StateMachine.PushState(new LoadFieldState());
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class DefaultSimulatorState : State
     /// </summary>
     public void OnChangeRobotButtonPressed()
     {
-        StateMachine.Instance.PushState(new LoadRobotState());
+        StateMachine.PushState(new LoadRobotState());
     }
 
     /// <summary>

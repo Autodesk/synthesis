@@ -33,7 +33,7 @@ public class LoadFieldState : State
     /// </summary>
     public void OnBackButtonPressed()
     {
-        StateMachine.Instance.PopState();
+        StateMachine.PopState();
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public class LoadFieldState : State
             string simSelectedFieldName = fieldList.GetComponent<SelectScrollable>().selectedEntry;
             string simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
 
-            if (StateMachine.Instance.FindState<MixAndMatchState>() != null) //Starts the MixAndMatch scene
+            if (StateMachine.FindState<MixAndMatchState>() != null) //Starts the MixAndMatch scene
             {
                 PlayerPrefs.SetString("simSelectedField", simSelectedField);
                 PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
@@ -61,7 +61,7 @@ public class LoadFieldState : State
             {
                 PlayerPrefs.SetString("simSelectedField", simSelectedField);
                 PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
-                StateMachine.Instance.PopState();
+                StateMachine.PopState();
             }
         }
         else
@@ -85,6 +85,6 @@ public class LoadFieldState : State
     /// </summary>
     public void OnChangeFieldButtonPressed()
     {
-        StateMachine.Instance.PushState(new BrowseFieldState());
+        StateMachine.PushState(new BrowseFieldState());
     }
 }
