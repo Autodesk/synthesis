@@ -18,6 +18,7 @@ namespace BxDRobotExporter.Wizard
         public static event OnWheelSetupPanelRemove remove;
         public static event OnWheelSetupPanelHover hover;
         public String name;
+        public bool isRightWheel;
         public WheelSetupPanel()
         {
             InitializeComponent();
@@ -57,7 +58,7 @@ namespace BxDRobotExporter.Wizard
             {
                 FrictionLevel = (WizardData.WizardFrictionLevel)this.FrictionComboBox.SelectedIndex,
                 WheelType = (WizardData.WizardWheelType)(this.WheelTypeComboBox.SelectedIndex + 1),
-                //PWMPort = (RightRadioButton.Checked) ? (byte)0x02 : (byte)0x01,
+                PWMPort = isRightWheel ? (byte)0x02 : (byte)0x01,
                 Node = this.node
             };
         }

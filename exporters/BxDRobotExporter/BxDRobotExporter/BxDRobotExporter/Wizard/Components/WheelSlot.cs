@@ -27,12 +27,12 @@ namespace BxDRobotExporter.Wizard
             IsFilled = false;
         }
 
-        public void FillSlot(RigidNode_Base node, String name, WizardData.WizardWheelType wheelType = WizardData.WizardWheelType.NORMAL)
+        public void FillSlot(RigidNode_Base node, String name, bool isRight, WizardData.WizardWheelType wheelType = WizardData.WizardWheelType.NORMAL)
         {
             this.name = name;
             wheelSetupPanel = new WheelSetupPanel(node, name, wheelType);
             wheelSetupPanel.Dock = DockStyle.Fill;
-
+            wheelSetupPanel.isRightWheel = isRight;
             this.SuspendLayout();
             while (Controls.Count > 0)
             {
