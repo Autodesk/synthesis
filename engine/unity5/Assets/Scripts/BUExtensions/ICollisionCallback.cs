@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Assets.Scripts
+namespace Synthesis.BUExtensions
 {
     /// <summary>
     /// Classes that are intended to be registered with a BMultiCallback should implement this interface.

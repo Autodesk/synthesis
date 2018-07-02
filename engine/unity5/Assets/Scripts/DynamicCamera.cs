@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using Assets.Scripts.FSM;
+using Synthesis.FSM;
+using Synthesis.InputControl;
+using Synthesis.RobotCamera;
+using Synthesis.States;
 
 public class DynamicCamera : MonoBehaviour
 {
@@ -85,7 +88,7 @@ public class DynamicCamera : MonoBehaviour
             startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
             currentRotation = startRotation;
             transformSpeed = 2.5f;
-            main = StateMachine.Instance.FindState<MainState>();
+            main = StateMachine.SceneGlobal.FindState<MainState>();
         }
 
         public override void Update()
@@ -556,7 +559,7 @@ public class DynamicCamera : MonoBehaviour
             transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
             if (robot == null) robot = GameObject.Find("robot");
-            main = StateMachine.Instance.FindState<MainState>();
+            main = StateMachine.SceneGlobal.FindState<MainState>();
         }
 
         public override void Update()

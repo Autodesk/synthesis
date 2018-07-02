@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Assets.Scripts.BUExtensions
+namespace Synthesis.BUExtensions
 {
     /// <summary>
     /// Describes info about a robot wheel.

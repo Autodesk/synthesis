@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using Assets.Scripts.FSM;
+using Synthesis.FSM;
 using System.Linq;
 using UnityEngine.Analytics;
+using Synthesis.GUI;
+using Synthesis.DriverPractice;
+using Synthesis.GUI.Scrollables;
+using Synthesis.States;
+using Synthesis.Utils;
 
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer
@@ -37,7 +42,7 @@ public class LocalMultiplayer : StateBehaviour<MainState> {
             robotButtons[i] = Auxiliary.FindObject(canvas, "Robot" + (i + 1) + "Button");
         }
 
-        simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
+        simUI = StateMachine.gameObject.GetComponent<SimUI>();
         highlight = Auxiliary.FindObject(canvas, "HighlightActiveRobot");
         mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
     }
