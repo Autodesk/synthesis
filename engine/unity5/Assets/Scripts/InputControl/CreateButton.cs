@@ -31,8 +31,8 @@ public class CreateButton : MonoBehaviour
     {
         DestroyList();
 
-        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
-        unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
+        tankDriveSwitch = Auxiliary.FindObject("TankDriveSwitch");
+        unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
 
         //Can change the default measurement HERE and also change the default value in the slider game object in main menu
         PlayerPrefs.SetString("Measure", "Metric");
@@ -759,11 +759,11 @@ public class CreateButton : MonoBehaviour
     public void OnEnable()
     {
         //Tank drive slider
-        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        tankDriveSwitch = Auxiliary.FindObject("TankDriveSwitch");
         tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
 
         //Measurement slider
-        unitConversionSwitch = AuxFunctions.FindObject("UnitConversionSwitch");
+        unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
         unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 1 : 0;
     }
 

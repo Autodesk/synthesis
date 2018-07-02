@@ -106,7 +106,7 @@ public class Gyro : SensorBase
         GameObject outputPanel = GameObject.Find(gameObject.name + "_Panel");
         if (outputPanel != null)
         {
-            GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
+            GameObject outputText = Auxiliary.FindObject(outputPanel, "Text");
             outputText.GetComponent<Text>().text = gameObject.name + " Output (degrees)";
         }
     }

@@ -7,7 +7,7 @@ using UnityEngine.Analytics;
 /// <summary>
 /// This class handles every sensor-related GUI elements in Unity
 /// </summary>
-class SensorManagerGUI : MonoBehaviour
+class SensorManagerGUI : StateBehaviour<MainState>
 {
     Toolkit toolkit;
     GameObject canvas;
@@ -16,7 +16,6 @@ class SensorManagerGUI : MonoBehaviour
     DynamicCamera.CameraState preConfigState;
     DynamicCamera dynamicCamera;
     RobotCameraGUI robotCameraGUI;
-    MainState main;
 
     GameObject sensorOptionPanel;
     GameObject sensorTypePanel;
@@ -76,13 +75,6 @@ class SensorManagerGUI : MonoBehaviour
     //A list of all output panels instantiated
     private List<GameObject> sensorOutputPanels = new List<GameObject>();
 
-    /// <summary>
-    /// Link the sensor GUI to main state
-    /// </summary>
-    private void Awake()
-    {
-        StateMachine.Instance.Link<MainState>(this);
-    }
     private void Start()
     {
         FindElements();
@@ -90,10 +82,6 @@ class SensorManagerGUI : MonoBehaviour
 
     private void Update()
     {
-        if(main == null)
-        {
-            main = StateMachine.Instance.FindState<MainState>();
-        }
         //Find the dynamic camera
         if (dynamicCamera == null)
         {
@@ -122,54 +110,54 @@ class SensorManagerGUI : MonoBehaviour
         canvas = GameObject.Find("Canvas");
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
-        toolkit = GameObject.Find("StateMachine").GetComponent<Toolkit>();
+        toolkit = GetComponent<Toolkit>();
 
-        sensorOptionPanel = AuxFunctions.FindObject(canvas, "SensorOptionPanel");
-        sensorTypePanel = AuxFunctions.FindObject(canvas, "SensorTypePanel");
+        sensorOptionPanel = Auxiliary.FindObject(canvas, "SensorOptionPanel");
+        sensorTypePanel = Auxiliary.FindObject(canvas, "SensorTypePanel");
 
         //For sensor option panel
-        addSensorButton = AuxFunctions.FindObject(sensorOptionPanel, "AddNewSensor");
-        selectExistingButton = AuxFunctions.FindObject(sensorOptionPanel, "ConfigureExistingSensor");
-        cancelOptionButton = AuxFunctions.FindObject(sensorOptionPanel, "CancelButton");
-        sensorOptionToolTip = AuxFunctions.FindObject(sensorOptionPanel, "ToolTipPanel");
+        addSensorButton = Auxiliary.FindObject(sensorOptionPanel, "AddNewSensor");
+        selectExistingButton = Auxiliary.FindObject(sensorOptionPanel, "ConfigureExistingSensor");
+        cancelOptionButton = Auxiliary.FindObject(sensorOptionPanel, "CancelButton");
+        sensorOptionToolTip = Auxiliary.FindObject(sensorOptionPanel, "ToolTipPanel");
 
         //For choosing sensor type
-        addUltrasonicButton = AuxFunctions.FindObject(sensorTypePanel, "AddUltrasonic");
-        addBeamBreakerButton = AuxFunctions.FindObject(sensorTypePanel, "AddBeamBreaker");
-        addGyroButton = AuxFunctions.FindObject(sensorTypePanel, "AddGyro");
-        cancelTypeButton = AuxFunctions.FindObject(sensorTypePanel, "CancelButton");
+        addUltrasonicButton = Auxiliary.FindObject(sensorTypePanel, "AddUltrasonic");
+        addBeamBreakerButton = Auxiliary.FindObject(sensorTypePanel, "AddBeamBreaker");
+        addGyroButton = Auxiliary.FindObject(sensorTypePanel, "AddGyro");
+        cancelTypeButton = Auxiliary.FindObject(sensorTypePanel, "CancelButton");
 
         //For Sensor position and attachment configuration
-        configureSensorPanel = AuxFunctions.FindObject(canvas, "SensorConfigurationPanel");
-        changeSensorNodeButton = AuxFunctions.FindObject(configureSensorPanel, "ChangeNodeButton");
-        sensorConfigurationModeButton = AuxFunctions.FindObject(configureSensorPanel, "ConfigurationMode");
-        sensorNodeText = AuxFunctions.FindObject(configureSensorPanel, "NodeText").GetComponent<Text>();
-        cancelNodeSelectionButton = AuxFunctions.FindObject(configureSensorPanel, "CancelNodeSelectionButton");
-        deleteSensorButton = AuxFunctions.FindObject(configureSensorPanel, "DeleteSensorButton");
-        hideSensorButton = AuxFunctions.FindObject(configureSensorPanel, "HideSensorButton");
+        configureSensorPanel = Auxiliary.FindObject(canvas, "SensorConfigurationPanel");
+        changeSensorNodeButton = Auxiliary.FindObject(configureSensorPanel, "ChangeNodeButton");
+        sensorConfigurationModeButton = Auxiliary.FindObject(configureSensorPanel, "ConfigurationMode");
+        sensorNodeText = Auxiliary.FindObject(configureSensorPanel, "NodeText").GetComponent<Text>();
+        cancelNodeSelectionButton = Auxiliary.FindObject(configureSensorPanel, "CancelNodeSelectionButton");
+        deleteSensorButton = Auxiliary.FindObject(configureSensorPanel, "DeleteSensorButton");
+        hideSensorButton = Auxiliary.FindObject(configureSensorPanel, "HideSensorButton");
 
         //For Sensor angle configuration
-        sensorAnglePanel = AuxFunctions.FindObject(canvas, "SensorAnglePanel");
-        xAngleEntry = AuxFunctions.FindObject(sensorAnglePanel, "xAngleEntry");
-        yAngleEntry = AuxFunctions.FindObject(sensorAnglePanel, "yAngleEntry");
-        zAngleEntry = AuxFunctions.FindObject(sensorAnglePanel, "zAngleEntry");
-        showAngleButton = AuxFunctions.FindObject(configureSensorPanel, "ShowSensorAngleButton");
-        editAngleButton = AuxFunctions.FindObject(sensorAnglePanel, "EditButton");
+        sensorAnglePanel = Auxiliary.FindObject(canvas, "SensorAnglePanel");
+        xAngleEntry = Auxiliary.FindObject(sensorAnglePanel, "xAngleEntry");
+        yAngleEntry = Auxiliary.FindObject(sensorAnglePanel, "yAngleEntry");
+        zAngleEntry = Auxiliary.FindObject(sensorAnglePanel, "zAngleEntry");
+        showAngleButton = Auxiliary.FindObject(configureSensorPanel, "ShowSensorAngleButton");
+        editAngleButton = Auxiliary.FindObject(sensorAnglePanel, "EditButton");
 
         //For range configuration
-        sensorRangePanel = AuxFunctions.FindObject(canvas, "SensorRangePanel");
-        RangeEntry = AuxFunctions.FindObject(sensorRangePanel, "RangeEntry");
-        showRangeButton = AuxFunctions.FindObject(configureSensorPanel, "ShowSensorRangeButton");
-        editRangeButton = AuxFunctions.FindObject(sensorRangePanel, "EditButton");
-        rangeUnit = AuxFunctions.FindObject(sensorRangePanel, "RangeUnit").GetComponent<Text>();
+        sensorRangePanel = Auxiliary.FindObject(canvas, "SensorRangePanel");
+        RangeEntry = Auxiliary.FindObject(sensorRangePanel, "RangeEntry");
+        showRangeButton = Auxiliary.FindObject(configureSensorPanel, "ShowSensorRangeButton");
+        editRangeButton = Auxiliary.FindObject(sensorRangePanel, "EditButton");
+        rangeUnit = Auxiliary.FindObject(sensorRangePanel, "RangeUnit").GetComponent<Text>();
 
-        lockPositionButton = AuxFunctions.FindObject(configureSensorPanel, "LockPositionButton");
-        lockAngleButton = AuxFunctions.FindObject(configureSensorPanel, "LockAngleButton");
-        lockRangeButton = AuxFunctions.FindObject(configureSensorPanel, "LockRangeButton");
+        lockPositionButton = Auxiliary.FindObject(configureSensorPanel, "LockPositionButton");
+        lockAngleButton = Auxiliary.FindObject(configureSensorPanel, "LockAngleButton");
+        lockRangeButton = Auxiliary.FindObject(configureSensorPanel, "LockRangeButton");
 
-        showSensorButton = AuxFunctions.FindObject(canvas, "ShowOutputButton");
-        sensorOutputPanel = AuxFunctions.FindObject(canvas, "SensorOutputBorder");
-        robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
+        showSensorButton = Auxiliary.FindObject(canvas, "ShowOutputButton");
+        sensorOutputPanel = Auxiliary.FindObject(canvas, "SensorOutputBorder");
+        robotCameraGUI = GetComponent<RobotCameraGUI>();
         
     }
 
@@ -645,7 +633,7 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void UpdateSensorRangePanel()
     {
-        if (main.IsMetric) rangeUnit.text = "Range (meters)";
+        if (State.IsMetric) rangeUnit.text = "Range (meters)";
         else rangeUnit.text = "Range (feet)";
         if (!isEditingRange)
         {

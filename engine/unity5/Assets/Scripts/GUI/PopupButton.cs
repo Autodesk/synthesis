@@ -17,6 +17,30 @@ public class PopupButton : MonoBehaviour {
 
     private Canvas canvas;
 
+    private bool Fullscreen
+    {
+        get
+        {
+            return PlayerPrefs.GetInt("fullscreen") != 0;
+        }
+        set
+        {
+            PlayerPrefs.SetInt("fullscreen", value ? 1 : 0);
+        }
+    }
+
+    private int ResolutionSetting
+    {
+        get
+        {
+            return PlayerPrefs.GetInt("resolution");
+        }
+        set
+        {
+            PlayerPrefs.SetInt("resolution", value);
+        }
+    }
+
 	// Use this for initialization
 	void Start () {
         listStyle = new GUIStyle();
@@ -45,27 +69,27 @@ public class PopupButton : MonoBehaviour {
 
 	void OnGUI () {
         if (setting.Equals("Screen Mode"))
-            if (!MainMenu.fullscreen) listEntry = 0;
+            if (!Fullscreen) listEntry = 0;
             else listEntry = 1;
         else if (setting.Equals("Resolution"))
-            listEntry = MainMenu.resolutionsetting;
+            listEntry = ResolutionSetting;
 
         float scale = canvas.scaleFactor;
 
         buttonStyle.fontSize = Mathf.RoundToInt(24 * scale);
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
         Rect rect = GetComponent<RectTransform>().rect;
-        if (Popup.List(new Rect(p.x-rect.width/2*scale, Screen.height-p.y-rect.height/2*scale, rect.width*scale, rect.height*scale), ref showList, ref listEntry, list[listEntry], list, buttonStyle, boxStyle, listStyle))
+        if (Popup.List(new Rect(p.x - rect.width / 2 * scale, Screen.height - p.y - rect.height / 2 * scale, rect.width * scale, rect.height * scale), ref showList, ref listEntry, list[listEntry], list, buttonStyle, boxStyle, listStyle))
         {
             //This was a quick way to implement resolution settings. It might be 'bad code', but it works for the two settings we need.
             if (setting.Equals("Screen Mode"))
             {
-                if (listEntry == 0) MainMenu.fullscreen = false;
-                else MainMenu.fullscreen = true;
+                if (listEntry == 0) Fullscreen = false;
+                else Fullscreen = true;
             }
             else if (setting.Equals("Resolution"))
             {
-                MainMenu.resolutionsetting = listEntry;
+                ResolutionSetting = listEntry;
             }
         }
     }

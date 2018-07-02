@@ -58662,8 +58662,9 @@ GameObject:
   - component: {fileID: 1741231150}
   - component: {fileID: 1741231151}
   - component: {fileID: 1741231153}
+  - component: {fileID: 1741231152}
   m_Layer: 0
-  m_Name: StateMachine
+  m_Name: Simulator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58772,6 +58773,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c53592bbed626b4f97715ddca8fb289, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1741231152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1741231142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbc8b1bb5e9ba5743bd85986f2799cf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1741231153

@@ -4,11 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
 
-public class DriverPracticeMode : MonoBehaviour {
+public class DriverPracticeMode : StateBehaviour<MainState> {
 
     private DriverPracticeRobot dpmRobot;
     private SimUI simUI;
-    private MainState mainState;
 
     GameObject canvas;
 
@@ -70,21 +69,17 @@ public class DriverPracticeMode : MonoBehaviour {
 
     bool isEditing = false;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         InitializeTrajectories();
-        StateMachine.Instance.Link<MainState>(this);
     }
 
     private void Update()
     {
-        if (mainState == null)
+        if (dpmRobot == null)
         {
-            mainState = StateMachine.Instance.FindState<MainState>();
-        }
-        else if (dpmRobot == null)
-        {
-            dpmRobot = mainState.ActiveRobot.GetDriverPractice();
+            dpmRobot = State.ActiveRobot.GetDriverPractice();
             FindElements();
         }
         else
@@ -102,40 +97,40 @@ public class DriverPracticeMode : MonoBehaviour {
         canvas = GameObject.Find("Canvas");
         simUI = GetComponent<SimUI>();
 
-        dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
-        configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
+        dpmWindow = Auxiliary.FindObject(canvas, "DPMPanel");
+        configWindow = Auxiliary.FindObject(canvas, "ConfigurationPanel");
 
         //enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
 
-        primaryGamepieceText = AuxFunctions.FindObject(canvas, "PrimaryGamepieceText").GetComponent<Text>();
-        secondaryGamepieceText = AuxFunctions.FindObject(canvas, "SecondaryGamepieceText").GetComponent<Text>();
+        primaryGamepieceText = Auxiliary.FindObject(canvas, "PrimaryGamepieceText").GetComponent<Text>();
+        secondaryGamepieceText = Auxiliary.FindObject(canvas, "SecondaryGamepieceText").GetComponent<Text>();
 
-        configuringText = AuxFunctions.FindObject(canvas, "ConfiguringText").GetComponent<Text>();
-        configHeaderText = AuxFunctions.FindObject(canvas, "ConfigHeaderText").GetComponent<Text>();
+        configuringText = Auxiliary.FindObject(canvas, "ConfiguringText").GetComponent<Text>();
+        configHeaderText = Auxiliary.FindObject(canvas, "ConfigHeaderText").GetComponent<Text>();
 
-        releaseVelocityPanel = AuxFunctions.FindObject(canvas, "ReleaseVelocityPanel");
+        releaseVelocityPanel = Auxiliary.FindObject(canvas, "ReleaseVelocityPanel");
 
-        xOffsetEntry = AuxFunctions.FindObject(canvas, "XOffsetEntry");
-        yOffsetEntry = AuxFunctions.FindObject(canvas, "YOffsetEntry");
-        zOffsetEntry = AuxFunctions.FindObject(canvas, "ZOffsetEntry");
-        releaseSpeedEntry = AuxFunctions.FindObject(canvas, "ReleaseSpeedEntry");
-        releaseVerticalEntry = AuxFunctions.FindObject(canvas, "ReleaseVerticalEntry");
-        releaseHorizontalEntry = AuxFunctions.FindObject(canvas, "ReleaseHorizontalEntry");
+        xOffsetEntry = Auxiliary.FindObject(canvas, "XOffsetEntry");
+        yOffsetEntry = Auxiliary.FindObject(canvas, "YOffsetEntry");
+        zOffsetEntry = Auxiliary.FindObject(canvas, "ZOffsetEntry");
+        releaseSpeedEntry = Auxiliary.FindObject(canvas, "ReleaseSpeedEntry");
+        releaseVerticalEntry = Auxiliary.FindObject(canvas, "ReleaseVerticalEntry");
+        releaseHorizontalEntry = Auxiliary.FindObject(canvas, "ReleaseHorizontalEntry");
 
-        releaseMechanismText = AuxFunctions.FindObject(canvas, "ReleaseMechanismText").GetComponent<Text>();
-        intakeMechanismText = AuxFunctions.FindObject(canvas, "IntakeMechanismText").GetComponent<Text>();
+        releaseMechanismText = Auxiliary.FindObject(canvas, "ReleaseMechanismText").GetComponent<Text>();
+        intakeMechanismText = Auxiliary.FindObject(canvas, "IntakeMechanismText").GetComponent<Text>();
 
-        defineIntakeWindow = AuxFunctions.FindObject(canvas, "DefineIntakePanel");
-        defineReleaseWindow = AuxFunctions.FindObject(canvas, "DefineReleasePanel");
-        defineGamepieceWindow = AuxFunctions.FindObject(canvas, "DefineGamepiecePanel");
-        setSpawnWindow = AuxFunctions.FindObject(canvas, "SetGamepieceSpawnPanel");
+        defineIntakeWindow = Auxiliary.FindObject(canvas, "DefineIntakePanel");
+        defineReleaseWindow = Auxiliary.FindObject(canvas, "DefineReleasePanel");
+        defineGamepieceWindow = Auxiliary.FindObject(canvas, "DefineGamepiecePanel");
+        setSpawnWindow = Auxiliary.FindObject(canvas, "SetGamepieceSpawnPanel");
 
-        intakeControlText = AuxFunctions.FindObject(canvas, "IntakeInputButton").GetComponentInChildren<Text>();
-        releaseControlText = AuxFunctions.FindObject(canvas, "ReleaseInputButton").GetComponentInChildren<Text>();
-        spawnControlText = AuxFunctions.FindObject(canvas, "SpawnInputButton").GetComponentInChildren<Text>();
+        intakeControlText = Auxiliary.FindObject(canvas, "IntakeInputButton").GetComponentInChildren<Text>();
+        releaseControlText = Auxiliary.FindObject(canvas, "ReleaseInputButton").GetComponentInChildren<Text>();
+        spawnControlText = Auxiliary.FindObject(canvas, "SpawnInputButton").GetComponentInChildren<Text>();
 
-        primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
-        secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
+        primaryCountText = Auxiliary.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
+        secondaryCountText = Auxiliary.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
     }
 
     /// <summary>
@@ -529,12 +524,11 @@ public class DriverPracticeMode : MonoBehaviour {
             return;
         }
 
-
         foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
         {
             if (Input.GetKeyDown(vKey))
             {
-                int index = mainState.ActiveRobot.ControlIndex;
+                int index = State.ActiveRobot.ControlIndex;
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
@@ -582,14 +576,12 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void ChangeActiveRobot(int index)
     {
-
-        DriverPracticeRobot newRobot = mainState.SpawnedRobots[index].GetComponent<DriverPracticeRobot>();
+        DriverPracticeRobot newRobot = State.SpawnedRobots[index].GetComponent<DriverPracticeRobot>();
         dpmRobot.displayTrajectories[0] = false;
         dpmRobot.displayTrajectories[1] = false;
 
         UpdateDPMValues();
         dpmRobot = newRobot;
-
     }
 
     private void InitializeTrajectories()

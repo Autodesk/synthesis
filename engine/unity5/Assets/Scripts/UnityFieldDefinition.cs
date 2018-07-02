@@ -37,13 +37,13 @@ public class UnityFieldDefinition : FieldDefinition
         List<KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>> colliders = new List<KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>>();
 
         // Create all submesh objects
-        AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+        Auxiliary.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             submeshes.Add(new KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>(sub, meshu));
         });
 
         // Create all collider objects
-        AuxFunctions.ReadMeshSet(mesh.colliders, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+        Auxiliary.ReadMeshSet(mesh.colliders, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             colliders.Add(new KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>(sub, meshu));
         });
@@ -132,7 +132,7 @@ public class UnityFieldDefinition : FieldDefinition
                             subObject.transform.rotation = meshObject.transform.rotation;
 
                             BConvexHullShape hullshape = subObject.AddComponent<BConvexHullShape>();
-                            hullshape.HullMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh, dummyMeshCollider.sharedMesh.bounds.center, 0f/*CollisionMargin*/);
+                            hullshape.HullMesh = Auxiliary.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh, dummyMeshCollider.sharedMesh.bounds.center, 0f/*CollisionMargin*/);
                             hullshape.GetCollisionShape().Margin = CollisionMargin;
 
                             //subObject.AddComponent<MouseListener>();

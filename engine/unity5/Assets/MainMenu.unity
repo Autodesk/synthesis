@@ -1518,7 +1518,7 @@ GameObject:
   - component: {fileID: 138553898}
   - component: {fileID: 138553897}
   m_Layer: 0
-  m_Name: Button
+  m_Name: MainSimulatorButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1581,18 +1581,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 138553898}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimDefault
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &138553898
@@ -1735,7 +1724,7 @@ RectTransform:
   m_Children:
   - {fileID: 1860171147}
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 9
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -1780,18 +1769,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 146728820}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: ChangeQualitySettings
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &146728820
@@ -2052,7 +2030,7 @@ GameObject:
   - component: {fileID: 169363233}
   - component: {fileID: 169363232}
   m_Layer: 0
-  m_Name: Button
+  m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2115,18 +2093,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 169363233}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimDefault
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &169363233
@@ -2871,7 +2838,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00010681152}
+  m_AnchoredPosition: {x: 0, y: -0.00017961733}
   m_SizeDelta: {x: -28, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &250185197
@@ -2901,7 +2868,7 @@ GameObject:
   - component: {fileID: 256181836}
   - component: {fileID: 256181835}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2918,7 +2885,7 @@ RectTransform:
   m_LocalScale: {x: 0.9999811, y: 0.9999811, z: 0.9999811}
   m_Children: []
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 10
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -4225,7 +4192,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -5053,18 +5020,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 534213282}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimLoadField
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &534213282
@@ -5648,7 +5604,7 @@ GameObject:
   - component: {fileID: 599316540}
   - component: {fileID: 599316539}
   m_Layer: 0
-  m_Name: Button
+  m_Name: FieldExportButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6043,7 +5999,7 @@ GameObject:
   - component: {fileID: 618793336}
   - component: {fileID: 618793335}
   m_Layer: 0
-  m_Name: Button
+  m_Name: SelectFieldButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6106,18 +6062,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 618793336}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SelectSimField
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &618793336
@@ -6165,7 +6110,7 @@ GameObject:
   - component: {fileID: 630004267}
   - component: {fileID: 630004266}
   m_Layer: 0
-  m_Name: Button
+  m_Name: SelectRobotButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6228,18 +6173,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 630004267}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SelectSimRobot
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &630004267
@@ -6661,7 +6595,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &672940397
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7161,7 +7095,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 758318692}
   m_HandleRect: {fileID: 758318691}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -7421,7 +7355,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 0.99999976}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -7470,7 +7404,7 @@ GameObject:
   - component: {fileID: 763386046}
   - component: {fileID: 763386045}
   m_Layer: 0
-  m_Name: Button
+  m_Name: InputButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7533,18 +7467,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 763386046}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchInput
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &763386046
@@ -8024,7 +7947,7 @@ GameObject:
   - component: {fileID: 815203053}
   - component: {fileID: 815203052}
   m_Layer: 0
-  m_Name: Button
+  m_Name: StartButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8089,29 +8012,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 815203053}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchTabSim
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimSelection
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &815203053
@@ -8457,6 +8358,7 @@ GameObject:
   - component: {fileID: 860403447}
   - component: {fileID: 860403446}
   - component: {fileID: 860403445}
+  - component: {fileID: 860403452}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -8502,12 +8404,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c4953847945db49995aedafcbde146, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mixAndMatchModeScript: {fileID: 0}
-  homeTab: {fileID: 1769824028}
-  simTab: {fileID: 733606798}
-  optionsTab: {fileID: 811653938}
-  fieldDirectory: 
-  robotDirectory: 
 --- !u!114 &860403446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8612,6 +8508,17 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &860403452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 860403443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0548158fd8a3d164299589b68c35a651, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &870022008
 GameObject:
   m_ObjectHideFlags: 0
@@ -8624,7 +8531,7 @@ GameObject:
   - component: {fileID: 870022011}
   - component: {fileID: 870022010}
   m_Layer: 0
-  m_Name: Button
+  m_Name: WebsiteButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8689,18 +8596,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 870022011}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: OpenWebsite
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &870022011
@@ -9436,7 +9332,7 @@ GameObject:
   - component: {fileID: 911743237}
   - component: {fileID: 911743236}
   m_Layer: 0
-  m_Name: Button
+  m_Name: RobotExportButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10559,7 +10455,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1004531418
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10862,7 +10758,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -10952,9 +10848,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1033060837}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fa2813dedba9ec459646900b59855d2, type: 3}
+  m_Script: {fileID: 11500000, guid: c8d145b415ed39e4385bb50127127d96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetFilename: definition.bxdf
+  ErrorMessage: No fields found in directory!
 --- !u!114 &1033060840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11000,7 +10898,7 @@ GameObject:
   - component: {fileID: 1033845267}
   - component: {fileID: 1033845266}
   m_Layer: 0
-  m_Name: Button
+  m_Name: MixAndMatchButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11063,18 +10961,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1033845267}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchMixAndMatch
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1033845267
@@ -12092,18 +11979,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1142416800}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimSelection
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1142416800
@@ -12225,7 +12101,7 @@ GameObject:
   - component: {fileID: 1145282076}
   - component: {fileID: 1145282075}
   m_Layer: 0
-  m_Name: Button
+  m_Name: TutorialsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12290,18 +12166,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1145282076}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: OpenTutorials
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1145282076
@@ -12625,7 +12490,7 @@ GameObject:
   - component: {fileID: 1159781442}
   - component: {fileID: 1159781441}
   m_Layer: 0
-  m_Name: Button
+  m_Name: ApplyButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12643,7 +12508,7 @@ RectTransform:
   m_Children:
   - {fileID: 175501055}
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -12688,18 +12553,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1159781442}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: ApplyGraphics
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1159781442
@@ -12747,7 +12601,7 @@ GameObject:
   - component: {fileID: 1179896273}
   - component: {fileID: 1179896272}
   m_Layer: 0
-  m_Name: Button
+  m_Name: ChangeRobotButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12812,18 +12666,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1179896273}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchRobotDir
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1179896273
@@ -14062,7 +13905,7 @@ GameObject:
   - component: {fileID: 1342995218}
   - component: {fileID: 1342995217}
   m_Layer: 0
-  m_Name: Button
+  m_Name: DeleteButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14125,18 +13968,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1342995218}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SelectDeleteReplay
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1342995218
@@ -14261,7 +14093,7 @@ GameObject:
   - component: {fileID: 1354771153}
   - component: {fileID: 1354771152}
   m_Layer: 0
-  m_Name: Button
+  m_Name: ChangeFieldButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14326,18 +14158,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1354771153}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchFieldDir
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1354771153
@@ -14382,6 +14203,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 1532488197}
     m_Modifications:
+    - target: {fileID: 114933091240371482, guid: d0b50c0aa1eae7a4ebad445a411fc746,
+        type: 2}
+      propertyPath: list.Array.size
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 224492744229175914, guid: d0b50c0aa1eae7a4ebad445a411fc746,
         type: 2}
       propertyPath: m_LocalPosition.x
@@ -14420,7 +14246,7 @@ Prefab:
     - target: {fileID: 224492744229175914, guid: d0b50c0aa1eae7a4ebad445a411fc746,
         type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 224492744229175914, guid: d0b50c0aa1eae7a4ebad445a411fc746,
         type: 2}
@@ -14471,6 +14297,29 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114933091240371482, guid: d0b50c0aa1eae7a4ebad445a411fc746,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1980273354726702, guid: d0b50c0aa1eae7a4ebad445a411fc746, type: 2}
+      propertyPath: m_Name
+      value: ResolutionButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1980273354726702, guid: d0b50c0aa1eae7a4ebad445a411fc746, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114823539319390554, guid: d0b50c0aa1eae7a4ebad445a411fc746,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114933091240371482, guid: d0b50c0aa1eae7a4ebad445a411fc746,
+        type: 2}
+      propertyPath: list.Array.data[8].m_Text
+      value: 1920x1080
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d0b50c0aa1eae7a4ebad445a411fc746, type: 2}
@@ -14550,18 +14399,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1355942930}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchTabHome
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1355942930
@@ -15132,7 +14970,7 @@ GameObject:
   - component: {fileID: 1453501779}
   - component: {fileID: 1453501778}
   m_Layer: 0
-  m_Name: Button
+  m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15195,18 +15033,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1453501779}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimDefault
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1453501779
@@ -15842,10 +15669,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1295469850}
   - {fileID: 408226838}
   - {fileID: 1030887260}
-  - {fileID: 40707627}
   - {fileID: 1159781440}
   - {fileID: 1961457966}
   - {fileID: 1935116727}
@@ -15853,6 +15678,8 @@ RectTransform:
   - {fileID: 1785167289}
   - {fileID: 146728818}
   - {fileID: 256181834}
+  - {fileID: 40707627}
+  - {fileID: 1295469850}
   m_Father: {fileID: 811653939}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -16919,7 +16746,7 @@ GameObject:
   - component: {fileID: 1625394399}
   - component: {fileID: 1625394398}
   m_Layer: 0
-  m_Name: Button
+  m_Name: ReplaysButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16982,18 +16809,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1625394399}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimLoadReplay
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1625394399
@@ -17115,7 +16931,7 @@ GameObject:
   - component: {fileID: 1644962652}
   - component: {fileID: 1644962651}
   m_Layer: 0
-  m_Name: Button
+  m_Name: StartButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17178,18 +16994,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1644962652}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: StartDefaultSim
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1644962652
@@ -17815,7 +17620,7 @@ GameObject:
   - component: {fileID: 1683793583}
   - component: {fileID: 1683793582}
   m_Layer: 0
-  m_Name: Button
+  m_Name: ChangeRobotButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17878,18 +17683,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1683793583}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimLoadRobot
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1683793583
@@ -18156,7 +17950,7 @@ GameObject:
   - component: {fileID: 1758638866}
   - component: {fileID: 1758638865}
   m_Layer: 0
-  m_Name: Button
+  m_Name: LaunchButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18219,18 +18013,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1758638866}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SelectSimReplay
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1758638866
@@ -18333,7 +18116,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 8
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -19337,7 +19120,7 @@ GameObject:
   - component: {fileID: 1858985273}
   - component: {fileID: 1858985272}
   m_Layer: 0
-  m_Name: Button
+  m_Name: ChangeFieldButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19400,18 +19183,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1858985273}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimLoadField
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1858985273
@@ -19717,7 +19489,7 @@ Prefab:
     - target: {fileID: 224516560694696672, guid: 9b3fe4b65b06eb344a869727d87edb22,
         type: 2}
       propertyPath: m_RootOrder
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 224516560694696672, guid: 9b3fe4b65b06eb344a869727d87edb22,
         type: 2}
@@ -19768,6 +19540,14 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1946350102792330, guid: 9b3fe4b65b06eb344a869727d87edb22, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1946350102792330, guid: 9b3fe4b65b06eb344a869727d87edb22, type: 2}
+      propertyPath: m_Name
+      value: ScreenModeButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9b3fe4b65b06eb344a869727d87edb22, type: 2}
@@ -20273,7 +20053,7 @@ GameObject:
   - component: {fileID: 1935116729}
   - component: {fileID: 1935116728}
   m_Layer: 0
-  m_Name: Button
+  m_Name: InputButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20291,7 +20071,7 @@ RectTransform:
   m_Children:
   - {fileID: 83841974}
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -20336,18 +20116,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1935116729}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchInput
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1935116729
@@ -20529,18 +20298,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1953087006}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimSelection
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1953087006
@@ -20588,7 +20346,7 @@ GameObject:
   - component: {fileID: 1961457968}
   - component: {fileID: 1961457967}
   m_Layer: 0
-  m_Name: Button
+  m_Name: GraphicsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20606,7 +20364,7 @@ RectTransform:
   m_Children:
   - {fileID: 579641562}
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -20651,18 +20409,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1961457968}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SwitchGraphics
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1961457968
@@ -20968,9 +20715,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2036179077}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6c4ba5283d5eaf4faf22339382ba4fe, type: 3}
+  m_Script: {fileID: 11500000, guid: c8d145b415ed39e4385bb50127127d96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetFilename: skeleton.bxdj
+  ErrorMessage: No robots found in directory!
 --- !u!114 &2036179080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21016,7 +20765,7 @@ GameObject:
   - component: {fileID: 2037803138}
   - component: {fileID: 2037803137}
   m_Layer: 0
-  m_Name: Button
+  m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21079,18 +20828,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2037803138}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimDefault
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &2037803138
@@ -21369,7 +21107,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1532488197}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -22123,7 +21861,7 @@ GameObject:
   - component: {fileID: 2146200451}
   - component: {fileID: 2146200450}
   m_Layer: 0
-  m_Name: Button
+  m_Name: GraphicsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22186,18 +21924,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2146200451}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchGraphics
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &2146200451

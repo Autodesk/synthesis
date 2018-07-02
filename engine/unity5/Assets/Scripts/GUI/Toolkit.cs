@@ -11,13 +11,11 @@ using UnityEngine.Analytics;
 /// <summary>
 /// Helps the user with various helper functions such as stopwatch, and ruler
 /// </summary>
-public class Toolkit : MonoBehaviour
+public class Toolkit : StateBehaviour<MainState>
 {
-
     private bool ignoreClick = true;
 
     private GameObject canvas;
-    private MainState mainState;
     private GameObject toolkitWindow;
     private SensorManagerGUI sensorManagerGUI;
 
@@ -53,57 +51,42 @@ public class Toolkit : MonoBehaviour
     private Text weightUnit;
     private bool statsOn;
 
-    //dummy robot variables
-    private GameObject dummyWindow;
-    private DummyScrollable dummyList;
-    bool controllingDummy = false;
-    private GameObject dummyIndicator;
-
-    /// <summary>
-    /// Link the toolkit to main state
-    /// </summary>
-    private void Awake()
-    {
-        StateMachine.Instance.Link<MainState>(this);
-    }
-
     // Use this for initialization
-    void Start()
+    private void Start()
     {
         canvas = GameObject.Find("Canvas");
-        toolkitWindow = AuxFunctions.FindObject(canvas, "ToolkitPanel");
-        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
+        toolkitWindow = Auxiliary.FindObject(canvas, "ToolkitPanel");
+        sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
         //Ruler Objects
         rulerStartPoint = GameObject.Find("RulerStartPoint");
         rulerEndPoint = GameObject.Find("RulerEndPoint");
-        rulerWindow = AuxFunctions.FindObject(canvas, "RulerPanel");
-        rulerText = AuxFunctions.FindObject(canvas, "RulerText").GetComponent<Text>();
-        rulerXText = AuxFunctions.FindObject(canvas, "RulerXAxisText").GetComponent<Text>();
-        rulerYText = AuxFunctions.FindObject(canvas, "RulerYAxisText").GetComponent<Text>();
-        rulerZText = AuxFunctions.FindObject(canvas, "RulerZAxisText").GetComponent<Text>();
+        rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
+        rulerText = Auxiliary.FindObject(canvas, "RulerText").GetComponent<Text>();
+        rulerXText = Auxiliary.FindObject(canvas, "RulerXAxisText").GetComponent<Text>();
+        rulerYText = Auxiliary.FindObject(canvas, "RulerYAxisText").GetComponent<Text>();
+        rulerZText = Auxiliary.FindObject(canvas, "RulerZAxisText").GetComponent<Text>();
 
         //Stopwatch Objects
-        stopwatchWindow = AuxFunctions.FindObject(canvas, "StopwatchPanel");
-        stopwatchText = AuxFunctions.FindObject(canvas, "StopwatchText").GetComponent<Text>();
-        stopwatchStartButtonText = AuxFunctions.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
-        stopwatchPauseButtonText = AuxFunctions.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
+        stopwatchWindow = Auxiliary.FindObject(canvas, "StopwatchPanel");
+        stopwatchText = Auxiliary.FindObject(canvas, "StopwatchText").GetComponent<Text>();
+        stopwatchStartButtonText = Auxiliary.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
+        stopwatchPauseButtonText = Auxiliary.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
 
         //Stats Objects
-        statsWindow = AuxFunctions.FindObject(canvas, "StatsPanel");
-        speedEntry = AuxFunctions.FindObject(statsWindow, "SpeedEntry");
-        speedUnit = AuxFunctions.FindObject(speedEntry, "Unit").GetComponent<Text>();
-        accelerationEntry = AuxFunctions.FindObject(statsWindow, "AccelerationEntry");
-        accelerationUnit = AuxFunctions.FindObject(accelerationEntry, "Unit").GetComponent<Text>();
-        angularVelocityEntry = AuxFunctions.FindObject(statsWindow, "AngularVelocityEntry");
-        weightEntry = AuxFunctions.FindObject(statsWindow, "WeightEntry");
-        weightUnit = AuxFunctions.FindObject(weightEntry, "Unit").GetComponent<Text>();
+        statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
+        speedEntry = Auxiliary.FindObject(statsWindow, "SpeedEntry");
+        speedUnit = Auxiliary.FindObject(speedEntry, "Unit").GetComponent<Text>();
+        accelerationEntry = Auxiliary.FindObject(statsWindow, "AccelerationEntry");
+        accelerationUnit = Auxiliary.FindObject(accelerationEntry, "Unit").GetComponent<Text>();
+        angularVelocityEntry = Auxiliary.FindObject(statsWindow, "AngularVelocityEntry");
+        weightEntry = Auxiliary.FindObject(statsWindow, "WeightEntry");
+        weightUnit = Auxiliary.FindObject(weightEntry, "Unit").GetComponent<Text>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (mainState == null) mainState = StateMachine.Instance.FindState<MainState>();
         if (usingRuler)
         {
             if (ignoreClick) ignoreClick = false;
@@ -190,8 +173,8 @@ public class Toolkit : MonoBehaviour
     {
         usingRuler = true;
         rulerStartPoint.SetActive(true);
-        AuxFunctions.FindObject(canvas, "RulerStartButton").SetActive(false);
-        AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(true);
+        Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(false);
+        Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(true);
         if (SimUI.changeAnalytics)
         {
             Analytics.CustomEvent("Used Ruler", new Dictionary<string, object> //for analytics tracking
@@ -240,7 +223,7 @@ public class Toolkit : MonoBehaviour
                 rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
             }
             //Display different values based on the measure system it's currently using
-            else if (!mainState.IsMetric)
+            else if (!State.IsMetric)
             {
                 rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f) / 100 + "ft";
                 rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f) / 100 + "ft";
@@ -272,8 +255,8 @@ public class Toolkit : MonoBehaviour
         rulerStartPoint.GetComponent<LineRenderer>().enabled = false;
         rulerStartPoint.SetActive(false);
         rulerEndPoint.SetActive(false);
-        AuxFunctions.FindObject(canvas, "RulerStartButton").SetActive(true);
-        AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(false);
+        Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(true);
+        Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(false);
     }
     #endregion
     #region Stopwatch Functions
@@ -387,12 +370,12 @@ public class Toolkit : MonoBehaviour
     /// </summary>
     public void UpdateStatsWindow()
     {
-        speedEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Speed.ToString();
-        accelerationEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Acceleration.ToString();
-        angularVelocityEntry.GetComponent<InputField>().text = mainState.ActiveRobot.AngularVelocity.ToString();
-        weightEntry.GetComponent<InputField>().text = mainState.ActiveRobot.Weight.ToString();
+        speedEntry.GetComponent<InputField>().text = State.ActiveRobot.Speed.ToString();
+        accelerationEntry.GetComponent<InputField>().text = State.ActiveRobot.Acceleration.ToString();
+        angularVelocityEntry.GetComponent<InputField>().text = State.ActiveRobot.AngularVelocity.ToString();
+        weightEntry.GetComponent<InputField>().text = State.ActiveRobot.Weight.ToString();
         //Use correct units depending on the measure system used
-        if (mainState.IsMetric)
+        if (State.IsMetric)
         {
             speedUnit.text = "m/s";
             accelerationUnit.text = "m/s^2";
