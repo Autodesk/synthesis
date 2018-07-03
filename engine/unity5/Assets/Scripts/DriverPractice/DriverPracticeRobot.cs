@@ -347,7 +347,7 @@ namespace Synthesis.DriverPractice
         public void SetGamepiece(int index)
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -468,7 +468,7 @@ namespace Synthesis.DriverPractice
                     spawnIndicator.transform.position = gamepieceSpawn[index];
                     settingSpawn = index + 1;
 
-                    DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                    DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
                     dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
 
@@ -484,7 +484,7 @@ namespace Synthesis.DriverPractice
             int index = settingSpawn - 1;
             if (spawnIndicator != null)
             {
-                ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
+                ((DynamicCamera.SateliteState)UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
                 if (Input.GetKey(KeyCode.A)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
                 if (Input.GetKey(KeyCode.D)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
                 if (Input.GetKey(KeyCode.W)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
@@ -504,7 +504,7 @@ namespace Synthesis.DriverPractice
             if (spawnIndicator != null) Destroy(spawnIndicator);
             if (lastCameraState != null)
             {
-                DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
                 dynamicCamera.SwitchCameraState(lastCameraState);
                 lastCameraState = null;
             }
@@ -522,7 +522,7 @@ namespace Synthesis.DriverPractice
         public void SetMechanism(int index)
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -583,7 +583,7 @@ namespace Synthesis.DriverPractice
         private void SelectingNode()
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 

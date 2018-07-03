@@ -6,8 +6,9 @@ using UnityEngine.UI;
 using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Utils;
+using Synthesis.Robot;
 
-namespace Synthesis.RobotCamera
+namespace Synthesis.Camera
 {
     /// <summary>
     /// This class is attached to RobotCameraList object and handles a list of cameras
@@ -83,10 +84,10 @@ namespace Synthesis.RobotCamera
         /// <param name="positionOffset"></param> 
         /// <param name="rotationOffset"></param>
         /// <returns></returns>
-        public GameObject AddCamera(Robot robot, Transform anchor, Vector3 positionOffset, Vector3 rotationOffset)
+        public GameObject AddCamera(RobotBase robot, Transform anchor, Vector3 positionOffset, Vector3 rotationOffset)
         {
             GameObject newCamera = new GameObject("RobotCamera_" + robotCameraList.Count);
-            newCamera.AddComponent<Camera>();
+            newCamera.AddComponent<UnityEngine.Camera>();
 
             newCamera.transform.parent = anchor;
             newCamera.transform.localPosition = positionOffset;
@@ -110,10 +111,10 @@ namespace Synthesis.RobotCamera
         /// Add a new camera to the robot using the default position (0, 0.5, 0) and rotation
         /// </summary>
         /// <returns></returns>
-        public GameObject AddCamera(Robot robot, Transform anchor)
+        public GameObject AddCamera(RobotBase robot, Transform anchor)
         {
             GameObject newCamera = new GameObject("RobotCamera_" + robotCameraList.Count);
-            newCamera.AddComponent<Camera>();
+            newCamera.AddComponent<UnityEngine.Camera>();
 
             newCamera.transform.parent = anchor;
             newCamera.transform.localPosition = new Vector3(0f, 0f, 0f);
@@ -155,7 +156,7 @@ namespace Synthesis.RobotCamera
         /// Remove all cameras from a given robot, used when a robot is removed. Use DetachCamerasFromRobot when changing a robot!
         /// </summary>
         /// <param name="parent"></param> The robot whose cameras you want to remove
-        public void RemoveCamerasFromRobot(Robot parent)
+        public void RemoveCamerasFromRobot(RobotBase parent)
         {
             List<GameObject> removingCameras = GetRobotCamerasFromRobot(parent);
             //Take out the camera indicator in case it gets destroyed with one of the robots
@@ -178,7 +179,7 @@ namespace Synthesis.RobotCamera
         /// Detach the robot camera from a given robot in preparation for changing robot or other operation that needs to take out a specific group of robot camera
         /// </summary>
         /// <param name="parent"></param> A robot where cameras are going to be detached from
-        public void DetachCamerasFromRobot(Robot parent)
+        public void DetachCamerasFromRobot(RobotBase parent)
         {
             List<GameObject> detachingCameras = GetRobotCamerasFromRobot(parent);
 
@@ -193,7 +194,7 @@ namespace Synthesis.RobotCamera
         /// </summary>
         /// <param name="parent"></param> A robot on which cameras are attached to
         /// <returns></returns> A list of camera attach to that robot
-        public List<GameObject> GetRobotCamerasFromRobot(Robot parent)
+        public List<GameObject> GetRobotCamerasFromRobot(RobotBase parent)
         {
 
             List<GameObject> camerasOnRobot = new List<GameObject>();
@@ -241,7 +242,7 @@ namespace Synthesis.RobotCamera
         public void SetNode()
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -332,13 +333,13 @@ namespace Synthesis.RobotCamera
             {
                 if (IsChangingFOV) //Control fov
                 {
-                    CurrentCamera.GetComponent<Camera>().fieldOfView += Input.GetAxis("CameraVertical");
+                    CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView += Input.GetAxis("CameraVertical");
 
                     //Limit fov to range from 0 to 180
-                    float fov = CurrentCamera.GetComponent<Camera>().fieldOfView;
+                    float fov = CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView;
                     if (fov > 179) fov = 179; //Not quite 180 because at 180 it has this weird circle thing
                     else if (fov < 0) fov = 0;
-                    CurrentCamera.GetComponent<Camera>().fieldOfView = fov;
+                    CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = fov;
                 }
                 else if (IsShowingAngle) //Control rotation (only when the angle panel is active)
                 {

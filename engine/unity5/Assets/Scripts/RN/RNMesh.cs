@@ -10,7 +10,7 @@ using Synthesis.BUExtensions;
 using Synthesis.States;
 using Synthesis.Utils;
 
-namespace Synthesis.RigidNode
+namespace Synthesis.RN
 {
     public partial class RigidNode : RigidNode_Base
     {

@@ -16,10 +16,11 @@ using Synthesis.DriverPractice;
 using Synthesis.GUI;
 using Synthesis.InputControl;
 using Synthesis.MixAndMatch;
-using Synthesis.RobotCamera;
+using Synthesis.Camera;
 using Synthesis.Sensors;
 using Synthesis.StatePacket;
 using Synthesis.Utils;
+using Synthesis.Robot;
 
 namespace Synthesis.States
 {
@@ -40,8 +41,8 @@ namespace Synthesis.States
 
         private UnityPacket unityPacket;
 
-        private List<Robot> robots;
-        public Robot ActiveRobot { get; private set; }
+        // TODO: Create more robot classes that suit the needs of MainState.
+        public RobotBase ActiveRobot { get; private set; }
 
         private DynamicCamera dynamicCamera;
         public GameObject DynamicCameraObject;
@@ -54,22 +55,15 @@ namespace Synthesis.States
         private GameObject fieldObject;
         private UnityFieldDefinition fieldDefinition;
 
-        private const float HOLD_TIME = 0.8f;
-        private float keyDownTime = 0f;
-
-        private OverlayWindow oWindow;
-
         public CollisionTracker CollisionTracker { get; private set; }
 
         private string fieldPath;
         private string robotPath;
 
-        public List<Robot> SpawnedRobots { get; private set; }
+        public List<RobotBase> SpawnedRobots { get; private set; }
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-
-        public int controlIndex = 0;
 
         /// <summary>
         /// Called when the script instance is being initialized.
@@ -85,7 +79,7 @@ namespace Synthesis.States
 
             CollisionTracker = new CollisionTracker(this);
             unityPacket = new UnityPacket();
-            SpawnedRobots = new List<Robot>();
+            SpawnedRobots = new List<RobotBase>();
         }
 
         /// <summary>
@@ -361,7 +355,7 @@ namespace Synthesis.States
         /// </summary>
         public void ChangeControlIndex(int index)
         {
-            ActiveRobot.SetControlIndex(index);
+            ActiveRobot.ControlIndex = index;
         }
 
         /// <summary>
@@ -385,7 +379,7 @@ namespace Synthesis.States
                 SwitchActiveRobot();
 
                 int i = 0;
-                foreach (Robot robot in SpawnedRobots)
+                foreach (RobotBase robot in SpawnedRobots)
                 {
                     robot.ControlIndex = i;
                     i++;
@@ -514,7 +508,7 @@ namespace Synthesis.States
                 robotPath = baseDirectory;
 
                 GameObject robotObject = new GameObject("Robot");
-                Robot robot = robotObject.AddComponent<Robot>();
+                RobotBase robot = robotObject.AddComponent<RobotBase>();
                 robot.RobotIsMixAndMatch = true;
 
                 //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
@@ -651,7 +645,7 @@ namespace Synthesis.States
         private void SendRobotPackets()
         {
             ActiveRobot.Packet = unityPacket.GetLastPacket();
-            foreach (Robot robot in SpawnedRobots)
+            foreach (RobotBase robot in SpawnedRobots)
             {
                 if (robot != ActiveRobot) robot.Packet = null;
             }

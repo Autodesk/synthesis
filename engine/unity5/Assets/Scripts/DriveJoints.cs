@@ -7,7 +7,7 @@ using BulletUnity;
 using BulletSharp;
 using Synthesis.BUExtensions;
 using Synthesis.InputControl;
-using Synthesis.RigidNode;
+using Synthesis.RN;
 using Synthesis.StatePacket;
 using Synthesis.Utils;
 

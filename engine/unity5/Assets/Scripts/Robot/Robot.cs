@@ -14,8 +14,8 @@ using Synthesis.DriverPractice;
 using Synthesis.GUI;
 using Synthesis.InputControl;
 using Synthesis.MixAndMatch;
-using Synthesis.RigidNode;
-using Synthesis.RobotCamera;
+using Synthesis.RN;
+using Synthesis.Camera;
 using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.StatePacket;
@@ -202,7 +202,6 @@ public class Robot : StateBehaviour<MainState>
         //Initializes the wheel variables
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
-
 
         //Initializes the nodes and creates joints for the robot
         if (RobotIsMixAndMatch && !robotIsMecanum) //If the user is in MaM and the robot they select is not mecanum, create the nodes and replace the wheel meshes to match those selected
@@ -440,8 +439,6 @@ public class Robot : StateBehaviour<MainState>
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING: LIKE ACTUALLY
 
-
-
         Vector3 manipulatorTransform = robotStartPosition + offset;
         Debug.Log("Node Com Offset" + node.ComOffset);
         ManipulatorObject.transform.position = manipulatorTransform;
@@ -530,7 +527,6 @@ public class Robot : StateBehaviour<MainState>
                 newTransform.Basis = BulletSharp.Math.Matrix.Identity;
                 r.WorldTransform = newTransform;
             }
-
 
             if (RobotHasManipulator && RobotIsMixAndMatch)
             {

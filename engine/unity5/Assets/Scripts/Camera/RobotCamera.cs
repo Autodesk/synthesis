@@ -1,9 +1,10 @@
 ﻿using Synthesis.GUI;
+using Synthesis.Robot;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Synthesis.RobotCamera
+namespace Synthesis.Camera
 {
     /// <summary>
     /// This class is used to store robot camera configuration and restore info when changing robot
@@ -16,7 +17,7 @@ namespace Synthesis.RobotCamera
         Transform parent;
         int parentNodeIndex;
         float FOV;
-        public Robot robot;
+        public RobotBase robot;
 
         /// <summary>
         /// Update the configuration info of robot camera, called in RobotCameraManager after each configuration update
@@ -25,7 +26,7 @@ namespace Synthesis.RobotCamera
         {
             localPosition = transform.localPosition;
             localRotation = transform.localRotation;
-            FOV = GetComponent<Camera>().fieldOfView;
+            FOV = GetComponent<UnityEngine.Camera>().fieldOfView;
             parent = transform.parent;
             parentNodeIndex = transform.parent.GetSiblingIndex();
         }
@@ -34,7 +35,7 @@ namespace Synthesis.RobotCamera
         /// Set the parent robot of the robot cameras
         /// </summary>
         /// <param name="robot"></param>
-        public void SetParentRobot(Robot robot)
+        public void SetParentRobot(RobotBase robot)
         {
             this.robot = robot;
         }
@@ -51,7 +52,7 @@ namespace Synthesis.RobotCamera
             transform.parent = parent;
             transform.localPosition = pos;
             transform.localRotation = rot;
-            GetComponent<Camera>().fieldOfView = fov;
+            GetComponent<UnityEngine.Camera>().fieldOfView = fov;
             UpdateConfiguration();
         }
 
@@ -75,7 +76,7 @@ namespace Synthesis.RobotCamera
             parent = transform.parent;
             transform.localPosition = localPosition;
             transform.localRotation = localRotation;
-            GetComponent<Camera>().fieldOfView = FOV;
+            GetComponent<UnityEngine.Camera>().fieldOfView = FOV;
         }
 
         /// <summary>

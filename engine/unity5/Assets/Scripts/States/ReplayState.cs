@@ -85,7 +85,7 @@ namespace Synthesis.States
         private bool firstFrame;
         private bool active;
 
-        private Camera camera;
+        private UnityEngine.Camera camera;
         private DynamicCamera dynamicCamera;
         private List<Tracker> trackers;
         private List<List<ContactDescriptor>> contactPoints;
@@ -489,7 +489,7 @@ namespace Synthesis.States
             if (dynamicCamera == null)
             {
                 dynamicCamera = UnityEngine.Object.FindObjectOfType<DynamicCamera>();
-                camera = dynamicCamera.GetComponent<Camera>();
+                camera = dynamicCamera.GetComponent<UnityEngine.Camera>();
             }
 
             if (InputControl.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
