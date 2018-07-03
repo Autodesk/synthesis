@@ -502,16 +502,47 @@ public partial class SynthesisGUI : Form
                 Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName);
 
                 // Add joint properties to set
-                Utilities.SetProperty(propertySet, "has-driver", joint.cDriver != null);
+                // Save driver information
+                JointDriver driver = joint.cDriver;
+                Utilities.SetProperty(propertySet, "has-driver", driver != null);
 
-                if (joint.cDriver != null)
+                if (driver != null)
                 {
-                    Utilities.SetProperty(propertySet, "driver-type", joint.cDriver.GetDriveType());
-                    Utilities.SetProperty(propertySet, "driver-portA", joint.cDriver.portA);
-                    Utilities.SetProperty(propertySet, "driver-portB", joint.cDriver.portB);
-                    Utilities.SetProperty(propertySet, "driver-isCan", joint.cDriver.isCan);
-                    Utilities.SetProperty(propertySet, "driver-lowerLimit", joint.cDriver.lowerLimit);
-                    Utilities.SetProperty(propertySet, "driver-upperLimit", joint.cDriver.upperLimit);
+                    Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());
+                    Utilities.SetProperty(propertySet, "driver-portA", driver.portA);
+                    Utilities.SetProperty(propertySet, "driver-portB", driver.portB);
+                    Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
+                    Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
+                    Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
+
+                    // Save other properties stored in meta
+                    // Wheel information
+                    WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
+                    Utilities.SetProperty(propertySet, "has-wheel", wheel != null);
+
+                    if (wheel != null)
+                    {
+                        Utilities.SetProperty(propertySet, "wheel-type", (int)wheel.type);
+
+                    }
+
+                    // Pneumatic information
+                    PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+                    Utilities.SetProperty(propertySet, "has-pneumatic", pneumatic != null);
+
+                    if (pneumatic != null)
+                    {
+
+                    }
+
+                    // Elevator information
+                    ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+                    Utilities.SetProperty(propertySet, "has-elevator", elevator != null);
+
+                    if (elevator != null)
+                    {
+
+                    }
                 }
 
                 // Recur along this child
