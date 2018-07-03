@@ -37,7 +37,7 @@
             this.LeftWheelsGroup = new System.Windows.Forms.GroupBox();
             this.WarningLabel = new System.Windows.Forms.Label();
             this.RobotInfoGroupBox = new System.Windows.Forms.GroupBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.MassValueBox = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.DriveTrainDropdown = new System.Windows.Forms.ComboBox();
             this.DriveTrainLabel = new System.Windows.Forms.Label();
@@ -47,7 +47,7 @@
             this.WheelNodeGroupBox.SuspendLayout();
             this.LeftWheelsGroup.SuspendLayout();
             this.RobotInfoGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MassValueBox)).BeginInit();
             this.RightWheelsGroup.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -146,7 +146,7 @@
             // 
             this.RobotInfoGroupBox.BackColor = System.Drawing.SystemColors.Control;
             this.RobotInfoGroupBox.Controls.Add(this.MassTypeSelector);
-            this.RobotInfoGroupBox.Controls.Add(this.numericUpDown1);
+            this.RobotInfoGroupBox.Controls.Add(this.MassValueBox);
             this.RobotInfoGroupBox.Controls.Add(this.label3);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainDropdown);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainLabel);
@@ -161,17 +161,17 @@
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(365, 22);
-            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.MassValueBox.Location = new System.Drawing.Point(365, 22);
+            this.MassValueBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.MassValueBox.Maximum = new decimal(new int[] {
             150,
             0,
             0,
             0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(133, 22);
-            this.numericUpDown1.TabIndex = 3;
-            this.numericUpDown1.TextChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
+            this.MassValueBox.Name = "numericUpDown1";
+            this.MassValueBox.Size = new System.Drawing.Size(133, 22);
+            this.MassValueBox.TabIndex = 3;
+            this.MassValueBox.TextChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
             // 
             // label3
             // 
@@ -269,7 +269,7 @@
             this.LeftWheelsGroup.ResumeLayout(false);
             this.RobotInfoGroupBox.ResumeLayout(false);
             this.RobotInfoGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MassValueBox)).EndInit();
             this.RightWheelsGroup.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -288,7 +288,7 @@
         private System.Windows.Forms.Label DriveTrainLabel;
         private System.Windows.Forms.FlowLayoutPanel RightWheelsPanel;
         private System.Windows.Forms.ListBox NodeListBox;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown MassValueBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox LeftWheelsGroup;
