@@ -9,7 +9,7 @@ using System.Text;
 using System.Xml;
 using UnityEngine;
 
-namespace Assets.Scripts.FEA
+namespace Synthesis.FEA
 {
     public static class ReplayImporter
     {

@@ -12,6 +12,11 @@ using System.Runtime.InteropServices;
 
 namespace BxDRobotExporter
 {
+    public class ExporterFailedException : ApplicationException
+    {
+        public ExporterFailedException(string message) : base(message) {}
+    }
+
     /// <summary>
     /// This is where the magic happens. All top-level event handling, UI creation, and inventor communication is handled here.
     /// </summary>
@@ -185,7 +190,7 @@ namespace BxDRobotExporter
             DedectionTestButton = ControlDefs.AddButtonDefinition("Detection Test", "BxD:RobotExporter:DetectionTestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
             DedectionTestButton.OnExecute += delegate (NameValueMap context)
             {
-                Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, Wizard.WizardData.WizardDriveTrain.WESTERN, 6);
+                Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, Wizard.WizardData.WizardDriveTrain.TANK, 6);
             };
             DebugPanel.CommandControls.AddButton(DedectionTestButton, true);
             //UI Test
@@ -299,7 +304,14 @@ namespace BxDRobotExporter
             SaveButton.Enabled = false;
 
             // Immediately start the "advanced export" when the exporter is opened. TODO: Rename this as ExporterSetup, as it applies to all exporting modes.
-            BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
+            try
+            {
+                BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
+            }
+            catch (ExporterFailedException)
+            {
+                // TODO: Close the addin. I don't know how to do this.
+            }
         }
 
         /// <summary>
@@ -399,7 +411,6 @@ namespace BxDRobotExporter
                 }
                 else if (EnvironmentState == EnvironmentStateEnum.kTerminateEnvironmentState && EnvironmentEnabled && BeforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    
                     ToggleEnvironment();
                 }
             }
@@ -434,27 +445,23 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if ((!PendingChanges || this.WarnUnsaved()) && (Utilities.GUI.SkeletonBase != null || Utilities.GUI.BuildRobotSkeleton()))
+            if (!PendingChanges || this.WarnUnsaved())
             {
-                SaveAsButton.Enabled = true;
-                SaveButton.Enabled = true;
+                if (Utilities.GUI.BuildRobotSkeleton())
+                {
+                    SaveAsButton.Enabled = true;
+                    SaveButton.Enabled = true;
 
-                Wizard.WizardForm wizard = new Wizard.WizardForm();
-                Utilities.HideDockableWindows();
-                wizard.ShowDialog();
-                Utilities.GUI.ReloadPanels();
-                Utilities.ShowDockableWindows();
-            }
-            else if (Utilities.GUI.SkeletonBase != null)
-            {
-                SaveAsButton.Enabled = true;
-                SaveButton.Enabled = true;
-
-                Wizard.WizardForm wizard = new Wizard.WizardForm();
-                Utilities.HideDockableWindows();
-                wizard.ShowDialog();
-                Utilities.GUI.ReloadPanels();
-                Utilities.ShowDockableWindows();
+                    Wizard.WizardForm wizard = new Wizard.WizardForm();
+                    Utilities.HideDockableWindows();
+                    wizard.ShowDialog();
+                    Utilities.GUI.ReloadPanels();
+                    Utilities.ShowDockableWindows();
+                }
+                else
+                {
+                    throw new ExporterFailedException("Failed to build robot skeleton.");
+                }
             }
         }
 

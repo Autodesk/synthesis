@@ -23,7 +23,7 @@ namespace JointResolver.ControlGUI
             };
         }
 
-        public void SetProgress(string message, int current, int max)
+        private void SetProgress(string message, int current, int max)
         {
             // Allows function to be called by other threads
             if (InvokeRequired)
@@ -77,7 +77,22 @@ namespace JointResolver.ControlGUI
             SetProgress("Processing joints...", NumCentered, occurrences.Count);
             foreach (ComponentOccurrence component in occurrences)
             {
-                Exporter.CenterAllJoints(component);
+                try
+                {
+                    Exporter.CenterAllJoints(component);
+                }
+                catch (Exporter.InvalidJointException e)
+                {
+                    string caption = "Invalid Joint";
+                    MessageBoxButtons buttons = MessageBoxButtons.OK;
+                    DialogResult r = MessageBox.Show(e.Message, caption, buttons);
+                    return null;
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+
                 NumCentered++;
 
                 SetProgress("Processing joints...", NumCentered, occurrences.Count + 3);

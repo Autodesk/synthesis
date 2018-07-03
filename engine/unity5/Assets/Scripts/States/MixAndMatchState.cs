@@ -1,19 +1,28 @@
-﻿using Assets.Scripts.FSM;
+﻿using Synthesis.FSM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class MixAndMatchState : State
+namespace Synthesis.States
 {
-    public void OnBackButtonPressed()
+    public class MixAndMatchState : State
     {
-        StateMachine.Instance.PopState();
-    }
+        /// <summary>
+        /// Returns to the previous scene when the back button is pressed.
+        /// </summary>
+        public void OnBackButtonPressed()
+        {
+            StateMachine.PopState();
+        }
 
-    public void OnNextButtonPressed()
-    {
-        StateMachine.Instance.PushState(new LoadFieldState());
+        /// <summary>
+        /// Launches a new <see cref="LoadFieldState"/> when the next button is pressed.
+        /// </summary>
+        public void OnNextButtonPressed()
+        {
+            StateMachine.PushState(new LoadFieldState());
+        }
     }
 }
