@@ -1,20 +1,21 @@
 #ifndef _ROBORIO_H_
 #define _ROBORIO_H_
 
+#include <array>
+#include <memory>
+#include <mutex>
+
 #include "HAL/ChipObject.h"
 #include "athena/PortsInternal.h"
 
-#include<array>
-
 namespace cerebrum{
+    using namespace nFPGA;
+    using namespace nRoboRIO_FPGANamespace;
 
-	using namespace nFPGA;
- 	using namespace nRoboRIO_FPGANamespace;
-
-	struct RoboRIO{
-		struct AnalogOutput{
-				uint16_t mxp_value;
-		};
+    struct RoboRIO{
+        struct AnalogOutput{
+            uint16_t mxp_value;
+        };
         struct AnalogInputs {
             struct AnalogInput{
                 uint8_t oversample_bits;
@@ -71,24 +72,50 @@ namespace cerebrum{
 			void setMXPDutyCycle(uint8_t, uint32_t);
 		};
 		
-		struct DIOSystem{
-			tDIO::tDO outputs;
-			tDIO::tOutputEnable enabled_outputs;
-			tDIO::tPulse pulses;
-			tDIO::tDI inputs;
+        struct DIOSystem{
+            tDIO::tDO outputs;
+            tDIO::tOutputEnable enabled_outputs;
+            tDIO::tPulse pulses;
+            tDIO::tDI inputs;
 
-			uint8_t pulse_length;
+            uint8_t pulse_length;
 
-			std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
-		};
+        std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
+        };
 
-		std::array<AnalogOutput, tAO::kNumMXPRegisters> analog_outputs;
-		PWMSystem pwm_system;
-		DIOSystem digital_system;
+        std::array<AnalogOutput, tAO::kNumMXPRegisters> analog_outputs;
+        PWMSystem pwm_system;
+        DIOSystem digital_system;
         AnalogInputs analog_inputs;
-	};
 
-	static RoboRIO roborio_state;
+        explicit RoboRIO() = default;
+
+        friend class RoboRIOManager;
+    private:
+        RoboRIO(RoboRIO const&) = default;
+    };
+
+    class RoboRIOManager {
+
+    public:
+        static std::shared_ptr<RoboRIO> getInstance(std::mutex& m) {
+            std::unique_lock<std::mutex> lock(m);
+            static std::shared_ptr<RoboRIO> instance;
+            return instance;
+        }
+        static RoboRIO getCopy() {
+            std::mutex m;
+            return RoboRIO((*RoboRIOManager::getInstance(m)));
+        }
+    private:
+        RoboRIOManager() {}
+    public:
+        RoboRIOManager(RoboRIOManager const&) = delete;
+        void operator=(RoboRIOManager const&) = delete;
+    };
+
+    static RoboRIO roborio_state;
+
 }
 
 #endif
