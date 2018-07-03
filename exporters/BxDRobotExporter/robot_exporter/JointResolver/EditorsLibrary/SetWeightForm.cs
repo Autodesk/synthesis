@@ -34,8 +34,8 @@ namespace EditorsLibrary
         {
             IsMetric = UnitBox.SelectedIndex == 1;
 
-            if (IsMetric)
-                TotalWeightKg = (float)WeightBox.Value * 2.20462f;
+            if (!IsMetric)
+                TotalWeightKg = (float)WeightBox.Value / 2.20462f;
             else
                 TotalWeightKg = (float)WeightBox.Value;
 
