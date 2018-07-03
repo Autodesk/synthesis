@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Assets.Scripts.BUExtensions
+namespace Synthesis.BUExtensions
 {
     /// <summary>
     /// This class is used to override the <see cref="BPhysicsWorldLateHelper"/> class normally used by

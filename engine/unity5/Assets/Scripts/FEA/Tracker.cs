@@ -1,20 +1,20 @@
-﻿using Assets.Scripts.BUExtensions;
-using Assets.Scripts.FSM;
+﻿using Synthesis.FSM;
 using BulletSharp;
 using BulletUnity;
+using Synthesis.BUExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Synthesis.States;
 
-namespace Assets.Scripts.FEA
+namespace Synthesis.FEA
 {
-    public class Tracker : MonoBehaviour
+    public class Tracker : StateBehaviour<MainState>
     {
         private const float fixedTimeStep = 1f / 60f;
 
-        private MainState mainState;
         private BPhysicsWorld physicsWorld;
         private RigidBody rigidBody;
 
@@ -41,7 +41,7 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Returns a StateDescriptor based on the current frame.
         /// </summary>
-        private StateDescriptor State
+        private StateDescriptor StateDescriptor
         {
             get
             {
@@ -60,7 +60,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public void Clear()
         {
-            States.Clear(State);
+            States.Clear(StateDescriptor);
         }
 
         /// <summary>
@@ -68,14 +68,14 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public void AddState(DynamicsWorld world, float timeStep, int numSteps)
         {
-            if (!mainState.Tracking)
+            if (!State.Tracking)
                 return;
 
-            StateDescriptor nextState = State;
+            StateDescriptor nextState = StateDescriptor;
 
             if (numSteps == 1) // This will be the case the vast majority of the time
             {
-                States.Add(State);
+                States.Add(StateDescriptor);
             }
             else // If there's some random lag spike
             {
@@ -100,17 +100,14 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Called when the Tracker is initialized.
         /// </summary>
-        void Awake()
+        protected override void Awake()
         {
-            mainState = StateMachine.Instance.FindState<MainState>();
-
-            if (mainState == null)
-                Destroy(this);
+            base.Awake();
 
             physicsWorld = BPhysicsWorld.Get();
             rigidBody = (RigidBody)GetComponent<BRigidBody>().GetCollisionObject();
 
-            States = new FixedQueue<StateDescriptor>(Length, State);
+            States = new FixedQueue<StateDescriptor>(Length, StateDescriptor);
 
             BPhysicsTickListener.Instance.OnTick += AddState;
         }
