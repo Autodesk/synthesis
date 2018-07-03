@@ -28,7 +28,12 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 CMakeFiles/*
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
 
 # Doxygen
 docs/html
 docs/latex
+
+# Developer dependancies
+GoogleTest-prefix/
