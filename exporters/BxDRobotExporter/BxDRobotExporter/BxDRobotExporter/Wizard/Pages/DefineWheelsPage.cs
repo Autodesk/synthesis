@@ -15,12 +15,8 @@ namespace BxDRobotExporter.Wizard
     /// </summary>
     public partial class DefineWheelsPage : UserControl, IWizardPage
     {
-        /// <summary>
-        /// Active counter of how many <see cref="RigidNode_Base"/>s have been selected
-        /// </summary>
-        private int checkedCount = 0;
-        private int totalMassKg = 0;
-        private double inputMass = 0;
+        private int totalWeightKg = 0;
+
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
@@ -166,7 +162,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
-            WizardData.Instance.massKg = totalMassKg;
+            WizardData.Instance.weightKg = totalWeightKg;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
             {
@@ -289,18 +285,18 @@ namespace BxDRobotExporter.Wizard
 
         private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateMassCount();
+            UpdateWeight();
         }
 
-        private void UpdateMassCount()
+        private void UpdateWeight()
         {
-            if (MassTypeSelector.SelectedIndex == 0)
+            if (WeightUnitSelector.SelectedIndex == 0)
             {
-                totalMassKg = (int)Math.Round(Convert.ToDouble(MassValueBox.Value) / 2.20462);
+                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value) / 2.20462);
             }
             else
             {
-                totalMassKg = (int)Math.Round(Convert.ToDouble(MassValueBox.Value));
+                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value));
             }
         }
 
@@ -443,7 +439,7 @@ namespace BxDRobotExporter.Wizard
        
         private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
         {
-            UpdateMassCount();
+            UpdateWeight();
         }
     }
 }
