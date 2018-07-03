@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections;
 
 namespace BxDRobotExporter.Wizard
 {
@@ -51,61 +52,6 @@ namespace BxDRobotExporter.Wizard
             
         }
 
-        /// <summary>
-        /// Either fills or removes a <see cref="WheelSetupPanel"/> from a <see cref="WheelSlotPanel"/> 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /*private void NodeListBox_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            if(e.NewValue == CheckState.Checked)
-            {
-                if(disableChecked)
-                {
-                    e.NewValue = CheckState.Unchecked;
-                    return;
-                }
-                OnInvalidatePage();
-                switch (WizardData.Instance.driveTrain)
-                {
-                    case WizardData.WizardDriveTrain.TANK:
-                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
-                        break;
-                    case WizardData.WizardDriveTrain.MECANUM:
-                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.MECANUM);
-                        break;
-                    case WizardData.WizardDriveTrain.H_DRIVE:
-                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index), WizardData.WizardWheelType.OMNI);
-                        break;
-                    case WizardData.WizardDriveTrain.SWERVE:
-                        //TODO implement this crap
-                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
-                        break;
-                    case WizardData.WizardDriveTrain.CUSTOM:
-                        GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
-                        break;
-                }
-                checkedCount++;
-
-                if (checkedCount == WizardData.Instance.wheelCount)
-                    disableChecked = true;
-
-            }
-            else
-            {
-                OnInvalidatePage();
-                checkedCount--;
-                disableChecked = false;
-
-                foreach(var slot in slots)
-                {
-                    if (slot.Node == checkedListItems[NodeListBox.Items[e.Index].ToString()])
-                        slot.FreeSlot();
-                }
-            }
-
-            UpdateProgress();
-        }*/
 
         /// <summary>
         /// Sets the limits of <see cref="WheelCountUpDown"/> and validates input.
@@ -142,8 +88,6 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
             OnInvalidatePage();
-            //checkedListItems.Clear();
-            //UpdateWheelPanes();
         }
         
         /// <summary>
@@ -223,7 +167,6 @@ namespace BxDRobotExporter.Wizard
                 RightWheelsPanel.Controls.Add(rightPanel);
             }
             _initialized = true;
-
         }
 
         public void UpdateWheelPanes()
@@ -233,8 +176,6 @@ namespace BxDRobotExporter.Wizard
                 int downTo = leftSlots.Count;
                 for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
                 {
-                    //NodeListBox.
-
                     LeftWheelsPanel.Controls.Remove(leftSlots.ElementAt(i));
                     leftSlots.Remove(leftSlots.ElementAt(i));
                 }
@@ -421,6 +362,16 @@ namespace BxDRobotExporter.Wizard
                 }
             }
             NodeListBox.Items.Add(s);
+            object[] list;
+            NodeListBox.Items.CopyTo(list = new object[NodeListBox.Items.Count], 0);
+            ArrayList a = new ArrayList();
+            a.AddRange(list);
+            a.Sort();
+            NodeListBox.Items.Clear();
+            foreach (object sortedItem in a)
+            {
+                NodeListBox.Items.Add(sortedItem);
+            }
             return "";
         }
 
