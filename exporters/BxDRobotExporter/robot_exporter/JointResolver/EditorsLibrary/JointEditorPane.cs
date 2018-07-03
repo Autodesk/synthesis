@@ -233,8 +233,8 @@ namespace EditorsLibrary
 
                         ListViewItem item = new ListViewItem(new string[] {
                         Utilities.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()), true),
-                        Utilities.CapitalizeFirstLetter(node.GetParent().ModelFileName.Replace('_', ' ').Replace(".bxda", " ")),
-                        Utilities.CapitalizeFirstLetter(node.ModelFileName.Replace('_', ' ').Replace(".bxda", " ")),
+                        Utilities.CapitalizeFirstLetter(node.GetParent().ModelFileName.Replace('_', ' ').Replace(".bxda", "")),
+                        Utilities.CapitalizeFirstLetter(node.ModelFileName.Replace('_', ' ').Replace(".bxda", "")),
                         joint.cDriver != null ? joint.cDriver.ToString() : "No Driver",
                         wheelData!=null ? wheelData.GetTypeString() : "No Wheel",
                         joint.attachedSensors.Count.ToString()})
