@@ -37,3 +37,7 @@ CMakeCache.txt
 cmake_install.xmake
 Makefile
 CMakeFiles/*
+
+# Doxygen
+docs/html
+docs/latex

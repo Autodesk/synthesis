@@ -42,7 +42,8 @@ endif()
 #    )
 #endif(TEST)
 
-if(DOXYGEN_FOUND AND CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
+find_package(Doxygen)
+if(DOXYGEN_FOUND)#AND CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
 
   #set(DOXYGEN_IN ${CMAKE_BINARY_DIR}/docs/Doxyfile.in)
   #set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/docs/Doxyfile)
