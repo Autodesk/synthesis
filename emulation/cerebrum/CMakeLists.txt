@@ -23,6 +23,7 @@ set (CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++14")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
@@ -34,13 +35,13 @@ endif()
 
 
 # If we decide to add automated unit testing, uncomment this block
-#if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
-#  ExternalProject_Add(GoogleTest
-#    DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
-#    GIT_REPOSITORY https://www.github.com/google/googletest
-#    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-#    )
-#endif(TEST)
+if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
+  ExternalProject_Add(GoogleTest
+    DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
+    GIT_REPOSITORY https://www.github.com/google/googletest
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    )
+endif(TEST)
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)#AND CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
@@ -69,4 +70,5 @@ include_directories("${WPILIB_DIRECTORY}/hal/src/main/native/include")
 include_directories("./include")
 
 add_library (cerebrum SHARED src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp)
-
+add_executable (digital-io src/digital_io.cpp)
+target_compile_options (digital-io PUBLIC -DDIGITAL_IO_TEST)
