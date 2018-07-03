@@ -224,7 +224,11 @@ public class DriverPracticeRobot : MonoBehaviour
             newObject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.NoContactResponse;
 
             intakeInteractor[index].heldGamepieces.Add(newObject);
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> ae99265aa2a7b3530ffc8806eb925c112188b7b0
             startParentRotation = intakeInteractor[index].transform.rotation;
             startChildRotation = newObject.transform.rotation;
 
