@@ -6,7 +6,7 @@
 
 #include<array>
 
-namespace minerva{
+namespace cerebrum{
 
 	using namespace nFPGA;
  	using namespace nRoboRIO_FPGANamespace;
