@@ -534,7 +534,8 @@ public partial class SynthesisGUI : Form
 
                     if (pneumatic != null)
                     {
-                        // TODO: Save pneumatic meta to properties
+                        Utilities.SetProperty(propertySet, "pneumatic-diameter", (int)pneumatic.widthEnum);
+                        Utilities.SetProperty(propertySet, "pneumatic-pressure", (int)pneumatic.pressureEnum);
                     }
 
                     // Elevator information
@@ -543,7 +544,7 @@ public partial class SynthesisGUI : Form
 
                     if (elevator != null)
                     {
-                        // TODO: Save elevator meta to properties
+                        Utilities.SetProperty(propertySet, "elevator-type", (int)elevator.type);
                     }
                 }
 
@@ -628,7 +629,8 @@ public partial class SynthesisGUI : Form
                             driver.AddInfo(new PneumaticDriverMeta());
                         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
 
-                        // TODO: Apply pneumatic meta from properties
+                        pneumatic.widthEnum = (PneumaticDiameter)Utilities.GetProperty(propertySet, "pneumatic-diameter", (int)PneumaticDiameter.MEDIUM);
+                        pneumatic.pressureEnum = (PneumaticPressure)Utilities.GetProperty(propertySet, "pneumatic-pressure", (int)PneumaticPressure.MEDIUM);
                     }
 
                     // Elevator information
@@ -638,7 +640,7 @@ public partial class SynthesisGUI : Form
                             driver.AddInfo(new ElevatorDriverMeta());
                         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
-                        // TODO: Apply elevator meta from properties
+                        elevator.type = (ElevatorType)Utilities.GetProperty(propertySet, "elevator-type", (int)ElevatorType.NOT_MULTI);
                     }
                 }
 
