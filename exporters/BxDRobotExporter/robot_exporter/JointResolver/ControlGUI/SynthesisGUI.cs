@@ -585,8 +585,12 @@ public partial class SynthesisGUI : Form
                 // Name of the property set in inventor
                 string setName = "bxd-jointdata-" + child.GetModelID();
 
-                // Create the property set if it doesn't exist
-                Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName);
+                // Attempt to open the property set
+                Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName, false);
+
+                // If the property set does not exist, stop loading data
+                if (propertySet == null)
+                    return false;
 
                 // Get joint properties from set
                 // Get driver information
@@ -597,10 +601,10 @@ public partial class SynthesisGUI : Form
                     JointDriver driver = joint.cDriver;
 
                     joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portA", 0);
-                    joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portB", -1);
+                    joint.cDriver.portB = Utilities.GetProperty(propertySet, "driver-portB", -1);
                     joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
                     joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
-                    joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
+                    joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
 
                     // Get other properties stored in meta
                     // Wheel information
