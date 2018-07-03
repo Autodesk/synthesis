@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.FSM;
+﻿using Synthesis.FSM;
 using BulletSharp;
 using BulletUnity;
 using System;
@@ -12,8 +12,11 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Analytics;
+using Synthesis.GUI;
+using Synthesis.InputControl;
+using Synthesis.FEA;
 
-namespace Assets.Scripts.FEA
+namespace Synthesis.States
 {
     public class ReplayState : State
     {
@@ -277,7 +280,7 @@ namespace Assets.Scripts.FEA
             Rect controlRect = new Rect(ControlButtonMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
                 ButtonSize, ButtonSize);
 
-            if (GUI.Button(controlRect, string.Empty, rewindStyle))
+            if (UnityEngine.GUI.Button(controlRect, string.Empty, rewindStyle))
             {
                 if (rewindTime == Tracker.Lifetime)
                     rewindTime = 0f;
@@ -287,12 +290,12 @@ namespace Assets.Scripts.FEA
 
             controlRect.x += ButtonSize + ControlButtonMargin;
 
-            if (GUI.Button(controlRect, string.Empty, stopStyle))
+            if (UnityEngine.GUI.Button(controlRect, string.Empty, stopStyle))
                 playbackMode = PlaybackMode.Paused;
 
             controlRect.x += ButtonSize + ControlButtonMargin;
 
-            if (GUI.Button(controlRect, string.Empty, playStyle))
+            if (UnityEngine.GUI.Button(controlRect, string.Empty, playStyle))
             {
                 if (rewindTime == 0f)
                     rewindTime = Tracker.Lifetime;
@@ -302,7 +305,7 @@ namespace Assets.Scripts.FEA
 
             controlRect.x = Screen.width - SliderRightMargin + EditButtonMargin;
 
-            if (GUI.Button(controlRect, string.Empty, collisionStyle))
+            if (UnityEngine.GUI.Button(controlRect, string.Empty, collisionStyle))
                 editMode = editMode == EditMode.Threshold ? EditMode.None : EditMode.Threshold;
 
             Rect collisionSliderRect = new Rect(controlRect.x + (ButtonSize - SliderThickness) / 2,
@@ -310,30 +313,30 @@ namespace Assets.Scripts.FEA
 
             if (editMode == EditMode.Threshold)
             {
-                contactThreshold = GUI.VerticalSlider(collisionSliderRect, contactThreshold, Mathf.Sqrt(CollisionSliderTopValue), 0f, windowStyle, thumbStyle);
+                contactThreshold = UnityEngine.GUI.VerticalSlider(collisionSliderRect, contactThreshold, Mathf.Sqrt(CollisionSliderTopValue), 0f, windowStyle, thumbStyle);
 
                 Rect collisionLabelRect = new Rect(controlRect.x + controlRect.width, controlRect.y - controlRect.height - CollisionSliderMargin,
                     Screen.width - (controlRect.x + controlRect.width), controlRect.height);
 
-                GUI.Label(collisionLabelRect, "Impulse Threshold:\n" + AdjustedContactThreshold.ToString("F2") + " Newtons", windowStyle);
+                UnityEngine.GUI.Label(collisionLabelRect, "Impulse Threshold:\n" + AdjustedContactThreshold.ToString("F2") + " Newtons", windowStyle);
             }
 
             controlRect.x += ButtonSize + EditButtonMargin;
 
-            bool consolidatePressed = editMode == EditMode.Consolidate ? GUI.Button(controlRect, consolidateStyle.hover.background, GUIStyle.none) :
-                GUI.Button(controlRect, string.Empty, consolidateStyle);
+            bool consolidatePressed = editMode == EditMode.Consolidate ? UnityEngine.GUI.Button(controlRect, consolidateStyle.hover.background, GUIStyle.none) :
+                UnityEngine.GUI.Button(controlRect, string.Empty, consolidateStyle);
 
             if (consolidatePressed)
                 editMode = editMode == EditMode.Consolidate ? EditMode.None : EditMode.Consolidate;
 
             if (editMode == EditMode.Consolidate)
-                GUI.Label(new Rect(Screen.width - SliderLeftMargin, controlRect.y - InfoBoxHeight - CollisionSliderMargin,
+                UnityEngine.GUI.Label(new Rect(Screen.width - SliderLeftMargin, controlRect.y - InfoBoxHeight - CollisionSliderMargin,
                     Screen.width - SliderLeftMargin, InfoBoxHeight), "Select a collision to consolidate.", windowStyle);
 
             Rect sliderRect = new Rect(SliderLeftMargin, Screen.height - (SliderBottomMargin + SliderThickness),
                 Screen.width - (SliderRightMargin + SliderLeftMargin), SliderThickness);
 
-            rewindTime = GUI.HorizontalSlider(sliderRect, rewindTime, Tracker.Lifetime, 0.0f, windowStyle, thumbStyle);
+            rewindTime = UnityEngine.GUI.HorizontalSlider(sliderRect, rewindTime, Tracker.Lifetime, 0.0f, windowStyle, thumbStyle);
 
             Rect guiRect = new Rect(0, Screen.height - (SliderBottomMargin + SliderThickness + KeyframeHeight),
                 Screen.width, SliderBottomMargin + SliderThickness + KeyframeHeight);
@@ -382,7 +385,7 @@ namespace Assets.Scripts.FEA
                                     KeyframeWidth,
                                     sliderRect.height);
 
-                                if (GUI.Button(keyframeRect, keyframeTexture, GUIStyle.none))
+                                if (UnityEngine.GUI.Button(keyframeRect, keyframeTexture, GUIStyle.none))
                                 {
                                     rewindTime = keyframeTime;
                                     playbackMode = PlaybackMode.Paused;
@@ -400,17 +403,17 @@ namespace Assets.Scripts.FEA
 
                                 if (circleRect.Contains(Event.current.mousePosition) && !circleHovered)
                                 {
-                                    GUI.color = Color.white;
+                                    UnityEngine.GUI.color = Color.white;
                                     SelectedBody = currentContact.RobotBody;
                                     shouldActivate = true;
                                 }
                                 else
                                 {
-                                    GUI.color = new Color(1f, 1f, 1f, Math.Max((CircleRenderDistance -
+                                    UnityEngine.GUI.color = new Color(1f, 1f, 1f, Math.Max((CircleRenderDistance -
                                         Math.Abs((Tracker.Length - 1 - i) - RewindFrame)) / CircleRenderDistance, 0.1f));
                                 }
 
-                                if (GUI.Button(circleRect, circleTexture, GUIStyle.none) && Event.current.button == 0 && shouldActivate)
+                                if (UnityEngine.GUI.Button(circleRect, circleTexture, GUIStyle.none) && Event.current.button == 0 && shouldActivate)
                                 {
                                     if (editMode == EditMode.Consolidate)
                                     {
@@ -426,10 +429,10 @@ namespace Assets.Scripts.FEA
                                 }
 
                                 if (circleRect.Contains(Event.current.mousePosition) && shouldActivate)
-                                    GUI.Label(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y - InfoBoxHeight,
+                                    UnityEngine.GUI.Label(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y - InfoBoxHeight,
                                         InfoBoxWidth, InfoBoxHeight), "Impulse: " + currentContact.AppliedImpulse.ToString("F2") + " N", windowStyle);
 
-                                GUI.color = Color.white;
+                                UnityEngine.GUI.color = Color.white;
 
                                 circleHovered = circleHovered || shouldActivate;
                             }
@@ -449,7 +452,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         private void ReturnToMainState()
         {
-            StateMachine.Instance.PopState();
+            StateMachine.PopState();
         }
 
         /// <summary>
@@ -457,7 +460,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         private void PushSaveReplayState()
         {
-            MainState mainState = StateMachine.Instance.FindState<MainState>();
+            MainState mainState = StateMachine.FindState<MainState>();
             foreach (Robot robot in mainState.SpawnedRobots)
             {
                 if (robot.RobotIsMixAndMatch)
@@ -466,7 +469,7 @@ namespace Assets.Scripts.FEA
                     return;
                 }
             }
-            StateMachine.Instance.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
+            StateMachine.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
         }
 
         /// <summary>
@@ -475,8 +478,7 @@ namespace Assets.Scripts.FEA
         public override void Update()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
-            //if (InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
-                StateMachine.Instance.PopState();
+                StateMachine.PopState();
         }
 
         /// <summary>
@@ -490,7 +492,7 @@ namespace Assets.Scripts.FEA
                 camera = dynamicCamera.GetComponent<Camera>();
             }
 
-            if (InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
+            if (InputControl.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             if (firstFrame)

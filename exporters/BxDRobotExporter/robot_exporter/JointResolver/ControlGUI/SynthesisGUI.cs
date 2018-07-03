@@ -203,7 +203,7 @@ public partial class SynthesisGUI : Form
         }
 
         if (SkeletonBase == null)
-            return false;
+            return false; // Skeleton export failed
 
         return true;
     }
@@ -217,19 +217,22 @@ public partial class SynthesisGUI : Form
         {
             var exporterThread = new Thread(() =>
             {
-#if LITEMODE
                 if (SkeletonBase == null)
                 {
                     skeletonExporter = new SkeletonExporterForm();
                     skeletonExporter.ShowDialog();
                 }
-                    
-                liteExporter = new LiteExporterForm();
-                liteExporter.ShowDialog(); // Remove node building
+
+                if (SkeletonBase != null)
+                {
+#if LITEMODE
+                    liteExporter = new LiteExporterForm();
+                    liteExporter.ShowDialog(); // Remove node building
 #else
-                exporter = new ExporterForm(PluginSettings);
-                exporter.ShowDialog();
+                    exporter = new ExporterForm(PluginSettings);
+                    exporter.ShowDialog();
 #endif
+                }
             });
 
             exporterThread.SetApartmentState(ApartmentState.STA);
@@ -253,21 +256,21 @@ public partial class SynthesisGUI : Form
             MessageBox.Show(e.Message);
             return false;
         }
+        
+        if (Meshes == null)
+            return false; // Meshes were not exported
+        
+        if (liteExporter.DialogResult != DialogResult.OK)
+            return false; // Exporter was canceled
 
-        // Exporter completed successfully
-        if (liteExporter.DialogResult == DialogResult.OK)
+        // Export was successful
+        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
+        for (int i = 0; i < Meshes.Count; i++)
         {
-            List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-            for (int i = 0; i < Meshes.Count; i++)
-            {
-                ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
-            }
-            
-            return true;
+            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
         }
-        // Exporter failed
-        else
-            return false;
+            
+        return true;
     }
 
     /// <summary>
@@ -419,7 +422,7 @@ public partial class SynthesisGUI : Form
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
-    public bool RobotSave(bool silent = false)
+    public bool RobotSave(bool silent = true)
     {
         try
         {

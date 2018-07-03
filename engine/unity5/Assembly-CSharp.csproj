@@ -188,9 +188,9 @@
     <Compile Include="Assets\Scripts\BUExtensions\ICollisionCallback.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\RaycastRobot.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
-    <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeMode.cs" />
-    <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
-    <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeMode.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeRobot.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice\Interactor.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
     <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
@@ -218,8 +218,6 @@
     <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-    <Compile Include="Assets\Scripts\Helpers\Auxiliary.cs" />
-    <Compile Include="Assets\Scripts\Helpers\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\InputControl\Axis.cs" />
     <Compile Include="Assets\Scripts\InputControl\Controls.cs" />
     <Compile Include="Assets\Scripts\InputControl\CreateButton.cs" />
@@ -253,10 +251,10 @@
     <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNWheel.cs" />
-    <Compile Include="Assets\Scripts\Robot Camera\RobotCamera.cs" />
-    <Compile Include="Assets\Scripts\Robot Camera\RobotCameraGUI.cs" />
-    <Compile Include="Assets\Scripts\Robot Camera\RobotCameraManager.cs" />
     <Compile Include="Assets\Scripts\Robot.cs" />
+    <Compile Include="Assets\Scripts\RobotCamera\RobotCamera.cs" />
+    <Compile Include="Assets\Scripts\RobotCamera\RobotCameraGUI.cs" />
+    <Compile Include="Assets\Scripts\RobotCamera\RobotCameraManager.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
@@ -285,6 +283,8 @@
     <Compile Include="Assets\Scripts\States\SimTabState.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
     <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
+    <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />
+    <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
