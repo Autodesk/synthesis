@@ -37,13 +37,13 @@
             this.LeftWheelsGroup = new System.Windows.Forms.GroupBox();
             this.WarningLabel = new System.Windows.Forms.Label();
             this.RobotInfoGroupBox = new System.Windows.Forms.GroupBox();
+            this.MassTypeSelector = new System.Windows.Forms.ComboBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.DriveTrainDropdown = new System.Windows.Forms.ComboBox();
             this.DriveTrainLabel = new System.Windows.Forms.Label();
             this.RightWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.RightWheelsGroup = new System.Windows.Forms.GroupBox();
-            this.MassTypeSelector = new System.Windows.Forms.ComboBox();
             this.WheelNodeGroupBox.SuspendLayout();
             this.LeftWheelsGroup.SuspendLayout();
             this.RobotInfoGroupBox.SuspendLayout();
@@ -79,9 +79,9 @@
             this.WheelNodeGroupBox.Controls.Add(this.NodeListBox);
             this.WheelNodeGroupBox.Controls.Add(this.DefineWheelsInstruction1);
             this.WheelNodeGroupBox.Location = new System.Drawing.Point(0, 110);
-            this.WheelNodeGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.WheelNodeGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.WheelNodeGroupBox.Name = "WheelNodeGroupBox";
-            this.WheelNodeGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.WheelNodeGroupBox.Padding = new System.Windows.Forms.Padding(4);
             this.WheelNodeGroupBox.Size = new System.Drawing.Size(613, 146);
             this.WheelNodeGroupBox.TabIndex = 3;
             this.WheelNodeGroupBox.TabStop = false;
@@ -113,7 +113,7 @@
             this.LeftWheelsPanel.AutoScroll = true;
             this.LeftWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftWheelsPanel.Location = new System.Drawing.Point(4, 19);
-            this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
             this.LeftWheelsPanel.Name = "LeftWheelsPanel";
             this.LeftWheelsPanel.Size = new System.Drawing.Size(305, 517);
             this.LeftWheelsPanel.TabIndex = 4;
@@ -124,9 +124,9 @@
             // 
             this.LeftWheelsGroup.Controls.Add(this.LeftWheelsPanel);
             this.LeftWheelsGroup.Location = new System.Drawing.Point(0, 263);
-            this.LeftWheelsGroup.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.LeftWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.LeftWheelsGroup.Name = "LeftWheelsGroup";
-            this.LeftWheelsGroup.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.LeftWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
             this.LeftWheelsGroup.Size = new System.Drawing.Size(313, 540);
             this.LeftWheelsGroup.TabIndex = 1;
             this.LeftWheelsGroup.TabStop = false;
@@ -151,13 +151,28 @@
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainDropdown);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainLabel);
             this.RobotInfoGroupBox.Location = new System.Drawing.Point(0, 39);
-            this.RobotInfoGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RobotInfoGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.RobotInfoGroupBox.Name = "RobotInfoGroupBox";
-            this.RobotInfoGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RobotInfoGroupBox.Padding = new System.Windows.Forms.Padding(4);
             this.RobotInfoGroupBox.Size = new System.Drawing.Size(613, 62);
             this.RobotInfoGroupBox.TabIndex = 6;
             this.RobotInfoGroupBox.TabStop = false;
             this.RobotInfoGroupBox.Text = "Drive Information";
+            // 
+            // MassTypeSelector
+            // 
+            this.MassTypeSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.MassTypeSelector.DropDownWidth = 60;
+            this.MassTypeSelector.FormattingEnabled = true;
+            this.MassTypeSelector.Items.AddRange(new object[] {
+            "Pounds",
+            "Kilograms"});
+            this.MassTypeSelector.Location = new System.Drawing.Point(510, 21);
+            this.MassTypeSelector.Margin = new System.Windows.Forms.Padding(4);
+            this.MassTypeSelector.Name = "MassTypeSelector";
+            this.MassTypeSelector.Size = new System.Drawing.Size(90, 24);
+            this.MassTypeSelector.TabIndex = 4;
+            this.MassTypeSelector.SelectedIndexChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
             // 
             // numericUpDown1
             // 
@@ -168,6 +183,7 @@
             0,
             0,
             0});
+            this.numericUpDown1.MaximumSize = new System.Drawing.Size(133, 0);
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(133, 22);
             this.numericUpDown1.TabIndex = 3;
@@ -195,7 +211,7 @@
             "H-Drive",
             "Other/Custom"});
             this.DriveTrainDropdown.Location = new System.Drawing.Point(95, 21);
-            this.DriveTrainDropdown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.DriveTrainDropdown.Margin = new System.Windows.Forms.Padding(4);
             this.DriveTrainDropdown.Name = "DriveTrainDropdown";
             this.DriveTrainDropdown.Size = new System.Drawing.Size(160, 24);
             this.DriveTrainDropdown.TabIndex = 1;
@@ -216,7 +232,7 @@
             this.RightWheelsPanel.AutoScroll = true;
             this.RightWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RightWheelsPanel.Location = new System.Drawing.Point(4, 19);
-            this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
             this.RightWheelsPanel.Name = "RightWheelsPanel";
             this.RightWheelsPanel.Size = new System.Drawing.Size(284, 517);
             this.RightWheelsPanel.TabIndex = 7;
@@ -227,29 +243,13 @@
             // 
             this.RightWheelsGroup.Controls.Add(this.RightWheelsPanel);
             this.RightWheelsGroup.Location = new System.Drawing.Point(321, 263);
-            this.RightWheelsGroup.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RightWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.RightWheelsGroup.Name = "RightWheelsGroup";
-            this.RightWheelsGroup.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RightWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
             this.RightWheelsGroup.Size = new System.Drawing.Size(292, 540);
             this.RightWheelsGroup.TabIndex = 2;
             this.RightWheelsGroup.TabStop = false;
             this.RightWheelsGroup.Text = "Right Wheels";
-            // 
-            // MassTypeSelector
-            // 
-            this.MassTypeSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.MassTypeSelector.DropDownWidth = 60;
-            this.MassTypeSelector.FormattingEnabled = true;
-            this.MassTypeSelector.Items.AddRange(new object[] {
-            "Pounds",
-            "Kilograms"});
-            this.MassTypeSelector.Location = new System.Drawing.Point(510, 19);
-            this.MassTypeSelector.Margin = new System.Windows.Forms.Padding(4);
-            this.MassTypeSelector.Name = "MassTypeSelector";
-            this.MassTypeSelector.Size = new System.Drawing.Size(90, 24);
-            this.MassTypeSelector.TabIndex = 4;
-            this.MassTypeSelector.SelectedIndex = 0;
-            this.MassTypeSelector.SelectedIndexChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
             // 
             // DefineWheelsPage
             // 
@@ -261,7 +261,7 @@
             this.Controls.Add(this.WarningLabel);
             this.Controls.Add(this.WheelNodeGroupBox);
             this.Controls.Add(this.DefineWheelsTitleLabel);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "DefineWheelsPage";
             this.Size = new System.Drawing.Size(613, 804);
             this.WheelNodeGroupBox.ResumeLayout(false);
