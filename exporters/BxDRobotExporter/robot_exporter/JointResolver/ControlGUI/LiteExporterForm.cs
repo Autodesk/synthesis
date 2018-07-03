@@ -226,8 +226,8 @@ public partial class LiteExporterForm : Form
             }
         }
 
-        // Apply masses to mesh
-        if (totalMassKg > 0) // Negative value indicates that default mass should be left alone
+        // Apply custom mass to mesh
+        if (totalMassKg > 0) // Negative value indicates that default mass should be left alone (TODO: Make default mass more accurate)
         {
             float totalDefaultMass = 0;
             foreach (BXDAMesh mesh in meshes)
