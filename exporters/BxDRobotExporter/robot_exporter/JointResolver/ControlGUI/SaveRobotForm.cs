@@ -92,7 +92,7 @@ namespace JointResolver.ControlGUI
 
         private void ButtonOK_Click(object sender, EventArgs e)
         {
-            if(RobotNameTextBox.Text != null)
+            if (CheckFormIsValid())
             {
                 var InvalidChars = (new string(Path.GetInvalidPathChars()) + new string(Path.GetInvalidFileNameChars())).Distinct();
 
@@ -140,6 +140,24 @@ namespace JointResolver.ControlGUI
                 FieldLabel.Enabled = false;
                 FieldSelectComboBox.Enabled = false;
             }
+
+            CheckFormIsValid();
+        }
+
+        private bool CheckFormIsValid()
+        {
+            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0 && (!OpenSynthesisBox.Checked || FieldSelectComboBox.SelectedItem != null);
+            return ButtonOk.Enabled;
+        }
+
+        private void RobotNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            CheckFormIsValid();
+        }
+
+        private void FieldSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckFormIsValid();
         }
     }
 }
