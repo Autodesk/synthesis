@@ -17,16 +17,7 @@
 # Misc
 *.exe.stackdump
 
-# Specific Executables
-FunctionSignature
-libminerva.so
-libminerva.a
-MinervaGenerator
-Test
-test
-minerva_generator
-function_signature
-src/minerva.cpp
+# Specific Files
 
 # Output folders
 build/*
@@ -34,7 +25,7 @@ lib/*
 
 # CMake related stuff
 CMakeCache.txt
-cmake_install.xmake
+cmake_install.cmake
 Makefile
 CMakeFiles/*
 
