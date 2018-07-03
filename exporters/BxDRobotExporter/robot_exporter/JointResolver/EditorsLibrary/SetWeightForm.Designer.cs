@@ -46,7 +46,7 @@
             this.WeightBox.Location = new System.Drawing.Point(51, 4);
             this.WeightBox.Margin = new System.Windows.Forms.Padding(4);
             this.WeightBox.Maximum = new decimal(new int[] {
-            200,
+            1000,
             0,
             0,
             0});
