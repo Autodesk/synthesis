@@ -3,7 +3,7 @@
 namespace nFPGA{
 	namespace nRoboRIO_FPGANamespace{
 		void writeDO(tDIO::tDO value, tRioStatusCode* status){
-			minerva::roborio.digital_system.outputs = value;
+			cerebrum::roborio_state.digital_system.outputs = value;
 		}
 
 		void writeDO_Headers(uint16_t value, tRioStatusCode* status){}
@@ -12,7 +12,7 @@ namespace nFPGA{
 		void writeDO_MXP(uint16_t value, tRioStatusCode* status){}
 
 		tDIO::tDO readDO(tRioStatusCode* status){
-			return minerva::roborio.digital_system.outputs;
+			return cerebrum::roborio_state.digital_system.outputs;
 		}
 
 		uint16_t readDO_Headers(tRioStatusCode* status){}
@@ -21,7 +21,7 @@ namespace nFPGA{
 		uint16_t readDO_MXP(tRioStatusCode* status){}
 
 		void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
-			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio.digital_system.pwm_data){
+			for(cerebrum::RoboRIO::DIOSystem::PWMData& pwm: cerebrum::roborio_state.digital_system.pwm_data){
 				if(pwm.id == bitfield_index){
 					pwm.duty_cycle = value;
 					return;
@@ -31,7 +31,7 @@ namespace nFPGA{
 		}
 
 		uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* status){
-			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio.digital_system.pwm_data){
+			for(cerebrum::RoboRIO::DIOSystem::PWMData& pwm: cerebrum::roborio_state.digital_system.pwm_data){
 				if(pwm.id == bitfield_index){
 					return pwm.duty_cycle;
 				}
@@ -56,7 +56,7 @@ namespace nFPGA{
 		}
 
 		void writeOutputEnable(tDIO::tOutputEnable value, tRioStatusCode* status){
-			minerva::roborio.digital_system.enabled_outputs = value;
+			cerebrum::roborio_state.digital_system.enabled_outputs = value;
 		}
 
 		void writeOutputEnable_Headers(uint16_t value, tRioStatusCode* status){}
@@ -65,7 +65,7 @@ namespace nFPGA{
 		void writeOutputEnable_MXP(uint16_t value, tRioStatusCode* status){}
 
 		tDIO::tOutputEnable readOutputEnable(tRioStatusCode* status){
-			return minerva::roborio.digital_system.enabled_outputs;
+			return cerebrum::roborio_state.digital_system.enabled_outputs;
 		}
 
 		uint16_t readOutputEnable_Headers(tRioStatusCode* status){}
@@ -74,7 +74,7 @@ namespace nFPGA{
 		uint16_t readOutputEnable_MXP(tRioStatusCode* status){}
 
 		void writePWMOutputSelect(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
-			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio_state.digital_system.pwm_data){
+			for(cerebrum::RoboRIO::DIOSystem::PWMData& pwm: cerebrum::roborio_state.digital_system.pwm_data){
 				if(pwm.id == bitfield_index){
 					pwm.hardware_channel = value;
 					return;
@@ -84,7 +84,7 @@ namespace nFPGA{
 		}
 
 		uint8_t readPWMOutputSelect(uint8_t bitfield_index, tRioStatusCode* status){
-			for(minerva::RoboRIO::DIOSystem::PWMData& pwm: minerva::roborio_state.digital_system.pwm_data){
+			for(cerebrum::RoboRIO::DIOSystem::PWMData& pwm: cerebrum::roborio_state.digital_system.pwm_data){
 				if(pwm.id == bitfield_index){
 					return pwm.hardware_channel;
 				}
@@ -93,7 +93,7 @@ namespace nFPGA{
 		}
 
 		void writePulse(tDIO::tPulse value, tRioStatusCode* status){
-			minerva::roborio_state.digital_system.pulses = value;
+			cerebrum::roborio_state.digital_system.pulses = value;
 			//TODO this should only last for pulse_length seconds, and only one pulse should be active at a time?
 		}
 
@@ -103,7 +103,7 @@ namespace nFPGA{
 		void writePulse_MXP(uint16_t value, tRioStatusCode* status){}
 
 		tDIO::tPulse readPulse(tRioStatusCode* status){
-			return minerva::roborio_state.digital_system.pulses;
+			return cerebrum::roborio_state.digital_system.pulses;
 		}
 
 		uint16_t readPulse_Headers(tRioStatusCode* status){}
@@ -112,7 +112,7 @@ namespace nFPGA{
 		uint16_t readPulse_MXP(tRioStatusCode* status){}
 
 		tDIO::tDI readDI(tRioStatusCode* status){
-			return minerva::roborio_state.digital_system.inputs;
+			return cerebrum::roborio_state.digital_system.inputs;
 		}
 
 		uint16_t readDI_Headers(tRioStatusCode* status){}
@@ -137,11 +137,11 @@ namespace nFPGA{
 		}
 
 		void writePulseLength(uint8_t value, tRioStatusCode* status){
-			minerva::roborio_state.digital_system.pulse_length = value;
+			cerebrum::roborio_state.digital_system.pulse_length = value;
 		}
 
 		uint8_t readPulseLength(tRioStatusCode* status){
-			return minerva::roborio_state.digital_system.pulse_length;
+			return cerebrum::roborio_state.digital_system.pulse_length;
 		}
 
 		void writePWMPeriodPower(uint16_t value, tRioStatusCode* status){
