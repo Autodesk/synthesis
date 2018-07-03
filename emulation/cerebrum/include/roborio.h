@@ -1,27 +1,28 @@
 #ifndef _ROBORIO_H_
 #define _ROBORIO_H_
 
+#include <array>
+#include <memory>
+#include <mutex>
+
 #include "HAL/ChipObject.h"
 #include "athena/PortsInternal.h"
 
-#include<array>
-
 namespace cerebrum{
-
-	using namespace nFPGA;
- 	using namespace nRoboRIO_FPGANamespace;
+    using namespace nFPGA;
+    using namespace nRoboRIO_FPGANamespace;
 
 	struct RoboRIO{
-		struct AnalogOutput{
-			uint16_t mxp_value;
-		};
-		
-		struct AnalogInputs {
-			struct AnalogInput{
-				uint8_t oversample_bits;
-				uint8_t average_bits;
-				uint8_t scan_list;
-			};
+
+        struct AnalogOutput{
+            uint16_t mxp_value;
+        };
+        struct AnalogInputs {
+            struct AnalogInput{
+                uint8_t oversample_bits;
+                uint8_t average_bits;
+                uint8_t scan_list;
+            };
 
 			void setConfig(tAI::tConfig value);
 			tAI::tConfig getConfig();
@@ -67,9 +68,35 @@ namespace cerebrum{
         AnalogInputs analog_inputs;
 		PWMSystem pwm_system;
 		DIOSystem digital_system;
-	};
 
-	static RoboRIO roborio_state;
+        explicit RoboRIO() = default;
+
+        friend class RoboRIOManager;
+    private:
+        RoboRIO(RoboRIO const&) = default;
+    };
+
+    class RoboRIOManager {
+
+    public:
+        static std::shared_ptr<RoboRIO> getInstance(std::mutex& m) {
+            std::unique_lock<std::mutex> lock(m);
+            static std::shared_ptr<RoboRIO> instance;
+            return instance;
+        }
+        static RoboRIO getCopy() {
+            std::mutex m;
+            return RoboRIO((*RoboRIOManager::getInstance(m)));
+        }
+    private:
+        RoboRIOManager() {}
+    public:
+        RoboRIOManager(RoboRIOManager const&) = delete;
+        void operator=(RoboRIOManager const&) = delete;
+    };
+
+    static RoboRIO roborio_state;
+
 }
 
 #endif
