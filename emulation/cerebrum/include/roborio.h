@@ -58,14 +58,7 @@ namespace cerebrum{
 
 			uint8_t pulse_length;
 
-			struct PWMData{
-				uint8_t id;
-				uint8_t hardware_channel;
-				uint8_t duty_cycle;			
-			};
-			
-			std::array<PWMData, hal::kNumDigitalPWMOutputs> pwm_data;
-			//std::array<uint8_t, 
+			std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
 		};
 
 		std::array<AnalogOutput, tAO::kNumMXPRegisters> analog_outputs;

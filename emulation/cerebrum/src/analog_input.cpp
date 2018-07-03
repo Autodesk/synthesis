@@ -45,15 +45,15 @@ namespace nRoboRIO_FPGANamespace {
     }
 
     uint8_t readOversampleBits(uint8_t channel, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.getOversampleBits(channel);
+        return cerebrum::roborio_state.analog_inputs.getOversampleBits(channel);
     }
 
     uint8_t readAverageBits(uint8_t channel, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
+        return cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
     }
 
     uint8_t readScanList(uint8_t channel, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
+        return cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
     }
 
     void writeReadSelect(hal::tAI::tReadSelect value, tRioStatusCode*) {
@@ -89,7 +89,7 @@ namespace nRoboRIO_FPGANamespace {
 
     void strobeLatchOutput(tRioStatusCode*) {}
 
-};
+}
 
 namespace cerebrum {
 
@@ -118,4 +118,4 @@ namespace cerebrum {
         return analog_inputs[channel].scan_list;
     }
 
-};
+}
