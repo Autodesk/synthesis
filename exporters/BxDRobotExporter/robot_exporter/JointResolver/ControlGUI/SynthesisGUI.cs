@@ -479,7 +479,7 @@ public partial class SynthesisGUI : Form
     public bool JointDataSave(Inventor.AssemblyDocument document)
     {
         Inventor.PropertySets propertySets = document.PropertySets;
-
+        
         return JointDataSave(propertySets, SkeletonBase);
     }
     
@@ -488,23 +488,45 @@ public partial class SynthesisGUI : Form
     /// </summary>
     private bool JointDataSave(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
     {
-        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+        try
         {
-            SkeletalJoint_Base joint = connection.Key;
-            string setName = currentNode.GUID.ToString();
+            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+            {
+                SkeletalJoint_Base joint = connection.Key;
+                RigidNode_Base child = connection.Value;
 
-            // Save joint information to a new property set
+                // Name of the property set in inventor
+                string setName = "bxd-jointdata-" + child.GetModelID();
 
-            // Create the property set if it doesn't exist
-            Inventor.PropertySet propertySet = assemblyPropertySets.Add(setName);
+                // Create the property set if it doesn't exist
+                Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName);
 
-            propertySet.Add("Test", 123);
+                // Add joint properties to set
+                Utilities.SetProperty(propertySet, "has-driver", joint.cDriver != null);
 
-            if (!JointDataSave(assemblyPropertySets, connection.Value))
-                return false;
+                if (joint.cDriver != null)
+                {
+                    Utilities.SetProperty(propertySet, "driver-type", joint.cDriver.GetDriveType());
+                    Utilities.SetProperty(propertySet, "driver-portA", joint.cDriver.portA);
+                    Utilities.SetProperty(propertySet, "driver-portB", joint.cDriver.portB);
+                    Utilities.SetProperty(propertySet, "driver-isCan", joint.cDriver.isCan);
+                    Utilities.SetProperty(propertySet, "driver-lowerLimit", joint.cDriver.lowerLimit);
+                    Utilities.SetProperty(propertySet, "driver-upperLimit", joint.cDriver.upperLimit);
+                }
+
+                // Recur along this child
+                if (!JointDataSave(assemblyPropertySets, child))
+                    return false; // If one of the children failed to save, then cancel the saving process
+            }
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show("Joint data could not be saved to the inventor file. The following error occured:\n" + e.Message);
+            return false;
         }
 
-        return false; // true
+        // Save was successful
+        return true;
     }
 
     /// <summary>
