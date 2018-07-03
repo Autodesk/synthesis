@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Assembly-CSharp-f
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Assembly-CSharp-Editor.csproj", "{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp.Player", "Assembly-CSharp.Player.csproj", "{37CDCF3F-0389-B63F-5625-A1C74B87B5B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass.Player", "Assembly-CSharp-firstpass.Player.csproj", "{CBDB8A53-BE14-57EC-E991-2E1B0F1FC92D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,14 @@ Global
 		{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37CDCF3F-0389-B63F-5625-A1C74B87B5B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37CDCF3F-0389-B63F-5625-A1C74B87B5B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37CDCF3F-0389-B63F-5625-A1C74B87B5B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37CDCF3F-0389-B63F-5625-A1C74B87B5B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBDB8A53-BE14-57EC-E991-2E1B0F1FC92D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBDB8A53-BE14-57EC-E991-2E1B0F1FC92D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBDB8A53-BE14-57EC-E991-2E1B0F1FC92D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBDB8A53-BE14-57EC-E991-2E1B0F1FC92D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

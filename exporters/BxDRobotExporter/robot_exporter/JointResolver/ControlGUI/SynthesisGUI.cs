@@ -411,7 +411,7 @@ public partial class SynthesisGUI : Form
             RMeta.FieldName = field;
 
             PluginSettings.GeneralUseFancyColors = colors;
-            PluginSettings.OnSettingsChanged(PluginSettings.InventorChildColor, PluginSettings.GeneralUseFancyColors, PluginSettings.GeneralSaveLocation);
+            PluginSettings.OnSettingsChanged();
 
             return true;
         }
