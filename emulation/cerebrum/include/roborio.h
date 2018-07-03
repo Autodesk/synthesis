@@ -13,10 +13,16 @@ namespace cerebrum{
     using namespace nRoboRIO_FPGANamespace;
 
     struct RoboRIO{
-        struct AnalogOutput{
-            uint16_t mxp_value;
+        struct AnalogOutputs{
+		private:
+        	std::array<uint16_t, tAO::kNumMXPRegisters> mxp_outputs;
+		
+		public:
+			uint16_t getMXPOutput(uint8_t)const;
+			void setMXPOutput(uint8_t,uint16_t);
         };
-        struct AnalogInputs {
+        
+		struct AnalogInputs {
             struct AnalogInput{
                 uint8_t oversample_bits;
                 uint8_t average_bits;
@@ -73,7 +79,6 @@ namespace cerebrum{
 		};
 		
         struct DIOSystem{
-		
 		private:
 			tDIO::tDO outputs;
             tDIO::tOutputEnable enabled_outputs;
@@ -104,7 +109,7 @@ namespace cerebrum{
 			void setPWMDutyCycle(uint8_t, uint8_t);
 		};
 
-        std::array<AnalogOutput, tAO::kNumMXPRegisters> analog_outputs;
+        AnalogOutputs analog_outputs;
         PWMSystem pwm_system;
         DIOSystem digital_system;
         AnalogInputs analog_inputs;
