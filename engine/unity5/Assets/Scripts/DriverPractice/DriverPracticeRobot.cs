@@ -75,6 +75,9 @@ namespace Synthesis.DriverPractice
 
         public int controlIndex;
 
+        private UnityEngine.Quaternion startParentRotation;
+        private UnityEngine.Quaternion startChildRotation;
+
         /// <summary>
         /// If configuration file exists, loads information and auto-configures robot.
         /// If coniguration file doesn't exist, initializes variables for users to configure.
@@ -222,6 +225,8 @@ namespace Synthesis.DriverPractice
 
                 intakeInteractor[index].heldGamepieces.Add(newObject);
 
+                startParentRotation = intakeInteractor[index].transform.rotation;
+                startChildRotation = newObject.transform.rotation;
 
                 foreach (BRigidBody rb in this.GetComponentsInChildren<BRigidBody>())
                 {
@@ -249,6 +254,7 @@ namespace Synthesis.DriverPractice
                     orb = objectsHeld[index][i].GetComponent<BRigidBody>();
                     orb.velocity = nrb.velocity;
                     orb.SetPosition(nrb.transform.position + nrb.transform.rotation * positionOffset[index]);
+                    orb.SetRotation((nrb.transform.rotation * UnityEngine.Quaternion.Inverse(startParentRotation)) * startChildRotation);
                     orb.angularVelocity = UnityEngine.Vector3.zero;
                     orb.angularFactor = UnityEngine.Vector3.zero;
 
