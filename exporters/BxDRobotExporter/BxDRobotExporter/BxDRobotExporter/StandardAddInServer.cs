@@ -491,19 +491,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.BuildRobotSkeleton())
-            {
-                PreviewRobotButton.Enabled = true;
-                SaveAsButton.Enabled = true;
-                SaveButton.Enabled = true;
-
-                Wizard.WizardForm wizard = new Wizard.WizardForm();
-                Utilities.HideDockableWindows();
-                wizard.ShowDialog();
-                Utilities.GUI.ReloadPanels();
-                Utilities.ShowDockableWindows();
-            }
-            else if (Utilities.GUI.SkeletonBase != null)
+            if ((!PendingChanges || this.WarnUnsaved()) && (Utilities.GUI.SkeletonBase != null || Utilities.GUI.BuildRobotSkeleton()))
             {
                 PreviewRobotButton.Enabled = true;
                 SaveAsButton.Enabled = true;

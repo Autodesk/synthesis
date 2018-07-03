@@ -490,14 +490,10 @@ public partial class SynthesisGUI : Form
             // Save joint information to a new property set
 
             // Create the property set if it doesn't exist
-            object foundSet;
-            if (!assemblyPropertySets.PropertySetExists(setName, out foundSet))
-                foundSet = assemblyPropertySets.Add(setName);
+            Inventor.PropertySet propertySet = assemblyPropertySets.Add(setName);
 
-            Inventor.PropertySet propertySet = (Inventor.PropertySet) foundSet;
+            propertySet.Add("Test", 123);
 
-            //propertySet["portA"] = joint.cDriver.portA;
-            
             if (!JointDataSave(assemblyPropertySets, connection.Value))
                 return false;
         }
