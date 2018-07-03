@@ -29,7 +29,7 @@ namespace BxDRobotExporter.Wizard
         #region Nested enums and classes
         public enum WizardDriveTrain
         {
-            WESTERN = 1,
+            TANK = 1,
             MECANUM,
             SWERVE,
             H_DRIVE,
@@ -151,15 +151,7 @@ namespace BxDRobotExporter.Wizard
         /// The name of the robot. Does not do anything now.
         /// </summary>
         public string robotName;
-        /// <summary>
-        /// Analytics currently not implemented
-        /// </summary>
-        public string analytics_TeamNumber;
-        /// <summary>
-        /// Analytics currently not implemented
-        /// </summary>
-        public string analytics_TeamLeague;
-
+    
         //Drive Information
         /// <summary>
         /// Drive train set in <see cref="BasicRobotInfoPage"/>

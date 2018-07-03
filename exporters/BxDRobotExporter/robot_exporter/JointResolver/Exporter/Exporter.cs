@@ -10,6 +10,16 @@ public class Exporter
 {
 
     private const int MAX_VERTICIES = 8192;
+    
+    public class InvalidJointException : ApplicationException
+    {
+        AssemblyJoint joint;
+
+        public InvalidJointException(string message, AssemblyJoint joint) : base(message)
+        {
+            this.joint = joint;
+        }
+    }
 
     public static void CenterAllJoints(ComponentOccurrence component)
     {
@@ -34,7 +44,7 @@ public class Exporter
                 else
                 {
                     //No robot would have a piece that would just keep going.
-                    throw new Exception("Joints with linear motion require limits.");
+                    throw new InvalidJointException(String.Format("Please close the exporter and add limits to \"{0}\" before exporting your robot.", joint.Name), joint);
                 }
             }
         }
