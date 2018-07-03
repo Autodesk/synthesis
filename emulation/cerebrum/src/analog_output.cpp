@@ -3,17 +3,27 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
+namespace cerebrum{
+	uint16_t RoboRIO::AnalogOutputs::getMXPOutput(uint8_t index)const{
+		return mxp_outputs[index];
+	}
+
+	void RoboRIO::AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
+		mxp_outputs[index] = value;
+	}
+}
+
 struct AnalogOutputManager: public tAO{
 	tSystemInterface* getSystemInterface(){
 		return nullptr;
 	}
 
 	void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-		cerebrum::roborio_state.analog_outputs[reg_index].mxp_value = value;
+		cerebrum::roborio_state.analog_outputs.setMXPOutput(reg_index, value);
 	}
 
 	uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.analog_outputs[reg_index].mxp_value;
+		return cerebrum::roborio_state.analog_outputs.getMXPOutput(reg_index);
 	}
 };
 
