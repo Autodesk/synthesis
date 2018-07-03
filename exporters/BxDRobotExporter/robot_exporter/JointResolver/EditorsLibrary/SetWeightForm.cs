@@ -61,6 +61,8 @@ namespace EditorsLibrary
         private void CalculatedWeightCheck_CheckedChanged(object sender, EventArgs e)
         {
             WeightBox.Enabled = !CalculatedWeightCheck.Checked;
+            WeightBox.Minimum = CalculatedWeightCheck.Checked ? 0 : 1;
+            WeightBox.Value = CalculatedWeightCheck.Checked ? 0 : 100;
             UnitBox.Enabled = !CalculatedWeightCheck.Checked;
         }
     }
