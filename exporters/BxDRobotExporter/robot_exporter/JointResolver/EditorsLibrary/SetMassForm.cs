@@ -14,18 +14,18 @@ namespace EditorsLibrary
     {
         static bool IsMetric = false;
 
-        public float TotalMass = 0;
+        public float TotalMassKg = 0;
 
         public SetMassForm()
         {
             InitializeComponent();
 
-            TotalMass = SynthesisGUI.Instance.TotalMass;
+            TotalMassKg = SynthesisGUI.Instance.TotalMassKg;
             
-            if (IsMetric)
-                MassBox.Value = (decimal)(TotalMass / 2.20462);
+            if (!IsMetric)
+                MassBox.Value = (decimal)(TotalMassKg * 2.20462);
             else
-                MassBox.Value = (decimal)TotalMass;
+                MassBox.Value = (decimal)TotalMassKg;
 
             MetricBox.Checked = IsMetric;
         }
@@ -43,9 +43,9 @@ namespace EditorsLibrary
             IsMetric = MetricBox.Checked;
 
             if (IsMetric)
-                TotalMass = (float)MassBox.Value * 2.20462f;
+                TotalMassKg = (float)MassBox.Value * 2.20462f;
             else
-                TotalMass = (float)MassBox.Value;
+                TotalMassKg = (float)MassBox.Value;
 
             DialogResult = DialogResult.OK;
             Close();

@@ -166,7 +166,7 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// The total mass of the robot
         /// </summary>
-        public float mass;
+        public float massKg;
         #endregion
 
         #region DefineWheelsPage
@@ -211,7 +211,7 @@ namespace BxDRobotExporter.Wizard
         public void Apply()
         {
             // TODO: Masses will need to be calculated after exporting the mesh
-            Utilities.GUI.TotalMass = this.mass;
+            Utilities.GUI.TotalMassKg = massKg;
 
             //WheelSetupPage
             foreach (WheelSetupData data in wheels)

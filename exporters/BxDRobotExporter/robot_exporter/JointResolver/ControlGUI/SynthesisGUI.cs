@@ -66,7 +66,7 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
-    public float TotalMass = 120;
+    public float TotalMassKg = 120; // This should default to the calculated mass of the model
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
@@ -569,7 +569,7 @@ public partial class SynthesisGUI : Form
             massForm.ShowDialog();
 
             if (massForm.DialogResult == DialogResult.OK)
-                TotalMass = massForm.TotalMass;
+                TotalMassKg = massForm.TotalMassKg;
         }
         catch (Exception ex)
         {

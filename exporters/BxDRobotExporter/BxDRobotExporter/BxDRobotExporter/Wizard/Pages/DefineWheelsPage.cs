@@ -19,7 +19,7 @@ namespace BxDRobotExporter.Wizard
         /// Active counter of how many <see cref="RigidNode_Base"/>s have been selected
         /// </summary>
         private int checkedCount = 0;
-        private int totalMass = 0;
+        private int totalMassKg = 0;
         private double inputMass = 0;
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
@@ -166,7 +166,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
-            WizardData.Instance.mass = totalMass;
+            WizardData.Instance.massKg = totalMassKg;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
             {
@@ -294,12 +294,13 @@ namespace BxDRobotExporter.Wizard
 
         private void UpdateMassCount()
         {
-            if (this.MassTypeSelector.SelectedIndex == 0)
+            if (MassTypeSelector.SelectedIndex == 0)
             {
-                totalMass = (int)Math.Round(Convert.ToDouble(this.numericUpDown1.Value) / 2.20462);
-            } else
+                totalMassKg = (int)Math.Round(Convert.ToDouble(MassValueBox.Value) / 2.20462);
+            }
+            else
             {
-                totalMass = (int)Math.Round(Convert.ToDouble(this.numericUpDown1.Value));
+                totalMassKg = (int)Math.Round(Convert.ToDouble(MassValueBox.Value));
             }
         }
 
