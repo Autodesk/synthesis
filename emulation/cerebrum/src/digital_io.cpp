@@ -36,6 +36,14 @@ namespace cerebrum{
 		inputs = value;
 	}
 
+	uint16_t RoboRIO::DIOSystem::getMXPSpecialFunctionsEnabled()const{
+			return mxp_special_functions_enabled;
+	}
+
+	void RoboRIO::DIOSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
+		mxp_special_functions_enabled = value;
+	}
+
 	uint8_t RoboRIO::DIOSystem::getPulseLength()const{
 		return pulse_length;
 	}
@@ -289,11 +297,12 @@ struct DIOManager: public tDIO{
 		return cerebrum::roborio_state.digital_system.getInputs().MXP;
 	}		
 
-	void writeEnableMXPSpecialFunction(uint16_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
-
+	void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
+		cerebrum::roborio_state.digital_system.setMXPSpecialFunctionsEnabled(value);
+	}
 
 	uint16_t readEnableMXPSpecialFunction(tRioStatusCode* /*status*/){
-		return 0;//unnecessary for emulation
+		return cerebrum::roborio_state.digital_system.getMXPSpecialFunctionsEnabled();
 	}
 
 	void writeFilterSelectMXP(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation

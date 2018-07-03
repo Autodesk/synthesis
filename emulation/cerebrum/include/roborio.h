@@ -85,8 +85,10 @@ namespace cerebrum{
             tDIO::tPulse pulses;
             tDIO::tDI inputs;
             
-			uint8_t pulse_length;
-        	
+			uint16_t mxp_special_functions_enabled;//TODO this needs to be checked when attempting things
+
+			uint8_t pulse_length;        	
+
 			std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
 	
 		public:
@@ -95,6 +97,9 @@ namespace cerebrum{
 
 			tDIO::tOutputEnable getEnabledOutputs()const;
 			void setEnabledOutputs(tDIO::tOutputEnable);
+
+			uint16_t getMXPSpecialFunctionsEnabled()const;
+			void setMXPSpecialFunctionsEnabled(uint16_t);
 	
 			tDIO::tPulse getPulses()const;
 			void setPulses(tDIO::tPulse);
