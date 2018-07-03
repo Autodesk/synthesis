@@ -19,6 +19,7 @@ set (WPIUTIL_DIRECTORY "../external/allwpilib/wpiutil")
 
 set (CMAKE_C_COMPILER arm-frc-linux-gnueabi-gcc)
 set (CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
+#set (CMAKE_CXX_COMPILER g++)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++14")
 
@@ -70,5 +71,16 @@ include_directories("${WPILIB_DIRECTORY}/hal/src/main/native/include")
 include_directories("./include")
 
 add_library (cerebrum SHARED src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp)
+
 add_executable (digital-io src/digital_io.cpp)
 target_compile_options (digital-io PUBLIC -DDIGITAL_IO_TEST)
+
+add_executable (analog-output src/analog_output.cpp)
+target_compile_options (analog-output PUBLIC -DANALOG_OUTPUT_TEST)
+
+add_executable (analog-input src/analog_input.cpp)
+target_compile_options (analog-input PUBLIC -DANALOG_INPUT_TEST)
+
+add_executable (pwm src/pwm.cpp)
+target_compile_options (pwm PUBLIC -DPWM_TEST)
+

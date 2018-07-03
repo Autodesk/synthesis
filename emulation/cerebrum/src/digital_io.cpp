@@ -278,7 +278,7 @@ namespace nFPGA{
 
 int main(){
 	uint16_t value = 1u << 3;
-	nFPGA::nRoboRIO_FPGANamespace::tDIO* a = nFPGA::nRoboRIO_FPGANamespace::tDIO::create(nullptr);
+	tDIO* a = tDIO::create(nullptr);
 	a->writeOutputEnable_Headers(1u << 3, nullptr);
 	a->writeDO_Headers(value, nullptr);
 }
