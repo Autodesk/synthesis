@@ -44,7 +44,6 @@ namespace cerebrum{
             tAI::tReadSelect read_select;
         };
 
-
 		struct PWMSystem{
 		private:
 			tPWM::tConfig config; // configuration for PWM IO
@@ -73,16 +72,36 @@ namespace cerebrum{
 			uint32_t getMXPDutyCycle(uint8_t)const; 
 			void setMXPDutyCycle(uint8_t, uint32_t);
 		};
-		
-		struct DIOSystem{
+
+        struct DIOSystem{
+		private:
 			tDIO::tDO outputs;
-			tDIO::tOutputEnable enabled_outputs;
-			tDIO::tPulse pulses;
-			tDIO::tDI inputs;
-
+            tDIO::tOutputEnable enabled_outputs;
+            tDIO::tPulse pulses;
+            tDIO::tDI inputs;
+            
 			uint8_t pulse_length;
-
+        	
 			std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
+	
+		public:
+			tDIO::tDO getOutputs()const;
+			void setOutputs(tDIO::tDO);	
+
+			tDIO::tOutputEnable getEnabledOutputs()const;
+			void setEnabledOutputs(tDIO::tOutputEnable);
+	
+			tDIO::tPulse getPulses()const;
+			void setPulses(tDIO::tPulse);
+
+			tDIO::tDI getInputs()const;
+			void setInputs(tDIO::tDI);
+
+			uint8_t getPulseLength()const;
+			void setPulseLength(uint8_t);
+        
+			uint8_t getPWMDutyCycle(uint8_t)const;
+			void setPWMDutyCycle(uint8_t, uint8_t);
 		};
 
 		std::array<AnalogOutput, tAO::kNumMXPRegisters> analog_outputs;
