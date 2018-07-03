@@ -191,8 +191,10 @@ namespace BxDRobotExporter.Wizard
                 {
                     if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
                     {
-                        NodeListBox.Items.Add(node.ModelFileName);
-                        listItems.Add(node.ModelFileName, node);
+                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+                        NodeListBox.Items.Add(readableName);
+                        listItems.Add(readableName, node);
                     }
                 }
             }
@@ -202,8 +204,10 @@ namespace BxDRobotExporter.Wizard
                 {
                     if (node.GetParent().GetParent() != null)
                     {
-                        NodeListBox.Items.Add(node.ModelFileName);
-                        listItems.Add(node.ModelFileName, node);
+                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+                        NodeListBox.Items.Add(readableName);
+                        listItems.Add(readableName, node);
                     }
                 }
             }
