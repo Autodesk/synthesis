@@ -485,9 +485,19 @@ public partial class SynthesisGUI : Form
         foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
         {
             SkeletalJoint_Base joint = connection.Key;
+            string setName = currentNode.GUID.ToString();
 
             // Save joint information to a new property set
 
+            // Create the property set if it doesn't exist
+            object foundSet;
+            if (!assemblyPropertySets.PropertySetExists(setName, out foundSet))
+                foundSet = assemblyPropertySets.Add(setName);
+
+            Inventor.PropertySet propertySet = (Inventor.PropertySet) foundSet;
+
+            //propertySet["portA"] = joint.cDriver.portA;
+            
             if (!JointDataSave(assemblyPropertySets, connection.Value))
                 return false;
         }
@@ -513,7 +523,7 @@ public partial class SynthesisGUI : Form
         foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
         {
             SkeletalJoint_Base joint = connection.Key;
-            
+
             // Load joint information from a new property set, if a matching one exists
 
             if (!JointDataLoad(assemblyPropertySets, connection.Value))
