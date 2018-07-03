@@ -63,7 +63,7 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" )
 
     MESSAGE("Begun building test: ${test_name}")
 
-    add_executable( ${test_name} ${file})
+    add_executable( ${test_name} ${file} tests/main_stub.cpp)
 
     add_dependencies(${test_name} GoogleTest)
     target_link_libraries(${test_name} gtest gtest_main pthread)
