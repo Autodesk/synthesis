@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Assets.Scripts.FSM
+namespace Synthesis.FSM
 {
     /// <summary>
     /// The base class for any state.
     /// </summary>
     public abstract class State
     {
+        /// <summary>
+        /// The <see cref="FSM.StateMachine"/> running this state.
+        /// </summary>
+        public StateMachine StateMachine { get; set; }
+
         /// <summary>
         /// Called when the State is awaken.
         /// </summary>

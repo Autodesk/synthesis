@@ -5,27 +5,30 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 
-public partial class RigidNode : RigidNode_Base
+namespace Synthesis.RigidNode
 {
-    public GameObject MainObject { get; private set; }
-    public Vector3 ComOffset { get; set; }
-    public PhysicalProperties PhysicalProperties { get; private set; }
-
-    private Transform root;
-    private Component joint;
-
-    public RigidNode(Guid guid)
-        : base(guid)
+    public partial class RigidNode : RigidNode_Base
     {
-    }
+        public GameObject MainObject { get; private set; }
+        public Vector3 ComOffset { get; set; }
+        public PhysicalProperties PhysicalProperties { get; private set; }
 
-    public void CreateTransform(Transform root)
-    {
-        MainObject = new GameObject(ModelFileName);
-        MainObject.transform.parent = root;
+        private Transform root;
+        private Component joint;
 
-        this.root = root;
+        public RigidNode(Guid guid)
+            : base(guid)
+        {
+        }
 
-        ComOffset = Vector3.zero;
+        public void CreateTransform(Transform root)
+        {
+            MainObject = new GameObject(ModelFileName);
+            MainObject.transform.parent = root;
+
+            this.root = root;
+
+            ComOffset = Vector3.zero;
+        }
     }
 }

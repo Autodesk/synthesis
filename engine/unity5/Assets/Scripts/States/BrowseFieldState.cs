@@ -1,12 +1,15 @@
 ﻿using System;
 
-public class BrowseFieldState : BrowseFileState
+namespace Synthesis.States
 {
-    /// <summary>
-    /// Initializes a new <see cref="BrowseFieldState"/> instance.
-    /// </summary>
-    public BrowseFieldState() : base("FieldDirectory",
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields")
+    public class BrowseFieldState : BrowseFileState
     {
+        /// <summary>
+        /// Initializes a new <see cref="BrowseFieldState"/> instance.
+        /// </summary>
+        public BrowseFieldState() : base("FieldDirectory",
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields")
+        {
+        }
     }
 }
