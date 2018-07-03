@@ -575,17 +575,74 @@ public partial class SynthesisGUI : Form
     /// </summary>
     public bool JointDataLoad(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
     {
-        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+        try
         {
-            SkeletalJoint_Base joint = connection.Key;
+            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+            {
+                SkeletalJoint_Base joint = connection.Key;
+                RigidNode_Base child = connection.Value;
 
-            // Load joint information from a new property set, if a matching one exists
+                // Name of the property set in inventor
+                string setName = "bxd-jointdata-" + child.GetModelID();
 
-            if (!JointDataLoad(assemblyPropertySets, connection.Value))
-                return false;
+                // Create the property set if it doesn't exist
+                Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName);
+
+                // Get joint properties from set
+                // Get driver information
+                if (Utilities.GetProperty(propertySet, "has-driver", false))
+                {
+                    if (joint.cDriver == null)
+                        joint.cDriver = new JointDriver((JointDriverType)Utilities.GetProperty(propertySet, "driver-type", (int)JointDriverType.MOTOR));
+                    JointDriver driver = joint.cDriver;
+
+                    joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portA", 0);
+                    joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portB", -1);
+                    joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
+                    joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
+                    joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
+
+                    // Get other properties stored in meta
+                    // Wheel information
+                    if (Utilities.GetProperty(propertySet, "has-wheel", false))
+                    {
+                        if (driver.GetInfo<WheelDriverMeta>() == null)
+                            driver.AddInfo(new WheelDriverMeta());
+                        WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
+
+                        wheel.type = (WheelType)Utilities.GetProperty(propertySet, "wheel-type", (int)WheelType.NORMAL);
+                    }
+
+                    // Pneumatic information
+                    if (Utilities.GetProperty(propertySet, "has-pneumatic", false))
+                    {
+                        if (driver.GetInfo<PneumaticDriverMeta>() == null)
+                            driver.AddInfo(new PneumaticDriverMeta());
+                        PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+                    }
+
+                    // Elevator information
+                    if (Utilities.GetProperty(propertySet, "has-elevator", false))
+                    {
+                        if (driver.GetInfo<ElevatorDriverMeta>() == null)
+                            driver.AddInfo(new ElevatorDriverMeta());
+                        ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+                    }
+                }
+
+                // Recur along this child
+                if (!JointDataLoad(assemblyPropertySets, child))
+                    return false; // If one of the children failed to save, then cancel the saving process
+            }
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show("Joint data could not be loaded from the inventor file. The following error occured:\n" + e.Message);
+            return false;
         }
 
-        return false; // true
+        // Save was successful
+        return true;
     }
 
     /// <summary>
