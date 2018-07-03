@@ -58,7 +58,7 @@ public class Utilities
             return str.Substring(0, 1).ToUpperInvariant() + str.Substring(1);
     }
 
-    public static Inventor.PropertySet GetPropertySet(Inventor.PropertySets sets, string name)
+    public static Inventor.PropertySet GetPropertySet(Inventor.PropertySets sets, string name, bool createIfDoesNotExist = true)
     {
         foreach (Inventor.PropertySet set in sets)
         {
@@ -68,7 +68,10 @@ public class Utilities
             }
         }
 
-        return sets.Add(name);
+        if (createIfDoesNotExist)
+            return sets.Add(name);
+        else
+            return null;
     }
 
     public static void SetProperty<T>(Inventor.PropertySet set, string name, T value)
@@ -98,7 +101,7 @@ public class Utilities
         catch (ArgumentException)
         {
             // Property already exists, get existing value
-            return set[name].Value;
+            return (T)set[name].Value;
         }
     }
 }
