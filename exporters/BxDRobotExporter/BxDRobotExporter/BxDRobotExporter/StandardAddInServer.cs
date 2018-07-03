@@ -12,6 +12,11 @@ using System.Runtime.InteropServices;
 
 namespace BxDRobotExporter
 {
+    public class ExporterFailedException : ApplicationException
+    {
+        public ExporterFailedException(string message) : base(message) {}
+    }
+
     /// <summary>
     /// This is where the magic happens. All top-level event handling, UI creation, and inventor communication is handled here.
     /// </summary>
@@ -49,16 +54,11 @@ namespace BxDRobotExporter
         bool HiddenExporter = false;
 
         //Ribbon Pannels
-        RibbonPanel BeginPanel;
+        RibbonPanel SetupPanel;
         RibbonPanel FilePanel;
         RibbonPanel SettingsPanel;
-        RibbonPanel HelpPanel;
 
         //Standalone Buttons
-        ButtonDefinition LoadExportedRobotButton;
-        ButtonDefinition ExporterSettingsButton;
-        ButtonDefinition HelpButton;
-        ButtonDefinition PreviewRobotButton;
         ButtonDefinition WizardExportButton;
         ButtonDefinition SetMassButton;
 
@@ -147,10 +147,9 @@ namespace BxDRobotExporter
 
             ControlDefinitions ControlDefs = MainApplication.CommandManager.ControlDefinitions;
 
-            BeginPanel = ExporterTab.RibbonPanels.Add("Begin", "BxD:RobotExporter:BeginPanel", ClientID);
+            SetupPanel = ExporterTab.RibbonPanels.Add("Setup", "BxD:RobotExporter:SetupPanel", ClientID);
             FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
             SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "BxD:RobotExporter:SettingsPanel", ClientID);
-            HelpPanel = ExporterTab.RibbonPanels.Add("Help", "BxD:RobotExporter:HelpPanel", ClientID);
             #endregion
 
             #region Setup Buttons
@@ -158,37 +157,13 @@ namespace BxDRobotExporter
             WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Export", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports the robot with the aid of a wizard to guide you through the process.", WizardExportIconSmall, WizardExportIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
-            BeginPanel.CommandControls.AddButton(WizardExportButton, true);
-            
-            //Load Exported Robot
-            LoadExportedRobotButton = ControlDefs.AddButtonDefinition("Load Exported Robot", "BxD:RobotExporter:LoadExportedRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Loads a robot you have already exported for further editing.", LoadExportedRobotIconSmall, LoadExportedRobotIconLarge);
-            LoadExportedRobotButton.OnExecute += LoadExportedRobotButton_OnExecute;
-            LoadExportedRobotButton.OnHelp += _OnHelp;
-            BeginPanel.CommandControls.AddButton(LoadExportedRobotButton, true);
-
-            //Preview Robot
-            PreviewRobotButton = ControlDefs.AddButtonDefinition("Preview Robot", "BxD:RobotExporter:PreviewRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens the robot viewer from the old exporter. Use this to test your joint limits.", PreviewRobotIconSmall, PreviewRobotIconLarge);
-            PreviewRobotButton.OnExecute += PreviewRobotButton_OnExecute;
-            PreviewRobotButton.OnHelp += _OnHelp;
-            FilePanel.CommandControls.AddButton(PreviewRobotButton, true);
+            SetupPanel.CommandControls.AddButton(WizardExportButton, true);
 
             //Set Mass
             SetMassButton = ControlDefs.AddButtonDefinition("Set Mass", "BxD:RobotExporter:SetMass", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the Mass of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
             SetMassButton.OnExecute += SetMass_OnExecute;
             SetMassButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(SetMassButton, true);
-
-            //Exporter Settings
-            ExporterSettingsButton = ControlDefs.AddButtonDefinition("Exporter Settings", "BxD:RobotExporter:ExporterSettings", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Opens the settings menu.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
-            ExporterSettingsButton.OnExecute += ExporterSettings_OnExecute;
-            ExporterSettingsButton.OnHelp += _OnHelp;
-            SettingsPanel.CommandControls.AddButton(ExporterSettingsButton, true);
-
-            //Help Button
-            HelpButton = ControlDefs.AddButtonDefinition("Help", "BxD:RobotExporter:Help", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Takes you to the tutorials page at bxd.autodesk.com.", HelpButtonIconSmall, HelpButtonIconLarge);
-            HelpButton.OnExecute += HelpButton_OnExecute;
-            HelpButton.OnHelp += _OnHelp;
-            HelpPanel.CommandControls.AddButton(HelpButton, true);
 
             //Save Button
             SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to its previous location.", SaveRobotIconSmall, SaveRobotIconLarge);
@@ -215,7 +190,7 @@ namespace BxDRobotExporter
             DedectionTestButton = ControlDefs.AddButtonDefinition("Detection Test", "BxD:RobotExporter:DetectionTestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
             DedectionTestButton.OnExecute += delegate (NameValueMap context)
             {
-                Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, Wizard.WizardData.WizardDriveTrain.WESTERN, 6);
+                Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, Wizard.WizardData.WizardDriveTrain.TANK, 6);
             };
             DebugPanel.CommandControls.AddButton(DedectionTestButton, true);
             //UI Test
@@ -324,13 +299,19 @@ namespace BxDRobotExporter
             //Sets up events for selecting and deselecting parts in inventor
             Utilities.GUI.jointEditorPane1.SelectedJoint += JointEditorPane_SelectedJoint;
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
-
-            PreviewRobotButton.Enabled = false;
+            
             SaveAsButton.Enabled = false;
             SaveButton.Enabled = false;
 
             // Immediately start the "advanced export" when the exporter is opened. TODO: Rename this as ExporterSetup, as it applies to all exporting modes.
-            BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
+            try
+            {
+                BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
+            }
+            catch (ExporterFailedException)
+            {
+                // TODO: Close the addin. I don't know how to do this.
+            }
         }
 
         /// <summary>
@@ -430,7 +411,6 @@ namespace BxDRobotExporter
                 }
                 else if (EnvironmentState == EnvironmentStateEnum.kTerminateEnvironmentState && EnvironmentEnabled && BeforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    
                     ToggleEnvironment();
                 }
             }
@@ -448,14 +428,12 @@ namespace BxDRobotExporter
         {
             if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.BuildRobotSkeleton())
             {
-                PreviewRobotButton.Enabled = true;
                 SaveAsButton.Enabled = true;
                 SaveButton.Enabled = true;
                 pendingChanges = false;
             }
             else if (Utilities.GUI.SkeletonBase != null)
             {
-                PreviewRobotButton.Enabled = true;
                 SaveAsButton.Enabled = true;
                 SaveButton.Enabled = true;
             }
@@ -467,29 +445,23 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.BuildRobotSkeleton())
+            if (!PendingChanges || this.WarnUnsaved())
             {
-                PreviewRobotButton.Enabled = true;
-                SaveAsButton.Enabled = true;
-                SaveButton.Enabled = true;
+                if (Utilities.GUI.BuildRobotSkeleton())
+                {
+                    SaveAsButton.Enabled = true;
+                    SaveButton.Enabled = true;
 
-                Wizard.WizardForm wizard = new Wizard.WizardForm();
-                Utilities.HideDockableWindows();
-                wizard.ShowDialog();
-                Utilities.GUI.ReloadPanels();
-                Utilities.ShowDockableWindows();
-            }
-            else if (Utilities.GUI.SkeletonBase != null)
-            {
-                PreviewRobotButton.Enabled = true;
-                SaveAsButton.Enabled = true;
-                SaveButton.Enabled = true;
-
-                Wizard.WizardForm wizard = new Wizard.WizardForm();
-                Utilities.HideDockableWindows();
-                wizard.ShowDialog();
-                Utilities.GUI.ReloadPanels();
-                Utilities.ShowDockableWindows();
+                    Wizard.WizardForm wizard = new Wizard.WizardForm();
+                    Utilities.HideDockableWindows();
+                    wizard.ShowDialog();
+                    Utilities.GUI.ReloadPanels();
+                    Utilities.ShowDockableWindows();
+                }
+                else
+                {
+                    throw new ExporterFailedException("Failed to build robot skeleton.");
+                }
             }
         }
 
@@ -515,7 +487,6 @@ namespace BxDRobotExporter
         {
             if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.OpenExisting(ValidateAssembly))
             {
-                PreviewRobotButton.Enabled = true;
                 SaveAsButton.Enabled = true;
                 SaveButton.Enabled = true;
             }
@@ -570,16 +541,6 @@ namespace BxDRobotExporter
         private void ExporterSettings_OnExecute(NameValueMap Context)
         {
             Utilities.GUI.SettingsExporter_OnClick(this, null);
-        }
-
-
-        //Help
-        /// <summary>
-        /// Also opens the help page
-        /// </summary>
-        private void HelpButton_OnExecute(NameValueMap Context)
-        {
-            Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
         }
 
         /// <summary>
