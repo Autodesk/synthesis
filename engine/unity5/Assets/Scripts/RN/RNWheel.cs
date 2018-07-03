@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Synthesis.RigidNode
+namespace Synthesis.RN
 {
     public partial class RigidNode : RigidNode_Base
     {

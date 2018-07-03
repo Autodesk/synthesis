@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 
-namespace Synthesis.RigidNode
+namespace Synthesis.RN
 {
     public partial class RigidNode : RigidNode_Base
     {

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using Synthesis.FSM;
 using UnityEngine.Analytics;
 using Synthesis.GUI;
-using Synthesis.RobotCamera;
+using Synthesis.Camera;
 using Synthesis.States;
 using Synthesis.Utils;
 

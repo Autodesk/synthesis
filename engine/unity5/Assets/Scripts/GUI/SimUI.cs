@@ -12,7 +12,7 @@ using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;
 using Synthesis.InputControl;
 using Synthesis.MixAndMatch;
-using Synthesis.RobotCamera;
+using Synthesis.Camera;
 using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.Utils;

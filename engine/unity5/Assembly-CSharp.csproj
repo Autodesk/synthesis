@@ -8,7 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -187,6 +188,9 @@
     <Compile Include="Assets\Scripts\BUExtensions\BRobotRaycaster.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\ICollisionCallback.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\RaycastRobot.cs" />
+    <Compile Include="Assets\Scripts\Camera\RobotCamera.cs" />
+    <Compile Include="Assets\Scripts\Camera\RobotCameraGUI.cs" />
+    <Compile Include="Assets\Scripts\Camera\RobotCameraManager.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeMode.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeRobot.cs" />
@@ -247,14 +251,13 @@
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
-    <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />
-    <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
-    <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />
-    <Compile Include="Assets\Scripts\RigidNode\RNWheel.cs" />
-    <Compile Include="Assets\Scripts\Robot.cs" />
-    <Compile Include="Assets\Scripts\RobotCamera\RobotCamera.cs" />
-    <Compile Include="Assets\Scripts\RobotCamera\RobotCameraGUI.cs" />
-    <Compile Include="Assets\Scripts\RobotCamera\RobotCameraManager.cs" />
+    <Compile Include="Assets\Scripts\RN\RNCommon.cs" />
+    <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
+    <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
+    <Compile Include="Assets\Scripts\RN\RNWheel.cs" />
+    <Compile Include="Assets\Scripts\Robot\Robot.cs" />
+    <Compile Include="Assets\Scripts\Robot\RobotBase.cs" />
+    <Compile Include="Assets\Scripts\Robot\SimulatorBot.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />

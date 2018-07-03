@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 using Synthesis.FSM;
 using Synthesis.InputControl;
-using Synthesis.RobotCamera;
+using Synthesis.Camera;
 using Synthesis.States;
 
 public class DynamicCamera : MonoBehaviour

@@ -8,6 +8,7 @@ using Synthesis.FSM;
 using System;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Robot;
 
 namespace Synthesis.Sensors
 {
@@ -16,7 +17,6 @@ namespace Synthesis.Sensors
     /// </summary>
     public abstract class SensorBase : MonoBehaviour
     {
-
         public bool IsChangingPosition { get; set; }
         public bool IsChangingHeight { get; set; }
         public bool IsChangingAngle { get; set; }
@@ -26,7 +26,7 @@ namespace Synthesis.Sensors
         public bool IsVisible = true;
         protected bool IsMetric = false;
         protected MainState main;
-        public Robot Robot { get; set; }
+        public RobotBase Robot { get; set; }
 
         // Use this for initialization
         void Start()
@@ -68,7 +68,6 @@ namespace Synthesis.Sensors
                 {
                     UpdateHeightTransform();
                 }
-
             }
         }
 
@@ -87,7 +86,6 @@ namespace Synthesis.Sensors
         /// <param name="range"></param>
         public virtual void SetSensorRange(float range, bool isEditing = false)
         {
-
         }
 
         /// <summary>
@@ -119,7 +117,6 @@ namespace Synthesis.Sensors
         /// </summary>
         public virtual void UpdateRangeTransform()
         {
-
         }
 
         /// <summary>
@@ -140,7 +137,6 @@ namespace Synthesis.Sensors
         /// </summary>
         public virtual void ResetSensorReading()
         {
-
         }
 
         /// <summary>
@@ -160,6 +156,7 @@ namespace Synthesis.Sensors
             IsVisible = visible;
             SyncVisibility();
         }
+
         /// <summary>
         /// Set the sensor to be visible temporarily, for choosing sensor option
         /// </summary>

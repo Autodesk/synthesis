@@ -5,7 +5,7 @@ using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.Utils;
 
-namespace Synthesis.RobotCamera
+namespace Synthesis.Camera
 {
     /// <summary>
     /// This class handles all GUI elements related to robot camera in Unity
@@ -150,14 +150,14 @@ namespace Synthesis.RobotCamera
                 if (robotCameraManager.CurrentCamera != null)
                 {
                     robotCameraManager.CurrentCamera.SetActive(true);
-                    robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+                    robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = robotCameraView;
                     //Toggle the robot camera using Z (can be changed later)
                     if (Input.GetKeyDown(KeyCode.Z))
                     {
                         //Reset the targetTexture of current camera or they will conflict
-                        robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+                        robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;
                         robotCameraManager.ToggleCamera();
-                        robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+                        robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = robotCameraView;
                     }
                 }
             }
@@ -165,7 +165,7 @@ namespace Synthesis.RobotCamera
             else
             {
                 if (robotCameraManager.CurrentCamera != null)
-                    robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+                    robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;
             }
         }
 
@@ -180,13 +180,13 @@ namespace Synthesis.RobotCamera
             robotCameraViewWindow.SetActive(usingRobotView);
             if (usingRobotView)
             {
-                robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = robotCameraView;
                 ToggleCameraIndicator();
             }
             else
             {
                 //Free the target texture and disable the camera since robot camera has more depth than main camera
-                robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;
                 robotCameraManager.CurrentCamera.SetActive(false);
                 //Close the panel when indicator is not active and stop all configuration
                 configureCameraPanel.SetActive(false);
@@ -370,7 +370,7 @@ namespace Synthesis.RobotCamera
         {
             if (!isEditingFOV && robotCameraManager.CurrentCamera != null)
             {
-                FOVEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.GetComponent<Camera>().fieldOfView.ToString();
+                FOVEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView.ToString();
             }
         }
 
@@ -382,11 +382,11 @@ namespace Synthesis.RobotCamera
             float temp = 0;
             if ((float.TryParse(FOVEntry.GetComponent<InputField>().text, out temp) && temp >= 0))
             {
-                robotCameraManager.CurrentCamera.GetComponent<Camera>().fieldOfView = temp;
+                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
             }
             else
             {
-                robotCameraManager.CurrentCamera.GetComponent<Camera>().fieldOfView = temp;
+                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
             }
 
         }
@@ -490,7 +490,7 @@ namespace Synthesis.RobotCamera
             {
                 ToggleCameraWindow();
             }
-            robotCameraManager.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+            robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;
             robotCameraManager.CurrentCamera.SetActive(false);
         }
         #endregion
