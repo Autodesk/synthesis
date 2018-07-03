@@ -45,8 +45,6 @@ namespace EditorsLibrary
         {
             Values = SynthesisGUI.PluginSettings;
             ChildHighlight.BackColor = Values.InventorChildColor;
-            SaveLocationTextBox.Text = Values.GeneralSaveLocation;
-            UseFancyColorsCheckBox.Checked = Values.GeneralUseFancyColors;
         }
         
         /// <summary>
@@ -55,9 +53,7 @@ namespace EditorsLibrary
         private void SaveValues()
         {
             Values.InventorChildColor = ChildHighlight.BackColor;
-            Values.GeneralSaveLocation = SaveLocationTextBox.Text;
-            Values.GeneralUseFancyColors = UseFancyColorsCheckBox.Checked;
-            Values.OnSettingsChanged(ChildHighlight.BackColor, Values.GeneralUseFancyColors, SaveLocationTextBox.Text);
+            Values.OnSettingsChanged();
         }
 
         /// <summary>
@@ -81,9 +77,9 @@ namespace EditorsLibrary
         {
 
             public static event SettingsEvent SettingsChanged;
-            internal void OnSettingsChanged(Color Child, bool UseFancyColors, string SaveLocation)
+            internal void OnSettingsChanged()
             {
-                SettingsChanged.Invoke(Child, UseFancyColors, SaveLocation);
+                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation);
             }
 
             //General
@@ -115,16 +111,6 @@ namespace EditorsLibrary
             {
                 Values.GeneralSaveLocation = folderBrowser.SelectedPath;
             }
-        }
-
-        private void UseFancyColorsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (UseFancyColorsCheckBox.Checked)
-            {
-                UseFancyColorsCheckBox.ForeColor = Color.Red;
-            }
-            else
-                UseFancyColorsCheckBox.ForeColor = DefaultForeColor;
         }
 
     }
