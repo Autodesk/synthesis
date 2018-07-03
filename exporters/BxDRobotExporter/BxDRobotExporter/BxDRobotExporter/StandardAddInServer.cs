@@ -310,10 +310,16 @@ namespace BxDRobotExporter
             }
             catch (ExporterFailedException)
             {
-                // TODO: Close the addin. I don't know how to do this.
+                ForceQuitExporter();
             }
         }
 
+        private async void ForceQuitExporter()
+        {
+            await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
+            AsmDocument.EnvironmentManager.SetCurrentEnvironment(AsmDocument.EnvironmentManager.EditObjectEnvironment);
+        }
+        
         /// <summary>
         /// Disposes of some COM objects and exits the environment
         /// </summary>
