@@ -1,10 +1,13 @@
-/// <summary>
-/// Preferred input device.
-/// Source: https://github.com/Gris87/InputControl
-/// </summary>
-public enum InputDevice
+namespace Synthesis.InputControl.Enums
 {
-      Any
-    , KeyboardAndMouse
-    , Joystick
+    /// <summary>
+    /// Preferred input device.
+    /// Source: https://github.com/Gris87/InputControl
+    /// </summary>
+    public enum InputDevice
+    {
+          Any
+        , KeyboardAndMouse
+        , Joystick
+    }
 }

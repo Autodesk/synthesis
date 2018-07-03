@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using BulletSharp;
 using BulletSharp.Math;
 using BulletUnity.Debugging;
-using Assets.Scripts;
 using System;
-using Assets.Scripts.BUExtensions;
+using Synthesis.BUExtensions;
+using BulletUnity;
 
-namespace BulletUnity
+namespace Synthesis.DriverPractice
 {
     /// <summary>
     /// This is a component to be attached to any game object that is meant to interact with game pieces in driver practice mode.

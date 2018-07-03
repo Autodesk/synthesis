@@ -1,20 +1,23 @@
-﻿using Assets.Scripts.FSM;
+﻿using Synthesis.FSM;
 
-public class SelectionState : State
+namespace Synthesis.States
 {
-    /// <summary>
-    /// Opens the default simulator tab when the main simulator button is pressed.
-    /// </summary>
-    public void OnMainSimulatorButtonPressed()
+    public class SelectionState : State
     {
-        StateMachine.Instance.PushState(new DefaultSimulatorState());
-    }
+        /// <summary>
+        /// Opens the default simulator tab when the main simulator button is pressed.
+        /// </summary>
+        public void OnMainSimulatorButtonPressed()
+        {
+            StateMachine.PushState(new DefaultSimulatorState());
+        }
 
-    /// <summary>
-    /// Opens the mix and match tab when the mix and match button is pressed.
-    /// </summary>
-    public void OnMixAndMatchButtonPressed()
-    {
-        StateMachine.Instance.PushState(new MixAndMatchState());
+        /// <summary>
+        /// Opens the mix and match tab when the mix and match button is pressed.
+        /// </summary>
+        public void OnMixAndMatchButtonPressed()
+        {
+            StateMachine.PushState(new MixAndMatchState());
+        }
     }
 }

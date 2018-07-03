@@ -6,7 +6,7 @@ using System.Text;
 using BulletSharp;
 using UnityEngine;
 
-namespace Assets.Scripts.BUExtensions
+namespace Synthesis.BUExtensions
 {
     public class BMultiCallbacks : BCollisionCallbacksDefault
     {

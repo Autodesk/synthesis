@@ -1,11 +1,11 @@
-﻿using Assets.Scripts.FSM;
-using Assets.Scripts.Utils;
+﻿using Synthesis.FSM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Synthesis.States;
 
 public class SimStart : MonoBehaviour
 {
@@ -14,6 +14,11 @@ public class SimStart : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        StateMachine.Instance.PushState(new MainState());
+        StateMachine stateMachine = GetComponent<StateMachine>();
+
+        if (stateMachine == null)
+            Debug.LogError("Could not find the required StateMachine component!");
+        else
+            stateMachine.PushState(new MainState());
     }
 }

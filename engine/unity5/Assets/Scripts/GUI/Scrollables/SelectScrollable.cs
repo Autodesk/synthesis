@@ -6,40 +6,43 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class SelectScrollable : ScrollablePanel
+namespace Synthesis.GUI.Scrollables
 {
-    public string TargetFilename;
-    public string ErrorMessage;
-
-    /// <summary>
-    /// Refreshes the scrollable with the directory provided.
-    /// </summary>
-    /// <param name="directory"></param>
-    public void Refresh(string directory)
+    public class SelectScrollable : ScrollablePanel
     {
-        string[] folders = Directory.GetDirectories(directory);
+        public string TargetFilename;
+        public string ErrorMessage;
 
-        items.Clear();
+        /// <summary>
+        /// Refreshes the scrollable with the directory provided.
+        /// </summary>
+        /// <param name="directory"></param>
+        public void Refresh(string directory)
+        {
+            string[] folders = Directory.GetDirectories(directory);
 
-        foreach (string robot in folders)
-            if (File.Exists(robot + "\\" + TargetFilename))
-                items.Add(new DirectoryInfo(robot).Name);
+            items.Clear();
 
-        if (items.Count > 0)
-            selectedEntry = items[0];
+            foreach (string robot in folders)
+                if (File.Exists(robot + "\\" + TargetFilename))
+                    items.Add(new DirectoryInfo(robot).Name);
 
-        position = Camera.main.WorldToScreenPoint(transform.position);
-    }
+            if (items.Count > 0)
+                selectedEntry = items[0];
 
-    /// <summary>
-    /// Clears the list of items when this <see cref="SelectScrollable"/>
-    /// is enabled.
-    /// </summary>
-    void OnEnable()
-    {
-        errorMessage = ErrorMessage;
+            position = Camera.main.WorldToScreenPoint(transform.position);
+        }
 
-        items = new List<string>();
-        items.Clear();
+        /// <summary>
+        /// Clears the list of items when this <see cref="SelectScrollable"/>
+        /// is enabled.
+        /// </summary>
+        void OnEnable()
+        {
+            errorMessage = ErrorMessage;
+
+            items = new List<string>();
+            items.Clear();
+        }
     }
 }
