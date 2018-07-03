@@ -5,18 +5,28 @@
 
 #include "roborio.h"
 
-namespace nRoboRIO_FPGANamespace {
+using namespace nFPGA;
+using namespace nRoboRIO_FPGANamespace;
+
+struct AnalogInputManager: public tAI{
+	tSystemInterface* getSystemInterface(){
+		return nullptr;
+	}
+	int32_t readOutput(tRioStatusCode* /*status*/){
+		//TODO
+	}
 
     void writeConfig(hal::tAI::tConfig value, tRioStatusCode*) {
         cerebrum::roborio_state.analog_inputs.setConfig(value);
     }
+
     void writeConfig_ScanSize(uint8_t value, tRioStatusCode*) {
         auto current_config = cerebrum::roborio_state.analog_inputs.getConfig();
         current_config.ScanSize = value;
         cerebrum::roborio_state.analog_inputs.setConfig(current_config);
     }
 
-    void writeConfig_ScanSize(uint32_t value, tRioStatusCode*) {
+    void writeConfig_ConvertRate(uint32_t value, tRioStatusCode*) {
         auto current_config = cerebrum::roborio_state.analog_inputs.getConfig();
         current_config.ConvertRate = value;
         cerebrum::roborio_state.analog_inputs.setConfig(current_config);
@@ -88,7 +98,14 @@ namespace nRoboRIO_FPGANamespace {
     }
 
     void strobeLatchOutput(tRioStatusCode*) {}
+};
 
+namespace nFPGA{
+	namespace nRoboRIO_FPGANamespace{
+		tAI* tAI::create(tRioStatusCode* /*status*/){
+			return new AnalogInputManager();
+		}
+	}
 }
 
 namespace cerebrum {
@@ -119,3 +136,11 @@ namespace cerebrum {
     }
 
 }
+
+#ifdef ANALOG_INPUT_TEST
+
+int main(){
+	//tAI* a = tAI::create(nullptr);
+}
+
+#endif
