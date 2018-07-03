@@ -323,6 +323,10 @@ namespace BxDRobotExporter
                 // Joint data is already loaded, reload panels in UI
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
+                
+                // Enable save button
+                SaveAsButton.Enabled = true;
+                SaveButton.Enabled = true;
             }
         }
 
