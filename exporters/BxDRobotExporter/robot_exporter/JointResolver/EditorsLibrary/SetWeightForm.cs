@@ -21,11 +21,21 @@ namespace EditorsLibrary
             InitializeComponent();
 
             TotalWeightKg = SynthesisGUI.Instance.TotalWeightKg;
-            
-            if (!IsMetric)
-                WeightBox.Value = (decimal)(TotalWeightKg * 2.20462);
+
+            if (TotalWeightKg > 0)
+            {
+                if (!IsMetric)
+                    WeightBox.Value = (decimal)(TotalWeightKg * 2.20462);
+                else
+                    WeightBox.Value = (decimal)TotalWeightKg;
+
+                CalculatedWeightCheck.Checked = false;
+            }
             else
-                WeightBox.Value = (decimal)TotalWeightKg;
+            {
+                WeightBox.Value = 0;
+                CalculatedWeightCheck.Checked = true;
+            }
 
             UnitBox.SelectedIndex = IsMetric ? 1 : 0;
         }
@@ -34,13 +44,24 @@ namespace EditorsLibrary
         {
             IsMetric = UnitBox.SelectedIndex == 1;
 
-            if (!IsMetric)
-                TotalWeightKg = (float)WeightBox.Value / 2.20462f;
+            if (CalculatedWeightCheck.Checked)
+                TotalWeightKg = -1;
             else
-                TotalWeightKg = (float)WeightBox.Value;
+            {
+                if (!IsMetric)
+                    TotalWeightKg = (float)WeightBox.Value / 2.20462f;
+                else
+                    TotalWeightKg = (float)WeightBox.Value;
+            }
 
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void CalculatedWeightCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            WeightBox.Enabled = !CalculatedWeightCheck.Checked;
+            UnitBox.Enabled = !CalculatedWeightCheck.Checked;
         }
     }
 }

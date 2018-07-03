@@ -36,6 +36,7 @@
             this.SaveButton = new System.Windows.Forms.Button();
             this.WeightLabel = new System.Windows.Forms.Label();
             this.UnitBox = new System.Windows.Forms.ComboBox();
+            this.CalculatedWeightCheck = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -86,6 +87,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.Controls.Add(this.CancelButton, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.SaveButton, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.CalculatedWeightCheck, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 28);
             this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
@@ -138,6 +140,18 @@
             this.UnitBox.Size = new System.Drawing.Size(40, 21);
             this.UnitBox.TabIndex = 2;
             // 
+            // CalculatedWeightCheck
+            // 
+            this.CalculatedWeightCheck.AutoSize = true;
+            this.CalculatedWeightCheck.Dock = System.Windows.Forms.DockStyle.Left;
+            this.CalculatedWeightCheck.Location = new System.Drawing.Point(3, 3);
+            this.CalculatedWeightCheck.Name = "CalculatedWeightCheck";
+            this.CalculatedWeightCheck.Size = new System.Drawing.Size(131, 23);
+            this.CalculatedWeightCheck.TabIndex = 3;
+            this.CalculatedWeightCheck.Text = "Use calculated weight";
+            this.CalculatedWeightCheck.UseVisualStyleBackColor = true;
+            this.CalculatedWeightCheck.CheckedChanged += new System.EventHandler(this.CalculatedWeightCheck_CheckedChanged);
+            // 
             // SetWeightForm
             // 
             this.AcceptButton = this.SaveButton;
@@ -157,6 +171,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,5 +186,6 @@
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.ComboBox UnitBox;
+        private System.Windows.Forms.CheckBox CalculatedWeightCheck;
     }
 }
