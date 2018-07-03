@@ -46,11 +46,32 @@ namespace cerebrum{
 
 
 		struct PWMSystem{
+		private:
 			tPWM::tConfig config; // configuration for PWM IO
-			std::array<uint32_t, tPWM::kNumPeriodScaleHdrElements> hdr_period_scale; //2-bit mask for signal masking frequency, effectively scaling the PWM value (0 = 1x 1, = 2x, 3 = 4x)
-			std::array<uint32_t, tPWM::kNumPeriodScaleMXPElements> mxp_period_scale;
-			std::array<uint16_t, tPWM::kNumPeriodScaleHdrElements> hdr_values; //these are the pwm values 
-			std::array<uint16_t, tPWM::kNumPeriodScaleMXPElements> mxp_values;
+		
+			struct PWM{
+				uint32_t period_scale;//2-bit mask for signal masking frequency, effectively scaling the PWM value (0 = 1x 1, = 2x, 3 = 4x)
+				uint16_t duty_cycle;
+			};
+		
+			std::array<PWM, tPWM::kNumHdrRegisters> hdr; 
+			std::array<PWM, tPWM::kNumMXPRegisters> mxp;
+		
+		public:
+			tPWM::tConfig getConfig()const;
+			void setConfig(tPWM::tConfig);
+
+			uint32_t getHdrPeriodScale(uint8_t)const; 
+			void setHdrPeriodScale(uint8_t, uint32_t);
+			
+			uint32_t getMXPPeriodScale(uint8_t)const; 
+			void setMXPPeriodScale(uint8_t, uint32_t);
+			
+			uint32_t getHdrDutyCycle(uint8_t)const; 
+			void setHdrDutyCycle(uint8_t, uint32_t);
+			
+			uint32_t getMXPDutyCycle(uint8_t)const; 
+			void setMXPDutyCycle(uint8_t, uint32_t);
 		};
 		
 		struct DIOSystem{
