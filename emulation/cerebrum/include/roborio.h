@@ -73,15 +73,36 @@ namespace cerebrum{
 		};
 		
         struct DIOSystem{
-            tDIO::tDO outputs;
+		
+		private:
+			tDIO::tDO outputs;
             tDIO::tOutputEnable enabled_outputs;
             tDIO::tPulse pulses;
             tDIO::tDI inputs;
+            
+			uint8_t pulse_length;
+        	
+			std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
+	
+		public:
+			tDIO::tDO getOutputs()const;
+			void setOutputs(tDIO::tDO);	
 
-            uint8_t pulse_length;
+			tDIO::tOutputEnable getEnabledOutputs()const;
+			void setEnabledOutputs(tDIO::tOutputEnable);
+	
+			tDIO::tPulse getPulses()const;
+			void setPulses(tDIO::tPulse);
 
-        std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
-        };
+			tDIO::tDI getInputs()const;
+			void setInputs(tDIO::tDI);
+
+			uint8_t getPulseLength()const;
+			void setPulseLength(uint8_t);
+        
+			uint8_t getPWMDutyCycle(uint8_t)const;
+			void setPWMDutyCycle(uint8_t, uint8_t);
+		};
 
         std::array<AnalogOutput, tAO::kNumMXPRegisters> analog_outputs;
         PWMSystem pwm_system;
