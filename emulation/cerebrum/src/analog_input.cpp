@@ -5,18 +5,28 @@
 
 #include "roborio.h"
 
-namespace nRoboRIO_FPGANamespace {
+using namespace nFPGA;
+using namespace nRoboRIO_FPGANamespace;
+
+struct AnalogInputManager: public tAI{
+	tSystemInterface* getSystemInterface(){
+		return nullptr;
+	}
+	int32_t readOutput(tRioStatusCode* /*status*/){
+		//TODO
+	}
 
     void writeConfig(hal::tAI::tConfig value, tRioStatusCode*) {
         cerebrum::roborio_state.analog_inputs.setConfig(value);
     }
+
     void writeConfig_ScanSize(uint8_t value, tRioStatusCode*) {
         auto current_config = cerebrum::roborio_state.analog_inputs.getConfig();
         current_config.ScanSize = value;
         cerebrum::roborio_state.analog_inputs.setConfig(current_config);
     }
 
-    void writeConfig_ScanSize(uint32_t value, tRioStatusCode*) {
+    void writeConfig_ConvertRate(uint32_t value, tRioStatusCode*) {
         auto current_config = cerebrum::roborio_state.analog_inputs.getConfig();
         current_config.ConvertRate = value;
         cerebrum::roborio_state.analog_inputs.setConfig(current_config);
@@ -45,15 +55,15 @@ namespace nRoboRIO_FPGANamespace {
     }
 
     uint8_t readOversampleBits(uint8_t channel, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.getOversampleBits(channel);
+        return cerebrum::roborio_state.analog_inputs.getOversampleBits(channel);
     }
 
     uint8_t readAverageBits(uint8_t channel, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
+        return cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
     }
 
     uint8_t readScanList(uint8_t channel, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
+        return cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
     }
 
     void writeReadSelect(hal::tAI::tReadSelect value, tRioStatusCode*) {
@@ -88,8 +98,15 @@ namespace nRoboRIO_FPGANamespace {
     }
 
     void strobeLatchOutput(tRioStatusCode*) {}
-
 };
+
+namespace nFPGA{
+	namespace nRoboRIO_FPGANamespace{
+		tAI* tAI::create(tRioStatusCode* /*status*/){
+			return new AnalogInputManager();
+		}
+	}
+}
 
 namespace cerebrum {
 
@@ -118,4 +135,12 @@ namespace cerebrum {
         return analog_inputs[channel].scan_list;
     }
 
-};
+}
+
+#ifdef ANALOG_INPUT_TEST
+
+int main(){
+	//tAI* a = tAI::create(nullptr);
+}
+
+#endif

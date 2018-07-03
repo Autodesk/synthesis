@@ -47,7 +47,7 @@ namespace cerebrum{
             tPWM::tConfig config; // configuration for PWM IO
             std::array<uint32_t, tPWM::kNumPeriodScaleHdrElements> hdr_period_scale; //2-bit mask for signal masking frequency, effectively scaling the PWM value (0 = 1x 1, = 2x, 3 = 4x)
             std::array<uint32_t, tPWM::kNumPeriodScaleMXPElements> mxp_period_scale;
-            std::array<uint16_t, tPWM::kNumPeriodScaleHdrElements> hdr_values; //these are the pwm values 
+            std::array<uint16_t, tPWM::kNumPeriodScaleHdrElements> hdr_values; //these are the pwm values
             std::array<uint16_t, tPWM::kNumPeriodScaleMXPElements> mxp_values;
         };
 
@@ -59,14 +59,7 @@ namespace cerebrum{
 
             uint8_t pulse_length;
 
-            struct PWMData{
-                uint8_t id;
-                uint8_t hardware_channel;
-                uint8_t duty_cycle;
-            };
-
-            std::array<PWMData, hal::kNumDigitalPWMOutputs> pwm_data;
-            //std::array<uint8_t, 
+        std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
         };
 
         std::array<AnalogOutput, tAO::kNumMXPRegisters> analog_outputs;
