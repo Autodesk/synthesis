@@ -473,6 +473,7 @@ public partial class SynthesisGUI : Form
         return false;
     }
 
+    #region Joint Data Management
     /// <summary>
     /// Saves the joint information to the Inventor assembly file. Returns false if fails.
     /// </summary>
@@ -523,7 +524,8 @@ public partial class SynthesisGUI : Form
                     if (wheel != null)
                     {
                         Utilities.SetProperty(propertySet, "wheel-type", (int)wheel.type);
-
+                        Utilities.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
+                        Utilities.SetProperty(propertySet, "wheel-frictionLevel", (int)wheel.GetFrictionLevel());
                     }
 
                     // Pneumatic information
@@ -532,7 +534,7 @@ public partial class SynthesisGUI : Form
 
                     if (pneumatic != null)
                     {
-
+                        // TODO: Save pneumatic meta to properties
                     }
 
                     // Elevator information
@@ -541,7 +543,7 @@ public partial class SynthesisGUI : Form
 
                     if (elevator != null)
                     {
-
+                        // TODO: Save elevator meta to properties
                     }
                 }
 
@@ -615,6 +617,8 @@ public partial class SynthesisGUI : Form
                         WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
 
                         wheel.type = (WheelType)Utilities.GetProperty(propertySet, "wheel-type", (int)WheelType.NORMAL);
+                        wheel.isDriveWheel = Utilities.GetProperty(propertySet, "wheel-isDriveWheel", false);
+                        wheel.SetFrictionLevel((FrictionLevel)Utilities.GetProperty(propertySet, "wheel-frictionLevel", (int)FrictionLevel.MEDIUM));
                     }
 
                     // Pneumatic information
@@ -623,6 +627,8 @@ public partial class SynthesisGUI : Form
                         if (driver.GetInfo<PneumaticDriverMeta>() == null)
                             driver.AddInfo(new PneumaticDriverMeta());
                         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+
+                        // TODO: Apply pneumatic meta from properties
                     }
 
                     // Elevator information
@@ -631,6 +637,8 @@ public partial class SynthesisGUI : Form
                         if (driver.GetInfo<ElevatorDriverMeta>() == null)
                             driver.AddInfo(new ElevatorDriverMeta());
                         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+
+                        // TODO: Apply elevator meta from properties
                     }
                 }
 
@@ -648,6 +656,7 @@ public partial class SynthesisGUI : Form
         // Save was successful
         return true;
     }
+    #endregion
 
     /// <summary>
     /// Get the desired folder to open from or save to
