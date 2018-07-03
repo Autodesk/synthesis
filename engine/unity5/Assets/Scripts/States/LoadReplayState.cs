@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.FSM;
+﻿using Synthesis.FSM;
+using Synthesis.GUI.Scrollables;
+using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,56 +9,59 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class LoadReplayState : State
+namespace Synthesis.States
 {
-    private GameObject splashScreen;
-
-    /// <summary>
-    /// Initializes references to requried <see cref="GameObject"/>s.
-    /// </summary>
-    public override void Start()
+    public class LoadReplayState : State
     {
-        splashScreen = Auxiliary.FindGameObject("LoadSplash");
-    }
+        private GameObject splashScreen;
 
-    /// <summary>
-    /// Pops the current <see cref="State"/> when the back button is pressed.
-    /// </summary>
-    public void OnBackButtonPressed()
-    {
-        StateMachine.Instance.PopState();
-    }
-
-    /// <summary>
-    /// Deletes the selected replay when the delete button is pressed.
-    /// </summary>
-    public void OnDeleteButtonPressed()
-    {
-        GameObject replayList = GameObject.Find("SimLoadReplayList");
-        string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
-
-        if (entry != null)
+        /// <summary>
+        /// Initializes references to requried <see cref="GameObject"/>s.
+        /// </summary>
+        public override void Start()
         {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\" + entry + ".replay");
-            replayList.SetActive(false);
-            replayList.SetActive(true);
+            splashScreen = Auxiliary.FindGameObject("LoadSplash");
         }
-    }
 
-    /// <summary>
-    /// Launches the selected replay when the launch replay button is pressed.
-    /// </summary>
-    public void OnLaunchButtonPressed()
-    {
-        GameObject replayList = GameObject.Find("SimLoadReplayList");
-        string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
-
-        if (entry != null)
+        /// <summary>
+        /// Pops the current <see cref="State"/> when the back button is pressed.
+        /// </summary>
+        public void OnBackButtonPressed()
         {
-            splashScreen.SetActive(true);
-            PlayerPrefs.SetString("simSelectedReplay", entry);
-            PlayerPrefs.Save();
-            Application.LoadLevel("Scene");
+            StateMachine.PopState();
+        }
+
+        /// <summary>
+        /// Deletes the selected replay when the delete button is pressed.
+        /// </summary>
+        public void OnDeleteButtonPressed()
+        {
+            GameObject replayList = GameObject.Find("SimLoadReplayList");
+            string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
+
+            if (entry != null)
+            {
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\" + entry + ".replay");
+                replayList.SetActive(false);
+                replayList.SetActive(true);
+            }
+        }
+
+        /// <summary>
+        /// Launches the selected replay when the launch replay button is pressed.
+        /// </summary>
+        public void OnLaunchButtonPressed()
+        {
+            GameObject replayList = GameObject.Find("SimLoadReplayList");
+            string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
+
+            if (entry != null)
+            {
+                splashScreen.SetActive(true);
+                PlayerPrefs.SetString("simSelectedReplay", entry);
+                PlayerPrefs.Save();
+                Application.LoadLevel("Scene");
+            }
         }
     }
 }

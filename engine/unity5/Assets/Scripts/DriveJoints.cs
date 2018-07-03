@@ -5,7 +5,11 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
-using Assets.Scripts.BUExtensions;
+using Synthesis.BUExtensions;
+using Synthesis.InputControl;
+using Synthesis.RigidNode;
+using Synthesis.StatePacket;
+using Synthesis.Utils;
 
 public class DriveJoints
 {
@@ -178,6 +182,7 @@ public class DriveJoints
             }
         }
     }
+
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
         bool IsMecanum = mecanum;

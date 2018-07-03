@@ -6,7 +6,7 @@ using System.Text;
 using BulletSharp.Math;
 using BulletUnity;
 
-namespace Assets.Scripts.BUExtensions
+namespace Synthesis.BUExtensions
 {
     public class BRobotRaycaster : IVehicleRaycaster
     {

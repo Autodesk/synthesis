@@ -19,47 +19,36 @@ namespace BxDRobotExporter.Wizard
         /// Active counter of how many <see cref="RigidNode_Base"/>s have been selected
         /// </summary>
         private int checkedCount = 0;
-
-        /// <summary>
-        /// Set to true when <see cref="checkedCount"/> equals <see cref="WizardData.wheelCount"/>
-        /// </summary>
-        private bool disableChecked = false;
-
+        private int totalMass = 0;
+        private double inputMass = 0;
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
-        private Dictionary<string, RigidNode_Base> checkedListItems = new Dictionary<string, RigidNode_Base>();
+        private Dictionary<string, RigidNode_Base> listItems = new Dictionary<string, RigidNode_Base>();
 
         /// <summary>
         /// List of all the <see cref="WheelSlotPanel"/>s in this page. Referenced in <see cref="GetNextEmptyPanel()"/>
         /// </summary>
-        private List<WheelSlotPanel> slots = new List<WheelSlotPanel>();
+        private List<WheelSlotPanel> rightSlots = new List<WheelSlotPanel>();
+        private List<WheelSlotPanel> leftSlots = new List<WheelSlotPanel>();
 
         public DefineWheelsPage()
         {
+            WheelSetupPanel.remove += new OnWheelSetupPanelRemove(this.RemoveWheelSetupPanel);
+            WheelSetupPanel.hover += new OnWheelSetupPanelHover(this.WheelSetupHover);
             InitializeComponent();
+            RightWheelsPanel.AllowDrop = true;
+            LeftWheelsPanel.AllowDrop = true;
+            NodeListBox.AllowDrop = true;
 
-            NodeCheckedListBox.CheckOnClick = false;
+            DriveTrainDropdown.SelectedIndex = 0;
+            
+            rightSlots = new List<WheelSlotPanel>();
+            leftSlots = new List<WheelSlotPanel>();
 
-
-            NodeCheckedListBox.SelectedIndexChanged += delegate (object sender, EventArgs e)
-            {
-                StandardAddInServer.Instance.WizardSelect(checkedListItems[NodeCheckedListBox.Items[NodeCheckedListBox.SelectedIndex].ToString()]);
-            };
-
-            NodeCheckedListBox.ItemCheck += NodeCheckedListBox_ItemCheck;
-
-            this.VisibleChanged += delegate (object sender, EventArgs e)
-            {
-                if (this.Visible)
-                {
-                    UpdateProgress();
-                }
-                if(WizardData.Instance.wheelCount != slots.Count)
-                {
-                    _initialized = false;
-                }
-            };
+            NodeListBox.Enabled = false;
+            Initialize();
+            
         }
 
         /// <summary>
@@ -67,7 +56,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void NodeCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
+        /*private void NodeListBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             if(e.NewValue == CheckState.Checked)
             {
@@ -79,7 +68,7 @@ namespace BxDRobotExporter.Wizard
                 OnInvalidatePage();
                 switch (WizardData.Instance.driveTrain)
                 {
-                    case WizardData.WizardDriveTrain.WESTERN:
+                    case WizardData.WizardDriveTrain.TANK:
                         GetNextEmptyPanel().FillSlot(checkedListItems.Values.ElementAt(e.Index));
                         break;
                     case WizardData.WizardDriveTrain.MECANUM:
@@ -100,6 +89,7 @@ namespace BxDRobotExporter.Wizard
 
                 if (checkedCount == WizardData.Instance.wheelCount)
                     disableChecked = true;
+
             }
             else
             {
@@ -109,96 +99,53 @@ namespace BxDRobotExporter.Wizard
 
                 foreach(var slot in slots)
                 {
-                    if (slot.Node == checkedListItems[NodeCheckedListBox.Items[e.Index].ToString()])
+                    if (slot.Node == checkedListItems[NodeListBox.Items[e.Index].ToString()])
                         slot.FreeSlot();
                 }
             }
 
             UpdateProgress();
-        }
+        }*/
 
         /// <summary>
-        /// Makes sure all of the wheels are set correctly.
+        /// Sets the limits of <see cref="WheelCountUpDown"/> and validates input.
         /// </summary>
-        private void ValidateInput()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DriveTrainDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (WizardData.Instance.driveTrain)
+            switch (DriveTrainDropdown.SelectedIndex)
             {
-                case WizardData.WizardDriveTrain.MECANUM:
-                    string BadPanels = string.Empty;
-                    int BadPanelCount = 0;
-                    foreach (WheelSlotPanel slot in slots)
-                    {
-                        if (slot.WheelType != WizardData.WizardWheelType.MECANUM)
-                        {
-                            BadPanels += slot.Node.ModelFileName + ", ";
-                            BadPanelCount++;
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(BadPanels))
-                    {
-                        WarningLabel.Text = string.Format("Warning: Wheel {0} {1} {2} not set to Mecanum. This may cause problems with the exporter. If you have a custom drive train, select \'Other/Custom\' on the previous page.",
-                            (BadPanelCount == 1) ? "node" : "nodes", BadPanels.Substring(0, (BadPanels.Length - 2)), (BadPanelCount == 1) ? "is" : "are");
-                        OnDeactivateNext();
-                    }
-                    else
-                    {
-                        WarningLabel.Text = string.Empty;
-                        OnActivateNext();
-                    }
+                case 0: //Undefined
+                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
+                    NodeListBox.Enabled = false;
                     break;
-                case WizardData.WizardDriveTrain.H_DRIVE:
-                    BadPanels = string.Empty;
-                    BadPanelCount = 0;
-                    foreach (WheelSlotPanel slot in slots)
-                    {
-                        if (slot.WheelType != WizardData.WizardWheelType.OMNI)
-                        {
-                            BadPanels += slot.Node.ModelFileName + ", ";
-                            BadPanelCount++;
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(BadPanels))
-                    {
-                        WarningLabel.Text = string.Format("Warning: Wheel {0} {1} {2} not set to Omni. This may cause problems with the exporter. If you have a custom drive train, select \'Other/Custom\' on the previous page.", (BadPanelCount == 1) ? "node" : "nodes", BadPanels.Substring(0, (BadPanels.Length - 2)), (BadPanelCount == 1) ? "is" : "are");
-                        OnDeactivateNext();
-                    }
-                    else
-                    {
-                        WarningLabel.Text = string.Empty;
-                        OnActivateNext();
-                    }
+                case 1: //Tank
+                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
+                    NodeListBox.Enabled = true;
                     break;
-                case WizardData.WizardDriveTrain.CUSTOM:
+                case 2: //Mecanum
+                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.MECANUM;
+                    NodeListBox.Enabled = true;
                     break;
-                default:
-                    BadPanels = string.Empty;
-                    BadPanelCount = 0;
-                    foreach (WheelSlotPanel slot in slots)
-                    {
-                        if (slot.WheelType != WizardData.WizardWheelType.NORMAL)
-                        {
-                            BadPanels += slot.Node.ModelFileName + ", ";
-                            BadPanelCount++;
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(BadPanels))
-                    {
-                        WarningLabel.Text = string.Format("Warning: Wheel {0} {1} {2} not set to Normal. This may cause problems with the exporter. If you have a custom drive train, select \'Other/Custom\' on the previous page.", (BadPanelCount == 1) ? "node" : "nodes", BadPanels.Substring(0, (BadPanels.Length - 2)), (BadPanelCount == 1) ? "is" : "are");
-                        OnDeactivateNext();
-                    }
-                    else
-                    {
-                        WarningLabel.Text = string.Empty;
-                        OnActivateNext();
-                    }
+                case 3: //Swerve
+                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.SWERVE;
+                    NodeListBox.Enabled = true;
+                    break;
+                case 4: //H-Drive
+                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
+                    NodeListBox.Enabled = true;
+                    break;
+                case 5: //Custom
+                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
+                    NodeListBox.Enabled = true;
                     break;
             }
+            OnInvalidatePage();
+            //checkedListItems.Clear();
+            //UpdateWheelPanes();
         }
-
+        
         /// <summary>
         /// Validates input
         /// </summary>
@@ -206,30 +153,12 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void Panel_WheelTypeChanged(object sender, WheelTypeChangedEventArgs e)
         {
-            ValidateInput();
         }
 
         /// <summary>
-        /// Gets the next unfilled <see cref="WheelSlotPanel"/>. Referenced in <see cref="NodeCheckedListBox_ItemCheck(object, ItemCheckEventArgs)"/>
+        /// Gets the next unfilled <see cref="WheelSlotPanel"/>. Referenced in <see cref="NodeListBox_ItemCheck(object, ItemCheckEventArgs)"/>
         /// </summary>
         /// <returns></returns>
-        private WheelSlotPanel GetNextEmptyPanel()
-        {
-            for(int i = 0; i < slots.Count; i++)
-            {
-                if (!slots[i].IsFilled)
-                    return slots[i];
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Updates <see cref="WheelProgressLabel"/>
-        /// </summary>
-        private void UpdateProgress()
-        {
-            WheelProgressLabel.Text = string.Format("{0} out of {1} wheels selected.", checkedCount, WizardData.Instance.wheelCount);
-        }
 
         #region IWizardPage Implementation
         /// <summary>
@@ -237,10 +166,17 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
+            WizardData.Instance.mass = totalMass;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
-            foreach(var slot in slots)
+            foreach(var slot in rightSlots)
             {
                 WizardData.Instance.wheels.Add(slot.WheelData);
+                WizardData.WheelSetupData wheel = slot.WheelData;
+            }
+            foreach (var slot in leftSlots)
+            {
+                WizardData.Instance.wheels.Add(slot.WheelData);
+                WizardData.WheelSetupData wheel = slot.WheelData;
             }
         }
 
@@ -255,8 +191,8 @@ namespace BxDRobotExporter.Wizard
                 {
                     if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
                     {
-                        NodeCheckedListBox.Items.Add(node.ModelFileName);
-                        checkedListItems.Add(node.ModelFileName, node);
+                        NodeListBox.Items.Add(node.ModelFileName);
+                        listItems.Add(node.ModelFileName, node);
                     }
                 }
             }
@@ -266,23 +202,55 @@ namespace BxDRobotExporter.Wizard
                 {
                     if (node.GetParent().GetParent() != null)
                     {
-                        NodeCheckedListBox.Items.Add(node.ModelFileName);
-                        checkedListItems.Add(node.ModelFileName, node);
+                        NodeListBox.Items.Add(node.ModelFileName);
+                        listItems.Add(node.ModelFileName, node);
                     }
                 }
             }
 
-            slots = new List<WheelSlotPanel>();
-            for (int i = 0; i < WizardData.Instance.wheelCount; i++)
+            leftSlots = new List<WheelSlotPanel>();
+            rightSlots = new List<WheelSlotPanel>();
+            for (int i = 0; i < WizardData.Instance.wheelCount/2; i++)
             {
-                WheelSlotPanel panel = new WheelSlotPanel();
-                panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                slots.Add(panel);
-                WheelPropertiesPanel.Controls.Add(panel);                
-            }
+                WheelSlotPanel leftPanel = new WheelSlotPanel();
+                leftPanel.WheelTypeChanged += Panel_WheelTypeChanged;
+                leftSlots.Add(leftPanel);
+                LeftWheelsPanel.Controls.Add(leftPanel);
 
-            UpdateProgress();
+                WheelSlotPanel rightPanel = new WheelSlotPanel();
+                rightPanel.WheelTypeChanged += Panel_WheelTypeChanged;
+                rightSlots.Add(rightPanel);
+                RightWheelsPanel.Controls.Add(rightPanel);
+            }
             _initialized = true;
+
+        }
+
+        public void UpdateWheelPanes()
+        {
+             if (leftSlots.Count > WizardData.Instance.wheelCount)
+            {
+                int downTo = leftSlots.Count;
+                for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
+                {
+                    //NodeListBox.
+
+                    LeftWheelsPanel.Controls.Remove(leftSlots.ElementAt(i));
+                    leftSlots.Remove(leftSlots.ElementAt(i));
+                }
+            }
+           
+            if (rightSlots.Count > WizardData.Instance.wheelCount)
+            {
+                int downTo = rightSlots.Count;
+                for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
+                {
+                    RightWheelsPanel.Controls.Remove(rightSlots.ElementAt(i));
+                    rightSlots.Remove(rightSlots.ElementAt(i));
+                }
+            }
+            _initialized = true;
+
         }
         
         public event Action ActivateNext;
@@ -302,7 +270,7 @@ namespace BxDRobotExporter.Wizard
         {
             InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
         }
-
+      
         public bool Initialized
         {
             get => _initialized;
@@ -310,13 +278,171 @@ namespace BxDRobotExporter.Wizard
             {
                 if (!value)
                 {
-                    while (WheelPropertiesPanel.Controls.Count > 0)
-                        WheelPropertiesPanel.Controls[0].Dispose(); 
+                    while (LeftWheelsPanel.Controls.Count > 0)
+                        LeftWheelsPanel.Controls[0].Dispose(); 
                 }
                 _initialized = value;
             }
         }
         private bool _initialized = false;
         #endregion
+
+        private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateMassCount();
+        }
+
+        private void UpdateMassCount()
+        {
+            if (this.MassTypeSelector.SelectedIndex == 0)
+            {
+                totalMass = (int)Math.Round(Convert.ToDouble(this.numericUpDown1.Value) / 2.20462);
+            } else
+            {
+                totalMass = (int)Math.Round(Convert.ToDouble(this.numericUpDown1.Value));
+            }
+        }
+
+        private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.SelectedItem.ToString()]);
+                NodeListBox.DoDragDrop(NodeListBox.SelectedItems, DragDropEffects.Copy |
+                            DragDropEffects.Move);
+            }
+            catch (Exception) { }
+        }
+
+        private void RightWheelsPanel_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void RightWheelsPanel_DragDrop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                foreach (String r in NodeListBox.SelectedItems)
+                {
+                    OnInvalidatePage();
+                    WheelSlotPanel panel = new WheelSlotPanel();
+                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
+                    rightSlots.Add(panel);
+                    RightWheelsPanel.Controls.Add(panel);
+                    switch (WizardData.Instance.driveTrain)
+                    {
+                        case WizardData.WizardDriveTrain.TANK:
+                            panel.FillSlot(listItems[r], r, true);
+                            break;
+                        case WizardData.WizardDriveTrain.MECANUM:
+                            panel.FillSlot(listItems[r], r, true, WizardData.WizardWheelType.MECANUM);
+                            break;
+                        case WizardData.WizardDriveTrain.H_DRIVE:
+                            panel.FillSlot(listItems[r], r, true, WizardData.WizardWheelType.OMNI);
+                            break;
+                        case WizardData.WizardDriveTrain.SWERVE:
+                            //TODO implement this crap
+                            panel.FillSlot(listItems[r], r, true);
+                            break;
+                        case WizardData.WizardDriveTrain.CUSTOM:
+                            panel.FillSlot(listItems[r], r, true);
+                            break;
+                    }
+                    NodeListBox.Items.Remove(r);
+                }
+            }
+            catch (Exception) { }
+        }
+
+        private void LeftWheelsPanel_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void LeftWheelsPanel_DragDrop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                foreach (String r in NodeListBox.SelectedItems)
+                {
+                    OnInvalidatePage();
+                    WheelSlotPanel panel = new WheelSlotPanel();
+                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
+                    leftSlots.Add(panel);
+                    LeftWheelsPanel.Controls.Add(panel);
+                    switch (WizardData.Instance.driveTrain)
+                    {
+                        case WizardData.WizardDriveTrain.TANK:
+                            panel.FillSlot(listItems[r],r, false);
+                            break;
+                        case WizardData.WizardDriveTrain.MECANUM:
+                            panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.MECANUM);
+                            break;
+                        case WizardData.WizardDriveTrain.H_DRIVE:
+                            panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.OMNI);
+                            break;
+                        case WizardData.WizardDriveTrain.SWERVE:
+                            //TODO implement this crap
+                            panel.FillSlot(listItems[r], r, false);
+                            break;
+                        case WizardData.WizardDriveTrain.CUSTOM:
+                            panel.FillSlot(listItems[r], r, false);
+                            break;
+                    }
+                    NodeListBox.Items.Remove(r);
+                }
+            }
+            catch (Exception) { }
+            }
+
+        public String RemoveWheelSetupPanel(String s)
+        {
+            foreach (Object wheel in LeftWheelsPanel.Controls)
+            {
+                if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
+                {
+                    if (((WheelSlotPanel)wheel).name.Equals(s))
+                    {
+                        LeftWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));
+                        leftSlots.Remove(((WheelSlotPanel)wheel));
+                    }
+                }
+            }
+            foreach (Object wheel in RightWheelsPanel.Controls)
+            {
+                if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
+                {
+                    if (((WheelSlotPanel)wheel).name.Equals(s))
+                    {
+                        RightWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));
+                        rightSlots.Remove(((WheelSlotPanel)wheel));
+                    }
+                }
+            }
+            NodeListBox.Items.Add(s);
+            return "";
+        }
+
+        public String WheelSetupHover(String s)
+        {
+
+            StandardAddInServer.Instance.WizardSelect(listItems[s]);
+            return "";
+        }
+
+        private void NodeListBox_SelectedIndexChanged(object sender, EventArgs e)
+        { 
+            try
+            {
+                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.Items[NodeListBox.SelectedIndex].ToString()]);
+            }
+            catch (Exception) { }
+        }
+       
+        private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
+        {
+            UpdateMassCount();
+        }
     }
 }
