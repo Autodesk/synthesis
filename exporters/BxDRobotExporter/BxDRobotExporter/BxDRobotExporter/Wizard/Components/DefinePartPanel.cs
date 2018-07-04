@@ -35,18 +35,21 @@ namespace BxDRobotExporter.Wizard
         {
             InitializeComponent();
         }
-        
+
         public DefinePartPanel(RigidNode_Base node)
         {
             InitializeComponent();
             BackColor = DefaultBackColor;
             this.node = node;
-            this.NodeGroupBox.Text = node.ModelFileName;
+            NodeGroupBox.Text = node.ModelFileName;
 
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
             PortTwoUpDown.Minimum = WizardData.Instance.nextFreePort;
             PortOneUpDown.Minimum = WizardData.Instance.nextFreePort;
+
+            // Add a highlight component action to all children. This is simpler than manually adding the hover event to each control.
+            AddHighlightAction(this);
         }
 
         private void AutoAssignCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -140,6 +143,14 @@ namespace BxDRobotExporter.Wizard
         private void HighlightNode(object sender, EventArgs e)
         {
             StandardAddInServer.Instance.WizardSelect(node);
+        }
+
+        private void AddHighlightAction(Control baseControl)
+        {
+            baseControl.MouseHover += HighlightNode;
+
+            foreach (Control control in baseControl.Controls)
+                AddHighlightAction(control);
         }
 
         /// <summary>
