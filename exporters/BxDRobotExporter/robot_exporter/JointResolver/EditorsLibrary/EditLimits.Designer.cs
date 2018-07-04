@@ -38,7 +38,7 @@ namespace EditorsLibrary
             // tabDOF
             // 
             this.tabDOF.Location = new System.Drawing.Point(10, 11);
-            this.tabDOF.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabDOF.Margin = new System.Windows.Forms.Padding(2);
             this.tabDOF.Name = "tabDOF";
             this.tabDOF.SelectedIndex = 0;
             this.tabDOF.Size = new System.Drawing.Size(200, 86);
@@ -47,7 +47,7 @@ namespace EditorsLibrary
             // btnCancel
             // 
             this.btnCancel.Location = new System.Drawing.Point(16, 102);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(91, 22);
             this.btnCancel.TabIndex = 1;
@@ -58,7 +58,7 @@ namespace EditorsLibrary
             // btnOkay
             // 
             this.btnOkay.Location = new System.Drawing.Point(112, 102);
-            this.btnOkay.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnOkay.Margin = new System.Windows.Forms.Padding(2);
             this.btnOkay.Name = "btnOkay";
             this.btnOkay.Size = new System.Drawing.Size(93, 21);
             this.btnOkay.TabIndex = 0;
@@ -74,9 +74,11 @@ namespace EditorsLibrary
             this.Controls.Add(this.btnOkay);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.tabDOF);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "EditLimits";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Edit Limits";
