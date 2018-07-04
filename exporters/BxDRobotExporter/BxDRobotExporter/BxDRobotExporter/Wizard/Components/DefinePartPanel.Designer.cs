@@ -52,6 +52,7 @@
             this.SelectDriverLabel = new System.Windows.Forms.Label();
             this.MainTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.DriverLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.PneumaticLayout = new System.Windows.Forms.TableLayoutPanel();
             this.NodeGroupBox.SuspendLayout();
             this.JointLimitGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UpperLimitUpDown)).BeginInit();
@@ -63,6 +64,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).BeginInit();
             this.MainTableLayout.SuspendLayout();
             this.DriverLayout.SuspendLayout();
+            this.PneumaticLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // NodeGroupBox
@@ -73,7 +75,7 @@
             this.NodeGroupBox.Controls.Add(this.MainTableLayout);
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
             this.NodeGroupBox.Name = "NodeGroupBox";
-            this.NodeGroupBox.Size = new System.Drawing.Size(374, 252);
+            this.NodeGroupBox.Size = new System.Drawing.Size(374, 254);
             this.NodeGroupBox.TabIndex = 0;
             this.NodeGroupBox.TabStop = false;
             this.NodeGroupBox.Text = "Empty";
@@ -154,20 +156,17 @@
             this.MetaTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.MetaTabControl.Name = "MetaTabControl";
             this.MetaTabControl.SelectedIndex = 0;
-            this.MetaTabControl.Size = new System.Drawing.Size(177, 126);
+            this.MetaTabControl.Size = new System.Drawing.Size(177, 128);
             this.MetaTabControl.TabIndex = 12;
             this.MetaTabControl.Visible = false;
             // 
             // PneumaticTab
             // 
-            this.PneumaticTab.Controls.Add(this.PressureLabel);
-            this.PneumaticTab.Controls.Add(this.PneumaticPressureComboBox);
-            this.PneumaticTab.Controls.Add(this.PneumaticDiameterComboBox);
-            this.PneumaticTab.Controls.Add(this.DiameterLabel);
+            this.PneumaticTab.Controls.Add(this.PneumaticLayout);
             this.PneumaticTab.Location = new System.Drawing.Point(4, 22);
             this.PneumaticTab.Margin = new System.Windows.Forms.Padding(2);
             this.PneumaticTab.Name = "PneumaticTab";
-            this.PneumaticTab.Size = new System.Drawing.Size(169, 100);
+            this.PneumaticTab.Size = new System.Drawing.Size(169, 102);
             this.PneumaticTab.TabIndex = 1;
             this.PneumaticTab.Text = "Pneumatic";
             this.PneumaticTab.UseVisualStyleBackColor = true;
@@ -175,8 +174,8 @@
             // PressureLabel
             // 
             this.PressureLabel.AutoSize = true;
-            this.PressureLabel.Location = new System.Drawing.Point(2, 59);
-            this.PressureLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.PressureLabel.Location = new System.Drawing.Point(3, 47);
+            this.PressureLabel.Margin = new System.Windows.Forms.Padding(3);
             this.PressureLabel.Name = "PressureLabel";
             this.PressureLabel.Size = new System.Drawing.Size(48, 13);
             this.PressureLabel.TabIndex = 13;
@@ -184,6 +183,7 @@
             // 
             // PneumaticPressureComboBox
             // 
+            this.PneumaticPressureComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.PneumaticPressureComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.PneumaticPressureComboBox.FormattingEnabled = true;
             this.PneumaticPressureComboBox.ImeMode = System.Windows.Forms.ImeMode.NoControl;
@@ -191,31 +191,32 @@
             "60 psi",
             "20 psi",
             "10 psi"});
-            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(4, 74);
+            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(2, 65);
             this.PneumaticPressureComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.PneumaticPressureComboBox.Name = "PneumaticPressureComboBox";
-            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(94, 21);
+            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(165, 21);
             this.PneumaticPressureComboBox.TabIndex = 6;
             // 
             // PneumaticDiameterComboBox
             // 
+            this.PneumaticDiameterComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.PneumaticDiameterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.PneumaticDiameterComboBox.FormattingEnabled = true;
             this.PneumaticDiameterComboBox.Items.AddRange(new object[] {
             "1 in",
             ".5 in",
             ".25 in"});
-            this.PneumaticDiameterComboBox.Location = new System.Drawing.Point(4, 26);
+            this.PneumaticDiameterComboBox.Location = new System.Drawing.Point(2, 21);
             this.PneumaticDiameterComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.PneumaticDiameterComboBox.Name = "PneumaticDiameterComboBox";
-            this.PneumaticDiameterComboBox.Size = new System.Drawing.Size(94, 21);
+            this.PneumaticDiameterComboBox.Size = new System.Drawing.Size(165, 21);
             this.PneumaticDiameterComboBox.TabIndex = 12;
             // 
             // DiameterLabel
             // 
             this.DiameterLabel.AutoSize = true;
-            this.DiameterLabel.Location = new System.Drawing.Point(2, 9);
-            this.DiameterLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.DiameterLabel.Location = new System.Drawing.Point(3, 3);
+            this.DiameterLabel.Margin = new System.Windows.Forms.Padding(3);
             this.DiameterLabel.Name = "DiameterLabel";
             this.DiameterLabel.Size = new System.Drawing.Size(87, 13);
             this.DiameterLabel.TabIndex = 9;
@@ -357,7 +358,7 @@
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainTableLayout.Size = new System.Drawing.Size(362, 214);
+            this.MainTableLayout.Size = new System.Drawing.Size(362, 216);
             this.MainTableLayout.TabIndex = 14;
             // 
             // DriverLayout
@@ -379,6 +380,27 @@
             this.DriverLayout.Size = new System.Drawing.Size(362, 27);
             this.DriverLayout.TabIndex = 0;
             // 
+            // PneumaticLayout
+            // 
+            this.PneumaticLayout.AutoSize = true;
+            this.PneumaticLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PneumaticLayout.ColumnCount = 1;
+            this.PneumaticLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.PneumaticLayout.Controls.Add(this.PressureLabel, 0, 2);
+            this.PneumaticLayout.Controls.Add(this.DiameterLabel, 0, 0);
+            this.PneumaticLayout.Controls.Add(this.PneumaticPressureComboBox, 0, 3);
+            this.PneumaticLayout.Controls.Add(this.PneumaticDiameterComboBox, 0, 1);
+            this.PneumaticLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PneumaticLayout.Location = new System.Drawing.Point(0, 0);
+            this.PneumaticLayout.Name = "PneumaticLayout";
+            this.PneumaticLayout.RowCount = 4;
+            this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.PneumaticLayout.Size = new System.Drawing.Size(169, 88);
+            this.PneumaticLayout.TabIndex = 15;
+            // 
             // DefinePartPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -388,7 +410,7 @@
             this.BackColor = System.Drawing.Color.Transparent;
             this.Controls.Add(this.NodeGroupBox);
             this.Name = "DefinePartPanel";
-            this.Size = new System.Drawing.Size(377, 255);
+            this.Size = new System.Drawing.Size(377, 257);
             this.NodeGroupBox.ResumeLayout(false);
             this.NodeGroupBox.PerformLayout();
             this.JointLimitGroupBox.ResumeLayout(false);
@@ -406,6 +428,8 @@
             this.MainTableLayout.PerformLayout();
             this.DriverLayout.ResumeLayout(false);
             this.DriverLayout.PerformLayout();
+            this.PneumaticLayout.ResumeLayout(false);
+            this.PneumaticLayout.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -437,5 +461,6 @@
         private System.Windows.Forms.Label FreedomFactorLabel;
         private System.Windows.Forms.TableLayoutPanel MainTableLayout;
         private System.Windows.Forms.TableLayoutPanel DriverLayout;
+        private System.Windows.Forms.TableLayoutPanel PneumaticLayout;
     }
 }
