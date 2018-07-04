@@ -12,6 +12,7 @@ using Synthesis.FSM;
 using Synthesis.BUExtensions;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Robot;
 
 namespace Synthesis.RN
 {
@@ -26,7 +27,7 @@ namespace Synthesis.RN
             Y
         }
 
-        public void CreateJoint(int numWheels, bool mixAndMatch, float wheelFriction = 1f, float lateralFriction = 1f)
+        public void CreateJoint(int numWheels, RobotBase robotBase, float wheelFriction = 1f, float lateralFriction = 1f)
         {
             if (joint != null || GetSkeletalJoint() == null)
             {
@@ -52,12 +53,11 @@ namespace Synthesis.RN
                         BRaycastWheel wheel = MainObject.AddComponent<BRaycastWheel>();
                         wheel.CreateWheel(this);
 
-                        if (mixAndMatch)
+                        if (robotBase is MaMRobot)
                         {
                             wheel.Friction = wheelFriction;
                             wheel.SlidingFriction = lateralFriction;
                         }
-
 
                         MainObject.transform.parent = parent.MainObject.transform;
                     }

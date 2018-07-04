@@ -17,8 +17,14 @@ namespace Synthesis.Robot
 {
     public class MaMRobot : SimulatorRobot
     {
+        /// <summary>
+        /// The manipulator <see cref="GameObject"/> reference.
+        /// </summary>
         public GameObject ManipulatorObject { get; private set; }
 
+        /// <summary>
+        /// If true, this robot has a manipulator.
+        /// </summary>
         public bool RobotHasManipulator { get; set; }
 
         private RigidNode_Base manipulatorNode;
@@ -30,10 +36,11 @@ namespace Synthesis.Robot
         private float wheelLateralFriction;
         private float wheelMass;
 
-        // TODO: Rename to manipulatorOffset
-        private Vector3 offset;
+        private Vector3 manipulatorOffset;
 
         private bool robotIsMecanum;
+
+        // TODO: Something weird is going on with the spawn, at least with robots with manipulators. Reset is fine.
 
         /// <summary>
         /// Loads and initializes the physical manipulator object (used in Mix and Match mode)
@@ -48,6 +55,7 @@ namespace Synthesis.Robot
             {
                 robotGameObject = GameObject.Find("Robot");
             }
+
             ManipulatorObject = new GameObject("Manipulator");
 
             RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
@@ -77,7 +85,7 @@ namespace Synthesis.Robot
 
             //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING: LIKE ACTUALLY
 
-            Vector3 manipulatorTransform = robotStartPosition + offset;
+            Vector3 manipulatorTransform = robotStartPosition + manipulatorOffset;
             Debug.Log("Node Com Offset" + node.ComOffset);
             ManipulatorObject.transform.position = manipulatorTransform;
 
@@ -97,7 +105,7 @@ namespace Synthesis.Robot
                     UnityEngine.Object.Destroy(ManipulatorObject);
                     return false;
                 }
-                otherNode.CreateJoint(numWheels, true);
+                otherNode.CreateJoint(numWheels, this);
                 otherNode.MainObject.AddComponent<Tracker>().Trace = true;
                 t = otherNode.MainObject.GetComponent<Tracker>();
                 Debug.Log(t);
@@ -131,6 +139,9 @@ namespace Synthesis.Robot
             Destroy(ManipulatorObject);
         }
 
+        /// <summary>
+        /// Sets the wheel and drivetrain properties of the robot just before generation.
+        /// </summary>
         protected override void OnInitializeRobot()
         {
             base.OnInitializeRobot();
@@ -143,26 +154,37 @@ namespace Synthesis.Robot
             robotIsMecanum = RobotTypeManager.IsMecanum;
         }
 
+        /// <summary>
+        /// Reads the robot's manipulator offset just after the robot is generated.
+        /// </summary>
         protected override void OnRobotSetup()
         {
             base.OnRobotSetup();
 
-            offset = Vector3.zero;
+            manipulatorOffset = Vector3.zero;
             try
             {
                 using (TextReader reader = File.OpenText(RobotDirectory + "\\position.txt"))
                 {
-                    offset.x = float.Parse(reader.ReadLine());
-                    offset.y = float.Parse(reader.ReadLine());
-                    offset.z = float.Parse(reader.ReadLine());
+                    manipulatorOffset.x = float.Parse(reader.ReadLine());
+                    manipulatorOffset.y = float.Parse(reader.ReadLine());
+                    manipulatorOffset.z = float.Parse(reader.ReadLine());
                 }
             }
             catch
             {
-                offset = Vector3.zero;
+                manipulatorOffset = Vector3.zero;
             }
         }
 
+        /// <summary>
+        /// Generates the robot from the list of <see cref="RigidNode_Base"/>s and the
+        /// number of wheels, and updates the collective mass.
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="numWheels"></param>
+        /// <param name="collectiveMass"></param>
+        /// <returns></returns>
         protected override bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
         {
             if (IsMecanum())
@@ -180,7 +202,7 @@ namespace Synthesis.Robot
                 return false;
             }
 
-            node.CreateJoint(numWheels, true);
+            node.CreateJoint(numWheels, this);
 
             if (node.PhysicalProperties != null)
                 collectiveMass += node.PhysicalProperties.mass;
@@ -255,7 +277,7 @@ namespace Synthesis.Robot
                 }
 
                 //Create the joints that interact with physics
-                node.CreateJoint(numWheels, true, wheelFriction, wheelLateralFriction);
+                node.CreateJoint(numWheels, this, wheelFriction, wheelLateralFriction);
 
                 if (node.HasDriverMeta<WheelDriverMeta>())
                     node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelRadius;
@@ -270,11 +292,18 @@ namespace Synthesis.Robot
             return true;
         }
 
+        /// <summary>
+        /// Returns true if the robot has a mecanum drive.
+        /// </summary>
+        /// <returns></returns>
         public override bool IsMecanum()
         {
             return robotIsMecanum;
         }
 
+        /// <summary>
+        /// Updates the motors of the robot.
+        /// </summary>
         protected override void UpdateMotors()
         {
             base.UpdateMotors();
@@ -283,6 +312,9 @@ namespace Synthesis.Robot
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, ControlIndex);
         }
 
+        /// <summary>
+        /// Called when the robot begins to reset.
+        /// </summary>
         protected override void OnBeginReset()
         {
             if (!RobotHasManipulator)
@@ -313,6 +345,9 @@ namespace Synthesis.Robot
             }
         }
 
+        /// <summary>
+        /// Called when resetting is complete.
+        /// </summary>
         protected override void OnEndReset()
         {
             if (!RobotHasManipulator)
@@ -331,6 +366,10 @@ namespace Synthesis.Robot
             }
         }
 
+        /// <summary>
+        /// Called when the robot is moved.
+        /// </summary>
+        /// <param name="transposition"></param>
         protected override void OnTransposeRobot(Vector3 transposition)
         {
             if (!RobotHasManipulator)

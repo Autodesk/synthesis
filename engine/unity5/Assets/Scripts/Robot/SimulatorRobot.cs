@@ -21,6 +21,9 @@ namespace Synthesis.Robot
 {
     public class SimulatorRobot : RobotBase
     {
+        /// <summary>
+        /// If true, the robot is in the process of resetting.
+        /// </summary>
         public bool IsResetting { get; private set; } = false;
 
         private const float ResetVelocity = 0.05f;
@@ -35,6 +38,9 @@ namespace Synthesis.Robot
 
         private SensorManager sensorManager;
 
+        /// <summary>
+        /// Initializes sensors and driver practice data.
+        /// </summary>
         protected override void OnInitializeRobot()
         {
             //Detach and destroy all sensors on the original robot
@@ -46,11 +52,18 @@ namespace Synthesis.Robot
                 Destroy(dpmRobot);
         }
 
+        /// <summary>
+        /// Called just after the robot is constructed.
+        /// </summary>
         protected override void OnRobotSetup()
         {
             //Get the offset from the first node to the robot for new robot start position calculation
             //This line is CRITICAL to new reset position accuracy! DON'T DELETE IT!
             nodeToRobotOffset = gameObject.transform.GetChild(0).localPosition - robotStartPosition;
+
+            //Initializes Driver Practice component
+            dpmRobot = gameObject.AddComponent<DriverPracticeRobot>();
+            dpmRobot.Initialize(RobotDirectory);
 
             //Initializing robot cameras
             bool hasRobotCamera = false;
@@ -66,7 +79,6 @@ namespace Synthesis.Robot
                     robotCamera.GetComponent<RobotCamera>().RecoverConfiguration();
                     hasRobotCamera = true;
                 }
-
             }
 
             //Add new cameras to the robot if there is none robot camera belong to the current robot (which means it is a new robot)
@@ -80,6 +92,14 @@ namespace Synthesis.Robot
             }
         }
 
+        /// <summary>
+        /// Generates the robot from the list of <see cref="RigidNode_Base"/>s and the
+        /// number of wheels, and updates the collective mass.
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="numWheels"></param>
+        /// <param name="collectiveMass"></param>
+        /// <returns></returns>
         protected override bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
         {
             if (!base.ConstructRobot(nodes, numWheels, ref collectiveMass))
@@ -96,6 +116,9 @@ namespace Synthesis.Robot
             return true;
         }
 
+        /// <summary>
+        /// Updates positional information of the robot.
+        /// </summary>
         protected override void UpdateTransform()
         {
             base.UpdateTransform();
@@ -126,8 +149,13 @@ namespace Synthesis.Robot
             }
         }
 
+        /// <summary>
+        /// Updates the physics of the robot.
+        /// </summary>
         protected override void UpdatePhysics()
         {
+            base.UpdatePhysics();
+
             if (IsResetting)
                 Resetting();
         }
@@ -314,10 +342,20 @@ namespace Synthesis.Robot
             return GetComponent<DriverPracticeRobot>();
         }
 
+        /// <summary>
+        /// Called when resetting begins.
+        /// </summary>
         protected virtual void OnBeginReset() { }
 
+        /// <summary>
+        /// Called when resetting ends.
+        /// </summary>
         protected virtual void OnEndReset() { }
 
+        /// <summary>
+        /// Called when the robot is transposed.
+        /// </summary>
+        /// <param name="transposition"></param>
         protected virtual void OnTransposeRobot(Vector3 transposition) { }
     }
 }

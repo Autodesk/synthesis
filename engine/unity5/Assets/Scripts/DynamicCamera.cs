@@ -575,7 +575,7 @@ public class DynamicCamera : MonoBehaviour
 
                 if (InputControl.GetMouseButton(0))
                 {
-                    if (GameObject.Find("ChangeRobotPanel") == true || GameObject.Find("ChangeFieldPanel"))
+                    if (GameObject.Find("ChangeRobotPanel") || GameObject.Find("ChangeFieldPanel"))
                     {
                         MovingEnabled = false;
                     }
