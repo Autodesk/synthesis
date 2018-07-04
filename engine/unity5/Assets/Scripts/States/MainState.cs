@@ -307,7 +307,14 @@ namespace Synthesis.States
             RemoveRobot(SpawnedRobots.IndexOf(ActiveRobot));
             //ActiveRobot = null;
 
-            return LoadRobot(directory, isMixAndMatch);
+            if (LoadRobot(directory, isMixAndMatch))
+            {
+                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
+                DynamicCamera.MovingEnabled = true;
+                return true;
+            }
+
+            return false;
 
             // Old code below. Not exactly possible with new robot structure.
 
@@ -338,20 +345,20 @@ namespace Synthesis.States
         {
             if (SpawnedRobots.Count >= 1)
             {
-
                 if (ActiveRobot != null)
                 {
                     int index = SpawnedRobots.IndexOf(ActiveRobot);
+
                     if (index < SpawnedRobots.Count - 1)
-                    {
                         ActiveRobot = SpawnedRobots[index + 1];
-                    }
                     else
-                    {
                         ActiveRobot = SpawnedRobots[0];
-                    }
                 }
-                else ActiveRobot = SpawnedRobots[0];
+                else
+                {
+                    ActiveRobot = SpawnedRobots[0];
+                }
+
                 dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }
@@ -381,7 +388,7 @@ namespace Synthesis.States
         /// </summary>
         public void RemoveRobot(int index)
         {
-            if (index < SpawnedRobots.Count/* && SpawnedRobots.Count > 1*/)
+            if (index < SpawnedRobots.Count)
             {
                 robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
                 sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);

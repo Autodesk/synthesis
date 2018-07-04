@@ -255,7 +255,6 @@
     <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RN\RNWheel.cs" />
     <Compile Include="Assets\Scripts\Robot\MaMRobot.cs" />
-    <Compile Include="Assets\Scripts\Robot\Robot.cs" />
     <Compile Include="Assets\Scripts\Robot\RobotBase.cs" />
     <Compile Include="Assets\Scripts\Robot\SimulatorRobot.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
