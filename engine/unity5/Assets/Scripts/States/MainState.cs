@@ -14,7 +14,7 @@ using UnityEngine.UI;
 using Synthesis.BUExtensions;
 using Synthesis.DriverPractice;
 using Synthesis.GUI;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.MixAndMatch;
 using Synthesis.Camera;
 using Synthesis.Sensors;
@@ -42,7 +42,7 @@ namespace Synthesis.States
         private UnityPacket unityPacket;
 
         // TODO: Create more robot classes that suit the needs of MainState.
-        public RobotBase ActiveRobot { get; private set; }
+        public SimulatorRobot ActiveRobot { get; private set; }
 
         private DynamicCamera dynamicCamera;
         public GameObject DynamicCameraObject;
@@ -60,7 +60,7 @@ namespace Synthesis.States
         private string fieldPath;
         private string robotPath;
 
-        public List<RobotBase> SpawnedRobots { get; private set; }
+        public List<SimulatorRobot> SpawnedRobots { get; private set; }
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
@@ -79,7 +79,7 @@ namespace Synthesis.States
 
             CollisionTracker = new CollisionTracker(this);
             unityPacket = new UnityPacket();
-            SpawnedRobots = new List<RobotBase>();
+            SpawnedRobots = new List<SimulatorRobot>();
         }
 
         /// <summary>
@@ -166,13 +166,13 @@ namespace Synthesis.States
             //Spawn a new robot from the same path or switch active robot
             if (!ActiveRobot.IsResetting)
             {
-                if (Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot.RobotIsMixAndMatch);
-                if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
+                if (UnityEngine.Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
 
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((InputControl.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen)
+            if ((Input.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen)
             {
                 if (DynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
                 {
@@ -181,7 +181,7 @@ namespace Synthesis.States
             }
 
             // Switches to replay mode
-            if (!ActiveRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
+            if (!ActiveRobot.IsResetting && UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             //if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
@@ -262,10 +262,18 @@ namespace Synthesis.States
                 }
 
                 GameObject robotObject = new GameObject("Robot");
-                Robot robot = robotObject.AddComponent<Robot>();
+                SimulatorRobot robot;
 
-                robot.RobotIsMixAndMatch = isMixAndMatch;
-                robot.RobotHasManipulator = false; //Defaults to false
+                if (isMixAndMatch)
+                {
+                    MaMRobot mamRobot = robotObject.AddComponent<MaMRobot>();
+                    mamRobot.RobotHasManipulator = false; // Defaults to false
+                    robot = mamRobot;
+                }
+                else
+                {
+                    robot = robotObject.AddComponent<SimulatorRobot>();
+                }
 
                 //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
                 if (!robot.InitializeRobot(robotPath))
@@ -295,14 +303,23 @@ namespace Synthesis.States
             sensorManager.RemoveSensorsFromRobot(ActiveRobot);
             sensorManagerGUI.ShiftOutputPanels();
             sensorManagerGUI.EndProcesses();
-            if (ActiveRobot.RobotHasManipulator)
-            {
-                ActiveRobot.DeleteManipulatorNodes();
-                ActiveRobot.RobotHasManipulator = false;
-            }
 
-            ActiveRobot.RobotIsMixAndMatch = isMixAndMatch;
-            return ActiveRobot.InitializeRobot(directory);
+            RemoveRobot(SpawnedRobots.IndexOf(ActiveRobot));
+            //ActiveRobot = null;
+
+            return LoadRobot(directory, isMixAndMatch);
+
+            // Old code below. Not exactly possible with new robot structure.
+
+            //if (ActiveRobot.RobotHasManipulator)
+            //{
+            //    ActiveRobot.DeleteManipulatorNodes();
+            //    ActiveRobot.RobotHasManipulator = false;
+            //}
+
+            //ActiveRobot.RobotIsMixAndMatch = isMixAndMatch;
+
+            //return ActiveRobot.InitializeRobot(directory);
         }
 
         /// <summary>
@@ -310,7 +327,8 @@ namespace Synthesis.States
         /// </summary>
         public void DeleteManipulatorNodes()
         {
-            ActiveRobot.DeleteManipulatorNodes();
+            MaMRobot mamRobot = ActiveRobot as MaMRobot;
+            mamRobot?.DeleteManipulatorNodes();
         }
 
         /// <summary>
@@ -363,17 +381,19 @@ namespace Synthesis.States
         /// </summary>
         public void RemoveRobot(int index)
         {
-            if (index < SpawnedRobots.Count && SpawnedRobots.Count > 1)
+            if (index < SpawnedRobots.Count/* && SpawnedRobots.Count > 1*/)
             {
                 robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
                 sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
 
-                if (SpawnedRobots[index].RobotHasManipulator)
-                {
-                    GameObject.Destroy(SpawnedRobots[index].ManipulatorObject);
-                }
+                // TODO: The camera is a bit weird when changing robots. Fix that. Then test other aspects of the simulator and fix anything else that needs fixing.
 
-                GameObject.Destroy(SpawnedRobots[index].gameObject);
+                MaMRobot mamRobot = SpawnedRobots[index] as MaMRobot;
+
+                if (mamRobot != null && mamRobot.RobotHasManipulator)
+                    UnityEngine.Object.Destroy(mamRobot.ManipulatorObject);
+
+                UnityEngine.Object.Destroy(SpawnedRobots[index].gameObject);
                 SpawnedRobots.RemoveAt(index);
                 ActiveRobot = null;
                 SwitchActiveRobot();
@@ -481,8 +501,13 @@ namespace Synthesis.States
         /// <returns></returns>
         public bool LoadManipulator(string directory)
         {
-            ActiveRobot.RobotHasManipulator = true;
-            return ActiveRobot.InitializeManipulator(directory, null);
+            MaMRobot mamRobot = ActiveRobot as MaMRobot;
+
+            if (mamRobot == null)
+                return false;
+
+            mamRobot.RobotHasManipulator = true;
+            return mamRobot.InitializeManipulator(directory, null);
         }
 
         /// <summary>
@@ -492,8 +517,13 @@ namespace Synthesis.States
         /// <returns></returns>
         public bool LoadManipulator(string directory, GameObject robotGameObject)
         {
-            ActiveRobot.RobotHasManipulator = true;
-            return ActiveRobot.InitializeManipulator(directory, robotGameObject);
+            MaMRobot mamRobot = ActiveRobot as MaMRobot;
+
+            if (mamRobot == null)
+                return false;
+
+            mamRobot.RobotHasManipulator = true;
+            return mamRobot.InitializeManipulator(directory, robotGameObject);
         }
 
         /// <summary>
@@ -508,8 +538,7 @@ namespace Synthesis.States
                 robotPath = baseDirectory;
 
                 GameObject robotObject = new GameObject("Robot");
-                RobotBase robot = robotObject.AddComponent<RobotBase>();
-                robot.RobotIsMixAndMatch = true;
+                MaMRobot robot = robotObject.AddComponent<MaMRobot>();
 
                 //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
                 if (!robot.InitializeRobot(baseDirectory)) return false;

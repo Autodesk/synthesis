@@ -1,4 +1,4 @@
-namespace Synthesis.InputControl.Enums
+namespace Synthesis.Input.Enums
 {
     /// <summary>
     /// Joystick button. Enumeration for joystick buttons.

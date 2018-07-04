@@ -1,8 +1,8 @@
 using UnityEngine;
 using System;
-using Synthesis.InputControl.Enums;
+using Synthesis.Input.Enums;
 
-namespace Synthesis.InputControl.Inputs
+namespace Synthesis.Input.Inputs
 {
     /// <summary>
     /// <see cref="MouseInput"/> handles mouse input device.
@@ -241,7 +241,7 @@ namespace Synthesis.InputControl.Inputs
             {
                 KeyCode mouseButton = (KeyCode)((int)KeyCode.Mouse0 + (int)mButton);
 
-                return Input.GetKey(mouseButton) ? 1 : 0;
+                return UnityEngine.Input.GetKey(mouseButton) ? 1 : 0;
             }
 
             return getInputByAxis();
@@ -271,7 +271,7 @@ namespace Synthesis.InputControl.Inputs
             {
                 KeyCode mouseButton = (KeyCode)((int)KeyCode.Mouse0 + (int)mButton);
 
-                return Input.GetKeyDown(mouseButton) ? 1 : 0;
+                return UnityEngine.Input.GetKeyDown(mouseButton) ? 1 : 0;
             }
 
             return getInputByAxis();
@@ -301,7 +301,7 @@ namespace Synthesis.InputControl.Inputs
             {
                 KeyCode mouseButton = (KeyCode)((int)KeyCode.Mouse0 + (int)mButton);
 
-                return Input.GetKeyUp(mouseButton) ? 1 : 0;
+                return UnityEngine.Input.GetKeyUp(mouseButton) ? 1 : 0;
             }
 
             return getInputByAxis();
@@ -335,7 +335,7 @@ namespace Synthesis.InputControl.Inputs
         /// <returns>Value of mouse axis.</returns>
         private float InputGetAxis(string axisName, bool positive)
         {
-            float value = Input.GetAxis(axisName);
+            float value = UnityEngine.Input.GetAxis(axisName);
 
             if (positive)
             {

@@ -16,7 +16,7 @@ using Synthesis.Utils;
 // Adapted from: https://github.com/Gris87/InputControl
 //=========================================================================================
 
-namespace Synthesis.InputControl
+namespace Synthesis.Input
 {
     public class CreateButton : MonoBehaviour
     {

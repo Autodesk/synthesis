@@ -1,7 +1,7 @@
-using Synthesis.InputControl.Enums;
+using Synthesis.Input.Enums;
 using UnityEngine;
 
-namespace Synthesis.InputControl.Inputs
+namespace Synthesis.Input.Inputs
 {
     /// <summary>
     /// <see cref="CustomInput"/> is an interface for handling some input device(keyboard, mouse, joystick).
@@ -83,17 +83,17 @@ namespace Synthesis.InputControl.Inputs
             {
                 KeyModifier res = KeyModifier.NoModifier;
 
-                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftControl) || UnityEngine.Input.GetKey(KeyCode.RightControl))
                 {
                     res |= KeyModifier.Ctrl;
                 }
 
-                if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftAlt) || UnityEngine.Input.GetKey(KeyCode.RightAlt))
                 {
                     res |= KeyModifier.Alt;
                 }
 
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftShift) || UnityEngine.Input.GetKey(KeyCode.RightShift))
                 {
                     res |= KeyModifier.Shift;
                 }

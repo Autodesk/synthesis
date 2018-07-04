@@ -1,7 +1,7 @@
-using Synthesis.InputControl.Enums;
+using Synthesis.Input.Enums;
 using UnityEngine;
 
-namespace Synthesis.InputControl
+namespace Synthesis.Input
 {
     /// <summary>
     /// <see cref="Axis"/> is a named handler for negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.

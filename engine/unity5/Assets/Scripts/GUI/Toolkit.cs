@@ -103,7 +103,7 @@ namespace Synthesis.GUI
                 UpdateStatsWindow();
             }
             //UpdateControlIndicator();
-            if (Input.GetKeyDown(KeyCode.P) && stopwatchWindow.activeSelf)
+            if (UnityEngine.Input.GetKeyDown(KeyCode.P) && stopwatchWindow.activeSelf)
             {
                 PauseStopwatch();
             }
@@ -193,7 +193,7 @@ namespace Synthesis.GUI
         private void ClickRuler()
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -206,7 +206,7 @@ namespace Synthesis.GUI
 
             if (rayResult.CollisionObject != null)
             {
-                if (Input.GetMouseButtonDown(0))
+                if (UnityEngine.Input.GetMouseButtonDown(0))
                 {
                     if (firstPoint == BulletSharp.Math.Vector3.Zero)
                     {

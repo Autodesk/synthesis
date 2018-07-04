@@ -3,8 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Synthesis.InputControl.Inputs;
-using Synthesis.InputControl.Enums;
+using Synthesis.Input.Inputs;
+using Synthesis.Input.Enums;
 
 //=========================================================================================
 //                                      InputControl.cs
@@ -13,7 +13,7 @@ using Synthesis.InputControl.Enums;
 /// Adapted from: https://github.com/Gris87/InputControl
 //=========================================================================================
 
-namespace Synthesis.InputControl
+namespace Synthesis.Input
 {
     public static class InputControl
     {
@@ -1662,7 +1662,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.acceleration;
+                return UnityEngine.Input.acceleration;
             }
         }
 
@@ -1674,7 +1674,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.accelerationEventCount;
+                return UnityEngine.Input.accelerationEventCount;
             }
         }
 
@@ -1686,7 +1686,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.accelerationEvents;
+                return UnityEngine.Input.accelerationEvents;
             }
         }
 
@@ -1698,7 +1698,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.anyKey;
+                return UnityEngine.Input.anyKey;
             }
         }
 
@@ -1710,7 +1710,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.anyKeyDown;
+                return UnityEngine.Input.anyKeyDown;
             }
         }
 
@@ -1722,7 +1722,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.compass;
+                return UnityEngine.Input.compass;
             }
         }
 
@@ -1734,7 +1734,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.compensateSensors;
+                return UnityEngine.Input.compensateSensors;
             }
         }
 
@@ -1746,7 +1746,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.compositionCursorPos;
+                return UnityEngine.Input.compositionCursorPos;
             }
         }
 
@@ -1758,7 +1758,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.compositionString;
+                return UnityEngine.Input.compositionString;
             }
         }
 
@@ -1774,17 +1774,17 @@ namespace Synthesis.InputControl
 
             if (useModifiers)
             {
-                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftControl) || UnityEngine.Input.GetKey(KeyCode.RightControl))
                 {
                     modifiers |= KeyModifier.Ctrl;
                 }
 
-                if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftAlt) || UnityEngine.Input.GetKey(KeyCode.RightAlt))
                 {
                     modifiers |= KeyModifier.Alt;
                 }
 
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftShift) || UnityEngine.Input.GetKey(KeyCode.RightShift))
                 {
                     modifiers |= KeyModifier.Shift;
                 }
@@ -1798,7 +1798,7 @@ namespace Synthesis.InputControl
                 #region Axes
                 for (int j = 1; j <= (int)JoystickAxis.None / 2; ++j)
                 {
-                    float joyAxis = Input.GetAxis(target + "Axis " + j.ToString());
+                    float joyAxis = UnityEngine.Input.GetAxis(target + "Axis " + j.ToString());
 
                     if (joyAxis < -mJoystickThreshold)
                     {
@@ -1815,7 +1815,7 @@ namespace Synthesis.InputControl
                 #region Buttons
                 for (int j = 0; j < (int)JoystickButton.None; ++j)
                 {
-                    if (Input.GetButton(target + "Button " + (j + 1).ToString()))
+                    if (UnityEngine.Input.GetButton(target + "Button " + (j + 1).ToString()))
                     {
                         return new JoystickInput((JoystickButton)j, (Joystick)i, modifiers);
                     }
@@ -1829,7 +1829,7 @@ namespace Synthesis.InputControl
             #region Axes
 
             #region ScrollWheel
-            float mouseAxis = Input.GetAxis("Mouse ScrollWheel");
+            float mouseAxis = UnityEngine.Input.GetAxis("Mouse ScrollWheel");
 
             if (mouseAxis < 0)
             {
@@ -1845,7 +1845,7 @@ namespace Synthesis.InputControl
             if (!ignoreMouseMovement)
             {
                 #region X
-                mouseAxis = Input.GetAxis("Mouse X");
+                mouseAxis = UnityEngine.Input.GetAxis("Mouse X");
 
                 if (mouseAxis < 0)
                 {
@@ -1859,7 +1859,7 @@ namespace Synthesis.InputControl
                 #endregion
 
                 #region Y
-                mouseAxis = Input.GetAxis("Mouse Y");
+                mouseAxis = UnityEngine.Input.GetAxis("Mouse Y");
 
                 if (mouseAxis < 0)
                 {
@@ -1879,7 +1879,7 @@ namespace Synthesis.InputControl
             {
                 KeyCode key = (KeyCode)((int)KeyCode.Mouse0 + i);
 
-                if (Input.GetKey(key))
+                if (UnityEngine.Input.GetKey(key))
                 {
                     return new MouseInput((MouseButton)i, modifiers);
                 }
@@ -1910,7 +1910,7 @@ namespace Synthesis.InputControl
                       )
                     )
                     &&
-                    Input.GetKey(key)
+                    UnityEngine.Input.GetKey(key)
                    )
                 {
                     return new KeyboardInput(key, modifiers);
@@ -1929,7 +1929,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.deviceOrientation;
+                return UnityEngine.Input.deviceOrientation;
             }
         }
 
@@ -1940,7 +1940,7 @@ namespace Synthesis.InputControl
         /// <param name="index">Index of acceleration event.</param>
         public static AccelerationEvent GetAccelerationEvent(int index)
         {
-            return Input.GetAccelerationEvent(index);
+            return UnityEngine.Input.GetAccelerationEvent(index);
         }
 
         /// <summary>
@@ -2047,7 +2047,7 @@ namespace Synthesis.InputControl
                     Debug.LogError("Axis \"" + axisName + "\" not found. Using InputManager axis");
                 }
 
-                return Input.GetAxisRaw(axisName) * sensitivity;
+                return UnityEngine.Input.GetAxisRaw(axisName) * sensitivity;
             }
 
             return outAxis.getValue(exactKeyModifiers, mInputDevice) * sensitivity;
@@ -2181,7 +2181,7 @@ namespace Synthesis.InputControl
         /// <returns>Count of connected joysticks.</returns>
         public static int GetJoystickCount()
         {
-            return Input.GetJoystickNames().Length;
+            return UnityEngine.Input.GetJoystickNames().Length;
         }
 
         /// <summary>
@@ -2190,7 +2190,7 @@ namespace Synthesis.InputControl
         /// <returns>Names of connected joysticks.</returns>
         public static string[] GetJoystickNames()
         {
-            return Input.GetJoystickNames();
+            return UnityEngine.Input.GetJoystickNames();
         }
 
         /// <summary>
@@ -2200,7 +2200,7 @@ namespace Synthesis.InputControl
         /// <param name="name">Name of key.</param>
         public static bool GetKey(string name)
         {
-            return Input.GetKey(name);
+            return UnityEngine.Input.GetKey(name);
         }
 
         /// <summary>
@@ -2210,7 +2210,7 @@ namespace Synthesis.InputControl
         /// <param name="key">Code of key.</param>
         public static bool GetKey(KeyCode key)
         {
-            return Input.GetKey(key);
+            return UnityEngine.Input.GetKey(key);
         }
 
         /// <summary>
@@ -2220,7 +2220,7 @@ namespace Synthesis.InputControl
         /// <param name="name">Name of key.</param>
         public static bool GetKeyDown(string name)
         {
-            return Input.GetKeyDown(name);
+            return UnityEngine.Input.GetKeyDown(name);
         }
 
         /// <summary>
@@ -2230,7 +2230,7 @@ namespace Synthesis.InputControl
         /// <param name="name">Code of key.</param>
         public static bool GetKeyDown(KeyCode key)
         {
-            return Input.GetKeyDown(key);
+            return UnityEngine.Input.GetKeyDown(key);
         }
 
         /// <summary>
@@ -2240,7 +2240,7 @@ namespace Synthesis.InputControl
         /// <param name="name">Name of key.</param>
         public static bool GetKeyUp(string name)
         {
-            return Input.GetKeyUp(name);
+            return UnityEngine.Input.GetKeyUp(name);
         }
 
         /// <summary>
@@ -2250,7 +2250,7 @@ namespace Synthesis.InputControl
         /// <param name="name">Code of key.</param>
         public static bool GetKeyUp(KeyCode key)
         {
-            return Input.GetKeyUp(key);
+            return UnityEngine.Input.GetKeyUp(key);
         }
 
         /// <summary>
@@ -2277,7 +2277,7 @@ namespace Synthesis.InputControl
         {
             if (button != MouseButton.None)
             {
-                return Input.GetKey((KeyCode)((int)KeyCode.Mouse0 + (int)button));
+                return UnityEngine.Input.GetKey((KeyCode)((int)KeyCode.Mouse0 + (int)button));
             }
 
             return false;
@@ -2307,7 +2307,7 @@ namespace Synthesis.InputControl
         {
             if (button != MouseButton.None)
             {
-                return Input.GetKeyDown((KeyCode)((int)KeyCode.Mouse0 + (int)button));
+                return UnityEngine.Input.GetKeyDown((KeyCode)((int)KeyCode.Mouse0 + (int)button));
             }
 
             return false;
@@ -2337,7 +2337,7 @@ namespace Synthesis.InputControl
         {
             if (button != MouseButton.None)
             {
-                return Input.GetKeyUp((KeyCode)((int)KeyCode.Mouse0 + (int)button));
+                return UnityEngine.Input.GetKeyUp((KeyCode)((int)KeyCode.Mouse0 + (int)button));
             }
 
             return false;
@@ -2350,7 +2350,7 @@ namespace Synthesis.InputControl
         /// <param name="index">Touch index.</param>
         public static Touch GetTouch(int index)
         {
-            return Input.GetTouch(index);
+            return UnityEngine.Input.GetTouch(index);
         }
         #endregion
 
@@ -2363,7 +2363,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.gyro;
+                return UnityEngine.Input.gyro;
             }
         }
 
@@ -2375,12 +2375,12 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.imeCompositionMode;
+                return UnityEngine.Input.imeCompositionMode;
             }
 
             set
             {
-                Input.imeCompositionMode = value;
+                UnityEngine.Input.imeCompositionMode = value;
             }
         }
 
@@ -2392,7 +2392,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.imeIsSelected;
+                return UnityEngine.Input.imeIsSelected;
             }
         }
 
@@ -2404,7 +2404,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.inputString;
+                return UnityEngine.Input.inputString;
             }
         }
 
@@ -2416,7 +2416,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.location;
+                return UnityEngine.Input.location;
             }
         }
 
@@ -2428,7 +2428,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.mousePosition;
+                return UnityEngine.Input.mousePosition;
             }
         }
 
@@ -2440,7 +2440,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.mousePresent;
+                return UnityEngine.Input.mousePresent;
             }
         }
 
@@ -2452,12 +2452,12 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.multiTouchEnabled;
+                return UnityEngine.Input.multiTouchEnabled;
             }
 
             set
             {
-                Input.multiTouchEnabled = value;
+                UnityEngine.Input.multiTouchEnabled = value;
             }
         }
 
@@ -2483,7 +2483,7 @@ namespace Synthesis.InputControl
         /// </summary>
         public static void ResetInputAxes()
         {
-            Input.ResetInputAxes();
+            UnityEngine.Input.ResetInputAxes();
         }
 
         /// <summary>
@@ -2494,12 +2494,12 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.simulateMouseWithTouches;
+                return UnityEngine.Input.simulateMouseWithTouches;
             }
 
             set
             {
-                Input.simulateMouseWithTouches = value;
+                UnityEngine.Input.simulateMouseWithTouches = value;
             }
         }
 
@@ -2511,7 +2511,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.touchCount;
+                return UnityEngine.Input.touchCount;
             }
         }
 
@@ -2523,7 +2523,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.touches;
+                return UnityEngine.Input.touches;
             }
         }
 
@@ -2535,7 +2535,7 @@ namespace Synthesis.InputControl
         {
             get
             {
-                return Input.touchSupported;
+                return UnityEngine.Input.touchSupported;
             }
         }
         #endregion

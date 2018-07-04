@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.ObjectModel;
 using UnityEngine.UI;
-using Synthesis.InputControl.Inputs;
+using Synthesis.Input.Inputs;
 
 //=========================================================================================
 //                                      Player Class
@@ -11,7 +11,7 @@ using Synthesis.InputControl.Inputs;
 ///             for each player through <see cref="KeyMapping"/>KeyMapping Lists and Maps
 //=========================================================================================
 
-namespace Synthesis.InputControl
+namespace Synthesis.Input
 {
     public class Player
     {

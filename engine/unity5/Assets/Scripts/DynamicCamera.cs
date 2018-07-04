@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 using Synthesis.FSM;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.Camera;
 using Synthesis.States;
 

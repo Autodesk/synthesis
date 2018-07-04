@@ -112,7 +112,7 @@ namespace Synthesis.Sensors
         public override void UpdateRangeTransform()
         {
             //Lower the transform speed
-            sensorOffset += Input.GetAxis("CameraVertical") * 0.02f;
+            sensorOffset += UnityEngine.Input.GetAxis("CameraVertical") * 0.02f;
             SetSensorRange(sensorOffset);
         }
 
