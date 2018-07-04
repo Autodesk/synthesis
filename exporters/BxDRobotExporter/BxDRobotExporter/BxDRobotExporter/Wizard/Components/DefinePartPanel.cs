@@ -133,42 +133,11 @@ namespace BxDRobotExporter.Wizard
         }
 
         /// <summary>
-        /// Warns the user and then merges the node into its parent node.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MergeNodeButton_Click(object sender, EventArgs e)
-        {
-            if(MessageBox.Show("Are you sure you want to merge this node into the parent node? (Use this only if you don't want this part of the robot to move in the simulation)\n This cannot be undone.", "Merge Node", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-            {
-                foreach(Control control in this.Controls)
-                {
-                    if (!(control is Button))
-                        control.Enabled = false;
-                }
-                Label mergedLabel = new Label
-                {
-                    Text = "Merged " + node.ModelFileName + " into " + node.GetParent().ModelFileName,
-                    Font = new Font(DefaultFont.FontFamily, 12.0f),
-                    BackColor = System.Windows.Forms.Control.DefaultBackColor,
-                    ForeColor = Color.DarkGray,
-                    AutoSize = false,
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleCenter
-                };
-                this.Controls.Add(mergedLabel);
-                mergedLabel.BringToFront();
-
-                WizardData.Instance.MergeQueue.Add(node);
-            }
-        }
-
-        /// <summary>
         /// Highlights the node in inventor.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void InventorHighlightButton_Click(object sender, EventArgs e)
+        private void HighlightNode(object sender, EventArgs e)
         {
             StandardAddInServer.Instance.WizardSelect(node);
         }
