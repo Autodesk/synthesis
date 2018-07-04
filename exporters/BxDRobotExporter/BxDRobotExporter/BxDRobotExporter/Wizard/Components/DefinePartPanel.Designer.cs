@@ -50,6 +50,8 @@
             this.PortOneUpDown = new System.Windows.Forms.NumericUpDown();
             this.DriverComboBox = new System.Windows.Forms.ComboBox();
             this.SelectDriverLabel = new System.Windows.Forms.Label();
+            this.MainTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.DriverLayout = new System.Windows.Forms.TableLayoutPanel();
             this.NodeGroupBox.SuspendLayout();
             this.JointLimitGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UpperLimitUpDown)).BeginInit();
@@ -59,6 +61,8 @@
             this.PortsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).BeginInit();
+            this.MainTableLayout.SuspendLayout();
+            this.DriverLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // NodeGroupBox
@@ -66,14 +70,10 @@
             this.NodeGroupBox.AutoSize = true;
             this.NodeGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.NodeGroupBox.BackColor = System.Drawing.SystemColors.Control;
-            this.NodeGroupBox.Controls.Add(this.JointLimitGroupBox);
-            this.NodeGroupBox.Controls.Add(this.MetaTabControl);
-            this.NodeGroupBox.Controls.Add(this.PortsGroupBox);
-            this.NodeGroupBox.Controls.Add(this.DriverComboBox);
-            this.NodeGroupBox.Controls.Add(this.SelectDriverLabel);
+            this.NodeGroupBox.Controls.Add(this.MainTableLayout);
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
             this.NodeGroupBox.Name = "NodeGroupBox";
-            this.NodeGroupBox.Size = new System.Drawing.Size(440, 202);
+            this.NodeGroupBox.Size = new System.Drawing.Size(374, 252);
             this.NodeGroupBox.TabIndex = 0;
             this.NodeGroupBox.TabStop = false;
             this.NodeGroupBox.Text = "Empty";
@@ -86,9 +86,10 @@
             this.JointLimitGroupBox.Controls.Add(this.UpperLimitLabel);
             this.JointLimitGroupBox.Controls.Add(this.LowerLimitLabel);
             this.JointLimitGroupBox.Controls.Add(this.LowerLimitUpDown);
-            this.JointLimitGroupBox.Location = new System.Drawing.Point(226, 101);
+            this.JointLimitGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.JointLimitGroupBox.Location = new System.Drawing.Point(3, 87);
             this.JointLimitGroupBox.Name = "JointLimitGroupBox";
-            this.JointLimitGroupBox.Size = new System.Drawing.Size(208, 79);
+            this.JointLimitGroupBox.Size = new System.Drawing.Size(175, 83);
             this.JointLimitGroupBox.TabIndex = 13;
             this.JointLimitGroupBox.TabStop = false;
             this.JointLimitGroupBox.Text = "Joint Limits";
@@ -96,7 +97,7 @@
             // TotalFreedomLabel
             // 
             this.TotalFreedomLabel.AutoSize = true;
-            this.TotalFreedomLabel.Location = new System.Drawing.Point(128, 34);
+            this.TotalFreedomLabel.Location = new System.Drawing.Point(118, 28);
             this.TotalFreedomLabel.Name = "TotalFreedomLabel";
             this.TotalFreedomLabel.Size = new System.Drawing.Size(47, 13);
             this.TotalFreedomLabel.TabIndex = 5;
@@ -105,7 +106,7 @@
             // FreedomFactorLabel
             // 
             this.FreedomFactorLabel.AutoSize = true;
-            this.FreedomFactorLabel.Location = new System.Drawing.Point(128, 19);
+            this.FreedomFactorLabel.Location = new System.Drawing.Point(118, 16);
             this.FreedomFactorLabel.Name = "FreedomFactorLabel";
             this.FreedomFactorLabel.Size = new System.Drawing.Size(51, 13);
             this.FreedomFactorLabel.TabIndex = 4;
@@ -148,11 +149,12 @@
             // MetaTabControl
             // 
             this.MetaTabControl.Controls.Add(this.PneumaticTab);
-            this.MetaTabControl.Location = new System.Drawing.Point(10, 98);
+            this.MetaTabControl.Dock = System.Windows.Forms.DockStyle.Top;
+            this.MetaTabControl.Location = new System.Drawing.Point(183, 86);
             this.MetaTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.MetaTabControl.Name = "MetaTabControl";
             this.MetaTabControl.SelectedIndex = 0;
-            this.MetaTabControl.Size = new System.Drawing.Size(211, 86);
+            this.MetaTabControl.Size = new System.Drawing.Size(177, 126);
             this.MetaTabControl.TabIndex = 12;
             this.MetaTabControl.Visible = false;
             // 
@@ -165,7 +167,7 @@
             this.PneumaticTab.Location = new System.Drawing.Point(4, 22);
             this.PneumaticTab.Margin = new System.Windows.Forms.Padding(2);
             this.PneumaticTab.Name = "PneumaticTab";
-            this.PneumaticTab.Size = new System.Drawing.Size(203, 60);
+            this.PneumaticTab.Size = new System.Drawing.Size(169, 100);
             this.PneumaticTab.TabIndex = 1;
             this.PneumaticTab.Text = "Pneumatic";
             this.PneumaticTab.UseVisualStyleBackColor = true;
@@ -173,7 +175,7 @@
             // PressureLabel
             // 
             this.PressureLabel.AutoSize = true;
-            this.PressureLabel.Location = new System.Drawing.Point(100, 9);
+            this.PressureLabel.Location = new System.Drawing.Point(2, 59);
             this.PressureLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.PressureLabel.Name = "PressureLabel";
             this.PressureLabel.Size = new System.Drawing.Size(48, 13);
@@ -189,10 +191,10 @@
             "60 psi",
             "20 psi",
             "10 psi"});
-            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(102, 26);
+            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(4, 74);
             this.PneumaticPressureComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.PneumaticPressureComboBox.Name = "PneumaticPressureComboBox";
-            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(91, 21);
+            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(94, 21);
             this.PneumaticPressureComboBox.TabIndex = 6;
             // 
             // PneumaticDiameterComboBox
@@ -221,14 +223,16 @@
             // 
             // PortsGroupBox
             // 
+            this.MainTableLayout.SetColumnSpan(this.PortsGroupBox, 2);
             this.PortsGroupBox.Controls.Add(this.AutoAssignCheckBox);
             this.PortsGroupBox.Controls.Add(this.PortTwoUpDown);
             this.PortsGroupBox.Controls.Add(this.PortTwoLabel);
             this.PortsGroupBox.Controls.Add(this.PortOneLabel);
             this.PortsGroupBox.Controls.Add(this.PortOneUpDown);
-            this.PortsGroupBox.Location = new System.Drawing.Point(10, 44);
+            this.PortsGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PortsGroupBox.Location = new System.Drawing.Point(3, 30);
             this.PortsGroupBox.Name = "PortsGroupBox";
-            this.PortsGroupBox.Size = new System.Drawing.Size(424, 51);
+            this.PortsGroupBox.Size = new System.Drawing.Size(356, 51);
             this.PortsGroupBox.TabIndex = 6;
             this.PortsGroupBox.TabStop = false;
             this.PortsGroupBox.Text = "Ports";
@@ -308,6 +312,7 @@
             // 
             // DriverComboBox
             // 
+            this.DriverComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.DriverComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DriverComboBox.FormattingEnabled = true;
             this.DriverComboBox.Items.AddRange(new object[] {
@@ -317,20 +322,62 @@
             "Bumper Pneumatic",
             "Relay Pneumatic",
             "Dual Motor"});
-            this.DriverComboBox.Location = new System.Drawing.Point(84, 17);
+            this.DriverComboBox.Location = new System.Drawing.Point(80, 3);
             this.DriverComboBox.Name = "DriverComboBox";
-            this.DriverComboBox.Size = new System.Drawing.Size(350, 21);
+            this.DriverComboBox.Size = new System.Drawing.Size(279, 21);
             this.DriverComboBox.TabIndex = 2;
             this.DriverComboBox.SelectedIndexChanged += new System.EventHandler(this.DriverComboBox_SelectedIndexChanged);
             // 
             // SelectDriverLabel
             // 
             this.SelectDriverLabel.AutoSize = true;
-            this.SelectDriverLabel.Location = new System.Drawing.Point(7, 20);
+            this.SelectDriverLabel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.SelectDriverLabel.Location = new System.Drawing.Point(3, 3);
+            this.SelectDriverLabel.Margin = new System.Windows.Forms.Padding(3);
             this.SelectDriverLabel.Name = "SelectDriverLabel";
-            this.SelectDriverLabel.Size = new System.Drawing.Size(71, 13);
+            this.SelectDriverLabel.Size = new System.Drawing.Size(71, 21);
             this.SelectDriverLabel.TabIndex = 1;
             this.SelectDriverLabel.Text = "Select Driver:";
+            this.SelectDriverLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // MainTableLayout
+            // 
+            this.MainTableLayout.AutoSize = true;
+            this.MainTableLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.MainTableLayout.ColumnCount = 2;
+            this.MainTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.MainTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.MainTableLayout.Controls.Add(this.DriverLayout, 0, 0);
+            this.MainTableLayout.Controls.Add(this.JointLimitGroupBox, 0, 2);
+            this.MainTableLayout.Controls.Add(this.PortsGroupBox, 0, 1);
+            this.MainTableLayout.Controls.Add(this.MetaTabControl, 1, 2);
+            this.MainTableLayout.Location = new System.Drawing.Point(6, 19);
+            this.MainTableLayout.Name = "MainTableLayout";
+            this.MainTableLayout.RowCount = 3;
+            this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.MainTableLayout.Size = new System.Drawing.Size(362, 214);
+            this.MainTableLayout.TabIndex = 14;
+            // 
+            // DriverLayout
+            // 
+            this.DriverLayout.AutoSize = true;
+            this.DriverLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.DriverLayout.ColumnCount = 2;
+            this.MainTableLayout.SetColumnSpan(this.DriverLayout, 2);
+            this.DriverLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.DriverLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.DriverLayout.Controls.Add(this.SelectDriverLabel, 0, 0);
+            this.DriverLayout.Controls.Add(this.DriverComboBox, 1, 0);
+            this.DriverLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.DriverLayout.Location = new System.Drawing.Point(0, 0);
+            this.DriverLayout.Margin = new System.Windows.Forms.Padding(0);
+            this.DriverLayout.Name = "DriverLayout";
+            this.DriverLayout.RowCount = 1;
+            this.DriverLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.DriverLayout.Size = new System.Drawing.Size(362, 27);
+            this.DriverLayout.TabIndex = 0;
             // 
             // DefinePartPanel
             // 
@@ -341,7 +388,7 @@
             this.BackColor = System.Drawing.Color.Transparent;
             this.Controls.Add(this.NodeGroupBox);
             this.Name = "DefinePartPanel";
-            this.Size = new System.Drawing.Size(443, 205);
+            this.Size = new System.Drawing.Size(377, 255);
             this.NodeGroupBox.ResumeLayout(false);
             this.NodeGroupBox.PerformLayout();
             this.JointLimitGroupBox.ResumeLayout(false);
@@ -355,6 +402,10 @@
             this.PortsGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).EndInit();
+            this.MainTableLayout.ResumeLayout(false);
+            this.MainTableLayout.PerformLayout();
+            this.DriverLayout.ResumeLayout(false);
+            this.DriverLayout.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -384,5 +435,7 @@
         private System.Windows.Forms.NumericUpDown LowerLimitUpDown;
         private System.Windows.Forms.Label TotalFreedomLabel;
         private System.Windows.Forms.Label FreedomFactorLabel;
+        private System.Windows.Forms.TableLayoutPanel MainTableLayout;
+        private System.Windows.Forms.TableLayoutPanel DriverLayout;
     }
 }
