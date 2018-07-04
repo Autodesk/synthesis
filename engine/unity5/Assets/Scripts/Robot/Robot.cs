@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 using Synthesis.BUExtensions;
 using Synthesis.DriverPractice;
 using Synthesis.GUI;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.MixAndMatch;
 using Synthesis.RN;
 using Synthesis.Camera;
@@ -51,7 +51,7 @@ public class Robot : StateBehaviour<MainState>
 
     private readonly UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
 
-    private RigidNode_Base rootNode;
+    protected RigidNode_Base rootNode;
 
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
@@ -369,11 +369,13 @@ public class Robot : StateBehaviour<MainState>
         //Add new cameras to the robot if there is none robot camera belong to the current robot (which means it is a new robot)
         if (!hasRobotCamera)
         {
-            //Attached to the main frame and face the front
-            robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0.5f, 0), new Vector3(0, 0, 0));
-            ////Attached to main frame and face the back
-            robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0.5f, 0), new Vector3(0, 180, 0));
-            robotCameraManager.AddCamera(this, transform.GetChild(0).transform);
+            // This was commented out to prevent compiler errors when restructuring.
+
+            ////Attached to the main frame and face the front
+            //robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0.5f, 0), new Vector3(0, 0, 0));
+            //////Attached to main frame and face the back
+            //robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0.5f, 0), new Vector3(0, 180, 0));
+            //robotCameraManager.AddCamera(this, transform.GetChild(0).transform);
         }
 
         //Reads the offset position for the manipulator
@@ -405,7 +407,6 @@ public class Robot : StateBehaviour<MainState>
     /// <param name="robotGameObject">GameObject of the robot the manipulator will be attached to</param>
     public bool InitializeManipulator(string directory, GameObject robotGameObject)
     {
-
         if (robotGameObject == null)
         {
             robotGameObject = GameObject.Find("Robot");

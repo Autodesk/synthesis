@@ -171,8 +171,10 @@ namespace Synthesis.Camera
                     Destroy(camera);
                 }
             }
+
             //Reset the current camera to the first one on the list in case the current one gets destroyed already
-            CurrentCamera = robotCameraList[0];
+            if (robotCameraList.Count > 0)
+                CurrentCamera = robotCameraList[0];
         }
 
         /// <summary>
@@ -242,7 +244,7 @@ namespace Synthesis.Camera
         public void SetNode()
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -273,7 +275,7 @@ namespace Synthesis.Camera
                         lastNode = selectedObject;
                     }
                     //Change the color to selected color when user click and choose the node
-                    if (Input.GetMouseButtonDown(0))
+                    if (UnityEngine.Input.GetMouseButtonDown(0))
                     {
                         string name = selectedObject.name;
 
@@ -297,7 +299,7 @@ namespace Synthesis.Camera
                         lastNode = null;
                     }
                     //When users try to select a non-robotNode object
-                    if (Input.GetMouseButtonDown(0))
+                    if (UnityEngine.Input.GetMouseButtonDown(0))
                     {
                         UserMessageManager.Dispatch("Please select a robot node!", 3);
                     }
@@ -333,7 +335,7 @@ namespace Synthesis.Camera
             {
                 if (IsChangingFOV) //Control fov
                 {
-                    CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView += Input.GetAxis("CameraVertical");
+                    CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView += UnityEngine.Input.GetAxis("CameraVertical");
 
                     //Limit fov to range from 0 to 180
                     float fov = CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView;
@@ -343,15 +345,15 @@ namespace Synthesis.Camera
                 }
                 else if (IsShowingAngle) //Control rotation (only when the angle panel is active)
                 {
-                    CurrentCamera.transform.Rotate(new Vector3(-Input.GetAxis("CameraVertical") * rotationSpeed, Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
+                    CurrentCamera.transform.Rotate(new Vector3(-UnityEngine.Input.GetAxis("CameraVertical") * rotationSpeed, UnityEngine.Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
                 }
                 else if (!IsChangingHeight) //Control horizontal plane transform
                 {
-                    CurrentCamera.transform.Translate(new Vector3(Input.GetAxis("CameraHorizontal") * positionSpeed, 0, Input.GetAxis("CameraVertical") * positionSpeed) * Time.deltaTime);
+                    CurrentCamera.transform.Translate(new Vector3(UnityEngine.Input.GetAxis("CameraHorizontal") * positionSpeed, 0, UnityEngine.Input.GetAxis("CameraVertical") * positionSpeed) * Time.deltaTime);
                 }
                 else //Control height transform
                 {
-                    CurrentCamera.transform.Translate(new Vector3(0, Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
+                    CurrentCamera.transform.Translate(new Vector3(0, UnityEngine.Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
                 }
                 //Update configuration info of the current camera
                 CurrentCamera.GetComponent<RobotCamera>().UpdateConfiguration();

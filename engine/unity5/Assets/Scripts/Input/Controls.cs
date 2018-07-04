@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Synthesis.InputControl.Inputs;
-using Synthesis.InputControl.Enums;
+using Synthesis.Input.Inputs;
+using Synthesis.Input.Enums;
 
-namespace Synthesis.InputControl
+namespace Synthesis.Input
 {
     public class Controls
     {

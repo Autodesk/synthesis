@@ -8,8 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <ProjectGuid>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -222,24 +221,24 @@
     <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Axis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Controls.cs" />
-    <Compile Include="Assets\Scripts\InputControl\CreateButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\InputDevice.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\Joystick.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\JoystickAxis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\JoystickButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\KeyModifier.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\MouseAxis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\MouseButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\InputControl.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\CustomInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\JoystickInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\KeyboardInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\MouseInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Player.cs" />
-    <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
+    <Compile Include="Assets\Scripts\Input\Axis.cs" />
+    <Compile Include="Assets\Scripts\Input\Controls.cs" />
+    <Compile Include="Assets\Scripts\Input\CreateButton.cs" />
+    <Compile Include="Assets\Scripts\Input\Enums\InputDevice.cs" />
+    <Compile Include="Assets\Scripts\Input\Enums\Joystick.cs" />
+    <Compile Include="Assets\Scripts\Input\Enums\JoystickAxis.cs" />
+    <Compile Include="Assets\Scripts\Input\Enums\JoystickButton.cs" />
+    <Compile Include="Assets\Scripts\Input\Enums\KeyModifier.cs" />
+    <Compile Include="Assets\Scripts\Input\Enums\MouseAxis.cs" />
+    <Compile Include="Assets\Scripts\Input\Enums\MouseButton.cs" />
+    <Compile Include="Assets\Scripts\Input\InputControl.cs" />
+    <Compile Include="Assets\Scripts\Input\Inputs\CustomInput.cs" />
+    <Compile Include="Assets\Scripts\Input\Inputs\JoystickInput.cs" />
+    <Compile Include="Assets\Scripts\Input\Inputs\KeyboardInput.cs" />
+    <Compile Include="Assets\Scripts\Input\Inputs\MouseInput.cs" />
+    <Compile Include="Assets\Scripts\Input\KeyMapping.cs" />
+    <Compile Include="Assets\Scripts\Input\Player.cs" />
+    <Compile Include="Assets\Scripts\Input\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
@@ -255,9 +254,10 @@
     <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RN\RNWheel.cs" />
+    <Compile Include="Assets\Scripts\Robot\MaMRobot.cs" />
     <Compile Include="Assets\Scripts\Robot\Robot.cs" />
     <Compile Include="Assets\Scripts\Robot\RobotBase.cs" />
-    <Compile Include="Assets\Scripts\Robot\SimulatorBot.cs" />
+    <Compile Include="Assets\Scripts\Robot\SimulatorRobot.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
@@ -293,7 +293,7 @@
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
-    <None Include="Assets\Scripts\InputControl\Documentation\Readme.txt" />
+    <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
     <None Include="Assets\item_data.xml" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

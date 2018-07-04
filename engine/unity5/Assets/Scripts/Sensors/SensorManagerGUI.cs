@@ -103,8 +103,8 @@ namespace Synthesis.Sensors
             showSensorButton.SetActive(sensorManager.GetActiveSensors().Count > 0 && isHidingOutput);
 
             //Allows users to save their configuration using enter
-            if (isEditingAngle && Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
-            if (isEditingRange && Input.GetKeyDown(KeyCode.Return)) ToggleEditRange();
+            if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
+            if (isEditingRange && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditRange();
 
         }
 

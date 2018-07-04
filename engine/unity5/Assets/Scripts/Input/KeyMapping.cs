@@ -1,7 +1,7 @@
-using Synthesis.InputControl.Enums;
-using Synthesis.InputControl.Inputs;
+using Synthesis.Input.Enums;
+using Synthesis.Input.Inputs;
 
-namespace Synthesis.InputControl
+namespace Synthesis.Input
 {
     /// <summary>
     /// <see cref="KeyMapping"/> is a named handler for 3 <see cref="CustomInput"/>.

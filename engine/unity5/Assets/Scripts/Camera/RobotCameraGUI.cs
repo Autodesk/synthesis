@@ -83,8 +83,8 @@ namespace Synthesis.Camera
             }
 
             //Allows users to save their configuration using enter
-            if (isEditingAngle && Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
-            if (isEditingFOV && Input.GetKeyDown(KeyCode.Return)) ToggleEditFOV();
+            if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
+            if (isEditingFOV && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditFOV();
         }
 
         #region robot camera GUI functions
@@ -152,7 +152,7 @@ namespace Synthesis.Camera
                     robotCameraManager.CurrentCamera.SetActive(true);
                     robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = robotCameraView;
                     //Toggle the robot camera using Z (can be changed later)
-                    if (Input.GetKeyDown(KeyCode.Z))
+                    if (UnityEngine.Input.GetKeyDown(KeyCode.Z))
                     {
                         //Reset the targetTexture of current camera or they will conflict
                         robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;

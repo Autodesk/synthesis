@@ -8,7 +8,7 @@ using UnityEngine.UI;
 // Main Content: Primarily functions attached to control panel buttons.
 //=========================================================================================
 
-namespace Synthesis.InputControl
+namespace Synthesis.Input
 {
     public class SettingsMode : MonoBehaviour
     {

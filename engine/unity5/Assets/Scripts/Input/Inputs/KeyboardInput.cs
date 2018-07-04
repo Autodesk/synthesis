@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Synthesis.InputControl.Enums;
+using Synthesis.Input.Enums;
 
-namespace Synthesis.InputControl.Inputs
+namespace Synthesis.Input.Inputs
 {
     #region KeyCode conversions
     namespace Internal
@@ -855,7 +855,7 @@ namespace Synthesis.InputControl.Inputs
                 sensitivity = 0.1f;
             }
 
-            return Input.GetKey(mKey) ? sensitivity : 0;
+            return UnityEngine.Input.GetKey(mKey) ? sensitivity : 0;
         }
 
         /// <summary>
@@ -893,7 +893,7 @@ namespace Synthesis.InputControl.Inputs
                 sensitivity = 0.1f;
             }
 
-            return Input.GetKeyDown(mKey) ? sensitivity : 0;
+            return UnityEngine.Input.GetKeyDown(mKey) ? sensitivity : 0;
         }
 
         /// <summary>
@@ -931,7 +931,7 @@ namespace Synthesis.InputControl.Inputs
                 sensitivity = 0.1f;
             }
 
-            return Input.GetKeyUp(mKey) ? sensitivity : 0;
+            return UnityEngine.Input.GetKeyUp(mKey) ? sensitivity : 0;
         }
 
         /// <summary>
@@ -950,17 +950,17 @@ namespace Synthesis.InputControl.Inputs
             {
                 KeyModifier res = KeyModifier.NoModifier;
 
-                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftControl) || UnityEngine.Input.GetKey(KeyCode.RightControl))
                 {
                     res |= KeyModifier.Ctrl;
                 }
 
-                if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftAlt) || UnityEngine.Input.GetKey(KeyCode.RightAlt))
                 {
                     res |= KeyModifier.Alt;
                 }
 
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftShift) || UnityEngine.Input.GetKey(KeyCode.RightShift))
                 {
                     res |= KeyModifier.Shift;
                 }

@@ -1,8 +1,8 @@
 using UnityEngine;
 using System;
-using Synthesis.InputControl.Enums;
+using Synthesis.Input.Enums;
 
-namespace Synthesis.InputControl.Inputs
+namespace Synthesis.Input.Inputs
 {
     /// <summary>
     /// <see cref="JoystickInput"/> handles joystick input device.
@@ -333,7 +333,7 @@ namespace Synthesis.InputControl.Inputs
 
             if (mButton != JoystickButton.None)
             {
-                return Input.GetButton(getInputName()) ? sensitivity : 0;
+                return UnityEngine.Input.GetButton(getInputName()) ? sensitivity : 0;
             }
 
             return getInputByAxis() * sensitivity;
@@ -376,7 +376,7 @@ namespace Synthesis.InputControl.Inputs
 
             if (mButton != JoystickButton.None)
             {
-                return Input.GetButtonDown(getInputName()) ? sensitivity : 0;
+                return UnityEngine.Input.GetButtonDown(getInputName()) ? sensitivity : 0;
             }
 
             return getInputByAxis() * sensitivity;
@@ -419,7 +419,7 @@ namespace Synthesis.InputControl.Inputs
 
             if (mButton != JoystickButton.None)
             {
-                return Input.GetButtonUp(getInputName()) ? sensitivity : 0;
+                return UnityEngine.Input.GetButtonUp(getInputName()) ? sensitivity : 0;
             }
 
             return getInputByAxis() * sensitivity;
@@ -431,7 +431,7 @@ namespace Synthesis.InputControl.Inputs
         /// <returns>Value of joystick axis.</returns>
         private float getInputByAxis()
         {
-            float joyAxis = Input.GetAxis(getInputName());
+            float joyAxis = UnityEngine.Input.GetAxis(getInputName());
 
             if (
                 ((int)mAxis) % 2 == 1

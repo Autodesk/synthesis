@@ -1,4 +1,4 @@
-namespace Synthesis.InputControl.Enums
+namespace Synthesis.Input.Enums
 {
     /// <summary>
     /// Target joystick. This enumeration contains entry for all joysticks and list of joysticks.

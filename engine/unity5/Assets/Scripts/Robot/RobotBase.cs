@@ -3,7 +3,7 @@ using Synthesis.BUExtensions;
 using Synthesis.DriverPractice;
 using Synthesis.FEA;
 using Synthesis.FSM;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.MixAndMatch;
 using Synthesis.RN;
 using Synthesis.Camera;
@@ -42,14 +42,12 @@ namespace Synthesis.Robot
         public float AngularVelocity { get; private set; }
         public float Acceleration { get; private set; }
 
+        protected RigidNode_Base RootNode { get; private set; }
+        
         protected Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
         protected BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
-        private readonly UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
-
-        private RigidNode_Base rootNode;
-
-        private Vector3 nodeToRobotOffset;
+        protected readonly UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
 
         private float oldSpeed;
 
@@ -66,10 +64,10 @@ namespace Synthesis.Robot
         /// </summary>
         void FixedUpdate()
         {
-            if (rootNode != null)
+            if (RootNode != null)
                 UpdateMotors();
 
-            UpdateStats();
+            UpdatePhysics();
         }
 
         /// <summary>
@@ -80,6 +78,7 @@ namespace Synthesis.Robot
         public bool InitializeRobot(string directory)
         {
             RobotDirectory = directory;
+            RobotName = new DirectoryInfo(directory).Name;
 
             //Deletes all nodes if any exist, take the old node transforms out from the robot object
             int childCount = transform.childCount;
@@ -97,38 +96,21 @@ namespace Synthesis.Robot
             if (!File.Exists(directory + "\\skeleton.bxdj"))
                 return false;
 
+            OnInitializeRobot();
+
             //Loads the node and skeleton data
             RigidNode_Base.NODE_FACTORY = delegate (Guid guid) { return new RigidNode(guid); };
 
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-            rootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
-            rootNode.ListAllNodes(nodes);
+            RootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
+            RootNode.ListAllNodes(nodes);
 
             //Initializes the wheel variables
             int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
             float collectiveMass = 0f;
 
-            //Initializes the nodes
-            foreach (RigidNode_Base n in nodes)
-            {
-                RigidNode node = (RigidNode)n;
-                node.CreateTransform(transform);
-
-                if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
-                {
-                    Debug.Log("Robot not loaded!");
-                    return false;
-                }
-
-                node.CreateJoint(numWheels, false); // TODO: Real mix and match detection.
-
-                if (node.PhysicalProperties != null)
-                    collectiveMass += node.PhysicalProperties.mass;
-            }
-
-            //Get the offset from the first node to the robot for new robot start position calculation
-            //This line is CRITICAL to new reset position accuracy! DON'T DELETE IT!
-            nodeToRobotOffset = gameObject.transform.GetChild(0).localPosition - robotStartPosition;
+            if (!ConstructRobot(nodes, numWheels, ref collectiveMass))
+                return false;
 
             foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
             {
@@ -138,7 +120,7 @@ namespace Synthesis.Robot
 
             RotateRobot(robotStartOrientation);
 
-            RobotName = new DirectoryInfo(directory).Name;
+            OnRobotSetup();
 
             return true;
         }
@@ -146,11 +128,11 @@ namespace Synthesis.Robot
         /// <summary>
         /// Rotates the robot about its origin by a mathematical 4x4 matrix
         /// </summary>
-        protected void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
+        public void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
         {
             BulletSharp.Math.Vector3? origin = null;
 
-            foreach (RigidNode n in rootNode.ListAllNodes())
+            foreach (RigidNode n in RootNode.ListAllNodes())
             {
                 BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
 
@@ -162,9 +144,11 @@ namespace Synthesis.Robot
                 if (origin == null)
                     origin = r.CenterOfMassPosition;
 
-                BulletSharp.Math.Matrix rotationTransform = new BulletSharp.Math.Matrix();
-                rotationTransform.Basis = rotationMatrix;
-                rotationTransform.Origin = BulletSharp.Math.Vector3.Zero;
+                BulletSharp.Math.Matrix rotationTransform = new BulletSharp.Math.Matrix
+                {
+                    Basis = rotationMatrix,
+                    Origin = BulletSharp.Math.Vector3.Zero
+                };
 
                 BulletSharp.Math.Matrix currentTransform = r.WorldTransform;
                 BulletSharp.Math.Vector3 pos = currentTransform.Origin;
@@ -177,9 +161,65 @@ namespace Synthesis.Robot
         }
 
         /// <summary>
+        /// Get the total weight of the robot
+        /// </summary>
+        /// <returns></returns>
+        public float GetWeight()
+        {
+            float weight = 0;
+
+            foreach (Transform child in gameObject.transform)
+                if (child.GetComponent<BRigidBody>() != null)
+                    weight += child.GetComponent<BRigidBody>().mass;
+
+            return weight;
+        }
+
+        /// <summary>
+        /// Returns true if the robot has a mecanum drive.
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsMecanum()
+        {
+            return RootNode.GetDriverMeta<WheelDriverMeta>().type == WheelType.MECANUM;
+        }
+        
+        protected virtual bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
+        {
+            //Initializes the nodes
+            foreach (RigidNode_Base n in nodes)
+            {
+                RigidNode node = (RigidNode)n;
+                node.CreateTransform(transform);
+
+                if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName))
+                {
+                    Debug.LogError("Robot not loaded!");
+                    return false;
+                }
+
+                node.CreateJoint(numWheels, false); // TODO: Real mix and match detection.
+
+                if (node.PhysicalProperties != null)
+                    collectiveMass += node.PhysicalProperties.mass;
+            }
+
+            return true;
+        }
+
+        protected virtual void UpdateMotors()
+        {
+            // TODO: Real mecanum detection.
+            if (Packet != null)
+                DriveJoints.UpdateAllMotors(RootNode, Packet.dio, ControlIndex, false/*robotIsMecanum*/);
+            else
+                DriveJoints.UpdateAllMotors(RootNode, emptyDIO, ControlIndex, false/*robotIsMecanum*/);
+        }
+
+        /// <summary>
         /// Update the stats for robot depending on whether it's metric or not
         /// </summary>
-        public void UpdateStats()
+        protected virtual void UpdatePhysics()
         {
             GameObject mainNode = transform.GetChild(0).gameObject;
             //calculates stats of robot
@@ -201,30 +241,6 @@ namespace Synthesis.Robot
             }
         }
 
-        /// <summary>
-        /// Get the total weight of the robot
-        /// </summary>
-        /// <returns></returns>
-        public float GetWeight()
-        {
-            float weight = 0;
-
-            foreach (Transform child in gameObject.transform)
-                if (child.GetComponent<BRigidBody>() != null)
-                    weight += child.GetComponent<BRigidBody>().mass;
-
-            return weight;
-        }
-
-        protected virtual void UpdateMotors()
-        {
-            // TODO: Real mecanum detection.
-            if (Packet != null)
-                DriveJoints.UpdateAllMotors(rootNode, Packet.dio, ControlIndex, false/*robotIsMecanum*/);
-            else
-                DriveJoints.UpdateAllMotors(rootNode, emptyDIO, ControlIndex, false/*robotIsMecanum*/);
-        }
-
         protected virtual void UpdateTransform()
         {
             BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
@@ -238,5 +254,9 @@ namespace Synthesis.Robot
             if (!rigidBody.GetCollisionObject().IsActive)
                 rigidBody.GetCollisionObject().Activate();
         }
+
+        protected virtual void OnInitializeRobot() { }
+
+        protected virtual void OnRobotSetup() { }
     }
 }

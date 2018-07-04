@@ -1,4 +1,4 @@
-namespace Synthesis.InputControl.Enums
+namespace Synthesis.Input.Enums
 {
     /// <summary>
     /// Preferred input device.
