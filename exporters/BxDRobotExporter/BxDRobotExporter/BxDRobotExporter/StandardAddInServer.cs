@@ -273,12 +273,10 @@ namespace BxDRobotExporter
         {
             if (EnvironmentEnabled)
             {
-                EnvironmentEnabled = false;
                 EndExporter();
             }
             else
             {
-                EnvironmentEnabled = true;
                 StartExporter();
             }
         }
@@ -302,15 +300,33 @@ namespace BxDRobotExporter
             
             SaveAsButton.Enabled = false;
             SaveButton.Enabled = false;
+            
+            EnvironmentEnabled = true;
 
-            // Immediately start the "advanced export" when the exporter is opened. TODO: Rename this as ExporterSetup, as it applies to all exporting modes.
-            try
+            // Load robot skeleton and prepare UI
+            Utilities.GUI.BuildRobotSkeleton();
+            
+            // If fails to load existing data, restart wizard
+            if (!Utilities.GUI.JointDataLoad(AsmDocument))
             {
-                BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
+                try
+                {
+                    BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
+                }
+                catch (ExporterFailedException)
+                {
+                    // TODO: Close the addin. I don't know how to do this.
+                }
             }
-            catch (ExporterFailedException)
+            else
             {
-                // TODO: Close the addin. I don't know how to do this.
+                // Joint data is already loaded, reload panels in UI
+                Utilities.GUI.ReloadPanels();
+                Utilities.ShowDockableWindows();
+                
+                // Enable save button
+                SaveAsButton.Enabled = true;
+                SaveButton.Enabled = true;
             }
         }
 
@@ -322,9 +338,11 @@ namespace BxDRobotExporter
             // Export mesh as exporter is finished
             if (Utilities.GUI.SkeletonBase != null && !Utilities.GUI.HasExported)
             {
-                Utilities.GUI.PromptExport();
+                if (Utilities.GUI.PromptExport())
+                    Utilities.GUI.JointDataSave(AsmDocument);
             }
 
+            // Close add-in
             AsmDocument = null;
             Utilities.DisposeDockableWindows();
             ChildHighlight = null;
@@ -333,6 +351,8 @@ namespace BxDRobotExporter
             {
                 doc.Key.DisabledCommandList.Remove(doc.Value);
             }
+
+            EnvironmentEnabled = false;
         }
         #endregion
 
@@ -443,7 +463,7 @@ namespace BxDRobotExporter
         {
             if (!PendingChanges || this.WarnUnsaved())
             {
-                if (Utilities.GUI.BuildRobotSkeleton())
+                if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.BuildRobotSkeleton())
                 {
                     SaveAsButton.Enabled = true;
                     SaveButton.Enabled = true;
@@ -505,6 +525,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveButton_OnExecute(NameValueMap Context)
         {
+            Utilities.GUI.JointDataSave(AsmDocument);
             Utilities.GUI.RobotSave();
         }
 
@@ -514,6 +535,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveAsButton_OnExecute(NameValueMap Context)
         {
+            Utilities.GUI.JointDataSave(AsmDocument);
             Utilities.GUI.RobotSaveAs();
         }
 
