@@ -1,4 +1,5 @@
 #include "roborio.h"
+#include "util.h"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
@@ -74,9 +75,9 @@ struct DIOManager: public tDIO{
 	}
 
 	void writeDO_Headers(uint16_t value, tRioStatusCode* /*status*/){
-		for(uint32_t i = 1; i <= value; i <<= 1){ 
-			if(value & i){ // attempt output if bit in value is high
-				if(hel::roborio_state.digital_system.getEnabledOutputs().Headers & i){ //allow write if enabled_outputs bit is also high 
+		for(unsigned i = 1; i <= hel::findMostSignificantBit(value); i++){ 
+			if(hel::checkBitHigh(value, i)){ // attempt output if bit in value is high
+				if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().Headers, i)){ //allow write if enabled_outputs bit is also high 
 					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
 					outputs.Headers = value;
 					hel::roborio_state.digital_system.setOutputs(outputs);
@@ -88,9 +89,9 @@ struct DIOManager: public tDIO{
 	}
 	
 	void writeDO_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
-		for(uint32_t i = 1; i <= value; i <<= 1){ 
-			if(value & i){ // attempt output if bit in value is high
-				if(hel::roborio_state.digital_system.getEnabledOutputs().SPIPort & i){ //allow write if enabled_outputs bit is also high
+		for(unsigned i = 1; i <= hel::findMostSignificantBit(value); i++){ 
+			if(hel::checkBitHigh(value, i)){ // attempt output if bit in value is high
+				if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().SPIPort, i)){ //allow write if enabled_outputs bit is also high
 					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
 					outputs.SPIPort = value;
 					hel::roborio_state.digital_system.setOutputs(outputs);
@@ -102,9 +103,9 @@ struct DIOManager: public tDIO{
 	}
 	
 	void writeDO_Reserved(uint8_t value, tRioStatusCode* /*status*/){
-		for(uint32_t i = 1; i <= value; i <<= 1){ 
-			if(value & i){ // attempt output if bit in value is high
-				if(hel::roborio_state.digital_system.getEnabledOutputs().Reserved & i){ //allow write if enabled_outputs bit is also high
+		for(unsigned i = 1; i <= hel::findMostSignificantBit(value); i++){ 
+			if(hel::checkBitHigh(value, i)){ // attempt output if bit in value is high
+				if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().Reserved, i)){ //allow write if enabled_outputs bit is also high
 					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
 					outputs.Reserved = value;
 					hel::roborio_state.digital_system.setOutputs(outputs);
@@ -116,9 +117,9 @@ struct DIOManager: public tDIO{
 	}
 	
 	void writeDO_MXP(uint16_t value, tRioStatusCode* /*status*/){
-		for(uint32_t i = 1; i <= value; i <<= 1){ 
-			if(value & i){ // attempt output if bit in value is high
-				if(hel::roborio_state.digital_system.getEnabledOutputs().MXP & i){ //allow write if enabled_outputs bit is also high
+		for(unsigned i = 1; i <= hel::findMostSignificantBit(value); i++){ 
+			if(hel::checkBitHigh(value, i)){ // attempt output if bit in value is high
+				if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().MXP, i)){ //allow write if enabled_outputs bit is also high
 					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
 					outputs.MXP = value;
 					hel::roborio_state.digital_system.setOutputs(outputs);
@@ -150,8 +151,7 @@ struct DIOManager: public tDIO{
 	}
 
 	void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-		uint32_t i = 1u << bitfield_index;
-		if(hel::roborio_state.digital_system.getEnabledOutputs().MXP & i){
+		if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().MXP, bitfield_index)){
 			hel::roborio_state.digital_system.setPWMDutyCycle(bitfield_index, value);
 		} else {
 			//TODO error handling
