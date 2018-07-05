@@ -32,7 +32,6 @@ public partial class SynthesisGUI : Form
         public bool UseSettingsDir;
         public string ActiveDir;
         public string ActiveRobotName;
-        public bool OpenSynthesis;
         public string FieldName;
 
         public static RuntimeMeta CreateRuntimeMeta()
@@ -42,7 +41,6 @@ public partial class SynthesisGUI : Form
                 UseSettingsDir = true,
                 ActiveDir = null,
                 ActiveRobotName = null,
-                OpenSynthesis = false,
                 FieldName = null
             };
         }
@@ -68,7 +66,6 @@ public partial class SynthesisGUI : Form
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
     public float TotalMass = 120;
-    public bool HasExported = false;
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
@@ -167,35 +164,6 @@ public partial class SynthesisGUI : Form
         SkeletonBase = null;
         Meshes = null;
         ReloadPanels();
-    }
-
-    /// <summary>
-    /// Prompts the user to export their robot. This is intended to be used when the user is closing the exporter and has not exported yet.
-    /// </summary>
-    public bool PromptExport()
-    {
-        DialogResult saveResult = MessageBox.Show("Your robot has not been exported. Export now?", "Export", MessageBoxButtons.YesNo);
-
-        if (saveResult == DialogResult.Yes)
-        {
-            if (PromptSaveSettings(true, true))
-            {
-                if (Meshes != null || LoadMeshes())
-                {
-                    if (ExportRobot())
-                    {
-                        SaveRobotData();
-
-                        if (RMeta.OpenSynthesis)
-                            OpenSynthesis(RMeta.ActiveRobotName, RMeta.FieldName);
-
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 
     /// <summary>
@@ -319,14 +287,13 @@ public partial class SynthesisGUI : Form
     /// Prompts the user for the name of the robot, as well as other information.
     /// </summary>
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
-    public bool PromptSaveSettings(bool allowOpeningSynthesis, bool isFinal)
+    public bool PromptExportSettings()
     {
-        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, allowOpeningSynthesis, isFinal, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
         {
             RMeta.UseSettingsDir = true;
             RMeta.ActiveDir = null;
             RMeta.ActiveRobotName = robotName;
-            RMeta.OpenSynthesis = openSynthesis;
             RMeta.FieldName = field;
 
             PluginSettings.GeneralUseFancyColors = colors;
@@ -347,7 +314,7 @@ public partial class SynthesisGUI : Form
         {
             // If robot has not been named, prompt user for information
             if (RMeta.ActiveRobotName == null)
-                if (!PromptSaveSettings(false, false))
+                if (!PromptExportSettings())
                     return false;
 
             if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName))
@@ -363,8 +330,6 @@ public partial class SynthesisGUI : Form
             {
                 Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
             }
-
-            HasExported = true;
 
             return true;
         }
@@ -383,6 +348,9 @@ public partial class SynthesisGUI : Form
     public bool SaveRobotData()
     {
         if (AsmDocument == null)
+            return false;
+
+        if (SkeletonBase == null)
             return false;
         
         Inventor.PropertySets propertySets = AsmDocument.PropertySets;
@@ -477,11 +445,14 @@ public partial class SynthesisGUI : Form
         if (asmDocument == null)
             return false;
 
+        if (SkeletonBase == null)
+            return false;
+
         Inventor.PropertySets propertySets = asmDocument.PropertySets;
 
         bool success = LoadJointData(propertySets, SkeletonBase);
 
-        // Store assembly document to save to later on
+        // Store assembly document for saving to later on
         if (success)
             AsmDocument = asmDocument;
 
@@ -616,9 +587,10 @@ public partial class SynthesisGUI : Form
     /// Warn the user that they are about to exit without unsaved work
     /// </summary>
     /// <returns>Whether the user wishes to continue without saving</returns>
-    public bool WarnUnsaved()
+    public bool WarnUnsaved(bool allowCancel = true)
     {
-        DialogResult saveResult = MessageBox.Show("Do you want to save your work?", "Save", MessageBoxButtons.YesNoCancel);
+        DialogResult saveResult = MessageBox.Show("Do you want to save your work?", "Save",
+                                                  allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
 
         if (saveResult == DialogResult.Yes)
         {

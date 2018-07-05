@@ -61,8 +61,8 @@ namespace BxDRobotExporter
         //Standalone Buttons
         ButtonDefinition WizardExportButton;
         ButtonDefinition SetMassButton;
-        
         ButtonDefinition SaveButton;
+        ButtonDefinition ExportButton;
 
         //Highlighting
         HighlightSet ChildHighlight;
@@ -164,10 +164,16 @@ namespace BxDRobotExporter
             SettingsPanel.CommandControls.AddButton(SetMassButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to its previous location.", SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves robot information to your assembly file.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
             SaveButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(SaveButton, true);
+
+            //Export Button
+            ExportButton = ControlDefs.AddButtonDefinition("Export", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot to Synthesis.", SaveRobotIconSmall, SaveRobotIconLarge);
+            ExportButton.OnExecute += ExportButton_OnExecute;
+            ExportButton.OnHelp += _OnHelp;
+            FilePanel.CommandControls.AddButton(ExportButton, true);
 
             #endregion
 
@@ -321,11 +327,8 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            // Export mesh as exporter is finished
-            if (Utilities.GUI.SkeletonBase != null && !Utilities.GUI.HasExported)
-            {
-                Utilities.GUI.PromptExport();
-            }
+            if (Utilities.GUI.SkeletonBase != null)
+                Utilities.GUI.WarnUnsaved(false);
 
             // Close add-in
             AsmDocument = null;
@@ -338,8 +341,6 @@ namespace BxDRobotExporter
             }
 
             EnvironmentEnabled = false;
-
-            Utilities.GUI.SaveRobotData();
         }
         #endregion
 
@@ -468,6 +469,15 @@ namespace BxDRobotExporter
             Utilities.GUI.SaveRobotData();
         }
 
+        /// <summary>
+        /// Saves the active robot to the active directory
+        /// </summary>
+        /// <param name="Context"></param>
+        private void ExportButton_OnExecute(NameValueMap Context)
+        {
+            Utilities.GUI.PromptExportSettings();
+            Utilities.GUI.ExportRobot();
+        }
 
         //Settings
         /// <summary>
