@@ -343,103 +343,10 @@ public partial class SynthesisGUI : Form
 
     #region Joint Data Management
     /// <summary>
-    /// Saves the joint information to the most recently loaded assembly file. Returns false if fails.
-    /// </summary>
-    public bool SaveRobotData()
-    {
-        if (AsmDocument == null)
-            return false;
-
-        if (SkeletonBase == null)
-            return false;
-        
-        Inventor.PropertySets propertySets = AsmDocument.PropertySets;
-        
-        return SaveJointData(propertySets, SkeletonBase);
-    }
-    
-    /// <summary>
-    /// Recursive utility for JointDataSave.
-    /// </summary>
-    private bool SaveJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
-    {
-        try
-        {
-            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
-            {
-                SkeletalJoint_Base joint = connection.Key;
-                RigidNode_Base child = connection.Value;
-
-                // Name of the property set in inventor
-                string setName = "bxd-jointdata-" + child.GetModelID();
-
-                // Create the property set if it doesn't exist
-                Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName);
-
-                // Add joint properties to set
-                // Save driver information
-                JointDriver driver = joint.cDriver;
-                Utilities.SetProperty(propertySet, "has-driver", driver != null);
-
-                if (driver != null)
-                {
-                    Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());
-                    Utilities.SetProperty(propertySet, "driver-portA", driver.portA);
-                    Utilities.SetProperty(propertySet, "driver-portB", driver.portB);
-                    Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
-                    Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
-                    Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
-
-                    // Save other properties stored in meta
-                    // Wheel information
-                    WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
-                    Utilities.SetProperty(propertySet, "has-wheel", wheel != null);
-
-                    if (wheel != null)
-                    {
-                        Utilities.SetProperty(propertySet, "wheel-type", (int)wheel.type);
-                        Utilities.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
-                        Utilities.SetProperty(propertySet, "wheel-frictionLevel", (int)wheel.GetFrictionLevel());
-                    }
-
-                    // Pneumatic information
-                    PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
-                    Utilities.SetProperty(propertySet, "has-pneumatic", pneumatic != null);
-
-                    if (pneumatic != null)
-                    {
-                        Utilities.SetProperty(propertySet, "pneumatic-diameter", (int)pneumatic.widthEnum);
-                        Utilities.SetProperty(propertySet, "pneumatic-pressure", (int)pneumatic.pressureEnum);
-                    }
-
-                    // Elevator information
-                    ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-                    Utilities.SetProperty(propertySet, "has-elevator", elevator != null);
-
-                    if (elevator != null)
-                    {
-                        Utilities.SetProperty(propertySet, "elevator-type", (int)elevator.type);
-                    }
-                }
-
-                // Recur along this child
-                if (!SaveJointData(assemblyPropertySets, child))
-                    return false; // If one of the children failed to save, then cancel the saving process
-            }
-        }
-        catch (Exception e)
-        {
-            MessageBox.Show("Joint data could not be saved to the inventor file. The following error occured:\n" + e.Message);
-            return false;
-        }
-
-        // Save was successful
-        return true;
-    }
-
-    /// <summary>
     /// Loads the joint information from the Inventor assembly file. Returns false if fails.
     /// </summary>
+    /// <param name="asmDocument">Assembly document to load data from. Data will be saved to this document when <see cref="SaveRobotData"/> is called.</param>
+    /// <returns>True if successful.</returns>
     public bool LoadRobotData(Inventor.AssemblyDocument asmDocument)
     {
         if (asmDocument == null)
@@ -450,95 +357,205 @@ public partial class SynthesisGUI : Form
 
         Inventor.PropertySets propertySets = asmDocument.PropertySets;
 
-        bool success = LoadJointData(propertySets, SkeletonBase);
+        // Load Robot Data
+        try
+        {
+            // Load global robot data
+            // TODO: Load robot weight and name
 
-        // Store assembly document for saving to later on
-        if (success)
-            AsmDocument = asmDocument;
-
-        return success;
+            // Load joint data
+            if (LoadJointData(propertySets, SkeletonBase))
+            {
+                AsmDocument = asmDocument; // Store assembly document for saving to later on
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show("Robot data could not be loaded from the inventor file. The following error occured:\n" + e.Message);
+            return false;
+        }
     }
 
     /// <summary>
     /// Recursive utility for JointDataLoad.
     /// </summary>
+    /// <param name="assemblyPropertySets">Group of property sets to add any new property sets to.</param>
+    /// <param name="currentNode">Current node to save joint data of.</param>
+    /// <returns>True if successful.</returns>
     public bool LoadJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
     {
-        try
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
         {
-            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+            SkeletalJoint_Base joint = connection.Key;
+            RigidNode_Base child = connection.Value;
+
+            // Name of the property set in inventor
+            string setName = "bxd-jointdata-" + child.GetModelID();
+
+            // Attempt to open the property set
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName, false);
+
+            // If the property set does not exist, stop loading data
+            if (propertySet == null)
+                return false;
+
+            // Get joint properties from set
+            // Get driver information
+            if (Utilities.GetProperty(propertySet, "has-driver", false))
             {
-                SkeletalJoint_Base joint = connection.Key;
-                RigidNode_Base child = connection.Value;
+                if (joint.cDriver == null)
+                    joint.cDriver = new JointDriver((JointDriverType)Utilities.GetProperty(propertySet, "driver-type", (int)JointDriverType.MOTOR));
+                JointDriver driver = joint.cDriver;
 
-                // Name of the property set in inventor
-                string setName = "bxd-jointdata-" + child.GetModelID();
+                joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portA", 0);
+                joint.cDriver.portB = Utilities.GetProperty(propertySet, "driver-portB", -1);
+                joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
+                joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
+                joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
 
-                // Attempt to open the property set
-                Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName, false);
-
-                // If the property set does not exist, stop loading data
-                if (propertySet == null)
-                    return false;
-
-                // Get joint properties from set
-                // Get driver information
-                if (Utilities.GetProperty(propertySet, "has-driver", false))
+                // Get other properties stored in meta
+                // Wheel information
+                if (Utilities.GetProperty(propertySet, "has-wheel", false))
                 {
-                    if (joint.cDriver == null)
-                        joint.cDriver = new JointDriver((JointDriverType)Utilities.GetProperty(propertySet, "driver-type", (int)JointDriverType.MOTOR));
-                    JointDriver driver = joint.cDriver;
+                    if (driver.GetInfo<WheelDriverMeta>() == null)
+                        driver.AddInfo(new WheelDriverMeta());
+                    WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
 
-                    joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portA", 0);
-                    joint.cDriver.portB = Utilities.GetProperty(propertySet, "driver-portB", -1);
-                    joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
-                    joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
-                    joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
-
-                    // Get other properties stored in meta
-                    // Wheel information
-                    if (Utilities.GetProperty(propertySet, "has-wheel", false))
-                    {
-                        if (driver.GetInfo<WheelDriverMeta>() == null)
-                            driver.AddInfo(new WheelDriverMeta());
-                        WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
-
-                        wheel.type = (WheelType)Utilities.GetProperty(propertySet, "wheel-type", (int)WheelType.NORMAL);
-                        wheel.isDriveWheel = Utilities.GetProperty(propertySet, "wheel-isDriveWheel", false);
-                        wheel.SetFrictionLevel((FrictionLevel)Utilities.GetProperty(propertySet, "wheel-frictionLevel", (int)FrictionLevel.MEDIUM));
-                    }
-
-                    // Pneumatic information
-                    if (Utilities.GetProperty(propertySet, "has-pneumatic", false))
-                    {
-                        if (driver.GetInfo<PneumaticDriverMeta>() == null)
-                            driver.AddInfo(new PneumaticDriverMeta());
-                        PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
-
-                        pneumatic.widthEnum = (PneumaticDiameter)Utilities.GetProperty(propertySet, "pneumatic-diameter", (int)PneumaticDiameter.MEDIUM);
-                        pneumatic.pressureEnum = (PneumaticPressure)Utilities.GetProperty(propertySet, "pneumatic-pressure", (int)PneumaticPressure.MEDIUM);
-                    }
-
-                    // Elevator information
-                    if (Utilities.GetProperty(propertySet, "has-elevator", false))
-                    {
-                        if (driver.GetInfo<ElevatorDriverMeta>() == null)
-                            driver.AddInfo(new ElevatorDriverMeta());
-                        ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-
-                        elevator.type = (ElevatorType)Utilities.GetProperty(propertySet, "elevator-type", (int)ElevatorType.NOT_MULTI);
-                    }
+                    wheel.type = (WheelType)Utilities.GetProperty(propertySet, "wheel-type", (int)WheelType.NORMAL);
+                    wheel.isDriveWheel = Utilities.GetProperty(propertySet, "wheel-isDriveWheel", false);
+                    wheel.SetFrictionLevel((FrictionLevel)Utilities.GetProperty(propertySet, "wheel-frictionLevel", (int)FrictionLevel.MEDIUM));
                 }
 
-                // Recur along this child
-                if (!LoadJointData(assemblyPropertySets, child))
-                    return false; // If one of the children failed to save, then cancel the saving process
+                // Pneumatic information
+                if (Utilities.GetProperty(propertySet, "has-pneumatic", false))
+                {
+                    if (driver.GetInfo<PneumaticDriverMeta>() == null)
+                        driver.AddInfo(new PneumaticDriverMeta());
+                    PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+
+                    pneumatic.widthEnum = (PneumaticDiameter)Utilities.GetProperty(propertySet, "pneumatic-diameter", (int)PneumaticDiameter.MEDIUM);
+                    pneumatic.pressureEnum = (PneumaticPressure)Utilities.GetProperty(propertySet, "pneumatic-pressure", (int)PneumaticPressure.MEDIUM);
+                }
+
+                // Elevator information
+                if (Utilities.GetProperty(propertySet, "has-elevator", false))
+                {
+                    if (driver.GetInfo<ElevatorDriverMeta>() == null)
+                        driver.AddInfo(new ElevatorDriverMeta());
+                    ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+
+                    elevator.type = (ElevatorType)Utilities.GetProperty(propertySet, "elevator-type", (int)ElevatorType.NOT_MULTI);
+                }
             }
+
+            // Recur along this child
+            if (!LoadJointData(assemblyPropertySets, child))
+                return false; // If one of the children failed to save, then cancel the saving process
+        }
+
+        // Save was successful
+        return true;
+    }
+
+    /// <summary>
+    /// Saves the joint information to the most recently loaded assembly file. Returns false if fails.
+    /// </summary>
+    /// <returns>True if successful.</returns>
+    public bool SaveRobotData()
+    {
+        if (AsmDocument == null)
+            return false;
+
+        if (SkeletonBase == null)
+            return false;
+
+        Inventor.PropertySets propertySets = AsmDocument.PropertySets;
+
+        // Save Robot Data
+        try
+        {
+            // Save global robot data
+            // TODO: Save robot weight and name
+
+            // Save joint data
+            return SaveJointData(propertySets, SkeletonBase);
         }
         catch (Exception e)
         {
-            MessageBox.Show("Joint data could not be loaded from the inventor file. The following error occured:\n" + e.Message);
+            MessageBox.Show("Robot data could not be save to the inventor file. The following error occured:\n" + e.Message);
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Recursive utility for JointDataSave.
+    /// </summary>
+    /// <returns>True if successful.</returns>
+    private bool SaveJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
+    {
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+        {
+            SkeletalJoint_Base joint = connection.Key;
+            RigidNode_Base child = connection.Value;
+
+            // Name of the property set in inventor
+            string setName = "bxd-jointdata-" + child.GetModelID();
+
+            // Create the property set if it doesn't exist
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName);
+
+            // Add joint properties to set
+            // Save driver information
+            JointDriver driver = joint.cDriver;
+            Utilities.SetProperty(propertySet, "has-driver", driver != null);
+
+            if (driver != null)
+            {
+                Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());
+                Utilities.SetProperty(propertySet, "driver-portA", driver.portA);
+                Utilities.SetProperty(propertySet, "driver-portB", driver.portB);
+                Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
+                Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
+                Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
+
+                // Save other properties stored in meta
+                // Wheel information
+                WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
+                Utilities.SetProperty(propertySet, "has-wheel", wheel != null);
+
+                if (wheel != null)
+                {
+                    Utilities.SetProperty(propertySet, "wheel-type", (int)wheel.type);
+                    Utilities.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
+                    Utilities.SetProperty(propertySet, "wheel-frictionLevel", (int)wheel.GetFrictionLevel());
+                }
+
+                // Pneumatic information
+                PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+                Utilities.SetProperty(propertySet, "has-pneumatic", pneumatic != null);
+
+                if (pneumatic != null)
+                {
+                    Utilities.SetProperty(propertySet, "pneumatic-diameter", (int)pneumatic.widthEnum);
+                    Utilities.SetProperty(propertySet, "pneumatic-pressure", (int)pneumatic.pressureEnum);
+                }
+
+                // Elevator information
+                ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+                Utilities.SetProperty(propertySet, "has-elevator", elevator != null);
+
+                if (elevator != null)
+                {
+                    Utilities.SetProperty(propertySet, "elevator-type", (int)elevator.type);
+                }
+            }
+
+            // Recur along this child
+            if (!SaveJointData(assemblyPropertySets, child))
+                return false; // If one of the children failed to save, then cancel the saving process
         }
 
         // Save was successful
