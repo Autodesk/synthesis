@@ -341,7 +341,7 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            if (Utilities.GUI.SkeletonBase != null)
+            if (PendingChanges)
                 Utilities.GUI.WarnUnsaved(false);
 
             // Close add-in
