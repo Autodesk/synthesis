@@ -32,7 +32,6 @@ public partial class SynthesisGUI : Form
         public bool UseSettingsDir;
         public string ActiveDir;
         public string ActiveRobotName;
-        public bool OpenSynthesis;
         public string FieldName;
 
         public static RuntimeMeta CreateRuntimeMeta()
@@ -42,7 +41,6 @@ public partial class SynthesisGUI : Form
                 UseSettingsDir = true,
                 ActiveDir = null,
                 ActiveRobotName = null,
-                OpenSynthesis = false,
                 FieldName = null
             };
         }
@@ -62,11 +60,13 @@ public partial class SynthesisGUI : Form
     {
         FormBorderStyle = FormBorderStyle.None
     };
-
+    
+    private Inventor.AssemblyDocument AsmDocument = null; // Set when LoadRobotData is called.
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
-    public float TotalMass = 120;
+    // TODO: This should be moved to RMeta
+    public float TotalWeightKg = -1; // Negative value indicates default mass should be left alone
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
@@ -168,11 +168,40 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Open Synthesis to a specific robot and field.
+    /// </summary>
+    /// <param name="node"></param>
+    public void OpenSynthesis(string robotName = null, string fieldName = null)
+    {
+        if (robotName == null)
+        {
+            // Cancel if no robot name is given
+            if (RMeta.ActiveRobotName == null)
+                return;
+
+            robotName = RMeta.ActiveRobotName;
+        }
+
+        if (fieldName == null)
+        {
+            // Cancel if no field name is given
+            if (RMeta.FieldName == null)
+                return;
+
+            fieldName = RMeta.FieldName;
+        }
+        
+        Process.Start(Utilities.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
+    }
+
+    /// <summary>
     /// Build the node tree of the robot from Inventor
     /// </summary>
-    public bool BuildRobotSkeleton(bool warnUnsaved = false)
+    public bool LoadRobotSkeleton(bool warnUnsaved = false)
     {
-        if (SkeletonBase != null && warnUnsaved && !WarnUnsaved()) return false;
+        if (SkeletonBase != null)
+            if (warnUnsaved && !WarnUnsaved())
+                return false;
 
         try
         {
@@ -202,31 +231,37 @@ public partial class SynthesisGUI : Form
             return false;
         }
 
+        if (SkeletonBase == null)
+            return false; // Skeleton export failed
+
         return true;
     }
 
     /// <summary>
-    /// Export a robot from Inventor
+    /// Load meshes of a robot from Inventor
     /// </summary>
-    public bool ExportMeshes()
+    public bool LoadMeshes()
     {
         try
         {
             var exporterThread = new Thread(() =>
             {
-#if LITEMODE
                 if (SkeletonBase == null)
                 {
                     skeletonExporter = new SkeletonExporterForm();
                     skeletonExporter.ShowDialog();
                 }
-                    
-                liteExporter = new LiteExporterForm();
-                liteExporter.ShowDialog(); // Remove node building
+
+                if (SkeletonBase != null)
+                {
+#if LITEMODE
+                    liteExporter = new LiteExporterForm();
+                    liteExporter.ShowDialog(); // Remove node building
 #else
-                exporter = new ExporterForm(PluginSettings);
-                exporter.ShowDialog();
+                    exporter = new ExporterForm(PluginSettings);
+                    exporter.ShowDialog();
 #endif
+                }
             });
 
             exporterThread.SetApartmentState(ApartmentState.STA);
@@ -250,143 +285,20 @@ public partial class SynthesisGUI : Form
             MessageBox.Show(e.Message);
             return false;
         }
+        
+        if (Meshes == null)
+            return false; // Meshes were not exported
+        
+        if (liteExporter.DialogResult != DialogResult.OK)
+            return false; // Exporter was canceled
 
-        // Exporter completed successfully
-        if (liteExporter.DialogResult == DialogResult.OK)
+        // Export was successful
+        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
+        for (int i = 0; i < Meshes.Count; i++)
         {
-            List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-            for (int i = 0; i < Meshes.Count; i++)
-            {
-                ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
-            }
+            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
+        }
             
-            return true;
-        }
-        // Exporter failed
-        else
-            return false;
-    }
-
-    /// <summary>
-    /// Open a previously exported robot. 
-    /// </summary>
-    /// <param name="validate">If it is not null, this will validate the open inventor assembly.</param>
-    public void OpenExisting()
-    {
-        if (SkeletonBase != null && !WarnUnsaved()) return;
-
-        string dirPath = OpenFolderPath();
-
-        if (dirPath == null) return;
-
-        try
-        {
-            List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-            SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
-
-            SkeletonBase.ListAllNodes(nodes);
-
-            Meshes = new List<BXDAMesh>();
-
-            foreach (RigidNode_Base n in nodes)
-            {
-                BXDAMesh mesh = new BXDAMesh();
-                mesh.ReadFromFile(dirPath + "\\" + n.ModelFileName);
-
-                if (!n.GUID.Equals(mesh.GUID))
-                {
-                    MessageBox.Show(n.ModelFileName + " has been modified.", "Could not load mesh.");
-                    return;
-                }
-
-                Meshes.Add(mesh);
-            }
-            for (int i = 0; i < Meshes.Count; i++)
-            {
-                ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
-            }
-        }
-        catch (Exception e)
-        {
-            MessageBox.Show(e.ToString());
-        }
-
-
-        ReloadPanels();
-    }
-
-    /// <summary>
-    /// Open a previously exported robot. 
-    /// </summary>
-    /// <param name="validate">If it is not null, this will validate the open inventor assembly.</param>
-    public bool OpenExisting(ValidationAction validate, bool warnUnsaved = false)
-    {
-
-        if (SkeletonBase != null && warnUnsaved && !WarnUnsaved()) return false;
-
-        string dirPath = OpenFolderPath();
-
-        if (dirPath == null) return false;
-
-        try
-        {
-            List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-            SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
-
-            if (validate != null)
-            {
-                if (!validate(SkeletonBase, out string message))
-                {
-                    while (true)
-                    {
-                        DialogResult result = MessageBox.Show(message, "Assembly Validation", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                        if (result == DialogResult.Retry)
-                            continue;
-                        if (result == DialogResult.Abort)
-                        {
-                            return false;
-                        }
-                        break;
-                    }
-                }
-                #region DEBUG
-#if DEBUG
-                else
-                {
-                    MessageBox.Show(message);
-                }
-#endif 
-                #endregion
-            }
-
-            SkeletonBase.ListAllNodes(nodes);
-
-            Meshes = new List<BXDAMesh>();
-
-            foreach (RigidNode_Base n in nodes)
-            {
-                BXDAMesh mesh = new BXDAMesh();
-                mesh.ReadFromFile(dirPath + "\\" + n.ModelFileName);
-
-                if (!n.GUID.Equals(mesh.GUID))
-                {
-                    MessageBox.Show(n.ModelFileName + " has been modified.", "Could not load mesh.");
-                    return false;
-                }
-
-                Meshes.Add(mesh);
-            }
-        }
-        catch (Exception e)
-        {
-            MessageBox.Show(e.ToString());
-        }
-
-        RMeta.UseSettingsDir = false;
-        RMeta.ActiveDir = dirPath;
-        RMeta.ActiveRobotName = dirPath.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last();
-
-        ReloadPanels();
         return true;
     }
 
@@ -394,18 +306,17 @@ public partial class SynthesisGUI : Form
     /// Prompts the user for the name of the robot, as well as other information.
     /// </summary>
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
-    public bool PromptSaveSettings(bool allowOpeningSynthesis, bool isFinal)
+    public bool PromptExportSettings()
     {
-        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, allowOpeningSynthesis, isFinal, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
         {
             RMeta.UseSettingsDir = true;
             RMeta.ActiveDir = null;
             RMeta.ActiveRobotName = robotName;
-            RMeta.OpenSynthesis = openSynthesis;
             RMeta.FieldName = field;
 
             PluginSettings.GeneralUseFancyColors = colors;
-            PluginSettings.OnSettingsChanged(PluginSettings.InventorChildColor, PluginSettings.GeneralUseFancyColors, PluginSettings.GeneralSaveLocation);
+            PluginSettings.OnSettingsChanged();
 
             return true;
         }
@@ -416,35 +327,28 @@ public partial class SynthesisGUI : Form
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
-    public bool RobotSave(bool silent = false)
+    public bool ExportRobot()
     {
         try
         {
             // If robot has not been named, prompt user for information
             if (RMeta.ActiveRobotName == null)
-                if (!PromptSaveSettings(false, false))
+                if (!PromptExportSettings())
                     return false;
 
             if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName))
                 Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName);
 
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
-                ExportMeshes();
+                LoadMeshes();
 
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
-            for (int i = 0; i < Meshes.Count; i++)
-            {
-                Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
-            }
 
             for (int i = 0; i < Meshes.Count; i++)
             {
                 Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
             }
-
-            if(!silent)
-                MessageBox.Show("Saved");
 
             return true;
         }
@@ -456,20 +360,236 @@ public partial class SynthesisGUI : Form
         }
     }
 
+    #region Joint Data Management
     /// <summary>
-    /// Saves the robot to the currently set robot directory.
+    /// Loads the joint information from the Inventor assembly file. Returns false if fails.
     /// </summary>
-    /// <param name="robotName"></param>
-    public bool RobotSaveAs()
+    /// <param name="asmDocument">Assembly document to load data from. Data will be saved to this document when <see cref="SaveRobotData"/> is called.</param>
+    /// <returns>True if all data was loaded successfully.</returns>
+    public bool LoadRobotData(Inventor.AssemblyDocument asmDocument)
     {
-        if (PromptSaveSettings(false, false))
-        {
-            RobotSave();
+        if (asmDocument == null)
+            return false;
 
-            return true;
+        if (SkeletonBase == null)
+            return false;
+
+        AsmDocument = asmDocument;
+        Inventor.PropertySets propertySets = asmDocument.PropertySets;
+
+        // Load Robot Data
+        try
+        {
+            // Load global robot data
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata", false);
+            
+            if (propertySet != null)
+            {
+                RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
+                TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
+            }
+
+            // Load joint data
+            return LoadJointData(propertySets, SkeletonBase) && (propertySet != null);
         }
-        return false;
+        catch (Exception e)
+        {
+            MessageBox.Show("Robot data could not be loaded from the inventor file. The following error occured:\n" + e.Message);
+            return false;
+        }
     }
+
+    /// <summary>
+    /// Recursive utility for JointDataLoad.
+    /// </summary>
+    /// <param name="propertySets">Group of property sets to add any new property sets to.</param>
+    /// <param name="currentNode">Current node to save joint data of.</param>
+    /// <returns>True if all data was loaded successfully.</returns>
+    public bool LoadJointData(Inventor.PropertySets propertySets, RigidNode_Base currentNode)
+    {
+        bool allSuccessful = true;
+
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+        {
+            SkeletalJoint_Base joint = connection.Key;
+            RigidNode_Base child = connection.Value;
+
+            // Name of the property set in inventor
+            string setName = "bxd-jointdata-" + child.GetModelID();
+
+            // Attempt to open the property set
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, setName, false);
+
+            // If the property set does not exist, stop loading data
+            if (propertySet == null)
+                return false;
+
+            // Get joint properties from set
+            // Get driver information
+            if (Utilities.GetProperty(propertySet, "has-driver", false))
+            {
+                if (joint.cDriver == null)
+                    joint.cDriver = new JointDriver((JointDriverType)Utilities.GetProperty(propertySet, "driver-type", (int)JointDriverType.MOTOR));
+                JointDriver driver = joint.cDriver;
+
+                joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portA", 0);
+                joint.cDriver.portB = Utilities.GetProperty(propertySet, "driver-portB", -1);
+                joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
+                joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
+                joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
+
+                // Get other properties stored in meta
+                // Wheel information
+                if (Utilities.GetProperty(propertySet, "has-wheel", false))
+                {
+                    if (driver.GetInfo<WheelDriverMeta>() == null)
+                        driver.AddInfo(new WheelDriverMeta());
+                    WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
+
+                    wheel.type = (WheelType)Utilities.GetProperty(propertySet, "wheel-type", (int)WheelType.NORMAL);
+                    wheel.isDriveWheel = Utilities.GetProperty(propertySet, "wheel-isDriveWheel", false);
+                    wheel.SetFrictionLevel((FrictionLevel)Utilities.GetProperty(propertySet, "wheel-frictionLevel", (int)FrictionLevel.MEDIUM));
+                }
+
+                // Pneumatic information
+                if (Utilities.GetProperty(propertySet, "has-pneumatic", false))
+                {
+                    if (driver.GetInfo<PneumaticDriverMeta>() == null)
+                        driver.AddInfo(new PneumaticDriverMeta());
+                    PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+
+                    pneumatic.widthEnum = (PneumaticDiameter)Utilities.GetProperty(propertySet, "pneumatic-diameter", (int)PneumaticDiameter.MEDIUM);
+                    pneumatic.pressureEnum = (PneumaticPressure)Utilities.GetProperty(propertySet, "pneumatic-pressure", (int)PneumaticPressure.MEDIUM);
+                }
+
+                // Elevator information
+                if (Utilities.GetProperty(propertySet, "has-elevator", false))
+                {
+                    if (driver.GetInfo<ElevatorDriverMeta>() == null)
+                        driver.AddInfo(new ElevatorDriverMeta());
+                    ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+
+                    elevator.type = (ElevatorType)Utilities.GetProperty(propertySet, "elevator-type", (int)ElevatorType.NOT_MULTI);
+                }
+            }
+
+            // Recur along this child
+            if (!LoadJointData(propertySets, child))
+                allSuccessful = false;
+        }
+
+        // Save was successful
+        return allSuccessful;
+    }
+
+    /// <summary>
+    /// Saves the joint information to the most recently loaded assembly file. Returns false if fails.
+    /// </summary>
+    /// <returns>True if all data was saved successfully.</returns>
+    public bool SaveRobotData()
+    {
+        if (AsmDocument == null)
+            return false;
+
+        if (SkeletonBase == null)
+            return false;
+
+        Inventor.PropertySets propertySets = AsmDocument.PropertySets;
+
+        // Save Robot Data
+        try
+        {
+            // Save global robot data
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata");
+
+            if (RMeta.ActiveRobotName != null)
+                Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
+            Utilities.SetProperty(propertySet, "robot-weight-kg", TotalWeightKg);
+
+            // Save joint data
+            return SaveJointData(propertySets, SkeletonBase);
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show("Robot data could not be save to the inventor file. The following error occured:\n" + e.Message);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Recursive utility for JointDataSave.
+    /// </summary>
+    /// <returns>True if all data was saved successfully.</returns>
+    private bool SaveJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
+    {
+        bool allSuccessful = true;
+
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
+        {
+            SkeletalJoint_Base joint = connection.Key;
+            RigidNode_Base child = connection.Value;
+
+            // Name of the property set in inventor
+            string setName = "bxd-jointdata-" + child.GetModelID();
+
+            // Create the property set if it doesn't exist
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName);
+
+            // Add joint properties to set
+            // Save driver information
+            JointDriver driver = joint.cDriver;
+            Utilities.SetProperty(propertySet, "has-driver", driver != null);
+
+            if (driver != null)
+            {
+                Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());
+                Utilities.SetProperty(propertySet, "driver-portA", driver.portA);
+                Utilities.SetProperty(propertySet, "driver-portB", driver.portB);
+                Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
+                Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
+                Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
+
+                // Save other properties stored in meta
+                // Wheel information
+                WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
+                Utilities.SetProperty(propertySet, "has-wheel", wheel != null);
+
+                if (wheel != null)
+                {
+                    Utilities.SetProperty(propertySet, "wheel-type", (int)wheel.type);
+                    Utilities.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
+                    Utilities.SetProperty(propertySet, "wheel-frictionLevel", (int)wheel.GetFrictionLevel());
+                }
+
+                // Pneumatic information
+                PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+                Utilities.SetProperty(propertySet, "has-pneumatic", pneumatic != null);
+
+                if (pneumatic != null)
+                {
+                    Utilities.SetProperty(propertySet, "pneumatic-diameter", (int)pneumatic.widthEnum);
+                    Utilities.SetProperty(propertySet, "pneumatic-pressure", (int)pneumatic.pressureEnum);
+                }
+
+                // Elevator information
+                ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+                Utilities.SetProperty(propertySet, "has-elevator", elevator != null);
+
+                if (elevator != null)
+                {
+                    Utilities.SetProperty(propertySet, "elevator-type", (int)elevator.type);
+                }
+            }
+
+            // Recur along this child
+            if (!SaveJointData(assemblyPropertySets, child))
+                allSuccessful = false;
+        }
+
+        // Save was successful
+        return allSuccessful;
+    }
+    #endregion
 
     /// <summary>
     /// Get the desired folder to open from or save to
@@ -503,31 +623,31 @@ public partial class SynthesisGUI : Form
     /// <returns>Whether the user wishes to overwrite the data</returns>
     private bool WarnOverwrite()
     {
-        DialogResult overwriteResult = MessageBox.Show("Really overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
+        DialogResult overwriteResult = MessageBox.Show("Overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
 
-        if (overwriteResult == DialogResult.Yes) return true;
-        else return false;
+        return overwriteResult == DialogResult.Yes;
     }
 
     /// <summary>
     /// Warn the user that they are about to exit without unsaved work
     /// </summary>
     /// <returns>Whether the user wishes to continue without saving</returns>
-    public bool WarnUnsaved()
+    public bool WarnUnsaved(bool allowCancel = true)
     {
-        DialogResult saveResult = MessageBox.Show("Do you want to save your work?", "Save", MessageBoxButtons.YesNoCancel);
+        DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
+                                                  allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
 
         if (saveResult == DialogResult.Yes)
         {
-            return RobotSave();
+            return SaveRobotData(); // True if saving succeeds. False if fails.
         }
         else if (saveResult == DialogResult.No)
         {
-            return true;
+            return true; // Continue without saving
         }
         else
         {
-            return false;
+            return false; // Don't continue
         }
     }
 
@@ -551,19 +671,18 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Opens the <see cref="SetMassForm"/> form
+    /// Opens the <see cref="SetWeightForm"/> form
     /// </summary>
-    public void PromptRobotMass()
+    public void PromptRobotWeight()
     {
         try
         {
-            //TODO: Implement Value saving and loading
-            SetMassForm massForm = new SetMassForm();
+            SetWeightForm weightForm = new SetWeightForm();
 
-            massForm.ShowDialog();
+            weightForm.ShowDialog();
 
-            if (massForm.DialogResult == DialogResult.OK)
-                TotalMass = massForm.TotalMass;
+            if (weightForm.DialogResult == DialogResult.OK)
+                TotalWeightKg = weightForm.TotalWeightKg;
         }
         catch (Exception ex)
         {

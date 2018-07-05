@@ -13,7 +13,7 @@ namespace BxDRobotExporter
 {
     internal static class Utilities
     {
-        public const string SYTHESIS_PATH = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Synthesis.exe";
+        public const string SYNTHESIS_PATH = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Synthesis.exe";
 
         static internal SynthesisGUI GUI;
         static DockableWindow EmbededJointPane;

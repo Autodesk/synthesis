@@ -54,8 +54,10 @@ namespace BxDRobotExporter.Wizard
         private void OnActivateNext() => ActivateNext?.Invoke();
 
         public event InvalidatePageEventHandler InvalidatePage;
-        private void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(ReviewAndFinishPage));
-        
+        private void OnInvalidatePage()
+        {
+            InvalidatePage?.Invoke(null);
+        }
         /// <summary>
         /// Passes the <see cref="JointDriver"/> from each <see cref="DefinePartPanel"/> to <see cref="WizardData.Instance"/>
         /// </summary>

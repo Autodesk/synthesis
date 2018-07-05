@@ -37,18 +37,18 @@
             this.LeftWheelsGroup = new System.Windows.Forms.GroupBox();
             this.WarningLabel = new System.Windows.Forms.Label();
             this.RobotInfoGroupBox = new System.Windows.Forms.GroupBox();
-            this.MetricCheckBox = new System.Windows.Forms.CheckBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.WeightBox = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.DriveTrainDropdown = new System.Windows.Forms.ComboBox();
             this.DriveTrainLabel = new System.Windows.Forms.Label();
             this.AutoFill = new System.Windows.Forms.Button();
             this.RightWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.RightWheelsGroup = new System.Windows.Forms.GroupBox();
+            this.WeightUnitSelector = new System.Windows.Forms.ComboBox();
             this.WheelNodeGroupBox.SuspendLayout();
             this.LeftWheelsGroup.SuspendLayout();
             this.RobotInfoGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
             this.RightWheelsGroup.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -103,7 +103,7 @@
             this.NodeListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NodeListBox.FormattingEnabled = true;
             this.NodeListBox.ItemHeight = 17;
-            this.NodeListBox.Location = new System.Drawing.Point(12, 23);
+            this.NodeListBox.Location = new System.Drawing.Point(12, 22);
             this.NodeListBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.NodeListBox.Name = "NodeListBox";
             this.NodeListBox.Size = new System.Drawing.Size(389, 72);
@@ -148,8 +148,8 @@
             // RobotInfoGroupBox
             // 
             this.RobotInfoGroupBox.BackColor = System.Drawing.SystemColors.Control;
-            this.RobotInfoGroupBox.Controls.Add(this.MetricCheckBox);
-            this.RobotInfoGroupBox.Controls.Add(this.numericUpDown1);
+            this.RobotInfoGroupBox.Controls.Add(this.WeightUnitSelector);
+            this.RobotInfoGroupBox.Controls.Add(this.WeightBox);
             this.RobotInfoGroupBox.Controls.Add(this.label3);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainDropdown);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainLabel);
@@ -162,31 +162,19 @@
             this.RobotInfoGroupBox.TabStop = false;
             this.RobotInfoGroupBox.Text = "Drive Information";
             // 
-            // MetricCheckBox
-            // 
-            this.MetricCheckBox.AutoSize = true;
-            this.MetricCheckBox.Location = new System.Drawing.Point(507, 21);
-            this.MetricCheckBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MetricCheckBox.Name = "MetricCheckBox";
-            this.MetricCheckBox.Size = new System.Drawing.Size(104, 21);
-            this.MetricCheckBox.TabIndex = 4;
-            this.MetricCheckBox.Text = "Metric Units";
-            this.MetricCheckBox.UseVisualStyleBackColor = true;
-            this.MetricCheckBox.CheckedChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
-            // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(365, 22);
-            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.WeightBox.Location = new System.Drawing.Point(365, 22);
+            this.WeightBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.WeightBox.Maximum = new decimal(new int[] {
             150,
             0,
             0,
             0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(133, 22);
-            this.numericUpDown1.TabIndex = 3;
-            this.numericUpDown1.TextChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
+            this.WeightBox.Name = "numericUpDown1";
+            this.WeightBox.Size = new System.Drawing.Size(133, 22);
+            this.WeightBox.TabIndex = 3;
+            this.WeightBox.TextChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
             // 
             // label3
             // 
@@ -261,6 +249,22 @@
             this.RightWheelsGroup.TabStop = false;
             this.RightWheelsGroup.Text = "Right Wheels";
             // 
+            // WeightUnitSelector
+            // 
+            this.WeightUnitSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.WeightUnitSelector.DropDownWidth = 60;
+            this.WeightUnitSelector.FormattingEnabled = true;
+            this.WeightUnitSelector.Items.AddRange(new object[] {
+            "Pounds",
+            "Kilograms"});
+            this.WeightUnitSelector.Location = new System.Drawing.Point(510, 19);
+            this.WeightUnitSelector.Margin = new System.Windows.Forms.Padding(4);
+            this.WeightUnitSelector.Name = "WeightUnitSelector";
+            this.WeightUnitSelector.Size = new System.Drawing.Size(90, 24);
+            this.WeightUnitSelector.TabIndex = 4;
+            this.WeightUnitSelector.SelectedIndex = 0;
+            this.WeightUnitSelector.SelectedIndexChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
+            // 
             // DefineWheelsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -279,7 +283,7 @@
             this.LeftWheelsGroup.ResumeLayout(false);
             this.RobotInfoGroupBox.ResumeLayout(false);
             this.RobotInfoGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).EndInit();
             this.RightWheelsGroup.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -299,11 +303,11 @@
         private System.Windows.Forms.Button AutoFill; 
         private System.Windows.Forms.FlowLayoutPanel RightWheelsPanel;
         private System.Windows.Forms.ListBox NodeListBox;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown WeightBox;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.CheckBox MetricCheckBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox LeftWheelsGroup;
         private System.Windows.Forms.GroupBox RightWheelsGroup;
+        private System.Windows.Forms.ComboBox WeightUnitSelector;
     }
 }

@@ -22,7 +22,7 @@ namespace Synthesis.GUI
 
             if (position.Contains(Event.current.mousePosition))
             {
-                if (Input.GetMouseButtonDown(0) && !listActive)
+                if (UnityEngine.Input.GetMouseButtonDown(0) && !listActive)
                 {
                     showList = true;
                     listActive = true;
@@ -39,7 +39,7 @@ namespace Synthesis.GUI
                 UnityEngine.GUI.Box(listRect, "", boxStyle);
                 //This is SUPPOSED to change the list entry to whatever your mouse is hovering over when clicking, but all it does is show the list.
                 listEntry = UnityEngine.GUI.SelectionGrid(listRect, listEntry, listContent, 1, listStyle);
-                if (Input.GetMouseButtonDown(0))
+                if (UnityEngine.Input.GetMouseButtonDown(0))
                 {
                     if (listRect.Contains(Event.current.mousePosition))
                     {
