@@ -1,8 +1,21 @@
 #!/bin/bash
+FILE_URL="https://dl.dropboxusercontent.com/s/339v2vep4yf99x0/synthesis_image.tar.gz?dl=0"
 
-wget -O synthesis_image.tar.gz https://uc1047ee6720d098b469c6f3b731.dl.dropboxusercontent.com/cd/0/get/AKjGidGE2hBx8Jx2DQX3E1OWVSjxCNXbIcraSeaUty-rOoiEcHOTQeTP5amIUw8YGYwFrowQaGAiT9s8LyRCRr3mXw06WmVd3DmqHZI0WJOUA7MXI4-tMfFqwfPkfMXobTx0jgRpVH9TzAx2V8c4x6ZXX0gfm4nFHxWY_2h-1J-wp0PtbKhtBWWLkGfzg2PAnEk/file?dl=1
+if [ ! -f synthesis_image.tar.gz ] ; then
+	printf "Begun downloading VM image\n"
+	wget -O synthesis_image.tar.gz $FILE_URL
+	printf "Image successfully download.\nPlease wait while the image is extracted.\n"
+fi
 mkdir synthesis_image -p;
-tar -xvzf synthesis_image.tar.gz --directory synthesis_image;
-cd synthesis_image;
-mv new_root_files/* . && rm -rf new_root_files;
-cd ../;
+
+if [ ! -d ./synthesis_image ] || [ ! -f synthesis_image/zImage ] || [ ! -f synthesis_image/rootfs.cpio.gz ] || [ ! -f synthesis_image/rootfs.ext4 ] || [ ! -f synthesis_image/vexpress-v2p-ca9.dtb ]; then
+
+	tar -xvzf synthesis_image.tar.gz --directory synthesis_image;
+	cd synthesis_image;
+
+	mv new_root_files/* . && rm -rf new_root_files;
+	cd ../;
+
+	printf "Successfully downloaded and extract image.\n"
+fi
+
