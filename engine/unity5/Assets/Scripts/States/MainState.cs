@@ -41,7 +41,6 @@ namespace Synthesis.States
 
         private UnityPacket unityPacket;
 
-        // TODO: Create more robot classes that suit the needs of MainState.
         public SimulatorRobot ActiveRobot { get; private set; }
 
         private DynamicCamera dynamicCamera;
@@ -61,7 +60,7 @@ namespace Synthesis.States
         private string robotPath;
 
         public List<SimulatorRobot> SpawnedRobots { get; private set; }
-        private const int MAX_ROBOTS = 6;
+        private const int MaxRobots = 6;
 
         public bool IsMetric;
 
@@ -171,17 +170,12 @@ namespace Synthesis.States
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen)
-            {
-                if (DynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
-                {
-                    dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
-                }
-            }
+            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen &&
+                DynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
+                dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             // Switches to replay mode
             if (!ActiveRobot.IsResetting && UnityEngine.Input.GetKeyDown(KeyCode.Tab))
-            //if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -249,7 +243,7 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobot(string directory, bool isMixAndMatch)
         {
-            if (SpawnedRobots.Count < MAX_ROBOTS)
+            if (SpawnedRobots.Count < MaxRobots)
             {
                 if (isMixAndMatch)
                     robotPath = RobotTypeManager.RobotPath;
@@ -504,7 +498,7 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
         {
-            if (SpawnedRobots.Count >= MAX_ROBOTS)
+            if (SpawnedRobots.Count >= MaxRobots)
                 return false;
 
             robotPath = baseDirectory;
