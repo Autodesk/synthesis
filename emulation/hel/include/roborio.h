@@ -147,7 +147,6 @@ namespace hel{
     };
 
     static RoboRIO roborio_state;
-
 }
 
 #endif

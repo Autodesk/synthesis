@@ -22,6 +22,7 @@
 # Output folders
 build/*
 lib/*
+bin/*
 
 # CMake related stuff
 CMakeCache.txt
@@ -37,3 +38,8 @@ docs/latex
 
 # Developer dependancies
 GoogleTest-prefix/
+
+# Virtualization
+synthesis_image.tar.gz
+synthesis_image.md5
+synthesis_image/*

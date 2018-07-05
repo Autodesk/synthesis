@@ -100,7 +100,7 @@ else()
   MESSAGE("Doxygen not found; skipping")
 endif()
 
-add_custom_target ( build_vm ALL
+add_custom_target ( build_vm 
 	COMMAND ${VM_BUILD_COMMAND}
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	COMMENT "Download, build, and run synthesis VM",
@@ -112,5 +112,5 @@ include_directories("${WPIUTIL_DIRECTORY}/src/main/native/include")
 include_directories("${WPILIB_DIRECTORY}/hal/src/main/native/include")
 include_directories("./include")
 
-add_library (hel SHARED src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp)
+add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp)
 
