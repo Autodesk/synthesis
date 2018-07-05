@@ -8,7 +8,7 @@
 #include "HAL/ChipObject.h"
 #include "athena/PortsInternal.h"
 
-namespace cerebrum{
+namespace hel{
     using namespace nFPGA;
     using namespace nRoboRIO_FPGANamespace;
 

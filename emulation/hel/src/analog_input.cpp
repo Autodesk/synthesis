@@ -17,80 +17,80 @@ struct AnalogInputManager: public tAI{
 	}
 
     void writeConfig(hal::tAI::tConfig value, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.setConfig(value);
+        hel::roborio_state.analog_inputs.setConfig(value);
     }
 
     void writeConfig_ScanSize(uint8_t value, tRioStatusCode*) {
-        auto current_config = cerebrum::roborio_state.analog_inputs.getConfig();
+        auto current_config = hel::roborio_state.analog_inputs.getConfig();
         current_config.ScanSize = value;
-        cerebrum::roborio_state.analog_inputs.setConfig(current_config);
+        hel::roborio_state.analog_inputs.setConfig(current_config);
     }
 
     void writeConfig_ConvertRate(uint32_t value, tRioStatusCode*) {
-        auto current_config = cerebrum::roborio_state.analog_inputs.getConfig();
+        auto current_config = hel::roborio_state.analog_inputs.getConfig();
         current_config.ConvertRate = value;
-        cerebrum::roborio_state.analog_inputs.setConfig(current_config);
+        hel::roborio_state.analog_inputs.setConfig(current_config);
     }
 
     hal::tAI::tConfig readConfig(tRioStatusCode*) {
-        return cerebrum::roborio_state.analog_inputs.getConfig();
+        return hel::roborio_state.analog_inputs.getConfig();
     }
 
     uint8_t readConfig_ScanSize(tRioStatusCode*) {
-        return cerebrum::roborio_state.analog_inputs.getConfig().ScanSize;
+        return hel::roborio_state.analog_inputs.getConfig().ScanSize;
     }
 
     uint32_t readConfig_ConvertRate(tRioStatusCode*) {
-        return cerebrum::roborio_state.analog_inputs.getConfig().ConvertRate;
+        return hel::roborio_state.analog_inputs.getConfig().ConvertRate;
     }
 
     void writeOversampleBits(uint8_t channel, uint8_t value, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.setOversampleBits(channel, value);
+        hel::roborio_state.analog_inputs.setOversampleBits(channel, value);
     }
     void writeAverageBits(uint8_t channel, uint8_t value, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.setAverageBits(channel, value);
+        hel::roborio_state.analog_inputs.setAverageBits(channel, value);
     }
     void writeScanList(uint8_t channel, uint8_t value, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.setScanList(channel, value);
+        hel::roborio_state.analog_inputs.setScanList(channel, value);
     }
 
     uint8_t readOversampleBits(uint8_t channel, tRioStatusCode*) {
-        return cerebrum::roborio_state.analog_inputs.getOversampleBits(channel);
+        return hel::roborio_state.analog_inputs.getOversampleBits(channel);
     }
 
     uint8_t readAverageBits(uint8_t channel, tRioStatusCode*) {
-        return cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
+        return hel::roborio_state.analog_inputs.getAverageBits(channel);
     }
 
     uint8_t readScanList(uint8_t channel, tRioStatusCode*) {
-        return cerebrum::roborio_state.analog_inputs.getAverageBits(channel);
+        return hel::roborio_state.analog_inputs.getAverageBits(channel);
     }
 
     void writeReadSelect(hal::tAI::tReadSelect value, tRioStatusCode*) {
-        cerebrum::roborio_state.analog_inputs.setReadSelect(value);
+        hel::roborio_state.analog_inputs.setReadSelect(value);
     }
 
     void writeReadSelect_Channel(uint8_t value, tRioStatusCode*) {
-        auto current_read_select = cerebrum::roborio_state.analog_inputs.getReadSelect();
+        auto current_read_select = hel::roborio_state.analog_inputs.getReadSelect();
         current_read_select.Channel = value;
-        cerebrum::roborio_state.analog_inputs.setReadSelect(current_read_select);
+        hel::roborio_state.analog_inputs.setReadSelect(current_read_select);
     }
 
     void writeReadSelect_Averaged(bool value, tRioStatusCode*) {
-        auto current_read_select = cerebrum::roborio_state.analog_inputs.getReadSelect();
+        auto current_read_select = hel::roborio_state.analog_inputs.getReadSelect();
         current_read_select.Channel = value;
-        cerebrum::roborio_state.analog_inputs.setReadSelect(current_read_select);
+        hel::roborio_state.analog_inputs.setReadSelect(current_read_select);
     }
 
     hal::tAI::tReadSelect readReadSelect(tRioStatusCode*) {
-        return cerebrum::roborio_state.analog_inputs.getReadSelect();
+        return hel::roborio_state.analog_inputs.getReadSelect();
     }
 
     uint8_t readReadSelect_Channel(tRioStatusCode*) {
-        return cerebrum::roborio_state.analog_inputs.getReadSelect().Channel;
+        return hel::roborio_state.analog_inputs.getReadSelect().Channel;
     }
     bool readReadSelect_Averaged(tRioStatusCode*) {
-            return cerebrum::roborio_state.analog_inputs.getReadSelect().Averaged;
+            return hel::roborio_state.analog_inputs.getReadSelect().Averaged;
     }
 
     uint32_t readLoopTiming(tRioStatusCode*) {
@@ -108,7 +108,7 @@ namespace nFPGA{
 	}
 }
 
-namespace cerebrum {
+namespace hel {
 
     void RoboRIO::AnalogInputs::setConfig(tAI::tConfig value) {config = value;}
     tAI::tConfig RoboRIO::AnalogInputs::getConfig() {return config;}
