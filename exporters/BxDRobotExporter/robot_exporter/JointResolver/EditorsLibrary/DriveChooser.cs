@@ -91,12 +91,7 @@ public partial class DriveChooser : Form
                     {
                         // TODO:  This is a really sketchy hack and I don't even know where the cat is.
                         cmbWheelType.SelectedIndex = (byte)wheelMeta.type;
-                        if (wheelMeta.forwardExtremeValue > 8)
-                            cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.HIGH;
-                        else if (wheelMeta.forwardExtremeValue > 4)
-                            cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
-                        else
-                            cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.LOW;
+                        cmbFrictionLevel.SelectedIndex = (byte)wheelMeta.GetFrictionLevel();
                     }
                     catch
                     {
@@ -294,72 +289,8 @@ public partial class DriveChooser : Form
                     isDriveWheel = chkBoxDriveWheel.Checked
                 }; //The info about the wheel attached to the joint.
                    //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
-                switch ((FrictionLevel) cmbFrictionLevel.SelectedIndex)
-                {
-                    case FrictionLevel.HIGH:
-                        wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
-                        wheelDriver.forwardExtremeValue = 10; //Force of max static friction force.
-                        wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
-                        wheelDriver.forwardAsympValue = 8; //Force of leveld off kinetic friction force.
 
-                        if (wheelDriver.type == WheelType.OMNI) //Set to relatively low friction, as omni wheels can move sidways.
-                        {
-                            wheelDriver.sideExtremeSlip = 1; //Same as above, but orthogonal to the movement of the wheel.
-                            wheelDriver.sideExtremeValue = .01f;
-                            wheelDriver.sideAsympSlip = 1.5f;
-                            wheelDriver.sideAsympValue = .005f;
-                        }
-                        else
-                        {
-                            wheelDriver.sideExtremeSlip = 1;
-                            wheelDriver.sideExtremeValue = 10;
-                            wheelDriver.sideAsympSlip = 1.5f;
-                            wheelDriver.sideAsympValue = 8;
-                        }
-                        break;
-                    case FrictionLevel.MEDIUM:
-                        wheelDriver.forwardExtremeSlip = 1f;
-                        wheelDriver.forwardExtremeValue = 7;
-                        wheelDriver.forwardAsympSlip = 1.5f;
-                        wheelDriver.forwardAsympValue = 5;
-
-                        if (wheelDriver.type == WheelType.OMNI)
-                        {
-                            wheelDriver.sideExtremeSlip = 1;
-                            wheelDriver.sideExtremeValue = .01f;
-                            wheelDriver.sideAsympSlip = 1.5f;
-                            wheelDriver.sideAsympValue = .005f;
-                        }
-                        else
-                        {
-                            wheelDriver.sideExtremeSlip = 1;
-                            wheelDriver.sideExtremeValue = 7;
-                            wheelDriver.sideAsympSlip = 1.5f;
-                            wheelDriver.sideAsympValue = 5;
-                        }
-                        break;
-                    case FrictionLevel.LOW:
-                        wheelDriver.forwardExtremeSlip = 1;
-                        wheelDriver.forwardExtremeValue = 5;
-                        wheelDriver.forwardAsympSlip = 1.5f;
-                        wheelDriver.forwardAsympValue = 3;
-
-                        if (wheelDriver.type == WheelType.OMNI)
-                        {
-                            wheelDriver.sideExtremeSlip = 1;
-                            wheelDriver.sideExtremeValue = .01f;
-                            wheelDriver.sideAsympSlip = 1.5f;
-                            wheelDriver.sideAsympValue = .005f;
-                        }
-                        else
-                        {
-                            wheelDriver.sideExtremeSlip = 1;
-                            wheelDriver.sideExtremeValue = 5;
-                            wheelDriver.sideAsympSlip = 1.5f;
-                            wheelDriver.sideAsympValue = 3;
-                        }
-                        break;
-                }
+                wheelDriver.SetFrictionLevel((FrictionLevel)cmbFrictionLevel.SelectedIndex);
 
                 joint.cDriver.AddInfo(wheelDriver);
                 #endregion
