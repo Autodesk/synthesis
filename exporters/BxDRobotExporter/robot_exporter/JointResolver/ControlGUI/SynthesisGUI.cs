@@ -171,8 +171,26 @@ public partial class SynthesisGUI : Form
     /// Open Synthesis to a specific robot and field.
     /// </summary>
     /// <param name="node"></param>
-    public void OpenSynthesis(string robotName, string fieldName)
+    public void OpenSynthesis(string robotName = null, string fieldName = null)
     {
+        if (robotName == null)
+        {
+            // Cancel if no robot name is given
+            if (RMeta.ActiveRobotName == null)
+                return;
+
+            robotName = RMeta.ActiveRobotName;
+        }
+
+        if (fieldName == null)
+        {
+            // Cancel if no field name is given
+            if (RMeta.FieldName == null)
+                return;
+
+            fieldName = RMeta.FieldName;
+        }
+        
         Process.Start(Utilities.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
     }
 
