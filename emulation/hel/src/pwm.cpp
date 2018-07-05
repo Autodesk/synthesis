@@ -57,31 +57,31 @@ struct PWMManager: public tPWM{
 	}
 	
 	void writeConfig(tPWM::tConfig value, tRioStatusCode* /*status*/){
-		hel::roborio_state.pwm_system.setConfig(value);
+		hel::RoboRIOManager::getInstance()->pwm_system.setConfig(value);
 	}
 
 	void writeConfig_Period(uint16_t value, tRioStatusCode* /*status*/){
-		tPWM::tConfig config = hel::roborio_state.pwm_system.getConfig();
+		tPWM::tConfig config = hel::RoboRIOManager::getInstance()->pwm_system.getConfig();
 		config.Period = value;
-		hel::roborio_state.pwm_system.setConfig(config);
+		hel::RoboRIOManager::getInstance()->pwm_system.setConfig(config);
 	}
 	
 	void writeConfig_MinHigh(uint16_t value, tRioStatusCode* /*status*/){
-		tPWM::tConfig config = hel::roborio_state.pwm_system.getConfig();
+		tPWM::tConfig config = hel::RoboRIOManager::getInstance()->pwm_system.getConfig();
 		config.MinHigh = value;
-		hel::roborio_state.pwm_system.setConfig(config);
+		hel::RoboRIOManager::getInstance()->pwm_system.setConfig(config);
 	}
 
 	tPWM::tConfig readConfig(tRioStatusCode* /*status*/){
-		return hel::roborio_state.pwm_system.getConfig();
+		return hel::RoboRIOManager::getInstance()->pwm_system.getConfig();
 	}
 	
 	uint16_t readConfig_Period(tRioStatusCode* /*status*/){
-		return hel::roborio_state.pwm_system.getConfig().Period;
+		return hel::RoboRIOManager::getInstance()->pwm_system.getConfig().Period;
 	}
 	
 	uint16_t readConfig_MinHigh(tRioStatusCode* /*status*/){
-		return hel::roborio_state.pwm_system.getConfig().MinHigh;
+		return hel::RoboRIOManager::getInstance()->pwm_system.getConfig().MinHigh;
 	}
 
 	uint32_t readCycleStartTimeUpper(tRioStatusCode* /*status*/){
@@ -93,19 +93,19 @@ struct PWMManager: public tPWM{
 	}
 
 	void writePeriodScaleMXP(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-		hel::roborio_state.pwm_system.setMXPPeriodScale(bitfield_index, value);
+		hel::RoboRIOManager::getInstance()->pwm_system.setMXPPeriodScale(bitfield_index, value);
 	}
 
 	uint8_t readPeriodScaleMXP(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-		return hel::roborio_state.pwm_system.getMXPPeriodScale(bitfield_index);
+		return hel::RoboRIOManager::getInstance()->pwm_system.getMXPPeriodScale(bitfield_index);
 	}
 
 	void writePeriodScaleHdr(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-		hel::roborio_state.pwm_system.setHdrPeriodScale(bitfield_index, value);
+		hel::RoboRIOManager::getInstance()->pwm_system.setHdrPeriodScale(bitfield_index, value);
 	}
 	
 	uint8_t readPeriodScaleHdr(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-		return hel::roborio_state.pwm_system.getHdrPeriodScale(bitfield_index);
+		return hel::RoboRIOManager::getInstance()->pwm_system.getHdrPeriodScale(bitfield_index);
 	}
 
 	void writeZeroLatch(uint8_t bitfield_index, bool value, tRioStatusCode* /*status*/){
@@ -117,19 +117,19 @@ struct PWMManager: public tPWM{
 	}
 
 	void writeHdr(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-		hel::roborio_state.pwm_system.setHdrDutyCycle(reg_index, value);
+		hel::RoboRIOManager::getInstance()->pwm_system.setHdrDutyCycle(reg_index, value);
 	}
 	
 	uint16_t readHdr(uint8_t reg_index, tRioStatusCode* /*status*/){
-		return hel::roborio_state.pwm_system.getHdrDutyCycle(reg_index);
+		return hel::RoboRIOManager::getInstance()->pwm_system.getHdrDutyCycle(reg_index);
 	}
 
 	void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-		hel::roborio_state.pwm_system.setMXPDutyCycle(reg_index, value);
+		hel::RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
 	}
 	
 	uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
-		return hel::roborio_state.pwm_system.getMXPDutyCycle(reg_index);
+		return hel::RoboRIOManager::getInstance()->pwm_system.getMXPDutyCycle(reg_index);
 	}
 };
 
