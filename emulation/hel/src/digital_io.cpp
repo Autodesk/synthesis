@@ -74,92 +74,87 @@ struct DIOManager: public tDIO{
 		writeDO_MXP(value.MXP, status);
 	}
 
-	void writeDO_Headers(uint16_t value, tRioStatusCode* /*status*/){
-		for(unsigned i = 1; i <= hel::findMostSignificantBit(value); i++){ 
-			if(hel::checkBitHigh(value, i)){ // attempt output if bit in value is high
-				if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().Headers, i)){ //allow write if enabled_outputs bit is also high 
-					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
-					outputs.Headers = value;
-					hel::roborio_state.digital_system.setOutputs(outputs);
-				} else {
-					//TODO error handling
-			 	}
+private:
+	template<typename T, typename S>
+	bool allowOutput(T output,S enabled){
+		for(unsigned i = 1; i < hel::findMostSignificantBit(output); i++){ 
+			if(hel::checkBitHigh(output, i)){ // attempt output if bit in value is high
+				if(hel::checkBitHigh(enabled, i)){ //allow write if enabled_outputs bit is also high 
+					return true;
+				}
 			}
 		}
+		return false;
+	}
+
+public:
+
+	void writeDO_Headers(uint16_t value, tRioStatusCode* /*status*/){
+		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Headers)){
+			tDIO::tDO outputs = hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
+			outputs.Headers = value;
+			hel::RoboRIOManager::getInstance()->digital_system.setOutputs(outputs);
+		}
+		//TODO error handling
 	}
 	
 	void writeDO_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
-		for(unsigned i = 1; i <= hel::findMostSignificantBit(value); i++){ 
-			if(hel::checkBitHigh(value, i)){ // attempt output if bit in value is high
-				if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().SPIPort, i)){ //allow write if enabled_outputs bit is also high
-					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
-					outputs.SPIPort = value;
-					hel::roborio_state.digital_system.setOutputs(outputs);
-				} else {
-					//TODO error handling
-			 	}
-			}
+		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().SPIPort)){
+			tDIO::tDO outputs = hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
+			outputs.SPIPort = value;
+			hel::RoboRIOManager::getInstance()->digital_system.setOutputs(outputs);
 		}
+		//TODO error handling
 	}
 	
 	void writeDO_Reserved(uint8_t value, tRioStatusCode* /*status*/){
-		for(unsigned i = 1; i <= hel::findMostSignificantBit(value); i++){ 
-			if(hel::checkBitHigh(value, i)){ // attempt output if bit in value is high
-				if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().Reserved, i)){ //allow write if enabled_outputs bit is also high
-					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
-					outputs.Reserved = value;
-					hel::roborio_state.digital_system.setOutputs(outputs);
-				} else {
-					//TODO error handling
-			 	}
-			}
+		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Reserved)){
+			tDIO::tDO outputs = hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
+			outputs.Reserved = value;
+			hel::RoboRIOManager::getInstance()->digital_system.setOutputs(outputs);
 		}
+		//TODO error handling
 	}
 	
 	void writeDO_MXP(uint16_t value, tRioStatusCode* /*status*/){
-		for(unsigned i = 1; i <= hel::findMostSignificantBit(value); i++){ 
-			if(hel::checkBitHigh(value, i)){ // attempt output if bit in value is high
-				if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().MXP, i)){ //allow write if enabled_outputs bit is also high
-					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
-					outputs.MXP = value;
-					hel::roborio_state.digital_system.setOutputs(outputs);
-				} else {
-					//TODO error handling
-			 	}
-			}
+		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP)){
+			tDIO::tDO outputs = hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
+			outputs.MXP = value;
+			hel::RoboRIOManager::getInstance()->digital_system.setOutputs(outputs);
 		}
+		//TODO error handling
 	}
 
 	tDO readDO(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getOutputs();
+		return hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
 	}
 
 	uint16_t readDO_Headers(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getOutputs().Headers;
+		return hel::RoboRIOManager::getInstance()->digital_system.getOutputs().Headers;
 	}
 
 	uint8_t readDO_SPIPort(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getOutputs().SPIPort;
+		return hel::RoboRIOManager::getInstance()->digital_system.getOutputs().SPIPort;
 	}
 
 	uint8_t readDO_Reserved(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getOutputs().Reserved;
+		return hel::RoboRIOManager::getInstance()->digital_system.getOutputs().Reserved;
 	}
 	
 	uint16_t readDO_MXP(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getOutputs().MXP;
+		return hel::RoboRIOManager::getInstance()->digital_system.getOutputs().MXP;
 	}
 
 	void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-		if(hel::checkBitHigh(hel::roborio_state.digital_system.getEnabledOutputs().MXP, bitfield_index)){
-			hel::roborio_state.digital_system.setPWMDutyCycle(bitfield_index, value);
+		if(hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, bitfield_index)){
+			hel::RoboRIOManager::getInstance()->digital_system.setPWMDutyCycle(bitfield_index, value);
 		} else {
 			//TODO error handling
 		}
 	}
 
 	uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getPWMDutyCycle(bitfield_index);
+		return hel::RoboRIOManager::getInstance()->digital_system.getPWMDutyCycle(bitfield_index);
 	}
 
 	void writePWMDutyCycleB(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
@@ -178,58 +173,58 @@ struct DIOManager: public tDIO{
 	}
 
 	void writeOutputEnable(tDIO::tOutputEnable value, tRioStatusCode* /*status*/){
-		hel::roborio_state.digital_system.setEnabledOutputs(value);
+		hel::RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(value);
 	}
 
 	void writeOutputEnable_Headers(uint16_t value, tRioStatusCode* /*status*/){
-		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
 		enabled_outputs.Headers = value;
-		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(enabled_outputs);
 	}
 	
 	void writeOutputEnable_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
-		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
 		enabled_outputs.SPIPort = value;
-		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(enabled_outputs);
 	}
 	
 	void writeOutputEnable_Reserved(uint8_t value, tRioStatusCode* /*status*/){
-		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
 		enabled_outputs.Reserved = value;
-		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(enabled_outputs);
 	}
 	
 	void writeOutputEnable_MXP(uint16_t value, tRioStatusCode* /*status*/){
-		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
 		enabled_outputs.MXP = value;
-		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(enabled_outputs);
 	}
 
 	tOutputEnable readOutputEnable(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getEnabledOutputs();
+		return hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
 	}
 
 	uint16_t readOutputEnable_Headers(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getEnabledOutputs().Headers;
+		return hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Headers;
 	}
 	
 	uint8_t readOutputEnable_SPIPort(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getEnabledOutputs().SPIPort;
+		return hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().SPIPort;
 	}
 	
 	uint8_t readOutputEnable_Reserved(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getEnabledOutputs().Reserved;
+		return hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Reserved;
 	}
 
 	uint16_t readOutputEnable_MXP(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getEnabledOutputs().MXP;
+		return hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP;
 	}
 
 	void writePWMOutputSelect(uint8_t bitfield_index, uint8_t /*value*/, tRioStatusCode* /*status*/){
 		//note: bitfield_index is mxp remapped dio address corresponding to the mxp pwm output
-		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
 		enabled_outputs.MXP &= 1u << bitfield_index;
-		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(enabled_outputs);
 	}
 
 	uint8_t readPWMOutputSelect(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
@@ -237,7 +232,7 @@ struct DIOManager: public tDIO{
 	}
 
 	void writePulse(tDIO::tPulse value, tRioStatusCode* /*status*/){
-		hel::roborio_state.digital_system.setPulses(value);
+		hel::RoboRIOManager::getInstance()->digital_system.setPulses(value);
 		//TODO this should only last for pulse_length seconds, and only one pulse should be active at a time?
 	}
 
@@ -258,51 +253,51 @@ struct DIOManager: public tDIO{
 	}
 
 	tPulse readPulse(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getPulses();
+		return hel::RoboRIOManager::getInstance()->digital_system.getPulses();
 	}
 
 	uint16_t readPulse_Headers(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getPulses().Headers;
+		return hel::RoboRIOManager::getInstance()->digital_system.getPulses().Headers;
 	}
 	
 	uint8_t readPulse_SPIPort(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getPulses().SPIPort;
+		return hel::RoboRIOManager::getInstance()->digital_system.getPulses().SPIPort;
 	}
 	
 	uint8_t readPulse_Reserved(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getPulses().Reserved;
+		return hel::RoboRIOManager::getInstance()->digital_system.getPulses().Reserved;
 	}
 	
 	uint16_t readPulse_MXP(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getPulses().MXP;
+		return hel::RoboRIOManager::getInstance()->digital_system.getPulses().MXP;
 	}
 
 	tDI readDI(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getInputs();
+		return hel::RoboRIOManager::getInstance()->digital_system.getInputs();
 	}
 
 	uint16_t readDI_Headers(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getInputs().Headers;
+		return hel::RoboRIOManager::getInstance()->digital_system.getInputs().Headers;
 	}
 	
 	uint8_t readDI_SPIPort(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getInputs().SPIPort;
+		return hel::RoboRIOManager::getInstance()->digital_system.getInputs().SPIPort;
 	}
 	
 	uint8_t readDI_Reserved(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getInputs().Reserved;
+		return hel::RoboRIOManager::getInstance()->digital_system.getInputs().Reserved;
 	}
 	
 	uint16_t readDI_MXP(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getInputs().MXP;
+		return hel::RoboRIOManager::getInstance()->digital_system.getInputs().MXP;
 	}		
 
 	void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
-		hel::roborio_state.digital_system.setMXPSpecialFunctionsEnabled(value);
+		hel::RoboRIOManager::getInstance()->digital_system.setMXPSpecialFunctionsEnabled(value);
 	}
 
 	uint16_t readEnableMXPSpecialFunction(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getMXPSpecialFunctionsEnabled();
+		return hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled();
 	}
 
 	void writeFilterSelectMXP(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
@@ -312,11 +307,11 @@ struct DIOManager: public tDIO{
 	}
 
 	void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
-		hel::roborio_state.digital_system.setPulseLength(value);
+		hel::RoboRIOManager::getInstance()->digital_system.setPulseLength(value);
 	}
 
 	uint8_t readPulseLength(tRioStatusCode* /*status*/){
-		return hel::roborio_state.digital_system.getPulseLength();
+		return hel::RoboRIOManager::getInstance()->digital_system.getPulseLength();
 	}
 
 	void writePWMPeriodPower(uint16_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
