@@ -225,6 +225,14 @@ namespace Synthesis.Robot
             return false;
         }
         
+        /// <summary>
+        /// Constructs the robot from the given list of nodes and number of wheels,
+        /// and updates the collective mass.
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="numWheels"></param>
+        /// <param name="collectiveMass"></param>
+        /// <returns></returns>
         protected virtual bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
         {
             //Initializes the nodes
@@ -248,9 +256,11 @@ namespace Synthesis.Robot
             return true;
         }
 
+        /// <summary>
+        /// Updates all motors on the robot.
+        /// </summary>
         protected virtual void UpdateMotors()
         {
-            // TODO: Real mecanum detection.
             if (Packet != null)
                 DriveJoints.UpdateAllMotors(RootNode, Packet.dio, ControlIndex, IsMecanum());
             else
