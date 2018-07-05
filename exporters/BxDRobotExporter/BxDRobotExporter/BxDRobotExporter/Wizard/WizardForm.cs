@@ -18,7 +18,7 @@ namespace BxDRobotExporter.Wizard
         {
             InitializeComponent();
 
-            BXDJSkeleton.SetupFileNames(Utilities.GUI.SkeletonBase, true);
+            BXDJSkeleton.SetupFileNames(Utilities.GUI.SkeletonBase);
             
             this.Resize += WizardForm_Resize;
 
