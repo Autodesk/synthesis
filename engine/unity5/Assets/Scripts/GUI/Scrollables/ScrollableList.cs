@@ -60,7 +60,7 @@ namespace Synthesis.GUI.Scrollables
                     selectedEntry = items[0];
             }
 
-            Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
+            Vector3 p = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
 
             float scale = GameObject.Find("Canvas").GetComponent<Canvas>().scaleFactor;
             Rect rect = GetComponent<RectTransform>().rect;
