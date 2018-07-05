@@ -11,6 +11,7 @@
 #include <array>
 #include <memory>
 #include <mutex>
+#include <queue>
 
 #include "HAL/ChipObject.h"
 #include "athena/PortsInternal.h"
@@ -279,10 +280,37 @@ namespace hel{
 			void setPWMDutyCycle(uint8_t, uint8_t);
 		};
 
-        AnalogOutputs analog_outputs;
-        PWMSystem pwm_system;
-        DIOSystem digital_system;
+		struct CANBus{
+			struct Message{
+				uint32_t id;
+				std::array<uint8_t, 8> data;
+				uint8_t data_size: 4;
+				uint32_t time_stamp;
+
+				static constexpr int32_t CAN_SEND_PERIOD_NO_REPEAT = 0;
+				static constexpr int32_t CAN_SEND_PERIOD_STOP_REPEATING = -1;
+
+				static constexpr uint32_t CAN_IS_FRAME_REMOTE = 0x80000000;
+				static constexpr uint32_t CAN_IS_FRAME_11BIT = 0x40000000;
+
+				static constexpr uint32_t CAN_29BIT_MESSAGE_ID_MASK = 0x1FFFFFFF;
+				static constexpr uint32_t CAN_11BIT_MESSAGE_ID_MASK = 0x000007FF;
+			};
+		private:
+			std::queue<Message> in_message_queue;
+			std::queue<Message> out_message_queue;
+	
+		public:
+			void enqueueMessage(Message);
+			Message getNextMessage()const;
+			void popNextMessage();
+		};
+
         AnalogInputs analog_inputs;
+        AnalogOutputs analog_outputs;
+		CANBus can_bus;
+        DIOSystem digital_system;
+        PWMSystem pwm_system;
 
         explicit RoboRIO() = default;
 

@@ -108,42 +108,46 @@ namespace hel{
         uint8_t readPeriodScaleHdr(uint8_t bitfield_index, tRioStatusCode* /*status*/){
             return hel::RoboRIOManager::getInstance()->pwm_system.getHdrPeriodScale(bitfield_index);
         }
-
-        void writeZeroLatch(uint8_t bitfield_index, bool value, tRioStatusCode* /*status*/){
+                void writeZeroLatch(uint8_t bitfield_index, bool value, tRioStatusCode* /*status*/){
             //TODO
         }
 
         bool readZeroLatch(uint8_t bitfield_index, tRioStatusCode* /*status*/){
+            return false;
             //TODO
         }
 
         void writeHdr(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
             hel::RoboRIOManager::getInstance()->pwm_system.setHdrDutyCycle(reg_index, value);
         }
+        void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
+            uint8_t DO_index = [&]{
+                if(reg_index < 4){ //First four MXP PWM channels line up with DO, but the next six are offset by four
+                    return reg_index;
+                }
+                reg_index += 4; 
+                return reg_index;
+            }();
+            if(
+               hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, DO_index) && //Allow MXP output if pin is output-enabled
+               hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), DO_index) //Allow MXP outout if DO is using special function
+               ){
+                hel::RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
+            }
+        }
 
         uint16_t readHdr(uint8_t reg_index, tRioStatusCode* /*status*/){
             return hel::RoboRIOManager::getInstance()->pwm_system.getHdrDutyCycle(reg_index);
         }
-
-        void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-            if(
-               hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, reg_index) && //Allow MXP output if pin is output-enabled
-               hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), reg_index) //Allow MXP outout if DO is using special function
-                ){
-                hel::RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
-            }
-            //TODO error handling
-        }
-
         uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
             return hel::RoboRIOManager::getInstance()->pwm_system.getMXPDutyCycle(reg_index);
         }
     };
 };
 namespace nFPGA{
-	namespace nRoboRIO_FPGANamespace{
+    namespace nRoboRIO_FPGANamespace{
 		tPWM* tPWM::create(tRioStatusCode* /*status*/){
 			return new hel::PWMManager();
 		}
-	}
-}
+    }
+};
