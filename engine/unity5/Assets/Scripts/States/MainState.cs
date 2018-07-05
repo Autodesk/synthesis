@@ -168,11 +168,10 @@ namespace Synthesis.States
             {
                 if (UnityEngine.Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
-
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((Input.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen)
+            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen)
             {
                 if (DynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
                 {
@@ -253,13 +252,9 @@ namespace Synthesis.States
             if (SpawnedRobots.Count < MAX_ROBOTS)
             {
                 if (isMixAndMatch)
-                {
                     robotPath = RobotTypeManager.RobotPath;
-                }
                 else
-                {
                     robotPath = directory;
-                }
 
                 GameObject robotObject = new GameObject("Robot");
                 SimulatorRobot robot;
@@ -305,7 +300,6 @@ namespace Synthesis.States
             sensorManagerGUI.EndProcesses();
 
             RemoveRobot(SpawnedRobots.IndexOf(ActiveRobot));
-            //ActiveRobot = null;
 
             if (LoadRobot(directory, isMixAndMatch))
             {
@@ -315,18 +309,6 @@ namespace Synthesis.States
             }
 
             return false;
-
-            // Old code below. Not exactly possible with new robot structure.
-
-            //if (ActiveRobot.RobotHasManipulator)
-            //{
-            //    ActiveRobot.DeleteManipulatorNodes();
-            //    ActiveRobot.RobotHasManipulator = false;
-            //}
-
-            //ActiveRobot.RobotIsMixAndMatch = isMixAndMatch;
-
-            //return ActiveRobot.InitializeRobot(directory);
         }
 
         /// <summary>
@@ -392,8 +374,6 @@ namespace Synthesis.States
             {
                 robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
                 sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
-
-                // TODO: The camera is a bit weird when changing robots. Fix that. Then test other aspects of the simulator and fix anything else that needs fixing.
 
                 MaMRobot mamRobot = SpawnedRobots[index] as MaMRobot;
 
