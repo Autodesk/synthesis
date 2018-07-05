@@ -1,6 +1,7 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.States;
+using Synthesis.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
