@@ -65,6 +65,7 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
+    // TODO: This should be moved to RMeta
     public float TotalMass = 120;
 
     private SkeletonExporterForm skeletonExporter;
@@ -346,7 +347,7 @@ public partial class SynthesisGUI : Form
     /// Loads the joint information from the Inventor assembly file. Returns false if fails.
     /// </summary>
     /// <param name="asmDocument">Assembly document to load data from. Data will be saved to this document when <see cref="SaveRobotData"/> is called.</param>
-    /// <returns>True if successful.</returns>
+    /// <returns>True if all data was loaded successfully.</returns>
     public bool LoadRobotData(Inventor.AssemblyDocument asmDocument)
     {
         if (asmDocument == null)
@@ -355,22 +356,23 @@ public partial class SynthesisGUI : Form
         if (SkeletonBase == null)
             return false;
 
+        AsmDocument = asmDocument;
         Inventor.PropertySets propertySets = asmDocument.PropertySets;
 
         // Load Robot Data
         try
         {
             // Load global robot data
-            // TODO: Load robot weight and name
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata", false);
+            
+            if (propertySet != null)
+            {
+                RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
+                TotalMass = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
+            }
 
             // Load joint data
-            if (LoadJointData(propertySets, SkeletonBase))
-            {
-                AsmDocument = asmDocument; // Store assembly document for saving to later on
-                return true;
-            }
-            else
-                return false;
+            return LoadJointData(propertySets, SkeletonBase) && (propertySet != null);
         }
         catch (Exception e)
         {
@@ -382,11 +384,13 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Recursive utility for JointDataLoad.
     /// </summary>
-    /// <param name="assemblyPropertySets">Group of property sets to add any new property sets to.</param>
+    /// <param name="propertySets">Group of property sets to add any new property sets to.</param>
     /// <param name="currentNode">Current node to save joint data of.</param>
-    /// <returns>True if successful.</returns>
-    public bool LoadJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
+    /// <returns>True if all data was loaded successfully.</returns>
+    public bool LoadJointData(Inventor.PropertySets propertySets, RigidNode_Base currentNode)
     {
+        bool allSuccessful = true;
+
         foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
         {
             SkeletalJoint_Base joint = connection.Key;
@@ -396,7 +400,7 @@ public partial class SynthesisGUI : Form
             string setName = "bxd-jointdata-" + child.GetModelID();
 
             // Attempt to open the property set
-            Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName, false);
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, setName, false);
 
             // If the property set does not exist, stop loading data
             if (propertySet == null)
@@ -452,18 +456,18 @@ public partial class SynthesisGUI : Form
             }
 
             // Recur along this child
-            if (!LoadJointData(assemblyPropertySets, child))
-                return false; // If one of the children failed to save, then cancel the saving process
+            if (!LoadJointData(propertySets, child))
+                allSuccessful = false;
         }
 
         // Save was successful
-        return true;
+        return allSuccessful;
     }
 
     /// <summary>
     /// Saves the joint information to the most recently loaded assembly file. Returns false if fails.
     /// </summary>
-    /// <returns>True if successful.</returns>
+    /// <returns>True if all data was saved successfully.</returns>
     public bool SaveRobotData()
     {
         if (AsmDocument == null)
@@ -478,7 +482,11 @@ public partial class SynthesisGUI : Form
         try
         {
             // Save global robot data
-            // TODO: Save robot weight and name
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata");
+
+            Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
+            Utilities.SetProperty(propertySet, "robot-weight-kg", TotalMass);
+            // TODO: Save isMetric info.
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
@@ -493,9 +501,11 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Recursive utility for JointDataSave.
     /// </summary>
-    /// <returns>True if successful.</returns>
+    /// <returns>True if all data was saved successfully.</returns>
     private bool SaveJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
     {
+        bool allSuccessful = true;
+
         foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
         {
             SkeletalJoint_Base joint = connection.Key;
@@ -555,11 +565,11 @@ public partial class SynthesisGUI : Form
 
             // Recur along this child
             if (!SaveJointData(assemblyPropertySets, child))
-                return false; // If one of the children failed to save, then cancel the saving process
+                allSuccessful = false;
         }
 
         // Save was successful
-        return true;
+        return allSuccessful;
     }
     #endregion
 
