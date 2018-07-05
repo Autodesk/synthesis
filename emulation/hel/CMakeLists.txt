@@ -17,6 +17,9 @@ set (hel_VERSION_MINOR 0)
 set (WPILIB_DIRECTORY "../external/allwpilib")
 set (WPIUTIL_DIRECTORY "../external/allwpilib/wpiutil")
 
+#set (VM_BUILD_COMMAND "./download_vm.sh && ./run_vm.sh")
+set (VM_BUILD_COMMAND "./run_vm.sh")
+
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" )
   set (CMAKE_C_COMPILER gcc)
   set (CMAKE_CXX_COMPILER g++)
@@ -97,6 +100,12 @@ else()
   MESSAGE("Doxygen not found; skipping")
 endif()
 
+add_custom_target ( build_vm ALL
+	COMMAND ${VM_BUILD_COMMAND}
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	COMMENT "Download, build, and run synthesis VM",
+	VERBATIM )
+
 include_directories("${WPILIB_DIRECTORY}/hal/src/main/native")
 include_directories("${WPILIB_DIRECTORY}/ni-libraries/include")
 include_directories("${WPIUTIL_DIRECTORY}/src/main/native/include")
@@ -104,16 +113,4 @@ include_directories("${WPILIB_DIRECTORY}/hal/src/main/native/include")
 include_directories("./include")
 
 add_library (hel SHARED src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp)
-
-add_executable (digital-io src/digital_io.cpp)
-target_compile_options (digital-io PUBLIC -DDIGITAL_IO_TEST)
-
-add_executable (analog-output src/analog_output.cpp)
-target_compile_options (analog-output PUBLIC -DANALOG_OUTPUT_TEST)
-
-add_executable (analog-input src/analog_input.cpp)
-target_compile_options (analog-input PUBLIC -DANALOG_INPUT_TEST)
-
-add_executable (pwm src/pwm.cpp)
-target_compile_options (pwm PUBLIC -DPWM_TEST)
 
