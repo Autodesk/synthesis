@@ -578,7 +578,7 @@ public partial class SynthesisGUI : Form
     /// <returns>Whether the user wishes to overwrite the data</returns>
     private bool WarnOverwrite()
     {
-        DialogResult overwriteResult = MessageBox.Show("Really overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
+        DialogResult overwriteResult = MessageBox.Show("Overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
 
         return overwriteResult == DialogResult.Yes;
     }
@@ -589,7 +589,7 @@ public partial class SynthesisGUI : Form
     /// <returns>Whether the user wishes to continue without saving</returns>
     public bool WarnUnsaved(bool allowCancel = true)
     {
-        DialogResult saveResult = MessageBox.Show("Do you want to save your work?", "Save",
+        DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
                                                   allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
 
         if (saveResult == DialogResult.Yes)
