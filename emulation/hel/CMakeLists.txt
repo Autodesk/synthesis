@@ -112,5 +112,5 @@ include_directories("${WPIUTIL_DIRECTORY}/src/main/native/include")
 include_directories("${WPILIB_DIRECTORY}/hal/src/main/native/include")
 include_directories("./include")
 
-add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp)
+add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp)
 
