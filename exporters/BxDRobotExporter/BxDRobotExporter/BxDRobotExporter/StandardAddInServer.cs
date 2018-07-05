@@ -55,16 +55,14 @@ namespace BxDRobotExporter
 
         //Ribbon Pannels
         RibbonPanel SetupPanel;
-        RibbonPanel FilePanel;
         RibbonPanel SettingsPanel;
+        RibbonPanel FilePanel;
 
         //Standalone Buttons
         ButtonDefinition WizardExportButton;
         ButtonDefinition SetWeightButton;
-
-        ObjectCollection SaveButtonCollection;
         ButtonDefinition SaveButton;
-        ButtonDefinition SaveAsButton;
+        ButtonDefinition ExportButton;
 
         //Highlighting
         HighlightSet ChildHighlight;
@@ -148,13 +146,13 @@ namespace BxDRobotExporter
             ControlDefinitions ControlDefs = MainApplication.CommandManager.ControlDefinitions;
 
             SetupPanel = ExporterTab.RibbonPanels.Add("Setup", "BxD:RobotExporter:SetupPanel", ClientID);
-            FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
             SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "BxD:RobotExporter:SettingsPanel", ClientID);
+            FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
             #endregion
 
             #region Setup Buttons
             //Begin Wizard Export
-            WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Export", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Exports the robot with the aid of a wizard to guide you through the process.", WizardExportIconSmall, WizardExportIconLarge);
+            WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", WizardExportIconSmall, WizardExportIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
@@ -166,20 +164,16 @@ namespace BxDRobotExporter
             SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to its previous location.", SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot information to your assembly file.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
             SaveButton.OnHelp += _OnHelp;
+            FilePanel.CommandControls.AddButton(SaveButton, true);
 
-            //Save As Button
-            SaveAsButton = ControlDefs.AddButtonDefinition("Save As...", "BxD:RobotExporter:SaveAs", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to a new location.", SaveRobotAsIconSmall, SaveRobotAsIconLarge);
-            SaveAsButton.OnExecute += SaveAsButton_OnExecute;
-            SaveAsButton.OnHelp += _OnHelp;
-
-            //Save Control Definition
-            SaveButtonCollection = MainApplication.TransientObjects.CreateObjectCollection();
-            SaveButtonCollection.Add(SaveButton);
-            SaveButtonCollection.Add(SaveAsButton);
-            FilePanel.CommandControls.AddSplitButton(SaveButton, SaveButtonCollection, true);
+            //Export Button
+            ExportButton = ControlDefs.AddButtonDefinition("Export", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
+            ExportButton.OnExecute += ExportButton_OnExecute;
+            ExportButton.OnHelp += _OnHelp;
+            FilePanel.CommandControls.AddButton(ExportButton, true);
 
             #endregion
 
@@ -298,20 +292,19 @@ namespace BxDRobotExporter
             Utilities.GUI.jointEditorPane1.SelectedJoint += JointEditorPane_SelectedJoint;
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
             
-            SaveAsButton.Enabled = false;
             SaveButton.Enabled = false;
             
             EnvironmentEnabled = true;
 
             // Load robot skeleton and prepare UI
-            if (!Utilities.GUI.BuildRobotSkeleton())
+            if (!Utilities.GUI.LoadRobotSkeleton())
             {
                 ForceQuitExporter();
                 return;
             }
-
+            
             // If fails to load existing data, restart wizard
-            if (!Utilities.GUI.JointDataLoad(AsmDocument))
+            if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
                 try
                 {
@@ -329,7 +322,6 @@ namespace BxDRobotExporter
                 Utilities.ShowDockableWindows();
                 
                 // Enable save button
-                SaveAsButton.Enabled = true;
                 SaveButton.Enabled = true;
             }
         }
@@ -345,26 +337,8 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            // Save robot mesh to file
             if (Utilities.GUI.SkeletonBase != null)
-            {
-                // User can cancel robot save
-                if (Utilities.GUI.PromptSaveSettings(true, true))
-                {
-                    // Only reload meshes if meshes have not been loaded
-                    if (Utilities.GUI.Meshes != null || Utilities.GUI.ExportMeshes())
-                    {
-                        // Save joint configurations
-                        Utilities.GUI.JointDataSave(AsmDocument);
-
-                        // Save robot
-                        if (Utilities.GUI.RobotSave())
-                            // Open Synthesis
-                            if (Utilities.GUI.RMeta.OpenSynthesis)
-                                OpenSynthesis(Utilities.GUI.RMeta.ActiveRobotName, Utilities.GUI.RMeta.FieldName);
-                    }
-                }
-            }
+                Utilities.GUI.WarnUnsaved(false);
 
             // Close add-in
             AsmDocument = null;
@@ -461,25 +435,6 @@ namespace BxDRobotExporter
         #region Custom Button Events
 
         /// <summary>
-        /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>
-        /// </summary>
-        /// <param name="Context"></param>
-        public void BeginAdvancedExport_OnExecute(NameValueMap Context)
-        {
-            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.BuildRobotSkeleton())
-            {
-                SaveAsButton.Enabled = true;
-                SaveButton.Enabled = true;
-                pendingChanges = false;
-            }
-            else if (Utilities.GUI.SkeletonBase != null)
-            {
-                SaveAsButton.Enabled = true;
-                SaveButton.Enabled = true;
-            }
-        }
-
-        /// <summary>
         /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>, then opens the <see cref="Wizard.WizardForm"/>
         /// </summary>
         /// <param name="Context"></param>
@@ -487,9 +442,8 @@ namespace BxDRobotExporter
         {
             if (!PendingChanges || this.WarnUnsaved())
             {
-                if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.BuildRobotSkeleton())
+                if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton())
                 {
-                    SaveAsButton.Enabled = true;
                     SaveButton.Enabled = true;
 
                     Wizard.WizardForm wizard = new Wizard.WizardForm();
@@ -502,33 +456,6 @@ namespace BxDRobotExporter
                 {
                     throw new ExporterFailedException("Failed to build robot skeleton.");
                 }
-            }
-        }
-
-        /// <summary>
-        /// Opens the <see cref="Wizard.OneClickExportForm"/> which allows for a super easy exporting of a robot
-        /// </summary>
-        /// <param name="Context"></param>
-        public void BeginOneClickExport_OnExecute(NameValueMap Context)
-        {
-            Wizard.OneClickExportForm oneClickExportForm = new Wizard.OneClickExportForm();
-            if((!PendingChanges || this.WarnUnsaved()) && (oneClickExportForm.ShowDialog() == DialogResult.OK))
-            {
-                Utilities.GUI.RobotSave();
-            }
-        }
-
-        /// <summary>
-        /// Opens a <see cref="FolderBrowserDialog"/> and prompts the user to select a robot folder. 
-        /// Note: soon this should be replaced with an <see cref="OpenFileDialog"/> when the old format is merged into one file.
-        /// </summary>
-        /// <param name="Context"></param>
-        private void LoadExportedRobotButton_OnExecute(NameValueMap Context)
-        {
-            if ((!PendingChanges || this.WarnUnsaved()) && Utilities.GUI.OpenExisting(ValidateAssembly))
-            {
-                SaveAsButton.Enabled = true;
-                SaveButton.Enabled = true;
             }
         }
 
@@ -549,20 +476,19 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveButton_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.JointDataSave(AsmDocument);
-            Utilities.GUI.RobotSave();
+            Utilities.GUI.SaveRobotData();
         }
 
         /// <summary>
-        /// Opens the name robot menu again and prompts the user to save the robot to another location.
+        /// Saves the active robot to the active directory
         /// </summary>
         /// <param name="Context"></param>
-        private void SaveAsButton_OnExecute(NameValueMap Context)
+        private void ExportButton_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.JointDataSave(AsmDocument);
-            Utilities.GUI.RobotSaveAs();
+            if (Utilities.GUI.PromptExportSettings())
+                if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null)
+                    Utilities.GUI.OpenSynthesis();
         }
-
 
         //Settings
         /// <summary>
@@ -901,15 +827,6 @@ namespace BxDRobotExporter
                 }
                 ViewOccurrences(occurrences, 15, ViewDirection.Y, false);
             }
-        }
-        
-        /// <summary>
-        /// Open Synthesis to a specific robot and field.
-        /// </summary>
-        /// <param name="node"></param>
-        public void OpenSynthesis(string robotName, string fieldName)
-        {
-            Process.Start(Utilities.SYTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + robotName, fieldName));
         }
 
         /// <summary>
