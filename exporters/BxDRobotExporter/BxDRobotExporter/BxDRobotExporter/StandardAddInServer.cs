@@ -164,13 +164,13 @@ namespace BxDRobotExporter
             SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot information to your assembly file.", SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save Configuration", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot configuration to your assembly file for future exporting.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
             SaveButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(SaveButton, true);
 
             //Export Button
-            ExportButton = ControlDefs.AddButtonDefinition("Export", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
+            ExportButton = ControlDefs.AddButtonDefinition("Export to Synthesis", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot's model to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
             ExportButton.OnExecute += ExportButton_OnExecute;
             ExportButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(ExportButton, true);
