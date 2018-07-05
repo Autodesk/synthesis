@@ -60,7 +60,7 @@ namespace BxDRobotExporter
 
         //Standalone Buttons
         ButtonDefinition WizardExportButton;
-        ButtonDefinition SetMassButton;
+        ButtonDefinition SetWeightButton;
 
         ObjectCollection SaveButtonCollection;
         ButtonDefinition SaveButton;
@@ -159,11 +159,11 @@ namespace BxDRobotExporter
             WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
 
-            //Set Mass
-            SetMassButton = ControlDefs.AddButtonDefinition("Set Mass", "BxD:RobotExporter:SetMass", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the Mass of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
-            SetMassButton.OnExecute += SetMass_OnExecute;
-            SetMassButton.OnHelp += _OnHelp;
-            SettingsPanel.CommandControls.AddButton(SetMassButton, true);
+            //Set Weight
+            SetWeightButton = ControlDefs.AddButtonDefinition("Set Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            SetWeightButton.OnExecute += SetWeight_OnExecute;
+            SetWeightButton.OnHelp += _OnHelp;
+            SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
             //Save Button
             SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to its previous location.", SaveRobotIconSmall, SaveRobotIconLarge);
@@ -273,12 +273,10 @@ namespace BxDRobotExporter
         {
             if (EnvironmentEnabled)
             {
-                EnvironmentEnabled = false;
                 EndExporter();
             }
             else
             {
-                EnvironmentEnabled = true;
                 StartExporter();
             }
         }
@@ -302,15 +300,37 @@ namespace BxDRobotExporter
             
             SaveAsButton.Enabled = false;
             SaveButton.Enabled = false;
+            
+            EnvironmentEnabled = true;
 
-            // Immediately start the "advanced export" when the exporter is opened. TODO: Rename this as ExporterSetup, as it applies to all exporting modes.
-            try
-            {
-                BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
-            }
-            catch (ExporterFailedException)
+            // Load robot skeleton and prepare UI
+            if (!Utilities.GUI.BuildRobotSkeleton())
             {
                 ForceQuitExporter();
+                return;
+            }
+
+            // If fails to load existing data, restart wizard
+            if (!Utilities.GUI.JointDataLoad(AsmDocument))
+            {
+                try
+                {
+                    BeginWizardExport_OnExecute(null);
+                }
+                catch (ExporterFailedException)
+                {
+                    ForceQuitExporter();
+                }
+            }
+            else
+            {
+                // Joint data is already loaded, reload panels in UI
+                Utilities.GUI.ReloadPanels();
+                Utilities.ShowDockableWindows();
+                
+                // Enable save button
+                SaveAsButton.Enabled = true;
+                SaveButton.Enabled = true;
             }
         }
 
@@ -325,16 +345,28 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            // Export mesh as exporter is finished
+            // Save robot mesh to file
             if (Utilities.GUI.SkeletonBase != null)
             {
+                // User can cancel robot save
                 if (Utilities.GUI.PromptSaveSettings(true, true))
+                {
+                    // Only reload meshes if meshes have not been loaded
                     if (Utilities.GUI.Meshes != null || Utilities.GUI.ExportMeshes())
+                    {
+                        // Save joint configurations
+                        Utilities.GUI.JointDataSave(AsmDocument);
+
+                        // Save robot
                         if (Utilities.GUI.RobotSave())
+                            // Open Synthesis
                             if (Utilities.GUI.RMeta.OpenSynthesis)
-                                 OpenSynthesis(Utilities.GUI.RMeta.ActiveRobotName, Utilities.GUI.RMeta.FieldName);
+                                OpenSynthesis(Utilities.GUI.RMeta.ActiveRobotName, Utilities.GUI.RMeta.FieldName);
+                    }
+                }
             }
 
+            // Close add-in
             AsmDocument = null;
             Utilities.DisposeDockableWindows();
             ChildHighlight = null;
@@ -343,6 +375,8 @@ namespace BxDRobotExporter
             {
                 doc.Key.DisabledCommandList.Remove(doc.Value);
             }
+
+            EnvironmentEnabled = false;
         }
         #endregion
 
@@ -453,7 +487,7 @@ namespace BxDRobotExporter
         {
             if (!PendingChanges || this.WarnUnsaved())
             {
-                if (Utilities.GUI.BuildRobotSkeleton())
+                if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.BuildRobotSkeleton())
                 {
                     SaveAsButton.Enabled = true;
                     SaveButton.Enabled = true;
@@ -515,6 +549,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveButton_OnExecute(NameValueMap Context)
         {
+            Utilities.GUI.JointDataSave(AsmDocument);
             Utilities.GUI.RobotSave();
         }
 
@@ -524,18 +559,19 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveAsButton_OnExecute(NameValueMap Context)
         {
+            Utilities.GUI.JointDataSave(AsmDocument);
             Utilities.GUI.RobotSaveAs();
         }
 
 
         //Settings
         /// <summary>
-        /// Opens the <see cref="SetMassForm"/> form to allow the user to set the Mass of their robot.
+        /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
         /// </summary>
         /// <param name="Context"></param>
-        private void SetMass_OnExecute(NameValueMap Context)
+        private void SetWeight_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.PromptRobotMass();
+            Utilities.GUI.PromptRobotWeight();
         }
 
 

@@ -79,6 +79,86 @@ public class WheelDriverMeta : JointDriverMeta
         isDriveWheel = reader.ReadBoolean();
     }
 
+    public void SetFrictionLevel(FrictionLevel level)
+    {
+        switch (level)
+        {
+            case FrictionLevel.HIGH:
+                forwardExtremeSlip = 1; //Speed of max static friction force.
+                forwardExtremeValue = 10; //Force of max static friction force.
+                forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
+                forwardAsympValue = 8; //Force of leveld off kinetic friction force.
+
+                if (type == WheelType.OMNI) //Set to relatively low friction, as omni wheels can move sidways.
+                {
+                    sideExtremeSlip = 1; //Same as above, but orthogonal to the movement of the wheel.
+                    sideExtremeValue = .01f;
+                    sideAsympSlip = 1.5f;
+                    sideAsympValue = .005f;
+                }
+                else
+                {
+                    sideExtremeSlip = 1;
+                    sideExtremeValue = 10;
+                    sideAsympSlip = 1.5f;
+                    sideAsympValue = 8;
+                }
+                break;
+            case FrictionLevel.MEDIUM:
+                forwardExtremeSlip = 1f;
+                forwardExtremeValue = 7;
+                forwardAsympSlip = 1.5f;
+                forwardAsympValue = 5;
+
+                if (type == WheelType.OMNI)
+                {
+                    sideExtremeSlip = 1;
+                    sideExtremeValue = .01f;
+                    sideAsympSlip = 1.5f;
+                    sideAsympValue = .005f;
+                }
+                else
+                {
+                    sideExtremeSlip = 1;
+                    sideExtremeValue = 7;
+                    sideAsympSlip = 1.5f;
+                    sideAsympValue = 5;
+                }
+                break;
+            case FrictionLevel.LOW:
+                forwardExtremeSlip = 1;
+                forwardExtremeValue = 5;
+                forwardAsympSlip = 1.5f;
+                forwardAsympValue = 3;
+
+                if (type == WheelType.OMNI)
+                {
+                    sideExtremeSlip = 1;
+                    sideExtremeValue = .01f;
+                    sideAsympSlip = 1.5f;
+                    sideAsympValue = .005f;
+                }
+                else
+                {
+                    sideExtremeSlip = 1;
+                    sideExtremeValue = 5;
+                    sideAsympSlip = 1.5f;
+                    sideAsympValue = 3;
+                }
+                break;
+        }
+    }
+
+    public FrictionLevel GetFrictionLevel()
+    {
+        if (forwardExtremeValue >= 10)
+            return FrictionLevel.HIGH;
+        else if (forwardExtremeValue >= 7)
+            return FrictionLevel.MEDIUM;
+        else
+            return FrictionLevel.LOW;
+    }
+
     public string GetTypeString()
     {
         switch (type)

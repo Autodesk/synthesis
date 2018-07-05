@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Synthesis.Robot;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -35,7 +36,7 @@ namespace Synthesis.FEA
 
                 WriteField(writer, fieldPath, fieldTrackers);
 
-                foreach (Robot r in UnityEngine.Object.FindObjectsOfType<Robot>())
+                foreach (SimulatorRobot r in UnityEngine.Object.FindObjectsOfType<SimulatorRobot>())
                     WriteRobot(writer, r.RobotDirectory, r.GetComponentsInChildren<Tracker>().ToList());
 
                 WriteGamePieces(writer, gamePieceTrackers);
