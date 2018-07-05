@@ -30,7 +30,7 @@ namespace Synthesis.GUI.Scrollables
             if (items.Count > 0)
                 selectedEntry = items[0];
 
-            position = Camera.main.WorldToScreenPoint(transform.position);
+            position = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
         }
 
         /// <summary>
