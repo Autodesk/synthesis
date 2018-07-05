@@ -181,7 +181,7 @@ namespace Synthesis.MixAndMatch
 
 
 
-                if (SimUI.changeAnalytics) //for analytics tracking
+                if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
                 {
                     Analytics.CustomEvent("Opened Mix and Match", new Dictionary<string, object>
                     {
@@ -207,7 +207,7 @@ namespace Synthesis.MixAndMatch
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             SceneManager.LoadScene("Scene");
 
-            if (SimUI.changeAnalytics) //for analytics tracking
+            if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
             {
                 Analytics.CustomEvent("Started Mix and Match", new Dictionary<string, object>
                 {
@@ -273,7 +273,7 @@ namespace Synthesis.MixAndMatch
 
             StateMachine.SceneGlobal.gameObject.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
 
-            if (SimUI.changeAnalytics) //For analytics tracking
+            if (PlayerPrefs.GetInt("analytics") == 1) //For analytics tracking
             {
                 Analytics.CustomEvent("Changed Mix and Match Robot", new Dictionary<string, object>
                 {
@@ -368,7 +368,7 @@ namespace Synthesis.MixAndMatch
             Text txt = infoText.GetComponent<Text>();
             txt.text = XMLManager.ins.itemDB.xmlList[PresetClones.Count - 1].GetName();
 
-            if (SimUI.changeAnalytics) //for analytics tracking
+            if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
             {
                 Analytics.CustomEvent("Created Mix and Match Preset", new Dictionary<string, object>
                 {
