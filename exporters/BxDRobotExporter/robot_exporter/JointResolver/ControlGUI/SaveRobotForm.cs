@@ -59,8 +59,8 @@ namespace JointResolver.ControlGUI
                 openSynthesis = form.OpenSynthesisBox.Checked;
 
                 field = null;
-
-                if (form.FieldSelectComboBox.SelectedItem != null)
+                
+                if (form.OpenSynthesisBox.Checked && form.FieldSelectComboBox.SelectedItem != null)
                     field = fields[(string)form.FieldSelectComboBox.SelectedItem];
 
                 return form.DialogResult;

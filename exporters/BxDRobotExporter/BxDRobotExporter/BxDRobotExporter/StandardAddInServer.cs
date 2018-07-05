@@ -476,7 +476,8 @@ namespace BxDRobotExporter
         private void ExportButton_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.PromptExportSettings())
-                Utilities.GUI.ExportRobot();
+                if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null)
+                    Utilities.GUI.OpenSynthesis();
         }
 
         //Settings
