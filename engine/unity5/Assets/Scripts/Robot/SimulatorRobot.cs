@@ -29,14 +29,14 @@ namespace Synthesis.Robot
         private const float ResetVelocity = 0.05f;
         private const float HoldTime = 0.8f;
 
+        private readonly SensorManager sensorManager;
+
         private DriverPracticeRobot dpmRobot;
 
         private Vector3 nodeToRobotOffset;
 
         private float keyDownTime = 0f;
         private RobotCameraManager robotCameraManager;
-
-        private SensorManager sensorManager;
 
         /// <summary>
         /// Initializes sensors and driver practice data.

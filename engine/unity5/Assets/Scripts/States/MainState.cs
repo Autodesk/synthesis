@@ -514,23 +514,7 @@ namespace Synthesis.States
                 return false;
 
             mamRobot.RobotHasManipulator = true;
-            return mamRobot.InitializeManipulator(directory, null);
-        }
-
-        /// <summary>
-        /// Loads a manipulator for Mix and Match mode and maps it to the robot. 
-        /// </summary>
-        /// <param name="directory"></param>
-        /// <returns></returns>
-        public bool LoadManipulator(string directory, GameObject robotGameObject)
-        {
-            MaMRobot mamRobot = ActiveRobot as MaMRobot;
-
-            if (mamRobot == null)
-                return false;
-
-            mamRobot.RobotHasManipulator = true;
-            return mamRobot.InitializeManipulator(directory, robotGameObject);
+            return mamRobot.InitializeManipulator(directory);
         }
 
         /// <summary>
@@ -540,31 +524,27 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
         {
-            if (SpawnedRobots.Count < MAX_ROBOTS)
-            {
-                robotPath = baseDirectory;
+            if (SpawnedRobots.Count >= MAX_ROBOTS)
+                return false;
 
-                GameObject robotObject = new GameObject("Robot");
-                MaMRobot robot = robotObject.AddComponent<MaMRobot>();
+            robotPath = baseDirectory;
 
-                //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
-                if (!robot.InitializeRobot(baseDirectory)) return false;
+            GameObject robotObject = new GameObject("Robot");
+            MaMRobot robot = robotObject.AddComponent<MaMRobot>();
 
-                robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
+            //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
+            if (!robot.InitializeRobot(baseDirectory)) return false;
 
-                //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
-                if (ActiveRobot == null)
-                {
-                    ActiveRobot = robot;
-                }
+            robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
 
-                robot.ControlIndex = SpawnedRobots.Count;
-                SpawnedRobots.Add(robot);
+            //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
+            if (ActiveRobot == null)
+                ActiveRobot = robot;
 
-                if (!robot.InitializeManipulator(manipulatorDirectory, robot.gameObject)) return false;
-                return true;
-            }
-            return false;
+            robot.ControlIndex = SpawnedRobots.Count;
+            SpawnedRobots.Add(robot);
+
+            return robot.InitializeManipulator(manipulatorDirectory);
         }
 
         /// <summary>
