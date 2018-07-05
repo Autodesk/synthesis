@@ -3,7 +3,7 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-namespace cerebrum{
+namespace hel{
 	tDIO::tDO RoboRIO::DIOSystem::getOutputs()const{
 		return outputs;
 	}
@@ -76,10 +76,10 @@ struct DIOManager: public tDIO{
 	void writeDO_Headers(uint16_t value, tRioStatusCode* /*status*/){
 		for(uint32_t i = 1; i <= value; i <<= 1){ 
 			if(value & i){ // attempt output if bit in value is high
-				if(cerebrum::roborio_state.digital_system.getEnabledOutputs().Headers & i){ //allow write if enabled_outputs bit is also high 
-					tDIO::tDO outputs = cerebrum::roborio_state.digital_system.getOutputs();
+				if(hel::roborio_state.digital_system.getEnabledOutputs().Headers & i){ //allow write if enabled_outputs bit is also high 
+					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
 					outputs.Headers = value;
-					cerebrum::roborio_state.digital_system.setOutputs(outputs);
+					hel::roborio_state.digital_system.setOutputs(outputs);
 				} else {
 					//TODO error handling
 			 	}
@@ -90,10 +90,10 @@ struct DIOManager: public tDIO{
 	void writeDO_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
 		for(uint32_t i = 1; i <= value; i <<= 1){ 
 			if(value & i){ // attempt output if bit in value is high
-				if(cerebrum::roborio_state.digital_system.getEnabledOutputs().SPIPort & i){ //allow write if enabled_outputs bit is also high
-					tDIO::tDO outputs = cerebrum::roborio_state.digital_system.getOutputs();
+				if(hel::roborio_state.digital_system.getEnabledOutputs().SPIPort & i){ //allow write if enabled_outputs bit is also high
+					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
 					outputs.SPIPort = value;
-					cerebrum::roborio_state.digital_system.setOutputs(outputs);
+					hel::roborio_state.digital_system.setOutputs(outputs);
 				} else {
 					//TODO error handling
 			 	}
@@ -104,10 +104,10 @@ struct DIOManager: public tDIO{
 	void writeDO_Reserved(uint8_t value, tRioStatusCode* /*status*/){
 		for(uint32_t i = 1; i <= value; i <<= 1){ 
 			if(value & i){ // attempt output if bit in value is high
-				if(cerebrum::roborio_state.digital_system.getEnabledOutputs().Reserved & i){ //allow write if enabled_outputs bit is also high
-					tDIO::tDO outputs = cerebrum::roborio_state.digital_system.getOutputs();
+				if(hel::roborio_state.digital_system.getEnabledOutputs().Reserved & i){ //allow write if enabled_outputs bit is also high
+					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
 					outputs.Reserved = value;
-					cerebrum::roborio_state.digital_system.setOutputs(outputs);
+					hel::roborio_state.digital_system.setOutputs(outputs);
 				} else {
 					//TODO error handling
 			 	}
@@ -118,10 +118,10 @@ struct DIOManager: public tDIO{
 	void writeDO_MXP(uint16_t value, tRioStatusCode* /*status*/){
 		for(uint32_t i = 1; i <= value; i <<= 1){ 
 			if(value & i){ // attempt output if bit in value is high
-				if(cerebrum::roborio_state.digital_system.getEnabledOutputs().MXP & i){ //allow write if enabled_outputs bit is also high
-					tDIO::tDO outputs = cerebrum::roborio_state.digital_system.getOutputs();
+				if(hel::roborio_state.digital_system.getEnabledOutputs().MXP & i){ //allow write if enabled_outputs bit is also high
+					tDIO::tDO outputs = hel::roborio_state.digital_system.getOutputs();
 					outputs.MXP = value;
-					cerebrum::roborio_state.digital_system.setOutputs(outputs);
+					hel::roborio_state.digital_system.setOutputs(outputs);
 				} else {
 					//TODO error handling
 			 	}
@@ -130,36 +130,36 @@ struct DIOManager: public tDIO{
 	}
 
 	tDO readDO(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getOutputs();
+		return hel::roborio_state.digital_system.getOutputs();
 	}
 
 	uint16_t readDO_Headers(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getOutputs().Headers;
+		return hel::roborio_state.digital_system.getOutputs().Headers;
 	}
 
 	uint8_t readDO_SPIPort(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getOutputs().SPIPort;
+		return hel::roborio_state.digital_system.getOutputs().SPIPort;
 	}
 
 	uint8_t readDO_Reserved(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getOutputs().Reserved;
+		return hel::roborio_state.digital_system.getOutputs().Reserved;
 	}
 	
 	uint16_t readDO_MXP(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getOutputs().MXP;
+		return hel::roborio_state.digital_system.getOutputs().MXP;
 	}
 
 	void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
 		uint32_t i = 1u << bitfield_index;
-		if(cerebrum::roborio_state.digital_system.getEnabledOutputs().MXP & i){
-			cerebrum::roborio_state.digital_system.setPWMDutyCycle(bitfield_index, value);
+		if(hel::roborio_state.digital_system.getEnabledOutputs().MXP & i){
+			hel::roborio_state.digital_system.setPWMDutyCycle(bitfield_index, value);
 		} else {
 			//TODO error handling
 		}
 	}
 
 	uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getPWMDutyCycle(bitfield_index);
+		return hel::roborio_state.digital_system.getPWMDutyCycle(bitfield_index);
 	}
 
 	void writePWMDutyCycleB(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
@@ -178,58 +178,58 @@ struct DIOManager: public tDIO{
 	}
 
 	void writeOutputEnable(tDIO::tOutputEnable value, tRioStatusCode* /*status*/){
-		cerebrum::roborio_state.digital_system.setEnabledOutputs(value);
+		hel::roborio_state.digital_system.setEnabledOutputs(value);
 	}
 
 	void writeOutputEnable_Headers(uint16_t value, tRioStatusCode* /*status*/){
-		tDIO::tOutputEnable enabled_outputs = cerebrum::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
 		enabled_outputs.Headers = value;
-		cerebrum::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
 	}
 	
 	void writeOutputEnable_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
-		tDIO::tOutputEnable enabled_outputs = cerebrum::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
 		enabled_outputs.SPIPort = value;
-		cerebrum::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
 	}
 	
 	void writeOutputEnable_Reserved(uint8_t value, tRioStatusCode* /*status*/){
-		tDIO::tOutputEnable enabled_outputs = cerebrum::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
 		enabled_outputs.Reserved = value;
-		cerebrum::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
 	}
 	
 	void writeOutputEnable_MXP(uint16_t value, tRioStatusCode* /*status*/){
-		tDIO::tOutputEnable enabled_outputs = cerebrum::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
 		enabled_outputs.MXP = value;
-		cerebrum::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
 	}
 
 	tOutputEnable readOutputEnable(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getEnabledOutputs();
+		return hel::roborio_state.digital_system.getEnabledOutputs();
 	}
 
 	uint16_t readOutputEnable_Headers(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getEnabledOutputs().Headers;
+		return hel::roborio_state.digital_system.getEnabledOutputs().Headers;
 	}
 	
 	uint8_t readOutputEnable_SPIPort(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getEnabledOutputs().SPIPort;
+		return hel::roborio_state.digital_system.getEnabledOutputs().SPIPort;
 	}
 	
 	uint8_t readOutputEnable_Reserved(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getEnabledOutputs().Reserved;
+		return hel::roborio_state.digital_system.getEnabledOutputs().Reserved;
 	}
 
 	uint16_t readOutputEnable_MXP(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getEnabledOutputs().MXP;
+		return hel::roborio_state.digital_system.getEnabledOutputs().MXP;
 	}
 
 	void writePWMOutputSelect(uint8_t bitfield_index, uint8_t /*value*/, tRioStatusCode* /*status*/){
 		//note: bitfield_index is mxp remapped dio address corresponding to the mxp pwm output
-		tDIO::tOutputEnable enabled_outputs = cerebrum::roborio_state.digital_system.getEnabledOutputs();
+		tDIO::tOutputEnable enabled_outputs = hel::roborio_state.digital_system.getEnabledOutputs();
 		enabled_outputs.MXP &= 1u << bitfield_index;
-		cerebrum::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
+		hel::roborio_state.digital_system.setEnabledOutputs(enabled_outputs);
 	}
 
 	uint8_t readPWMOutputSelect(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
@@ -237,7 +237,7 @@ struct DIOManager: public tDIO{
 	}
 
 	void writePulse(tDIO::tPulse value, tRioStatusCode* /*status*/){
-		cerebrum::roborio_state.digital_system.setPulses(value);
+		hel::roborio_state.digital_system.setPulses(value);
 		//TODO this should only last for pulse_length seconds, and only one pulse should be active at a time?
 	}
 
@@ -258,51 +258,51 @@ struct DIOManager: public tDIO{
 	}
 
 	tPulse readPulse(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getPulses();
+		return hel::roborio_state.digital_system.getPulses();
 	}
 
 	uint16_t readPulse_Headers(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getPulses().Headers;
+		return hel::roborio_state.digital_system.getPulses().Headers;
 	}
 	
 	uint8_t readPulse_SPIPort(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getPulses().SPIPort;
+		return hel::roborio_state.digital_system.getPulses().SPIPort;
 	}
 	
 	uint8_t readPulse_Reserved(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getPulses().Reserved;
+		return hel::roborio_state.digital_system.getPulses().Reserved;
 	}
 	
 	uint16_t readPulse_MXP(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getPulses().MXP;
+		return hel::roborio_state.digital_system.getPulses().MXP;
 	}
 
 	tDI readDI(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getInputs();
+		return hel::roborio_state.digital_system.getInputs();
 	}
 
 	uint16_t readDI_Headers(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getInputs().Headers;
+		return hel::roborio_state.digital_system.getInputs().Headers;
 	}
 	
 	uint8_t readDI_SPIPort(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getInputs().SPIPort;
+		return hel::roborio_state.digital_system.getInputs().SPIPort;
 	}
 	
 	uint8_t readDI_Reserved(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getInputs().Reserved;
+		return hel::roborio_state.digital_system.getInputs().Reserved;
 	}
 	
 	uint16_t readDI_MXP(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getInputs().MXP;
+		return hel::roborio_state.digital_system.getInputs().MXP;
 	}		
 
 	void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
-		cerebrum::roborio_state.digital_system.setMXPSpecialFunctionsEnabled(value);
+		hel::roborio_state.digital_system.setMXPSpecialFunctionsEnabled(value);
 	}
 
 	uint16_t readEnableMXPSpecialFunction(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getMXPSpecialFunctionsEnabled();
+		return hel::roborio_state.digital_system.getMXPSpecialFunctionsEnabled();
 	}
 
 	void writeFilterSelectMXP(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
@@ -312,11 +312,11 @@ struct DIOManager: public tDIO{
 	}
 
 	void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
-		cerebrum::roborio_state.digital_system.setPulseLength(value);
+		hel::roborio_state.digital_system.setPulseLength(value);
 	}
 
 	uint8_t readPulseLength(tRioStatusCode* /*status*/){
-		return cerebrum::roborio_state.digital_system.getPulseLength();
+		return hel::roborio_state.digital_system.getPulseLength();
 	}
 
 	void writePWMPeriodPower(uint16_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
