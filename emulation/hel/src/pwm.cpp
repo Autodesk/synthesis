@@ -126,9 +126,16 @@ struct PWMManager: public tPWM{
 	}
 
 	void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
+		uint8_t DO_index = [&]{
+			if(reg_index < 4){ //First four MXP PWM channels line up with DO, but the next six are offset by four
+				return reg_index;
+			}
+			reg_index += 4; 
+			return reg_index;
+		}();
 		if( 
-			hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, reg_index) && //Allow MXP output if pin is output-enabled
-			hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), reg_index) //Allow MXP outout if DO is using special function
+			hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, DO_index) && //Allow MXP output if pin is output-enabled
+			hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), DO_index) //Allow MXP outout if DO is using special function
 		){
 			hel::RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
         }
