@@ -268,7 +268,7 @@ namespace Synthesis.GUI
 
             //If the new robot has a manipulator, load the manipulator
             if (RobotTypeManager.HasManipulator)
-                State.LoadManipulator(manipulatorDirectory, State.ActiveRobot.gameObject);
+                State.LoadManipulator(manipulatorDirectory);
             else if (mamRobot != null)
                 mamRobot.RobotHasManipulator = false;
         }
