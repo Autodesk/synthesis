@@ -126,7 +126,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public override void UpdateRangeTransform()
         {
-            MaxRange += Input.GetAxis("CameraVertical") * 0.02f;
+            MaxRange += UnityEngine.Input.GetAxis("CameraVertical") * 0.02f;
         }
 
         public override void UpdateOutputDisplay()

@@ -10,8 +10,8 @@ namespace Synthesis.GUI
 
         public void BeginDrag()
         {
-            offsetX = transform.parent.position.x - Input.mousePosition.x;
-            offsetY = transform.parent.position.y - Input.mousePosition.y;
+            offsetX = transform.parent.position.x - UnityEngine.Input.mousePosition.x;
+            offsetY = transform.parent.position.y - UnityEngine.Input.mousePosition.y;
 
             DynamicCamera.MovingEnabled = false;
         }
@@ -19,7 +19,7 @@ namespace Synthesis.GUI
         public void OnDrag()
         {
             Vector3 lastPos = transform.parent.position;
-            transform.parent.position = new Vector3(offsetX + Input.mousePosition.x, offsetY + Input.mousePosition.y);
+            transform.parent.position = new Vector3(offsetX + UnityEngine.Input.mousePosition.x, offsetY + UnityEngine.Input.mousePosition.y);
 
             Rect rect = GetComponent<RectTransform>().rect;
 

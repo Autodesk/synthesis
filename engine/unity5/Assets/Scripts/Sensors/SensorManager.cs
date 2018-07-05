@@ -6,6 +6,7 @@ using BulletUnity;
 using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.States;
+using Synthesis.Robot;
 
 namespace Synthesis.Sensors
 {
@@ -137,7 +138,7 @@ namespace Synthesis.Sensors
         public void SetNode()
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -164,7 +165,7 @@ namespace Synthesis.Sensors
                         ChangeNodeColors(selectedObject, hoverColor, hoveredColors);
                         lastNode = selectedObject;
                     }
-                    if (Input.GetMouseButtonDown(0))
+                    if (UnityEngine.Input.GetMouseButtonDown(0))
                     {
                         string name = selectedObject.name;
 
@@ -184,7 +185,7 @@ namespace Synthesis.Sensors
                         RevertNodeColors(lastNode, hoveredColors);
                         lastNode = null;
                     }
-                    if (Input.GetMouseButtonDown(0))
+                    if (UnityEngine.Input.GetMouseButtonDown(0))
                     {
                         UserMessageManager.Dispatch("Please select a robot node!", 3);
                     }
@@ -199,7 +200,7 @@ namespace Synthesis.Sensors
         public void SetSensor()
         {
             RaycastHit hitInfo = new RaycastHit();
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             Physics.Raycast(ray, out hitInfo);
             if (hitInfo.transform != null && hitInfo.transform.gameObject.tag == "Sensor")
             {
@@ -225,7 +226,7 @@ namespace Synthesis.Sensors
                     lastNode = selectedObject;
                 }
 
-                if (Input.GetMouseButtonDown(0))
+                if (UnityEngine.Input.GetMouseButtonDown(0))
                 {
                     RevertNodeColors(lastNode, hoveredColors);
                     RevertNodeColors(SelectedSensor, selectedColors);
@@ -241,7 +242,7 @@ namespace Synthesis.Sensors
                     RevertNodeColors(lastNode, hoveredColors);
                     lastNode = null;
                 }
-                if (Input.GetMouseButtonDown(0))
+                if (UnityEngine.Input.GetMouseButtonDown(0))
                 {
                     UserMessageManager.Dispatch("Please select a sensor!", 3);
                 }
@@ -292,7 +293,7 @@ namespace Synthesis.Sensors
         /// </summary>
         /// <param name="robot"></param> The robot where sensors are attached to
         /// <returns></returns> A list of sensors attached to the robot
-        public List<GameObject> GetSensorsFromRobot(Robot robot)
+        public List<GameObject> GetSensorsFromRobot(RobotBase robot)
         {
             List<GameObject> sensorsOnRobot = new List<GameObject>();
             foreach (GameObject sensor in activeSensorList)
@@ -310,7 +311,7 @@ namespace Synthesis.Sensors
         /// Remove all sensors attached to the given robot and destroy them, reset all lists
         /// </summary>
         /// <param name="robot"></param> The robot where sensors are attached to
-        public void RemoveSensorsFromRobot(Robot robot)
+        public void RemoveSensorsFromRobot(RobotBase robot)
         {
             List<GameObject> sensorsOnRobot = GetSensorsFromRobot(robot);
             foreach (GameObject removingSensors in sensorsOnRobot)
