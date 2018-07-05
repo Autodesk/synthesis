@@ -11,11 +11,11 @@ using System.IO;
 
 namespace JointResolver.ControlGUI
 {
-    public partial class SaveRobotForm : Form
+    public partial class ExportRobotForm : Form
     {
         static Dictionary<string, string> fields = new Dictionary<string, string>();
 
-        public SaveRobotForm(string initialRobotName)
+        public ExportRobotForm(string initialRobotName)
         {
             InitializeComponent();
             InitializeFields();
@@ -52,7 +52,7 @@ namespace JointResolver.ControlGUI
         {
             try
             {
-                SaveRobotForm form = new SaveRobotForm(initialRobotName);
+                ExportRobotForm form = new ExportRobotForm(initialRobotName);
                 form.ShowDialog();
                 robotName = form.RobotNameTextBox.Text;
                 colors = form.ColorBox.Checked;
@@ -74,7 +74,7 @@ namespace JointResolver.ControlGUI
 
         private void ButtonOK_Click(object sender, EventArgs e)
         {
-            if(RobotNameTextBox.Text != null)
+            if (CheckFormIsValid())
             {
                 var InvalidChars = (new string(Path.GetInvalidPathChars()) + new string(Path.GetInvalidFileNameChars())).Distinct();
 
@@ -109,6 +109,24 @@ namespace JointResolver.ControlGUI
                 FieldLabel.Enabled = false;
                 FieldSelectComboBox.Enabled = false;
             }
+
+            CheckFormIsValid();
+        }
+
+        private bool CheckFormIsValid()
+        {
+            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0 && (!OpenSynthesisBox.Checked || FieldSelectComboBox.SelectedItem != null);
+            return ButtonOk.Enabled;
+        }
+
+        private void RobotNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            CheckFormIsValid();
+        }
+
+        private void FieldSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckFormIsValid();
         }
     }
 }
