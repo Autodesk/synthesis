@@ -348,7 +348,7 @@ namespace Synthesis.Sensors
 
                 //Add a sensor
                 AddUltrasonic();
-                if (SimUI.changeAnalytics)
+                if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
                     {
@@ -380,7 +380,7 @@ namespace Synthesis.Sensors
 
                 AddBeamBreaker();
 
-                if (SimUI.changeAnalytics)
+                if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
                     {
@@ -410,7 +410,7 @@ namespace Synthesis.Sensors
                 addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
                 AddGyro();
 
-                if (SimUI.changeAnalytics)
+                if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
                     {

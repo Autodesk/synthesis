@@ -63,7 +63,7 @@ namespace Synthesis.GUI
 
         GameObject toolbar;
 
-        public static bool changeAnalytics = true;
+        //bool changeAnalytics = true;
 
         GameObject exitPanel;
 
@@ -230,7 +230,7 @@ namespace Synthesis.GUI
                 PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
                 PlayerPrefs.Save();
 
-                if (changeAnalytics) //for analytics tracking
+                if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
                 {
                     Analytics.CustomEvent("Changed Robot", new Dictionary<string, object>
                     {
@@ -299,7 +299,7 @@ namespace Synthesis.GUI
                 PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
                 PlayerPrefs.Save();
 
-                if (changeAnalytics) //for analytics tracking
+                if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
                 {
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
@@ -529,7 +529,7 @@ namespace Synthesis.GUI
         public void OpenTutorialLink()
         {
             Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
-            if (changeAnalytics) //for analytics tracking
+            if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
             {
                 Analytics.CustomEvent("Clicked Tutorial Link", new Dictionary<string, object>
                 {
@@ -711,7 +711,12 @@ namespace Synthesis.GUI
         /// </summary>
         public void ToggleAnalytics(bool tAnalytics)
         {
-            changeAnalytics = !changeAnalytics;
+            if (PlayerPrefs.GetInt("analytics") == 0)
+            {
+                PlayerPrefs.SetInt("analytics", 1);
+            }else{
+                PlayerPrefs.SetInt("analytics", 0);
+            }
         }
 
         /// <summary>
