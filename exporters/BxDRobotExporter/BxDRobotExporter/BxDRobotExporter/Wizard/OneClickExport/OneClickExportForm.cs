@@ -209,7 +209,7 @@ namespace BxDRobotExporter.Wizard
                 Utilities.GUI.ReloadPanels();
                 Utilities.GUI.RobotSave();
                 DialogResult = DialogResult.OK;
-                Process.Start(Utilities.SYTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + Utilities.GUI.RMeta.ActiveRobotName, fields[(string)FieldSelectComboBox.SelectedItem]));
+                Process.Start(Utilities.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + Utilities.GUI.RMeta.ActiveRobotName, fields[(string)FieldSelectComboBox.SelectedItem]));
 
             }
             else
