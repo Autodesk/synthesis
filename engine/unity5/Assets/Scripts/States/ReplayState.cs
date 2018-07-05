@@ -583,8 +583,8 @@ namespace Synthesis.States
         public override void End()
         {
             SelectedBody = null;
-            //(SimUI.changeAnalytics.ToString());
-            if (SimUI.changeAnalytics)
+            //(PlayerPrefs.GetInt("analytics") == 1.ToString());
+            if (PlayerPrefs.GetInt("analytics") == 1)
             {
                 Analytics.CustomEvent("Replay Mode", new Dictionary<string, object>
                 {

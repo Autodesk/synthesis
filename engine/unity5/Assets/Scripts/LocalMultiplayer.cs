@@ -85,7 +85,7 @@ public class LocalMultiplayer : StateBehaviour<MainState> {
     /// </summary>
     public void AddRobot()
     {
-        if (SimUI.changeAnalytics)
+        if (PlayerPrefs.GetInt("analytics") == 1)
         {
             Analytics.CustomEvent("Added Robot", new Dictionary<string, object>
             {
