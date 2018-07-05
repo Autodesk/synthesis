@@ -11,26 +11,26 @@ namespace hel{
 	void RoboRIO::AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
 		mxp_outputs[index] = value;
 	}
-}
 
-struct AnalogOutputManager: public tAO{
-	tSystemInterface* getSystemInterface(){
-		return nullptr;
-	}
 
-	void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-		hel::RoboRIOManager::getInstance()->analog_outputs.setMXPOutput(reg_index, value);
-	}
+    struct AnalogOutputManager: public tAO{
+        tSystemInterface* getSystemInterface(){
+            return nullptr;
+        }
 
-	uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
-		return hel::RoboRIOManager::getInstance()->analog_outputs.getMXPOutput(reg_index);
-	}
+        void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
+            hel::RoboRIOManager::getInstance()->analog_outputs.setMXPOutput(reg_index, value);
+        }
+
+        uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
+            return hel::RoboRIOManager::getInstance()->analog_outputs.getMXPOutput(reg_index);
+        }
+    };
 };
-
 namespace nFPGA{
 	namespace nRoboRIO_FPGANamespace{
 		tAO* tAO::create(tRioStatusCode* /*status*/){
-			return new AnalogOutputManager();
+			return new hel::AnalogOutputManager();
 		}
 	}
 }
