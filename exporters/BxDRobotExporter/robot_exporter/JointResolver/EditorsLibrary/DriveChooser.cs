@@ -16,7 +16,6 @@ public partial class DriveChooser : Form
     public DriveChooser()
     {
         InitializeComponent();
-        FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
     }
 
     public bool Saved;
@@ -357,6 +356,7 @@ public partial class DriveChooser : Form
         }
 
         Saved = true;
+        LegacyInterchange.LegacyEvents.OnRobotModified();
         Close();
     }
 
