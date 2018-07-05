@@ -308,7 +308,7 @@ public partial class SynthesisGUI : Form
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
     public bool PromptExportSettings()
     {
-        if (SaveRobotForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        if (ExportRobotForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
         {
             RMeta.UseSettingsDir = true;
             RMeta.ActiveDir = null;

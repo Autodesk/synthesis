@@ -1,6 +1,6 @@
 ﻿namespace JointResolver.ControlGUI
 {
-    partial class SaveRobotForm
+    partial class ExportRobotForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SaveRobotForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportRobotForm));
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.WindowControlLayout = new System.Windows.Forms.TableLayoutPanel();
             this.ButtonOk = new System.Windows.Forms.Button();
