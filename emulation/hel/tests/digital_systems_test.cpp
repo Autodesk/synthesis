@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "roborio.h"
 #include <iostream>
+
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
