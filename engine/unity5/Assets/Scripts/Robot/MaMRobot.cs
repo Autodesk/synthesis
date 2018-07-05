@@ -47,29 +47,17 @@ namespace Synthesis.Robot
         /// </summary>
         /// <param name="directory">Folder directory of the manipulator</param>
         /// <param name="robotGameObject">GameObject of the robot the manipulator will be attached to</param>
-        public bool InitializeManipulator(string directory, GameObject robotGameObject)
+        public bool InitializeManipulator(string directory)
         {
-            // TODO: Lots of duplication. Fix.
-
-            if (robotGameObject == null)
-            {
-                robotGameObject = GameObject.Find("Robot");
-            }
-
             ManipulatorObject = new GameObject("Manipulator");
+            ManipulatorObject.transform.position = robotStartPosition + manipulatorOffset;
 
-            RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
-            {
-                return new RigidNode(guid);
-            };
+            RigidNode_Base.NODE_FACTORY = delegate (Guid guid) { return new RigidNode(guid); };
 
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
             //TO-DO: Read .robot instead (from the new exporters if they are implemented). Maybe need a RobotSkeleton class
             manipulatorNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
             manipulatorNode.ListAllNodes(nodes);
-
-            int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
-            float collectiveMass = 0f;
 
             //Load node_0 for attaching manipulator to robot
             RigidNode node = (RigidNode)nodes[0];
@@ -77,46 +65,32 @@ namespace Synthesis.Robot
             node.CreateTransform(ManipulatorObject.transform);
             if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
             {
-                Debug.Log("Robot not loaded!");
-                UnityEngine.Object.Destroy(ManipulatorObject);
+                Destroy(ManipulatorObject);
                 return false;
             }
-            GameObject robot = robotGameObject;
 
-            //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING: LIKE ACTUALLY
-
-            Vector3 manipulatorTransform = robotStartPosition + manipulatorOffset;
-            Debug.Log("Node Com Offset" + node.ComOffset);
-            ManipulatorObject.transform.position = manipulatorTransform;
-
-            node.CreateManipulatorJoint(robot);
+            node.CreateManipulatorJoint(gameObject);
             node.MainObject.AddComponent<Tracker>().Trace = true;
-            Tracker t = node.MainObject.GetComponent<Tracker>();
-            Debug.Log(t);
 
             //Load other nodes associated with the manipulator
             for (int i = 1; i < nodes.Count; i++)
             {
                 RigidNode otherNode = (RigidNode)nodes[i];
                 otherNode.CreateTransform(ManipulatorObject.transform);
+
                 if (!otherNode.CreateMesh(directory + "\\" + otherNode.ModelFileName))
                 {
-                    Debug.Log("Robot not loaded!");
-                    UnityEngine.Object.Destroy(ManipulatorObject);
+                    Destroy(ManipulatorObject);
                     return false;
                 }
-                otherNode.CreateJoint(numWheels, this);
+
+                otherNode.CreateJoint(0, this);
                 otherNode.MainObject.AddComponent<Tracker>().Trace = true;
-                t = otherNode.MainObject.GetComponent<Tracker>();
-                Debug.Log(t);
             }
 
-            foreach (BRaycastRobot r in ManipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-                r.RaycastRobot.OverrideMass = collectiveMass;
-
             RotateRobot(robotStartOrientation);
+            RobotHasManipulator = true;
 
-            this.RobotHasManipulator = true;
             return true;
         }
 
@@ -162,6 +136,7 @@ namespace Synthesis.Robot
             base.OnRobotSetup();
 
             manipulatorOffset = Vector3.zero;
+
             try
             {
                 using (TextReader reader = File.OpenText(RobotDirectory + "\\position.txt"))
@@ -190,17 +165,12 @@ namespace Synthesis.Robot
             if (IsMecanum())
                 return base.ConstructRobot(nodes, numWheels, ref collectiveMass);
 
-            // TODO: Holy carp this is awful, fix it please.
-
             //Load Node_0, the base of the robot
             RigidNode node = (RigidNode)nodes[0];
             node.CreateTransform(transform);
 
             if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName, true, wheelMass))
-            {
-                Debug.Log("Robot not loaded!");
                 return false;
-            }
 
             node.CreateJoint(numWheels, this);
 
@@ -225,10 +195,9 @@ namespace Synthesis.Robot
                 meshList.Add(meshu);
 
                 materials = new Material[meshu.subMeshCount];
+
                 for (int i = 0; i < materials.Length; i++)
-                {
                     materials[i] = sub.surfaces[i].AsMaterial(true);
-                }
 
                 materialList.Add(materials);
             }, true);
@@ -240,19 +209,15 @@ namespace Synthesis.Robot
                 node.CreateTransform(transform);
 
                 if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName, true, wheelMass))
-                {
-                    Debug.Log("Robot not loaded!");
                     return false;
-                }
 
                 //If the node is a wheel, destroy the original wheel mesh and replace it with the wheels selected in MaM
                 if (node.HasDriverMeta<WheelDriverMeta>())
                 {
                     int chldCount = node.MainObject.transform.childCount;
+
                     for (int j = 0; j < chldCount; j++)
-                    {
                         Destroy(node.MainObject.transform.GetChild(j).gameObject);
-                    }
 
                     int k = 0;
 
@@ -262,10 +227,10 @@ namespace Synthesis.Robot
                         GameObject meshObj = new GameObject(node.MainObject.name + "_mesh");
                         meshObj.transform.parent = node.MainObject.transform;
                         meshObj.AddComponent<MeshFilter>().mesh = meshObject;
+
                         if (!offset.HasValue)
-                        {
                             offset = meshObject.bounds.center;
-                        }
+
                         meshObj.transform.localPosition = -offset.Value;
 
                         //Take out this line if you want some snazzy pink wheels
