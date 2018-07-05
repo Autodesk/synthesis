@@ -61,6 +61,6 @@ namespace nRoboRIO_FPGANamespace {
 
 };
 
-namespace cerebrum {
+namespace hel {
     
 }
