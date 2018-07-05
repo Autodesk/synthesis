@@ -48,6 +48,7 @@ namespace EditorsLibrary
             {
                 joint.attachedSensors.Remove((RobotSensor) sensorListView.SelectedItems[0].Tag);
                 this.UpdateSensorList();
+                LegacyInterchange.LegacyEvents.OnRobotModified();
             }
         }
 
@@ -86,11 +87,6 @@ namespace EditorsLibrary
         private void closeButton_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void SensorListForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            LegacyInterchange.LegacyEvents.OnRobotModified();
         }
     }
 }
