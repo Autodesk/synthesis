@@ -297,18 +297,22 @@ namespace BxDRobotExporter
             EnvironmentEnabled = true;
 
             // Load robot skeleton and prepare UI
-            Utilities.GUI.LoadRobotSkeleton();
+            if (!Utilities.GUI.LoadRobotSkeleton())
+            {
+                ForceQuitExporter();
+                return;
+            }
             
             // If fails to load existing data, restart wizard
             if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
                 try
                 {
-                    BeginWizardExport_OnExecute(null); // This should also be run async, as of now it stops the initialization of the addin until the wizard completes.
+                    BeginWizardExport_OnExecute(null);
                 }
                 catch (ExporterFailedException)
                 {
-                    // TODO: Close the addin. I don't know how to do this.
+                    ForceQuitExporter();
                 }
             }
             else
@@ -322,6 +326,12 @@ namespace BxDRobotExporter
             }
         }
 
+        private async void ForceQuitExporter()
+        {
+            await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
+            AsmDocument.EnvironmentManager.SetCurrentEnvironment(AsmDocument.EnvironmentManager.EditObjectEnvironment);
+        }
+        
         /// <summary>
         /// Disposes of some COM objects and exits the environment
         /// </summary>

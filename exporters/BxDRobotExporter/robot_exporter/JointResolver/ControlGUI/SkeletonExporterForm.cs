@@ -36,6 +36,18 @@ namespace JointResolver.ControlGUI
             ProgressBar.Maximum = max;
             ProgressBar.Value = current;
         }
+        
+        // Hide function cannot be run by worker
+        private void SetProgressWindowVisisble(bool v)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke((Action<bool>)SetProgressWindowVisisble, v);
+                return;
+            }
+
+            Visible = v;
+        }
 
         private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -53,8 +65,22 @@ namespace JointResolver.ControlGUI
             }
 
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
-            
-            RigidNode_Base Skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
+
+            RigidNode_Base Skeleton = null;
+
+            try
+            {
+                Skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
+            }
+            catch (Exporter.InvalidJointException ex)
+            {
+                SetProgressWindowVisisble(false);
+
+                string caption = "Invalid Joint";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                DialogResult r = MessageBox.Show(ex.Message, caption, buttons);
+            }
+
             SynthesisGUI.Instance.SkeletonBase = Skeleton;
         }
 
@@ -76,21 +102,7 @@ namespace JointResolver.ControlGUI
             SetProgress("Processing joints...", NumCentered, occurrences.Count);
             foreach (ComponentOccurrence component in occurrences)
             {
-                try
-                {
-                    Exporter.CenterAllJoints(component);
-                }
-                catch (Exporter.InvalidJointException e)
-                {
-                    string caption = "Invalid Joint";
-                    MessageBoxButtons buttons = MessageBoxButtons.OK;
-                    DialogResult r = MessageBox.Show(e.Message, caption, buttons);
-                    return null;
-                }
-                catch (Exception e)
-                {
-                    throw e;
-                }
+                Exporter.CenterAllJoints(component);
 
                 NumCentered++;
 

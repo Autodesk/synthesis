@@ -44,7 +44,7 @@ public class Exporter
                 else
                 {
                     //No robot would have a piece that would just keep going.
-                    throw new InvalidJointException(String.Format("Please close the exporter and add limits to \"{0}\" before exporting your robot.", joint.Name), joint);
+                    throw new InvalidJointException(String.Format("Please add limits to \"{0}\" before exporting your robot.", joint.Name), joint);
                 }
             }
         }
