@@ -312,12 +312,17 @@ namespace BxDRobotExporter
                 ForceQuitExporter();
                 return;
             }
-            
+
+            // No changes are pending after skeleton is loaded
+            PendingChanges = false;
+
             // If fails to load existing data, restart wizard
             if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
                 try
                 {
+                    // By default, save button should be enabled (changes pending)
+                    PendingChanges = true;
                     BeginWizardExport_OnExecute(null);
                 }
                 catch (ExporterFailedException)
@@ -327,9 +332,6 @@ namespace BxDRobotExporter
             }
             else
             {
-                // If data has been loaded, no changes are pending
-                PendingChanges = false;
-
                 // Joint data is already loaded, reload panels in UI
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
@@ -347,8 +349,7 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            if (PendingChanges)
-                Utilities.GUI.WarnUnsaved(false);
+            WarnIfUnsaved(false);
 
             // Close add-in
             AsmDocument = null;
@@ -450,23 +451,18 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if (!PendingChanges || this.WarnUnsaved())
+            if (WarnIfUnsaved())
             {
-                if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton())
-                {
-                    Wizard.WizardForm wizard = new Wizard.WizardForm();
-                    Utilities.HideDockableWindows();
-
-                    wizard.ShowDialog();
-                    
-                    PendingChanges = true; // After completing wizard, changes will be pending save
-                    Utilities.GUI.ReloadPanels();
-                    Utilities.ShowDockableWindows();
-                }
-                else
-                {
+                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                     throw new ExporterFailedException("Failed to build robot skeleton.");
-                }
+
+                Wizard.WizardForm wizard = new Wizard.WizardForm();
+                Utilities.HideDockableWindows();
+
+                wizard.ShowDialog();
+                    
+                Utilities.GUI.ReloadPanels();
+                Utilities.ShowDockableWindows();
             }
         }
 
@@ -798,21 +794,29 @@ namespace BxDRobotExporter
                 button.ProgressiveToolTip.IsProgressive = true;
             }
             button.ProgressiveToolTip.Title = title;
-        }        
+        }
 
-        public bool WarnUnsaved()
+        /// <summary>
+        /// Warn the user that they are about to exit without unsaved work
+        /// </summary>
+        /// <returns>True if the user wishes to continue without saving/no saving is needed.</returns>
+        public bool WarnIfUnsaved(bool allowCancel = true)
         {
-            switch (MessageBox.Show("Would you like to save your robot?", "Save", MessageBoxButtons.YesNoCancel))
+            if (!PendingChanges)
+                return true; // No changes to save
+
+            DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
+                                                      allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
+
+            if (saveResult == DialogResult.Yes)
             {
-                case DialogResult.Yes:
-                    SaveButton_OnExecute(null);
-                    return true;
-                case DialogResult.No:
-                    return true;
-                case DialogResult.Cancel:
-                    return false;
+                SaveButton_OnExecute(null);
+                return !PendingChanges;
             }
-            return false;
+            else if (saveResult == DialogResult.No)
+                return true; // Continue without saving
+            else
+                return false; // Don't continue
         }
 
         /// <summary>

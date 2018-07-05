@@ -102,7 +102,6 @@ public partial class SynthesisGUI : Form
 
         FormClosing += new FormClosingEventHandler(delegate (object sender, FormClosingEventArgs e)
         {
-            if (SkeletonBase != null && !WarnUnsaved()) e.Cancel = true;
             InventorManager.ReleaseInventor();
         });
 
@@ -158,15 +157,6 @@ public partial class SynthesisGUI : Form
         JointPaneForm.Show();
     }
 
-    public void SetNew()
-    {
-        if (SkeletonBase == null || !WarnUnsaved()) return;
-
-        SkeletonBase = null;
-        Meshes = null;
-        ReloadPanels();
-    }
-
     /// <summary>
     /// Open Synthesis to a specific robot and field.
     /// </summary>
@@ -197,12 +187,8 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Build the node tree of the robot from Inventor
     /// </summary>
-    public bool LoadRobotSkeleton(bool warnUnsaved = false)
+    public bool LoadRobotSkeleton()
     {
-        if (SkeletonBase != null)
-            if (warnUnsaved && !WarnUnsaved())
-                return false;
-
         try
         {
             var exporterThread = new Thread(() =>
@@ -626,29 +612,6 @@ public partial class SynthesisGUI : Form
         DialogResult overwriteResult = MessageBox.Show("Overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
 
         return overwriteResult == DialogResult.Yes;
-    }
-
-    /// <summary>
-    /// Warn the user that they are about to exit without unsaved work
-    /// </summary>
-    /// <returns>Whether the user wishes to continue without saving</returns>
-    public bool WarnUnsaved(bool allowCancel = true)
-    {
-        DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
-                                                  allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
-
-        if (saveResult == DialogResult.Yes)
-        {
-            return SaveRobotData(); // True if saving succeeds. False if fails.
-        }
-        else if (saveResult == DialogResult.No)
-        {
-            return true; // Continue without saving
-        }
-        else
-        {
-            return false; // Don't continue
-        }
     }
 
     /// <summary>
