@@ -117,7 +117,7 @@ namespace Synthesis.GUI
         {
             if (show)
             {
-                if (SimUI.changeAnalytics)
+                if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Opened Toolkit", new Dictionary<string, object> //for analytics tracking
                     {
@@ -179,7 +179,7 @@ namespace Synthesis.GUI
             rulerStartPoint.SetActive(true);
             Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(false);
             Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(true);
-            if (SimUI.changeAnalytics)
+            if (PlayerPrefs.GetInt("analytics") == 1)
             {
                 Analytics.CustomEvent("Used Ruler", new Dictionary<string, object> //for analytics tracking
                 {
@@ -299,7 +299,7 @@ namespace Synthesis.GUI
                 stopwatchTime = 0f;
                 stopwatchStartButtonText.text = "Stop";
                 stopwatchOn = true;
-                if (SimUI.changeAnalytics)
+                if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Used Stopwatch", new Dictionary<string, object> //for analytics tracking
                     {
