@@ -475,8 +475,8 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void ExportButton_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.PromptExportSettings();
-            Utilities.GUI.ExportRobot();
+            if (Utilities.GUI.PromptExportSettings())
+                Utilities.GUI.ExportRobot();
         }
 
         //Settings
