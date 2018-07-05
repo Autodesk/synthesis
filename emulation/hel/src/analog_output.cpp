@@ -19,11 +19,11 @@ struct AnalogOutputManager: public tAO{
 	}
 
 	void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-		hel::roborio_state.analog_outputs.setMXPOutput(reg_index, value);
+		hel::RoboRIOManager::getInstance()->analog_outputs.setMXPOutput(reg_index, value);
 	}
 
 	uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
-		return hel::roborio_state.analog_outputs.getMXPOutput(reg_index);
+		return hel::RoboRIOManager::getInstance()->analog_outputs.getMXPOutput(reg_index);
 	}
 };
 
