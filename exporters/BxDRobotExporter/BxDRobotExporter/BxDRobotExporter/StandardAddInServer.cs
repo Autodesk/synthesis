@@ -148,8 +148,8 @@ namespace BxDRobotExporter
             ControlDefinitions ControlDefs = MainApplication.CommandManager.ControlDefinitions;
 
             SetupPanel = ExporterTab.RibbonPanels.Add("Setup", "BxD:RobotExporter:SetupPanel", ClientID);
-            FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
             SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "BxD:RobotExporter:SettingsPanel", ClientID);
+            FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
             #endregion
 
             #region Setup Buttons
@@ -320,7 +320,7 @@ namespace BxDRobotExporter
         private void EndExporter()
         {
             // Export mesh as exporter is finished
-            if (Utilities.GUI.SkeletonBase != null)
+            if (Utilities.GUI.SkeletonBase != null && !Utilities.GUI.HasExported)
             {
                 Utilities.GUI.PromptExport();
             }

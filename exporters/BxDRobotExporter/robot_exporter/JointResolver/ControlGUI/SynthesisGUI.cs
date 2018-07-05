@@ -67,6 +67,7 @@ public partial class SynthesisGUI : Form
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
     public float TotalMass = 120;
+    public bool HasExported = false;
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
@@ -172,7 +173,7 @@ public partial class SynthesisGUI : Form
     /// </summary>
     public void PromptExport()
     {
-        DialogResult saveResult = MessageBox.Show("You robot has not been exported. Export now?", "Export", MessageBoxButtons.YesNo);
+        DialogResult saveResult = MessageBox.Show("Your robot has not been exported. Export now?", "Export", MessageBoxButtons.YesNo);
 
         if (saveResult == DialogResult.Yes)
         {
@@ -448,7 +449,7 @@ public partial class SynthesisGUI : Form
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
-    public bool RobotSave(bool silent = true)
+    public bool RobotSave()
     {
         try
         {
@@ -475,8 +476,7 @@ public partial class SynthesisGUI : Form
                 Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
             }
 
-            if(!silent)
-                MessageBox.Show("Saved");
+            HasExported = true;
 
             return true;
         }
