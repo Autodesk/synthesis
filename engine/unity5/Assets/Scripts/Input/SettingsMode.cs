@@ -1,4 +1,6 @@
-﻿using Synthesis.GUI;
+﻿using Synthesis.FSM;
+using Synthesis.GUI;
+using Synthesis.States;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,6 +52,7 @@ namespace Synthesis.Input
         {
             Controls.Save();
             UserMessageManager.Dispatch("Player preferances saved.", 5);
+            StateMachine.SceneGlobal.ChangeState(new HomeTabState());
         }
 
         /// <summary>
