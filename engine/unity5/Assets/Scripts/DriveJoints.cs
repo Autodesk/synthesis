@@ -6,8 +6,8 @@ using UnityEngine;
 using BulletUnity;
 using BulletSharp;
 using Synthesis.BUExtensions;
-using Synthesis.InputControl;
-using Synthesis.RigidNode;
+using Synthesis.Input;
+using Synthesis.RN;
 using Synthesis.StatePacket;
 using Synthesis.Utils;
 

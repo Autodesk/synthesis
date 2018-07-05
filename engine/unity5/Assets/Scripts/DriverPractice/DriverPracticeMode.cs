@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Synthesis.FSM;
 using Synthesis.GUI;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.States;
 using Synthesis.Utils;
 
@@ -525,7 +525,7 @@ namespace Synthesis.DriverPractice
 
         private void ListenControl()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 settingControl = 0;
                 return;
@@ -533,7 +533,7 @@ namespace Synthesis.DriverPractice
 
             foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
             {
-                if (Input.GetKeyDown(vKey))
+                if (UnityEngine.Input.GetKeyDown(vKey))
                 {
                     int index = State.ActiveRobot.ControlIndex;
                     if (configuringIndex == 0)
