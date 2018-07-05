@@ -41,6 +41,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.DriveTrainDropdown = new System.Windows.Forms.ComboBox();
             this.DriveTrainLabel = new System.Windows.Forms.Label();
+            this.AutoFill = new System.Windows.Forms.Button();
             this.RightWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.RightWheelsGroup = new System.Windows.Forms.GroupBox();
             this.WeightUnitSelector = new System.Windows.Forms.ComboBox();
@@ -72,12 +73,14 @@
             this.DefineWheelsInstruction1.TabIndex = 2;
             this.DefineWheelsInstruction1.Text = "Click on items to the left to see the part they correspond to. Drag wheels from t" +
     "he list into their respective columns below.";
+            this.DefineWheelsInstruction1.Click += new System.EventHandler(this.DefineWheelsInstruction1_Click);
             // 
             // WheelNodeGroupBox
             // 
             this.WheelNodeGroupBox.Controls.Add(this.label4);
             this.WheelNodeGroupBox.Controls.Add(this.NodeListBox);
             this.WheelNodeGroupBox.Controls.Add(this.DefineWheelsInstruction1);
+            this.WheelNodeGroupBox.Controls.Add(this.AutoFill);
             this.WheelNodeGroupBox.Location = new System.Drawing.Point(0, 110);
             this.WheelNodeGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.WheelNodeGroupBox.Name = "WheelNodeGroupBox";
@@ -211,6 +214,17 @@
             this.DriveTrainLabel.TabIndex = 0;
             this.DriveTrainLabel.Text = "Drive Train:";
             // 
+            // AutoFill
+            // 
+            this.AutoFill.Location = new System.Drawing.Point(12, 110);
+            this.AutoFill.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.AutoFill.Name = "AutoFill";
+            this.AutoFill.Size = new System.Drawing.Size(283, 28);
+            this.AutoFill.TabIndex = 7;
+            this.AutoFill.Text = "AutoFill";
+            this.AutoFill.UseVisualStyleBackColor = true;
+            this.AutoFill.Click += new System.EventHandler(this.AutoFill_Click);
+            // 
             // RightWheelsPanel
             // 
             this.RightWheelsPanel.AutoScroll = true;
@@ -286,6 +300,7 @@
         private System.Windows.Forms.GroupBox RobotInfoGroupBox;
         private System.Windows.Forms.ComboBox DriveTrainDropdown;
         private System.Windows.Forms.Label DriveTrainLabel;
+        private System.Windows.Forms.Button AutoFill; 
         private System.Windows.Forms.FlowLayoutPanel RightWheelsPanel;
         private System.Windows.Forms.ListBox NodeListBox;
         private System.Windows.Forms.NumericUpDown WeightBox;

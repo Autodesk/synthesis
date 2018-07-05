@@ -84,11 +84,11 @@
     <Compile Include="ControlGUI\LiteExporterForm.Designer.cs">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\SaveRobotForm.cs">
+    <Compile Include="ControlGUI\ExportRobotForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlGUI\SaveRobotForm.Designer.cs">
-      <DependentUpon>SaveRobotForm.cs</DependentUpon>
+    <Compile Include="ControlGUI\ExportRobotForm.Designer.cs">
+      <DependentUpon>ExportRobotForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlGUI\NodeEditorPane.cs">
       <SubType>UserControl</SubType>
@@ -171,12 +171,6 @@
     <Compile Include="EditorsLibrary\JointGroupNameEditorForm.Designer.cs">
       <DependentUpon>JointGroupNameEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorsLibrary\ParametersEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\ParametersEditor.Designer.cs">
-      <DependentUpon>ParametersEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="EditorsLibrary\ExporterSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -258,8 +252,8 @@
     <EmbeddedResource Include="ControlGUI\LiteExporterForm.resx">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\SaveRobotForm.resx">
-      <DependentUpon>SaveRobotForm.cs</DependentUpon>
+    <EmbeddedResource Include="ControlGUI\ExportRobotForm.resx">
+      <DependentUpon>ExportRobotForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\NodeEditorPane.resx">
       <DependentUpon>NodeEditorPane.cs</DependentUpon>
@@ -302,9 +296,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\JointGroupNameEditorForm.resx">
       <DependentUpon>JointGroupNameEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\ParametersEditor.resx">
-      <DependentUpon>ParametersEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\SensorListForm.resx">
       <DependentUpon>SensorListForm.cs</DependentUpon>
