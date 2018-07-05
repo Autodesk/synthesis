@@ -797,7 +797,7 @@ namespace BxDRobotExporter
         }
 
         /// <summary>
-        /// Warn the user that they are about to exit without unsaved work
+        /// If the user has unsaved work, warn them that they are about to exit with unsaved work
         /// </summary>
         /// <returns>True if the user wishes to continue without saving/no saving is needed.</returns>
         public bool WarnIfUnsaved(bool allowCancel = true)
