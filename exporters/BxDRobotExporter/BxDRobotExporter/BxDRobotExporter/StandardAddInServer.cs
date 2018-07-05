@@ -35,7 +35,15 @@ namespace BxDRobotExporter
                 else
                     return pendingChanges;
             }
-            set => pendingChanges = value;
+            set
+            {
+                if (SaveButton != null)
+                {
+                    SaveButton.Enabled = value; // Disable save button if changes have been saved
+                }
+
+                pendingChanges = value;
+            }
         }
         private bool pendingChanges = false;
         
@@ -215,7 +223,7 @@ namespace BxDRobotExporter
             MainApplication.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange += UIEvents_OnEnvironmentChange;
             MainApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
             MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
-            LegacyInterchange.LegacyEvents.RobotModified += new Action( () => { pendingChanges = true; } );
+            LegacyInterchange.LegacyEvents.RobotModified += new Action( () => { PendingChanges = true; } );
             #endregion 
 
             #endregion
@@ -296,8 +304,6 @@ namespace BxDRobotExporter
             Utilities.GUI.jointEditorPane1.SelectedJoint += JointEditorPane_SelectedJoint;
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
             
-            SaveButton.Enabled = false;
-            
             EnvironmentEnabled = true;
 
             // Load robot skeleton and prepare UI
@@ -321,12 +327,12 @@ namespace BxDRobotExporter
             }
             else
             {
+                // If data has been loaded, no changes are pending
+                PendingChanges = false;
+
                 // Joint data is already loaded, reload panels in UI
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
-                
-                // Enable save button
-                SaveButton.Enabled = true;
             }
         }
 
@@ -448,11 +454,12 @@ namespace BxDRobotExporter
             {
                 if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton())
                 {
-                    SaveButton.Enabled = true;
-
                     Wizard.WizardForm wizard = new Wizard.WizardForm();
                     Utilities.HideDockableWindows();
+
                     wizard.ShowDialog();
+                    
+                    PendingChanges = true; // After completing wizard, changes will be pending save
                     Utilities.GUI.ReloadPanels();
                     Utilities.ShowDockableWindows();
                 }
@@ -480,7 +487,8 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveButton_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.SaveRobotData();
+            if (Utilities.GUI.SaveRobotData())
+                PendingChanges = false;
         }
 
         /// <summary>
@@ -501,7 +509,8 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SetWeight_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.PromptRobotWeight();
+            if (Utilities.GUI.PromptRobotWeight())
+                PendingChanges = true;
         }
 
 

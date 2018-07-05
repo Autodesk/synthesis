@@ -673,7 +673,8 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Opens the <see cref="SetWeightForm"/> form
     /// </summary>
-    public void PromptRobotWeight()
+    /// <returns>True if robot weight was changed.</returns>
+    public bool PromptRobotWeight()
     {
         try
         {
@@ -682,13 +683,18 @@ public partial class SynthesisGUI : Form
             weightForm.ShowDialog();
 
             if (weightForm.DialogResult == DialogResult.OK)
+            {
                 TotalWeightKg = weightForm.TotalWeightKg;
+                return true;
+            }
         }
         catch (Exception ex)
         {
             MessageBox.Show(ex.ToString());
             throw;
         }
+
+        return false;
     }
 
     /// <summary>
