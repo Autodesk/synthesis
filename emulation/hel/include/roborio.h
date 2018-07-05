@@ -129,17 +129,18 @@ namespace hel{
     class RoboRIOManager {
 
     public:
-        static std::shared_ptr<RoboRIO> getInstance(std::mutex& m) {
-            std::unique_lock<std::mutex> lock(m);
-            static std::shared_ptr<RoboRIO> instance;
+        static std::shared_ptr<RoboRIO> getInstance() {
+            if (instance == nullptr) {
+                instance = std::make_shared<RoboRIO>();
+            }
             return instance;
         }
         static RoboRIO getCopy() {
-            std::mutex m;
-            return RoboRIO((*RoboRIOManager::getInstance(m)));
+            return RoboRIO((*RoboRIOManager::getInstance()));
         }
     private:
         RoboRIOManager() {}
+        static std::shared_ptr<RoboRIO> instance;
     public:
         RoboRIOManager(RoboRIOManager const&) = delete;
         void operator=(RoboRIOManager const&) = delete;
