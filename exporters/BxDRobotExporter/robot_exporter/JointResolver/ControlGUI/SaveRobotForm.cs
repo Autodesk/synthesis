@@ -15,31 +15,13 @@ namespace JointResolver.ControlGUI
     {
         static Dictionary<string, string> fields = new Dictionary<string, string>();
 
-        private bool _isFinal;
-
-        public SaveRobotForm(string initialRobotName, bool allowOpeningSynthesis, bool isFinal)
+        public SaveRobotForm(string initialRobotName)
         {
             InitializeComponent();
             InitializeFields();
 
-            _isFinal = isFinal;
-
             RobotNameTextBox.Text = initialRobotName;
             ColorBox.Checked = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
-
-            if (!allowOpeningSynthesis)
-            {
-                OpenSynthesisBox.Checked = false;
-                OpenSynthesisBox.Visible = false;
-                FieldLabel.Visible = false;
-                FieldSelectComboBox.Visible = false;
-            }
-            else
-            {
-                OpenSynthesisBox.Visible = true;
-                FieldLabel.Visible = true;
-                FieldSelectComboBox.Visible = true;
-            }
         }
 
         /// <summary>
@@ -66,11 +48,11 @@ namespace JointResolver.ControlGUI
             }
         }
 
-        public static DialogResult Prompt(string initialRobotName, bool allowOpeningSynthesis, bool isFinal, out string robotName, out bool colors, out bool openSynthesis, out string field)
+        public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field)
         {
             try
             {
-                SaveRobotForm form = new SaveRobotForm(initialRobotName, allowOpeningSynthesis, isFinal);
+                SaveRobotForm form = new SaveRobotForm(initialRobotName);
                 form.ShowDialog();
                 robotName = form.RobotNameTextBox.Text;
                 colors = form.ColorBox.Checked;
@@ -78,7 +60,7 @@ namespace JointResolver.ControlGUI
 
                 field = null;
 
-                if (openSynthesis && form.FieldSelectComboBox.SelectedItem != null)
+                if (form.FieldSelectComboBox.SelectedItem != null)
                     field = fields[(string)form.FieldSelectComboBox.SelectedItem];
 
                 return form.DialogResult;
@@ -112,19 +94,6 @@ namespace JointResolver.ControlGUI
             else
             {
                 MessageBox.Show("Please enter a name for your robot.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void SaveRobotForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (DialogResult == DialogResult.Cancel)
-            {
-                if (_isFinal && MessageBox.Show("Are you sure you want to cancel? (All export progress would be lost)",
-                                                "Cancel", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-                {
-                    e.Cancel = true;
-                    DialogResult = DialogResult.None;
-                }
             }
         }
 
