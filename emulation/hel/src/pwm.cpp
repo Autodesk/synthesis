@@ -1,4 +1,5 @@
 #include "roborio.h"
+#include "util.h"
 
 #include "athena/DigitalInternal.h"
 
@@ -125,7 +126,13 @@ struct PWMManager: public tPWM{
 	}
 
 	void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-		hel::RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
+		if( 
+			hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, reg_index) && //Allow MXP output if pin is output-enabled
+			hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), reg_index) //Allow MXP outout if DO is using special function
+		){
+			hel::RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
+        }
+        //TODO error handling
 	}
 	
 	uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){

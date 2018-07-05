@@ -75,13 +75,12 @@ struct DIOManager: public tDIO{
 	}
 
 private:
-	template<typename T, typename S>
-	bool allowOutput(T output,S enabled){
+	template<typename T, typename S> //note: this is not an Ni FPGA function
+	bool allowOutput(T output,S enabled, bool requires_special_function){
 		for(unsigned i = 1; i < hel::findMostSignificantBit(output); i++){ 
-			if(hel::checkBitHigh(output, i)){ // attempt output if bit in value is high
-				if(hel::checkBitHigh(enabled, i)){ //allow write if enabled_outputs bit is also high 
-					return true;
-				}
+			if(hel::checkBitHigh(output, i) && hel::checkBitHigh(enabled, i)){ //Attempt output if bit in value is high, allow write if enabled_outputs bit is also high 
+				bool special_enabled = hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), i);
+				return requires_special_function ? special_enabled : !special_enabled; //If it's DO, special function should be disabled. Otherwise, it should be enabled
 			}
 		}
 		return false;
@@ -90,7 +89,7 @@ private:
 public:
 
 	void writeDO_Headers(uint16_t value, tRioStatusCode* /*status*/){
-		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Headers)){
+		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Headers, false)){
 			tDIO::tDO outputs = hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
 			outputs.Headers = value;
 			hel::RoboRIOManager::getInstance()->digital_system.setOutputs(outputs);
@@ -99,7 +98,7 @@ public:
 	}
 	
 	void writeDO_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
-		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().SPIPort)){
+		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().SPIPort, false)){
 			tDIO::tDO outputs = hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
 			outputs.SPIPort = value;
 			hel::RoboRIOManager::getInstance()->digital_system.setOutputs(outputs);
@@ -108,7 +107,7 @@ public:
 	}
 	
 	void writeDO_Reserved(uint8_t value, tRioStatusCode* /*status*/){
-		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Reserved)){
+		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Reserved, false)){
 			tDIO::tDO outputs = hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
 			outputs.Reserved = value;
 			hel::RoboRIOManager::getInstance()->digital_system.setOutputs(outputs);
@@ -117,7 +116,7 @@ public:
 	}
 	
 	void writeDO_MXP(uint16_t value, tRioStatusCode* /*status*/){
-		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP)){
+		if(allowOutput(value, hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, false)){
 			tDIO::tDO outputs = hel::RoboRIOManager::getInstance()->digital_system.getOutputs();
 			outputs.MXP = value;
 			hel::RoboRIOManager::getInstance()->digital_system.setOutputs(outputs);
@@ -146,7 +145,7 @@ public:
 	}
 
 	void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-		if(hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, bitfield_index)){
+		if(allowOutput(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, bitfield_index, true)){
 			hel::RoboRIOManager::getInstance()->digital_system.setPWMDutyCycle(bitfield_index, value);
 		} else {
 			//TODO error handling
@@ -233,7 +232,7 @@ public:
 
 	void writePulse(tDIO::tPulse value, tRioStatusCode* /*status*/){
 		hel::RoboRIOManager::getInstance()->digital_system.setPulses(value);
-		//TODO this should only last for pulse_length seconds, and only one pulse should be active at a time?
+		//TODO this should only last for pulse_length seconds, and only one pulse should be active at a time? Also need to use allowOutput() too
 	}
 
 	void writePulse_Headers(uint16_t /*value*/, tRioStatusCode* /*status*/){
