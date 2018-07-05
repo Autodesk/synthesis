@@ -2,8 +2,8 @@
 using System.Collections;
 using System;
 using Synthesis.FSM;
-using Synthesis.InputControl;
-using Synthesis.RobotCamera;
+using Synthesis.Input;
+using Synthesis.Camera;
 using Synthesis.States;
 
 public class DynamicCamera : MonoBehaviour
@@ -575,7 +575,7 @@ public class DynamicCamera : MonoBehaviour
 
                 if (InputControl.GetMouseButton(0))
                 {
-                    if (GameObject.Find("ChangeRobotPanel") == true || GameObject.Find("ChangeFieldPanel"))
+                    if (GameObject.Find("ChangeRobotPanel") || GameObject.Find("ChangeFieldPanel"))
                     {
                         MovingEnabled = false;
                     }

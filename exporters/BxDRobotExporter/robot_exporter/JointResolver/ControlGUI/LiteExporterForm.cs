@@ -143,7 +143,7 @@ public partial class LiteExporterForm : Form
         if (SynthesisGUI.Instance.SkeletonBase == null)
             return; // Skeleton has not been built
 
-        List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase, SynthesisGUI.Instance.TotalMass);
+        List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase, SynthesisGUI.Instance.TotalWeightKg);
 
         SynthesisGUI.Instance.Meshes = Meshes;
     }
@@ -187,7 +187,7 @@ public partial class LiteExporterForm : Form
     /// <seealso cref="ExporterWorker_DoWork"/>
     /// <param name="baseNode"></param>
     /// <returns></returns>
-    public List<BXDAMesh> ExportMeshesLite(RigidNode_Base baseNode, float totalMass)
+    public List<BXDAMesh> ExportMeshesLite(RigidNode_Base baseNode, float totalMassKg)
     {
         SurfaceExporter surfs = new SurfaceExporter();
         BXDJSkeleton.SetupFileNames(baseNode, true);
@@ -225,16 +225,19 @@ public partial class LiteExporterForm : Form
                 }
             }
         }
-        
-        // Apply masses to mesh
-        float totalDefaultMass = 0;
-        foreach (BXDAMesh mesh in meshes)
+
+        // Apply custom mass to mesh
+        if (totalMassKg > 0) // Negative value indicates that default mass should be left alone (TODO: Make default mass more accurate)
         {
-            totalDefaultMass += mesh.physics.mass;
-        }
-        for (int i = 0; i < meshes.Count; i++)
-        {
-           meshes[i].physics.mass = totalMass * (float)(meshes[i].physics.mass / totalDefaultMass);
+            float totalDefaultMass = 0;
+            foreach (BXDAMesh mesh in meshes)
+            {
+                totalDefaultMass += mesh.physics.mass;
+            }
+            for (int i = 0; i < meshes.Count; i++)
+            {
+                meshes[i].physics.mass = totalMassKg * (float)(meshes[i].physics.mass / totalDefaultMass);
+            }
         }
 
         // Add meshes to all nodes

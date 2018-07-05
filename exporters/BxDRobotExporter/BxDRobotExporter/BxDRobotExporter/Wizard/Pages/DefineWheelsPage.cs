@@ -15,12 +15,8 @@ namespace BxDRobotExporter.Wizard
     /// </summary>
     public partial class DefineWheelsPage : UserControl, IWizardPage
     {
-        /// <summary>
-        /// Active counter of how many <see cref="RigidNode_Base"/>s have been selected
-        /// </summary>
-        private int checkedCount = 0;
-        private int totalMass = 0;
-        private double inputMass = 0;
+        private int totalWeightKg = 0;
+
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
@@ -166,7 +162,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
-            WizardData.Instance.mass = totalMass;
+            WizardData.Instance.weightKg = totalWeightKg;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
             {
@@ -289,17 +285,18 @@ namespace BxDRobotExporter.Wizard
 
         private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateMassCount();
+            UpdateWeight();
         }
 
-        private void UpdateMassCount()
+        private void UpdateWeight()
         {
-            if (this.MassTypeSelector.SelectedIndex == 0)
+            if (WeightUnitSelector.SelectedIndex == 0)
             {
-                totalMass = (int)Math.Round(Convert.ToDouble(this.numericUpDown1.Value) / 2.20462);
-            } else
+                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value) / 2.20462);
+            }
+            else
             {
-                totalMass = (int)Math.Round(Convert.ToDouble(this.numericUpDown1.Value));
+                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value));
             }
         }
 
@@ -442,7 +439,7 @@ namespace BxDRobotExporter.Wizard
        
         private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
         {
-            UpdateMassCount();
+            UpdateWeight();
         }
     }
 }

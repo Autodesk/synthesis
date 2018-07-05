@@ -202,8 +202,7 @@
             this.Name = "SaveRobotForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Save Robot";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SaveRobotForm_FormClosing);
+            this.Text = "Export Robot";
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             this.WindowControlLayout.ResumeLayout(false);
