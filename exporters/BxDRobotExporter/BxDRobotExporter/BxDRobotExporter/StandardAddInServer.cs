@@ -55,8 +55,8 @@ namespace BxDRobotExporter
 
         //Ribbon Pannels
         RibbonPanel SetupPanel;
-        RibbonPanel FilePanel;
         RibbonPanel SettingsPanel;
+        RibbonPanel FilePanel;
 
         //Standalone Buttons
         ButtonDefinition WizardExportButton;
