@@ -535,7 +535,8 @@ namespace Synthesis.States
             lastFrameCount = physicsWorld.frameCount;
             Tracking = true;
 
-            CollisionTracker.Reset();
+            if (!awaitingReplay)
+                CollisionTracker.Reset();
         }
 
         /// <summary>
