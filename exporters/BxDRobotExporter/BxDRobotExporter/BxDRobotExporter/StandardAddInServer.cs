@@ -153,7 +153,7 @@ namespace BxDRobotExporter
 
             ControlDefinitions ControlDefs = MainApplication.CommandManager.ControlDefinitions;
 
-            SetupPanel = ExporterTab.RibbonPanels.Add("Setup", "BxD:RobotExporter:SetupPanel", ClientID);
+            SetupPanel = ExporterTab.RibbonPanels.Add("Start Over", "BxD:RobotExporter:SetupPanel", ClientID);
             SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "BxD:RobotExporter:SettingsPanel", ClientID);
             FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
 
@@ -164,7 +164,7 @@ namespace BxDRobotExporter
 
             #region Setup Buttons
             //Begin Wizard Export
-            WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", WizardExportIconSmall, WizardExportIconLarge);
+            WizardExportButton = ControlDefs.AddButtonDefinition("Quick Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", WizardExportIconSmall, WizardExportIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
