@@ -50,6 +50,7 @@ namespace Synthesis.Robot
         public bool InitializeManipulator(string directory)
         {
             ManipulatorObject = new GameObject("Manipulator");
+            ManipulatorObject.transform.position = robotStartPosition + manipulatorOffset;
 
             RigidNode_Base.NODE_FACTORY = delegate (Guid guid) { return new RigidNode(guid); };
 
@@ -67,11 +68,6 @@ namespace Synthesis.Robot
                 Destroy(ManipulatorObject);
                 return false;
             }
-
-            //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING: LIKE ACTUALLY
-
-            Vector3 manipulatorTransform = robotStartPosition + manipulatorOffset;
-            ManipulatorObject.transform.position = manipulatorTransform;
 
             node.CreateManipulatorJoint(gameObject);
             node.MainObject.AddComponent<Tracker>().Trace = true;
