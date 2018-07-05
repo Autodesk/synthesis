@@ -10,9 +10,10 @@ using BulletUnity.Debugging;
 using System.Linq;
 using Synthesis.FSM;
 using Synthesis.GUI;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Robot;
 
 namespace Synthesis.DriverPractice
 {
@@ -74,6 +75,9 @@ namespace Synthesis.DriverPractice
         private DynamicCamera.CameraState lastCameraState;
 
         public int controlIndex;
+
+        private UnityEngine.Quaternion startParentRotation;
+        private UnityEngine.Quaternion startChildRotation;
 
         /// <summary>
         /// If configuration file exists, loads information and auto-configures robot.
@@ -153,7 +157,7 @@ namespace Synthesis.DriverPractice
             //After initializing all the lists and variables, try to load from the robot directory.
             Load(robotDirectory);
 
-            controlIndex = GetComponent<Robot>().ControlIndex;
+            controlIndex = GetComponent<SimulatorRobot>().ControlIndex;
             modeEnabled = true;
         }
 
@@ -166,7 +170,7 @@ namespace Synthesis.DriverPractice
             {
                 ProcessControls();
 
-                if (Input.GetMouseButtonDown(0))
+                if (UnityEngine.Input.GetMouseButtonDown(0))
                 {
                     if (addingGamepiece) SetGamepiece(configuringIndex);
                     else if (definingIntake || definingRelease) SetMechanism(configuringIndex);
@@ -222,6 +226,8 @@ namespace Synthesis.DriverPractice
 
                 intakeInteractor[index].heldGamepieces.Add(newObject);
 
+                startParentRotation = intakeInteractor[index].transform.rotation;
+                startChildRotation = newObject.transform.rotation;
 
                 foreach (BRigidBody rb in this.GetComponentsInChildren<BRigidBody>())
                 {
@@ -249,6 +255,7 @@ namespace Synthesis.DriverPractice
                     orb = objectsHeld[index][i].GetComponent<BRigidBody>();
                     orb.velocity = nrb.velocity;
                     orb.SetPosition(nrb.transform.position + nrb.transform.rotation * positionOffset[index]);
+                    orb.SetRotation((nrb.transform.rotation * UnityEngine.Quaternion.Inverse(startParentRotation)) * startChildRotation);
                     orb.angularVelocity = UnityEngine.Vector3.zero;
                     orb.angularFactor = UnityEngine.Vector3.zero;
 
@@ -347,7 +354,7 @@ namespace Synthesis.DriverPractice
         public void SetGamepiece(int index)
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -468,7 +475,7 @@ namespace Synthesis.DriverPractice
                     spawnIndicator.transform.position = gamepieceSpawn[index];
                     settingSpawn = index + 1;
 
-                    DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                    DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
                     dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
 
@@ -484,12 +491,12 @@ namespace Synthesis.DriverPractice
             int index = settingSpawn - 1;
             if (spawnIndicator != null)
             {
-                ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
-                if (Input.GetKey(KeyCode.A)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-                if (Input.GetKey(KeyCode.D)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-                if (Input.GetKey(KeyCode.W)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-                if (Input.GetKey(KeyCode.S)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
-                if (Input.GetKeyDown(KeyCode.Return))
+                ((DynamicCamera.SateliteState)UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
+                if (UnityEngine.Input.GetKey(KeyCode.A)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
+                if (UnityEngine.Input.GetKey(KeyCode.D)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
+                if (UnityEngine.Input.GetKey(KeyCode.W)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
+                if (UnityEngine.Input.GetKey(KeyCode.S)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
                 {
                     UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
                     gamepieceSpawn[index] = spawnIndicator.transform.position;
@@ -504,7 +511,7 @@ namespace Synthesis.DriverPractice
             if (spawnIndicator != null) Destroy(spawnIndicator);
             if (lastCameraState != null)
             {
-                DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
                 dynamicCamera.SwitchCameraState(lastCameraState);
                 lastCameraState = null;
             }
@@ -522,7 +529,7 @@ namespace Synthesis.DriverPractice
         public void SetMechanism(int index)
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -583,7 +590,7 @@ namespace Synthesis.DriverPractice
         private void SelectingNode()
         {
             //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
             BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
 
@@ -891,16 +898,16 @@ namespace Synthesis.DriverPractice
         {
             if (processingIndex == 0)
             {
-                if ((InputControl.InputControl.GetButton(Controls.buttons[controlIndex].pickupPrimary)))
+                if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupPrimary)))
                 {
 
                     Intake(0);
                 }
-                if ((InputControl.InputControl.GetButton(Controls.buttons[controlIndex].pickupSecondary)))
+                if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupSecondary)))
                 {
                     Intake(1);
                 }
-                if ((InputControl.InputControl.GetButtonDown(Controls.buttons[controlIndex].releasePrimary)))
+                if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].releasePrimary)))
                 {
                     ReleaseGamepiece(0);
                 }
@@ -908,7 +915,7 @@ namespace Synthesis.DriverPractice
                 {
                     HoldGamepiece(0);
                 }
-                if ((InputControl.InputControl.GetButtonDown(Controls.buttons[controlIndex].releaseSecondary)))
+                if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].releaseSecondary)))
                 {
                     ReleaseGamepiece(1);
                 }
@@ -920,16 +927,16 @@ namespace Synthesis.DriverPractice
             }
             else
             {
-                if ((InputControl.InputControl.GetButton(Controls.buttons[controlIndex].pickupSecondary)))
+                if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupSecondary)))
                 {
 
                     Intake(1);
                 }
-                if ((InputControl.InputControl.GetButton(Controls.buttons[controlIndex].pickupPrimary)))
+                if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupPrimary)))
                 {
                     Intake(0);
                 }
-                if ((InputControl.InputControl.GetButtonDown(Controls.buttons[controlIndex].releaseSecondary)))
+                if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].releaseSecondary)))
                 {
                     ReleaseGamepiece(1);
                 }
@@ -937,7 +944,7 @@ namespace Synthesis.DriverPractice
                 {
                     HoldGamepiece(1);
                 }
-                if ((InputControl.InputControl.GetButtonDown(Controls.buttons[controlIndex].releasePrimary)))
+                if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].releasePrimary)))
                 {
                     ReleaseGamepiece(0);
                 }
@@ -948,8 +955,8 @@ namespace Synthesis.DriverPractice
                 processingIndex = 0;
             }
 
-            if ((InputControl.InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPrimary))) SpawnGamepiece(0);
-            if ((InputControl.InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnSecondary))) SpawnGamepiece(1);
+            if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPrimary))) SpawnGamepiece(0);
+            if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnSecondary))) SpawnGamepiece(1);
         }
 
         private void OnDestroy()

@@ -13,8 +13,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Analytics;
 using Synthesis.GUI;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.FEA;
+using Synthesis.Robot;
 
 namespace Synthesis.States
 {
@@ -85,7 +86,7 @@ namespace Synthesis.States
         private bool firstFrame;
         private bool active;
 
-        private Camera camera;
+        private UnityEngine.Camera camera;
         private DynamicCamera dynamicCamera;
         private List<Tracker> trackers;
         private List<List<ContactDescriptor>> contactPoints;
@@ -343,13 +344,13 @@ namespace Synthesis.States
 
             if (!active && (guiRect.Contains(Event.current.mousePosition) ||
                 (editMode == EditMode.Threshold && collisionSliderRect.Contains(Event.current.mousePosition))) &&
-                Input.GetMouseButton(0))
+                UnityEngine.Input.GetMouseButton(0))
             {
                 DynamicCamera.MovingEnabled = false;
                 active = true;
                 playbackMode = PlaybackMode.Paused;
             }
-            else if (active && !Input.GetMouseButton(0))
+            else if (active && !UnityEngine.Input.GetMouseButton(0))
             {
                 DynamicCamera.MovingEnabled = true;
                 active = false;
@@ -461,9 +462,9 @@ namespace Synthesis.States
         private void PushSaveReplayState()
         {
             MainState mainState = StateMachine.FindState<MainState>();
-            foreach (Robot robot in mainState.SpawnedRobots)
+            foreach (SimulatorRobot robot in mainState.SpawnedRobots)
             {
-                if (robot.RobotIsMixAndMatch)
+                if (robot is MaMRobot)
                 {
                     UserMessageManager.Dispatch("Cannot save replays with Mix and Match robots", 5);
                     return;
@@ -477,7 +478,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
                 StateMachine.PopState();
         }
 
@@ -489,19 +490,19 @@ namespace Synthesis.States
             if (dynamicCamera == null)
             {
                 dynamicCamera = UnityEngine.Object.FindObjectOfType<DynamicCamera>();
-                camera = dynamicCamera.GetComponent<Camera>();
+                camera = dynamicCamera.GetComponent<UnityEngine.Camera>();
             }
 
-            if (InputControl.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
+            if (Input.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             if (firstFrame)
             {
                 firstFrame = false;
             }
-            else if (Input.GetKeyDown(KeyCode.Space))
+            else if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
             {
-                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftControl) || UnityEngine.Input.GetKey(KeyCode.RightControl))
                 {
                     rewindTime = Tracker.Lifetime;
                     playbackMode = PlaybackMode.Play;
@@ -533,15 +534,15 @@ namespace Synthesis.States
                     break;
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (UnityEngine.Input.GetKey(KeyCode.LeftArrow))
             {
-                rewindTime += Time.deltaTime * (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ? 0.05f : 0.25f);
+                rewindTime += Time.deltaTime * (UnityEngine.Input.GetKey(KeyCode.LeftControl) || UnityEngine.Input.GetKey(KeyCode.RightControl) ? 0.05f : 0.25f);
                 playbackMode = PlaybackMode.Paused;
             }
 
-            if (Input.GetKey(KeyCode.RightArrow))
+            if (UnityEngine.Input.GetKey(KeyCode.RightArrow))
             {
-                rewindTime -= Time.deltaTime * (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ? 0.05f : 0.25f);
+                rewindTime -= Time.deltaTime * (UnityEngine.Input.GetKey(KeyCode.LeftControl) || UnityEngine.Input.GetKey(KeyCode.RightControl) ? 0.05f : 0.25f);
                 playbackMode = PlaybackMode.Paused;
             }
 

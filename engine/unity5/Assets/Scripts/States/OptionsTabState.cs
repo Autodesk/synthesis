@@ -1,6 +1,6 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.Utils;
 using System;
 using System.Collections.Generic;

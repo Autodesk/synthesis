@@ -16,10 +16,7 @@ namespace BxDRobotExporter.Wizard
     /// </summary>
     public partial class DefineWheelsPage : UserControl, IWizardPage
     {
-        /// <summary>
-        /// Active counter of how many <see cref="RigidNode_Base"/>s have been selected
-        /// </summary>
-        private int totalMass = 0;
+        private int totalWeightKg = 0;
 
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
@@ -37,10 +34,6 @@ namespace BxDRobotExporter.Wizard
             WheelSetupPanel.remove += new OnWheelSetupPanelRemove(this.RemoveWheelSetupPanel);
             WheelSetupPanel.hover += new OnWheelSetupPanelHover(this.WheelSetupHover);
             InitializeComponent();
-            this.VisibleChanged += delegate (object sender, EventArgs e)
-            {
-                if (Visible) ValidateInput();
-            };
             RightWheelsPanel.AllowDrop = true;
             LeftWheelsPanel.AllowDrop = true;
             NodeListBox.AllowDrop = true;
@@ -90,28 +83,8 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
             OnInvalidatePage();
-            ValidateInput();
             //checkedListItems.Clear();
             //UpdateWheelPanes();
-        }
-
-
-        /// <summary>
-        /// Makes sure all of the wheels are set correctly.
-        /// </summary>
-        private void ValidateInput()
-        {
-            if (totalMass != 0.0f)
-            {
-                WarningLabel.Text = string.Empty;
-                OnActivateNext();
-            }
-            else
-            {
-                WarningLabel.Text = string.Format("Please enter a Robot Weight");
-                OnDeactivateNext();
-            }
-            
         }
 
         /// <summary>
@@ -121,7 +94,6 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void Panel_WheelTypeChanged(object sender, WheelTypeChangedEventArgs e)
         {
-            ValidateInput();
         }
 
         /// <summary>
@@ -135,7 +107,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
-            WizardData.Instance.mass = totalMass;
+            WizardData.Instance.weightKg = totalWeightKg;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
             {
@@ -258,12 +230,19 @@ namespace BxDRobotExporter.Wizard
 
         private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateMassCount();
+            UpdateWeight();
         }
 
-        private void UpdateMassCount()
+        private void UpdateWeight()
         {
-             ValidateInput();
+            if (WeightUnitSelector.SelectedIndex == 0)
+            {
+                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value) / 2.20462);
+            }
+            else
+            {
+                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value));
+            }
         }
 
         private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
@@ -405,10 +384,7 @@ namespace BxDRobotExporter.Wizard
        
         private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
         {
-
-            totalMass = (int)Math.Round(this.numericUpDown1.Value);
-            ValidateInput();
-
+            UpdateWeight();
         }
 
         private void DefineWheelsInstruction1_Click(object sender, EventArgs e)
