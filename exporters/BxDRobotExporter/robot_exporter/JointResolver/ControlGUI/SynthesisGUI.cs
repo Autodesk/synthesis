@@ -66,7 +66,7 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
-    public float TotalMass = 120;
+    public float TotalWeightKg = -1; // Negative value indicates default mass should be left alone
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
@@ -740,19 +740,18 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Opens the <see cref="SetMassForm"/> form
+    /// Opens the <see cref="SetWeightForm"/> form
     /// </summary>
-    public void PromptRobotMass()
+    public void PromptRobotWeight()
     {
         try
         {
-            //TODO: Implement Value saving and loading
-            SetMassForm massForm = new SetMassForm();
+            SetWeightForm weightForm = new SetWeightForm();
 
-            massForm.ShowDialog();
+            weightForm.ShowDialog();
 
-            if (massForm.DialogResult == DialogResult.OK)
-                TotalMass = massForm.TotalMass;
+            if (weightForm.DialogResult == DialogResult.OK)
+                TotalWeightKg = weightForm.TotalWeightKg;
         }
         catch (Exception ex)
         {

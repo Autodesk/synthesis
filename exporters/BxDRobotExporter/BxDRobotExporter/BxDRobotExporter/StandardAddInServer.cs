@@ -60,7 +60,7 @@ namespace BxDRobotExporter
 
         //Standalone Buttons
         ButtonDefinition WizardExportButton;
-        ButtonDefinition SetMassButton;
+        ButtonDefinition SetWeightButton;
 
         ObjectCollection SaveButtonCollection;
         ButtonDefinition SaveButton;
@@ -159,11 +159,11 @@ namespace BxDRobotExporter
             WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
 
-            //Set Mass
-            SetMassButton = ControlDefs.AddButtonDefinition("Set Mass", "BxD:RobotExporter:SetMass", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the Mass of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
-            SetMassButton.OnExecute += SetMass_OnExecute;
-            SetMassButton.OnHelp += _OnHelp;
-            SettingsPanel.CommandControls.AddButton(SetMassButton, true);
+            //Set Weight
+            SetWeightButton = ControlDefs.AddButtonDefinition("Set Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            SetWeightButton.OnExecute += SetWeight_OnExecute;
+            SetWeightButton.OnHelp += _OnHelp;
+            SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
             //Save Button
             SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Saves your robot to its previous location.", SaveRobotIconSmall, SaveRobotIconLarge);
@@ -556,12 +556,12 @@ namespace BxDRobotExporter
 
         //Settings
         /// <summary>
-        /// Opens the <see cref="SetMassForm"/> form to allow the user to set the Mass of their robot.
+        /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
         /// </summary>
         /// <param name="Context"></param>
-        private void SetMass_OnExecute(NameValueMap Context)
+        private void SetWeight_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.PromptRobotMass();
+            Utilities.GUI.PromptRobotWeight();
         }
 
 
