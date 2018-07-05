@@ -20,6 +20,8 @@ namespace Synthesis.Input
         public Sprite DefaultButtonImage;
         public Sprite ActiveButtonImage;
 
+        public State CurrentState { get; set; }
+
         // Update is called once per frame
         void Update()
         {
@@ -50,6 +52,12 @@ namespace Synthesis.Input
         /// Saves ALL player controls when clicked.
         /// </summary>
         public void OnSaveClick()
+        {
+            Controls.Save();
+            UserMessageManager.Dispatch("Player preferances saved.", 5);
+        }
+
+        public void OnSaveClickMainMenu()
         {
             Controls.Save();
             UserMessageManager.Dispatch("Player preferances saved.", 5);

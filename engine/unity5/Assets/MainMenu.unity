@@ -3188,7 +3188,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2074039511}
-        m_MethodName: OnSaveClick
+        m_MethodName: OnSaveClickMainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
