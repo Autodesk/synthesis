@@ -58,6 +58,53 @@ public class Utilities
         else
             return str.Substring(0, 1).ToUpperInvariant() + str.Substring(1);
     }
+
+    public static Inventor.PropertySet GetPropertySet(Inventor.PropertySets sets, string name, bool createIfDoesNotExist = true)
+    {
+        foreach (Inventor.PropertySet set in sets)
+        {
+            if (set.Name == name)
+            {
+                return set;
+            }
+        }
+
+        if (createIfDoesNotExist)
+            return sets.Add(name);
+        else
+            return null;
+    }
+
+    public static void SetProperty<T>(Inventor.PropertySet set, string name, T value)
+    {
+        // Inventor API provides no easy way to check if a property already exists. This try-catch is necessary.
+        try
+        {
+            // Try to add new property. This will result in an exception if the property already exists.
+            set.Add(value, name);
+        }
+        catch (ArgumentException)
+        {
+            // Property already exists, update value
+            set[name].Value = value;
+        }
+    }
+
+    public static T GetProperty<T>(Inventor.PropertySet set, string name, T defaultValue)
+    {
+        // Inventor API provides no easy way to check if a property already exists. This try-catch is necessary.
+        try
+        {
+            // Try to add new property with default value. This will result in an exception if the property already exists.
+            set.Add(defaultValue, name);
+            return defaultValue;
+        }
+        catch (ArgumentException)
+        {
+            // Property already exists, get existing value
+            return (T)set[name].Value;
+        }
+    }
 }
 
 namespace LegacyInterchange
