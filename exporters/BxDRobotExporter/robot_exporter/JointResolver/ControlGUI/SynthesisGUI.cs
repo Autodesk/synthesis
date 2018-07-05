@@ -62,7 +62,8 @@ public partial class SynthesisGUI : Form
     {
         FormBorderStyle = FormBorderStyle.None
     };
-
+    
+    private Inventor.AssemblyDocument AsmDocument = null; // Set when LoadRobotData is called.
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
@@ -179,10 +180,12 @@ public partial class SynthesisGUI : Form
         {
             if (PromptSaveSettings(true, true))
             {
-                if (Meshes != null || ExportMeshes())
+                if (Meshes != null || LoadMeshes())
                 {
-                    if (RobotSave())
+                    if (ExportRobot())
                     {
+                        SaveRobotData();
+
                         if (RMeta.OpenSynthesis)
                             OpenSynthesis(RMeta.ActiveRobotName, RMeta.FieldName);
 
@@ -207,9 +210,11 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Build the node tree of the robot from Inventor
     /// </summary>
-    public bool BuildRobotSkeleton(bool warnUnsaved = false)
+    public bool LoadRobotSkeleton(bool warnUnsaved = false)
     {
-        if (SkeletonBase != null && warnUnsaved && !WarnUnsaved()) return false;
+        if (SkeletonBase != null)
+            if (warnUnsaved && !WarnUnsaved())
+                return false;
 
         try
         {
@@ -246,9 +251,9 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Export a robot from Inventor
+    /// Load meshes of a robot from Inventor
     /// </summary>
-    public bool ExportMeshes()
+    public bool LoadMeshes()
     {
         try
         {
@@ -311,129 +316,6 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Open a previously exported robot. 
-    /// </summary>
-    /// <param name="validate">If it is not null, this will validate the open inventor assembly.</param>
-    public void OpenExisting()
-    {
-        if (SkeletonBase != null && !WarnUnsaved()) return;
-
-        string dirPath = OpenFolderPath();
-
-        if (dirPath == null) return;
-
-        try
-        {
-            List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-            SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
-
-            SkeletonBase.ListAllNodes(nodes);
-
-            Meshes = new List<BXDAMesh>();
-
-            foreach (RigidNode_Base n in nodes)
-            {
-                BXDAMesh mesh = new BXDAMesh();
-                mesh.ReadFromFile(dirPath + "\\" + n.ModelFileName);
-
-                if (!n.GUID.Equals(mesh.GUID))
-                {
-                    MessageBox.Show(n.ModelFileName + " has been modified.", "Could not load mesh.");
-                    return;
-                }
-
-                Meshes.Add(mesh);
-            }
-            for (int i = 0; i < Meshes.Count; i++)
-            {
-                ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
-            }
-        }
-        catch (Exception e)
-        {
-            MessageBox.Show(e.ToString());
-        }
-
-
-        ReloadPanels();
-    }
-
-    /// <summary>
-    /// Open a previously exported robot. 
-    /// </summary>
-    /// <param name="validate">If it is not null, this will validate the open inventor assembly.</param>
-    public bool OpenExisting(ValidationAction validate, bool warnUnsaved = false)
-    {
-
-        if (SkeletonBase != null && warnUnsaved && !WarnUnsaved()) return false;
-
-        string dirPath = OpenFolderPath();
-
-        if (dirPath == null) return false;
-
-        try
-        {
-            List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-            SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
-
-            if (validate != null)
-            {
-                if (!validate(SkeletonBase, out string message))
-                {
-                    while (true)
-                    {
-                        DialogResult result = MessageBox.Show(message, "Assembly Validation", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                        if (result == DialogResult.Retry)
-                            continue;
-                        if (result == DialogResult.Abort)
-                        {
-                            return false;
-                        }
-                        break;
-                    }
-                }
-                #region DEBUG
-#if DEBUG
-                else
-                {
-                    MessageBox.Show(message);
-                }
-#endif 
-                #endregion
-            }
-
-            SkeletonBase.ListAllNodes(nodes);
-
-            Meshes = new List<BXDAMesh>();
-
-            foreach (RigidNode_Base n in nodes)
-            {
-                BXDAMesh mesh = new BXDAMesh();
-                mesh.ReadFromFile(dirPath + "\\" + n.ModelFileName);
-
-                if (!n.GUID.Equals(mesh.GUID))
-                {
-                    MessageBox.Show(n.ModelFileName + " has been modified.", "Could not load mesh.");
-                    return false;
-                }
-
-                Meshes.Add(mesh);
-            }
-        }
-        catch (Exception e)
-        {
-            MessageBox.Show(e.ToString());
-        }
-
-        RMeta.UseSettingsDir = false;
-        RMeta.ActiveDir = dirPath;
-        RMeta.ActiveRobotName = dirPath.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last();
-
-        ReloadPanels();
-        return true;
-    }
-
-    /// <summary>
     /// Prompts the user for the name of the robot, as well as other information.
     /// </summary>
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
@@ -459,7 +341,7 @@ public partial class SynthesisGUI : Form
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
-    public bool RobotSave()
+    public bool ExportRobot()
     {
         try
         {
@@ -472,7 +354,7 @@ public partial class SynthesisGUI : Form
                 Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName);
 
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
-                ExportMeshes();
+                LoadMeshes();
 
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
@@ -494,36 +376,24 @@ public partial class SynthesisGUI : Form
         }
     }
 
-    /// <summary>
-    /// Saves the robot to the currently set robot directory.
-    /// </summary>
-    /// <param name="robotName"></param>
-    public bool RobotSaveAs()
-    {
-        if (PromptSaveSettings(false, false))
-        {
-            RobotSave();
-
-            return true;
-        }
-        return false;
-    }
-
     #region Joint Data Management
     /// <summary>
-    /// Saves the joint information to the Inventor assembly file. Returns false if fails.
+    /// Saves the joint information to the most recently loaded assembly file. Returns false if fails.
     /// </summary>
-    public bool JointDataSave(Inventor.AssemblyDocument document)
+    public bool SaveRobotData()
     {
-        Inventor.PropertySets propertySets = document.PropertySets;
+        if (AsmDocument == null)
+            return false;
         
-        return JointDataSave(propertySets, SkeletonBase);
+        Inventor.PropertySets propertySets = AsmDocument.PropertySets;
+        
+        return SaveJointData(propertySets, SkeletonBase);
     }
     
     /// <summary>
     /// Recursive utility for JointDataSave.
     /// </summary>
-    private bool JointDataSave(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
+    private bool SaveJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
     {
         try
         {
@@ -585,7 +455,7 @@ public partial class SynthesisGUI : Form
                 }
 
                 // Recur along this child
-                if (!JointDataSave(assemblyPropertySets, child))
+                if (!SaveJointData(assemblyPropertySets, child))
                     return false; // If one of the children failed to save, then cancel the saving process
             }
         }
@@ -602,17 +472,26 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Loads the joint information from the Inventor assembly file. Returns false if fails.
     /// </summary>
-    public bool JointDataLoad(Inventor.AssemblyDocument document)
+    public bool LoadRobotData(Inventor.AssemblyDocument asmDocument)
     {
-        Inventor.PropertySets propertySets = document.PropertySets;
+        if (asmDocument == null)
+            return false;
 
-        return JointDataLoad(propertySets, SkeletonBase);
+        Inventor.PropertySets propertySets = asmDocument.PropertySets;
+
+        bool success = LoadJointData(propertySets, SkeletonBase);
+
+        // Store assembly document to save to later on
+        if (success)
+            AsmDocument = asmDocument;
+
+        return success;
     }
 
     /// <summary>
     /// Recursive utility for JointDataLoad.
     /// </summary>
-    public bool JointDataLoad(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
+    public bool LoadJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
     {
         try
         {
@@ -681,7 +560,7 @@ public partial class SynthesisGUI : Form
                 }
 
                 // Recur along this child
-                if (!JointDataLoad(assemblyPropertySets, child))
+                if (!LoadJointData(assemblyPropertySets, child))
                     return false; // If one of the children failed to save, then cancel the saving process
             }
         }
@@ -730,8 +609,7 @@ public partial class SynthesisGUI : Form
     {
         DialogResult overwriteResult = MessageBox.Show("Really overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
 
-        if (overwriteResult == DialogResult.Yes) return true;
-        else return false;
+        return overwriteResult == DialogResult.Yes;
     }
 
     /// <summary>
@@ -744,15 +622,15 @@ public partial class SynthesisGUI : Form
 
         if (saveResult == DialogResult.Yes)
         {
-            return RobotSave();
+            return SaveRobotData(); // True if saving succeeds. False if fails.
         }
         else if (saveResult == DialogResult.No)
         {
-            return true;
+            return true; // Continue without saving
         }
         else
         {
-            return false;
+            return false; // Don't continue
         }
     }
 

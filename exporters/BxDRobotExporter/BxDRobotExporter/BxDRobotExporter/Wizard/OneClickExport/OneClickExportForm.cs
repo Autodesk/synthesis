@@ -83,7 +83,7 @@ namespace BxDRobotExporter.Wizard
         private void ExportButton_Click(object sender, EventArgs e)
         {
             Hide();
-            if (Utilities.GUI.ExportMeshes())
+            if (Utilities.GUI.LoadMeshes())
             {
                 var wheelsRaw = WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, DriveTrain, (int)WheelCountUpDown.Value);
                 var wheelsSorted = WizardUtilities.SortWheels(wheelsRaw);
@@ -207,7 +207,7 @@ namespace BxDRobotExporter.Wizard
                     }
                 }
                 Utilities.GUI.ReloadPanels();
-                Utilities.GUI.RobotSave();
+                Utilities.GUI.ExportRobot();
                 DialogResult = DialogResult.OK;
                 Process.Start(Utilities.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + Utilities.GUI.RMeta.ActiveRobotName, fields[(string)FieldSelectComboBox.SelectedItem]));
 
