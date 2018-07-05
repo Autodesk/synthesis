@@ -11,11 +11,11 @@ using System.IO;
 
 namespace JointResolver.ControlGUI
 {
-    public partial class SaveRobotForm : Form
+    public partial class ExportRobotForm : Form
     {
         static Dictionary<string, string> fields = new Dictionary<string, string>();
 
-        public SaveRobotForm(string initialRobotName)
+        public ExportRobotForm(string initialRobotName)
         {
             InitializeComponent();
             InitializeFields();
@@ -52,7 +52,7 @@ namespace JointResolver.ControlGUI
         {
             try
             {
-                SaveRobotForm form = new SaveRobotForm(initialRobotName);
+                ExportRobotForm form = new ExportRobotForm(initialRobotName);
                 form.ShowDialog();
                 robotName = form.RobotNameTextBox.Text;
                 colors = form.ColorBox.Checked;
