@@ -484,9 +484,9 @@ public partial class SynthesisGUI : Form
             // Save global robot data
             Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata");
 
-            Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
+            if (RMeta.ActiveRobotName != null)
+                Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
             Utilities.SetProperty(propertySet, "robot-weight-kg", TotalMass);
-            // TODO: Save isMetric info.
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
