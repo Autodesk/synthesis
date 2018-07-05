@@ -122,15 +122,8 @@ namespace Synthesis.Robot
             RobotName = new DirectoryInfo(directory).Name;
 
             //Deletes all nodes if any exist, take the old node transforms out from the robot object
-            int childCount = transform.childCount;
-            for (int i = childCount - 1; i >= 0; i--)
-            {
-                Transform child = transform.GetChild(i);
-
-                //If this isn't done, the game object is destroyed but the parent-child transform relationship remains!
-                child.parent = null;
+            foreach (Transform child in transform)
                 Destroy(child.gameObject);
-            }
 
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
@@ -242,10 +235,7 @@ namespace Synthesis.Robot
                 node.CreateTransform(transform);
 
                 if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName))
-                {
-                    Debug.LogError("Robot not loaded!");
                     return false;
-                }
 
                 node.CreateJoint(numWheels, this);
 
@@ -273,6 +263,7 @@ namespace Synthesis.Robot
         protected virtual void UpdatePhysics()
         {
             GameObject mainNode = transform.GetChild(0).gameObject;
+
             //calculates stats of robot
             if (mainNode != null)
             {
@@ -283,6 +274,7 @@ namespace Synthesis.Robot
                 AngularVelocity = (float)Math.Round(Math.Abs(mainNode.GetComponent<BRigidBody>().angularVelocity.magnitude), 3);
                 Acceleration = (float)Math.Round((currentSpeed - oldSpeed) / Time.deltaTime, 3);
                 oldSpeed = currentSpeed;
+
                 if (!State.IsMetric)
                 {
                     Speed = (float)Math.Round(Speed * 3.28084, 3);
@@ -300,12 +292,8 @@ namespace Synthesis.Robot
             BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
 
             if (rigidBody == null)
-            {
                 AppModel.ErrorToMenu("Could not generate robot physics data.");
-                return;
-            }
-
-            if (!rigidBody.GetCollisionObject().IsActive)
+            else if (!rigidBody.GetCollisionObject().IsActive)
                 rigidBody.GetCollisionObject().Activate();
         }
 
