@@ -66,7 +66,7 @@ public partial class SynthesisGUI : Form
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
     // TODO: This should be moved to RMeta
-    public float TotalMass = 120;
+    public float TotalWeightKg = -1; // Negative value indicates default mass should be left alone
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
@@ -386,7 +386,7 @@ public partial class SynthesisGUI : Form
             if (propertySet != null)
             {
                 RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
-                TotalMass = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
+                TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
             }
 
             // Load joint data
@@ -504,7 +504,7 @@ public partial class SynthesisGUI : Form
 
             if (RMeta.ActiveRobotName != null)
                 Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
-            Utilities.SetProperty(propertySet, "robot-weight-kg", TotalMass);
+            Utilities.SetProperty(propertySet, "robot-weight-kg", TotalWeightKg);
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
@@ -671,19 +671,18 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Opens the <see cref="SetMassForm"/> form
+    /// Opens the <see cref="SetWeightForm"/> form
     /// </summary>
-    public void PromptRobotMass()
+    public void PromptRobotWeight()
     {
         try
         {
-            //TODO: Implement Value saving and loading
-            SetMassForm massForm = new SetMassForm();
+            SetWeightForm weightForm = new SetWeightForm();
 
-            massForm.ShowDialog();
+            weightForm.ShowDialog();
 
-            if (massForm.DialogResult == DialogResult.OK)
-                TotalMass = massForm.TotalMass;
+            if (weightForm.DialogResult == DialogResult.OK)
+                TotalWeightKg = weightForm.TotalWeightKg;
         }
         catch (Exception ex)
         {
