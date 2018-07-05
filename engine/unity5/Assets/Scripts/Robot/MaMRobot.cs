@@ -40,8 +40,6 @@ namespace Synthesis.Robot
 
         private bool robotIsMecanum;
 
-        // TODO: Something weird is going on with the spawn, at least with robots with manipulators. Reset is fine.
-
         /// <summary>
         /// Loads and initializes the physical manipulator object (used in Mix and Match mode)
         /// </summary>
