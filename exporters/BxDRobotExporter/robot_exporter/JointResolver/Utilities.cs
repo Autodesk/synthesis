@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 public class Utilities
 {
+    public const string SYNTHESIS_PATH = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Synthesis.exe";
     public static string VIEWER_PATH = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + @"\RobotViewer\RobotViewer.exe";
     
     public static Vector ToInventorVector(BXDVector3 v)
