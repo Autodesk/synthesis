@@ -134,6 +134,7 @@
             this.Name = "SensorListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Sensor List";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SensorListForm_FormClosing);
             this.Load += new System.EventHandler(this.SensorListForm_Load);
             this.SizeChanged += new System.EventHandler(this.window_SizeChanged);
             this.ResumeLayout(false);
