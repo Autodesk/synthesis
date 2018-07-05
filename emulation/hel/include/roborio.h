@@ -89,7 +89,7 @@ namespace hel{
 
 			uint8_t pulse_length;        	
 
-			std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm;
+			std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
 	
 		public:
 			tDIO::tDO getOutputs()const;
