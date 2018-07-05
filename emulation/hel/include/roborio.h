@@ -217,66 +217,273 @@ namespace hel{
 
 		struct PWMSystem{
 		private:
-			tPWM::tConfig config; // configuration for PWM IO
+
+            /**
+             * \var tConfig config
+             * \brief Current PWM system configuration.
+             */
+
+			tPWM::tConfig config;
+
+            /**
+             * \struct PWM roborio.h
+             * \brief Data model for individual PWM
+             * Data model used for storing data about an individual PWM.
+             */
 
 			struct PWM{
-				uint32_t period_scale;//2-bit mask for signal masking frequency, effectively scaling the PWM value (0 = 1x 1, = 2x, 3 = 4x)
-				uint16_t duty_cycle;
+
+                /**
+                 * \var uint32_t period_scale
+                 * \brief 2 bit PWM signal mask.
+                 * 2-bit mask for signal masking frequency, effectively scaling the PWM value (0 = 1x 1, = 2x, 3 = 4x)
+                 */
+
+				uint32_t period_scale;
+
+                /**
+                 * \var uint16_t duty_cycle
+                 * \brief PWM Duty cycle
+                 * The percentage (0-65535)
+                 */
+
+                uint16_t duty_cycle;
 			};
 
+            /**
+             * \var std::array<PWM, tPWM::kNumHdrRegisters> hdr;
+             * \brief Array of all PWM Headers on the base RoboRIO board.
+             * Array of all PWM headers on the base board of the RoboRIO (not MXP). Numbered 0-10 on the board.
+             */
+
 			std::array<PWM, tPWM::kNumHdrRegisters> hdr;
+
+            /**
+             * \var std::array<PWM, tPWM::kNumMXPRegisters> mxp;
+             * \brief Array of all PWM Headers on the MXP.
+             * Array of all PWM headers on the MXP.
+             */
+
 			std::array<PWM, tPWM::kNumMXPRegisters> mxp;
 
 		public:
+
+            /**
+             * \fn tConfig getConfig()const
+             * \brief Gets current PWM system configuration.
+             * Gets current PWM configuration.
+             * \return tConfig representing current PWM system configuration.
+             */
+
 			tPWM::tConfig getConfig()const;
-			void setConfig(tPWM::tConfig);
+
+            /**
+             * \fn void setConfig(tConfig config)
+             * \brief Sets PWM system configuration.
+             * Sets new PWM system configuration.
+             * \param tConfig representing new PWM system configuration.
+             */
+
+            void setConfig(tPWM::tConfig);
+
+            /**
+             * \fn uint32_t getHdrPeriodScale(uint8_t index)
+             * \brief get current pwm scale for a header based PWM.
+             * Get current PWM scale for a pwm on the base RoboRIO board.
+             * \param index the index of the pwm.
+             * \return Unsigned 32-bit integer representing the PWM period scale.
+             */
 
 			uint32_t getHdrPeriodScale(uint8_t)const;
-			void setHdrPeriodScale(uint8_t, uint32_t);
+
+            /**
+             * \fn uint32_t getMXPPeriodScale(uint8_t index)
+             * \brief Get current PWM scale for a header based pwm.
+             * get current pwm scale for a pwm on the base RoboRIO board.
+             * \param index the index of the PWM.
+             * \return Unsigned 32-bit integer representing the PWM period scale.
+             */
+
+
+            void setHdrPeriodScale(uint8_t, uint32_t);
+
+            /**
+             * \fn uint32_t getMXPPeriodScale(uint8_t index)
+             * \brief get current pwm scale for a header based pwm.
+             * get current pwm scale for a pwm on the base roborio board.
+             * \param index the index of the pwm.
+             * \return unsigned 32-bit integer representing the pwm period scale.
+             */
+
 
 			uint32_t getMXPPeriodScale(uint8_t)const;
-			void setMXPPeriodScale(uint8_t, uint32_t);
+
+            /**
+             * \fn uint32_t getHdrDutyCycle(uint8_t index)
+             * \brief Get current PWM duty cycle.
+             * Get current PWM duty cycle for header PWMs.
+             * \param index the index of the PWM.
+             * \return Unsigned 32-bit integer representing the PWM duty cycle.
+             */
+
 
 			uint32_t getHdrDutyCycle(uint8_t)const;
-			void setHdrDutyCycle(uint8_t, uint32_t);
+
+            /**
+             * \fn void setHdrDutyCycle(uint8_t index, uint32_t value)
+             * \brief Sets PWM Duty cycle for PWMs on the base board.
+             * Sets PWM Duty cycle for PWMs on the base board.
+             * \param index the index of the PWM.
+             * \param value the new duty cycle to write to the PWM.
+             */
+
+            void setHdrDutyCycle(uint8_t, uint32_t);
+
+            /**
+             * \fn uint32_t getMXPDutyCycle(uint8_t index)
+             * \brief Get current PWM duty cycle.
+             * Get current PWM duty cycle for MXP PWMs.
+             * \param index the index of the PWM.
+             * \return Unsigned 32-bit integer representing the PWM duty cycle.
+             */
 
 			uint32_t getMXPDutyCycle(uint8_t)const;
-			void setMXPDutyCycle(uint8_t, uint32_t);
+
+            /**
+             * \fn void setMXPDutyCycle(uint8_t index, uint32_t value)
+             * \brief Sets PWM Duty cycle for PWMs on the MXP.
+             * Sets PWM Duty cycle for PWMs on the MXP.
+             * \param index the index of the PWM.
+             * \param value the new duty cycle to write to the PWM.
+             */
+            void setMXPDutyCycle(uint8_t, uint32_t);
 		};
 
         struct DIOSystem{
 		private:
-			tDIO::tDO outputs;
+
+            /**
+             * \var
+             */
+
+            tDIO::tDO outputs;
+
+            /**
+             * \var
+             */
+
             tDIO::tOutputEnable enabled_outputs;
+
+            /**
+             * \var
+             */
+
             tDIO::tPulse pulses;
+
+            /**
+             * \var
+             */
+
             tDIO::tDI inputs;
 
+            /**
+             * \var
+             */
+
 			uint16_t mxp_special_functions_enabled;//TODO this needs to be checked when attempting things
+
+            /**
+             * \var
+             */
 
 			uint8_t pulse_length;
 
 			std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
 
 		public:
+
+            /**
+             * \fn
+             */
+
 			tDIO::tDO getOutputs()const;
+
+            /**
+             * \fn
+             */
+
 			void setOutputs(tDIO::tDO);
 
+            /**
+             * \fn
+             */
+
 			tDIO::tOutputEnable getEnabledOutputs()const;
+
+            /**
+             * \fn
+             */
+
 			void setEnabledOutputs(tDIO::tOutputEnable);
 
+            /**
+             * \fn
+             */
+
 			uint16_t getMXPSpecialFunctionsEnabled()const;
+
+            /**
+             * \fn
+             */
+
 			void setMXPSpecialFunctionsEnabled(uint16_t);
 
+            /**
+             * \fn
+             */
+
 			tDIO::tPulse getPulses()const;
+
+            /**
+             * \fn
+             */
+
 			void setPulses(tDIO::tPulse);
 
+            /**
+             * \fn
+             */
+
 			tDIO::tDI getInputs()const;
+
+            /**
+             * \fn
+             */
+
 			void setInputs(tDIO::tDI);
 
+            /**
+             * \fn
+             */
+
 			uint8_t getPulseLength()const;
+
+            /**
+             * \fn
+             */
+
 			void setPulseLength(uint8_t);
 
+            /**
+             * \fn
+             */
+
 			uint8_t getPWMDutyCycle(uint8_t)const;
+
+            /**
+             * \fn
+             */
+
 			void setPWMDutyCycle(uint8_t, uint8_t);
 		};
 
