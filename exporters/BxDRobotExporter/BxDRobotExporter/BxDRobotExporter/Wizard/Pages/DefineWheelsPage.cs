@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace BxDRobotExporter.Wizard
 {
@@ -95,177 +95,6 @@ namespace BxDRobotExporter.Wizard
             //UpdateWheelPanes();
         }
 
-        private WizardData.WizardDriveTrain DriveTrain
-        {
-            get
-            {
-                switch (DriveTrainDropdown.SelectedIndex)
-                {
-                    default:
-                    case 0: //Undefined
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
-                        NodeListBox.Enabled = false;
-                        break;
-                    case 1: //Tank
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
-                        NodeListBox.Enabled = true;
-                        break;
-                    case 2: //Mecanum
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.MECANUM;
-                        NodeListBox.Enabled = true;
-                        break;
-                    case 3: //Swerve
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.SWERVE;
-                        NodeListBox.Enabled = true;
-                        break;
-                    case 4: //H-Drive
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
-                        NodeListBox.Enabled = true;
-                        break;
-                    case 5: //Custom
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
-                        NodeListBox.Enabled = true;
-                        break;
-                }
-
-                return WizardData.Instance.driveTrain;
-            }
-        }
-
-
-        /// <summary>
-        /// Exports the joints and meshes, prompts for a name, detects the wheels, sets the wheel properties, and merges other, unused nodes into their parents.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AutoFill_Click(object sender, EventArgs e)
-        {
-           
-            if (Utilities.GUI.ExportMeshes())
-            {
-                var wheelsRaw = WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, DriveTrain, (int)numericUpDown1.Value);
-                var wheelsSorted = WizardUtilities.SortWheels(wheelsRaw);
-                switch (DriveTrain)
-                {
-                    default:
-                    case WizardData.WizardDriveTrain.TANK:
-                        List<WizardData.WheelSetupData> oneClickWheels = new List<WizardData.WheelSetupData>();
-                        for (int i = 0; i < (wheelsRaw.Count / 2); i++)
-                        {
-                            oneClickWheels.Add(new WizardData.WheelSetupData
-                            {
-                                Node = wheelsSorted[0][i],
-                                FrictionLevel = WizardData.WizardFrictionLevel.MEDIUM,
-                                PWMPort = 0x01,
-                                WheelType = WizardData.WizardWheelType.NORMAL
-                            });
-                            oneClickWheels.Add(new WizardData.WheelSetupData
-                            {
-                                Node = wheelsSorted[1][i],
-                                FrictionLevel = WizardData.WizardFrictionLevel.MEDIUM,
-                                PWMPort = 0x02,
-                                WheelType = WizardData.WizardWheelType.NORMAL
-                            });
-                        }
-                        foreach (var wheelData in oneClickWheels)
-                        {
-                            wheelData.ApplyToNode();
-                        }
-                        break;
-
-                    case WizardData.WizardDriveTrain.MECANUM:
-                        oneClickWheels = new List<WizardData.WheelSetupData>();
-                        for (int i = 0; i < (wheelsRaw.Count / 2); i++)
-                        {
-                            oneClickWheels.Add(new WizardData.WheelSetupData
-                            {
-                                Node = wheelsSorted[0][i],
-                                FrictionLevel = WizardData.WizardFrictionLevel.MEDIUM,
-                                PWMPort = 0x01,
-                                WheelType = WizardData.WizardWheelType.MECANUM
-                            });
-                            oneClickWheels.Add(new WizardData.WheelSetupData
-                            {
-                                Node = wheelsSorted[1][i],
-                                FrictionLevel = WizardData.WizardFrictionLevel.MEDIUM,
-                                PWMPort = 0x02,
-                                WheelType = WizardData.WizardWheelType.MECANUM
-                            });
-                        }
-                        foreach (var wheelData in oneClickWheels)
-                        {
-                            wheelData.ApplyToNode();
-                        }
-                        break;
-
-                    case WizardData.WizardDriveTrain.SWERVE:
-                        oneClickWheels = new List<WizardData.WheelSetupData>();
-                        for (int i = 0; i < (wheelsRaw.Count / 2); i++)
-                        {
-                            oneClickWheels.Add(new WizardData.WheelSetupData
-                            {
-                                Node = wheelsSorted[0][i],
-                                FrictionLevel = WizardData.WizardFrictionLevel.LOW,
-                                PWMPort = 0x01,
-                                WheelType = WizardData.WizardWheelType.NORMAL
-                            });
-                            oneClickWheels.Add(new WizardData.WheelSetupData
-                            {
-                                Node = wheelsSorted[1][i],
-                                FrictionLevel = WizardData.WizardFrictionLevel.LOW,
-                                PWMPort = 0x02,
-                                WheelType = WizardData.WizardWheelType.NORMAL
-                            });
-                        }
-                        foreach (var wheelData in oneClickWheels)
-                        {
-                            wheelData.ApplyToNode();
-                        }
-                        break;
-
-                    case WizardData.WizardDriveTrain.H_DRIVE:
-                        oneClickWheels = new List<WizardData.WheelSetupData>();
-                        for (int i = 0; i < (wheelsRaw.Count / 2); i++)
-                        {
-                            oneClickWheels.Add(new WizardData.WheelSetupData
-                            {
-                                Node = wheelsSorted[0][i],
-                                FrictionLevel = WizardData.WizardFrictionLevel.HIGH,
-                                PWMPort = 0x01,
-                                WheelType = WizardData.WizardWheelType.OMNI
-                            });
-                            oneClickWheels.Add(new WizardData.WheelSetupData
-                            {
-                                Node = wheelsSorted[1][i],
-                                FrictionLevel = WizardData.WizardFrictionLevel.HIGH,
-                                PWMPort = 0x02,
-                                WheelType = WizardData.WizardWheelType.OMNI
-                            });
-                        }
-                        //5th wheel
-                        oneClickWheels.Add(new WizardData.WheelSetupData
-                        {
-                            Node = wheelsSorted[4][3],
-                            FrictionLevel = WizardData.WizardFrictionLevel.HIGH,
-                            PWMPort = 0x03,
-                            WheelType = WizardData.WizardWheelType.OMNI
-                        });
-                        foreach (var wheelData in oneClickWheels)
-                        {
-                            wheelData.ApplyToNode();
-                        }
-                        break;
-
-                }
-
-            }
-            
-            /// <summary>
-            /// Defines nodes, friction values, PWM ports used, and wheel type for selectible AutoFill drivetrains
-            /// </summary>
-        }
-
-     
 
         /// <summary>
         /// Makes sure all of the wheels are set correctly.
