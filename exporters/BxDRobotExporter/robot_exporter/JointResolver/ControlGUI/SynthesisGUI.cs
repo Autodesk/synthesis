@@ -168,6 +168,32 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Prompts the user to export their robot. This is intended to be used when the user is closing the exporter and has not exported yet.
+    /// </summary>
+    public void PromptExport()
+    {
+        DialogResult saveResult = MessageBox.Show("You robot has not been exported. Export now?", "Export", MessageBoxButtons.YesNo);
+
+        if (saveResult == DialogResult.Yes)
+        {
+            if (PromptSaveSettings(true, true))
+                if (Meshes != null || ExportMeshes())
+                    if (RobotSave())
+                        if (RMeta.OpenSynthesis)
+                            OpenSynthesis(RMeta.ActiveRobotName, RMeta.FieldName);
+        }
+    }
+
+    /// <summary>
+    /// Open Synthesis to a specific robot and field.
+    /// </summary>
+    /// <param name="node"></param>
+    public void OpenSynthesis(string robotName, string fieldName)
+    {
+        Process.Start(Utilities.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
+    }
+
+    /// <summary>
     /// Build the node tree of the robot from Inventor
     /// </summary>
     public bool BuildRobotSkeleton(bool warnUnsaved = false)

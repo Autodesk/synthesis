@@ -322,11 +322,7 @@ namespace BxDRobotExporter
             // Export mesh as exporter is finished
             if (Utilities.GUI.SkeletonBase != null)
             {
-                if (Utilities.GUI.PromptSaveSettings(true, true))
-                    if (Utilities.GUI.Meshes != null || Utilities.GUI.ExportMeshes())
-                        if (Utilities.GUI.RobotSave())
-                            if (Utilities.GUI.RMeta.OpenSynthesis)
-                                 OpenSynthesis(Utilities.GUI.RMeta.ActiveRobotName, Utilities.GUI.RMeta.FieldName);
+                Utilities.GUI.PromptExport();
             }
 
             AsmDocument = null;
@@ -859,15 +855,6 @@ namespace BxDRobotExporter
                 }
                 ViewOccurrences(occurrences, 15, ViewDirection.Y, false);
             }
-        }
-        
-        /// <summary>
-        /// Open Synthesis to a specific robot and field.
-        /// </summary>
-        /// <param name="node"></param>
-        public void OpenSynthesis(string robotName, string fieldName)
-        {
-            Process.Start(Utilities.SYTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", Properties.Settings.Default.SaveLocation + "\\" + robotName, fieldName));
         }
 
         /// <summary>
