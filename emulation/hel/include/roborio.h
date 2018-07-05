@@ -306,11 +306,22 @@ namespace hel{
 			void popNextMessage();
 		};
 
+		struct RelaySystem{
+		private:
+			tRelay::tValue value;
+
+		public:
+			tRelay::tValue getValue()const;
+			void setValue(tRelay::tValue);
+			
+		};
+
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
 		CANBus can_bus;
         DIOSystem digital_system;
         PWMSystem pwm_system;
+		RelaySystem relay_system;
 
         explicit RoboRIO() = default;
 
