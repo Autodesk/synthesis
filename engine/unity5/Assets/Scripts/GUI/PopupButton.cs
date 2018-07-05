@@ -81,7 +81,7 @@ namespace Synthesis.GUI
             float scale = canvas.scaleFactor;
 
             buttonStyle.fontSize = Mathf.RoundToInt(24 * scale);
-            Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
+            Vector3 p = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
             Rect rect = GetComponent<RectTransform>().rect;
             if (Popup.List(new Rect(p.x - rect.width / 2 * scale, Screen.height - p.y - rect.height / 2 * scale, rect.width * scale, rect.height * scale), ref showList, ref listEntry, list[listEntry], list, buttonStyle, boxStyle, listStyle))
             {
