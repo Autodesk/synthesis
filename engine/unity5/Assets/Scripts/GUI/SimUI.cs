@@ -10,12 +10,13 @@ using UnityEngine.Analytics;
 using Synthesis.DriverPractice;
 using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;
-using Synthesis.InputControl;
+using Synthesis.Input;
 using Synthesis.MixAndMatch;
-using Synthesis.RobotCamera;
+using Synthesis.Camera;
 using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Robot;
 
 namespace Synthesis.GUI
 {
@@ -102,7 +103,7 @@ namespace Synthesis.GUI
             {
                 UpdateWindows();
 
-                if (Input.GetKeyDown(KeyCode.Escape))
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
                 {
                     if (!exitPanel.activeSelf)
                     {
@@ -130,7 +131,7 @@ namespace Synthesis.GUI
                     }
                 }
 
-                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.H))
+                if (UnityEngine.Input.GetKey(KeyCode.LeftControl) && UnityEngine.Input.GetKeyDown(KeyCode.H))
                 {
                     TogglePanel(toolbar);
                 }
@@ -254,20 +255,22 @@ namespace Synthesis.GUI
         /// </summary>
         public void MaMChangeRobot(string robotDirectory, string manipulatorDirectory)
         {
+            MaMRobot mamRobot = State.ActiveRobot as MaMRobot;
+
             robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
             sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
             //If the current robot has a manipulator, destroy the manipulator
-            if (State.ActiveRobot.RobotHasManipulator)
+            if (mamRobot != null && mamRobot.RobotHasManipulator)
                 State.DeleteManipulatorNodes();
 
             State.ChangeRobot(robotDirectory, true);
 
             //If the new robot has a manipulator, load the manipulator
             if (RobotTypeManager.HasManipulator)
-                State.LoadManipulator(manipulatorDirectory, State.ActiveRobot.gameObject);
-            else
-                State.ActiveRobot.RobotHasManipulator = false;
+                State.LoadManipulator(manipulatorDirectory);
+            else if (mamRobot != null)
+                mamRobot.RobotHasManipulator = false;
         }
 
         public void ToggleChangeRobotPanel()

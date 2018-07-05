@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using Synthesis.InputControl;
+using Synthesis.Input;
 
 namespace Synthesis.Settings
 {

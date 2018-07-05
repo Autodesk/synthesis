@@ -9,7 +9,6 @@ namespace Synthesis.GUI.Scrollables
     /// </summary>
     public class ScrollablePanel : MonoBehaviour
     {
-
         private RectTransform rectTransform;
         private Vector2 scrollPosition;
 

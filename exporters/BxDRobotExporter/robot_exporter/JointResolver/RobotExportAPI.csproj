@@ -186,11 +186,11 @@
     <Compile Include="EditorsLibrary\SensorListForm.Designer.cs">
       <DependentUpon>SensorListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorsLibrary\SetMassForm.cs">
+    <Compile Include="EditorsLibrary\SetWeightForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditorsLibrary\SetMassForm.Designer.cs">
-      <DependentUpon>SetMassForm.cs</DependentUpon>
+    <Compile Include="EditorsLibrary\SetWeightForm.Designer.cs">
+      <DependentUpon>SetWeightForm.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorsLibrary\ViewerSettingsForm.cs">
       <SubType>Form</SubType>
@@ -309,8 +309,8 @@
     <EmbeddedResource Include="EditorsLibrary\SensorListForm.resx">
       <DependentUpon>SensorListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\SetMassForm.resx">
-      <DependentUpon>SetMassForm.cs</DependentUpon>
+    <EmbeddedResource Include="EditorsLibrary\SetWeightForm.resx">
+      <DependentUpon>SetWeightForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\ViewerSettingsForm.resx">
       <DependentUpon>ViewerSettingsForm.cs</DependentUpon>
