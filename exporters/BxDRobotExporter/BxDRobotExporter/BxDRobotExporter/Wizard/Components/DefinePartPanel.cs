@@ -45,20 +45,11 @@ namespace BxDRobotExporter.Wizard
 
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
-            PortTwoUpDown.Minimum = WizardData.Instance.nextFreePort;
-            PortOneUpDown.Minimum = WizardData.Instance.nextFreePort;
+            PortOneUpDown.Minimum = WizardData.Instance.NextFreePort;
+            PortTwoUpDown.Minimum = WizardData.Instance.NextFreePort;
 
             // Add a highlight component action to all children. This is simpler than manually adding the hover event to each control.
             AddHighlightAction(this);
-        }
-
-        private void AutoAssignCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            PortOneUpDown.Enabled = !AutoAssignCheckBox.Checked;
-            if(DriverComboBox.SelectedIndex == 3 || DriverComboBox.SelectedIndex == 5)
-            {
-                PortTwoUpDown.Enabled = PortOneUpDown.Enabled = !AutoAssignCheckBox.Checked;
-            }
         }
 
         /// <summary>
@@ -79,8 +70,8 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = false;
-                    PortTwoLabel.Enabled = false;
-                    PortTwoUpDown.Enabled = false;
+                    PortTwoLabel.Visible = false;
+                    PortTwoUpDown.Visible = false;
                     UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
                     UpperLimitUpDown.Minimum = LowerLimitUpDown.Minimum = 0;
                     unit = "°";
@@ -89,8 +80,8 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
-                    PortTwoLabel.Enabled = false;
-                    PortTwoUpDown.Enabled = false;
+                    PortTwoLabel.Visible = false;
+                    PortTwoUpDown.Visible = false;
                     unit = "cm";
                     break;
                 case 3: //Bumper Pneumatics
@@ -98,8 +89,8 @@ namespace BxDRobotExporter.Wizard
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortTwoLabel.Enabled = true;
-                    PortTwoUpDown.Enabled = true;
+                    PortTwoLabel.Visible = true;
+                    PortTwoUpDown.Visible = true;
                     unit = "cm";
                     break;
                 case 4: //Relay Pneumatics
@@ -107,16 +98,16 @@ namespace BxDRobotExporter.Wizard
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortTwoUpDown.Enabled = false;
-                    PortTwoLabel.Enabled = false;
+                    PortTwoUpDown.Visible = false;
+                    PortTwoLabel.Visible = false;
                     unit = "cm";
                     break;
                 case 5: //Dual Motor
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
-                    PortTwoLabel.Enabled = true;
-                    PortTwoUpDown.Enabled = true;
+                    PortTwoLabel.Visible = true;
+                    PortTwoUpDown.Visible = true;
                     UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
                     UpperLimitUpDown.Minimum = LowerLimitUpDown.Minimum = 0;
                     unit = "°";
@@ -168,34 +159,29 @@ namespace BxDRobotExporter.Wizard
                     ((RotationalJoint_Base)node.GetSkeletalJoint()).hasAngularLimit = true;
                     ((RotationalJoint_Base)node.GetSkeletalJoint()).angularLimitLow = (float)(LowerLimitUpDown.Value * (decimal)(Math.PI / 180));
                     ((RotationalJoint_Base)node.GetSkeletalJoint()).angularLimitHigh = (float)(UpperLimitUpDown.Value * (decimal)(Math.PI / 180));
-                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.nextFreePort : (int)PortOneUpDown.Value, 1);
-                    if (AutoAssignCheckBox.Checked) WizardData.Instance.nextFreePort++;
+                    driver.SetPort((int)PortOneUpDown.Value, 1);
                     return driver;
                 case 2: //Servo
                     driver = new JointDriver(JointDriverType.SERVO);
                     driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
-                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.nextFreePort : (int)PortOneUpDown.Value, 1);
-                    if (AutoAssignCheckBox.Checked) WizardData.Instance.nextFreePort++;
+                    driver.SetPort((int)PortOneUpDown.Value, 1);
                     return driver;
                 case 3: //Bumper Pneumatic
                     driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
                     driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
-                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.nextFreePort : (int)PortOneUpDown.Value, (AutoAssignCheckBox.Checked) ? WizardData.Instance.nextFreePort + 1 : (int)PortTwoUpDown.Value);
-                    if (AutoAssignCheckBox.Checked) WizardData.Instance.nextFreePort += 2;
+                    driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
                     return driver;
                 case 4: //Relay Pneumatic
                     driver = new JointDriver(JointDriverType.RELAY_PNEUMATIC);
                     driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
-                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.nextFreePort : (int)PortOneUpDown.Value, 1);
-                    if (AutoAssignCheckBox.Checked) WizardData.Instance.nextFreePort++;
+                    driver.SetPort((int)PortOneUpDown.Value, 1);
                     return driver;
                 case 5: //Dual Motor
                     driver = new JointDriver(JointDriverType.DUAL_MOTOR);
                     ((RotationalJoint_Base)node.GetSkeletalJoint()).hasAngularLimit = true;
                     ((RotationalJoint_Base)node.GetSkeletalJoint()).angularLimitLow = (float)(LowerLimitUpDown.Value * (decimal)(Math.PI / 180));
                     ((RotationalJoint_Base)node.GetSkeletalJoint()).angularLimitHigh = (float)(UpperLimitUpDown.Value * (decimal)(Math.PI / 180));
-                    driver.SetPort((AutoAssignCheckBox.Checked) ? WizardData.Instance.nextFreePort : (int)PortOneUpDown.Value, (AutoAssignCheckBox.Checked) ? WizardData.Instance.nextFreePort + 1 : (int)PortTwoUpDown.Value);
-                    if (AutoAssignCheckBox.Checked) WizardData.Instance.nextFreePort += 2;
+                    driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
                     return driver;
             }
             return null;
