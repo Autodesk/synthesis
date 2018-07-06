@@ -162,7 +162,7 @@
             this.RobotInfoGroupBox.TabStop = false;
             this.RobotInfoGroupBox.Text = "Drive Information";
             // 
-            // numericUpDown1
+            // WeightBox
             // 
             this.WeightBox.Location = new System.Drawing.Point(365, 22);
             this.WeightBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -171,10 +171,9 @@
             0,
             0,
             0});
-            this.WeightBox.Name = "numericUpDown1";
+            this.WeightBox.Name = "WeightBox";
             this.WeightBox.Size = new System.Drawing.Size(133, 22);
             this.WeightBox.TabIndex = 3;
-            this.WeightBox.TextChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
             // 
             // label3
             // 
@@ -263,7 +262,6 @@
             this.WeightUnitSelector.Size = new System.Drawing.Size(90, 24);
             this.WeightUnitSelector.TabIndex = 4;
             this.WeightUnitSelector.SelectedIndex = 0;
-            this.WeightUnitSelector.SelectedIndexChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
             // 
             // DefineWheelsPage
             // 
