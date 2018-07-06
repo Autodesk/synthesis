@@ -157,6 +157,12 @@
     </Compile>
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="Wizard\AutoFillPage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizard\AutoFillPage.Designer.cs">
+      <DependentUpon>AutoFillPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Wizard\Components\DefinePartPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -243,6 +249,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\AutoFillPage.resx">
+      <DependentUpon>AutoFillPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Components\WheelSlot.resx">
       <DependentUpon>WheelSlot.cs</DependentUpon>

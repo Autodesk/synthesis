@@ -39,13 +39,13 @@ namespace BxDRobotExporter.Wizard
             NodeListBox.AllowDrop = true;
 
             DriveTrainDropdown.SelectedIndex = 0;
-            
+
             rightSlots = new List<WheelSlotPanel>();
             leftSlots = new List<WheelSlotPanel>();
 
             NodeListBox.Enabled = false;
             Initialize();
-            
+
         }
 
         /// <summary>
@@ -87,6 +87,53 @@ namespace BxDRobotExporter.Wizard
             //UpdateWheelPanes();
         }
 
+        public WizardData.WizardDriveTrain DriveTrain
+        {
+
+            get
+            {
+
+                switch (DriveTrainDropdown.SelectedIndex)
+                {
+
+                    default:
+                    case 0: //Undefined
+                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
+                        NodeListBox.Enabled = false;
+                        break;
+
+                    case 1: //Tank
+                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
+                        NodeListBox.Enabled = false;
+                        break;
+
+                    case 2: //Mecanum
+                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.MECANUM;
+                        NodeListBox.Enabled = false;
+                        break;
+
+                    case 3: //Swerve
+                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.SWERVE;
+                        NodeListBox.Enabled = false;
+                        break;
+
+                    case 4: //H-Drive
+                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
+                        NodeListBox.Enabled = false;
+                        break;
+
+                    case 5: //custom
+                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
+                        NodeListBox.Enabled = false;
+                        break;
+
+                }
+
+                return WizardData.Instance.driveTrain;
+            }
+
+        }
+
         /// <summary>
         /// Validates input
         /// </summary>
@@ -109,7 +156,7 @@ namespace BxDRobotExporter.Wizard
         {
             WizardData.Instance.weightKg = totalWeightKg;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
-            foreach(var slot in rightSlots)
+            foreach (var slot in rightSlots)
             {
                 WizardData.Instance.wheels.Add(slot.WheelData);
                 WizardData.WheelSetupData wheel = slot.WheelData;
@@ -155,7 +202,7 @@ namespace BxDRobotExporter.Wizard
 
             leftSlots = new List<WheelSlotPanel>();
             rightSlots = new List<WheelSlotPanel>();
-            for (int i = 0; i < WizardData.Instance.wheelCount/2; i++)
+            for (int i = 0; i < WizardData.Instance.wheelCount / 2; i++)
             {
                 WheelSlotPanel leftPanel = new WheelSlotPanel();
                 leftPanel.WheelTypeChanged += Panel_WheelTypeChanged;
@@ -173,7 +220,7 @@ namespace BxDRobotExporter.Wizard
 
         public void UpdateWheelPanes()
         {
-             if (leftSlots.Count > WizardData.Instance.wheelCount)
+            if (leftSlots.Count > WizardData.Instance.wheelCount)
             {
                 int downTo = leftSlots.Count;
                 for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
@@ -184,7 +231,7 @@ namespace BxDRobotExporter.Wizard
                     leftSlots.Remove(leftSlots.ElementAt(i));
                 }
             }
-           
+
             if (rightSlots.Count > WizardData.Instance.wheelCount)
             {
                 int downTo = rightSlots.Count;
@@ -197,7 +244,7 @@ namespace BxDRobotExporter.Wizard
             _initialized = true;
 
         }
-        
+
         public event Action ActivateNext;
         private void OnActivateNext()
         {
@@ -215,7 +262,7 @@ namespace BxDRobotExporter.Wizard
         {
             InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
         }
-      
+
         public bool Initialized
         {
             get => _initialized;
@@ -224,7 +271,7 @@ namespace BxDRobotExporter.Wizard
                 if (!value)
                 {
                     while (LeftWheelsPanel.Controls.Count > 0)
-                        LeftWheelsPanel.Controls[0].Dispose(); 
+                        LeftWheelsPanel.Controls[0].Dispose();
                 }
                 _initialized = value;
             }
@@ -320,7 +367,7 @@ namespace BxDRobotExporter.Wizard
                     switch (WizardData.Instance.driveTrain)
                     {
                         case WizardData.WizardDriveTrain.TANK:
-                            panel.FillSlot(listItems[r],r, false);
+                            panel.FillSlot(listItems[r], r, false);
                             break;
                         case WizardData.WizardDriveTrain.MECANUM:
                             panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.MECANUM);
@@ -340,7 +387,7 @@ namespace BxDRobotExporter.Wizard
                 }
             }
             catch (Exception) { }
-            }
+        }
 
         public String RemoveWheelSetupPanel(String s)
         {
@@ -378,14 +425,14 @@ namespace BxDRobotExporter.Wizard
         }
 
         private void NodeListBox_SelectedIndexChanged(object sender, EventArgs e)
-        { 
+        {
             try
             {
                 StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.Items[NodeListBox.SelectedIndex].ToString()]);
             }
             catch (Exception) { }
         }
-       
+
         private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
         {
             UpdateWeight();
@@ -394,6 +441,12 @@ namespace BxDRobotExporter.Wizard
         private void DefineWheelsInstruction1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void AutoFill_Click(Object sender, EventArgs e)
+        {
+            AutoFillPage autoForm = new AutoFillPage(this);
+            autoForm.ShowDialog();
         }
     }
 }
