@@ -20,7 +20,7 @@ namespace EditorsLibrary
         {
             InitializeComponent();
 
-            TotalWeightKg = SynthesisGUI.Instance.TotalWeightKg;
+            TotalWeightKg = SynthesisGUI.Instance.RMeta.TotalWeightKg;
 
             if (TotalWeightKg > 0)
             {
