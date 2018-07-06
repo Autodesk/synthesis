@@ -210,7 +210,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Apply()
         {
-            Utilities.GUI.TotalWeightKg = weightKg;
+            Utilities.GUI.RMeta.TotalWeightKg = weightKg;
 
             //WheelSetupPage
             foreach (WheelSetupData data in wheels)

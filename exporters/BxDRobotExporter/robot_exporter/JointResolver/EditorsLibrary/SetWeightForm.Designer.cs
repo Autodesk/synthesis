@@ -34,9 +34,9 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.CancelButton = new System.Windows.Forms.Button();
             this.SaveButton = new System.Windows.Forms.Button();
+            this.CalculatedWeightCheck = new System.Windows.Forms.CheckBox();
             this.WeightLabel = new System.Windows.Forms.Label();
             this.UnitBox = new System.Windows.Forms.ComboBox();
-            this.CalculatedWeightCheck = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -117,6 +117,18 @@
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
+            // CalculatedWeightCheck
+            // 
+            this.CalculatedWeightCheck.AutoSize = true;
+            this.CalculatedWeightCheck.Dock = System.Windows.Forms.DockStyle.Left;
+            this.CalculatedWeightCheck.Location = new System.Drawing.Point(3, 3);
+            this.CalculatedWeightCheck.Name = "CalculatedWeightCheck";
+            this.CalculatedWeightCheck.Size = new System.Drawing.Size(131, 23);
+            this.CalculatedWeightCheck.TabIndex = 3;
+            this.CalculatedWeightCheck.Text = "Use calculated weight";
+            this.CalculatedWeightCheck.UseVisualStyleBackColor = true;
+            this.CalculatedWeightCheck.CheckedChanged += new System.EventHandler(this.CalculatedWeightCheck_CheckedChanged);
+            // 
             // WeightLabel
             // 
             this.WeightLabel.AutoSize = true;
@@ -139,18 +151,7 @@
             this.UnitBox.Name = "UnitBox";
             this.UnitBox.Size = new System.Drawing.Size(40, 21);
             this.UnitBox.TabIndex = 2;
-            // 
-            // CalculatedWeightCheck
-            // 
-            this.CalculatedWeightCheck.AutoSize = true;
-            this.CalculatedWeightCheck.Dock = System.Windows.Forms.DockStyle.Left;
-            this.CalculatedWeightCheck.Location = new System.Drawing.Point(3, 3);
-            this.CalculatedWeightCheck.Name = "CalculatedWeightCheck";
-            this.CalculatedWeightCheck.Size = new System.Drawing.Size(131, 23);
-            this.CalculatedWeightCheck.TabIndex = 3;
-            this.CalculatedWeightCheck.Text = "Use calculated weight";
-            this.CalculatedWeightCheck.UseVisualStyleBackColor = true;
-            this.CalculatedWeightCheck.CheckedChanged += new System.EventHandler(this.CalculatedWeightCheck_CheckedChanged);
+            this.UnitBox.SelectedIndexChanged += new System.EventHandler(this.UnitBox_SelectedIndexChanged);
             // 
             // SetWeightForm
             // 

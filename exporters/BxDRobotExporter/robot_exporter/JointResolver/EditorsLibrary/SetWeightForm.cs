@@ -12,19 +12,21 @@ namespace EditorsLibrary
 {
     public partial class SetWeightForm : Form
     {
-        static bool IsMetric = false;
-
         public float TotalWeightKg = 0;
+        public bool PreferMetric = false;
 
         public SetWeightForm()
         {
             InitializeComponent();
 
             TotalWeightKg = SynthesisGUI.Instance.RMeta.TotalWeightKg;
+            PreferMetric = SynthesisGUI.Instance.RMeta.PreferMetric;
+            
+            UnitBox.SelectedIndex = PreferMetric ? 1 : 0;
 
             if (TotalWeightKg > 0)
             {
-                if (!IsMetric)
+                if (!PreferMetric)
                     WeightBox.Value = (decimal)(TotalWeightKg * 2.20462);
                 else
                     WeightBox.Value = (decimal)TotalWeightKg;
@@ -36,19 +38,17 @@ namespace EditorsLibrary
                 WeightBox.Value = 0;
                 CalculatedWeightCheck.Checked = true;
             }
-
-            UnitBox.SelectedIndex = IsMetric ? 1 : 0;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            IsMetric = UnitBox.SelectedIndex == 1;
+            PreferMetric = UnitBox.SelectedIndex == 1;
 
             if (CalculatedWeightCheck.Checked)
                 TotalWeightKg = -1;
             else
             {
-                if (!IsMetric)
+                if (!PreferMetric)
                     TotalWeightKg = (float)WeightBox.Value / 2.20462f;
                 else
                     TotalWeightKg = (float)WeightBox.Value;
@@ -64,6 +64,14 @@ namespace EditorsLibrary
             WeightBox.Minimum = CalculatedWeightCheck.Checked ? 0 : 1;
             WeightBox.Value = CalculatedWeightCheck.Checked ? 0 : 100;
             UnitBox.Enabled = !CalculatedWeightCheck.Checked;
+        }
+
+        private void UnitBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (UnitBox.SelectedIndex == 0)
+                WeightBox.Value = (decimal)((float)WeightBox.Value / 2.20462f);
+            else
+                WeightBox.Value = (decimal)((float)WeightBox.Value * 2.20462f);
         }
     }
 }
