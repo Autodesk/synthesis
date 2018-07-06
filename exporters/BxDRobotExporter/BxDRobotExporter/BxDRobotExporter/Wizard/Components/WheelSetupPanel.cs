@@ -19,10 +19,6 @@ namespace BxDRobotExporter.Wizard
         public static event OnWheelSetupPanelHover hover;
         public String name;
         public bool isRightWheel;
-        public WheelSetupPanel()
-        {
-            InitializeComponent();
-        }
 
         public WheelSetupPanel(RigidNode_Base node, String name, WizardData.WizardWheelType WheelType = WizardData.WizardWheelType.NORMAL)
         {
@@ -41,7 +37,7 @@ namespace BxDRobotExporter.Wizard
                     StandardAddInServer.Instance.WizardSelect(this.node);
             };
 
-            this.BackColor = Control.DefaultBackColor;
+            BackColor = Color.White;
         }
 
         public RigidNode_Base node;
