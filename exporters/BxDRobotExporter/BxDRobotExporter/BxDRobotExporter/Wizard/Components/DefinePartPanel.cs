@@ -70,6 +70,7 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = false;
+                    PortOneLabel.Text = "Port:";
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
                     UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
@@ -80,6 +81,7 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
+                    PortOneLabel.Text = "Port:";
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
                     unit = "cm";
@@ -89,6 +91,7 @@ namespace BxDRobotExporter.Wizard
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
+                    PortOneLabel.Text = "Port 1:";
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
                     unit = "cm";
@@ -98,14 +101,16 @@ namespace BxDRobotExporter.Wizard
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortTwoUpDown.Visible = false;
+                    PortOneLabel.Text = "Port:";
                     PortTwoLabel.Visible = false;
+                    PortTwoUpDown.Visible = false;
                     unit = "cm";
                     break;
                 case 5: //Dual Motor
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
+                    PortOneLabel.Text = "Port 1:";
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
                     UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
