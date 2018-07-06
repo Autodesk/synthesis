@@ -188,6 +188,11 @@ namespace Synthesis.Input
             return mPlayerList[controlIndex].setKey(name, argToInput(primary), null, isTankDrive);
         }
 
+        public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, bool isTankDrive)
+        {
+            return mPlayerList[controlIndex].setKey(name, argToInput(primary), null, isTankDrive);
+        }
+
         /// <summary>
         /// Creates new <see cref="KeyMapping"/> with specified name, active player, primary KeyCode, 
         /// secondary CustomInput, and drive type.
