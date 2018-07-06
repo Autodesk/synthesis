@@ -32,6 +32,7 @@ public partial class SynthesisGUI : Form
         public bool UseSettingsDir;
         public string ActiveDir;
         public string ActiveRobotName;
+        public float TotalWeightKg;
         public string FieldName;
 
         public static RuntimeMeta CreateRuntimeMeta()
@@ -41,6 +42,7 @@ public partial class SynthesisGUI : Form
                 UseSettingsDir = true,
                 ActiveDir = null,
                 ActiveRobotName = null,
+                TotalWeightKg = -1, // Negative value indicates to use inventor mass
                 FieldName = null
             };
         }
@@ -65,8 +67,6 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
-    // TODO: This should be moved to RMeta
-    public float TotalWeightKg = -1; // Negative value indicates default mass should be left alone
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
@@ -386,7 +386,7 @@ public partial class SynthesisGUI : Form
             if (propertySet != null)
             {
                 RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
-                TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
+                RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
             }
 
             // Load joint data
@@ -504,7 +504,7 @@ public partial class SynthesisGUI : Form
 
             if (RMeta.ActiveRobotName != null)
                 Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
-            Utilities.SetProperty(propertySet, "robot-weight-kg", TotalWeightKg);
+            Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg);
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
@@ -682,7 +682,7 @@ public partial class SynthesisGUI : Form
             weightForm.ShowDialog();
 
             if (weightForm.DialogResult == DialogResult.OK)
-                TotalWeightKg = weightForm.TotalWeightKg;
+                RMeta.TotalWeightKg = weightForm.TotalWeightKg;
         }
         catch (Exception ex)
         {
