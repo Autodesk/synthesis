@@ -22,21 +22,8 @@ namespace EditorsLibrary
             TotalWeightKg = SynthesisGUI.Instance.RMeta.TotalWeightKg;
             PreferMetric = SynthesisGUI.Instance.RMeta.PreferMetric;
 
-            if (TotalWeightKg > 0)
-            {
-                if (!PreferMetric)
-                    WeightBox.Value = (decimal)(TotalWeightKg * 2.20462);
-                else
-                    WeightBox.Value = (decimal)TotalWeightKg;
-
-                CalculatedWeightCheck.Checked = false;
-            }
-            else
-            {
-                WeightBox.Value = 0;
-                CalculatedWeightCheck.Checked = true;
-            }
-
+            SetWeightBoxValue(TotalWeightKg * (PreferMetric ? 1 : 2.20462f));
+            CalculatedWeightCheck.Checked = TotalWeightKg <= 0;
             UnitBox.SelectedIndex = PreferMetric ? 1 : 0;
         }
 
@@ -74,18 +61,20 @@ namespace EditorsLibrary
 
             PreferMetric = UnitBox.SelectedIndex == 1;
 
-            decimal weightBoxValue;
-
             if (UnitBox.SelectedIndex == 0)
-                weightBoxValue = (decimal)((float)WeightBox.Value / 2.20462f);
+                SetWeightBoxValue((float)WeightBox.Value / 2.20462f);
             else
-                weightBoxValue = (decimal)((float)WeightBox.Value * 2.20462f);
+                SetWeightBoxValue((float)WeightBox.Value * 2.20462f);
+        }
 
-            // Protection from going over max
-            if (weightBoxValue > WeightBox.Maximum)
-                weightBoxValue = WeightBox.Maximum;
-
-            WeightBox.Value = weightBoxValue;
+        private void SetWeightBoxValue(float value)
+        {
+            if ((decimal)value > WeightBox.Maximum)
+                WeightBox.Value = WeightBox.Maximum;
+            else if ((decimal)value >= WeightBox.Minimum)
+                WeightBox.Value = (decimal)value;
+            else
+                WeightBox.Value = 0;
         }
     }
 }
