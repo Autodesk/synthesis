@@ -119,8 +119,7 @@ namespace BxDRobotExporter.Wizard
         {
             if (potentiallyDragging)
             {
-             //   this.DoDragDrop(usedString + " From Node Group", DragDropEffects.Copy |
-             //                 DragDropEffects.Move);
+                this.DoDragDrop(usedString + " From Node Group", DragDropEffects.Copy | DragDropEffects.Move);
             }
             potentiallyDragging = false;
             return "";
@@ -128,19 +127,11 @@ namespace BxDRobotExporter.Wizard
 
         private String PotenetialDragAndDrop(String s)
         {
-            this.DoDragDrop(usedString + " From Node Group", DragDropEffects.Copy |
-                                 DragDropEffects.Move);
+            //System.Windows.Forms.Control.MouseButtons
+        //    this.DoDragDrop(usedString + " From Node Group", DragDropEffects.Copy | DragDropEffects.Move);
             potentiallyDragging = true;
             usedString = s;
             return "";
-        }
-        [DllImport("user32.dll")]
-        static extern int GetSystemMetrics(int index);
-        const int SM_CXDRAG = 68;
-        const int SM_CYDRAG = 69;
-        Point GetDragThreshold()
-        {
-            return new Point(GetSystemMetrics(SM_CXDRAG), GetSystemMetrics(SM_CYDRAG));
         }
     }
 }

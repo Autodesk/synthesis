@@ -65,7 +65,6 @@
             this.WheelTypeLabel.TabIndex = 1;
             this.WheelTypeLabel.Text = "Wheel Type: ";
             this.WheelTypeLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.WheelTypeLabel.MouseLeave += new System.EventHandler(this.WheelSetupPanel_MouseLeave);
             this.WheelTypeLabel.MouseHover += new System.EventHandler(this.WheelSetupPanel_MouseHover);
             this.WheelTypeLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
@@ -84,7 +83,6 @@
             this.WheelTypeComboBox.TabIndex = 0;
             this.WheelTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.WheelTypeComboBox_SelectedIndexChanged);
             this.WheelTypeComboBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.WheelTypeComboBox.MouseLeave += new System.EventHandler(this.WheelSetupPanel_MouseLeave);
             this.WheelTypeComboBox.MouseHover += new System.EventHandler(this.WheelSetupPanel_MouseHover);
             this.WheelTypeComboBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
@@ -98,7 +96,6 @@
             this.FrictionLabel.TabIndex = 2;
             this.FrictionLabel.Text = "Wheel Friction:";
             this.FrictionLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.FrictionLabel.MouseLeave += new System.EventHandler(this.WheelSetupPanel_MouseLeave);
             this.FrictionLabel.MouseHover += new System.EventHandler(this.WheelSetupPanel_MouseHover);
             this.FrictionLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
@@ -116,7 +113,6 @@
             this.FrictionComboBox.Size = new System.Drawing.Size(153, 24);
             this.FrictionComboBox.TabIndex = 3;
             this.FrictionComboBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.FrictionComboBox.MouseLeave += new System.EventHandler(this.WheelSetupPanel_MouseLeave);
             this.FrictionComboBox.MouseHover += new System.EventHandler(this.WheelSetupPanel_MouseHover);
             this.FrictionComboBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
@@ -132,6 +128,7 @@
             this.backgroundLabel.Text = "node__.bxda";
             this.backgroundLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
             this.backgroundLabel.MouseLeave += new System.EventHandler(this.WheelSetupPanel_MouseLeave);
+            this.backgroundLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.backgroundLabel_MouseMove);
             this.backgroundLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
             // removeButton
@@ -145,7 +142,6 @@
             this.removeButton.UseVisualStyleBackColor = true;
             this.removeButton.Click += new System.EventHandler(this.button1_Click);
             this.removeButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.removeButton.MouseLeave += new System.EventHandler(this.WheelSetupPanel_MouseLeave);
             this.removeButton.MouseHover += new System.EventHandler(this.WheelSetupPanel_MouseHover);
             this.removeButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
@@ -160,7 +156,6 @@
             this.Size = new System.Drawing.Size(271, 140);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
             this.MouseEnter += new System.EventHandler(this.WheelSetupPanel_MouseHover);
-            this.MouseLeave += new System.EventHandler(this.WheelSetupPanel_MouseLeave);
             this.MouseHover += new System.EventHandler(this.WheelSetupPanel_MouseHover);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             this.MainGroupBox.ResumeLayout(false);

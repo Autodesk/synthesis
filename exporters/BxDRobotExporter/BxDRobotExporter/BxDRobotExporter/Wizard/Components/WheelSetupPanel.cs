@@ -117,7 +117,10 @@ namespace BxDRobotExporter.Wizard
 
         private void WheelSetupPanel_MouseLeave(object sender, EventArgs e)
         {
-            
+        }
+
+        private void backgroundLabel_MouseMove(object sender, MouseEventArgs e)
+        {
             mouseLeavingHandler(name);
         }
     }
