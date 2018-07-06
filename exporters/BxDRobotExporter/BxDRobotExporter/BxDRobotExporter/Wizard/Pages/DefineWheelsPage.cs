@@ -247,13 +247,9 @@ namespace BxDRobotExporter.Wizard
         private void UpdateWeight()
         {
             if (WeightUnitSelector.SelectedIndex == 0)
-            {
                 totalWeightKg = (float)WeightBox.Value / 2.20462f;
-            }
             else
-            {
                 totalWeightKg = (float)WeightBox.Value;
-            }
 
             preferMetric = WeightUnitSelector.SelectedIndex == 1;
         }
