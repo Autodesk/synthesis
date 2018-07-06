@@ -23,6 +23,7 @@
 build/*
 lib/*
 bin/*
+user_code/*
 
 # CMake related stuff
 CMakeCache.txt
