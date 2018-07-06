@@ -686,7 +686,10 @@ public partial class SynthesisGUI : Form
             weightForm.ShowDialog();
 
             if (weightForm.DialogResult == DialogResult.OK)
+            {
                 RMeta.TotalWeightKg = weightForm.TotalWeightKg;
+                RMeta.PreferMetric = weightForm.PreferMetric;
+            }
         }
         catch (Exception ex)
         {
