@@ -76,6 +76,8 @@ namespace Synthesis.Input
             return setKey(name, argToInput(primary), argToInput(secondary));
         }
 
+
+
         /// <summary>
         /// Creates new <see cref="KeyMapping"/> with specified name, primary CustomInput, and secondary CustomInput.
         /// </summary>
