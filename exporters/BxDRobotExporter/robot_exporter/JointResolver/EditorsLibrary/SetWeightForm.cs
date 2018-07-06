@@ -62,9 +62,9 @@ namespace EditorsLibrary
             PreferMetric = UnitBox.SelectedIndex == 1;
 
             if (UnitBox.SelectedIndex == 0)
-                SetWeightBoxValue((float)WeightBox.Value / 2.20462f);
-            else
                 SetWeightBoxValue((float)WeightBox.Value * 2.20462f);
+            else
+                SetWeightBoxValue((float)WeightBox.Value / 2.20462f);
         }
 
         private void SetWeightBoxValue(float value)
