@@ -1,4 +1,7 @@
-﻿using Synthesis.GUI;
+﻿using Synthesis.FSM;
+using Synthesis.GUI;
+using Synthesis.States;
+using Synthesis.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +19,8 @@ namespace Synthesis.Input
 
         public Sprite DefaultButtonImage;
         public Sprite ActiveButtonImage;
+
+        public State CurrentState { get; set; }
 
         // Update is called once per frame
         void Update()
@@ -50,6 +55,13 @@ namespace Synthesis.Input
         {
             Controls.Save();
             UserMessageManager.Dispatch("Player preferances saved.", 5);
+        }
+
+        public void OnSaveClickMainMenu()
+        {
+            Controls.Save();
+            UserMessageManager.Dispatch("Player preferances saved.", 5);
+            StateMachine.SceneGlobal.ChangeState(new HomeTabState());
         }
 
         /// <summary>
