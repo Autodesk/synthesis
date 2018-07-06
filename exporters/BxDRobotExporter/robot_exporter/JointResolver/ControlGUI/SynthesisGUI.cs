@@ -32,7 +32,12 @@ public partial class SynthesisGUI : Form
         public bool UseSettingsDir;
         public string ActiveDir;
         public string ActiveRobotName;
-        public float TotalWeightKg;
+        private float _totalWeightKg;
+        public float TotalWeightKg
+        {
+            get => _totalWeightKg;
+            set => _totalWeightKg = (value > 0) ? value : 0; // Prevent negative weight values
+        }
         public bool PreferMetric;
         public string FieldName;
 
