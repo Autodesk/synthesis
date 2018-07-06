@@ -665,6 +665,13 @@ namespace hel{
 			void setValue(tRelay::tValue);
 		};
 
+		/**
+		 * \var bool user_button
+		 * \represents the state of the user button on the roborio
+		 */
+
+		bool user_button;
+
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
 		CANBus can_bus;

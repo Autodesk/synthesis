@@ -127,7 +127,7 @@ namespace hel {
 
         void strobeLatchOutput(tRioStatusCode*) {}
     };
-};
+}
 
 namespace nFPGA{
 	namespace nRoboRIO_FPGANamespace{

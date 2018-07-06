@@ -26,7 +26,8 @@ namespace hel{
             return hel::RoboRIOManager::getInstance()->analog_outputs.getMXPOutput(reg_index);
         }
     };
-};
+}
+
 namespace nFPGA{
 	namespace nRoboRIO_FPGANamespace{
 		tAO* tAO::create(tRioStatusCode* /*status*/){

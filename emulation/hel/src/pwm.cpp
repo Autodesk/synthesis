@@ -147,7 +147,8 @@ namespace hel{
             return hel::RoboRIOManager::getInstance()->pwm_system.getMXPDutyCycle(reg_index);
         }
     };
-};
+}
+
 namespace nFPGA{
 	namespace nRoboRIO_FPGANamespace{
 		tPWM* tPWM::create(tRioStatusCode* /*status*/){
