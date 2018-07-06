@@ -13,7 +13,7 @@ namespace Synthesis.GUI
             offsetX = transform.parent.position.x - UnityEngine.Input.mousePosition.x;
             offsetY = transform.parent.position.y - UnityEngine.Input.mousePosition.y;
 
-            DynamicCamera.MovingEnabled = false;
+            DynamicCamera.ControlEnabled = false;
         }
 
         public void OnDrag()
@@ -34,7 +34,7 @@ namespace Synthesis.GUI
 
         public void EndDrag()
         {
-            DynamicCamera.MovingEnabled = true;
+            DynamicCamera.ControlEnabled = true;
         }
     }
 }
