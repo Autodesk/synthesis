@@ -134,29 +134,29 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Initialize()
         {
-            if (WizardData.Instance.driveTrain != WizardData.WizardDriveTrain.SWERVE)
+            List<string> duplicatePartNames = new List<string>();
+
+            foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                if ((node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL) ||
+                    (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.SWERVE && node.GetParent().GetParent() != null))
                 {
-                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+                    string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                    readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+                    NodeListBox.Items.Add(readableName);
+
+                    try
                     {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        NodeListBox.Items.Add(readableName);
                         listItems.Add(readableName, node);
                     }
-                }
-            }
-            else
-            {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
-                {
-                    if (node.GetParent().GetParent() != null)
+                    catch (Exception)
                     {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        NodeListBox.Items.Add(readableName);
-                        listItems.Add(readableName, node);
+                        if (!duplicatePartNames.Contains(node.ModelFileName))
+                        {
+                            MessageBox.Show("Multiple parts named " + node.ModelFileName + " exist in your assembly. " +
+                                            "Only one will be available to configure as a wheel in quick setup.");
+                            duplicatePartNames.Add(node.ModelFileName);
+                        }
                     }
                 }
             }
