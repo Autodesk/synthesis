@@ -14,13 +14,9 @@ namespace BxDRobotExporter.Wizard
     {
         private DefineWheelsPage wheelsPage = null;
 
-        public AutoFillPage()
-        {
-            InitializeComponent();
-        }
-
         public AutoFillPage(DefineWheelsPage wheelsPage)
         {
+            InitializeComponent();
             this.wheelsPage = wheelsPage;
         }
 
