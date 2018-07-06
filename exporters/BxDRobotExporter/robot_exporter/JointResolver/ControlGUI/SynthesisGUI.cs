@@ -43,7 +43,7 @@ public partial class SynthesisGUI : Form
                 UseSettingsDir = true,
                 ActiveDir = null,
                 ActiveRobotName = null,
-                TotalWeightKg = -1, // Negative value indicates to use inventor mass
+                TotalWeightKg = 0,
                 PreferMetric = false,
                 FieldName = null
             };
