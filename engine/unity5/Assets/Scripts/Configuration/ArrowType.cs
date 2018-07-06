@@ -6,9 +6,9 @@
     public enum ArrowType
     {
         None,
+        Center,
         X,
         Y,
         Z,
-        Center
     }
 }

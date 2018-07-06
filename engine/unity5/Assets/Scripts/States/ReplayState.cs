@@ -179,7 +179,7 @@ namespace Synthesis.States
             active = false;
             contactThreshold = Mathf.Sqrt(30f);
 
-            DynamicCamera.MovingEnabled = true;
+            DynamicCamera.ControlEnabled = true;
 
             Texture2D thumbTexture = (Texture2D)Resources.Load("Images/thumb");
 
@@ -346,13 +346,13 @@ namespace Synthesis.States
                 (editMode == EditMode.Threshold && collisionSliderRect.Contains(Event.current.mousePosition))) &&
                 UnityEngine.Input.GetMouseButton(0))
             {
-                DynamicCamera.MovingEnabled = false;
+                DynamicCamera.ControlEnabled = false;
                 active = true;
                 playbackMode = PlaybackMode.Paused;
             }
             else if (active && !UnityEngine.Input.GetMouseButton(0))
             {
-                DynamicCamera.MovingEnabled = true;
+                DynamicCamera.ControlEnabled = true;
                 active = false;
             }
 

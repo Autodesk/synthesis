@@ -190,9 +190,9 @@
     <Compile Include="Assets\Scripts\Camera\RobotCamera.cs" />
     <Compile Include="Assets\Scripts\Camera\RobotCameraGUI.cs" />
     <Compile Include="Assets\Scripts\Camera\RobotCameraManager.cs" />
-    <Compile Include="Assets\Scripts\Configuration\ArrowClickListener.cs" />
     <Compile Include="Assets\Scripts\Configuration\ArrowType.cs" />
     <Compile Include="Assets\Scripts\Configuration\MoveArrows.cs" />
+    <Compile Include="Assets\Scripts\Configuration\SelectableArrow.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeMode.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeRobot.cs" />

@@ -11,7 +11,12 @@ public class DynamicCamera : MonoBehaviour
     /// <summary>
     /// The scrolling enabled.
     /// </summary>
-    public static bool MovingEnabled { get; set; }
+    public static bool ControlEnabled { get; set; }
+
+    /// <summary>
+    /// If true, this camera will move according to the active camera state.
+    /// </summary>
+    public static bool MovementEnabled { get; set; }
 
     /// <summary>
     /// The state of the camera.
@@ -104,7 +109,7 @@ public class DynamicCamera : MonoBehaviour
                 robot = main.ActiveRobot.gameObject;
             }
             //Move left/right using A/D, freeze camera movement when the robot is resetting
-            if (MovingEnabled && !main.ActiveRobot.IsResetting)
+            if (ControlEnabled && !main.ActiveRobot.IsResetting)
             {
                 if (!opposite)
                 {
@@ -449,7 +454,7 @@ public class DynamicCamera : MonoBehaviour
 
                 bool adjusting = false;
 
-                if (MovingEnabled && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+                if (ControlEnabled && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
                 {
                     if (Input.GetMouseButton(0))
                     {
@@ -564,7 +569,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            if (MovingEnabled && !main.ActiveRobot.IsResetting && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+            if (ControlEnabled && !main.ActiveRobot.IsResetting && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
             {
                 //Rotate camera when holding left mouse
                 //if (InputControl.GetMouseButton(0))
@@ -577,13 +582,13 @@ public class DynamicCamera : MonoBehaviour
                 {
                     if (GameObject.Find("ChangeRobotPanel") || GameObject.Find("ChangeFieldPanel"))
                     {
-                        MovingEnabled = false;
+                        ControlEnabled = false;
                     }
                     else
                     {
                         rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
                         rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
-                        MovingEnabled = true;
+                        ControlEnabled = true;
                     }
                 }
 
@@ -715,7 +720,7 @@ public class DynamicCamera : MonoBehaviour
             if (target != null)
             {
                 targetVector = target.transform.position;
-                if (MovingEnabled) //Works like the old orbit state
+                if (ControlEnabled) //Works like the old orbit state
                 {
                     //Use left mouse to change angle
                     if (Input.GetMouseButton(0))
@@ -774,12 +779,13 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     void Start()
     {
+        MovementEnabled = true;
         SwitchCameraState(new OrbitState(this));
     }
 
     void LateUpdate()
     {
-        if (_cameraState != null) _cameraState.Update();
+        if (_cameraState != null && MovementEnabled) _cameraState.Update();
     }
 
     /// <summary>
@@ -788,7 +794,7 @@ public class DynamicCamera : MonoBehaviour
     /// <param name="currentCameraState"></param>
     public void ToggleCameraState(CameraState currentCameraState)
     {
-        if (MovingEnabled)
+        if (ControlEnabled)
         {
             if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
             else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
