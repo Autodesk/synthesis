@@ -64,7 +64,7 @@
             // DefineWheelsInstruction1
             // 
             this.DefineWheelsInstruction1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.DefineWheelsInstruction1.Location = new System.Drawing.Point(408, 10);
+            this.DefineWheelsInstruction1.Location = new System.Drawing.Point(408, 35);
             this.DefineWheelsInstruction1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.DefineWheelsInstruction1.Name = "DefineWheelsInstruction1";
             this.DefineWheelsInstruction1.Size = new System.Drawing.Size(189, 86);
@@ -82,7 +82,7 @@
             this.WheelNodeGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.WheelNodeGroupBox.Name = "WheelNodeGroupBox";
             this.WheelNodeGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.WheelNodeGroupBox.Size = new System.Drawing.Size(613, 120);
+            this.WheelNodeGroupBox.Size = new System.Drawing.Size(613, 145);
             this.WheelNodeGroupBox.TabIndex = 3;
             this.WheelNodeGroupBox.TabStop = false;
             this.WheelNodeGroupBox.Text = "Select Wheel Joints";
@@ -117,7 +117,7 @@
             this.LeftWheelsPanel.Location = new System.Drawing.Point(4, 19);
             this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.LeftWheelsPanel.Name = "LeftWheelsPanel";
-            this.LeftWheelsPanel.Size = new System.Drawing.Size(305, 547);
+            this.LeftWheelsPanel.Size = new System.Drawing.Size(305, 524);
             this.LeftWheelsPanel.TabIndex = 4;
             this.LeftWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
             this.LeftWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragEnter);
@@ -126,11 +126,11 @@
             // 
             this.LeftWheelsGroup.AllowDrop = true;
             this.LeftWheelsGroup.Controls.Add(this.LeftWheelsPanel);
-            this.LeftWheelsGroup.Location = new System.Drawing.Point(0, 233);
+            this.LeftWheelsGroup.Location = new System.Drawing.Point(0, 256);
             this.LeftWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.LeftWheelsGroup.Name = "LeftWheelsGroup";
             this.LeftWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
-            this.LeftWheelsGroup.Size = new System.Drawing.Size(313, 570);
+            this.LeftWheelsGroup.Size = new System.Drawing.Size(313, 547);
             this.LeftWheelsGroup.TabIndex = 1;
             this.LeftWheelsGroup.TabStop = false;
             this.LeftWheelsGroup.Text = "Left Wheels";
@@ -226,7 +226,7 @@
             this.RightWheelsPanel.Location = new System.Drawing.Point(4, 19);
             this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.RightWheelsPanel.Name = "RightWheelsPanel";
-            this.RightWheelsPanel.Size = new System.Drawing.Size(284, 547);
+            this.RightWheelsPanel.Size = new System.Drawing.Size(284, 524);
             this.RightWheelsPanel.TabIndex = 7;
             this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
             this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragEnter);
@@ -235,11 +235,11 @@
             // 
             this.RightWheelsGroup.AllowDrop = true;
             this.RightWheelsGroup.Controls.Add(this.RightWheelsPanel);
-            this.RightWheelsGroup.Location = new System.Drawing.Point(321, 233);
+            this.RightWheelsGroup.Location = new System.Drawing.Point(321, 256);
             this.RightWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.RightWheelsGroup.Name = "RightWheelsGroup";
             this.RightWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
-            this.RightWheelsGroup.Size = new System.Drawing.Size(292, 570);
+            this.RightWheelsGroup.Size = new System.Drawing.Size(292, 547);
             this.RightWheelsGroup.TabIndex = 2;
             this.RightWheelsGroup.TabStop = false;
             this.RightWheelsGroup.Text = "Right Wheels";
