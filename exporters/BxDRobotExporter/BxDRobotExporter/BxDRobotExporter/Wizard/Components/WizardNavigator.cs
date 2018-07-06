@@ -34,9 +34,13 @@ namespace BxDRobotExporter.Wizard
             /// </summary>
             Clean = 0b0001000,
             /// <summary>
-            /// Same as <see cref="WizardNavigatorState.Clean"/> except <see cref="NextButton"/> is enabled.
+            /// Same as <see cref="WizardNavigatorState.Clean"/> except <see cref="NextButton"/> is disabled.
             /// </summary>
-            NextDisabled = 0b00010000
+            NextDisabled = 0b00010000,
+            /// <summary>
+            /// Same as <see cref="WizardNavigatorState.Clean"/> except <see cref="BackButton"/> is disabled.
+            /// </summary>
+            BackDisabled = 0b00100000
         }
         public WizardNavigator()
         {
@@ -81,6 +85,15 @@ namespace BxDRobotExporter.Wizard
                     NextButton.Enabled = false;
                     BackButton.Text = "< Back";
                     BackButton.Enabled = true;
+                    Progress.Text = "Click \'Next\' to continue.";
+                    Progress.Enabled = true;
+                    break;
+                case WizardNavigatorState.BackDisabled:
+                    this.Visible = true;
+                    NextButton.Text = "Next >";
+                    NextButton.Enabled = true;
+                    BackButton.Text = "< Back";
+                    BackButton.Enabled = false;
                     Progress.Text = "Click \'Next\' to continue.";
                     Progress.Enabled = true;
                     break;

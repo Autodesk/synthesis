@@ -22,17 +22,11 @@ namespace BxDRobotExporter.Wizard
             
             this.Resize += WizardForm_Resize;
 
-            //Start page
-            StartPage startPage = new StartPage();
-            startPage.ActivateNext += ActivateNext;
-            startPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(startPage, WizardNavigator.WizardNavigatorState.StartEnabled);
-            
             //Step 1: Define Wheels
             DefineWheelsPage defineWheelsPage = new DefineWheelsPage();
             defineWheelsPage.ActivateNext += ActivateNext;
             defineWheelsPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.Clean);
+            WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.BackDisabled);
 
             //Step 2: Define other moving parts
             DefineMovingPartsPage defineMovingPartsPage = new DefineMovingPartsPage();
