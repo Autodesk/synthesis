@@ -74,10 +74,18 @@ namespace EditorsLibrary
 
             PreferMetric = UnitBox.SelectedIndex == 1;
 
+            decimal weightBoxValue;
+
             if (UnitBox.SelectedIndex == 0)
-                WeightBox.Value = (decimal)((float)WeightBox.Value / 2.20462f);
+                weightBoxValue = (decimal)((float)WeightBox.Value / 2.20462f);
             else
-                WeightBox.Value = (decimal)((float)WeightBox.Value * 2.20462f);
+                weightBoxValue = (decimal)((float)WeightBox.Value * 2.20462f);
+
+            // Protection from going over max
+            if (weightBoxValue > WeightBox.Maximum)
+                weightBoxValue = WeightBox.Maximum;
+
+            WeightBox.Value = weightBoxValue;
         }
     }
 }
