@@ -85,6 +85,20 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// When set to true, makes the next button skip the next form, or finish if only one form follows.
+        /// </summary>
+        public bool EndEarly
+        {
+            set
+            {
+                if (value)
+                    WizardNavigator.UpdateState(WizardNavigator.WizardNavigatorState.FinishEnabled | defaultNavigatorStates[ActivePageIndex + 1]);
+                else
+                    WizardNavigator.UpdateState(defaultNavigatorStates[ActivePageIndex + 1]);
+            }
+        }
+
         private int ActivePageIndex = 0;
 
         /// <summary>

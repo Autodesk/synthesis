@@ -207,16 +207,13 @@ namespace BxDRobotExporter.Wizard
         }
         
         public event Action ActivateNext;
-        private void OnActivateNext()
-        {
-            this.ActivateNext?.Invoke();
-        }
+        private void OnActivateNext() => ActivateNext?.Invoke();
 
         public event Action DeactivateNext;
-        private void OnDeactivateNext()
-        {
-            this.DeactivateNext?.Invoke();
-        }
+        private void OnDeactivateNext() => DeactivateNext?.Invoke();
+
+        public event Action<bool> SetEndEarly;
+        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
 
         public event InvalidatePageEventHandler InvalidatePage;
         public void OnInvalidatePage()
@@ -307,6 +304,9 @@ namespace BxDRobotExporter.Wizard
                             break;
                     }
                     NodeListBox.Items.Remove(r);
+
+                    if (NodeListBox.Items.Count < 1)
+                        OnSetEndEarly(true); // Skip next page, no parts are left
                 }
             }
             catch (Exception) { }
@@ -348,6 +348,9 @@ namespace BxDRobotExporter.Wizard
                             break;
                     }
                     NodeListBox.Items.Remove(r);
+
+                    if (NodeListBox.Items.Count < 1)
+                        OnSetEndEarly(true); // Skip next page, no parts are left
                 }
             }
             catch (Exception) { }
@@ -378,6 +381,7 @@ namespace BxDRobotExporter.Wizard
                 }
             }
             NodeListBox.Items.Add(s);
+            OnSetEndEarly(false);
             return "";
         }
 
