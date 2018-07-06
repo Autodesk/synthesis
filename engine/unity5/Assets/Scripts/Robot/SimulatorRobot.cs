@@ -1,6 +1,7 @@
 ﻿using BulletSharp;
 using BulletUnity;
 using Synthesis.Camera;
+using Synthesis.Configuration;
 using Synthesis.DriverPractice;
 using Synthesis.FEA;
 using Synthesis.GUI;
@@ -37,6 +38,8 @@ namespace Synthesis.Robot
 
         private float keyDownTime = 0f;
         private RobotCameraManager robotCameraManager;
+
+        private GameObject resetMoveArrows;
 
         /// <summary>
         /// Initializes sensors and driver practice data.
@@ -178,7 +181,6 @@ namespace Synthesis.Robot
 
             if (!State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
-                Debug.Log(State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState);
                 IsResetting = true;
 
                 foreach (RigidNode n in RootNode.ListAllNodes())
@@ -204,11 +206,10 @@ namespace Synthesis.Robot
                 //Where "save orientation" works
                 RotateRobot(robotStartOrientation);
 
-                GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5);
-                if (IsResetting)
-                {
-                    Debug.Log("is resetting!");
-                }
+                resetMoveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"),
+                    GetComponentInChildren<BRigidBody>().transform);
+
+                //GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5);
             }
             else
             {
@@ -273,6 +274,8 @@ namespace Synthesis.Robot
             }
 
             OnEndReset();
+
+            Destroy(resetMoveArrows);
 
             foreach (Tracker t in GetComponentsInChildren<Tracker>())
                 t.Clear();
