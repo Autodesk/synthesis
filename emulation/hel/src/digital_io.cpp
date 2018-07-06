@@ -334,7 +334,7 @@ namespace hel{
         }
 
     };
-};
+}
 
 namespace nFPGA{
 	namespace nRoboRIO_FPGANamespace{
