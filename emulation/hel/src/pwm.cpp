@@ -114,6 +114,7 @@ namespace hel{
         }
 
         bool readZeroLatch(uint8_t bitfield_index, tRioStatusCode* /*status*/){
+            return false;
             //TODO
         }
 
