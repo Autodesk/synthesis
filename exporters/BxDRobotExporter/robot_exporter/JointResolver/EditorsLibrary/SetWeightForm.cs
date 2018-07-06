@@ -21,8 +21,6 @@ namespace EditorsLibrary
 
             TotalWeightKg = SynthesisGUI.Instance.RMeta.TotalWeightKg;
             PreferMetric = SynthesisGUI.Instance.RMeta.PreferMetric;
-            
-            UnitBox.SelectedIndex = PreferMetric ? 1 : 0;
 
             if (TotalWeightKg > 0)
             {
@@ -38,6 +36,8 @@ namespace EditorsLibrary
                 WeightBox.Value = 0;
                 CalculatedWeightCheck.Checked = true;
             }
+
+            UnitBox.SelectedIndex = PreferMetric ? 1 : 0;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
@@ -68,6 +68,10 @@ namespace EditorsLibrary
 
         private void UnitBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Value did not change
+            if (PreferMetric == (UnitBox.SelectedIndex == 1))
+                return;
+
             if (UnitBox.SelectedIndex == 0)
                 WeightBox.Value = (decimal)((float)WeightBox.Value / 2.20462f);
             else
