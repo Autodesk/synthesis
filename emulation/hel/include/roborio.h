@@ -297,11 +297,11 @@ namespace hel{
 			uint32_t getHdrPeriodScale(uint8_t)const;
 
             /**
-             * \fn uint32_t getMXPPeriodScale(uint8_t index)
-             * \brief Get current PWM scale for a header based pwm.
-             * get current pwm scale for a pwm on the base RoboRIO board.
+             * \fn void setHdrPeriodScale(uint8_t index)
+             * \brief Set PWM scale for a header based pwm.
+             * Set PWM scale for a PWM on the base RoboRIO board.
              * \param index the index of the PWM.
-             * \return Unsigned 32-bit integer representing the PWM period scale.
+             * \param value the period scale you wish to set
              */
 
 
@@ -317,6 +317,17 @@ namespace hel{
 
 
 			uint32_t getMXPPeriodScale(uint8_t)const;
+
+            /**
+             * \fn void setMXPPeriodScale(uint8_t index, uint32_t value)
+             * \brief Set PWM scale for a MXP PWM.
+             * Set PWM scale for a PWM on the base RoboRIO MXP.
+             * \param index the index of the PWM.
+             * \param value the period scale you wish to set.
+             */
+
+
+			void setMXPPeriodScale(uint8_t, uint32_t);
 
             /**
              * \fn uint32_t getHdrDutyCycle(uint8_t index)
