@@ -33,6 +33,7 @@ public partial class SynthesisGUI : Form
         public string ActiveDir;
         public string ActiveRobotName;
         public float TotalWeightKg;
+        public bool PreferMetric;
         public string FieldName;
 
         public static RuntimeMeta CreateRuntimeMeta()
@@ -43,6 +44,7 @@ public partial class SynthesisGUI : Form
                 ActiveDir = null,
                 ActiveRobotName = null,
                 TotalWeightKg = -1, // Negative value indicates to use inventor mass
+                PreferMetric = false,
                 FieldName = null
             };
         }
@@ -387,6 +389,7 @@ public partial class SynthesisGUI : Form
             {
                 RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
                 RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
+                RMeta.PreferMetric = Utilities.GetProperty(propertySet, "robot-prefer-metric", false);
             }
 
             // Load joint data
@@ -505,6 +508,7 @@ public partial class SynthesisGUI : Form
             if (RMeta.ActiveRobotName != null)
                 Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
             Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg);
+            Utilities.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
