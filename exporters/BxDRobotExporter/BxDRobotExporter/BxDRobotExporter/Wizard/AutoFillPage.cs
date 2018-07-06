@@ -7,78 +7,48 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using System.Diagnostics;
-
 
 namespace BxDRobotExporter.Wizard
 {
-    public partial class DefineWheelsPage
-
+    public partial class AutoFillPage : Form
     {
+        private DefineWheelsPage wheelsPage = null;
 
-        private WizardData.WizardDriveTrain DriveTrain
+        public AutoFillPage()
         {
+            InitializeComponent();
+        }
 
-            get
-            {
+        public AutoFillPage(DefineWheelsPage wheelsPage)
+        {
+            this.wheelsPage = wheelsPage;
+        }
 
-                switch (DriveTrainDropdown.SelectedIndex)
-                {
+        //Done Clicked
+        private void StartButton_Click(object sender, EventArgs e)
+        {
+            DoAutoFill();
 
-                    default:
-                    case 0: //Undefined
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
-                        NodeListBox.Enabled = false;
-                        break;
-
-                    case 1: //Tank
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
-                        NodeListBox.Enabled = false;
-                        break;
-
-                    case 2: //Mecanum
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.MECANUM;
-                        NodeListBox.Enabled = false;
-                        break;
-
-                    case 3: //Swerve
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.SWERVE;
-                        NodeListBox.Enabled = false;
-                        break;
-
-                    case 4: //H-Drive
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
-                        NodeListBox.Enabled = false;
-                        break;
-
-                    case 5: //custom
-                        WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
-                        NodeListBox.Enabled = false;
-                        break;
-
-                }
-
-                return WizardData.Instance.driveTrain;
-            }
-
+            Close();
         }
 
         /// <summary>
         /// Exports the joints and meshes, prompts for a name, detects the wheels, sets the wheel properties, and merges other, unused nodes into their parents.
         /// </summary>
 
-        private void AutoFill_Click(Object sender, EventArgs e)
+        private void DoAutoFill()
         {
+            if (wheelsPage == null)
+                return;
 
-            if (Utilities.GUI.ExportMeshes())
+            if (Utilities.GUI.LoadMeshes())
             {
-                var wheelsRaw = WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, DriveTrain, (int)numericUpDown1.Value);
+                var wheelsRaw = WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, wheelsPage.DriveTrain, (int)WheelUpDown.Value);
                 var wheelsSorted = WizardUtilities.SortWheels(wheelsRaw);
 
                 List<WizardData.WheelSetupData> oneClickWheels = new List<WizardData.WheelSetupData>();
 
-                switch (DriveTrain)
+                switch (wheelsPage.DriveTrain)
                 {
                     default:
 
@@ -197,5 +167,7 @@ namespace BxDRobotExporter.Wizard
                 }
             }
         }
+
+        
     }
 }
