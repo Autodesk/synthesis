@@ -221,7 +221,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Apply()
         {
-            Utilities.GUI.EraseExistingConfiguration();
+            Utilities.GUI.ClearConfiguration();
 
             Utilities.GUI.RMeta.TotalWeightKg = weightKg;
             Utilities.GUI.RMeta.PreferMetric = preferMetric;
