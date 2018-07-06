@@ -64,20 +64,34 @@ namespace Synthesis.Configuration
             if (activeArrow == ArrowType.None)
                 return;
 
-            // TODO: Middle circle functionality.
-
-            Vector3 closestPointScreenRay;
-            Vector3 closestPointArrowRay;
             Ray mouseRay = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
-            
-            if (!Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out closestPointArrowRay,
-                mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection))
-                return;
 
-            if (lastArrowPoint != Vector3.zero)
-                State.TransposeRobot(closestPointArrowRay - lastArrowPoint);
+            if (activeArrow == ArrowType.Center)
+            {
+                Plane plane = new Plane(UnityEngine.Camera.main.transform.forward, transform.position);
 
-            lastArrowPoint = closestPointArrowRay;
+                float enter;
+                plane.Raycast(mouseRay, out enter);
+
+                Vector3 position = mouseRay.GetPoint(enter);
+
+                State.TransposeRobot(mouseRay.GetPoint(enter) -
+                    State.ActiveRobot.GetComponentInChildren<BRigidBody>().GetCollisionObject().WorldTransform.Origin.ToUnity());
+            }
+            else
+            {
+                Vector3 closestPointScreenRay;
+                Vector3 closestPointArrowRay;
+
+                if (!Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out closestPointArrowRay,
+                    mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection))
+                    return;
+
+                if (lastArrowPoint != Vector3.zero)
+                    State.TransposeRobot(closestPointArrowRay - lastArrowPoint);
+
+                lastArrowPoint = closestPointArrowRay;
+            }
         }
 
         /// <summary>
