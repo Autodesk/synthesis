@@ -107,6 +107,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
+            UpdateWeight();
             WizardData.Instance.weightKg = totalWeightKg;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
@@ -231,11 +232,6 @@ namespace BxDRobotExporter.Wizard
         }
         private bool _initialized = false;
         #endregion
-
-        private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateWeight();
-        }
 
         private void UpdateWeight()
         {
@@ -384,11 +380,6 @@ namespace BxDRobotExporter.Wizard
                 StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.Items[NodeListBox.SelectedIndex].ToString()]);
             }
             catch (Exception) { }
-        }
-       
-        private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
-        {
-            UpdateWeight();
         }
 
         private void DefineWheelsInstruction1_Click(object sender, EventArgs e)
