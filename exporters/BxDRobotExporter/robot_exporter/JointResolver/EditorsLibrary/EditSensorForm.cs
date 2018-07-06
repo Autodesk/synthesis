@@ -56,9 +56,6 @@ namespace EditorsLibrary
             {
                 secondaryBox.Visible = true;
             }
-
-            FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
-
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -117,6 +114,8 @@ namespace EditorsLibrary
             {
                 joint.attachedSensors.Add(addedSensor);
             }
+
+            LegacyInterchange.LegacyEvents.OnRobotModified();
             Close();
         }
 
@@ -138,16 +137,6 @@ namespace EditorsLibrary
                 }
             }
             lblEquationParsed.Text = new Polynomial(polyCoeff).ToString();
-        }
-
-        private void secondaryBox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

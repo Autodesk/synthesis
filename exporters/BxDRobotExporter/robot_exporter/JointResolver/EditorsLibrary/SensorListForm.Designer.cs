@@ -37,7 +37,6 @@
             this.polynomialHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.deleteButton = new System.Windows.Forms.Button();
             this.addSensorButton = new System.Windows.Forms.Button();
-            this.saveButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // typeColumnHeader
@@ -84,7 +83,7 @@
             // deleteButton
             // 
             this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.deleteButton.Location = new System.Drawing.Point(16, 179);
+            this.deleteButton.Location = new System.Drawing.Point(9, 181);
             this.deleteButton.Margin = new System.Windows.Forms.Padding(2);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(97, 29);
@@ -96,7 +95,7 @@
             // addSensorButton
             // 
             this.addSensorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.addSensorButton.Location = new System.Drawing.Point(129, 179);
+            this.addSensorButton.Location = new System.Drawing.Point(311, 181);
             this.addSensorButton.Margin = new System.Windows.Forms.Padding(2);
             this.addSensorButton.Name = "addSensorButton";
             this.addSensorButton.Size = new System.Drawing.Size(86, 29);
@@ -105,23 +104,11 @@
             this.addSensorButton.UseVisualStyleBackColor = true;
             this.addSensorButton.Click += new System.EventHandler(this.addSensorButton_Click);
             // 
-            // saveButton
-            // 
-            this.saveButton.Location = new System.Drawing.Point(303, 177);
-            this.saveButton.Margin = new System.Windows.Forms.Padding(2);
-            this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(93, 32);
-            this.saveButton.TabIndex = 0;
-            this.saveButton.Text = "Save";
-            this.saveButton.UseVisualStyleBackColor = true;
-            this.saveButton.Click += new System.EventHandler(this.closeButton_Click);
-            // 
             // SensorListForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(406, 221);
-            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.addSensorButton);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.sensorListView);
@@ -149,7 +136,6 @@
         private System.Windows.Forms.Button deleteButton;
         private System.Windows.Forms.Button addSensorButton;
         private System.Windows.Forms.ColumnHeader polynomialHeader;
-        private System.Windows.Forms.Button saveButton;
 
     }
 }
