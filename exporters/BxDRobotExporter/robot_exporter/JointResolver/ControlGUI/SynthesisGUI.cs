@@ -393,7 +393,7 @@ public partial class SynthesisGUI : Form
             if (propertySet != null)
             {
                 RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
-                RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
+                RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
                 RMeta.PreferMetric = Utilities.GetProperty(propertySet, "robot-prefer-metric", false);
             }
 
@@ -512,7 +512,7 @@ public partial class SynthesisGUI : Form
 
             if (RMeta.ActiveRobotName != null)
                 Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
-            Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg);
+            Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
             Utilities.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
 
             // Save joint data
