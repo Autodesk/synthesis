@@ -293,8 +293,6 @@ namespace Synthesis.Robot
 
             if (rigidBody == null)
                 AppModel.ErrorToMenu("Could not generate robot physics data.");
-            else if (!rigidBody.GetCollisionObject().IsActive)
-                rigidBody.GetCollisionObject().Activate();
         }
 
         /// <summary>
