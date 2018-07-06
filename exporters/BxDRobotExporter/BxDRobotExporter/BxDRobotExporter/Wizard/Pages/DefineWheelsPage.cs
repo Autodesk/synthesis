@@ -48,12 +48,7 @@ namespace BxDRobotExporter.Wizard
 
             // Load weight information
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
-
-            if (Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f) > (float)WeightBox.Maximum)
-                WeightBox.Value = WeightBox.Maximum;
-            else
-                WeightBox.Value = (decimal)(Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f));
-
+            SetWeightBoxValue(Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f));
             WeightUnitSelector.SelectedIndex = Utilities.GUI.RMeta.PreferMetric ? 1 : 0;
 
             Initialize();
@@ -261,6 +256,16 @@ namespace BxDRobotExporter.Wizard
             }
 
             preferMetric = WeightUnitSelector.SelectedIndex == 1;
+        }
+
+        private void SetWeightBoxValue(float value)
+        {
+            if ((decimal)value > WeightBox.Maximum)
+                WeightBox.Value = WeightBox.Maximum;
+            else if ((decimal)value >= WeightBox.Minimum)
+                WeightBox.Value = (decimal)value;
+            else
+                WeightBox.Value = 0;
         }
 
         private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
