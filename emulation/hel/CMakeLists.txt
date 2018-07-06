@@ -14,20 +14,29 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/docs)
 set (hel_VERSION_MAJOR 1)
 set (hel_VERSION_MINOR 0)
 
-set (WPILIB_DIRECTORY "../external/allwpilib")
-set (WPIUTIL_DIRECTORY "../external/allwpilib/wpiutil")
+set (WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/../external/allwpilib")
+set (WPIUTIL_DIRECTORY "${CMAKE_BINARY_DIR}/../external/allwpilib/wpiutil")
+set (WPILIB_SO_DIRECTORY "${CMAKE_BINARY_DIR}/../../../wpilib")
 
 #set (VM_BUILD_COMMAND "./download_vm.sh && ./run_vm.sh")
 set (VM_BUILD_COMMAND "./run_vm.sh")
 
-if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" )
-  set (CMAKE_C_COMPILER gcc)
-  set (CMAKE_CXX_COMPILER g++)
+if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MODE MATCHES "^[Ww][Pp][Ii]")
+  if (TEST_MODE MATCHES "^[Ww][Pp][Ii]")  
+    set (CMAKE_C_COMPILER arm-frc-linux-gnueabi-gcc)
+    set (CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
+    message (STATUS "Configuration: WPILib Tests")
+  else()
+    set (CMAKE_C_COMPILER gcc)
+    set (CMAKE_CXX_COMPILER g++)
+    message (STATUS "Configuration: Unit Tests")
+  endif()
 else()
   set (CMAKE_C_COMPILER arm-frc-linux-gnueabi-gcc)
   set (CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
-
+  message (STATUS "Configuration: Defualt")
 endif()
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++14")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -55,7 +64,7 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
 link_directories("lib/lib64")
 endif(TEST)
 
-if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" )
+if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MODE MATCHES "^[Ww][Pp][Ii]")
 
   MESSAGE("Begun building tests")
 
@@ -106,11 +115,16 @@ add_custom_target ( build_vm
 	COMMENT "Download, build, and run synthesis VM",
 	VERBATIM )
 
-include_directories("${WPILIB_DIRECTORY}/hal/src/main/native")
-include_directories("${WPILIB_DIRECTORY}/ni-libraries/include")
-include_directories("${WPIUTIL_DIRECTORY}/src/main/native/include")
-include_directories("${WPILIB_DIRECTORY}/hal/src/main/native/include")
-include_directories("./include")
 
 add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp)
+target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "./include")
 
+
+if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND TEST_MODE MATCHES "^[Ww][Pp][Ii]")
+  link_directories (${WPILIB_SO_DIRECTORY}/common/current/lib/linux/athena/shared ${WPILIB_SO_DIRECTORY}/cpp/current/reflib/linux/athena/shared) 
+  
+  add_executable (FRCUserProgram tests/test_project/robot.cpp)
+  target_include_directories(FRCUserProgram PRIVATE "${WPILIB_SO_DIRECTORY}/cpp/current/include")  
+  target_compile_options (FRCUserProgram PUBLIC -pthread)
+  target_link_libraries(FRCUserProgram wpi)
+endif()
