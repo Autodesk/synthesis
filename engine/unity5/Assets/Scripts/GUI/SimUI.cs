@@ -278,7 +278,7 @@ namespace Synthesis.GUI
             if (changeRobotPanel.activeSelf)
             {
                 changeRobotPanel.SetActive(false);
-                DynamicCamera.MovingEnabled = true;
+                DynamicCamera.ControlEnabled = true;
             }
             else
             {
@@ -321,7 +321,7 @@ namespace Synthesis.GUI
             if (changeFieldPanel.activeSelf)
             {
                 changeFieldPanel.SetActive(false);
-                DynamicCamera.MovingEnabled = true;
+                DynamicCamera.ControlEnabled = true;
             }
             else
             {
@@ -343,19 +343,19 @@ namespace Synthesis.GUI
             {
                 case 1:
                     camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
-                    DynamicCamera.MovingEnabled = true;
+                    DynamicCamera.ControlEnabled = true;
                     break;
                 case 2:
                     camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    DynamicCamera.MovingEnabled = true;
+                    DynamicCamera.ControlEnabled = true;
                     break;
                 case 3:
                     camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
-                    DynamicCamera.MovingEnabled = true;
+                    DynamicCamera.ControlEnabled = true;
                     break;
                 case 4:
                     camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
-                    DynamicCamera.MovingEnabled = true;
+                    DynamicCamera.ControlEnabled = true;
                     break;
             }
         }
@@ -630,7 +630,7 @@ namespace Synthesis.GUI
                 case 2:
                     EndOtherProcesses();
                     camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
-                    DynamicCamera.MovingEnabled = true;
+                    DynamicCamera.ControlEnabled = true;
                     State.BeginRobotReset();
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     break;
