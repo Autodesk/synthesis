@@ -53,20 +53,6 @@ namespace EditorsLibrary
             UnitBox.Enabled = !CalculatedWeightCheck.Checked;
         }
 
-        private void UnitBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Value did not change
-            if (PreferMetric == (UnitBox.SelectedIndex == 1))
-                return;
-
-            PreferMetric = UnitBox.SelectedIndex == 1;
-
-            if (UnitBox.SelectedIndex == 0)
-                SetWeightBoxValue((float)WeightBox.Value * 2.20462f);
-            else
-                SetWeightBoxValue((float)WeightBox.Value / 2.20462f);
-        }
-
         private void SetWeightBoxValue(float value)
         {
             if ((decimal)value > WeightBox.Maximum)

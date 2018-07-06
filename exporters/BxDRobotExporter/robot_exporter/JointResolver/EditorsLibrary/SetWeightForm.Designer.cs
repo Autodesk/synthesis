@@ -153,7 +153,6 @@
             this.UnitBox.Size = new System.Drawing.Size(75, 21);
             this.UnitBox.TabIndex = 2;
             this.UnitBox.SelectedIndex = 0;
-            this.UnitBox.SelectedIndexChanged += new System.EventHandler(this.UnitBox_SelectedIndexChanged);
             // 
             // SetWeightForm
             // 
