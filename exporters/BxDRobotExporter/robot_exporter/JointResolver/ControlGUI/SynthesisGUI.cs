@@ -167,25 +167,22 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Removes all configuration from the current skeleton.
     /// </summary>
-    public void EraseExistingConfiguration()
+    public void ClearConfiguration()
     {
-        EraseExistingConfiguration(SkeletonBase);
+        ClearConfiguration(SkeletonBase);
     }
     /// <summary>
     /// Removes all configuration from the current skeleton (recursive utility).
     /// </summary>
-    private void EraseExistingConfiguration(RigidNode_Base baseNode)
+    private void ClearConfiguration(RigidNode_Base baseNode)
     {
         SkeletalJoint_Base joint = baseNode.GetSkeletalJoint();
 
         if (joint != null)
-        {
-            joint.cDriver = null;
-            joint.attachedSensors.Clear();
-        }
+            joint.ClearConfiguration();
 
         foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseNode.Children)
-            EraseExistingConfiguration(child.Value);
+            ClearConfiguration(child.Value);
     }
 
     /// <summary>
