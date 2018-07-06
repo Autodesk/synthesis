@@ -137,7 +137,7 @@ namespace Synthesis.States
             //initializes the dynamic camera
             DynamicCameraObject = GameObject.Find("Main Camera");
             dynamicCamera = DynamicCameraObject.AddComponent<DynamicCamera>();
-            DynamicCamera.MovingEnabled = true;
+            DynamicCamera.ControlEnabled = true;
 
             sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
             sensorManagerGUI = StateMachine.gameObject.GetComponent<SensorManagerGUI>();
@@ -171,7 +171,7 @@ namespace Synthesis.States
 
             // Toggles between the different camera states if the camera toggle button is pressed
             if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen &&
-                DynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
+                DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             // Switches to replay mode
@@ -298,7 +298,7 @@ namespace Synthesis.States
             if (LoadRobot(directory, isMixAndMatch))
             {
                 dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
-                DynamicCamera.MovingEnabled = true;
+                DynamicCamera.ControlEnabled = true;
                 return true;
             }
 

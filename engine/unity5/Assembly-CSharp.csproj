@@ -190,6 +190,9 @@
     <Compile Include="Assets\Scripts\Camera\RobotCamera.cs" />
     <Compile Include="Assets\Scripts\Camera\RobotCameraGUI.cs" />
     <Compile Include="Assets\Scripts\Camera\RobotCameraManager.cs" />
+    <Compile Include="Assets\Scripts\Configuration\ArrowType.cs" />
+    <Compile Include="Assets\Scripts\Configuration\MoveArrows.cs" />
+    <Compile Include="Assets\Scripts\Configuration\SelectableArrow.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeMode.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeRobot.cs" />
@@ -288,6 +291,7 @@
     <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />
     <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
+    <None Include="Assets\Resources\Materials\Arrow Shader.shader" />
     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
