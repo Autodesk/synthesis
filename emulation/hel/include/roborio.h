@@ -15,6 +15,7 @@
 
 #include "HAL/ChipObject.h"
 #include "athena/PortsInternal.h"
+#include "FRC_NetworkCommunication/FRCComm.h"
 
 namespace hel{
     using namespace nFPGA;
@@ -665,6 +666,55 @@ namespace hel{
 			void setValue(tRelay::tValue);
 		};
 
+		struct RobotState{
+			enum class State{AUTONOMOUS,TELEOPERATED,TEST};
+
+		private:
+			State state;
+			bool enabled;
+
+		public:
+			State getState()const;
+			void setState(State);
+
+			bool getEnabled()const;
+			void setEnabled(bool);
+
+		};
+		
+		struct DriverStationInfo{
+		private:
+			std::string event_name;
+			std::string game_specific_message; 
+			MatchType_t match_type;
+			uint16_t match_number;
+			uint8_t replay_number;
+			AllianceStationID_t alliance_station_id;
+			double match_time; //seconds
+
+		public:
+			std::string getEventName()const;
+			void setEventName(std::string);
+
+			std::string getGameSpecificMessage()const;
+			void setGameSpecificMessage(std::string);
+
+			MatchType_t getMatchType()const;
+			void setMatchType(MatchType_t);
+
+			uint16_t getMatchNumber()const;
+			void setMatchNumber(uint16_t);
+
+			uint8_t getReplayNumber()const;
+			void setReplayNumber(uint8_t);
+
+			AllianceStationID_t getAllianceStationID()const;
+			void setAllianceStationID(AllianceStationID_t);
+
+			double getMatchTime()const;
+			void setMatchTime(double);
+		};
+
 		/**
 		 * \var bool user_button
 		 * \represents the state of the user button on the roborio
@@ -676,8 +726,10 @@ namespace hel{
         AnalogOutputs analog_outputs;
 		CANBus can_bus;
         DIOSystem digital_system;
+		DriverStationInfo driver_station_info;
         PWMSystem pwm_system;
 		RelaySystem relay_system;
+		RobotState robot_state;
 
         explicit RoboRIO() = default;
 
