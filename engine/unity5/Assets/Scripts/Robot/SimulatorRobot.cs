@@ -211,6 +211,7 @@ namespace Synthesis.Robot
 
                 resetMoveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"),
                     GetComponentInChildren<BRigidBody>().transform);
+                resetMoveArrows.name = "MoveArrows";
             }
             else
             {
