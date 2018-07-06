@@ -17,6 +17,9 @@ namespace BxDRobotExporter.Wizard
     {
         public static event OnWheelSetupPanelRemove remove;
         public static event OnWheelSetupPanelHover hover;
+        public static event OnWheelSlotMouseDown mouseDownHandler;
+        public static event OnWheelSlotMouseUp mouseUpHandler;
+        public static event OnWheelSetupPanelMouseLeave mouseLeavingHandler;
         public String name;
         public bool isRightWheel;
         public WheelSetupPanel()
@@ -29,11 +32,13 @@ namespace BxDRobotExporter.Wizard
             this.name = name;
             InitializeComponent();
 
+
             WheelTypeComboBox.SelectedIndex = ((int)WheelType) - 1;
             FrictionComboBox.SelectedIndex = 1;
 
             this.node = node;
             MainGroupBox.Text = node.ModelFileName;
+            this.backgroundLabel.Text = name;
 
             this.MouseClick += delegate (object sender, MouseEventArgs e)
             {
@@ -94,10 +99,32 @@ namespace BxDRobotExporter.Wizard
 
         private void WheelSetupPanel_MouseHover(object sender, EventArgs e)
         {
+           
             hover(name);
+         //   this.backgroundLabel.BackColor = System.Drawing.SystemColors.Highlight;
+        }
+
+        private void WheelSetupPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouseDownHandler(name);
+
+        }
+
+        private void WheelSetupPanel_MouseUp(object sender, MouseEventArgs e)
+        {
+            mouseUpHandler(name);
+        }
+
+        private void WheelSetupPanel_MouseLeave(object sender, EventArgs e)
+        {
+            
+            mouseLeavingHandler(name);
         }
     }
 
     public delegate string OnWheelSetupPanelRemove(string str);
+    public delegate string OnWheelSlotMouseDown(string str);
+    public delegate string OnWheelSlotMouseUp(string str);
     public delegate string OnWheelSetupPanelHover(string str);
+    public delegate string OnWheelSetupPanelMouseLeave(string str);
 }
