@@ -16,7 +16,8 @@ namespace BxDRobotExporter.Wizard
     /// </summary>
     public partial class DefineWheelsPage : UserControl, IWizardPage
     {
-        private int totalWeightKg = 0;
+        private float totalWeightKg = 0;
+        private bool preferMetric = false;
 
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
@@ -44,8 +45,13 @@ namespace BxDRobotExporter.Wizard
             leftSlots = new List<WheelSlotPanel>();
 
             NodeListBox.Enabled = false;
+
+            // Load weight information
+            preferMetric = Utilities.GUI.RMeta.PreferMetric;
+            SetWeightBoxValue(Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f));
+            WeightUnitSelector.SelectedIndex = Utilities.GUI.RMeta.PreferMetric ? 1 : 0;
+
             Initialize();
-            
         }
 
         /// <summary>
@@ -109,6 +115,7 @@ namespace BxDRobotExporter.Wizard
         {
             UpdateWeight();
             WizardData.Instance.weightKg = totalWeightKg;
+            WizardData.Instance.preferMetric = preferMetric;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
             {
@@ -236,13 +243,21 @@ namespace BxDRobotExporter.Wizard
         private void UpdateWeight()
         {
             if (WeightUnitSelector.SelectedIndex == 0)
-            {
-                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value) / 2.20462);
-            }
+                totalWeightKg = (float)WeightBox.Value / 2.20462f;
             else
-            {
-                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value));
-            }
+                totalWeightKg = (float)WeightBox.Value;
+
+            preferMetric = WeightUnitSelector.SelectedIndex == 1;
+        }
+
+        private void SetWeightBoxValue(float value)
+        {
+            if ((decimal)value > WeightBox.Maximum)
+                WeightBox.Value = WeightBox.Maximum;
+            else if ((decimal)value >= WeightBox.Minimum)
+                WeightBox.Value = (decimal)value;
+            else
+                WeightBox.Value = 0;
         }
 
         private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
