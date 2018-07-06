@@ -39,6 +39,7 @@
             // 
             // MainGroupBox
             // 
+            this.MainGroupBox.BackColor = System.Drawing.Color.Transparent;
             this.MainGroupBox.Controls.Add(this.FrictionComboBox);
             this.MainGroupBox.Controls.Add(this.FrictionLabel);
             this.MainGroupBox.Controls.Add(this.WheelTypeLabel);
