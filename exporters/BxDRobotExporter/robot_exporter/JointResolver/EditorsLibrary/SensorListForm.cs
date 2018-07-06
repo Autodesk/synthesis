@@ -20,7 +20,6 @@ namespace EditorsLibrary
 
             joint = passJoint;
             this.UpdateSensorList();
-            FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
             
             base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
         }
@@ -49,6 +48,7 @@ namespace EditorsLibrary
             {
                 joint.attachedSensors.Remove((RobotSensor) sensorListView.SelectedItems[0].Tag);
                 this.UpdateSensorList();
+                LegacyInterchange.LegacyEvents.OnRobotModified();
             }
         }
 
@@ -88,6 +88,5 @@ namespace EditorsLibrary
         {
             Close();
         }
-
     }
 }

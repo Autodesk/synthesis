@@ -44,6 +44,7 @@ namespace BxDRobotExporter.Wizard
             WizardPages.FinishClicked += delegate ()
             {
                 WizardData.Instance.Apply();
+                StandardAddInServer.Instance.PendingChanges = true;
                 Close();
             };
         }
