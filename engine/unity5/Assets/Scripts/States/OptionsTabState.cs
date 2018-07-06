@@ -17,8 +17,11 @@ namespace Synthesis.States
     {
         private GameObject graphics;
         private GameObject input;
+        private GameObject bindedKeyPanel;
         private GameObject settingsMode;
         private GameObject splashScreen;
+
+        private static bool inputPanelOn = false;
 
         /// <summary>
         /// Establishes references to required <see cref="GameObject"/>s.
@@ -27,12 +30,28 @@ namespace Synthesis.States
         {
             graphics = Auxiliary.FindGameObject("Graphics");
             input = Auxiliary.FindGameObject("Input");
+            bindedKeyPanel = Auxiliary.FindGameObject("BindedKeyPanel");
             settingsMode = Auxiliary.FindGameObject("SettingsMode");
             splashScreen = Auxiliary.FindGameObject("LoadSplash");
 
             OnInputButtonPressed();
 
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().GetLastSavedControls();
+        }
+
+        public override void Update()
+        {
+            if (KeyButton.Binded() && inputPanelOn)
+            {
+                if (KeyButton.Binded())
+                {
+                    bindedKeyPanel.SetActive(true);
+                }
+                else
+                {
+                    bindedKeyPanel.SetActive(false);
+                }
+            }
         }
 
         /// <summary>
@@ -43,6 +62,16 @@ namespace Synthesis.States
             graphics.SetActive(false);
             input.SetActive(true);
             settingsMode.SetActive(true);
+            inputPanelOn = true;
+        }
+
+        public void OnOkButtonPressed()
+        {
+            graphics.SetActive(false);
+            input.SetActive(true);
+            bindedKeyPanel.SetActive(false);
+            settingsMode.SetActive(true);
+            inputPanelOn = true;
         }
 
         /// <summary>
@@ -53,6 +82,7 @@ namespace Synthesis.States
             graphics.SetActive(true);
             input.SetActive(false);
             settingsMode.SetActive(true);
+            inputPanelOn = false;
         }
 
         /// <summary>
