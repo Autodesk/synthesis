@@ -73,7 +73,7 @@ namespace Synthesis.GUI.Scrollables
                 {
                     selectedEntry = entry;
                 }
-                DynamicCamera.MovingEnabled = false;
+                DynamicCamera.ControlEnabled = false;
             }
             else
             {

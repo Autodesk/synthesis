@@ -206,10 +206,11 @@ namespace Synthesis.Robot
                 //Where "save orientation" works
                 RotateRobot(robotStartOrientation);
 
+                if (resetMoveArrows != null)
+                    Destroy(resetMoveArrows);
+
                 resetMoveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"),
                     GetComponentInChildren<BRigidBody>().transform);
-
-                //GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5);
             }
             else
             {
@@ -247,9 +248,7 @@ namespace Synthesis.Robot
             if (UnityEngine.Input.GetKey(KeyCode.Return))
             {
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-
-                robotStartPosition = new Vector3(transform.GetChild(0).transform.localPosition.x - nodeToRobotOffset.x, robotStartPosition.y,
-                    transform.GetChild(0).transform.localPosition.z - nodeToRobotOffset.z);
+                robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
                 EndReset();
             }
         }
@@ -276,6 +275,7 @@ namespace Synthesis.Robot
             OnEndReset();
 
             Destroy(resetMoveArrows);
+            resetMoveArrows = null;
 
             foreach (Tracker t in GetComponentsInChildren<Tracker>())
                 t.Clear();
