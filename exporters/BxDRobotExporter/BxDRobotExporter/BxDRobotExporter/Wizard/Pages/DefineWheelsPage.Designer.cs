@@ -31,15 +31,12 @@
             this.DefineWheelsTitleLabel = new System.Windows.Forms.Label();
             this.DefineWheelsInstruction1 = new System.Windows.Forms.Label();
             this.WheelNodeGroupBox = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.NodeListBox = new System.Windows.Forms.ListBox();
             this.LeftWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.LeftWheelsGroup = new System.Windows.Forms.GroupBox();
-            this.WarningLabel = new System.Windows.Forms.Label();
             this.RobotInfoGroupBox = new System.Windows.Forms.GroupBox();
             this.MassTypeSelector = new System.Windows.Forms.ComboBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
+            this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.DriveTrainDropdown = new System.Windows.Forms.ComboBox();
             this.DriveTrainLabel = new System.Windows.Forms.Label();
             this.RightWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
@@ -47,7 +44,7 @@
             this.WheelNodeGroupBox.SuspendLayout();
             this.LeftWheelsGroup.SuspendLayout();
             this.RobotInfoGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).BeginInit();
             this.RightWheelsGroup.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,7 +62,7 @@
             // DefineWheelsInstruction1
             // 
             this.DefineWheelsInstruction1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.DefineWheelsInstruction1.Location = new System.Drawing.Point(408, 23);
+            this.DefineWheelsInstruction1.Location = new System.Drawing.Point(408, 10);
             this.DefineWheelsInstruction1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.DefineWheelsInstruction1.Name = "DefineWheelsInstruction1";
             this.DefineWheelsInstruction1.Size = new System.Drawing.Size(189, 86);
@@ -75,32 +72,23 @@
             // 
             // WheelNodeGroupBox
             // 
-            this.WheelNodeGroupBox.Controls.Add(this.label4);
             this.WheelNodeGroupBox.Controls.Add(this.NodeListBox);
             this.WheelNodeGroupBox.Controls.Add(this.DefineWheelsInstruction1);
             this.WheelNodeGroupBox.Location = new System.Drawing.Point(0, 110);
             this.WheelNodeGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.WheelNodeGroupBox.Name = "WheelNodeGroupBox";
             this.WheelNodeGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.WheelNodeGroupBox.Size = new System.Drawing.Size(613, 146);
+            this.WheelNodeGroupBox.Size = new System.Drawing.Size(613, 120);
             this.WheelNodeGroupBox.TabIndex = 3;
             this.WheelNodeGroupBox.TabStop = false;
             this.WheelNodeGroupBox.Text = "Select Wheel Joints";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(321, 123);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(0, 17);
-            this.label4.TabIndex = 5;
             // 
             // NodeListBox
             // 
             this.NodeListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NodeListBox.FormattingEnabled = true;
             this.NodeListBox.ItemHeight = 17;
-            this.NodeListBox.Location = new System.Drawing.Point(12, 22);
+            this.NodeListBox.Location = new System.Drawing.Point(8, 21);
             this.NodeListBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.NodeListBox.Name = "NodeListBox";
             this.NodeListBox.Size = new System.Drawing.Size(389, 72);
@@ -113,41 +101,33 @@
             this.LeftWheelsPanel.AutoScroll = true;
             this.LeftWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftWheelsPanel.Location = new System.Drawing.Point(4, 19);
-            this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
+            this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.LeftWheelsPanel.Name = "LeftWheelsPanel";
-            this.LeftWheelsPanel.Size = new System.Drawing.Size(305, 517);
+            this.LeftWheelsPanel.Size = new System.Drawing.Size(305, 547);
             this.LeftWheelsPanel.TabIndex = 4;
             this.LeftWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
             this.LeftWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragEnter);
             // 
             // LeftWheelsGroup
             // 
+            this.LeftWheelsGroup.AllowDrop = true;
             this.LeftWheelsGroup.Controls.Add(this.LeftWheelsPanel);
-            this.LeftWheelsGroup.Location = new System.Drawing.Point(0, 263);
+            this.LeftWheelsGroup.Location = new System.Drawing.Point(0, 233);
             this.LeftWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.LeftWheelsGroup.Name = "LeftWheelsGroup";
             this.LeftWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
-            this.LeftWheelsGroup.Size = new System.Drawing.Size(313, 540);
+            this.LeftWheelsGroup.Size = new System.Drawing.Size(313, 570);
             this.LeftWheelsGroup.TabIndex = 1;
             this.LeftWheelsGroup.TabStop = false;
             this.LeftWheelsGroup.Text = "Left Wheels";
-            // 
-            // WarningLabel
-            // 
-            this.WarningLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.WarningLabel.ForeColor = System.Drawing.Color.Red;
-            this.WarningLabel.Location = new System.Drawing.Point(5, 25);
-            this.WarningLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.WarningLabel.Name = "WarningLabel";
-            this.WarningLabel.Size = new System.Drawing.Size(592, 59);
-            this.WarningLabel.TabIndex = 5;
+            this.LeftWheelsGroup.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
+            this.LeftWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragEnter);
             // 
             // RobotInfoGroupBox
             // 
             this.RobotInfoGroupBox.BackColor = System.Drawing.SystemColors.Control;
             this.RobotInfoGroupBox.Controls.Add(this.MassTypeSelector);
-            this.RobotInfoGroupBox.Controls.Add(this.numericUpDown1);
-            this.RobotInfoGroupBox.Controls.Add(this.label3);
+            this.RobotInfoGroupBox.Controls.Add(this.massNumericUpDown);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainDropdown);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainLabel);
             this.RobotInfoGroupBox.Location = new System.Drawing.Point(0, 39);
@@ -174,30 +154,20 @@
             this.MassTypeSelector.TabIndex = 4;
             this.MassTypeSelector.SelectedIndexChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
             // 
-            // numericUpDown1
+            // massNumericUpDown
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(365, 22);
-            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.massNumericUpDown.Location = new System.Drawing.Point(365, 22);
+            this.massNumericUpDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.massNumericUpDown.Maximum = new decimal(new int[] {
             150,
             0,
             0,
             0});
-            this.numericUpDown1.MaximumSize = new System.Drawing.Size(133, 0);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(133, 22);
-            this.numericUpDown1.TabIndex = 3;
-            this.numericUpDown1.TextChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(265, 23);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(98, 17);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Robot Weight:";
+            this.massNumericUpDown.MaximumSize = new System.Drawing.Size(133, 0);
+            this.massNumericUpDown.Name = "massNumericUpDown";
+            this.massNumericUpDown.Size = new System.Drawing.Size(133, 22);
+            this.massNumericUpDown.TabIndex = 3;
+            this.massNumericUpDown.TextChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
             // 
             // DriveTrainDropdown
             // 
@@ -232,24 +202,27 @@
             this.RightWheelsPanel.AutoScroll = true;
             this.RightWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RightWheelsPanel.Location = new System.Drawing.Point(4, 19);
-            this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
+            this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.RightWheelsPanel.Name = "RightWheelsPanel";
-            this.RightWheelsPanel.Size = new System.Drawing.Size(284, 517);
+            this.RightWheelsPanel.Size = new System.Drawing.Size(284, 547);
             this.RightWheelsPanel.TabIndex = 7;
             this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
             this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragEnter);
             // 
             // RightWheelsGroup
             // 
+            this.RightWheelsGroup.AllowDrop = true;
             this.RightWheelsGroup.Controls.Add(this.RightWheelsPanel);
-            this.RightWheelsGroup.Location = new System.Drawing.Point(321, 263);
+            this.RightWheelsGroup.Location = new System.Drawing.Point(321, 233);
             this.RightWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.RightWheelsGroup.Name = "RightWheelsGroup";
             this.RightWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
-            this.RightWheelsGroup.Size = new System.Drawing.Size(292, 540);
+            this.RightWheelsGroup.Size = new System.Drawing.Size(292, 570);
             this.RightWheelsGroup.TabIndex = 2;
             this.RightWheelsGroup.TabStop = false;
             this.RightWheelsGroup.Text = "Right Wheels";
+            this.RightWheelsGroup.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
+            this.RightWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragEnter);
             // 
             // DefineWheelsPage
             // 
@@ -258,18 +231,16 @@
             this.Controls.Add(this.RightWheelsGroup);
             this.Controls.Add(this.LeftWheelsGroup);
             this.Controls.Add(this.RobotInfoGroupBox);
-            this.Controls.Add(this.WarningLabel);
             this.Controls.Add(this.WheelNodeGroupBox);
             this.Controls.Add(this.DefineWheelsTitleLabel);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "DefineWheelsPage";
             this.Size = new System.Drawing.Size(613, 804);
             this.WheelNodeGroupBox.ResumeLayout(false);
-            this.WheelNodeGroupBox.PerformLayout();
             this.LeftWheelsGroup.ResumeLayout(false);
             this.RobotInfoGroupBox.ResumeLayout(false);
             this.RobotInfoGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).EndInit();
             this.RightWheelsGroup.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -282,15 +253,12 @@
         private System.Windows.Forms.Label DefineWheelsInstruction1;
         private System.Windows.Forms.GroupBox WheelNodeGroupBox;
         private System.Windows.Forms.FlowLayoutPanel LeftWheelsPanel;
-        private System.Windows.Forms.Label WarningLabel;
         private System.Windows.Forms.GroupBox RobotInfoGroupBox;
         private System.Windows.Forms.ComboBox DriveTrainDropdown;
         private System.Windows.Forms.Label DriveTrainLabel;
         private System.Windows.Forms.FlowLayoutPanel RightWheelsPanel;
         private System.Windows.Forms.ListBox NodeListBox;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown massNumericUpDown;
         private System.Windows.Forms.GroupBox LeftWheelsGroup;
         private System.Windows.Forms.GroupBox RightWheelsGroup;
         private System.Windows.Forms.ComboBox MassTypeSelector;
