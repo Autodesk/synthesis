@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using Synthesis.FSM;
 using UnityEngine.Analytics;
 using Synthesis.GUI;
-using Synthesis.RobotCamera;
+using Synthesis.Camera;
 using Synthesis.States;
 using Synthesis.Utils;
 
@@ -103,8 +103,8 @@ namespace Synthesis.Sensors
             showSensorButton.SetActive(sensorManager.GetActiveSensors().Count > 0 && isHidingOutput);
 
             //Allows users to save their configuration using enter
-            if (isEditingAngle && Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
-            if (isEditingRange && Input.GetKeyDown(KeyCode.Return)) ToggleEditRange();
+            if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
+            if (isEditingRange && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditRange();
 
         }
 
@@ -348,7 +348,7 @@ namespace Synthesis.Sensors
 
                 //Add a sensor
                 AddUltrasonic();
-                if (SimUI.changeAnalytics)
+                if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
                     {
@@ -380,7 +380,7 @@ namespace Synthesis.Sensors
 
                 AddBeamBreaker();
 
-                if (SimUI.changeAnalytics)
+                if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
                     {
@@ -410,7 +410,7 @@ namespace Synthesis.Sensors
                 addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
                 AddGyro();
 
-                if (SimUI.changeAnalytics)
+                if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
                     {

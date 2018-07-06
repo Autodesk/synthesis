@@ -1,6 +1,6 @@
-﻿using Synthesis.InputControl;
-using Synthesis.InputControl.Enums;
-using Synthesis.InputControl.Inputs;
+﻿using Synthesis.Input;
+using Synthesis.Input.Enums;
+using Synthesis.Input.Inputs;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,7 +43,7 @@ namespace Synthesis.GUI
             //Currently DISABLED (hidden in the Unity menu) due to inconsistent toggle to key updates 08/2017
             if (selectedButton == this)
             {
-                CustomInput currentInput = InputControl.InputControl.currentInput(ignoreMouseMovement, useKeyModifiers);
+                CustomInput currentInput = Input.InputControl.currentInput(ignoreMouseMovement, useKeyModifiers);
 
                 if (currentInput != null)
                 {
@@ -106,7 +106,7 @@ namespace Synthesis.GUI
 
         public static bool Binded()
         {
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.W) || UnityEngine.Input.GetKeyDown(KeyCode.A) || UnityEngine.Input.GetKeyDown(KeyCode.S) || UnityEngine.Input.GetKeyDown(KeyCode.D))
             {
                 return true;
             }

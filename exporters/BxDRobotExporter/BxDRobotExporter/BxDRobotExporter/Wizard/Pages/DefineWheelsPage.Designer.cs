@@ -32,11 +32,13 @@
             this.DefineWheelsInstruction1 = new System.Windows.Forms.Label();
             this.WheelNodeGroupBox = new System.Windows.Forms.GroupBox();
             this.NodeListBox = new System.Windows.Forms.ListBox();
+            this.AutoFill = new System.Windows.Forms.Button();
             this.LeftWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.LeftWheelsGroup = new System.Windows.Forms.GroupBox();
             this.RobotInfoGroupBox = new System.Windows.Forms.GroupBox();
-            this.MassTypeSelector = new System.Windows.Forms.ComboBox();
-            this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.WeightUnitSelector = new System.Windows.Forms.ComboBox();
+            this.WeightBox = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
             this.DriveTrainDropdown = new System.Windows.Forms.ComboBox();
             this.DriveTrainLabel = new System.Windows.Forms.Label();
             this.RightWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
@@ -44,7 +46,7 @@
             this.WheelNodeGroupBox.SuspendLayout();
             this.LeftWheelsGroup.SuspendLayout();
             this.RobotInfoGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
             this.RightWheelsGroup.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,11 +71,13 @@
             this.DefineWheelsInstruction1.TabIndex = 2;
             this.DefineWheelsInstruction1.Text = "Click on items to the left to see the part they correspond to. Drag wheels from t" +
     "he list into their respective columns below.";
+            this.DefineWheelsInstruction1.Click += new System.EventHandler(this.DefineWheelsInstruction1_Click);
             // 
             // WheelNodeGroupBox
             // 
             this.WheelNodeGroupBox.Controls.Add(this.NodeListBox);
             this.WheelNodeGroupBox.Controls.Add(this.DefineWheelsInstruction1);
+            this.WheelNodeGroupBox.Controls.Add(this.AutoFill);
             this.WheelNodeGroupBox.Location = new System.Drawing.Point(0, 110);
             this.WheelNodeGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.WheelNodeGroupBox.Name = "WheelNodeGroupBox";
@@ -95,6 +99,16 @@
             this.NodeListBox.TabIndex = 4;
             this.NodeListBox.SelectedIndexChanged += new System.EventHandler(this.NodeListBox_SelectedIndexChanged);
             this.NodeListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NodeListBox_MouseDown);
+            // 
+            // AutoFill
+            // 
+            this.AutoFill.Location = new System.Drawing.Point(12, 110);
+            this.AutoFill.Margin = new System.Windows.Forms.Padding(4);
+            this.AutoFill.Name = "AutoFill";
+            this.AutoFill.Size = new System.Drawing.Size(283, 28);
+            this.AutoFill.TabIndex = 7;
+            this.AutoFill.Text = "AutoFill";
+            this.AutoFill.UseVisualStyleBackColor = true;
             // 
             // LeftWheelsPanel
             // 
@@ -126,8 +140,9 @@
             // RobotInfoGroupBox
             // 
             this.RobotInfoGroupBox.BackColor = System.Drawing.SystemColors.Control;
-            this.RobotInfoGroupBox.Controls.Add(this.MassTypeSelector);
-            this.RobotInfoGroupBox.Controls.Add(this.massNumericUpDown);
+            this.RobotInfoGroupBox.Controls.Add(this.WeightUnitSelector);
+            this.RobotInfoGroupBox.Controls.Add(this.WeightBox);
+            this.RobotInfoGroupBox.Controls.Add(this.label3);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainDropdown);
             this.RobotInfoGroupBox.Controls.Add(this.DriveTrainLabel);
             this.RobotInfoGroupBox.Location = new System.Drawing.Point(0, 39);
@@ -139,35 +154,42 @@
             this.RobotInfoGroupBox.TabStop = false;
             this.RobotInfoGroupBox.Text = "Drive Information";
             // 
-            // MassTypeSelector
+            // WeightUnitSelector
             // 
-            this.MassTypeSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.MassTypeSelector.DropDownWidth = 60;
-            this.MassTypeSelector.FormattingEnabled = true;
-            this.MassTypeSelector.Items.AddRange(new object[] {
+            this.WeightUnitSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.WeightUnitSelector.DropDownWidth = 60;
+            this.WeightUnitSelector.FormattingEnabled = true;
+            this.WeightUnitSelector.Items.AddRange(new object[] {
             "Pounds",
             "Kilograms"});
-            this.MassTypeSelector.Location = new System.Drawing.Point(510, 21);
-            this.MassTypeSelector.Margin = new System.Windows.Forms.Padding(4);
-            this.MassTypeSelector.Name = "MassTypeSelector";
-            this.MassTypeSelector.Size = new System.Drawing.Size(90, 24);
-            this.MassTypeSelector.TabIndex = 4;
-            this.MassTypeSelector.SelectedIndexChanged += new System.EventHandler(this.MetricCheckBox_CheckedChanged);
+            this.WeightUnitSelector.Location = new System.Drawing.Point(510, 19);
+            this.WeightUnitSelector.Margin = new System.Windows.Forms.Padding(4);
+            this.WeightUnitSelector.Name = "WeightUnitSelector";
+            this.WeightUnitSelector.Size = new System.Drawing.Size(90, 24);
+            this.WeightUnitSelector.TabIndex = 4;
             // 
-            // massNumericUpDown
+            // WeightBox
             // 
-            this.massNumericUpDown.Location = new System.Drawing.Point(365, 22);
-            this.massNumericUpDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.massNumericUpDown.Maximum = new decimal(new int[] {
+            this.WeightBox.Location = new System.Drawing.Point(365, 22);
+            this.WeightBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.WeightBox.Maximum = new decimal(new int[] {
             150,
             0,
             0,
             0});
-            this.massNumericUpDown.MaximumSize = new System.Drawing.Size(133, 0);
-            this.massNumericUpDown.Name = "massNumericUpDown";
-            this.massNumericUpDown.Size = new System.Drawing.Size(133, 22);
-            this.massNumericUpDown.TabIndex = 3;
-            this.massNumericUpDown.TextChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
+            this.WeightBox.Name = "WeightBox";
+            this.WeightBox.Size = new System.Drawing.Size(133, 22);
+            this.WeightBox.TabIndex = 3;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(265, 23);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(98, 17);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Robot Weight:";
             // 
             // DriveTrainDropdown
             // 
@@ -240,7 +262,7 @@
             this.LeftWheelsGroup.ResumeLayout(false);
             this.RobotInfoGroupBox.ResumeLayout(false);
             this.RobotInfoGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).EndInit();
             this.RightWheelsGroup.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -256,11 +278,13 @@
         private System.Windows.Forms.GroupBox RobotInfoGroupBox;
         private System.Windows.Forms.ComboBox DriveTrainDropdown;
         private System.Windows.Forms.Label DriveTrainLabel;
+        private System.Windows.Forms.Button AutoFill; 
         private System.Windows.Forms.FlowLayoutPanel RightWheelsPanel;
         private System.Windows.Forms.ListBox NodeListBox;
-        private System.Windows.Forms.NumericUpDown massNumericUpDown;
+        private System.Windows.Forms.NumericUpDown WeightBox;
+        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox LeftWheelsGroup;
         private System.Windows.Forms.GroupBox RightWheelsGroup;
-        private System.Windows.Forms.ComboBox MassTypeSelector;
+        private System.Windows.Forms.ComboBox WeightUnitSelector;
     }
 }
