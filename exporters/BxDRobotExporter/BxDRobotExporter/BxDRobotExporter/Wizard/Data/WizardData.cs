@@ -24,7 +24,13 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// The next free PWM port to assign a driver to.
         /// </summary>
-        public int nextFreePort = 3;
+        private int _nextFreePort = 3;
+        public int NextFreePort
+        {
+            get => _nextFreePort++;
+            private set => _nextFreePort = value;
+        }
+
 
         #region Nested enums and classes
         public enum WizardDriveTrain
