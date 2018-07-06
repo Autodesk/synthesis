@@ -167,6 +167,11 @@ namespace BxDRobotExporter.Wizard
         /// The total weight of the robot in kilograms
         /// </summary>
         public float weightKg;
+
+        /// <summary>
+        /// Whether weight units should be expressed in kilograms or pounds.
+        /// </summary>
+        public bool preferMetric;
         #endregion
 
         #region DefineWheelsPage
@@ -211,6 +216,7 @@ namespace BxDRobotExporter.Wizard
         public void Apply()
         {
             Utilities.GUI.RMeta.TotalWeightKg = weightKg;
+            Utilities.GUI.RMeta.PreferMetric = preferMetric;
 
             //WheelSetupPage
             foreach (WheelSetupData data in wheels)
