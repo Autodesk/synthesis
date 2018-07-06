@@ -72,6 +72,8 @@ namespace EditorsLibrary
             if (PreferMetric == (UnitBox.SelectedIndex == 1))
                 return;
 
+            PreferMetric = UnitBox.SelectedIndex == 1;
+
             if (UnitBox.SelectedIndex == 0)
                 WeightBox.Value = (decimal)((float)WeightBox.Value / 2.20462f);
             else
