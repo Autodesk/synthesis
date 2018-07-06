@@ -123,11 +123,16 @@ namespace Synthesis.Robot
         {
             base.UpdateTransform();
 
-            if (IsResetting)
-                return;
-
             // TODO: Utilize the state machine here if possible
-            if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
+
+            if (IsResetting)
+            {
+                BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
+
+                if (!rigidBody.GetCollisionObject().IsActive)
+                    rigidBody.GetCollisionObject().Activate();
+            }
+            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
             {
                 keyDownTime = Time.time;
             }
@@ -166,10 +171,10 @@ namespace Synthesis.Robot
         /// <param name="resetTransform"></param>
         public void BeginReset()
         {
-            BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
-
-            if (rigidBody != null && !rigidBody.GetCollisionObject().IsActive)
-                rigidBody.GetCollisionObject().Activate();
+            foreach (SimulatorRobot robot in State.SpawnedRobots)
+                foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
+                    if (rb != null && !rb.GetCollisionObject().IsActive)
+                        rb.GetCollisionObject().Activate();
 
             if (!State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
