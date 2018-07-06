@@ -35,12 +35,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.portTextBox = new System.Windows.Forms.TextBox();
             this.moduleTextBox = new System.Windows.Forms.TextBox();
-            this.saveButton = new System.Windows.Forms.Button();
+            this.SaveButton = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.secondaryBox = new System.Windows.Forms.CheckBox();
             this.coefficentTextBox = new System.Windows.Forms.TextBox();
             this.lblEquationParsed = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.CancelButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -99,16 +99,16 @@
             this.moduleTextBox.Size = new System.Drawing.Size(36, 20);
             this.moduleTextBox.TabIndex = 1;
             // 
-            // saveButton
+            // SaveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(155, 124);
-            this.saveButton.Margin = new System.Windows.Forms.Padding(2);
-            this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(134, 28);
-            this.saveButton.TabIndex = 0;
-            this.saveButton.Text = "Save Sensor";
-            this.saveButton.UseVisualStyleBackColor = true;
-            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            this.SaveButton.Location = new System.Drawing.Point(155, 124);
+            this.SaveButton.Margin = new System.Windows.Forms.Padding(2);
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(134, 28);
+            this.SaveButton.TabIndex = 0;
+            this.SaveButton.Text = "Save Sensor";
+            this.SaveButton.UseVisualStyleBackColor = true;
+            this.SaveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // label4
             // 
@@ -119,7 +119,6 @@
             this.label4.Size = new System.Drawing.Size(118, 13);
             this.label4.TabIndex = 7;
             this.label4.Text = "Polynomial Coefficients:";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // secondaryBox
             // 
@@ -132,7 +131,6 @@
             this.secondaryBox.Text = "Use Linear";
             this.secondaryBox.UseVisualStyleBackColor = true;
             this.secondaryBox.Visible = false;
-            this.secondaryBox.CheckedChanged += new System.EventHandler(this.secondaryBox_CheckedChanged);
             // 
             // coefficentTextBox
             // 
@@ -153,28 +151,30 @@
             this.lblEquationParsed.TabIndex = 11;
             this.lblEquationParsed.Text = "Polynomial...";
             // 
-            // button1
+            // CancelButton
             // 
-            this.button1.Location = new System.Drawing.Point(11, 124);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(134, 28);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "Cancel";
-            this.button1.UseVisualStyleBackColor = true;
+            this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.CancelButton.Location = new System.Drawing.Point(11, 124);
+            this.CancelButton.Margin = new System.Windows.Forms.Padding(2);
+            this.CancelButton.Name = "CancelButton";
+            this.CancelButton.Size = new System.Drawing.Size(134, 28);
+            this.CancelButton.TabIndex = 12;
+            this.CancelButton.Text = "Cancel";
+            this.CancelButton.UseVisualStyleBackColor = true;
             // 
             // EditSensorForm
             // 
-            this.AcceptButton = this.saveButton;
+            this.AcceptButton = this.SaveButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.CancelButton;
             this.ClientSize = new System.Drawing.Size(300, 168);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.lblEquationParsed);
             this.Controls.Add(this.coefficentTextBox);
             this.Controls.Add(this.secondaryBox);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.saveButton);
+            this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.moduleTextBox);
             this.Controls.Add(this.portTextBox);
             this.Controls.Add(this.label3);
@@ -188,6 +188,7 @@
             this.MinimizeBox = false;
             this.Name = "EditSensorForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sensor";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -202,11 +203,11 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox portTextBox;
         private System.Windows.Forms.TextBox moduleTextBox;
-        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox secondaryBox;
         private System.Windows.Forms.TextBox coefficentTextBox;
         private System.Windows.Forms.Label lblEquationParsed;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button CancelButton;
     }
 }

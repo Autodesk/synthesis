@@ -16,7 +16,6 @@ public partial class DriveChooser : Form
     public DriveChooser()
     {
         InitializeComponent();
-        FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
     }
 
     public bool Saved;
@@ -74,13 +73,13 @@ public partial class DriveChooser : Form
                 PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
                 if (pneumaticMeta != null)
                 {
-                    cmbPneumaticDiameter.SelectedIndex = (byte)pneumaticMeta.widthEnum;
-                    cmbPneumaticPressure.SelectedIndex = (byte)pneumaticMeta.pressureEnum;
+                    cmbPneumaticDiameter.SelectedIndex = (int)pneumaticMeta.widthEnum;
+                    cmbPneumaticPressure.SelectedIndex = (int)pneumaticMeta.pressureEnum;
                 }
                 else
                 {
-                    cmbPneumaticDiameter.SelectedIndex = (byte)PneumaticDiameter.MEDIUM;
-                    cmbPneumaticPressure.SelectedIndex = (byte)PneumaticPressure.HIGH;
+                    cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
+                    cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.HIGH;
                 }
             }
             {
@@ -89,17 +88,16 @@ public partial class DriveChooser : Form
                 {
                     try
                     {
-                        // TODO:  This is a really sketchy hack and I don't even know where the cat is.
-                        cmbWheelType.SelectedIndex = (byte)wheelMeta.type;
-                        cmbFrictionLevel.SelectedIndex = (byte)wheelMeta.GetFrictionLevel();
+                        cmbWheelType.SelectedIndex = (int)wheelMeta.type;
+                        cmbFrictionLevel.SelectedIndex = (int)wheelMeta.GetFrictionLevel();
                     }
                     catch
                     {
                         // If an exception was thrown (System.ArguementOutOfRangeException) it means
                         // the user did not choose a wheel type when they were configuring the 
                         // wheel joint
-                        cmbWheelType.SelectedIndex = (byte)WheelType.NORMAL;
-                        cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
+                        cmbWheelType.SelectedIndex = (int)WheelType.NORMAL;
+                        cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
                     }
 
                     chkBoxDriveWheel.Checked = wheelMeta.isDriveWheel;
@@ -107,15 +105,15 @@ public partial class DriveChooser : Form
                 }
                 else
                 {
-                    cmbWheelType.SelectedIndex = (byte)WheelType.NOT_A_WHEEL;
-                    cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
+                    cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
+                    cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
                 }
             }
             {
                 ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
                 if (elevatorMeta != null)
                 {
-                    cmbStages.SelectedIndex = (byte)elevatorMeta.type;
+                    cmbStages.SelectedIndex = (int)elevatorMeta.type;
                 }
             }
             #endregion
@@ -128,14 +126,14 @@ public partial class DriveChooser : Form
             txtLowLimit.Value = txtLowLimit.Minimum;
             txtHighLimit.Value = txtHighLimit.Minimum;
 
-            cmbPneumaticDiameter.SelectedIndex = (byte)PneumaticDiameter.MEDIUM;
-            cmbPneumaticPressure.SelectedIndex = (byte)PneumaticPressure.MEDIUM;
+            cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
+            cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
 
-            cmbWheelType.SelectedIndex = (byte)WheelType.NOT_A_WHEEL;
-            cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
+            cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
+            cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
             chkBoxDriveWheel.Checked = false;
 
-            cmbStages.SelectedIndex = (byte)ElevatorType.NOT_MULTI;
+            cmbStages.SelectedIndex = (int)ElevatorType.NOT_MULTI;
         }
         
         PrepLayout();
@@ -159,18 +157,18 @@ public partial class DriveChooser : Form
             return true;
 
         if (pneumatic != null && 
-            (cmbPneumaticDiameter.SelectedIndex != (byte) pneumatic.widthEnum ||
-            cmbPneumaticPressure.SelectedIndex != (byte) pneumatic.pressureEnum))
+            (cmbPneumaticDiameter.SelectedIndex != (int)pneumatic.widthEnum ||
+            cmbPneumaticPressure.SelectedIndex != (int)pneumatic.pressureEnum))
             return true;
 
         if (wheel != null &&
-            (cmbWheelType.SelectedIndex != (byte) wheel.type ||
-            cmbFrictionLevel.SelectedIndex != (byte) Math.Min(Math.Floor(wheel.forwardExtremeValue / 4), 2) || //ayy lmao
+            (cmbWheelType.SelectedIndex != (int)wheel.type ||
+            cmbFrictionLevel.SelectedIndex != (int)wheel.GetFrictionLevel() ||
             chkBoxDriveWheel.Checked != wheel.isDriveWheel))
             return true;
 
         if (elevator != null &&
-            cmbStages.SelectedIndex != (byte) elevator.type)
+            cmbStages.SelectedIndex != (int)elevator.type)
             return true;
 
         //If going from "NOT A WHEEL" to a wheel
@@ -358,6 +356,7 @@ public partial class DriveChooser : Form
         }
 
         Saved = true;
+        LegacyInterchange.LegacyEvents.OnRobotModified();
         Close();
     }
 

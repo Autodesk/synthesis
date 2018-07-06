@@ -35,7 +35,15 @@ namespace BxDRobotExporter
                 else
                     return pendingChanges;
             }
-            set => pendingChanges = value;
+            set
+            {
+                if (SaveButton != null)
+                {
+                    SaveButton.Enabled = value; // Disable save button if changes have been saved
+                }
+
+                pendingChanges = value;
+            }
         }
         private bool pendingChanges = false;
         
@@ -145,32 +153,36 @@ namespace BxDRobotExporter
 
             ControlDefinitions ControlDefs = MainApplication.CommandManager.ControlDefinitions;
 
-            SetupPanel = ExporterTab.RibbonPanels.Add("Setup", "BxD:RobotExporter:SetupPanel", ClientID);
+            SetupPanel = ExporterTab.RibbonPanels.Add("Start Over", "BxD:RobotExporter:SetupPanel", ClientID);
             SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "BxD:RobotExporter:SettingsPanel", ClientID);
             FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
+
+            // Reset positioning of panels
+            SettingsPanel.Reposition("BxD:RobotExporter:SetupPanel", false);
+            FilePanel.Reposition("BxD:RobotExporter:SettingsPanel", false);
             #endregion
 
             #region Setup Buttons
             //Begin Wizard Export
-            WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", WizardExportIconSmall, WizardExportIconLarge);
+            WizardExportButton = ControlDefs.AddButtonDefinition("Quick Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", WizardExportIconSmall, WizardExportIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
 
             //Set Weight
-            SetWeightButton = ControlDefs.AddButtonDefinition("Set Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            SetWeightButton = ControlDefs.AddButtonDefinition("Robot Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
             SetWeightButton.OnExecute += SetWeight_OnExecute;
             SetWeightButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot information to your assembly file.", SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save Configuration", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot configuration to your assembly file for future exporting.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
             SaveButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(SaveButton, true);
 
             //Export Button
-            ExportButton = ControlDefs.AddButtonDefinition("Export", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
+            ExportButton = ControlDefs.AddButtonDefinition("Export to Synthesis", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot's model to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
             ExportButton.OnExecute += ExportButton_OnExecute;
             ExportButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(ExportButton, true);
@@ -211,7 +223,7 @@ namespace BxDRobotExporter
             MainApplication.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange += UIEvents_OnEnvironmentChange;
             MainApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
             MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
-            LegacyInterchange.LegacyEvents.RobotModified += new Action( () => { pendingChanges = true; } );
+            LegacyInterchange.LegacyEvents.RobotModified += new Action( () => { PendingChanges = true; } );
             #endregion 
 
             #endregion
@@ -292,8 +304,6 @@ namespace BxDRobotExporter
             Utilities.GUI.jointEditorPane1.SelectedJoint += JointEditorPane_SelectedJoint;
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
             
-            SaveButton.Enabled = false;
-            
             EnvironmentEnabled = true;
 
             // Load robot skeleton and prepare UI
@@ -302,12 +312,17 @@ namespace BxDRobotExporter
                 ForceQuitExporter();
                 return;
             }
-            
+
+            // No changes are pending after skeleton is loaded
+            PendingChanges = false;
+
             // If fails to load existing data, restart wizard
             if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
                 try
                 {
+                    // By default, save button should be enabled (changes pending)
+                    PendingChanges = true;
                     BeginWizardExport_OnExecute(null);
                 }
                 catch (ExporterFailedException)
@@ -320,9 +335,6 @@ namespace BxDRobotExporter
                 // Joint data is already loaded, reload panels in UI
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
-                
-                // Enable save button
-                SaveButton.Enabled = true;
             }
         }
 
@@ -337,8 +349,7 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            if (Utilities.GUI.SkeletonBase != null)
-                Utilities.GUI.WarnUnsaved(false);
+            WarnIfUnsaved(false);
 
             // Close add-in
             AsmDocument = null;
@@ -440,22 +451,18 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if (!PendingChanges || this.WarnUnsaved())
+            if (WarnIfUnsaved())
             {
-                if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton())
-                {
-                    SaveButton.Enabled = true;
-
-                    Wizard.WizardForm wizard = new Wizard.WizardForm();
-                    Utilities.HideDockableWindows();
-                    wizard.ShowDialog();
-                    Utilities.GUI.ReloadPanels();
-                    Utilities.ShowDockableWindows();
-                }
-                else
-                {
+                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                     throw new ExporterFailedException("Failed to build robot skeleton.");
-                }
+
+                Wizard.WizardForm wizard = new Wizard.WizardForm();
+                Utilities.HideDockableWindows();
+
+                wizard.ShowDialog();
+                    
+                Utilities.GUI.ReloadPanels();
+                Utilities.ShowDockableWindows();
             }
         }
 
@@ -476,7 +483,8 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveButton_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.SaveRobotData();
+            if (Utilities.GUI.SaveRobotData())
+                PendingChanges = false;
         }
 
         /// <summary>
@@ -497,7 +505,8 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SetWeight_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.PromptRobotWeight();
+            if (Utilities.GUI.PromptRobotWeight())
+                PendingChanges = true;
         }
 
 
@@ -785,21 +794,29 @@ namespace BxDRobotExporter
                 button.ProgressiveToolTip.IsProgressive = true;
             }
             button.ProgressiveToolTip.Title = title;
-        }        
+        }
 
-        public bool WarnUnsaved()
+        /// <summary>
+        /// If the user has unsaved work, warn them that they are about to exit with unsaved work
+        /// </summary>
+        /// <returns>True if the user wishes to continue without saving/no saving is needed.</returns>
+        public bool WarnIfUnsaved(bool allowCancel = true)
         {
-            switch (MessageBox.Show("Would you like to save your robot?", "Save", MessageBoxButtons.YesNoCancel))
+            if (!PendingChanges)
+                return true; // No changes to save
+
+            DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
+                                                      allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
+
+            if (saveResult == DialogResult.Yes)
             {
-                case DialogResult.Yes:
-                    SaveButton_OnExecute(null);
-                    return true;
-                case DialogResult.No:
-                    return true;
-                case DialogResult.Cancel:
-                    return false;
+                SaveButton_OnExecute(null);
+                return !PendingChanges;
             }
-            return false;
+            else if (saveResult == DialogResult.No)
+                return true; // Continue without saving
+            else
+                return false; // Don't continue
         }
 
         /// <summary>
