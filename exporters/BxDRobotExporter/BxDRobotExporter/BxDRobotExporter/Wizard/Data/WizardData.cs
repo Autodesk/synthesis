@@ -24,7 +24,13 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// The next free PWM port to assign a driver to.
         /// </summary>
-        public int nextFreePort = 3;
+        private int _nextFreePort = 3;
+        public int NextFreePort
+        {
+            get => _nextFreePort++;
+            private set => _nextFreePort = value;
+        }
+
 
         #region Nested enums and classes
         public enum WizardDriveTrain
@@ -162,11 +168,16 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public int wheelCount;
 
-        //Mass Info
+        //Weight Info
         /// <summary>
-        /// The total mass of the robot
+        /// The total weight of the robot in kilograms
         /// </summary>
-        public float mass;
+        public float weightKg;
+
+        /// <summary>
+        /// Whether weight units should be expressed in kilograms or pounds.
+        /// </summary>
+        public bool preferMetric;
         #endregion
 
         #region DefineWheelsPage
@@ -210,8 +221,8 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Apply()
         {
-            // TODO: Masses will need to be calculated after exporting the mesh
-            Utilities.GUI.TotalMass = this.mass;
+            Utilities.GUI.RMeta.TotalWeightKg = weightKg;
+            Utilities.GUI.RMeta.PreferMetric = preferMetric;
 
             //WheelSetupPage
             foreach (WheelSetupData data in wheels)

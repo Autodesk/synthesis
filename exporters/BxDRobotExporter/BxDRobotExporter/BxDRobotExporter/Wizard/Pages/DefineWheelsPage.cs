@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +18,9 @@ namespace BxDRobotExporter.Wizard
     /// </summary>
     public partial class DefineWheelsPage : UserControl, IWizardPage
     {
-        /// <summary>
-        /// Active counter of how many <see cref="RigidNode_Base"/>s have been selected
-        /// </summary>
-        private int checkedCount = 0;
-        private int totalMass = 0;
-        private double inputMass = 0;
+        private float totalWeightKg = 0;
+        private bool preferMetric = false;
+
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
@@ -49,10 +47,14 @@ namespace BxDRobotExporter.Wizard
             leftSlots = new List<WheelSlotPanel>();
 
             NodeListBox.Enabled = false;
-            Initialize();
-            
-        }
 
+            // Load weight information
+            preferMetric = Utilities.GUI.RMeta.PreferMetric;
+            SetWeightBoxValue(Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f));
+            WeightUnitSelector.SelectedIndex = Utilities.GUI.RMeta.PreferMetric ? 1 : 0;
+
+            Initialize();
+        }
 
         /// <summary>
         /// Sets the limits of <see cref="WheelCountUpDown"/> and validates input.
@@ -90,7 +92,7 @@ namespace BxDRobotExporter.Wizard
             }
             OnInvalidatePage();
         }
-        
+
         /// <summary>
         /// Validates input
         /// </summary>
@@ -111,7 +113,9 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
-            WizardData.Instance.mass = totalMass;
+            UpdateWeight();
+            WizardData.Instance.weightKg = totalWeightKg;
+            WizardData.Instance.preferMetric = preferMetric;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
             {
@@ -136,8 +140,10 @@ namespace BxDRobotExporter.Wizard
                 {
                     if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
                     {
-                        NodeListBox.Items.Add(node.ModelFileName);
-                        listItems.Add(node.ModelFileName, node);
+                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+                        NodeListBox.Items.Add(readableName);
+                        listItems.Add(readableName, node);
                     }
                 }
             }
@@ -147,8 +153,10 @@ namespace BxDRobotExporter.Wizard
                 {
                     if (node.GetParent().GetParent() != null)
                     {
-                        NodeListBox.Items.Add(node.ModelFileName);
-                        listItems.Add(node.ModelFileName, node);
+                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+                        NodeListBox.Items.Add(readableName);
+                        listItems.Add(readableName, node);
                     }
                 }
             }
@@ -229,20 +237,24 @@ namespace BxDRobotExporter.Wizard
         private bool _initialized = false;
         #endregion
 
-        private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void UpdateWeight()
         {
-            UpdateMassCount();
+            if (WeightUnitSelector.SelectedIndex == 0)
+                totalWeightKg = (float)WeightBox.Value / 2.20462f;
+            else
+                totalWeightKg = (float)WeightBox.Value;
+
+            preferMetric = WeightUnitSelector.SelectedIndex == 1;
         }
 
-        private void UpdateMassCount()
+        private void SetWeightBoxValue(float value)
         {
-            if (this.MassTypeSelector.SelectedIndex == 0)
-            {
-                totalMass = (int)Math.Round(Convert.ToDouble(this.massNumericUpDown.Value) / 2.20462);
-            } else
-            {
-                totalMass = (int)Math.Round(Convert.ToDouble(this.massNumericUpDown.Value));
-            }
+            if ((decimal)value > WeightBox.Maximum)
+                WeightBox.Value = WeightBox.Maximum;
+            else if ((decimal)value >= WeightBox.Minimum)
+                WeightBox.Value = (decimal)value;
+            else
+                WeightBox.Value = 0;
         }
 
         private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
@@ -702,10 +714,10 @@ namespace BxDRobotExporter.Wizard
             }
             catch (Exception) { }
         }
-       
-        private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
+
+        private void DefineWheelsInstruction1_Click(object sender, EventArgs e)
         {
-            UpdateMassCount();
+
         }
     }
 }

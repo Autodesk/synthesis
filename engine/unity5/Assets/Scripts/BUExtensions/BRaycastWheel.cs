@@ -11,7 +11,7 @@ namespace Synthesis.BUExtensions
 {
     public class BRaycastWheel : MonoBehaviour
     {
-        private RigidNode.RigidNode node;
+        private RN.RigidNode node;
         private Vector3 axis;
         private BRaycastRobot robot;
         private BulletSharp.Math.Vector3 basePoint;
@@ -74,11 +74,11 @@ namespace Synthesis.BUExtensions
         /// Creates a wheel and attaches it to the parent BRaycastVehicle.
         /// </summary>
         /// <param name="node"></param>
-        public void CreateWheel(RigidNode.RigidNode node)
+        public void CreateWheel(RN.RigidNode node)
         {
             this.node = node;
 
-            RigidNode.RigidNode parent = (RigidNode.RigidNode)node.GetParent();
+            RN.RigidNode parent = (RN.RigidNode)node.GetParent();
             robot = parent.MainObject.GetComponent<BRaycastRobot>();
 
             if (robot == null)
