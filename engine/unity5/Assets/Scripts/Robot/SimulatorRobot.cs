@@ -1,6 +1,7 @@
 ﻿using BulletSharp;
 using BulletUnity;
 using Synthesis.Camera;
+using Synthesis.Configuration;
 using Synthesis.DriverPractice;
 using Synthesis.FEA;
 using Synthesis.GUI;
@@ -37,6 +38,8 @@ namespace Synthesis.Robot
 
         private float keyDownTime = 0f;
         private RobotCameraManager robotCameraManager;
+
+        private GameObject resetMoveArrows;
 
         /// <summary>
         /// Initializes sensors and driver practice data.
@@ -178,7 +181,6 @@ namespace Synthesis.Robot
 
             if (!State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
-                Debug.Log(State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState);
                 IsResetting = true;
 
                 foreach (RigidNode n in RootNode.ListAllNodes())
@@ -204,11 +206,12 @@ namespace Synthesis.Robot
                 //Where "save orientation" works
                 RotateRobot(robotStartOrientation);
 
-                GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5);
-                if (IsResetting)
-                {
-                    Debug.Log("is resetting!");
-                }
+                if (resetMoveArrows != null)
+                    Destroy(resetMoveArrows);
+
+                resetMoveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"),
+                    GetComponentInChildren<BRigidBody>().transform);
+                resetMoveArrows.name = "MoveArrows";
             }
             else
             {
@@ -246,9 +249,7 @@ namespace Synthesis.Robot
             if (UnityEngine.Input.GetKey(KeyCode.Return))
             {
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-
-                robotStartPosition = new Vector3(transform.GetChild(0).transform.localPosition.x - nodeToRobotOffset.x, robotStartPosition.y,
-                    transform.GetChild(0).transform.localPosition.z - nodeToRobotOffset.z);
+                robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
                 EndReset();
             }
         }
@@ -273,6 +274,9 @@ namespace Synthesis.Robot
             }
 
             OnEndReset();
+
+            Destroy(resetMoveArrows);
+            resetMoveArrows = null;
 
             foreach (Tracker t in GetComponentsInChildren<Tracker>())
                 t.Clear();
