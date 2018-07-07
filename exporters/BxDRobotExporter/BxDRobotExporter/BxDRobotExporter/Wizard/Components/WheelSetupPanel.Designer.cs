@@ -127,7 +127,6 @@
             this.backgroundLabel.Tag = "";
             this.backgroundLabel.Text = "node__.bxda";
             this.backgroundLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.backgroundLabel.MouseLeave += new System.EventHandler(this.WheelSetupPanel_MouseLeave);
             this.backgroundLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.backgroundLabel_MouseMove);
             this.backgroundLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
@@ -140,7 +139,7 @@
             this.removeButton.TabIndex = 2;
             this.removeButton.Text = "Remove";
             this.removeButton.UseVisualStyleBackColor = true;
-            this.removeButton.Click += new System.EventHandler(this.button1_Click);
+            this.removeButton.Click += new System.EventHandler(this.remove_Click);
             this.removeButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
             this.removeButton.MouseHover += new System.EventHandler(this.WheelSetupPanel_MouseHover);
             this.removeButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
