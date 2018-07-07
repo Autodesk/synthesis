@@ -15,13 +15,13 @@ namespace BxDRobotExporter.Wizard
     /// </summary>
     public partial class WheelSetupPanel : UserControl
     {
-        public static event OnWheelSetupPanelRemove remove;
-        public static event OnWheelSetupPanelHover hover;
-        public static event OnWheelSlotMouseDown mouseDownHandler;
-        public static event OnWheelSlotMouseUp mouseUpHandler;
-        public static event OnWheelSetupPanelMouseLeave mouseLeavingHandler;
-        public String name;
-        public bool isRightWheel;
+        public static event OnWheelSetupPanelRemove remove;// sends the remove event to the class that actually needs it
+        public static event OnWheelSetupPanelHover hover;// sends the hover event to the class that actually needs it
+        public static event OnWheelSlotMouseDown mouseDownHandler;// sends the mouse down event to the class that actually needs it(WheelSlot)
+        public static event OnWheelSlotMouseUp mouseUpHandler;// sends the mouse up event to the class that actually needs it(WheelSlot)
+        public static event OnWheelSetupPanelMouseMove mouseMoveHandler;// sends the mouse moving event to the class that actually needs it(WheelSlot)
+        public String name;// the name of the node, makes removal/ adding easier for the definewheel class
+        public bool isRightWheel;// helps in automatically assigning PWM ports
         public WheelSetupPanel()
         {
             InitializeComponent();
@@ -29,10 +29,9 @@ namespace BxDRobotExporter.Wizard
 
         public WheelSetupPanel(RigidNode_Base node, String name, WizardData.WizardWheelType WheelType = WizardData.WizardWheelType.NORMAL)
         {
-            this.name = name;
+            this.name = name;// sets the internal name so we can easily work with the panels
             InitializeComponent();
-
-
+            
             WheelTypeComboBox.SelectedIndex = ((int)WheelType) - 1;
             FrictionComboBox.SelectedIndex = 1;
 
@@ -87,47 +86,37 @@ namespace BxDRobotExporter.Wizard
         {
             _WheelTypeChangedInternal?.Invoke();
         }
-
-        private void ViewInventorButton_Click(object sender, EventArgs e)
+        private void remove_Click(object sender, EventArgs e)// handles the remove button click
         {
-            StandardAddInServer.Instance.WizardSelect(node);
-        }
-        private void button1_Click(object sender, EventArgs e)
-        {
-            remove(name);
+            remove(name);// sends the remove event so we can remove this panel
         }
 
-        private void WheelSetupPanel_MouseHover(object sender, EventArgs e)
+        private void WheelSetupPanel_MouseHover(object sender, EventArgs e)// handles mouse hover events
         {
            
-            hover(name);
-         //   this.backgroundLabel.BackColor = System.Drawing.SystemColors.Highlight;
+            hover(name);// sends the hover event so we can highlight the node in Inventor
+         //   this.backgroundLabel.BackColor = System.Drawing.SystemColors.Highlight;// highlights the background, could make it easier for user to see what panel is what node in Inventor
         }
 
-        private void WheelSetupPanel_MouseDown(object sender, MouseEventArgs e)
+        private void WheelSetupPanel_MouseDown(object sender, MouseEventArgs e)// handles mouse down events
         {
-            mouseDownHandler(name);
-
+            mouseDownHandler(name);// sends that there was a mouse down event and the name of the panel, allows us to disable the drag/ drop
         }
 
-        private void WheelSetupPanel_MouseUp(object sender, MouseEventArgs e)
+        private void WheelSetupPanel_MouseUp(object sender, MouseEventArgs e)// handles mouse up events
         {
-            mouseUpHandler(name);
+            mouseUpHandler(name);// sends that there was a mouse up event and the name of the panel, allows us to enable to=he drag/ drop
         }
 
-        private void WheelSetupPanel_MouseLeave(object sender, EventArgs e)
+        private void backgroundLabel_MouseMove(object sender, MouseEventArgs e)// handles mouse movement over the background
         {
-        }
-
-        private void backgroundLabel_MouseMove(object sender, MouseEventArgs e)
-        {
-            mouseLeavingHandler(name);
+            mouseMoveHandler(name);// sends that there was a mouse move event and the name of the panel, this helps in activating the drag and drop if the mouse is already down
         }
     }
 
-    public delegate string OnWheelSetupPanelRemove(string str);
-    public delegate string OnWheelSlotMouseDown(string str);
-    public delegate string OnWheelSlotMouseUp(string str);
-    public delegate string OnWheelSetupPanelHover(string str);
-    public delegate string OnWheelSetupPanelMouseLeave(string str);
+    public delegate string OnWheelSetupPanelRemove(string str);// sends the remove event to other classes
+    public delegate string OnWheelSlotMouseDown(string str);// sends the mouse down event to other classes
+    public delegate string OnWheelSlotMouseUp(string str);// sends the mouse down event to other classes
+    public delegate string OnWheelSetupPanelHover(string str);// sends the mouse hover event to other classes
+    public delegate string OnWheelSetupPanelMouseMove(string str);// sends the mouse move event to other classes
 }
