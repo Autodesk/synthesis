@@ -146,7 +146,7 @@ public class LocalMultiplayer : StateBehaviour<MainState> {
         if (addRobotWindow.activeSelf)
         {
             addRobotWindow.SetActive(false);
-            DynamicCamera.MovingEnabled = true;
+            DynamicCamera.ControlEnabled = true;
         }
         else
         {

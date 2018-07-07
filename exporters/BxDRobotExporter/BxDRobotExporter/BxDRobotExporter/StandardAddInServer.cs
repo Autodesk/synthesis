@@ -312,30 +312,20 @@ namespace BxDRobotExporter
                 ForceQuitExporter();
                 return;
             }
-
-            // No changes are pending after skeleton is loaded
-            PendingChanges = false;
-
+            
             // If fails to load existing data, restart wizard
             if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
-                try
-                {
-                    // By default, save button should be enabled (changes pending)
-                    PendingChanges = true;
-                    BeginWizardExport_OnExecute(null);
-                }
-                catch (ExporterFailedException)
-                {
-                    ForceQuitExporter();
-                }
+                Wizard.WizardForm wizard = new Wizard.WizardForm();
+                wizard.ShowDialog();
+                PendingChanges = true; // Force save button on since no data has been saved to this file
             }
             else
-            {
-                // Joint data is already loaded, reload panels in UI
-                Utilities.GUI.ReloadPanels();
-                Utilities.ShowDockableWindows();
-            }
+                PendingChanges = false; // No changes are pending if data has been loaded
+
+            // Reload panels in UI
+            Utilities.GUI.ReloadPanels();
+            Utilities.ShowDockableWindows();
         }
 
         private async void ForceQuitExporter()
@@ -454,7 +444,7 @@ namespace BxDRobotExporter
             if (WarnIfUnsaved())
             {
                 if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
-                    throw new ExporterFailedException("Failed to build robot skeleton.");
+                    return;
 
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
                 Utilities.HideDockableWindows();
