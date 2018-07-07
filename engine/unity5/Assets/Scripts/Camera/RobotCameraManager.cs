@@ -347,15 +347,7 @@ namespace Synthesis.Camera
                 {
                     CurrentCamera.transform.Rotate(new Vector3(-UnityEngine.Input.GetAxis("CameraVertical") * rotationSpeed, UnityEngine.Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
                 }
-                else if (!IsChangingHeight) //Control horizontal plane transform
-                {
-                    CurrentCamera.transform.Translate(new Vector3(UnityEngine.Input.GetAxis("CameraHorizontal") * positionSpeed, 0, UnityEngine.Input.GetAxis("CameraVertical") * positionSpeed) * Time.deltaTime);
-                }
-                else //Control height transform
-                {
-                    CurrentCamera.transform.Translate(new Vector3(0, UnityEngine.Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
-                }
-                //Update configuration info of the current camera
+
                 CurrentCamera.GetComponent<RobotCamera>().UpdateConfiguration();
             }
         }

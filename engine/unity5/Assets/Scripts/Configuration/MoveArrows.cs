@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Synthesis.Configuration
 {
-    public class MoveArrows : StateBehaviour<MainState>
+    public class MoveArrows : MonoBehaviour
     {
         private const float Scale = 0.075f;
         private Vector3 initialScale;
@@ -46,6 +46,12 @@ namespace Synthesis.Configuration
                 transform.forward;
 
         /// <summary>
+        /// Called when the arrows are dragged.
+        /// The input parameter is the position delta of the <see cref="MoveArrows"/>.
+        /// </summary>
+        public Action<Vector3> Translate { get; set; }
+
+        /// <summary>
         /// Sets the initial position and rotation.
         /// </summary>
         private void Start()
@@ -65,6 +71,7 @@ namespace Synthesis.Configuration
                 return;
 
             Ray mouseRay = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
+            Vector3 currentArrowPoint;
 
             if (activeArrow == ArrowType.Center)
             {
@@ -73,25 +80,19 @@ namespace Synthesis.Configuration
                 float enter;
                 plane.Raycast(mouseRay, out enter);
 
-                Vector3 position = mouseRay.GetPoint(enter);
-
-                State.TransposeRobot(mouseRay.GetPoint(enter) -
-                    State.ActiveRobot.GetComponentInChildren<BRigidBody>().GetCollisionObject().WorldTransform.Origin.ToUnity());
+                currentArrowPoint = mouseRay.GetPoint(enter);
             }
             else
             {
                 Vector3 closestPointScreenRay;
-                Vector3 closestPointArrowRay;
-
-                if (!Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out closestPointArrowRay,
-                    mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection))
-                    return;
-
-                if (lastArrowPoint != Vector3.zero)
-                    State.TransposeRobot(closestPointArrowRay - lastArrowPoint);
-
-                lastArrowPoint = closestPointArrowRay;
+                Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out currentArrowPoint,
+                    mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection);
             }
+
+            if (lastArrowPoint != Vector3.zero)
+                Translate?.Invoke(currentArrowPoint - lastArrowPoint);
+
+            lastArrowPoint = currentArrowPoint;
         }
 
         /// <summary>

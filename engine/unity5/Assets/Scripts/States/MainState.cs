@@ -586,9 +586,9 @@ namespace Synthesis.States
         /// <summary>
         /// Shifts the active robot by a set transposition vector
         /// </summary>
-        public void TransposeRobot(Vector3 transposition)
+        public void TranslateRobot(Vector3 transposition)
         {
-            ActiveRobot.TransposeRobot(transposition);
+            ActiveRobot.TranslateRobot(transposition);
         }
 
         /// <summary>
