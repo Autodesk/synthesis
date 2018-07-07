@@ -4,6 +4,7 @@ using Synthesis.FSM;
 using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Configuration;
 
 namespace Synthesis.Camera
 {
@@ -40,12 +41,12 @@ namespace Synthesis.Camera
         //The indicator object is originally under robot camera list in unity scene
         public GameObject CameraIndicator;
         GameObject showCameraButton;
+        GameObject moveArrows;
 
         //Camera configuration
         GameObject configureRobotCameraButton;
         GameObject configureCameraPanel;
         //Toggle between horizontal plane and height
-        GameObject cameraConfigurationModeButton;
         GameObject changeCameraNodeButton;
         Text cameraNodeText;
         GameObject cancelNodeSelectionButton;
@@ -116,7 +117,6 @@ namespace Synthesis.Camera
             configureCameraPanel = Auxiliary.FindObject(canvas, "CameraConfigurationPanel");
             configureRobotCameraButton = Auxiliary.FindObject(canvas, "CameraConfigurationButton");
             changeCameraNodeButton = Auxiliary.FindObject(configureCameraPanel, "ChangeNodeButton");
-            cameraConfigurationModeButton = Auxiliary.FindObject(configureCameraPanel, "ConfigurationMode");
             cameraNodeText = Auxiliary.FindObject(configureCameraPanel, "NodeText").GetComponent<Text>();
             cancelNodeSelectionButton = Auxiliary.FindObject(configureCameraPanel, "CancelNodeSelectionButton");
 
@@ -234,30 +234,35 @@ namespace Synthesis.Camera
                 //Update the node where current camera is attached to
                 cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
+
+                AttachMoveArrows();
             }
             else
             {
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
                 ResetConfigurationWindow();
                 dynamicCamera.SwitchToState(preConfigCamState);
+
+                Destroy(moveArrows);
+                moveArrows = null;
             }
         }
 
-        /// <summary>
-        /// Toggle between changing position along horizontal plane or changing height
-        /// </summary>
-        public void ToggleConfigurationMode()
-        {
-            robotCameraManager.IsChangingHeight = !robotCameraManager.IsChangingHeight;
-            if (robotCameraManager.IsChangingHeight)
-            {
-                cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Horizontal Plane";
-            }
-            else
-            {
-                cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
-            }
-        }
+        ///// <summary>
+        ///// Toggle between changing position along horizontal plane or changing height
+        ///// </summary>
+        //public void ToggleConfigurationMode()
+        //{
+        //    robotCameraManager.IsChangingHeight = !robotCameraManager.IsChangingHeight;
+        //    if (robotCameraManager.IsChangingHeight)
+        //    {
+        //        cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Horizontal Plane";
+        //    }
+        //    else
+        //    {
+        //        cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+        //    }
+        //}
 
         /// <summary>
         /// Going into the state of selecting a new node and confirming it
@@ -388,7 +393,6 @@ namespace Synthesis.Camera
             {
                 robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
             }
-
         }
 
         /// <summary>
@@ -468,12 +472,10 @@ namespace Synthesis.Camera
 
             showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
             showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Range";
-            cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
 
             cameraAnglePanel.SetActive(false);
             cameraFOVPanel.SetActive(false);
             configureCameraPanel.SetActive(false);
-
         }
 
         /// <summary>
@@ -495,5 +497,23 @@ namespace Synthesis.Camera
         }
         #endregion
 
+        /// <summary>
+        /// Attaches <see cref="MoveArrows"/> to the camera indicator.
+        /// </summary>
+        private void AttachMoveArrows()
+        {
+            if (moveArrows != null)
+                Destroy(moveArrows);
+
+            // TODO:
+            // Fix the issue were the camera moves when driving and dragging the arrows.
+            // Fix the issue where arrows are still visible if you click "show/hide camera" while configuring.
+            // Fix the issue where the arrows are visible by the robot camera.
+
+            moveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+            moveArrows.name = "CameraMoveArrows";
+            moveArrows.transform.parent = robotCameraManager.CurrentCamera.transform;
+            moveArrows.GetComponent<MoveArrows>().Translate = (translation) => robotCameraManager.CurrentCamera.transform.Translate(translation, Space.World);
+        }
     }
 }

@@ -206,12 +206,7 @@ namespace Synthesis.Robot
                 //Where "save orientation" works
                 RotateRobot(robotStartOrientation);
 
-                if (resetMoveArrows != null)
-                    Destroy(resetMoveArrows);
-
-                resetMoveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"),
-                    GetComponentInChildren<BRigidBody>().transform);
-                resetMoveArrows.name = "MoveArrows";
+                AttachMoveArrows();
             }
             else
             {
@@ -242,7 +237,7 @@ namespace Synthesis.Robot
                     UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f);
 
                 if (!transposition.Equals(Vector3.zero))
-                    TransposeRobot(transposition);
+                    TranslateRobot(transposition);
             }
 
             //Update robotStartPosition when hit enter
@@ -252,6 +247,20 @@ namespace Synthesis.Robot
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
                 EndReset();
             }
+        }
+
+        /// <summary>
+        /// Attaches the movement arrows to the robot.
+        /// </summary>
+        private void AttachMoveArrows()
+        {
+            if (resetMoveArrows != null)
+                Destroy(resetMoveArrows);
+
+            resetMoveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"),
+                GetComponentInChildren<BRigidBody>().transform);
+            resetMoveArrows.name = "ResetMoveArrows";
+            resetMoveArrows.GetComponent<MoveArrows>().Translate = TranslateRobot;
         }
 
         /// <summary>
@@ -285,7 +294,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// Shifts the robot by a set position vector
         /// </summary>
-        public void TransposeRobot(Vector3 transposition)
+        public void TranslateRobot(Vector3 transposition)
         {
             foreach (RigidNode n in RootNode.ListAllNodes())
             {
