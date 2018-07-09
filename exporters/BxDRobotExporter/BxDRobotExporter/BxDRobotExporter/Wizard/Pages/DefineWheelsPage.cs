@@ -489,13 +489,12 @@ namespace BxDRobotExporter.Wizard
             // Find the wheel control located below the mouse and insert before that node
             foreach (Control c in wheelPanel.Controls)
             {
-                int relativePosition = c.PointToClient(MousePosition).Y;
-                if (relativePosition < 0)
+                if (c.PointToClient(MousePosition).Y < c.Height / 2) // Check if mouse is above the center of the control
                 {
                     WheelSlotPanel slotPanel = (WheelSlotPanel)c;
                     if (slotPanel != null)
                     {
-                        SetWheelSide(nodeName, side, slotPanel.SetupPanel.NodeName);
+                        SetWheelSide(nodeName, side, slotPanel.SetupPanel.NodeName); // Insert above the control
                         return;
                     }
                 }
