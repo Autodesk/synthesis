@@ -54,7 +54,7 @@ namespace Synthesis.Input
         /// Gets or sets the axis smooth coefficient. Smooth coefficient is used in GetAxis method to make the movement a little smoothed as well as in Input.GetAxis
         /// </summary>
         /// <value>Axis smooth coefficient.</value>
-        public static float smoothCoefficient
+        public static float SmoothCoefficient
         {
             get
             {
@@ -85,7 +85,7 @@ namespace Synthesis.Input
         /// Gets or sets the joystick threshold.
         /// </summary>
         /// <value>Joystick threshold.</value>
-        public static float joystickThreshold
+        public static float JoystickThreshold
         {
             get
             {
@@ -116,7 +116,7 @@ namespace Synthesis.Input
         /// Gets or sets the mouse sensitivity.
         /// </summary>
         /// <value>Mouse sensitivity.</value>
-        public static float mouseSensitivity
+        public static float MouseSensitivity
         {
             get
             {
@@ -142,7 +142,7 @@ namespace Synthesis.Input
         /// Gets or sets a value indicating that mouse Y is inverted.
         /// </summary>
         /// <value><c>true</c> if mouse Y is inverted; otherwise, <c>false</c>.</value>
-        public static bool invertMouseY
+        public static bool InvertMouseY
         {
             get
             {
@@ -183,14 +183,14 @@ namespace Synthesis.Input
         /// <param name="controlIndex">Integer index to specify which player is active.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static KeyMapping setKey(string name, int controlIndex, CustomInput primary, bool isTankDrive)
+        public static KeyMapping SetKey(string name, int controlIndex, CustomInput primary, bool isTankDrive)
         {
-            return mPlayerList[controlIndex].setKey(name, argToInput(primary), null, isTankDrive);
+            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
         }
 
-        public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, bool isTankDrive)
+        public static KeyMapping SetKey(string name, int controlIndex, KeyCode primary, bool isTankDrive)
         {
-            return mPlayerList[controlIndex].setKey(name, argToInput(primary), null, isTankDrive);
+            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
         }
 
         /// <summary>
@@ -203,16 +203,16 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, CustomInput secondary, bool isTankDrive)
+        public static KeyMapping SetKey(string name, int controlIndex, KeyCode primary, CustomInput secondary, bool isTankDrive)
         {
-            return mPlayerList[controlIndex].setKey(name, argToInput(primary), argToInput(secondary), isTankDrive);
+            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), ArgToInput(secondary), isTankDrive);
         }
 
         /// <summary>
         /// Gets the list of ALL the keys.
         /// </summary>
         /// <returns>List of keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> getKeysList()
+        public static ReadOnlyCollection<KeyMapping> GetKeysList()
         {
             mKeysList.Clear();
             foreach (Player player in mPlayerList)
@@ -230,7 +230,7 @@ namespace Synthesis.Input
         /// </summary>
         /// <param name="controlIndex"></param>
         /// <returns>List of a player's keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
+        public static ReadOnlyCollection<KeyMapping> GetPlayerKeys(int controlIndex)
         {
             // Set the activePlayerIndex equal to the selected player (controlIndex)
             activePlayerIndex = controlIndex;
@@ -241,7 +241,7 @@ namespace Synthesis.Input
         /// Gets the list of the active player's keys. 
         /// </summary>
         /// <returns>The list of the active player's keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> getActivePlayerKeys()
+        public static ReadOnlyCollection<KeyMapping> GetActivePlayerKeys()
         {
             return mPlayerList[activePlayerIndex].GetActiveList();
         }
@@ -251,7 +251,7 @@ namespace Synthesis.Input
         #region Synthesis Setup Axes
 
         /// <summary>
-        /// Creates new <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
+        /// Creates new <see cref="Input.Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
         /// </summary>
         /// <returns>Created Axis.</returns>
         /// <param name="name">Axis name.</param>
@@ -259,9 +259,9 @@ namespace Synthesis.Input
         /// <param name="negative">Name of negative KeyMapping.</param>
         /// <param name="positive">Name of positive KeyMapping.</param>
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static Axis setAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive, bool isTankDrive)
+        public static Axis SetAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive, bool isTankDrive)
         {
-            return mPlayerList[controlIndex].setAxis(name, negative, positive, isTankDrive);
+            return mPlayerList[controlIndex].SetAxis(name, negative, positive, isTankDrive);
         }
 
         #endregion
@@ -274,7 +274,7 @@ namespace Synthesis.Input
 
         #region Setup/Remove Key Variations (With Different Arguments)
 
-        #region setKey with different arguments
+        #region SetKey with different arguments
 
         #region Level 1
         /// <summary>
@@ -283,9 +283,9 @@ namespace Synthesis.Input
         /// <returns>Created KeyMapping.</returns>
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary)
+        public static KeyMapping SetKey(string name, KeyCode primary)
         {
-            return setKey(name, argToInput(primary));
+            return SetKey(name, ArgToInput(primary));
         }
 
         /// <summary>
@@ -294,9 +294,9 @@ namespace Synthesis.Input
         /// <returns>Created KeyMapping.</returns>
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary)
+        public static KeyMapping SetKey(string name, MouseAxis primary)
         {
-            return setKey(name, argToInput(primary));
+            return SetKey(name, ArgToInput(primary));
         }
 
         /// <summary>
@@ -305,9 +305,9 @@ namespace Synthesis.Input
         /// <returns>Created KeyMapping.</returns>
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary)
+        public static KeyMapping SetKey(string name, MouseButton primary)
         {
-            return setKey(name, argToInput(primary));
+            return SetKey(name, ArgToInput(primary));
         }
         #endregion
 
@@ -323,9 +323,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, KeyCode secondary)
+        public static KeyMapping SetKey(string name, CustomInput primary, KeyCode secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -335,9 +335,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseAxis secondary)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseAxis secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -347,9 +347,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseButton secondary)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseButton secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
         #endregion
 
@@ -363,9 +363,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, CustomInput secondary)
+        public static KeyMapping SetKey(string name, KeyCode primary, CustomInput secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -375,9 +375,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, KeyCode secondary)
+        public static KeyMapping SetKey(string name, KeyCode primary, KeyCode secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -387,9 +387,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseAxis secondary)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseAxis secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -399,9 +399,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseButton secondary)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseButton secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
         #endregion
 
@@ -415,9 +415,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, CustomInput secondary)
+        public static KeyMapping SetKey(string name, MouseAxis primary, CustomInput secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -427,9 +427,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, KeyCode secondary)
+        public static KeyMapping SetKey(string name, MouseAxis primary, KeyCode secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -439,9 +439,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseAxis secondary)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseAxis secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -451,9 +451,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseButton secondary)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseButton secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
         #endregion
 
@@ -467,9 +467,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, CustomInput secondary)
+        public static KeyMapping SetKey(string name, MouseButton primary, CustomInput secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -479,9 +479,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, KeyCode secondary)
+        public static KeyMapping SetKey(string name, MouseButton primary, KeyCode secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -491,9 +491,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseAxis secondary)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseAxis secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -503,9 +503,9 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseButton secondary)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseButton secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary));
         }
         #endregion
 
@@ -526,9 +526,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, CustomInput secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, CustomInput primary, CustomInput secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -539,9 +539,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, CustomInput secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, CustomInput primary, CustomInput secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -552,9 +552,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, CustomInput secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, CustomInput primary, CustomInput secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -569,9 +569,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, KeyCode secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, CustomInput primary, KeyCode secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -582,9 +582,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, KeyCode secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, CustomInput primary, KeyCode secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -595,9 +595,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, KeyCode secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, CustomInput primary, KeyCode secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -608,9 +608,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, KeyCode secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, CustomInput primary, KeyCode secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -625,9 +625,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseAxis secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseAxis secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -638,9 +638,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseAxis secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseAxis secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -651,9 +651,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseAxis secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseAxis secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -664,9 +664,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseAxis secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseAxis secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -681,9 +681,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseButton secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseButton secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -694,9 +694,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseButton secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseButton secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -707,9 +707,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseButton secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseButton secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -720,9 +720,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary, MouseButton secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, CustomInput primary, MouseButton secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -741,9 +741,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, CustomInput secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, KeyCode primary, CustomInput secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -754,9 +754,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, CustomInput secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, KeyCode primary, CustomInput secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -767,9 +767,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, CustomInput secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, KeyCode primary, CustomInput secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -780,9 +780,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, CustomInput secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, KeyCode primary, CustomInput secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -797,9 +797,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, KeyCode secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, KeyCode primary, KeyCode secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -810,9 +810,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, KeyCode secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, KeyCode primary, KeyCode secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -823,9 +823,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, KeyCode secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, KeyCode primary, KeyCode secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -836,9 +836,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, KeyCode secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, KeyCode primary, KeyCode secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -853,9 +853,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseAxis secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseAxis secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -866,9 +866,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseAxis secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseAxis secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -879,9 +879,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseAxis secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseAxis secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -892,9 +892,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseAxis secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseAxis secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -909,9 +909,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseButton secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseButton secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -922,9 +922,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseButton secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseButton secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -935,9 +935,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseButton secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseButton secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -948,9 +948,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, KeyCode primary, MouseButton secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, KeyCode primary, MouseButton secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -969,9 +969,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, CustomInput secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, CustomInput secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -982,9 +982,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, CustomInput secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, CustomInput secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -995,9 +995,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, CustomInput secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, CustomInput secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1008,9 +1008,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, CustomInput secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, CustomInput secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -1025,9 +1025,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, KeyCode secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, KeyCode secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1038,9 +1038,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, KeyCode secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, KeyCode secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1051,9 +1051,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, KeyCode secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, KeyCode secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1064,9 +1064,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, KeyCode secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, KeyCode secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -1081,9 +1081,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseAxis secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseAxis secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1094,9 +1094,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseAxis secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseAxis secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1107,9 +1107,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseAxis secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseAxis secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1120,9 +1120,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseAxis secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseAxis secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -1137,9 +1137,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseButton secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseButton secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1150,9 +1150,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseButton secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseButton secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1163,9 +1163,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseButton secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseButton secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1176,9 +1176,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseAxis primary, MouseButton secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, MouseAxis primary, MouseButton secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -1197,9 +1197,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, CustomInput secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, MouseButton primary, CustomInput secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1210,9 +1210,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, CustomInput secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, MouseButton primary, CustomInput secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1223,9 +1223,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, CustomInput secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, MouseButton primary, CustomInput secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1236,9 +1236,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, CustomInput secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, MouseButton primary, CustomInput secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -1253,9 +1253,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, KeyCode secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, MouseButton primary, KeyCode secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1266,9 +1266,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, KeyCode secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, MouseButton primary, KeyCode secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1279,9 +1279,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, KeyCode secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, MouseButton primary, KeyCode secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1292,9 +1292,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, KeyCode secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, MouseButton primary, KeyCode secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -1309,9 +1309,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseAxis secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseAxis secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1322,9 +1322,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseAxis secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseAxis secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1335,9 +1335,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseAxis secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseAxis secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1348,9 +1348,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseAxis secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseAxis secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -1365,9 +1365,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseButton secondary, CustomInput third)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseButton secondary, CustomInput third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1378,9 +1378,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseButton secondary, KeyCode third)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseButton secondary, KeyCode third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1391,9 +1391,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseButton secondary, MouseAxis third)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseButton secondary, MouseAxis third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
 
         /// <summary>
@@ -1404,9 +1404,9 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, MouseButton primary, MouseButton secondary, MouseButton third)
+        public static KeyMapping SetKey(string name, MouseButton primary, MouseButton secondary, MouseButton third)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary), argToInput(third));
+            return SetKey(name, ArgToInput(primary), ArgToInput(secondary), ArgToInput(third));
         }
         #endregion
 
@@ -1422,7 +1422,7 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Converted CustomInput.</returns>
         /// <param name="arg">Some kind of argument.</param>
-        private static CustomInput argToInput(CustomInput arg)
+        private static CustomInput ArgToInput(CustomInput arg)
         {
             return arg;
         }
@@ -1432,7 +1432,7 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Converted CustomInput.</returns>
         /// <param name="arg">Some kind of argument.</param>
-        private static CustomInput argToInput(KeyCode arg)
+        private static CustomInput ArgToInput(KeyCode arg)
         {
             return new KeyboardInput(arg);
         }
@@ -1442,7 +1442,7 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Converted CustomInput.</returns>
         /// <param name="arg">Some kind of argument.</param>
-        private static CustomInput argToInput(MouseAxis arg)
+        private static CustomInput ArgToInput(MouseAxis arg)
         {
             return new MouseInput(arg);
         }
@@ -1452,7 +1452,7 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Converted CustomInput.</returns>
         /// <param name="arg">Some kind of argument.</param>
-        private static CustomInput argToInput(MouseButton arg)
+        private static CustomInput ArgToInput(MouseButton arg)
         {
             return new MouseInput(arg);
         }
@@ -1468,7 +1468,7 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="third">Third input.</param>
-        public static KeyMapping setKey(string name, CustomInput primary = null, CustomInput secondary = null, CustomInput third = null)
+        public static KeyMapping SetKey(string name, CustomInput primary = null, CustomInput secondary = null, CustomInput third = null)
         {
             KeyMapping outKey = null;
 
@@ -1493,13 +1493,13 @@ namespace Synthesis.Input
         /// Removes <see cref="KeyMapping"/> by name.
         /// </summary>
         /// <param name="name">KeyMapping name.</param>
-        public static void removeKey(string name)
+        public static void RemoveKey(string name)
         {
             KeyMapping outKey = null;
 
             if (mKeysMap.TryGetValue(name, out outKey))
             {
-                removeKey(outKey);
+                RemoveKey(outKey);
             }
         }
 
@@ -1507,7 +1507,7 @@ namespace Synthesis.Input
         /// Removes specified <see cref="KeyMapping"/>.
         /// </summary>
         /// <param name="key">KeyMapping instance.</param>
-        public static void removeKey(KeyMapping key)
+        public static void RemoveKey(KeyMapping key)
         {
             mKeysList.Remove(key);
             mKeysMap.Remove(key.name);
@@ -1517,7 +1517,7 @@ namespace Synthesis.Input
         /// Gets <see cref="KeyMapping"/> by name.
         /// </summary>
         /// <param name="name">KeyMapping name.</param>
-        public static KeyMapping key(string name)
+        public static KeyMapping Key(string name)
         {
             KeyMapping outKey = null;
 
@@ -1542,13 +1542,13 @@ namespace Synthesis.Input
 
         #region Setup/Remove Axes Variations (With Different Arguments)
         /// <summary>
-        /// Create new <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
+        /// Create new <see cref="Input.Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
         /// </summary>
         /// <returns>Created Axis.</returns>
         /// <param name="name">Axis name.</param>
         /// <param name="negative">Name of negative KeyMapping.</param>
         /// <param name="positive">Name of positive KeyMapping.</param>
-        public static Axis setAxis(string name, string negative, string positive)
+        public static Axis SetAxis(string name, string negative, string positive)
         {
             KeyMapping negativeKey = null;
             KeyMapping positiveKey = null;
@@ -1567,17 +1567,17 @@ namespace Synthesis.Input
                 return null;
             }
 
-            return setAxis(name, negativeKey, positiveKey);
+            return SetAxis(name, negativeKey, positiveKey);
         }
 
         /// <summary>
-        /// Create new <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
+        /// Create new <see cref="Input.Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
         /// </summary>
         /// <returns>Created Axis.</returns>
         /// <param name="name">Axis name.</param>
         /// <param name="negative">Negative KeyMapping.</param>
         /// <param name="positive">Positive KeyMapping.</param>
-        public static Axis setAxis(string name, KeyMapping negative, KeyMapping positive)
+        public static Axis SetAxis(string name, KeyMapping negative, KeyMapping positive)
         {
             Axis outAxis = null;
 
@@ -1597,34 +1597,34 @@ namespace Synthesis.Input
         }
 
         /// <summary>
-        /// Removes <see cref="Axis"/> by name.
+        /// Removes <see cref="Input.Axis"/> by name.
         /// </summary>
         /// <param name="name">Axis name.</param>
-        public static void removeAxis(string name)
+        public static void RemoveAxis(string name)
         {
             Axis outAxis = null;
 
             if (mAxesMap.TryGetValue(name, out outAxis))
             {
-                removeAxis(outAxis);
+                RemoveAxis(outAxis);
             }
         }
 
         /// <summary>
-        /// Removes specified <see cref="Axis"/>.
+        /// Removes specified <see cref="Input.Axis"/>.
         /// </summary>
         /// <param name="axis">Axis instance.</param>
-        public static void removeAxis(Axis axis)
+        public static void RemoveAxis(Axis axis)
         {
             mAxesList.Remove(axis);
             mAxesMap.Remove(axis.Name);
         }
 
         /// <summary>
-        /// Gets <see cref="Axis"/> by name.
+        /// Gets <see cref="Input.Axis"/> by name.
         /// </summary>
         /// <param name="name">Axis name.</param>
-        public static Axis axis(string name)
+        public static Axis Axis(string name)
         {
             Axis outAxis = null;
 
@@ -1641,7 +1641,7 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>List of axes.</returns>
         [Obsolete("Please use getAxesList instead of this. Obsoletion date: 2014-12-28. It will be removed after 1 year")]
-        public static List<Axis> getAxes()
+        public static List<Axis> GetAxes()
         {
             return mAxesList;
         }
@@ -1650,7 +1650,7 @@ namespace Synthesis.Input
         /// Gets the list of axes.
         /// </summary>
         /// <returns>List of axes.</returns>
-        public static ReadOnlyCollection<Axis> getAxesList()
+        public static ReadOnlyCollection<Axis> GetAxesList()
         {
             return mAxesList.AsReadOnly();
         }
@@ -1663,7 +1663,7 @@ namespace Synthesis.Input
         /// Gets the last measured linear acceleration of a device in three-dimensional space.
         /// </summary>
         /// <value>Last measured linear acceleration of a device in three-dimensional space.</value>
-        public static Vector3 acceleration
+        public static Vector3 Acceleration
         {
             get
             {
@@ -1675,7 +1675,7 @@ namespace Synthesis.Input
         /// Gets the number of acceleration measurements which occurred during last frame.
         /// </summary>
         /// <value>Number of acceleration measurements which occurred during last frame.</value>
-        public static int accelerationEventCount
+        public static int AccelerationEventCount
         {
             get
             {
@@ -1687,7 +1687,7 @@ namespace Synthesis.Input
         /// Gets the list of acceleration measurements which occurred during the last frame. (Read Only) (Allocates temporary variables).
         /// </summary>
         /// <value>List of acceleration measurements which occurred during the last frame. (Read Only) (Allocates temporary variables).</value>
-        public static AccelerationEvent[] accelerationEvents
+        public static AccelerationEvent[] AccelerationEvents
         {
             get
             {
@@ -1699,7 +1699,7 @@ namespace Synthesis.Input
         /// Gets a value indicating that any key or mouse button currently held down.
         /// </summary>
         /// <value><c>true</c> if key or mouse button currently held down; otherwise, <c>false</c>.</value>
-        public static bool anyKey
+        public static bool AnyKey
         {
             get
             {
@@ -1711,7 +1711,7 @@ namespace Synthesis.Input
         /// Gets a value indicating that if it is a first frame the user hits any key or mouse button.
         /// </summary>
         /// <value><c>true</c> if user press any key during this frame; otherwise, <c>false</c>.</value>
-        public static bool anyKeyDown
+        public static bool AnyKeyDown
         {
             get
             {
@@ -1723,7 +1723,7 @@ namespace Synthesis.Input
         /// Property for accessing compass (handheld devices only).
         /// </summary>
         /// <value>Handheld device compass.</value>
-        public static Compass compass
+        public static Compass Compass
         {
             get
             {
@@ -1735,7 +1735,7 @@ namespace Synthesis.Input
         /// This property controls if input sensors should be compensated for screen orientation.
         /// </summary>
         /// <value><c>true</c> if input sensors should be compensated for screen orientation; otherwise, <c>false</c>.</value>
-        public static bool compensateSensors
+        public static bool CompensateSensors
         {
             get
             {
@@ -1747,7 +1747,7 @@ namespace Synthesis.Input
         /// The current text input position used by IMEs to open windows.
         /// </summary>
         /// <value>Text input position.</value>
-        public static Vector2 compositionCursorPos
+        public static Vector2 CompositionCursorPos
         {
             get
             {
@@ -1759,7 +1759,7 @@ namespace Synthesis.Input
         /// The current IME composition string being typed by the user.
         /// </summary>
         /// <value>Current IME composition string.</value>
-        public static string compositionString
+        public static string CompositionString
         {
             get
             {
@@ -1773,7 +1773,7 @@ namespace Synthesis.Input
         /// <returns>Currently active input.</returns>
         /// <param name="ignoreMouseMovement">If set to <c>true</c> ignore mouse movement.</param>
         /// <param name="useModifiers">If set to <c>true</c> handle key modifiers.</param>
-        public static CustomInput currentInput(bool ignoreMouseMovement = true, bool useModifiers = false)
+        public static CustomInput CurrentInput(bool ignoreMouseMovement = true, bool useModifiers = false)
         {
             KeyModifier modifiers = KeyModifier.NoModifier;
 
@@ -1930,7 +1930,7 @@ namespace Synthesis.Input
         /// Gets the device physical orientation as reported by OS.
         /// </summary>
         /// <value>Device orientation.</value>
-        public static DeviceOrientation deviceOrientation
+        public static DeviceOrientation DeviceOrientation
         {
             get
             {
@@ -2364,7 +2364,7 @@ namespace Synthesis.Input
         /// Returns default gyroscope.
         /// </summary>
         /// <value>Default gyroscope.</value>
-        public static Gyroscope gyro
+        public static Gyroscope Gyro
         {
             get
             {
@@ -2376,7 +2376,7 @@ namespace Synthesis.Input
         /// Controls enabling and disabling of IME input composition.
         /// </summary>
         /// <value>IME composition mode.</value>
-        public static IMECompositionMode imeCompositionMode
+        public static IMECompositionMode ImeCompositionMode
         {
             get
             {
@@ -2393,7 +2393,7 @@ namespace Synthesis.Input
         /// Gets a value indicating that the user have an IME keyboard input source selected.
         /// </summary>
         /// <value><c>true</c> if IME keyboard input source selected; otherwise, <c>false</c>.</value>
-        public static bool imeIsSelected
+        public static bool ImeIsSelected
         {
             get
             {
@@ -2405,7 +2405,7 @@ namespace Synthesis.Input
         /// Returns the keyboard input entered this frame. (Read Only)
         /// </summary>
         /// <value>Keyboard input.</value>
-        public static string inputString
+        public static string InputString
         {
             get
             {
@@ -2417,7 +2417,7 @@ namespace Synthesis.Input
         /// Returns device location (handheld devices only).
         /// </summary>
         /// <value>Handheld device location.</value>
-        public static LocationService location
+        public static LocationService Location
         {
             get
             {
@@ -2429,7 +2429,7 @@ namespace Synthesis.Input
         /// Gets the current mouse position in pixel coordinates.
         /// </summary>
         /// <value>Current mouse position.</value>
-        public static Vector3 mousePosition
+        public static Vector3 MousePosition
         {
             get
             {
@@ -2441,7 +2441,7 @@ namespace Synthesis.Input
         /// Gets a value indicating that mouse is present.
         /// </summary>
         /// <value><c>true</c> if mouse is present; otherwise, <c>false</c>.</value>
-        public static bool mousePresent
+        public static bool MousePresent
         {
             get
             {
@@ -2453,7 +2453,7 @@ namespace Synthesis.Input
         /// Gets or sets a value indicating that the system handles multiple touches.
         /// </summary>
         /// <value><c>true</c> if system handles multiple touches; otherwise, <c>false</c>.</value>
-        public static bool multiTouchEnabled
+        public static bool MultiTouchEnabled
         {
             get
             {
@@ -2470,7 +2470,7 @@ namespace Synthesis.Input
         /// Gets or sets the preferred input device. (Any, Keyboard and mouse, joystick).
         /// </summary>
         /// <value>Preferred input device.</value>
-        public static InputDevice preferredInputDevice
+        public static InputDevice PreferredInputDevice
         {
             get
             {
@@ -2495,7 +2495,7 @@ namespace Synthesis.Input
         /// Gets or sets a value indicating that mouse actions are simulated as touches.
         /// </summary>
         /// <value><c>true</c> if mouse actions are simulated as touches; otherwise, <c>false</c>.</value>
-        public static bool simulateMouseWithTouches
+        public static bool SimulateMouseWithTouches
         {
             get
             {
@@ -2512,7 +2512,7 @@ namespace Synthesis.Input
         /// Gets the number of touches. Guaranteed not to change throughout the frame.
         /// </summary>
         /// <value>Number of touches.</value>
-        public static int touchCount
+        public static int TouchCount
         {
             get
             {
@@ -2524,7 +2524,7 @@ namespace Synthesis.Input
         /// Returns list of objects representing status of all touches during last frame. (Read Only) (Allocates temporary variables).
         /// </summary>
         /// <value>List of touches.</value>
-        public static Touch[] touches
+        public static Touch[] Touches
         {
             get
             {
@@ -2536,7 +2536,7 @@ namespace Synthesis.Input
         /// Returns whether the device on which application is currently running supports touch input.
         /// </summary>
         /// <value><c>true</c> if touch supported; otherwise, <c>false</c>.</value>
-        public static bool touchSupported
+        public static bool TouchSupported
         {
             get
             {
