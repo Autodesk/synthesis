@@ -40,7 +40,8 @@ namespace BxDRobotExporter.Wizard
         {
             this.name = name;
             wheelSetupPanel = new WheelSetupPanel(node, name, wheelType);
-            wheelSetupPanel.Dock = DockStyle.Fill;
+            wheelSetupPanel.Dock = DockStyle.Top;
+            this.Dock = DockStyle.Top;
             wheelSetupPanel.isRightWheel = isRight;
             this.SuspendLayout();
             while (Controls.Count > 0)
