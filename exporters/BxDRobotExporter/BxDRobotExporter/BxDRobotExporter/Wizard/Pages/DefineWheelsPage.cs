@@ -144,11 +144,8 @@ namespace BxDRobotExporter.Wizard
                     node.ModelFileName = "test";
                     string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
                     readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                    NodeListBox.Items.Add(readableName);
 
-                    if (!listItems.ContainsKey(readableName))
-                        listItems.Add(readableName, node);
-                    else
+                    if (listItems.ContainsKey(readableName))
                     {
                         // Add the part name to the list of duplicate parts
                         if (!duplicatePartNames.ContainsKey(node.ModelFileName))
@@ -160,17 +157,14 @@ namespace BxDRobotExporter.Wizard
                             identNum++;
 
                         // Add the joint to the list with the new unique name
-                        if (identNum <= 100)
-                            listItems.Add(readableName + ' ' + identNum, node);
-                        else if (duplicatePartNames[node.ModelFileName] < 100) // Too many exist. Only give this message once
-                        {
-                            MessageBox.Show("Over 100 jointed parts named " + node.ModelFileName + " exist in your assembly. " +
-                                            "Please remove or rename duplicate parts that need to be configurable as wheels.");
-                        }
+                        readableName += ' ' + identNum.ToString();
 
                         // Update the next available ID
                         duplicatePartNames[node.ModelFileName] = identNum;
                     }
+
+                    listItems.Add(readableName, node);
+                    NodeListBox.Items.Add(readableName);
                 }
             }
 
