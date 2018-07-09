@@ -458,7 +458,7 @@ namespace BxDRobotExporter.Wizard
             {
                 string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
 
-                SetWheelSide(nodeName, WheelSide.LEFT);
+                WheelsPanel_DragDrop(nodeName, WheelSide.LEFT);
             }
         }
 
@@ -473,8 +473,36 @@ namespace BxDRobotExporter.Wizard
             {
                 string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
 
-                SetWheelSide(nodeName, WheelSide.RIGHT);
+                WheelsPanel_DragDrop(nodeName, WheelSide.RIGHT);
             }
+        }
+
+        /// <summary>
+        /// Called when the user drops a dragged item into either panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WheelsPanel_DragDrop(string nodeName, WheelSide side)// called when the user "drops" a seleected value into the group
+        {
+            TableLayoutPanel wheelPanel = (side == WheelSide.LEFT) ? LeftWheelsPanel : RightWheelsPanel;
+
+            // Find the wheel control located below the mouse and insert before that node
+            foreach (Control c in wheelPanel.Controls)
+            {
+                int relativePosition = c.PointToClient(MousePosition).Y;
+                if (relativePosition < 0)
+                {
+                    WheelSlotPanel slotPanel = (WheelSlotPanel)c;
+                    if (slotPanel != null)
+                    {
+                        SetWheelSide(nodeName, side, slotPanel.SetupPanel.NodeName);
+                        return;
+                    }
+                }
+            }
+
+            // Mouse is below all other nodes, place at end
+            SetWheelSide(nodeName, side);
         }
 
         /// <summary>
