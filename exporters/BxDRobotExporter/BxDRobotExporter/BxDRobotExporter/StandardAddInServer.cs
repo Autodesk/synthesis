@@ -49,6 +49,7 @@ namespace BxDRobotExporter
         private bool pendingChanges = false;
 
         ArrayList jointRelatedOccurences;
+        ArrayList disabledOccurences;
         public Inventor.Application MainApplication;
 
         AssemblyDocument AsmDocument;
@@ -322,6 +323,7 @@ namespace BxDRobotExporter
                 }
             }
             Boolean contains = false;
+            disabledOccurences = new ArrayList();
             foreach (ComponentOccurrence c in AsmDocument.ComponentDefinition.Occurrences)
             {// looks at all parts/ assemblies in the main assembly
                 contains = false;
@@ -334,6 +336,7 @@ namespace BxDRobotExporter
                 }
                 if (!contains)
                 {// if the assembly/ part isn't part of a joint then hide it
+                    disabledOccurences.Add(c);
                     c.Enabled = false;
                 }
             }
@@ -371,7 +374,7 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            foreach (ComponentOccurrence c in AsmDocument.ComponentDefinition.Occurrences)
+            foreach (ComponentOccurrence c in disabledOccurences)
             {
                 c.Enabled = true;
             }
