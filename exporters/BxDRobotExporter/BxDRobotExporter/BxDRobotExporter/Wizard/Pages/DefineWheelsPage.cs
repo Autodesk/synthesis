@@ -36,9 +36,15 @@ namespace BxDRobotExporter.Wizard
         public DefineWheelsPage()
         {
             InitializeComponent();
+
+            // Hide horizontal scroll bars
+            LeftWheelsPanel.AutoScroll = false;
             LeftWheelsPanel.HorizontalScroll.Maximum = 0;
+            LeftWheelsPanel.AutoScroll = true;
+            RightWheelsPanel.AutoScroll = false;
             RightWheelsPanel.HorizontalScroll.Maximum = 0;
-            NodeListBox.AllowDrop = true;
+            RightWheelsPanel.AutoScroll = true;
+
             DriveTrainDropdown.SelectedIndex = 0;
 
             NodeListBox.Enabled = false;
@@ -260,14 +266,17 @@ namespace BxDRobotExporter.Wizard
         private void UpdateUI()
         {
             // Pause layout calculations to prevent siezures
-            SuspendLayout();
+            LeftWheelsPanel.SuspendLayout();
+            RightWheelsPanel.SuspendLayout();
 
             // Remove all items
             NodeListBox.Items.Clear();
             LeftWheelsPanel.Controls.Clear();
             LeftWheelsPanel.RowCount = 1;
+            LeftWheelsPanel.RowStyles.Clear();
             RightWheelsPanel.Controls.Clear();
             RightWheelsPanel.RowCount = 1;
+            RightWheelsPanel.RowStyles.Clear();
 
             // Add items to panels or list view
             int unassignedNodes = 0;
@@ -295,25 +304,22 @@ namespace BxDRobotExporter.Wizard
             }
 
             // Shrink items width if a scroll bar will appear
-            Padding leftMargin = LeftWheelsPanel.Margin;
             if (leftNodes <= 3)
-                leftMargin.Right = 0;
+                LeftWheelsPanel.ColumnStyles[1].Width = 0;
             else
-                leftMargin.Right = SystemInformation.VerticalScrollBarWidth;
-            LeftWheelsPanel.Margin = leftMargin;
+                LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
 
             // Shrink items width if a scroll bar will appear
-            Padding rightMargin = LeftWheelsPanel.Margin;
             if (rightNodes <= 3)
-                rightMargin.Right = 0;
+                RightWheelsPanel.ColumnStyles[1].Width = 0;
             else
-                rightMargin.Right = SystemInformation.VerticalScrollBarWidth;
-            RightWheelsPanel.Margin = rightMargin;
+                RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
 
             OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
 
             // Resume layout calculations
-            ResumeLayout();
+            LeftWheelsPanel.ResumeLayout();
+            RightWheelsPanel.ResumeLayout();
         }
 
         private void UpdateWeight()
@@ -352,6 +358,10 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Called when the user starts dragging from a setup panel.
+        /// </summary>
+        /// <param name="name">Name of node controlled by setup panel.</param>
         private void SetupPanel_StartDrag(string name)
         {
             if (name == null)
@@ -376,6 +386,11 @@ namespace BxDRobotExporter.Wizard
             e.Effect = DragDropEffects.Move;
         }
 
+        /// <summary>
+        /// Called when the user drops a dragged item into the left wheel panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LeftWheelsPanel_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
         {
             if (e.Data.GetDataPresent(DataFormats.StringFormat))
@@ -386,6 +401,11 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Called when the user drops a dragged item into the right wheel panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RightWheelsPanel_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
         {
             if (e.Data.GetDataPresent(DataFormats.StringFormat))
@@ -395,7 +415,22 @@ namespace BxDRobotExporter.Wizard
                 SetWheelSide(nodeName, WheelSide.RIGHT);
             }
         }
-           
+
+        /// <summary>
+        /// Called when the user drops a dragged item into the wheel list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NodeListBox_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
+        {
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
+
+                SetWheelSide(nodeName, WheelSide.UNASSIGNED);
+            }
+        }
+
         private void AddControlToNewTableRow(Control control, TableLayoutPanel table, RowStyle rowStyle = null)
         {
             if (rowStyle == null)
@@ -405,6 +440,7 @@ namespace BxDRobotExporter.Wizard
             table.RowStyles.Add(rowStyle);
             table.Controls.Add(control);
             table.SetRow(control, table.RowCount - 1);
+            table.SetColumn(control, 0);
         }
 
         private void RemoveNodeFromPanel(string name)

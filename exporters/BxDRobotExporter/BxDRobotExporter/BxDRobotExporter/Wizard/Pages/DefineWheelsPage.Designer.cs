@@ -116,6 +116,7 @@
             // 
             // NodeListBox
             // 
+            this.NodeListBox.AllowDrop = true;
             this.NodeListBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.NodeListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NodeListBox.FormattingEnabled = true;
@@ -126,6 +127,8 @@
             this.NodeListBox.Size = new System.Drawing.Size(218, 108);
             this.NodeListBox.TabIndex = 4;
             this.NodeListBox.SelectedIndexChanged += new System.EventHandler(this.NodeListBox_SelectedIndexChanged);
+            this.NodeListBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.NodeListBox_DragDrop);
+            this.NodeListBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.WheelsPanel_DragEnter);
             this.NodeListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NodeListBox_MouseDown);
             // 
             // AutoFill
@@ -156,8 +159,9 @@
             // 
             this.LeftWheelsPanel.AllowDrop = true;
             this.LeftWheelsPanel.AutoScroll = true;
-            this.LeftWheelsPanel.ColumnCount = 1;
+            this.LeftWheelsPanel.ColumnCount = 2;
             this.LeftWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.LeftWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.LeftWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftWheelsPanel.Location = new System.Drawing.Point(3, 16);
             this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(0);
@@ -324,8 +328,9 @@
             // 
             this.RightWheelsPanel.AllowDrop = true;
             this.RightWheelsPanel.AutoScroll = true;
-            this.RightWheelsPanel.ColumnCount = 1;
+            this.RightWheelsPanel.ColumnCount = 2;
             this.RightWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.RightWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.RightWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RightWheelsPanel.Location = new System.Drawing.Point(3, 16);
             this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(0);
