@@ -17,6 +17,7 @@ namespace Synthesis.Configuration
         private Vector3 initialScale;
         private Vector3 lastArrowPoint;
         private ArrowType activeArrow;
+        private bool bufferPassed;
 
         /// <summary>
         /// Gets or sets the active selected arrow. When <see cref="ActiveArrow"/>
@@ -68,9 +69,19 @@ namespace Synthesis.Configuration
         public Action<Vector3> Translate { get; set; }
 
         /// <summary>
+        /// Called when an arrow is first clicked.
+        /// </summary>
+        public Action OnClick { get; set; }
+
+        /// <summary>
+        /// Called when an arrow is released.
+        /// </summary>
+        public Action OnRelease { get; set; }
+
+        /// <summary>
         /// Sets the initial position and rotation.
         /// </summary>
-        private void Start()
+        private void Awake()
         {
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
@@ -85,6 +96,13 @@ namespace Synthesis.Configuration
         {
             if (activeArrow == ArrowType.None)
                 return;
+
+            // This allows for any updates from OnClick to complete before translation starts
+            if (!bufferPassed)
+            {
+                bufferPassed = true;
+                return;
+            }
 
             Ray mouseRay = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             Vector3 currentArrowPoint;
@@ -130,6 +148,9 @@ namespace Synthesis.Configuration
             ActiveArrow = arrowType;
             DynamicCamera.MovementEnabled = false;
             lastArrowPoint = Vector3.zero;
+            bufferPassed = false;
+
+            OnClick?.Invoke();
         }
 
         /// <summary>
@@ -140,6 +161,8 @@ namespace Synthesis.Configuration
         {
             ActiveArrow = ArrowType.None;
             DynamicCamera.MovementEnabled = true;
+
+            OnRelease?.Invoke();
         }
     }
 }
