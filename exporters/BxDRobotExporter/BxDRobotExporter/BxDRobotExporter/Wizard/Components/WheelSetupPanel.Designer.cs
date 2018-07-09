@@ -40,6 +40,7 @@
             // 
             // MainGroupBox
             // 
+            this.MainGroupBox.BackColor = System.Drawing.Color.Transparent;
             this.MainGroupBox.AllowDrop = true;
             this.MainGroupBox.Controls.Add(this.WheelTypeLabel);
             this.MainGroupBox.Controls.Add(this.WheelTypeComboBox);
