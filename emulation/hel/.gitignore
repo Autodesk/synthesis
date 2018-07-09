@@ -4,46 +4,43 @@
 *.o
 *.obj
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
 # Executables
 *.exe
 *.out
 *.app
-
-#temp dir for notes or git comments
-tmp/
-
-# visual studio stuff
-*log
-*.tlog
-*db
-*.vs/
-*Debug/*
-*Release/*
-*ipch/*
-*.cache
 
 # vim backup files
 *.swp
 *.swn
 *~
 
-#doxygen documentation files
-allDocs/
+# Misc
+*.exe.stackdump
+
+# Specific Files
+
+# Output folders
+build/*
+lib/*
+bin/*
+user_code/*
+
+# CMake related stuff
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CMakeFiles/*
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
+
+# Doxygen
+docs/html
+docs/latex
+
+# Developer dependancies
+GoogleTest-prefix/
+
+# Virtualization
+synthesis_image.tar.gz
+synthesis_image.md5
+synthesis_image/*
