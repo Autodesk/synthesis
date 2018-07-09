@@ -136,30 +136,36 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Initialize()
         {
-            if (WizardData.Instance.driveTrain != WizardData.WizardDriveTrain.SWERVE)
+            Dictionary<string, int> duplicatePartNames = new Dictionary<string, int>();
+
+            foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                if ((node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL) ||
+                    (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.SWERVE && node.GetParent().GetParent() != null))
                 {
-                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+                    string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                    readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+
+                    if (listItems.ContainsKey(readableName))
                     {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        NodeListBox.Items.Add(readableName);
-                        listItems.Add(readableName, node);
+                        // Add the part name to the list of duplicate parts
+                        if (!duplicatePartNames.ContainsKey(node.ModelFileName))
+                            duplicatePartNames.Add(node.ModelFileName, 2);
+
+                        // Find the next available name
+                        int identNum = duplicatePartNames[node.ModelFileName];
+                        while (listItems.ContainsKey(readableName + ' ' + identNum) && identNum <= 100)
+                            identNum++;
+
+                        // Add the joint to the list with the new unique name
+                        readableName += ' ' + identNum.ToString();
+
+                        // Update the next available ID
+                        duplicatePartNames[node.ModelFileName] = identNum;
                     }
-                }
-            }
-            else
-            {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
-                {
-                    if (node.GetParent().GetParent() != null)
-                    {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        NodeListBox.Items.Add(readableName);
-                        listItems.Add(readableName, node);
-                    }
+
+                    listItems.Add(readableName, node);
+                    NodeListBox.Items.Add(readableName);
                 }
             }
 
