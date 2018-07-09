@@ -165,6 +165,27 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
+    /// Removes all configuration from the current skeleton.
+    /// </summary>
+    public void ClearConfiguration()
+    {
+        ClearConfiguration(SkeletonBase);
+    }
+    /// <summary>
+    /// Removes all configuration from the current skeleton (recursive utility).
+    /// </summary>
+    private void ClearConfiguration(RigidNode_Base baseNode)
+    {
+        SkeletalJoint_Base joint = baseNode.GetSkeletalJoint();
+
+        if (joint != null)
+            joint.ClearConfiguration();
+
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseNode.Children)
+            ClearConfiguration(child.Value);
+    }
+
+    /// <summary>
     /// Open Synthesis to a specific robot and field.
     /// </summary>
     /// <param name="node"></param>

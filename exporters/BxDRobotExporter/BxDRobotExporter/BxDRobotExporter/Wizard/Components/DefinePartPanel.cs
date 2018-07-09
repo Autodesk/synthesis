@@ -30,16 +30,11 @@ namespace BxDRobotExporter.Wizard
         /// The <see cref="RigidNode_Base"/> which the driver will be applied to.
         /// </summary>
         public RigidNode_Base node;
-        
-        public DefinePartPanel()
-        {
-            InitializeComponent();
-        }
 
         public DefinePartPanel(RigidNode_Base node)
         {
             InitializeComponent();
-            BackColor = DefaultBackColor;
+            BackColor = Color.White;
             this.node = node;
             NodeGroupBox.Text = node.ModelFileName;
 

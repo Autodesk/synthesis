@@ -38,8 +38,8 @@ namespace BxDRobotExporter.Wizard
                 if (this.Node != null)
                     StandardAddInServer.Instance.WizardSelect(this.Node);
             };
-
-            this.BackColor = Control.DefaultBackColor;
+            
+            BackColor = Color.White;
 
             AddInteractEventsToAll(this);
         }

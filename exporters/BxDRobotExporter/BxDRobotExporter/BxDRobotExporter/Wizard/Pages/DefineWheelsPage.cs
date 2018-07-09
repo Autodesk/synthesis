@@ -128,30 +128,37 @@ namespace BxDRobotExporter.Wizard
 
             Dictionary<string, RigidNode_Base> availableNodes = new Dictionary<string, RigidNode_Base>(); // TODO: Rename this to availableNodes after a different merge
             wheelSlots = new Dictionary<string, WheelSlotPanel>();
-
+            
             // Find all nodes that can be wheels
-            if (WizardData.Instance.driveTrain != WizardData.WizardDriveTrain.SWERVE)
+            Dictionary<string, int> duplicatePartNames = new Dictionary<string, int>();
+
+            foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                if ((node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL) ||
+                    (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.SWERVE && node.GetParent().GetParent() != null))
                 {
-                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+                    string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                    readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+
+                    if (availableNodes.ContainsKey(readableName))
                     {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        availableNodes.Add(readableName, node);
+                        // Add the part name to the list of duplicate parts
+                        if (!duplicatePartNames.ContainsKey(node.ModelFileName))
+                            duplicatePartNames.Add(node.ModelFileName, 2);
+
+                        // Find the next available name
+                        int identNum = duplicatePartNames[node.ModelFileName];
+                        while (availableNodes.ContainsKey(readableName + ' ' + identNum) && identNum <= 100)
+                            identNum++;
+
+                        // Add the joint to the list with the new unique name
+                        readableName += ' ' + identNum.ToString();
+
+                        // Update the next available ID
+                        duplicatePartNames[node.ModelFileName] = identNum;
                     }
-                }
-            }
-            else
-            {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
-                {
-                    if (node.GetParent().GetParent() != null)
-                    {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        availableNodes.Add(readableName, node);
-                    }
+                    
+                    availableNodes.Add(readableName, node);
                 }
             }
 
@@ -225,12 +232,14 @@ namespace BxDRobotExporter.Wizard
             RightWheelsPanel.RowCount = 1;
 
             // Add items to panels or list view
+            int itemsLeft = 0;
             foreach (KeyValuePair<string, WheelSlotPanel> wheelSlot in wheelSlots)
             {
                 switch (wheelSlot.Value.SetupPanel.Side)
                 {
                     case WheelSide.UNASSIGNED:
                         NodeListBox.Items.Add(wheelSlot.Key);
+                        itemsLeft++;
                         break;
 
                     case WheelSide.LEFT:
@@ -243,21 +252,20 @@ namespace BxDRobotExporter.Wizard
                 }
             }
 
+            OnSetEndEarly(itemsLeft == 0); // Skip next page if no parts are left
+
             // Resume layout calculations
             ResumeLayout();
         }
 
         public event Action ActivateNext;
-        private void OnActivateNext()
-        {
-            this.ActivateNext?.Invoke();
-        }
+        private void OnActivateNext() => ActivateNext?.Invoke();
 
         public event Action DeactivateNext;
-        private void OnDeactivateNext()
-        {
-            this.DeactivateNext?.Invoke();
-        }
+        private void OnDeactivateNext() => DeactivateNext?.Invoke();
+
+        public event Action<bool> SetEndEarly;
+        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
 
         public event InvalidatePageEventHandler InvalidatePage;
         public void OnInvalidatePage()
@@ -350,7 +358,7 @@ namespace BxDRobotExporter.Wizard
         {
             if (rowStyle == null)
                 rowStyle = new RowStyle();
-
+            
             table.RowCount++;
             table.RowStyles.Add(rowStyle);
             table.Controls.Add(control);
