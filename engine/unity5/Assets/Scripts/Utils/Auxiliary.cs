@@ -179,6 +179,45 @@ namespace Synthesis.Utils
             return Resources.FindObjectsOfTypeAll<GameObject>().First(o => o.name.Equals(name));
         }
 
+        /// <summary>
+        /// Based on a solution provided by the Unity Wiki (http://wiki.unity3d.com/index.php/3d_Math_functions).
+        /// Finds the closest points on two lines.
+        /// </summary>
+        /// <param name="closestPointLine1"></param>
+        /// <param name="closestPointLine2"></param>
+        /// <param name="linePoint1"></param>
+        /// <param name="lineVec1"></param>
+        /// <param name="linePoint2"></param>
+        /// <param name="lineVec2"></param>
+        /// <returns></returns>
+        public static bool ClosestPointsOnTwoLines(out Vector3 closestPointLine1, out Vector3 closestPointLine2, Vector3 linePoint1, Vector3 lineVec1, Vector3 linePoint2, Vector3 lineVec2)
+        {
+            closestPointLine1 = Vector3.zero;
+            closestPointLine2 = Vector3.zero;
+
+            float a = Vector3.Dot(lineVec1, lineVec1);
+            float b = Vector3.Dot(lineVec1, lineVec2);
+            float e = Vector3.Dot(lineVec2, lineVec2);
+
+            float d = a * e - b * b;
+
+            // Check if lines are parallel
+            if (d == 0.0f)
+                return false;
+
+            Vector3 r = linePoint1 - linePoint2;
+            float c = Vector3.Dot(lineVec1, r);
+            float f = Vector3.Dot(lineVec2, r);
+
+            float s = (b * f - c * e) / d;
+            float t = (a * f - c * b) / d;
+
+            closestPointLine1 = linePoint1 + lineVec1 * s;
+            closestPointLine2 = linePoint2 + lineVec2 * t;
+
+            return true;
+        }
+
         public static float ToFeet(float meter)
         {
             return meter * (328.084f) / 100;
