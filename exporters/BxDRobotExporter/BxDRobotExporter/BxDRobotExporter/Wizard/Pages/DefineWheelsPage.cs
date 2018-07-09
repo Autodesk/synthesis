@@ -304,6 +304,9 @@ namespace BxDRobotExporter.Wizard
 
         private void SetupPanel_StartDrag(string name)
         {
+            if (name == null)
+                return;
+
             if (!wheelSlots.ContainsKey(name))
                 return;
 

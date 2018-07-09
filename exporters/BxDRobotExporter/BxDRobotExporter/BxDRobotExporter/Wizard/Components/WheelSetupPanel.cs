@@ -23,7 +23,7 @@ namespace BxDRobotExporter.Wizard
 
         public WheelSetupPanel(RigidNode_Base node, String name, WizardData.WizardWheelType WheelType = WizardData.WizardWheelType.NORMAL)
         {
-            this.Name = name;// sets the internal name so we can easily work with the panels
+            NodeName = name;// sets the internal name so we can easily work with the panels
             InitializeComponent();
             
             WheelTypeComboBox.SelectedIndex = ((int)WheelType) - 1;
