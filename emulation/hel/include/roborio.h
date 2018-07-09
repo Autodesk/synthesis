@@ -13,9 +13,13 @@
 #include <mutex>
 #include <queue>
 
+#include "FRC_NetworkCommunication/FRCComm.h"
+
 #include "HAL/ChipObject.h"
 #include "athena/PortsInternal.h"
-#include "FRC_NetworkCommunication/FRCComm.h"
+
+#include "DriverStation.h"
+#include "GenericHID.h"
 
 namespace hel{
     using namespace nFPGA;
@@ -402,7 +406,7 @@ namespace hel{
              * \var
              */
 
-			uint16_t mxp_special_functions_enabled;//TODO this needs to be checked when attempting things
+			uint16_t mxp_special_functions_enabled;//TODO this may be enabled low, double check that
 
             /**
              * \var
@@ -697,6 +701,27 @@ namespace hel{
 
 			bool enabled;
 
+            /**
+             * \var bool emergency_stopped
+             * \brief Robot emergency stopped state
+             */
+
+            bool emergency_stopped;
+
+            /**
+             * \var bool fms_attached
+             * \brief Whether the FMS is attached or not
+             */
+
+            bool fms_attached;
+
+            /**
+             * \var bool ds_attached
+             * \brief Whether the driver station is attached or not
+             */
+
+            bool ds_attached;
+
 		public:
 
             /**
@@ -731,6 +756,61 @@ namespace hel{
 
     		void setEnabled(bool);
 
+            /**
+             * \fn bool getEmergencyStopped()const
+             * \brief Get robot emergency stopped state
+             * \return true if the robot is emergency stopped
+             */
+
+            bool getEmergencyStopped()const;
+            
+            /**
+             * \fn void setEmergencyStopped(bool emergency_stopped)
+             * \brief Set the robot emergency stopped state
+             * \param emergency_stopped a bool representing the robot emergency stopped state
+             */
+
+            void setEmergencyStopped(bool);
+            
+            /**
+             * \fn bool getFMSAttached()const
+             * \brief Get robot FMS connection state
+             * \return true if the robot is connected to the FMS
+             */
+
+            bool getFMSAttached()const;
+            
+            /**
+             * \fn void setFMSAttached(bool fms_attached)
+             * \brief Set robot FMS connection state
+             * \param fmd_attached a bool representing the robot FMS connection state
+             */
+
+            void setFMSAttached(bool);
+
+            /**
+             * \fn bool getDSAttached()const
+             * \brief Get robot driver station connection state
+             * \return true if the robot is connected to the driver station
+             */
+
+            bool getDSAttached()const;
+            
+            /**
+             * \fn void setDSAttached(bool ds_attached)
+             * \brief Set robot driver station connection state
+             * \param ds_attached a bool representing the robot driver station connection state
+             */
+
+            void setDSAttached(bool);
+
+            /**
+             * \fn ControlWord_t toControlWord()const
+             * \brief Populate a new ControlWord_t object from this RobotState object
+             * \return a new ControlWord_t object populated from this RobotState object
+             */
+
+            ControlWord_t toControlWord()const;
 		};
 		
         /**
@@ -907,6 +987,184 @@ namespace hel{
             void setMatchTime(double);
 		};
 
+        /**
+         * \struct Joystick roborio.h
+         * \brief A data container for joystick data
+         * Holds data surrounding joystick inputs and outputs and a description 
+         */
+
+        struct Joystick{
+
+            /**
+             * \var static constexpr uint8_t MAX_JOYSTICK_COUNT
+             * \brief The maximum number of joysticks supported by WPILib
+             */
+
+            static constexpr uint8_t MAX_JOYSTICK_COUNT = frc::DriverStation::kJoystickPorts;
+            
+            /**
+             * \var static constexpr uint8_t MAX_AXIS_COUNT
+             * \brief The maximum number of joystick axes supported by HAL
+             */
+
+            static constexpr uint8_t MAX_AXIS_COUNT = HAL_kMaxJoystickAxes;
+            
+            /**
+             * \var static constexpr uint8_t MAX_POV_COUNT
+             * \brief The maximum number of joystick POVs supported by HAL
+             */
+
+            static constexpr uint8_t MAX_POV_COUNT = HAL_kMaxJoystickPOVs;
+
+        private:
+            
+            /**
+             * \var bool is_xbox
+             * \brief Whether the joystick is an XBox controller or not
+             */
+
+            bool is_xbox;
+             
+            /**
+             * \var frc::GenericHID::HIDType type
+             * \brief The joystick type
+             */
+
+            frc::GenericHID::HIDType type;
+
+            /**
+             * \var std::string name
+             * \brief The name of the joystick
+             */
+
+            std::string name;
+             
+            /**
+             * \var uint32_t buttons
+             * \brief A bit mask of joystick button states
+             */
+
+            uint32_t buttons;
+             
+            /**
+             * \var uint8_t button_count
+             * \brief The number of buttons on the joystick
+             */
+
+            uint8_t button_count;
+ 
+            /**
+             * \var std::array<int8_t> MAX_AXIS_COUNT> axes
+             * \brief Array containing joystick axis states
+             * The states of each axis stored as a byte representing percent offset from rest in either diretion
+             */
+
+            std::array<int8_t, MAX_AXIS_COUNT> axes;
+
+            /**
+             * \var uint8_t axis count
+             * \brief The number of axes on the joystick
+             */
+
+            uint8_t axis_count;
+             
+            /**
+             * \var std::array<uint8_t, MAX_AXIS_COUNT> axis_types
+             * \brief Array containing joystick axis types
+             */
+
+            std::array<uint8_t, MAX_AXIS_COUNT> axis_types; //TODO It is unclear how to interpret the bytes representing axis type
+             
+            /**
+             * \var std::array<int16_t, MAX_POV_COUNT> povs 
+             * \brief Array containing joystick POV states
+             * The states of each POV stored as 16-bit integers representing the angle in degrees that is pressed, -1 if none are pressed
+             */
+
+            std::array<int16_t, MAX_POV_COUNT> povs;
+             
+            /**
+             * \var uint8_t pov_count
+             * \brief The number of POVs on the joystick
+             */
+
+            uint8_t pov_count;
+
+            /**
+             * \var uint32_t outputs
+             * \brief A 32-bit mask representing HID outputs
+             */
+
+            uint32_t outputs;
+             
+            /**
+             * \var uint16_t left_rumble
+             * \brief A 16-bit mapped percent of output to the left rumble
+             */
+
+            uint16_t left_rumble;
+
+            /**
+             * \var uint16_t right_rumble
+             * \brief A 16-bit mapped percent of output to the right rumble
+             */
+
+            uint16_t right_rumble;
+
+        public:
+            bool getIsXBox()const;
+
+            void setIsXBox(bool);
+
+            frc::GenericHID::HIDType getType()const;
+
+            void setType(frc::GenericHID::HIDType);
+
+            std::string getName()const;
+
+            void setName(std::string);
+
+            uint32_t getButtons()const;
+
+            void setButtons(uint32_t);
+
+            uint8_t getButtonCount()const;
+
+            void setButtonCount(uint8_t);
+
+            std::array<int8_t, MAX_AXIS_COUNT> getAxes()const;
+
+            void setAxes(std::array<int8_t, MAX_AXIS_COUNT>);
+
+            uint8_t getAxisCount()const;
+
+            void setAxisCount(uint8_t);
+
+            std::array<uint8_t, MAX_AXIS_COUNT> getAxisTypes()const;
+
+            void setAxisTypes(std::array<uint8_t, MAX_AXIS_COUNT>);
+
+            std::array<int16_t, MAX_POV_COUNT> getPOVs()const;
+
+            void setPOVs(std::array<int16_t, MAX_POV_COUNT>);
+
+            uint8_t getPOVCount()const;
+
+            void setPOVCount(uint8_t);
+
+            uint32_t getOutputs()const;
+
+            void setOutputs(uint32_t);
+
+            uint16_t getLeftRumble()const;
+
+            void setLeftRumble(uint16_t);
+
+            uint16_t getRightRumble()const;
+
+            void setRightRumble(uint16_t);
+        };
+
 		/**
 		 * \var bool user_button
 		 * \represents the state of the user button on the roborio
@@ -919,6 +1177,7 @@ namespace hel{
 		CANBus can_bus;
         DIOSystem digital_system;
 		DriverStationInfo driver_station_info;
+        std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
         PWMSystem pwm_system;
 		RelaySystem relay_system;
 		RobotState robot_state;
