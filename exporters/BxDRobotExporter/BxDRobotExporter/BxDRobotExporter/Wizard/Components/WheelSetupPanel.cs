@@ -16,7 +16,6 @@ namespace BxDRobotExporter.Wizard
     public partial class WheelSetupPanel : UserControl
     {
         public static event OnWheelSetupPanelRemove remove;// sends the remove event to the class that actually needs it
-        public static event OnWheelSetupPanelHover hover;// sends the hover event to the class that actually needs it
         public static event OnWheelSlotMouseDown mouseDownHandler;// sends the mouse down event to the class that actually needs it(WheelSlot)
         public static event OnWheelSlotMouseUp mouseUpHandler;// sends the mouse up event to the class that actually needs it(WheelSlot)
         public static event OnWheelSetupPanelMouseMove mouseMoveHandler;// sends the mouse moving event to the class that actually needs it(WheelSlot)
@@ -42,6 +41,8 @@ namespace BxDRobotExporter.Wizard
             };
 
             this.BackColor = Control.DefaultBackColor;
+
+            AddHighlightAction(this);
         }
 
         public RigidNode_Base node;
@@ -61,6 +62,29 @@ namespace BxDRobotExporter.Wizard
                 PWMPort = isRightWheel ? (byte)0x02 : (byte)0x01,
                 Node = this.node
             };
+        }
+
+        /// <summary>
+        /// Add HighlightNode to every element's hover event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddHighlightAction(Control baseControl)
+        {
+            baseControl.MouseHover += HighlightNode;
+
+            foreach (Control control in baseControl.Controls)
+                AddHighlightAction(control);
+        }
+
+        /// <summary>
+        /// Highlights the node in inventor.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HighlightNode(object sender, EventArgs e)
+        {
+            StandardAddInServer.Instance.WizardSelect(node);
         }
 
         /// <summary>
@@ -87,13 +111,6 @@ namespace BxDRobotExporter.Wizard
             remove(name);// sends the remove event so we can remove this panel
         }
 
-        private void WheelSetupPanel_MouseHover(object sender, EventArgs e)// handles mouse hover events
-        {
-           
-            hover(name);// sends the hover event so we can highlight the node in Inventor
-         //   this.backgroundLabel.BackColor = System.Drawing.SystemColors.Highlight;// highlights the background, could make it easier for user to see what panel is what node in Inventor
-        }
-
         private void WheelSetupPanel_MouseDown(object sender, MouseEventArgs e)// handles mouse down events
         {
             mouseDownHandler(name);// sends that there was a mouse down event and the name of the panel, allows us to disable the drag/ drop
@@ -113,6 +130,5 @@ namespace BxDRobotExporter.Wizard
     public delegate string OnWheelSetupPanelRemove(string str);// sends the remove event to other classes
     public delegate string OnWheelSlotMouseDown(string str);// sends the mouse down event to other classes
     public delegate string OnWheelSlotMouseUp(string str);// sends the mouse down event to other classes
-    public delegate string OnWheelSetupPanelHover(string str);// sends the mouse hover event to other classes
     public delegate string OnWheelSetupPanelMouseMove(string str);// sends the mouse move event to other classes
 }
