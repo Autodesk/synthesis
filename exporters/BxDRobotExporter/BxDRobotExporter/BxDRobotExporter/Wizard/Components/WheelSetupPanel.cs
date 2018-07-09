@@ -22,10 +22,6 @@ namespace BxDRobotExporter.Wizard
         public static event OnWheelSetupPanelMouseMove mouseMoveHandler;// sends the mouse moving event to the class that actually needs it(WheelSlot)
         public String name;// the name of the node, makes removal/ adding easier for the definewheel class
         public bool isRightWheel;// helps in automatically assigning PWM ports
-        public WheelSetupPanel()
-        {
-            InitializeComponent();
-        }
 
         public WheelSetupPanel(RigidNode_Base node, String name, WizardData.WizardWheelType WheelType = WizardData.WizardWheelType.NORMAL)
         {
@@ -36,8 +32,8 @@ namespace BxDRobotExporter.Wizard
             FrictionComboBox.SelectedIndex = 1;
 
             this.node = node;
-            MainGroupBox.Text = node.ModelFileName;
-            this.backgroundLabel.Text = name;
+
+            MainGroupBox.Text = name;
 
             this.MouseClick += delegate (object sender, MouseEventArgs e)
             {
