@@ -14,6 +14,7 @@ using Synthesis.Input;
 using Synthesis.States;
 using Synthesis.Utils;
 using Synthesis.Robot;
+using Synthesis.Configuration;
 
 namespace Synthesis.DriverPractice
 {
@@ -27,6 +28,7 @@ namespace Synthesis.DriverPractice
         public List<float[]> releaseVelocity; //release velocity vectors for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
         public float[] primaryVelocity = new float[3];
         public float[] secondaryVelocity = new float[3];
+        public GameObject[] moveArrows;
 
         public List<UnityEngine.Vector3> releaseVelocityVector;
 
@@ -79,6 +81,7 @@ namespace Synthesis.DriverPractice
         private UnityEngine.Quaternion startParentRotation;
         private UnityEngine.Quaternion startChildRotation;
 
+
         /// <summary>
         /// If configuration file exists, loads information and auto-configures robot.
         /// If coniguration file doesn't exist, initializes variables for users to configure.
@@ -120,7 +123,6 @@ namespace Synthesis.DriverPractice
             objectsHeld.Add(primaryHeld);
             objectsHeld.Add(secondaryHeld);
 
-
             gamepieceNames = new List<string>();
             gamepieceNames.Add("NOT CONFIGURED");
             gamepieceNames.Add("NOT CONFIGURED");
@@ -157,6 +159,11 @@ namespace Synthesis.DriverPractice
             //After initializing all the lists and variables, try to load from the robot directory.
             Load(robotDirectory);
 
+            moveArrows = new GameObject[2];
+
+            for (int i = 0; i < moveArrows.Length; i++)
+                moveArrows[i] = CreateMoveArrows(i);
+
             controlIndex = GetComponent<SimulatorRobot>().ControlIndex;
             modeEnabled = true;
         }
@@ -176,12 +183,11 @@ namespace Synthesis.DriverPractice
                     else if (definingIntake || definingRelease) SetMechanism(configuringIndex);
                 }
 
-                if (definingIntake || definingRelease) SelectingNode();
+                if (definingIntake || definingRelease)
+                    SelectingNode();
 
-
-
-
-                if (settingSpawn != 0) UpdateGamepieceSpawn();
+                if (settingSpawn != 0)
+                    UpdateGamepieceSpawn();
             }
 
             for (int i = 0; i < 2; i++)
@@ -568,6 +574,7 @@ namespace Synthesis.DriverPractice
                     {
                         releaseNode[index] = collisionObject;
                         SetInteractor(releaseNode[index], index);
+                        moveArrows[index].transform.parent = releaseNode[index].transform;
 
                         UserMessageManager.Dispatch(collisionObject.name + " has been selected as release node", 5);
 
@@ -575,6 +582,8 @@ namespace Synthesis.DriverPractice
                     }
 
                     RevertNodeColors(hoveredNode, hoveredColors);
+                    moveArrows[index].SetActive(true);
+                    RefreshMoveArrows();
                 }
                 else
                 {
@@ -666,6 +675,8 @@ namespace Synthesis.DriverPractice
             else intakeInteractor[index] = node.GetComponent<Interactor>();
 
             intakeInteractor[index].SetKeyword(gamepieceNames[index], index);
+
+            //RefreshMoveArrows();
         }
 
         public void HighlightNode(GameObject node)
@@ -692,14 +703,17 @@ namespace Synthesis.DriverPractice
         public void ChangeOffsetX(float amount, int index)
         {
             positionOffset[index].x += amount;
+            RefreshMoveArrows();
         }
         public void ChangeOffsetY(float amount, int index)
         {
             positionOffset[index].y += amount;
+            RefreshMoveArrows();
         }
         public void ChangeOffsetZ(float amount, int index)
         {
             positionOffset[index].z += amount;
+            RefreshMoveArrows();
         }
         public void ChangeReleaseSpeed(float amount, int index)
         {
@@ -735,7 +749,6 @@ namespace Synthesis.DriverPractice
                 int counter = 0;
                 foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
                 {
-
                     foreach (Material m in renderers.materials)
                     {
                         m.color = storedColors[counter];
@@ -888,6 +901,44 @@ namespace Synthesis.DriverPractice
                 result[i] = float.Parse(values[i]);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Refreshes the position of the move arrows with the position offsets.
+        /// </summary>
+        public void RefreshMoveArrows()
+        {
+            for (int i = 0; i < moveArrows.Length; i++)
+            {
+                moveArrows[i].transform.parent = releaseNode[i].transform;
+                moveArrows[i].transform.localPosition = positionOffset[i];
+            }
+        }
+        
+        /// <summary>
+        /// Creates a <see cref="GameObject"/> instantiated from the MoveArrows prefab.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private GameObject CreateMoveArrows(int index)
+        {
+            GameObject arrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+            arrows.name = "ReleasePositionMoveArrows";
+            arrows.transform.parent = releaseNode[index].transform;
+            arrows.transform.localPosition = positionOffset[index];
+
+            arrows.GetComponent<MoveArrows>().Translate = (translation) =>
+            {
+                arrows.transform.position += translation;
+                positionOffset[index] = arrows.transform.localPosition;
+            };
+            
+            arrows.GetComponent<MoveArrows>().OnClick = () => GetComponent<SimulatorRobot>().LockRobot();
+            arrows.GetComponent<MoveArrows>().OnRelease = () => GetComponent<SimulatorRobot>().UnlockRobot();
+
+            arrows.SetActive(false);
+
+            return arrows;
         }
 
         /// <summary>
