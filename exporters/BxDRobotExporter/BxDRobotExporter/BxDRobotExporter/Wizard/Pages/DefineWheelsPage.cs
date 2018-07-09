@@ -32,6 +32,8 @@ namespace BxDRobotExporter.Wizard
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
         private Dictionary<string, WheelSlotPanel> wheelSlots = new Dictionary<string, WheelSlotPanel>();
+        private List<string> leftOrder = new List<string>();
+        private List<string> rightOrder = new List<string>();
 
         public DefineWheelsPage()
         {
@@ -188,7 +190,7 @@ namespace BxDRobotExporter.Wizard
                 panel.FillSlot(node.Value, node.Key, WheelSide.UNASSIGNED, type);
                 panel.SetupPanel.removeHandler += RemoveNodeFromPanel;
                 panel.SetupPanel.mouseDownHandler += SetupPanel_StartDrag;
-
+                
                 wheelSlots.Add(node.Key, panel);
             }
 
@@ -265,13 +267,13 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         private void UpdateUI()
         {
-            // Remove all items
-            NodeListBox.Items.Clear();
+            ValidateLeftRightLists();
 
+            // Remove all items from
+            NodeListBox.Items.Clear();
             LeftWheelsPanel.Controls.Clear();
             LeftWheelsPanel.RowCount = 0;
             LeftWheelsPanel.RowStyles.Clear();
-
             RightWheelsPanel.Controls.Clear();
             RightWheelsPanel.RowCount = 0;
             RightWheelsPanel.RowStyles.Clear();
@@ -280,39 +282,33 @@ namespace BxDRobotExporter.Wizard
             LeftWheelsPanel.SuspendLayout();
             RightWheelsPanel.SuspendLayout();
 
-            // Add items to panels or list view
+            // Add left items to left side
+            foreach (string name in leftOrder)
+                AddControlToNewTableRow(wheelSlots[name], LeftWheelsPanel);
+
+            // Add right items to right side
+            foreach (string name in rightOrder)
+                AddControlToNewTableRow(wheelSlots[name], RightWheelsPanel);
+
+            // Add all remaining items to list box
             int unassignedNodes = 0;
-            int leftNodes = 0;
-            int rightNodes = 0;
-            foreach (KeyValuePair<string, WheelSlotPanel> wheelSlot in wheelSlots)
+            foreach (KeyValuePair<string, WheelSlotPanel> slot in wheelSlots)
             {
-                switch (wheelSlot.Value.SetupPanel.Side)
+                if (slot.Value.SetupPanel.Side == WheelSide.UNASSIGNED)
                 {
-                    case WheelSide.UNASSIGNED:
-                        NodeListBox.Items.Add(wheelSlot.Key);
-                        unassignedNodes++;
-                        break;
-
-                    case WheelSide.LEFT:
-                        AddControlToNewTableRow(wheelSlot.Value, LeftWheelsPanel);
-                        leftNodes++;
-                        break;
-
-                    case WheelSide.RIGHT:
-                        AddControlToNewTableRow(wheelSlot.Value, RightWheelsPanel);
-                        rightNodes++;
-                        break;
+                    NodeListBox.Items.Add(slot.Key);
+                    unassignedNodes++;
                 }
             }
 
             // Shrink items width if a scroll bar will appear
-            if (leftNodes <= 3)
+            if (leftOrder.Count <= 3)
                 LeftWheelsPanel.ColumnStyles[1].Width = 0;
             else
                 LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
 
             // Shrink items width if a scroll bar will appear
-            if (rightNodes <= 3)
+            if (rightOrder.Count <= 3)
                 RightWheelsPanel.ColumnStyles[1].Width = 0;
             else
                 RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
@@ -322,6 +318,42 @@ namespace BxDRobotExporter.Wizard
             // Resume layout calculations
             LeftWheelsPanel.ResumeLayout();
             RightWheelsPanel.ResumeLayout();
+        }
+
+        private void ValidateLeftRightLists()
+        {
+            // Make sure all items in left orders are left wheels
+            int n = 0;
+            while (n < leftOrder.Count)
+            {
+                if (wheelSlots[leftOrder[n]].SetupPanel.Side != WheelSide.LEFT)
+                    leftOrder.RemoveAt(n);
+                else
+                    n++;
+            }
+
+            // Make sure all items in right orders are right wheels
+            n = 0;
+            while (n < rightOrder.Count)
+            {
+                if (wheelSlots[rightOrder[n]].SetupPanel.Side != WheelSide.RIGHT)
+                    rightOrder.RemoveAt(n);
+                else
+                    n++;
+            }
+
+            foreach (KeyValuePair<string, WheelSlotPanel> wheelSlot in wheelSlots)
+            {
+                // If it should exist in the left order, add it to the left order
+                if (wheelSlot.Value.SetupPanel.Side == WheelSide.LEFT)
+                    if (!leftOrder.Contains(wheelSlot.Key))
+                        leftOrder.Add(wheelSlot.Key);
+
+                // If it should exist in the right order, add it to the right order
+                if (wheelSlot.Value.SetupPanel.Side == WheelSide.RIGHT)
+                    if (!rightOrder.Contains(wheelSlot.Key))
+                        rightOrder.Add(wheelSlot.Key);
+            }
         }
 
         private void UpdateWeight()
