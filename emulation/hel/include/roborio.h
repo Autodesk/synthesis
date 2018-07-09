@@ -1165,6 +1165,28 @@ namespace hel{
             void setRightRumble(uint16_t);
         };
 
+        struct Counter{
+            static constexpr uint8_t MAX_COUNTER_COUNT = tCounter::kNumSystems;
+        private:
+            tCounter::tOutput output;
+            tCounter::tConfig config;
+            tCounter::tTimerOutput timer_output;
+            tCounter::tTimerConfig timer_config;
+
+        public:
+            tCounter::tOutput getOutput()const;
+            void setOutput(tCounter::tOutput);
+
+            tCounter::tConfig getConfig()const;
+            void setConfig(tCounter::tConfig);
+ 
+            tCounter::tTimerOutput getTimerOutput()const;
+            void setTimerOutput(tCounter::tTimerOutput);
+ 
+            tCounter::tTimerConfig getTimerConfig()const;
+            void setTimerConfig(tCounter::tTimerConfig);
+        };
+
 		/**
 		 * \var bool user_button
 		 * \represents the state of the user button on the roborio
@@ -1175,6 +1197,7 @@ namespace hel{
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
 		CANBus can_bus;
+        std::array<Counter, Counter::MAX_COUNTER_COUNT> counters;
         DIOSystem digital_system;
 		DriverStationInfo driver_station_info;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
