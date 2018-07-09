@@ -35,7 +35,6 @@ namespace BxDRobotExporter.Wizard
         public DefineWheelsPage()
         {
             WheelSetupPanel.remove += new OnWheelSetupPanelRemove(this.RemoveWheelSetupPanel);// subscribes the removal handler to the removal handler in the setupPanel so we can properly remove the panel
-            WheelSetupPanel.hover += new OnWheelSetupPanelHover(this.WheelSetupHover);// subscribes the hover handler to the hover handler in the setupPanel so we can properly select the node in Inventor
             InitializeComponent();
             RightWheelsPanel.AllowDrop = true;// allow the drops in the panel
             LeftWheelsPanel.AllowDrop = true;// allow the drops in the panel
@@ -521,12 +520,6 @@ namespace BxDRobotExporter.Wizard
             {
                 NodeListBox.Items.Add(sortedItem);// add the ordered nodes back to the list
             }
-            return "";// needed because c# gets real ticked if this isn't here
-        }
-
-        public String WheelSetupHover(String s)// handler for the hover event in the wheel slot/ panel
-        {
-            StandardAddInServer.Instance.WizardSelect(listItems[s]);// seleects/ highlghts the appropriate node in Inventor
             return "";// needed because c# gets real ticked if this isn't here
         }
             
