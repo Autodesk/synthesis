@@ -314,6 +314,43 @@ namespace Synthesis.Robot
         }
 
         /// <summary>
+        /// Locks the robot in place.
+        /// </summary>
+        public void LockRobot()
+        {
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+            }
+        }
+
+        /// <summary>
+        /// If the robot is locked in place, unlocks the robot.
+        /// </summary>
+        public void UnlockRobot()
+        {
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+            }
+        }
+
+        /// <summary>
         /// Rotates the robot about its origin by a set vector
         /// </summary>
         public void RotateRobot(Vector3 rotation)

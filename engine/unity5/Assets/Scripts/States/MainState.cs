@@ -562,6 +562,24 @@ namespace Synthesis.States
         #region Robot Interaction Functions
 
         /// <summary>
+        /// Locks all <see cref="SimulatorRobot"/>s currently in the simulation.
+        /// </summary>
+        public void LockRobots()
+        {
+            foreach (SimulatorRobot robot in SpawnedRobots)
+                robot.LockRobot();
+        }
+
+        /// <summary>
+        /// Unlocks all <see cref="SimulatorRobot"/>s currently in the simulation.
+        /// </summary>
+        public void UnlockRobots()
+        {
+            foreach (SimulatorRobot robot in SpawnedRobots)
+                robot.UnlockRobot();
+        }
+
+        /// <summary>
         /// Starts the resetting process of the active robot
         /// </summary>
         public void BeginRobotReset()

@@ -1,4 +1,5 @@
-﻿using Synthesis.GUI;
+﻿using Synthesis.Configuration;
+using Synthesis.GUI;
 using Synthesis.Robot;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,13 +12,45 @@ namespace Synthesis.Camera
     /// </summary>
     public class RobotCamera : MonoBehaviour
     {
+        private Vector3 localPosition;
+        private Quaternion localRotation;
+        private Transform parent;
+        private int parentNodeIndex;
+        private float FOV;
+        private GameObject moveArrows;
 
-        Vector3 localPosition;
-        Quaternion localRotation;
-        Transform parent;
-        int parentNodeIndex;
-        float FOV;
         public RobotBase robot;
+
+        /// <summary>
+        /// Returns true if the <see cref="MoveArrows"/> are active.
+        /// </summary>
+        public bool ArrowsActive
+        {
+            get
+            {
+                return moveArrows.activeSelf;
+            }
+            set
+            {
+                moveArrows.SetActive(value);
+            }
+        }
+
+        /// <summary>
+        /// Instntaites <see cref="MoveArrows"/> associated with this instance.
+        /// </summary>
+        private void Awake()
+        {
+            GetComponent<UnityEngine.Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Configuration"));
+
+            moveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+            moveArrows.name = "CameraMoveArrows";
+            moveArrows.transform.parent = gameObject.transform;
+            moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
+                gameObject.transform.Translate(translation, Space.World);
+
+            ArrowsActive = false;
+        }
 
         /// <summary>
         /// Update the configuration info of robot camera, called in RobotCameraManager after each configuration update
