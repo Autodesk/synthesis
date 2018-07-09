@@ -134,29 +134,42 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Initialize()
         {
-            List<string> duplicatePartNames = new List<string>();
+            Dictionary<string, int> duplicatePartNames = new Dictionary<string, int>();
 
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
                 if ((node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL) ||
                     (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.SWERVE && node.GetParent().GetParent() != null))
                 {
+                    node.ModelFileName = "test";
                     string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
                     readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
                     NodeListBox.Items.Add(readableName);
 
-                    try
-                    {
+                    if (!listItems.ContainsKey(readableName))
                         listItems.Add(readableName, node);
-                    }
-                    catch (Exception)
+                    else
                     {
-                        if (!duplicatePartNames.Contains(node.ModelFileName))
+                        // Add the part name to the list of duplicate parts
+                        if (!duplicatePartNames.ContainsKey(node.ModelFileName))
+                            duplicatePartNames.Add(node.ModelFileName, 2);
+
+                        // Find the next available name
+                        int identNum = duplicatePartNames[node.ModelFileName];
+                        while (listItems.ContainsKey(readableName + ' ' + identNum) && identNum <= 100)
+                            identNum++;
+
+                        // Add the joint to the list with the new unique name
+                        if (identNum <= 100)
+                            listItems.Add(readableName + ' ' + identNum, node);
+                        else if (duplicatePartNames[node.ModelFileName] < 100) // Too many exist. Only give this message once
                         {
-                            MessageBox.Show("Multiple parts named " + node.ModelFileName + " exist in your assembly. " +
-                                            "Only one will be available to configure as a wheel in quick setup.");
-                            duplicatePartNames.Add(node.ModelFileName);
+                            MessageBox.Show("Over 100 jointed parts named " + node.ModelFileName + " exist in your assembly. " +
+                                            "Please remove or rename duplicate parts that need to be configurable as wheels.");
                         }
+
+                        // Update the next available ID
+                        duplicatePartNames[node.ModelFileName] = identNum;
                     }
                 }
             }
