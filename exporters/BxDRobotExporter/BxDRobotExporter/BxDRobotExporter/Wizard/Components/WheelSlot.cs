@@ -31,6 +31,7 @@ namespace BxDRobotExporter.Wizard
             WheelSetupPanel.mouseUpHandler += new OnWheelSlotMouseUp(this.CancelDragAndDrop);// subscribes the mouse up handler to the event in the panel
             WheelSetupPanel.mouseMoveHandler += new OnWheelSetupPanelMouseMove(this.MouseLeaving);// subscribes the mouse move handler to the event in the panel
             InitializeComponent();
+            BackColor = Color.White;
             IsFilled = false;
         }
 

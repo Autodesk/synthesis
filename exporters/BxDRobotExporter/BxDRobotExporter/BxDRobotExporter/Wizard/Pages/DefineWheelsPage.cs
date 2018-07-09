@@ -136,30 +136,36 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Initialize()
         {
-            if (WizardData.Instance.driveTrain != WizardData.WizardDriveTrain.SWERVE)
+            Dictionary<string, int> duplicatePartNames = new Dictionary<string, int>();
+
+            foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                if ((node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL) ||
+                    (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.SWERVE && node.GetParent().GetParent() != null))
                 {
-                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+                    string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                    readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+
+                    if (listItems.ContainsKey(readableName))
                     {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        NodeListBox.Items.Add(readableName);
-                        listItems.Add(readableName, node);
+                        // Add the part name to the list of duplicate parts
+                        if (!duplicatePartNames.ContainsKey(node.ModelFileName))
+                            duplicatePartNames.Add(node.ModelFileName, 2);
+
+                        // Find the next available name
+                        int identNum = duplicatePartNames[node.ModelFileName];
+                        while (listItems.ContainsKey(readableName + ' ' + identNum) && identNum <= 100)
+                            identNum++;
+
+                        // Add the joint to the list with the new unique name
+                        readableName += ' ' + identNum.ToString();
+
+                        // Update the next available ID
+                        duplicatePartNames[node.ModelFileName] = identNum;
                     }
-                }
-            }
-            else
-            {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
-                {
-                    if (node.GetParent().GetParent() != null)
-                    {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        NodeListBox.Items.Add(readableName);
-                        listItems.Add(readableName, node);
-                    }
+
+                    listItems.Add(readableName, node);
+                    NodeListBox.Items.Add(readableName);
                 }
             }
 
@@ -206,16 +212,13 @@ namespace BxDRobotExporter.Wizard
         }
         
         public event Action ActivateNext;
-        private void OnActivateNext()
-        {
-            this.ActivateNext?.Invoke();
-        }
+        private void OnActivateNext() => ActivateNext?.Invoke();
 
         public event Action DeactivateNext;
-        private void OnDeactivateNext()
-        {
-            this.DeactivateNext?.Invoke();
-        }
+        private void OnDeactivateNext() => DeactivateNext?.Invoke();
+
+        public event Action<bool> SetEndEarly;
+        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
 
         public event InvalidatePageEventHandler InvalidatePage;
         public void OnInvalidatePage()
@@ -405,6 +408,7 @@ namespace BxDRobotExporter.Wizard
                             break;
                         }
                     }
+
                     placementList.Remove(wantedPanel); // removes the panel
                     placementList.Add(wantedPanel);//    adds the panel back in
                     placementPanel.Controls.Add(wantedPanel);// ^^
@@ -456,9 +460,14 @@ namespace BxDRobotExporter.Wizard
                             panel.FillSlot(listItems[toFind], toFind, true);
                             break;
                     }
+
                     placementPanel.Controls.AddRange(tempControls);// add the temp controls back into the array
                     placementList.AddRange(tempSlots);//                               ^^
                     NodeListBox.Items.Remove(toFind);// removes the corresponding from the list of nodes
+
+                    if (NodeListBox.Items.Count < 1)
+                        OnSetEndEarly(true); // Skip next page, no parts are left
+
                     return; // quites the method
                 }
             }
@@ -484,6 +493,9 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
             NodeListBox.Items.Remove(toFind);// removes the corresponding from the list of nodes 
+
+            if (NodeListBox.Items.Count < 1)
+                OnSetEndEarly(true); // Skip next page, no parts are left
         }
 
         public String RemoveWheelSetupPanel(String s)// handles the user clicking the remove button in a wheel panel/ slot
@@ -521,6 +533,7 @@ namespace BxDRobotExporter.Wizard
             {
                 NodeListBox.Items.Add(sortedItem);// add the ordered nodes back to the list
             }
+            OnSetEndEarly(false);
             return "";// needed because c# gets real ticked if this isn't here
         }
 
