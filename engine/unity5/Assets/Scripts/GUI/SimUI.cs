@@ -34,7 +34,6 @@ namespace Synthesis.GUI
         SensorManager sensorManager;
         RobotCameraManager robotCameraManager;
         RobotCameraGUI robotCameraGUI;
-        SimulatorRobot robot;
 
         GameObject canvas;
 
