@@ -81,6 +81,7 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MOD
     add_dependencies(${test_name} GoogleTest)
     target_link_libraries(${test_name} gtest gtest_main pthread)
     include_directories("lib/include")
+    target_include_directories(${test_name} PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "./include")
 
     set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
 
