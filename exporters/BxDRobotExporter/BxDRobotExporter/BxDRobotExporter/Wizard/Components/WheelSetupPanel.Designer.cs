@@ -43,6 +43,7 @@
             // 
             // MainGroupBox
             // 
+            this.MainGroupBox.BackColor = System.Drawing.Color.Transparent;
             this.MainGroupBox.AllowDrop = true;
             this.MainGroupBox.AutoSize = true;
             this.MainGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;

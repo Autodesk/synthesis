@@ -27,6 +27,7 @@ namespace BxDRobotExporter.Wizard
         public WheelSlotPanel()
         {
             InitializeComponent();
+            BackColor = Color.White;
             IsFilled = false;
         }
 
