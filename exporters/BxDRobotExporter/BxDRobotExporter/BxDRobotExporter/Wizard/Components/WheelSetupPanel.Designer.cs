@@ -60,8 +60,8 @@
             this.ConfigLayout.AutoSize = true;
             this.ConfigLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ConfigLayout.ColumnCount = 2;
-            this.ConfigLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.ConfigLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.ConfigLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.ConfigLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.ConfigLayout.Controls.Add(this.WheelTypeComboBox, 1, 0);
             this.ConfigLayout.Controls.Add(this.FrictionComboBox, 1, 1);
             this.ConfigLayout.Controls.Add(this.WheelTypeLabel, 0, 0);
