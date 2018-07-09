@@ -15,39 +15,34 @@ namespace BxDRobotExporter.Wizard
     /// </summary>
     public partial class WheelSetupPanel : UserControl
     {
-        public static event OnWheelSetupPanelRemove remove;// sends the remove event to the class that actually needs it
-        public static event OnWheelSlotMouseDown mouseDownHandler;// sends the mouse down event to the class that actually needs it(WheelSlot)
-        public static event OnWheelSlotMouseUp mouseUpHandler;// sends the mouse up event to the class that actually needs it(WheelSlot)
-        public static event OnWheelSetupPanelMouseMove mouseMoveHandler;// sends the mouse moving event to the class that actually needs it(WheelSlot)
-        public String name;// the name of the node, makes removal/ adding easier for the definewheel class
-        public bool isRightWheel;// helps in automatically assigning PWM ports
+        public event OnWheelSetupPanelRemove removeHandler;// sends the remove event to the class that actually needs it
+        public event OnWheelSlotMouseDown mouseDownHandler;// sends the mouse down event to the class that actually needs it(WheelSlot)
+        public String NodeName;// the name of the node, makes removal/ adding easier for the definewheel class
+        public RigidNode_Base Node;
+        public WheelSide Side;// helps in automatically assigning PWM ports
 
         public WheelSetupPanel(RigidNode_Base node, String name, WizardData.WizardWheelType WheelType = WizardData.WizardWheelType.NORMAL)
         {
-            this.name = name;// sets the internal name so we can easily work with the panels
+            this.Name = name;// sets the internal name so we can easily work with the panels
             InitializeComponent();
             
             WheelTypeComboBox.SelectedIndex = ((int)WheelType) - 1;
             FrictionComboBox.SelectedIndex = 1;
 
-            this.node = node;
+            this.Node = node;
 
             MainGroupBox.Text = name;
 
             this.MouseClick += delegate (object sender, MouseEventArgs e)
             {
-                if (this.node != null)
-                    StandardAddInServer.Instance.WizardSelect(this.node);
+                if (this.Node != null)
+                    StandardAddInServer.Instance.WizardSelect(this.Node);
             };
 
             this.BackColor = Control.DefaultBackColor;
 
-            AddHighlightAction(this);
+            AddInteractEventsToAll(this);
         }
-
-        public RigidNode_Base node;
-
-        
 
         /// <summary>
         /// Gets the <see cref="WizardData.WheelSetupData"/> for this panel. The parent page then adds it to <see cref="WizardData.wheels"/>
@@ -59,8 +54,8 @@ namespace BxDRobotExporter.Wizard
             {
                 FrictionLevel = (WizardData.WizardFrictionLevel)this.FrictionComboBox.SelectedIndex,
                 WheelType = (WizardData.WizardWheelType)(this.WheelTypeComboBox.SelectedIndex + 1),
-                PWMPort = isRightWheel ? (byte)0x02 : (byte)0x01,
-                Node = this.node
+                PWMPort = (Side == WheelSide.RIGHT) ? (byte)0x02 : (byte)0x01,
+                Node = this.Node
             };
         }
 
@@ -69,12 +64,13 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AddHighlightAction(Control baseControl)
+        private void AddInteractEventsToAll(Control baseControl)
         {
             baseControl.MouseHover += HighlightNode;
+            baseControl.MouseDown += WheelSetupPanel_MouseDown;
 
             foreach (Control control in baseControl.Controls)
-                AddHighlightAction(control);
+                AddInteractEventsToAll(control);
         }
 
         /// <summary>
@@ -84,7 +80,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void HighlightNode(object sender, EventArgs e)
         {
-            StandardAddInServer.Instance.WizardSelect(node);
+            StandardAddInServer.Instance.WizardSelect(Node);
         }
 
         /// <summary>
@@ -106,29 +102,18 @@ namespace BxDRobotExporter.Wizard
         {
             _WheelTypeChangedInternal?.Invoke();
         }
+
         private void remove_Click(object sender, EventArgs e)// handles the remove button click
         {
-            remove(name);// sends the remove event so we can remove this panel
+            removeHandler(NodeName);// sends the remove event so we can remove this panel
         }
 
         private void WheelSetupPanel_MouseDown(object sender, MouseEventArgs e)// handles mouse down events
         {
-            mouseDownHandler(name);// sends that there was a mouse down event and the name of the panel, allows us to disable the drag/ drop
-        }
-
-        private void WheelSetupPanel_MouseUp(object sender, MouseEventArgs e)// handles mouse up events
-        {
-            mouseUpHandler(name);// sends that there was a mouse up event and the name of the panel, allows us to enable to=he drag/ drop
-        }
-
-        private void backgroundLabel_MouseMove(object sender, MouseEventArgs e)// handles mouse movement over the background
-        {
-            mouseMoveHandler(name);// sends that there was a mouse move event and the name of the panel, this helps in activating the drag and drop if the mouse is already down
+            mouseDownHandler(NodeName);// sends that there was a mouse down event and the name of the panel, allows us to disable the drag/ drop
         }
     }
 
-    public delegate string OnWheelSetupPanelRemove(string str);// sends the remove event to other classes
-    public delegate string OnWheelSlotMouseDown(string str);// sends the mouse down event to other classes
-    public delegate string OnWheelSlotMouseUp(string str);// sends the mouse down event to other classes
-    public delegate string OnWheelSetupPanelMouseMove(string str);// sends the mouse move event to other classes
+    public delegate void OnWheelSetupPanelRemove(string str);// sends the remove event to other classes
+    public delegate void OnWheelSlotMouseDown(string str);// sends the mouse down event to other classes
 }

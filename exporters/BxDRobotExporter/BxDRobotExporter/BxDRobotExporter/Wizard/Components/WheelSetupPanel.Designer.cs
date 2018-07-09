@@ -89,8 +89,6 @@
             this.WheelTypeComboBox.Size = new System.Drawing.Size(101, 21);
             this.WheelTypeComboBox.TabIndex = 0;
             this.WheelTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.WheelTypeComboBox_SelectedIndexChanged);
-            this.WheelTypeComboBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.WheelTypeComboBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
             // FrictionComboBox
             // 
@@ -105,8 +103,6 @@
             this.FrictionComboBox.Name = "FrictionComboBox";
             this.FrictionComboBox.Size = new System.Drawing.Size(101, 21);
             this.FrictionComboBox.TabIndex = 3;
-            this.FrictionComboBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.FrictionComboBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
             // WheelTypeLabel
             // 
@@ -119,8 +115,6 @@
             this.WheelTypeLabel.TabIndex = 1;
             this.WheelTypeLabel.Text = "Wheel Type";
             this.WheelTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.WheelTypeLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.WheelTypeLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
             // FrictionLabel
             // 
@@ -133,8 +127,6 @@
             this.FrictionLabel.TabIndex = 2;
             this.FrictionLabel.Text = "Wheel Friction";
             this.FrictionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.FrictionLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.FrictionLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
             // removeButton
             // 
@@ -146,8 +138,6 @@
             this.removeButton.Text = "Remove";
             this.removeButton.UseVisualStyleBackColor = true;
             this.removeButton.Click += new System.EventHandler(this.remove_Click);
-            this.removeButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.removeButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             // 
             // MainLayout
             // 
@@ -177,8 +167,6 @@
             this.MinimumSize = new System.Drawing.Size(200, 0);
             this.Name = "WheelSetupPanel";
             this.Size = new System.Drawing.Size(200, 107);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
             this.MainGroupBox.ResumeLayout(false);
             this.MainGroupBox.PerformLayout();
             this.ConfigLayout.ResumeLayout(false);
