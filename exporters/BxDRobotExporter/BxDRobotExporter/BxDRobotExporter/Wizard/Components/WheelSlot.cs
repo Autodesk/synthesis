@@ -6,7 +6,10 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
+using System.Windows.Input;
+using System.Runtime.InteropServices;
 
 namespace BxDRobotExporter.Wizard
 {
@@ -18,14 +21,20 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// Field containing the <see cref="WheelSetupPanel"/> in this slot.
         /// </summary>
-        private WheelSetupPanel wheelSetupPanel;
+        public WheelSetupPanel wheelSetupPanel;
         public String name;
-
+        String usedString;
+        public  bool potentiallyDragging = false;
         public WheelSlotPanel()
         {
+            WheelSetupPanel.mouseDownHandler += new OnWheelSlotMouseDown(this.PotenetialDragAndDrop);// subscribes the mouse down handler to the event in the panel
+            WheelSetupPanel.mouseUpHandler += new OnWheelSlotMouseUp(this.CancelDragAndDrop);// subscribes the mouse up handler to the event in the panel
+            WheelSetupPanel.mouseMoveHandler += new OnWheelSetupPanelMouseMove(this.MouseLeaving);// subscribes the mouse move handler to the event in the panel
             InitializeComponent();
             IsFilled = false;
         }
+
+        
 
         public void FillSlot(RigidNode_Base node, String name, bool isRight, WizardData.WizardWheelType wheelType = WizardData.WizardWheelType.NORMAL)
         {
@@ -98,6 +107,29 @@ namespace BxDRobotExporter.Wizard
         private void OnWheelTypeChanged()
         {
             WheelTypeChanged?.Invoke(this, new WheelTypeChangedEventArgs { NewWheelType = WheelType });
+        }
+        
+        private String CancelDragAndDrop(String s)// handles the mouse up event
+        {
+            potentiallyDragging = false;// tells the mouse move event that we don't want to be dragging because the user isn't clicking, so pass the event through to the form properly
+            return "";// needed because c# gets real ticked if this isn't here
+        }
+
+        private String MouseLeaving(String s)// called when the mouse moves in the background label
+        {
+            if (potentiallyDragging)// checks if the mouse is down, and thus potentially dragging
+            {
+                this.DoDragDrop(usedString + " From Node Group", DragDropEffects.Copy | DragDropEffects.Move); // enable the drag and drop with the correct name so we can call all the things to the correct slot
+            }
+            potentiallyDragging = false;// reset the dragging value because we have already begun dragging
+            return "";// needed because c# gets real ticked if this isn't here
+        }
+
+        private String PotenetialDragAndDrop(String s)// handles the mouse down event
+        {
+            potentiallyDragging = true;// tells the mouse move that we want to 
+            usedString = s;
+            return "";// needed because c# gets real ticked if this isn't here
         }
     }
 }
