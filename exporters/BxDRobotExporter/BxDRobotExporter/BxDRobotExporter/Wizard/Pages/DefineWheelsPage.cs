@@ -199,6 +199,22 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        public event Action ActivateNext;
+        private void OnActivateNext() => ActivateNext?.Invoke();
+
+        public event Action DeactivateNext;
+        private void OnDeactivateNext() => DeactivateNext?.Invoke();
+
+        public event Action<bool> SetEndEarly;
+        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
+
+        public event InvalidatePageEventHandler InvalidatePage;
+        public void OnInvalidatePage()
+        {
+            InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
+        }
+        #endregion
+        
         /// <summary>
         /// Sets the side that a wheel is on. This will update the wizard UI to show the changes.
         /// </summary>
@@ -214,6 +230,26 @@ namespace BxDRobotExporter.Wizard
 
             wheelSlots[nodeName].SetupPanel.Side = side;
             UpdateUI();
+        }
+
+        /// <summary>
+        /// Sets the side that a wheel is on. This will update the wizard UI to show the changes.
+        /// </summary>
+        /// <param name="nodeName">Node to set side of.</param>
+        /// <param name="side">Side to move node to.</param>
+        public void SetWheelSide(RigidNode_Base node, WheelSide side)
+        {
+            if (node == null)
+                return;
+
+            foreach(KeyValuePair<string, WheelSlotPanel> slot in wheelSlots)
+            {
+                if (slot.Value.SetupPanel.Node == node)
+                {
+                    SetWheelSide(slot.Key, side);
+                    return;
+                }
+            }
         }
 
         /// <summary>
@@ -257,22 +293,6 @@ namespace BxDRobotExporter.Wizard
             // Resume layout calculations
             ResumeLayout();
         }
-
-        public event Action ActivateNext;
-        private void OnActivateNext() => ActivateNext?.Invoke();
-
-        public event Action DeactivateNext;
-        private void OnDeactivateNext() => DeactivateNext?.Invoke();
-
-        public event Action<bool> SetEndEarly;
-        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
-
-        public event InvalidatePageEventHandler InvalidatePage;
-        public void OnInvalidatePage()
-        {
-            InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
-        }
-        #endregion
 
         private void UpdateWeight()
         {
