@@ -99,11 +99,10 @@
             this.NodeListBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.NodeListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NodeListBox.FormattingEnabled = true;
-            this.NodeListBox.Location = new System.Drawing.Point(2, 2);
-            this.NodeListBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.NodeListBox.Location = new System.Drawing.Point(3, 3);
             this.NodeListBox.Name = "NodeListBox";
             this.WheelJointsLayout.SetRowSpan(this.NodeListBox, 2);
-            this.NodeListBox.Size = new System.Drawing.Size(220, 96);
+            this.NodeListBox.Size = new System.Drawing.Size(218, 94);
             this.NodeListBox.TabIndex = 4;
             this.NodeListBox.SelectedIndexChanged += new System.EventHandler(this.NodeListBox_SelectedIndexChanged);
             this.NodeListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NodeListBox_MouseDown);
