@@ -309,13 +309,13 @@ namespace BxDRobotExporter.Wizard
             if (leftNodes <= 3)
                 LeftWheelsPanel.ColumnStyles[1].Width = 0;
             else
-                LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth - 3;
+                LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
 
             // Shrink items width if a scroll bar will appear
             if (rightNodes <= 3)
                 RightWheelsPanel.ColumnStyles[1].Width = 0;
             else
-                RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth - 3;
+                RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
 
             OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
 
