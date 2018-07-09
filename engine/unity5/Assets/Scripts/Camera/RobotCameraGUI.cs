@@ -4,6 +4,7 @@ using Synthesis.FSM;
 using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Configuration;
 
 namespace Synthesis.Camera
 {
@@ -40,12 +41,12 @@ namespace Synthesis.Camera
         //The indicator object is originally under robot camera list in unity scene
         public GameObject CameraIndicator;
         GameObject showCameraButton;
+        GameObject moveArrows;
 
         //Camera configuration
         GameObject configureRobotCameraButton;
         GameObject configureCameraPanel;
         //Toggle between horizontal plane and height
-        GameObject cameraConfigurationModeButton;
         GameObject changeCameraNodeButton;
         Text cameraNodeText;
         GameObject cancelNodeSelectionButton;
@@ -116,7 +117,6 @@ namespace Synthesis.Camera
             configureCameraPanel = Auxiliary.FindObject(canvas, "CameraConfigurationPanel");
             configureRobotCameraButton = Auxiliary.FindObject(canvas, "CameraConfigurationButton");
             changeCameraNodeButton = Auxiliary.FindObject(configureCameraPanel, "ChangeNodeButton");
-            cameraConfigurationModeButton = Auxiliary.FindObject(configureCameraPanel, "ConfigurationMode");
             cameraNodeText = Auxiliary.FindObject(configureCameraPanel, "NodeText").GetComponent<Text>();
             cancelNodeSelectionButton = Auxiliary.FindObject(configureCameraPanel, "CancelNodeSelectionButton");
 
@@ -216,6 +216,8 @@ namespace Synthesis.Camera
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
                 configureRobotCameraButton.SetActive(false);
 
+                robotCameraManager.ArrowsActive = false;
+                State.UnlockRobots();
             }
             CameraIndicator.SetActive(indicatorActive);
         }
@@ -234,28 +236,18 @@ namespace Synthesis.Camera
                 //Update the node where current camera is attached to
                 cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
+
+                State.LockRobots();
+                robotCameraManager.ArrowsActive = true;
             }
             else
             {
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
                 ResetConfigurationWindow();
                 dynamicCamera.SwitchToState(preConfigCamState);
-            }
-        }
 
-        /// <summary>
-        /// Toggle between changing position along horizontal plane or changing height
-        /// </summary>
-        public void ToggleConfigurationMode()
-        {
-            robotCameraManager.IsChangingHeight = !robotCameraManager.IsChangingHeight;
-            if (robotCameraManager.IsChangingHeight)
-            {
-                cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Horizontal Plane";
-            }
-            else
-            {
-                cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+                robotCameraManager.ArrowsActive = false;
+                State.UnlockRobots();
             }
         }
 
@@ -388,7 +380,6 @@ namespace Synthesis.Camera
             {
                 robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
             }
-
         }
 
         /// <summary>
@@ -468,12 +459,10 @@ namespace Synthesis.Camera
 
             showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
             showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Range";
-            cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
 
             cameraAnglePanel.SetActive(false);
             cameraFOVPanel.SetActive(false);
             configureCameraPanel.SetActive(false);
-
         }
 
         /// <summary>
@@ -494,6 +483,5 @@ namespace Synthesis.Camera
             robotCameraManager.CurrentCamera.SetActive(false);
         }
         #endregion
-
     }
 }

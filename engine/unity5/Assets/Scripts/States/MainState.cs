@@ -562,6 +562,27 @@ namespace Synthesis.States
         #region Robot Interaction Functions
 
         /// <summary>
+        /// Locks all <see cref="SimulatorRobot"/>s currently in the simulation.
+        /// </summary>
+        public void LockRobots()
+        {
+            foreach (SimulatorRobot robot in SpawnedRobots)
+                robot.LockRobot();
+        }
+
+        /// <summary>
+        /// Unlocks all <see cref="SimulatorRobot"/>s currently in the simulation.
+        /// </summary>
+        public void UnlockRobots()
+        {
+            if (ActiveRobot.IsResetting)
+                return;
+
+            foreach (SimulatorRobot robot in SpawnedRobots)
+                robot.UnlockRobot();
+        }
+
+        /// <summary>
         /// Starts the resetting process of the active robot
         /// </summary>
         public void BeginRobotReset()
@@ -586,9 +607,9 @@ namespace Synthesis.States
         /// <summary>
         /// Shifts the active robot by a set transposition vector
         /// </summary>
-        public void TransposeRobot(Vector3 transposition)
+        public void TranslateRobot(Vector3 transposition)
         {
-            ActiveRobot.TransposeRobot(transposition);
+            ActiveRobot.TranslateRobot(transposition);
         }
 
         /// <summary>
