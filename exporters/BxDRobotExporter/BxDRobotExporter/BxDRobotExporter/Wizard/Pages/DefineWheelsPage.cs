@@ -206,16 +206,13 @@ namespace BxDRobotExporter.Wizard
         }
         
         public event Action ActivateNext;
-        private void OnActivateNext()
-        {
-            this.ActivateNext?.Invoke();
-        }
+        private void OnActivateNext() => ActivateNext?.Invoke();
 
         public event Action DeactivateNext;
-        private void OnDeactivateNext()
-        {
-            this.DeactivateNext?.Invoke();
-        }
+        private void OnDeactivateNext() => DeactivateNext?.Invoke();
+
+        public event Action<bool> SetEndEarly;
+        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
 
         public event InvalidatePageEventHandler InvalidatePage;
         public void OnInvalidatePage()
@@ -405,6 +402,7 @@ namespace BxDRobotExporter.Wizard
                             break;
                         }
                     }
+
                     placementList.Remove(wantedPanel); // removes the panel
                     placementList.Add(wantedPanel);//    adds the panel back in
                     placementPanel.Controls.Add(wantedPanel);// ^^
@@ -456,9 +454,14 @@ namespace BxDRobotExporter.Wizard
                             panel.FillSlot(listItems[toFind], toFind, true);
                             break;
                     }
+
                     placementPanel.Controls.AddRange(tempControls);// add the temp controls back into the array
                     placementList.AddRange(tempSlots);//                               ^^
                     NodeListBox.Items.Remove(toFind);// removes the corresponding from the list of nodes
+
+                    if (NodeListBox.Items.Count < 1)
+                        OnSetEndEarly(true); // Skip next page, no parts are left
+
                     return; // quites the method
                 }
             }
@@ -484,6 +487,9 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
             NodeListBox.Items.Remove(toFind);// removes the corresponding from the list of nodes 
+
+            if (NodeListBox.Items.Count < 1)
+                OnSetEndEarly(true); // Skip next page, no parts are left
         }
 
         public String RemoveWheelSetupPanel(String s)// handles the user clicking the remove button in a wheel panel/ slot
@@ -521,6 +527,7 @@ namespace BxDRobotExporter.Wizard
             {
                 NodeListBox.Items.Add(sortedItem);// add the ordered nodes back to the list
             }
+            OnSetEndEarly(false);
             return "";// needed because c# gets real ticked if this isn't here
         }
 

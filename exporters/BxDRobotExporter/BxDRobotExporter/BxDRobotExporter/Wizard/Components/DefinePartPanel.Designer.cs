@@ -70,7 +70,6 @@
             // 
             this.NodeGroupBox.AutoSize = true;
             this.NodeGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.NodeGroupBox.BackColor = System.Drawing.SystemColors.Control;
             this.NodeGroupBox.Controls.Add(this.MainTableLayout);
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
             this.NodeGroupBox.Margin = new System.Windows.Forms.Padding(4);
@@ -413,7 +412,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackColor = System.Drawing.Color.Transparent;
             this.Controls.Add(this.NodeGroupBox);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "DefinePartPanel";
