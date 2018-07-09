@@ -230,7 +230,8 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         /// <param name="nodeName">Readable name of the node to set side of.</param>
         /// <param name="side">Side to move node to.</param>
-        public void SetWheelSide(string nodeName, WheelSide side)
+        /// <param name="insertBefore">Node to insert before in layout. Null indicates to add to end of column. Does not apply for unassigned wheels.</param>
+        public void SetWheelSide(string nodeName, WheelSide side, string insertBefore = null)
         {
             if (nodeName == null)
                 return;
@@ -238,7 +239,33 @@ namespace BxDRobotExporter.Wizard
             if (!wheelSlots.ContainsKey(nodeName))
                 return;
 
+            // Remove from current orders
+            if (leftOrder.Contains(nodeName))
+                leftOrder.Remove(nodeName);
+
+            // Remove from current orders
+            if (rightOrder.Contains(nodeName))
+                rightOrder.Remove(nodeName);
+
+            // Update side of wheel data
             wheelSlots[nodeName].SetupPanel.Side = side;
+
+            // Insert into appropriate order
+            if (side == WheelSide.LEFT)
+            {
+                if (insertBefore == null || !leftOrder.Contains(insertBefore))
+                    leftOrder.Add(nodeName);
+                else
+                    leftOrder.Insert(leftOrder.IndexOf(insertBefore), nodeName);
+            }
+            else if (side == WheelSide.RIGHT)
+            {
+                if (insertBefore == null || !rightOrder.Contains(insertBefore))
+                    rightOrder.Add(nodeName);
+                else
+                    rightOrder.Insert(rightOrder.IndexOf(insertBefore), nodeName);
+            }
+
             UpdateUI();
         }
 
