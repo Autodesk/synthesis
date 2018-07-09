@@ -265,18 +265,20 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         private void UpdateUI()
         {
+            // Remove all items
+            NodeListBox.Items.Clear();
+
+            LeftWheelsPanel.Controls.Clear();
+            LeftWheelsPanel.RowCount = 0;
+            LeftWheelsPanel.RowStyles.Clear();
+
+            RightWheelsPanel.Controls.Clear();
+            RightWheelsPanel.RowCount = 0;
+            RightWheelsPanel.RowStyles.Clear();
+
             // Pause layout calculations to prevent siezures
             LeftWheelsPanel.SuspendLayout();
             RightWheelsPanel.SuspendLayout();
-
-            // Remove all items
-            NodeListBox.Items.Clear();
-            LeftWheelsPanel.Controls.Clear();
-            LeftWheelsPanel.RowCount = 1;
-            LeftWheelsPanel.RowStyles.Clear();
-            RightWheelsPanel.Controls.Clear();
-            RightWheelsPanel.RowCount = 1;
-            RightWheelsPanel.RowStyles.Clear();
 
             // Add items to panels or list view
             int unassignedNodes = 0;
@@ -307,13 +309,13 @@ namespace BxDRobotExporter.Wizard
             if (leftNodes <= 3)
                 LeftWheelsPanel.ColumnStyles[1].Width = 0;
             else
-                LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
+                LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth - 3;
 
             // Shrink items width if a scroll bar will appear
             if (rightNodes <= 3)
                 RightWheelsPanel.ColumnStyles[1].Width = 0;
             else
-                RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
+                RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth - 3;
 
             OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
 
