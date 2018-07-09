@@ -50,7 +50,7 @@ namespace Synthesis.States
 
             replayNameText = GameObject.Find("ReplayNameText").GetComponent<Text>();
 
-            DynamicCamera.MovingEnabled = false;
+            DynamicCamera.ControlEnabled = false;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Synthesis.States
         public override void End()
         {
             //canvas.SetActive(false);
-            DynamicCamera.MovingEnabled = true;
+            DynamicCamera.ControlEnabled = true;
         }
 
         /// <summary>
