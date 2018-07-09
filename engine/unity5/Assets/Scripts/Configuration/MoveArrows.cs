@@ -40,10 +40,26 @@ namespace Synthesis.Configuration
         /// Returns a <see cref="Vector3"/> representing the direction the selected
         /// arrow is facing, or <see cref="Vector3.zero"/> if no arrow is selected.
         /// </summary>
-        private Vector3 ArrowDirection => ActiveArrow <= ArrowType.Center ? Vector3.zero :
-                ActiveArrow == ArrowType.X ? transform.right :
-                ActiveArrow == ArrowType.Y ? transform.up :
-                transform.forward;
+        private Vector3 ArrowDirection
+        {
+            get
+            {
+                switch (ActiveArrow)
+                {
+                    case ArrowType.X:
+                    case ArrowType.YZ:
+                        return transform.right;
+                    case ArrowType.Y:
+                    case ArrowType.XZ:
+                        return transform.up;
+                    case ArrowType.Z:
+                    case ArrowType.XY:
+                        return transform.forward;
+                    default:
+                        return Vector3.zero;
+                }
+            }
+        }
 
         /// <summary>
         /// Called when the arrows are dragged.
@@ -73,20 +89,20 @@ namespace Synthesis.Configuration
             Ray mouseRay = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             Vector3 currentArrowPoint;
 
-            if (activeArrow == ArrowType.Center)
+            if (activeArrow <= ArrowType.Z)
             {
-                Plane plane = new Plane(UnityEngine.Camera.main.transform.forward, transform.position);
+                Vector3 closestPointScreenRay;
+                Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out currentArrowPoint,
+                    mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection);
+            }
+            else
+            {
+                Plane plane = new Plane(ArrowDirection, transform.position);
 
                 float enter;
                 plane.Raycast(mouseRay, out enter);
 
                 currentArrowPoint = mouseRay.GetPoint(enter);
-            }
-            else
-            {
-                Vector3 closestPointScreenRay;
-                Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out currentArrowPoint,
-                    mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection);
             }
 
             if (lastArrowPoint != Vector3.zero)

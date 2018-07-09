@@ -14,6 +14,7 @@ namespace Synthesis.Configuration
         private ArrowType arrowType;
         private Material material;
         private Color color;
+        private bool selectable;
 
         /// <summary>
         /// Initializes the <see cref="ArrowType"/> and saves the assigned
@@ -26,6 +27,7 @@ namespace Synthesis.Configuration
 
             material = GetComponent<Renderer>().material;
             color = material.color;
+            selectable = true;
         }
 
         /// <summary>
@@ -44,8 +46,26 @@ namespace Synthesis.Configuration
         private void OnMouseUp()
         {
             SendMessageUpwards("OnArrowReleased");
-            color.a = 1f;
             material.color = color;
+        }
+
+        /// <summary>
+        /// Highlights the arrow yellow when it is hovered over.
+        /// </summary>
+        private void OnMouseEnter()
+        {
+            if (selectable)
+                material.color = Color.Lerp(color, Color.yellow, 0.75f);
+        }
+
+        /// <summary>
+        /// Returns the arrow to its original color when the mouse
+        /// is no longer hovering over it.
+        /// </summary>
+        private void OnMouseExit()
+        {
+            if (selectable)
+                material.color = color;
         }
 
         /// <summary>
@@ -55,8 +75,16 @@ namespace Synthesis.Configuration
         /// <param name="activeArrow"></param>
         private void SetActiveArrow(ArrowType activeArrow)
         {
-            color.a = activeArrow == ArrowType.None || arrowType == activeArrow ? 1f : HiddenAlpha;
-            material.color = color;
+            if (selectable = (activeArrow == ArrowType.None))
+            {
+                material.color = color;
+            }
+            else
+            {
+                Color newColor = color;
+                newColor.a = arrowType == activeArrow ? 1f : color.a * HiddenAlpha;
+                material.color = newColor;
+            }
         }
     }
 }

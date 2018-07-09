@@ -216,6 +216,8 @@ namespace Synthesis.Camera
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
                 configureRobotCameraButton.SetActive(false);
 
+                robotCameraManager.ArrowsActive = false;
+                State.UnlockRobots();
             }
             CameraIndicator.SetActive(indicatorActive);
         }
@@ -235,7 +237,8 @@ namespace Synthesis.Camera
                 cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
 
-                AttachMoveArrows();
+                State.LockRobots();
+                robotCameraManager.ArrowsActive = true;
             }
             else
             {
@@ -243,26 +246,10 @@ namespace Synthesis.Camera
                 ResetConfigurationWindow();
                 dynamicCamera.SwitchToState(preConfigCamState);
 
-                Destroy(moveArrows);
-                moveArrows = null;
+                robotCameraManager.ArrowsActive = false;
+                State.UnlockRobots();
             }
         }
-
-        ///// <summary>
-        ///// Toggle between changing position along horizontal plane or changing height
-        ///// </summary>
-        //public void ToggleConfigurationMode()
-        //{
-        //    robotCameraManager.IsChangingHeight = !robotCameraManager.IsChangingHeight;
-        //    if (robotCameraManager.IsChangingHeight)
-        //    {
-        //        cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Horizontal Plane";
-        //    }
-        //    else
-        //    {
-        //        cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
-        //    }
-        //}
 
         /// <summary>
         /// Going into the state of selecting a new node and confirming it
@@ -496,24 +483,5 @@ namespace Synthesis.Camera
             robotCameraManager.CurrentCamera.SetActive(false);
         }
         #endregion
-
-        /// <summary>
-        /// Attaches <see cref="MoveArrows"/> to the camera indicator.
-        /// </summary>
-        private void AttachMoveArrows()
-        {
-            if (moveArrows != null)
-                Destroy(moveArrows);
-
-            // TODO:
-            // Fix the issue were the camera moves when driving and dragging the arrows.
-            // Fix the issue where arrows are still visible if you click "show/hide camera" while configuring.
-            // Fix the issue where the arrows are visible by the robot camera.
-
-            moveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
-            moveArrows.name = "CameraMoveArrows";
-            moveArrows.transform.parent = robotCameraManager.CurrentCamera.transform;
-            moveArrows.GetComponent<MoveArrows>().Translate = (translation) => robotCameraManager.CurrentCamera.transform.Translate(translation, Space.World);
-        }
     }
 }

@@ -40,6 +40,23 @@ namespace Synthesis.Camera
         public bool IsShowingAngle { get; set; }
         public bool IsChangingFOV { get; set; }
 
+        private bool arrowsActive;
+
+        public bool ArrowsActive
+        {
+            get
+            {
+                return arrowsActive;
+            }
+            set
+            {
+                arrowsActive = value;
+
+                foreach (GameObject g in robotCameraList)
+                    g.GetComponent<RobotCamera>().ArrowsActive = arrowsActive;
+            }
+        }
+
         private void Start()
         {
             robotCameraListObject = GameObject.Find("RobotCameraList");
