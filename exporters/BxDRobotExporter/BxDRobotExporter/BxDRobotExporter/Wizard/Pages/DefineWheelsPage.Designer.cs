@@ -34,8 +34,8 @@
             this.WheelJointsLayout = new System.Windows.Forms.TableLayoutPanel();
             this.NodeListBox = new System.Windows.Forms.ListBox();
             this.AutoFill = new System.Windows.Forms.Button();
-            this.LeftWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.LeftWheelsGroup = new System.Windows.Forms.GroupBox();
+            this.LeftWheelsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.RobotInfoGroupBox = new System.Windows.Forms.GroupBox();
             this.RobotInfoLayout = new System.Windows.Forms.TableLayoutPanel();
             this.DriveTrainLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -45,8 +45,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.WeightUnitSelector = new System.Windows.Forms.ComboBox();
             this.WeightBox = new System.Windows.Forms.NumericUpDown();
-            this.RightWheelsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.RightWheelsGroup = new System.Windows.Forms.GroupBox();
+            this.RightWheelsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.WheelNodeGroupBox.SuspendLayout();
             this.WheelJointsLayout.SuspendLayout();
@@ -80,7 +80,6 @@
             this.DefineWheelsInstruction1.TabIndex = 2;
             this.DefineWheelsInstruction1.Text = "Drag the appropriate parts from the list to the left into their respective column" +
     "s below.";
-            this.DefineWheelsInstruction1.Click += new System.EventHandler(this.DefineWheelsInstruction1_Click);
             // 
             // WheelNodeGroupBox
             // 
@@ -120,11 +119,11 @@
             this.NodeListBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.NodeListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NodeListBox.FormattingEnabled = true;
-            this.NodeListBox.Location = new System.Drawing.Point(4, 4);
-            this.NodeListBox.Margin = new System.Windows.Forms.Padding(4);
+            this.NodeListBox.Location = new System.Drawing.Point(3, 4);
+            this.NodeListBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.NodeListBox.Name = "NodeListBox";
             this.WheelJointsLayout.SetRowSpan(this.NodeListBox, 2);
-            this.NodeListBox.Size = new System.Drawing.Size(216, 108);
+            this.NodeListBox.Size = new System.Drawing.Size(218, 108);
             this.NodeListBox.TabIndex = 4;
             this.NodeListBox.SelectedIndexChanged += new System.EventHandler(this.NodeListBox_SelectedIndexChanged);
             this.NodeListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NodeListBox_MouseDown);
@@ -139,18 +138,6 @@
             this.AutoFill.Text = "AutoFill";
             this.AutoFill.UseVisualStyleBackColor = true;
             // 
-            // LeftWheelsPanel
-            // 
-            this.LeftWheelsPanel.AutoScroll = true;
-            this.LeftWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LeftWheelsPanel.Location = new System.Drawing.Point(3, 16);
-            this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.LeftWheelsPanel.Name = "LeftWheelsPanel";
-            this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 412);
-            this.LeftWheelsPanel.TabIndex = 4;
-            this.LeftWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
-            this.LeftWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Panel_DragEnter);
-            // 
             // LeftWheelsGroup
             // 
             this.LeftWheelsGroup.AllowDrop = true;
@@ -163,7 +150,23 @@
             this.LeftWheelsGroup.TabStop = false;
             this.LeftWheelsGroup.Text = "Left Wheels";
             this.LeftWheelsGroup.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
-            this.LeftWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.Panel_DragEnter);
+            this.LeftWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.WheelsPanel_DragEnter);
+            // 
+            // LeftWheelsPanel
+            // 
+            this.LeftWheelsPanel.AllowDrop = true;
+            this.LeftWheelsPanel.AutoScroll = true;
+            this.LeftWheelsPanel.ColumnCount = 1;
+            this.LeftWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.LeftWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LeftWheelsPanel.Location = new System.Drawing.Point(3, 16);
+            this.LeftWheelsPanel.Name = "LeftWheelsPanel";
+            this.LeftWheelsPanel.RowCount = 1;
+            this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 412);
+            this.LeftWheelsPanel.TabIndex = 0;
+            this.LeftWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
+            this.LeftWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.WheelsPanel_DragEnter);
             // 
             // RobotInfoGroupBox
             // 
@@ -302,18 +305,6 @@
             this.WeightBox.Size = new System.Drawing.Size(106, 20);
             this.WeightBox.TabIndex = 3;
             // 
-            // RightWheelsPanel
-            // 
-            this.RightWheelsPanel.AutoScroll = true;
-            this.RightWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RightWheelsPanel.Location = new System.Drawing.Point(3, 16);
-            this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.RightWheelsPanel.Name = "RightWheelsPanel";
-            this.RightWheelsPanel.Size = new System.Drawing.Size(218, 412);
-            this.RightWheelsPanel.TabIndex = 7;
-            this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
-            this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Panel_DragEnter);
-            // 
             // RightWheelsGroup
             // 
             this.RightWheelsGroup.AllowDrop = true;
@@ -326,7 +317,23 @@
             this.RightWheelsGroup.TabStop = false;
             this.RightWheelsGroup.Text = "Right Wheels";
             this.RightWheelsGroup.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
-            this.RightWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.Panel_DragEnter);
+            this.RightWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.WheelsPanel_DragEnter);
+            // 
+            // RightWheelsPanel
+            // 
+            this.RightWheelsPanel.AllowDrop = true;
+            this.RightWheelsPanel.AutoScroll = true;
+            this.RightWheelsPanel.ColumnCount = 1;
+            this.RightWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.RightWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RightWheelsPanel.Location = new System.Drawing.Point(3, 16);
+            this.RightWheelsPanel.Name = "RightWheelsPanel";
+            this.RightWheelsPanel.RowCount = 1;
+            this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.RightWheelsPanel.Size = new System.Drawing.Size(218, 412);
+            this.RightWheelsPanel.TabIndex = 1;
+            this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
+            this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.WheelsPanel_DragEnter);
             // 
             // MainLayout
             // 
@@ -380,12 +387,10 @@
         private System.Windows.Forms.Label DefineWheelsTitleLabel;
         private System.Windows.Forms.Label DefineWheelsInstruction1;
         private System.Windows.Forms.GroupBox WheelNodeGroupBox;
-        private System.Windows.Forms.FlowLayoutPanel LeftWheelsPanel;
         private System.Windows.Forms.GroupBox RobotInfoGroupBox;
         private System.Windows.Forms.ComboBox DriveTrainDropdown;
         private System.Windows.Forms.Label DriveTrainLabel;
         private System.Windows.Forms.Button AutoFill; 
-        private System.Windows.Forms.FlowLayoutPanel RightWheelsPanel;
         private System.Windows.Forms.ListBox NodeListBox;
         private System.Windows.Forms.NumericUpDown WeightBox;
         private System.Windows.Forms.Label label3;
@@ -397,5 +402,7 @@
         private System.Windows.Forms.TableLayoutPanel RobotInfoLayout;
         private System.Windows.Forms.TableLayoutPanel DriveTrainLayout;
         private System.Windows.Forms.TableLayoutPanel WeightLayout;
+        private System.Windows.Forms.TableLayoutPanel LeftWheelsPanel;
+        private System.Windows.Forms.TableLayoutPanel RightWheelsPanel;
     }
 }
