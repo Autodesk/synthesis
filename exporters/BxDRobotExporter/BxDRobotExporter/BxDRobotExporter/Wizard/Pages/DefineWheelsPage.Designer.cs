@@ -139,7 +139,6 @@
             // 
             // RobotInfoGroupBox
             // 
-            this.RobotInfoGroupBox.BackColor = System.Drawing.SystemColors.Control;
             this.RobotInfoGroupBox.Controls.Add(this.WeightUnitSelector);
             this.RobotInfoGroupBox.Controls.Add(this.WeightBox);
             this.RobotInfoGroupBox.Controls.Add(this.label3);
