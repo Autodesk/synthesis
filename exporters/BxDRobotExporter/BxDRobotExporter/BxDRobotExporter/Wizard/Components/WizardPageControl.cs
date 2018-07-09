@@ -177,6 +177,10 @@ namespace BxDRobotExporter.Wizard
         {
             Controls[1].Visible = true;
             WizardNavigator.UpdateState(defaultNavigatorStates[1]);
+
+            // Initialize first page
+            if (!((IWizardPage)(Controls[1])).Initialized)
+                ((IWizardPage)(Controls[1])).Initialize();
         }
     }
 }
