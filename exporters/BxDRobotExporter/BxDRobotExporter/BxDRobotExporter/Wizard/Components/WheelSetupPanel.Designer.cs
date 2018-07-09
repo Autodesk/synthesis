@@ -84,9 +84,9 @@
             "Normal",
             "Omni",
             "Mecanum"});
-            this.WheelTypeComboBox.Location = new System.Drawing.Point(97, 3);
+            this.WheelTypeComboBox.Location = new System.Drawing.Point(84, 3);
             this.WheelTypeComboBox.Name = "WheelTypeComboBox";
-            this.WheelTypeComboBox.Size = new System.Drawing.Size(88, 21);
+            this.WheelTypeComboBox.Size = new System.Drawing.Size(101, 21);
             this.WheelTypeComboBox.TabIndex = 0;
             this.WheelTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.WheelTypeComboBox_SelectedIndexChanged);
             this.WheelTypeComboBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
@@ -101,9 +101,9 @@
             "Low",
             "Medium",
             "High"});
-            this.FrictionComboBox.Location = new System.Drawing.Point(97, 30);
+            this.FrictionComboBox.Location = new System.Drawing.Point(84, 30);
             this.FrictionComboBox.Name = "FrictionComboBox";
-            this.FrictionComboBox.Size = new System.Drawing.Size(88, 21);
+            this.FrictionComboBox.Size = new System.Drawing.Size(101, 21);
             this.FrictionComboBox.TabIndex = 3;
             this.FrictionComboBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseDown);
             this.FrictionComboBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WheelSetupPanel_MouseUp);
