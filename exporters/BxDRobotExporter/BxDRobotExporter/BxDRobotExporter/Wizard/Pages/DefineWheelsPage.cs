@@ -36,6 +36,8 @@ namespace BxDRobotExporter.Wizard
         public DefineWheelsPage()
         {
             InitializeComponent();
+            LeftWheelsPanel.HorizontalScroll.Maximum = 0;
+            RightWheelsPanel.HorizontalScroll.Maximum = 0;
             NodeListBox.AllowDrop = true;
             DriveTrainDropdown.SelectedIndex = 0;
 
@@ -268,27 +270,47 @@ namespace BxDRobotExporter.Wizard
             RightWheelsPanel.RowCount = 1;
 
             // Add items to panels or list view
-            int itemsLeft = 0;
+            int unassignedNodes = 0;
+            int leftNodes = 0;
+            int rightNodes = 0;
             foreach (KeyValuePair<string, WheelSlotPanel> wheelSlot in wheelSlots)
             {
                 switch (wheelSlot.Value.SetupPanel.Side)
                 {
                     case WheelSide.UNASSIGNED:
                         NodeListBox.Items.Add(wheelSlot.Key);
-                        itemsLeft++;
+                        unassignedNodes++;
                         break;
 
                     case WheelSide.LEFT:
                         AddControlToNewTableRow(wheelSlot.Value, LeftWheelsPanel);
+                        leftNodes++;
                         break;
 
                     case WheelSide.RIGHT:
                         AddControlToNewTableRow(wheelSlot.Value, RightWheelsPanel);
+                        rightNodes++;
                         break;
                 }
             }
 
-            OnSetEndEarly(itemsLeft == 0); // Skip next page if no parts are left
+            // Shrink items width if a scroll bar will appear
+            Padding leftMargin = LeftWheelsPanel.Margin;
+            if (leftNodes <= 3)
+                leftMargin.Right = 0;
+            else
+                leftMargin.Right = SystemInformation.VerticalScrollBarWidth;
+            LeftWheelsPanel.Margin = leftMargin;
+
+            // Shrink items width if a scroll bar will appear
+            Padding rightMargin = LeftWheelsPanel.Margin;
+            if (rightNodes <= 3)
+                rightMargin.Right = 0;
+            else
+                rightMargin.Right = SystemInformation.VerticalScrollBarWidth;
+            RightWheelsPanel.Margin = rightMargin;
+
+            OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
 
             // Resume layout calculations
             ResumeLayout();

@@ -160,6 +160,7 @@
             this.LeftWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.LeftWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftWheelsPanel.Location = new System.Drawing.Point(3, 16);
+            this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(0);
             this.LeftWheelsPanel.Name = "LeftWheelsPanel";
             this.LeftWheelsPanel.RowCount = 1;
             this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -327,6 +328,7 @@
             this.RightWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.RightWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RightWheelsPanel.Location = new System.Drawing.Point(3, 16);
+            this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(0);
             this.RightWheelsPanel.Name = "RightWheelsPanel";
             this.RightWheelsPanel.RowCount = 1;
             this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
