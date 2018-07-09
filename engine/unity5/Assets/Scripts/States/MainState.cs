@@ -575,6 +575,9 @@ namespace Synthesis.States
         /// </summary>
         public void UnlockRobots()
         {
+            if (ActiveRobot.IsResetting)
+                return;
+
             foreach (SimulatorRobot robot in SpawnedRobots)
                 robot.UnlockRobot();
         }
