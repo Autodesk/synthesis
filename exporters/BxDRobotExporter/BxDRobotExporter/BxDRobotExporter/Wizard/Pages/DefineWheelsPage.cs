@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace BxDRobotExporter.Wizard
 {
@@ -32,11 +34,11 @@ namespace BxDRobotExporter.Wizard
 
         public DefineWheelsPage()
         {
-            WheelSetupPanel.remove += new OnWheelSetupPanelRemove(this.RemoveWheelSetupPanel);
-            WheelSetupPanel.hover += new OnWheelSetupPanelHover(this.WheelSetupHover);
+            WheelSetupPanel.remove += new OnWheelSetupPanelRemove(this.RemoveWheelSetupPanel);// subscribes the removal handler to the removal handler in the setupPanel so we can properly remove the panel
+            WheelSetupPanel.hover += new OnWheelSetupPanelHover(this.WheelSetupHover);// subscribes the hover handler to the hover handler in the setupPanel so we can properly select the node in Inventor
             InitializeComponent();
-            RightWheelsPanel.AllowDrop = true;
-            LeftWheelsPanel.AllowDrop = true;
+            RightWheelsPanel.AllowDrop = true;// allow the drops in the panel
+            LeftWheelsPanel.AllowDrop = true;// allow the drops in the panel
             NodeListBox.AllowDrop = true;
 
             DriveTrainDropdown.SelectedIndex = 0;
@@ -89,8 +91,6 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
             OnInvalidatePage();
-            //checkedListItems.Clear();
-            //UpdateWheelPanes();
         }
 
         /// <summary>
@@ -119,11 +119,13 @@ namespace BxDRobotExporter.Wizard
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
             foreach(var slot in rightSlots)
             {
+                slot.wheelSetupPanel.isRightWheel = true;// tells the backend whether or not to give the wheel a right or left PWM value
                 WizardData.Instance.wheels.Add(slot.WheelData);
                 WizardData.WheelSetupData wheel = slot.WheelData;
             }
             foreach (var slot in leftSlots)
             {
+                slot.wheelSetupPanel.isRightWheel = false;// tells the backend whether or not to give the wheel a right or left PWM value
                 WizardData.Instance.wheels.Add(slot.WheelData);
                 WizardData.WheelSetupData wheel = slot.WheelData;
             }
@@ -176,7 +178,6 @@ namespace BxDRobotExporter.Wizard
                 RightWheelsPanel.Controls.Add(rightPanel);
             }
             _initialized = true;
-
         }
 
         public void UpdateWheelPanes()
@@ -186,8 +187,6 @@ namespace BxDRobotExporter.Wizard
                 int downTo = leftSlots.Count;
                 for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
                 {
-                    //NodeListBox.
-
                     LeftWheelsPanel.Controls.Remove(leftSlots.ElementAt(i));
                     leftSlots.Remove(leftSlots.ElementAt(i));
                 }
@@ -260,141 +259,284 @@ namespace BxDRobotExporter.Wizard
                 WeightBox.Value = 0;
         }
 
-        private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
+        private void NodeListBox_MouseDown(object sender, MouseEventArgs e)// catches the mouse down even in the nodelistbox to begin the drag and drop event
         {
             try
             {
-                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.SelectedItem.ToString()]);
-                NodeListBox.DoDragDrop(NodeListBox.SelectedItems, DragDropEffects.Copy |
-                            DragDropEffects.Move);
+                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.SelectedItem.ToString()]);// selects/highlights the appriate node in Inventor
+                NodeListBox.DoDragDrop(NodeListBox.SelectedItem.ToString() + " From Node Box", DragDropEffects.Copy | DragDropEffects.Move);// activates the drag and drop method with the name of the selected object so the when the user drops the node we can tell which node was dragged
             }
-            catch (Exception) { }
+            catch (Exception) { }// catches any freakiness with the user trying to drag with nothing selected
         }
 
-        private void RightWheelsPanel_DragEnter(object sender, DragEventArgs e)
+        private void RightWheelsPanel_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
         {
-            e.Effect = DragDropEffects.Copy;
-        }
-
-        private void RightWheelsPanel_DragDrop(object sender, DragEventArgs e)
-        {
-            try
+            if (((String)e.Data.GetData(DataFormats.StringFormat, true)).Contains(" From Node Box"))// checks the origin of the drag and drop, if the drag is from the node list box
             {
-                foreach (String r in NodeListBox.SelectedItems)
+                InitializePanelFormNodeList((String)e.Data.GetData(DataFormats.StringFormat, true), RightWheelsPanel, rightSlots);// calls the initialize method with the correct side values
+            }
+            else if (((String)e.Data.GetData(DataFormats.StringFormat, true)).Contains(" From Node Group")) // if the drag is from an existing panel
+            {
+                MovePanelFromGroup((String)e.Data.GetData(DataFormats.StringFormat, true), RightWheelsPanel, rightSlots, LeftWheelsPanel, leftSlots);// calls the method to handle a panel move with an existing panel with the appropriate side values
+            }
+        }
+
+        private void Panel_DragEnter(object sender, DragEventArgs e)// called when the drag hovers over the panel
+        {
+            e.Effect = DragDropEffects.Copy;// activates the copy event so the user can drop the node
+        }
+       
+        private void LeftWheelsPanel_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
+        {
+            if (((String)e.Data.GetData(DataFormats.StringFormat, true)).Contains(" From Node Box"))// checks the origin of the drag and drop, checks if the drag is from the node list box
+            {
+                InitializePanelFormNodeList((String)e.Data.GetData(DataFormats.StringFormat, true), LeftWheelsPanel, leftSlots);// calls the initialize method with the correct side values
+            }
+            else if (((String)e.Data.GetData(DataFormats.StringFormat, true)).Contains(" From Node Group")) // if the drag is from an existing panel
+            {
+                MovePanelFromGroup((String)e.Data.GetData(DataFormats.StringFormat, true), LeftWheelsPanel, leftSlots, RightWheelsPanel, rightSlots);// calls the method to handle a panel move with an existing panel with the appropriate side values
+            }
+        }
+
+        private void MovePanelFromGroup(String nodeName, FlowLayoutPanel placementPanel, List<WheelSlotPanel> placementList, FlowLayoutPanel otherPlacementPanel, List<WheelSlotPanel> otherPlacementList)// handles panel moves with existing panels both within the same group and between the two opposite groups
+        {
+            String toFind = nodeName.Substring(0, nodeName.IndexOf(" From Node Group"));// confirms that the data is from an existing node
+            OnInvalidatePage();// invalidates the page or something... idk lol
+            foreach (WheelSlotPanel wantedPanel in otherPlacementList)// iterates over all the panels in the other panel
+            {
+                if (wantedPanel.name.Equals(toFind))// checks if its the panel we want
                 {
-                    OnInvalidatePage();
-                    WheelSlotPanel panel = new WheelSlotPanel();
-                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                    rightSlots.Add(panel);
-                    RightWheelsPanel.Controls.Add(panel);
-                    switch (WizardData.Instance.driveTrain)
+                    foreach (WheelSlotPanel wheel in placementPanel.Controls)// iterates over the existing wheel nodes to find if a panel is below the cursor to add the wheel into that pos
+                    {
+                        if ((wheel.PointToScreen(Point.Empty).Y > System.Windows.Forms.Control.MousePosition.Y)) // checks if the panel is above or below the cursor
+                        {
+                            if (wantedPanel.Equals(wheel))// if the wanted area already contains the panel
+                            {
+                                return;// quit
+                            }
+                            foreach (WheelSlotPanel toRemove in otherPlacementPanel.Controls)// iterates over all the panels to find the one we want to remove
+                            {
+                                if (toRemove.name.Equals(toFind))// if the panel is the one we want
+                                {
+                                    otherPlacementPanel.Controls.Remove(toRemove);// removes the panel form the group view
+                                    break;
+                                }
+                            }
+
+                            otherPlacementList.Remove(wantedPanel);// removes the panel from the internal array
+                            Control[] tempControls = new Control[placementPanel.Controls.Count - placementPanel.Controls.IndexOf(wheel)]; // makes a temp array for the controls below the cursor
+                            List<WheelSlotPanel> tempSlots = new List<WheelSlotPanel>();//                                                         ^^
+                            int pos = 0;// tracks the position of the temp array
+                            for (int i = placementPanel.Controls.IndexOf(wheel); i < placementPanel.Controls.Count;)// iterates over the controls until there are only the controls above the cursor still exiting
+                            {
+                                tempControls[pos] = placementPanel.Controls[i];// copies the existing controls into a temp array
+                                tempSlots.Add(placementList[i]);//                                  ^^^
+                                pos++;// increase pos for the next loop thru
+                                placementPanel.Controls.RemoveAt(i); // removes the control form the actual array so we can add the control into the right place
+                                placementList.RemoveAt(i);//                  ^^
+                            }
+                            placementList.Add(wantedPanel);//    adds a new panel
+                            placementPanel.Controls.Add(wantedPanel);// ^^
+                            placementPanel.Controls.AddRange(tempControls);// add the temp controls back into the array
+                            placementList.AddRange(tempSlots);//                               ^^
+                            return; // quits the method
+                        }
+                    }
+                    // this gets called if the panel should be placed at the bottom
+                    foreach (WheelSlotPanel toRemove in otherPlacementPanel.Controls)// goes over the other panel lists to remove the panel
+                    {
+                        if (toRemove.name.Equals(toFind))// checks if the node is the one we want
+                        {
+                            otherPlacementPanel.Controls.Remove(toRemove);// removes the panel from the controls
+                            break;
+                        }
+                    }
+                    otherPlacementList.Remove(wantedPanel);// removes the panel from the other internal array
+                    placementList.Add(wantedPanel);//    adds a new panel
+                    placementPanel.Controls.Add(wantedPanel);// ^^
+                    return; // quites the method
+                }
+            }
+            foreach (WheelSlotPanel wantedPanel in placementList.ToList())// grabs a list form the left slot so when we mess with it c# does get annoyed
+            {
+                if (wantedPanel.name.Equals(toFind))// checks if this panel is the one we want
+                {
+                    foreach (WheelSlotPanel wheel in placementPanel.Controls)// iterates over the existing wheel nodes to find if a node is below the cursor to add the wheel into that pos
+                    {
+                        if ((wheel.PointToScreen(Point.Empty).Y > System.Windows.Forms.Control.MousePosition.Y)) // checks if the node is above or below the cursor
+                        {
+                            if (wantedPanel.Equals(wheel))// if the place where the panel should be put is the panel
+                            {
+                                return;// quit
+                            }
+                            foreach (WheelSlotPanel toRemove in placementPanel.Controls)// goes over the existing controll to find the one we want to remove
+                            {
+                                if (toRemove.name.Equals(toFind))// checks if its the panel we want
+                                {
+                                    placementPanel.Controls.Remove(toRemove);// removes the pane
+                                    break;// ends the loop
+                                }
+                            }
+                            placementList.Remove(wantedPanel);// removes the panel from the internal list
+                            Control[] tempControls = new Control[placementPanel.Controls.Count - placementPanel.Controls.IndexOf(wheel)]; // makes a temp array for the controls below the cursor
+                            List<WheelSlotPanel> tempSlots = new List<WheelSlotPanel>();//                                                         ^^
+                            int pos = 0;// tracks the position of the temp array
+                            for (int i = placementPanel.Controls.IndexOf(wheel); i < placementPanel.Controls.Count;)// iterates over the controls until there are only the controls above the cursor still exiting
+                            {
+                                tempControls[pos] = placementPanel.Controls[i];// copies the existing controls into a temp array
+                                tempSlots.Add(placementList[i]);//                                  ^^^
+                                pos++;// increase pos for the next loop thru
+                                placementPanel.Controls.RemoveAt(i); // removes the control form the actual array so we can add the control into the right place
+                                placementList.RemoveAt(i);//                  ^^
+                            }
+                            placementList.Add(wantedPanel);//    adds a new panel
+                            placementPanel.Controls.Add(wantedPanel);// ^^
+                            placementPanel.Controls.AddRange(tempControls);// add the temp controls back into the array
+                            placementList.AddRange(tempSlots);//                               ^^
+                            return; // quites the method
+                        }
+                    }
+                    //this just adds the panel at the bottom
+                    foreach (WheelSlotPanel toRemove in placementPanel.Controls) // goes over the panels in this group
+                    {
+                        if (toRemove.name.Equals(toFind))// checks if its the panel we want 
+                        {
+                            placementPanel.Controls.Remove(toRemove);// removes the panel from the group
+                            break;
+                        }
+                    }
+                    placementList.Remove(wantedPanel); // removes the panel
+                    placementList.Add(wantedPanel);//    adds the panel back in
+                    placementPanel.Controls.Add(wantedPanel);// ^^
+                    return; // quites the method
+                }
+            }
+        }
+
+        private void InitializePanelFormNodeList(String nodeName, FlowLayoutPanel placementPanel, List<WheelSlotPanel> placementList)// handles the creation of new panels from the nodelistbox
+        {
+            String toFind = nodeName.Substring(0, nodeName.IndexOf(" From Node Box"));// isolate the name of the drag and drop object
+            OnInvalidatePage();// not gonna lie. I've got no clue what this does. But everything else has it here so I assume its important. maybe not tho
+            WheelSlotPanel panel = new WheelSlotPanel();// preps a wheel panel to place a wheel setup into
+            panel.WheelTypeChanged += Panel_WheelTypeChanged;// ^^^^
+            foreach (WheelSlotPanel wheel in placementPanel.Controls)// iterates over the existing wheel nodes to find if a node is below the cursor to add the wheel into that pos
+            {
+                if ((wheel.PointToScreen(Point.Empty).Y > System.Windows.Forms.Control.MousePosition.Y)) // checks if the node is above or below the cursor
+                {
+                    Control[] tempControls = new Control[placementPanel.Controls.Count - placementPanel.Controls.IndexOf(wheel)]; // makes a temp array for the controls below the cursor
+                    List<WheelSlotPanel> tempSlots = new List<WheelSlotPanel>();//                                                         ^^
+                    int pos = 0;// tracks the position of the temp array
+                    for (int i = placementPanel.Controls.IndexOf(wheel); i < placementPanel.Controls.Count;)// iterates over the controls until there are only the controls above the cursor still exiting
+                    {
+                        tempControls[pos] = placementPanel.Controls[i];// copies the existing controls into a temp array
+                        tempSlots.Add(placementList[i]);//                                  ^^^
+                        pos++;// increase pos for the next loop thru
+                        placementPanel.Controls.RemoveAt(i); // removes the control form the actual array so we can add the control into the right place
+                        placementList.RemoveAt(i);//                  ^^
+                    }
+
+                    placementList.Add(panel);// adds a new panel
+                    placementPanel.Controls.Add(panel);// ^^
+                    switch (WizardData.Instance.driveTrain)// initializes the panel with the correct settings for the selected drive type
                     {
                         case WizardData.WizardDriveTrain.TANK:
-                            panel.FillSlot(listItems[r], r, true);
+                            panel.FillSlot(listItems[toFind], toFind, true);
                             break;
                         case WizardData.WizardDriveTrain.MECANUM:
-                            panel.FillSlot(listItems[r], r, true, WizardData.WizardWheelType.MECANUM);
+                            panel.FillSlot(listItems[toFind], toFind, true, WizardData.WizardWheelType.MECANUM);
                             break;
                         case WizardData.WizardDriveTrain.H_DRIVE:
-                            panel.FillSlot(listItems[r], r, true, WizardData.WizardWheelType.OMNI);
+                            panel.FillSlot(listItems[toFind], toFind, true, WizardData.WizardWheelType.OMNI);
                             break;
                         case WizardData.WizardDriveTrain.SWERVE:
-                            //TODO implement this crap
-                            panel.FillSlot(listItems[r], r, true);
+                            //TODO implement this
+                            panel.FillSlot(listItems[toFind], toFind, true);
                             break;
                         case WizardData.WizardDriveTrain.CUSTOM:
-                            panel.FillSlot(listItems[r], r, true);
+                            panel.FillSlot(listItems[toFind], toFind, true);
                             break;
                     }
-                    NodeListBox.Items.Remove(r);
+                    placementPanel.Controls.AddRange(tempControls);// add the temp controls back into the array
+                    placementList.AddRange(tempSlots);//                               ^^
+                    NodeListBox.Items.Remove(toFind);// removes the corresponding from the list of nodes
+                    return; // quites the method
                 }
             }
-            catch (Exception) { }
-        }
-
-        private void LeftWheelsPanel_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Copy;
-        }
-
-        private void LeftWheelsPanel_DragDrop(object sender, DragEventArgs e)
-        {
-            try
+            placementList.Add(panel); // adds the panel into the end of the list
+            placementPanel.Controls.Add(panel);// ^^^
+            switch (WizardData.Instance.driveTrain)// initializes the panel with the correct settings for the selected drive type
             {
-                foreach (String r in NodeListBox.SelectedItems)
-                {
-                    OnInvalidatePage();
-                    WheelSlotPanel panel = new WheelSlotPanel();
-                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                    leftSlots.Add(panel);
-                    LeftWheelsPanel.Controls.Add(panel);
-                    switch (WizardData.Instance.driveTrain)
-                    {
-                        case WizardData.WizardDriveTrain.TANK:
-                            panel.FillSlot(listItems[r],r, false);
-                            break;
-                        case WizardData.WizardDriveTrain.MECANUM:
-                            panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.MECANUM);
-                            break;
-                        case WizardData.WizardDriveTrain.H_DRIVE:
-                            panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.OMNI);
-                            break;
-                        case WizardData.WizardDriveTrain.SWERVE:
-                            //TODO implement this crap
-                            panel.FillSlot(listItems[r], r, false);
-                            break;
-                        case WizardData.WizardDriveTrain.CUSTOM:
-                            panel.FillSlot(listItems[r], r, false);
-                            break;
-                    }
-                    NodeListBox.Items.Remove(r);
-                }
+                case WizardData.WizardDriveTrain.TANK:
+                    panel.FillSlot(listItems[toFind], toFind, true);
+                    break;
+                case WizardData.WizardDriveTrain.MECANUM:
+                    panel.FillSlot(listItems[toFind], toFind, true, WizardData.WizardWheelType.MECANUM);
+                    break;
+                case WizardData.WizardDriveTrain.H_DRIVE:
+                    panel.FillSlot(listItems[toFind], toFind, true, WizardData.WizardWheelType.OMNI);
+                    break;
+                case WizardData.WizardDriveTrain.SWERVE:
+                    //TODO implement this
+                    panel.FillSlot(listItems[toFind], toFind, true);
+                    break;
+                case WizardData.WizardDriveTrain.CUSTOM:
+                    panel.FillSlot(listItems[toFind], toFind, true);
+                    break;
             }
-            catch (Exception) { }
-            }
-
-        public String RemoveWheelSetupPanel(String s)
-        {
-            foreach (Object wheel in LeftWheelsPanel.Controls)
-            {
-                if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
-                {
-                    if (((WheelSlotPanel)wheel).name.Equals(s))
-                    {
-                        LeftWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));
-                        leftSlots.Remove(((WheelSlotPanel)wheel));
-                    }
-                }
-            }
-            foreach (Object wheel in RightWheelsPanel.Controls)
-            {
-                if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
-                {
-                    if (((WheelSlotPanel)wheel).name.Equals(s))
-                    {
-                        RightWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));
-                        rightSlots.Remove(((WheelSlotPanel)wheel));
-                    }
-                }
-            }
-            NodeListBox.Items.Add(s);
-            return "";
+            NodeListBox.Items.Remove(toFind);// removes the corresponding from the list of nodes 
         }
 
-        public String WheelSetupHover(String s)
+        public String RemoveWheelSetupPanel(String s)// handles the user clicking the remove button in a wheel panel/ slot
         {
-
-            StandardAddInServer.Instance.WizardSelect(listItems[s]);
-            return "";
+            foreach (Object wheel in LeftWheelsPanel.Controls)// goes over all the objects in the panel
+            {
+                if (wheel.GetType().Equals(typeof(WheelSlotPanel)))// confirms that the object is atucally a wheel panel, needed because there are things other than wheel panes in the panel
+                {
+                    if (((WheelSlotPanel)wheel).name.Equals(s))// sees if this is the panel the remove event came from
+                    {
+                        LeftWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));// removes the pane from the panel
+                        leftSlots.Remove(((WheelSlotPanel)wheel));//                  ^^
+                    }
+                }
+            }
+            foreach (Object wheel in RightWheelsPanel.Controls)// goes over all the objects in the panel, second foreach needed because we need to look in both the left and right panel for the pane and there's no good way to search the panel ahead of time
+            {
+                if (wheel.GetType().Equals(typeof(WheelSlotPanel)))// confirms that the object is atucally a wheel panel, needed because there are things other than wheel panes in the panel
+                {
+                    if (((WheelSlotPanel)wheel).name.Equals(s))// sees if this is the panel the remove event came from
+                    {
+                        RightWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));// removes the pane from the panel
+                        rightSlots.Remove(((WheelSlotPanel)wheel));//                  ^^
+                    }
+                }
+            }
+            NodeListBox.Items.Add(s);// adds the node back into the nodelist
+            object[] list;// makes a temporary array so we can sort the array
+            NodeListBox.Items.CopyTo(list = new object[NodeListBox.Items.Count], 0);// copies the nodes into the array
+            ArrayList a = new ArrayList();// makes a new arraylist so we can sort super easily
+            a.AddRange(list);// add the list to the arraylist
+            a.Sort();//sort the array
+            NodeListBox.Items.Clear();// clear the node list so we can readd the ordered list
+            foreach(object sortedItem in a)// goes over all the sorted values
+            {
+                NodeListBox.Items.Add(sortedItem);// add the ordered nodes back to the list
+            }
+            return "";// needed because c# gets real ticked if this isn't here
         }
 
-        private void NodeListBox_SelectedIndexChanged(object sender, EventArgs e)
+        public String WheelSetupHover(String s)// handler for the hover event in the wheel slot/ panel
+        {
+            StandardAddInServer.Instance.WizardSelect(listItems[s]);// seleects/ highlghts the appropriate node in Inventor
+            return "";// needed because c# gets real ticked if this isn't here
+        }
+            
+        private void NodeListBox_SelectedIndexChanged(object sender, EventArgs e)//  handles when the selected value in the node box is changed so we can show the node in Inventor
         { 
             try
             {
-                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.Items[NodeListBox.SelectedIndex].ToString()]);
+                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.Items[NodeListBox.SelectedIndex].ToString()]);// selects/highlights the appriate node in Inventor
             }
-            catch (Exception) { }
+            catch (Exception) { }// catches any weird things the user tries to do, handles when weird things called this method that we dont really care about
         }
 
         private void DefineWheelsInstruction1_Click(object sender, EventArgs e)
