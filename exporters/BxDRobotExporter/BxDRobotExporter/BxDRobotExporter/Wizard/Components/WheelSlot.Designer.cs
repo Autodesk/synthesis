@@ -35,13 +35,14 @@
             // 
             // MainGroupBox
             // 
+            this.MainGroupBox.BackColor = System.Drawing.SystemColors.Control;
             this.MainGroupBox.Controls.Add(this.EmptyLabel);
             this.MainGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainGroupBox.Location = new System.Drawing.Point(0, 0);
-            this.MainGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MainGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.MainGroupBox.Name = "MainGroupBox";
-            this.MainGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MainGroupBox.Size = new System.Drawing.Size(271, 161);
+            this.MainGroupBox.Padding = new System.Windows.Forms.Padding(4);
+            this.MainGroupBox.Size = new System.Drawing.Size(271, 140);
             this.MainGroupBox.TabIndex = 0;
             this.MainGroupBox.TabStop = false;
             this.MainGroupBox.Text = "Undefined Node";
@@ -54,7 +55,7 @@
             this.EmptyLabel.Location = new System.Drawing.Point(4, 19);
             this.EmptyLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.EmptyLabel.Name = "EmptyLabel";
-            this.EmptyLabel.Size = new System.Drawing.Size(263, 138);
+            this.EmptyLabel.Size = new System.Drawing.Size(263, 117);
             this.EmptyLabel.TabIndex = 0;
             this.EmptyLabel.Text = "Empty Wheel Slot";
             this.EmptyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -64,9 +65,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.MainGroupBox);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "WheelSlotPanel";
-            this.Size = new System.Drawing.Size(271, 161);
+            this.Size = new System.Drawing.Size(271, 140);
             this.MainGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
 
