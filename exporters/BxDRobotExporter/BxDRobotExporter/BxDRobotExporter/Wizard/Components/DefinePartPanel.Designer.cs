@@ -75,8 +75,8 @@
             this.NodeGroupBox.AutoSize = true;
             this.NodeGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.NodeGroupBox.Controls.Add(this.MainTableLayout);
+            this.NodeGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
-            this.NodeGroupBox.MinimumSize = new System.Drawing.Size(400, 0);
             this.NodeGroupBox.Name = "NodeGroupBox";
             this.NodeGroupBox.Size = new System.Drawing.Size(400, 235);
             this.NodeGroupBox.TabIndex = 0;
@@ -460,8 +460,9 @@
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.NodeGroupBox);
+            this.MinimumSize = new System.Drawing.Size(400, 0);
             this.Name = "DefinePartPanel";
-            this.Size = new System.Drawing.Size(403, 238);
+            this.Size = new System.Drawing.Size(400, 235);
             this.NodeGroupBox.ResumeLayout(false);
             this.NodeGroupBox.PerformLayout();
             this.MainTableLayout.ResumeLayout(false);
