@@ -58,10 +58,18 @@ public partial class DriveChooser : Form
         if (joint.cDriver != null)
         {
             cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
-            txtPortA.Value = joint.cDriver.portA;
 
-            if (joint.cDriver.portB == -1)
+            if (joint.cDriver.portA < txtPortA.Minimum)
+                txtPortA.Value = txtPortA.Minimum;
+            if (joint.cDriver.portA > txtPortA.Maximum)
+                txtPortA.Value = txtPortA.Maximum;
+            else
+                txtPortA.Value = joint.cDriver.portA;
+
+            if (joint.cDriver.portB < txtPortB.Minimum)
                 txtPortB.Value = txtPortB.Minimum;
+            if (joint.cDriver.portB > txtPortB.Maximum)
+                txtPortB.Value = txtPortB.Maximum;
             else
                 txtPortB.Value = joint.cDriver.portB;
 
