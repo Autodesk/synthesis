@@ -16,16 +16,11 @@ namespace Synthesis.Sensors
     /// </summary>
     public class UltraSensor : SensorBase
     {
-
         public float MaxRange; //maximmum range of the sensor
         private UnityEngine.Vector3 offset = Vector3.zero; //offset from node in world coordinates
         private UnityEngine.Vector3 rotation = Vector3.forward; //rotation difference from the node rotation
         private bool isChangingRange;
         private bool isMetric;
-        //Initialization
-        void Start()
-        {
-        }
 
         // Update is called once per frame
         void FixedUpdate()
