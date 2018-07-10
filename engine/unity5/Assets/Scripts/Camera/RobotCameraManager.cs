@@ -101,7 +101,7 @@ namespace Synthesis.Camera
         /// <param name="positionOffset"></param> 
         /// <param name="rotationOffset"></param>
         /// <returns></returns>
-        public GameObject AddCamera(RobotBase robot, Transform anchor, Vector3 positionOffset, Vector3 rotationOffset)
+        public GameObject AddCamera(SimulatorRobot robot, Transform anchor, Vector3 positionOffset, Vector3 rotationOffset)
         {
             GameObject newCamera = new GameObject("RobotCamera_" + robotCameraList.Count);
             newCamera.AddComponent<UnityEngine.Camera>();
@@ -128,7 +128,7 @@ namespace Synthesis.Camera
         /// Add a new camera to the robot using the default position (0, 0.5, 0) and rotation
         /// </summary>
         /// <returns></returns>
-        public GameObject AddCamera(RobotBase robot, Transform anchor)
+        public GameObject AddCamera(SimulatorRobot robot, Transform anchor)
         {
             GameObject newCamera = new GameObject("RobotCamera_" + robotCameraList.Count);
             newCamera.AddComponent<UnityEngine.Camera>();
