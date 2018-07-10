@@ -206,11 +206,13 @@ namespace BxDRobotExporter.Wizard
             get => _initialized;
             set
             {
-                if (!value)
+                if (!value) // Page is being invalidated, reset interface
                 {
-                    wheelSlots = new Dictionary<string, WheelSlotPanel>();
-                    leftOrder = new List<string>();
-                    rightOrder = new List<string>();
+                    foreach (KeyValuePair<string, WheelSlotPanel> panel in wheelSlots)
+                        panel.Value.Dispose();
+                    wheelSlots.Clear();
+                    leftOrder.Clear();
+                    rightOrder.Clear();
                     UpdateUI();
                 }
 
