@@ -7,36 +7,36 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
 
-	void RoboRIO::CANBus::enqueueMessage(RoboRIO::CANBus::Message m){
-		out_message_queue.push(m);
-	}
+    void RoboRIO::CANBus::enqueueMessage(RoboRIO::CANBus::Message m){
+    	out_message_queue.push(m);
+    }
 
-	RoboRIO::CANBus::Message RoboRIO::CANBus::getNextMessage()const{
-		return in_message_queue.front();
-	}
+    RoboRIO::CANBus::Message RoboRIO::CANBus::getNextMessage()const{
+    	return in_message_queue.front();
+    }
 
-	void RoboRIO::CANBus::popNextMessage(){
-		in_message_queue.pop();
-	}
+    void RoboRIO::CANBus::popNextMessage(){
+    	in_message_queue.pop();
+    }
 
 }
 
 void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
-	hel::RoboRIO::CANBus::Message m;
-	m.id = messageID;
-	m.data_size = dataSize;
-	std::copy(data, data + dataSize, std::begin(m.data));
-	hel::RoboRIOManager::getInstance()->can_bus.enqueueMessage(m);
-	//TODO handle repeating messages - currently unsupported
+    hel::RoboRIO::CANBus::Message m;
+    m.id = messageID;
+    m.data_size = dataSize;
+    std::copy(data, data + dataSize, std::begin(m.data));
+    hel::RoboRIOManager::getInstance()->can_bus.enqueueMessage(m);
+    //TODO handle repeating messages - currently unsupported
 }
 
 void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t /*messageIDMask*/, uint8_t* data, uint8_t* dataSize, uint32_t* /*timeStamp*/, int32_t* /*status*/){
-	hel::RoboRIO::CANBus::Message m = hel::RoboRIOManager::getInstance()->can_bus.getNextMessage();
-	hel::RoboRIOManager::getInstance()->can_bus.popNextMessage();
-	*messageID = m.id; //TODO use message mask?
-	*dataSize = m.data_size;
-	std::copy(std::begin(m.data), std::end(m.data), data);
-	//TODO figure out what time stamp is marking and add it
+    hel::RoboRIO::CANBus::Message m = hel::RoboRIOManager::getInstance()->can_bus.getNextMessage();
+    hel::RoboRIOManager::getInstance()->can_bus.popNextMessage();
+    *messageID = m.id; //TODO use message mask?
+    *dataSize = m.data_size;
+    std::copy(std::begin(m.data), std::end(m.data), data);
+    //TODO figure out what time stamp is marking and add it
 }
 
 void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t /*messageID*/, uint32_t /*messageIDMask*/, uint32_t /*maxMessages*/, int32_t* /*status*/){} //TODO

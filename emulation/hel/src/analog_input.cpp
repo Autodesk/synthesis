@@ -159,9 +159,9 @@ namespace hel {
 }
 
 namespace nFPGA{
-	namespace nRoboRIO_FPGANamespace{
-		tAI* tAI::create(tRioStatusCode* /*status*/){
-			return new hel::AnalogInputManager();
-		}
-	}
+    namespace nRoboRIO_FPGANamespace{
+    	tAI* tAI::create(tRioStatusCode* /*status*/){
+    		return new hel::AnalogInputManager();
+    	}
+    }
 }

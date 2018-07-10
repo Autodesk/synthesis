@@ -5,67 +5,67 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-	tDIO::tDO RoboRIO::DIOSystem::getOutputs()const{
-		return outputs;
-	}
-	
-	void RoboRIO::DIOSystem::setOutputs(tDIO::tDO value){
-		outputs = value;
-	}
+    tDIO::tDO RoboRIO::DIOSystem::getOutputs()const{
+    	return outputs;
+    }
+    
+    void RoboRIO::DIOSystem::setOutputs(tDIO::tDO value){
+    	outputs = value;
+    }
 
-	tDIO::tOutputEnable RoboRIO::DIOSystem::getEnabledOutputs()const{
-		return enabled_outputs;
-	}
-	
-	void RoboRIO::DIOSystem::setEnabledOutputs(tDIO::tOutputEnable value){
-		enabled_outputs = value;
-	}
+    tDIO::tOutputEnable RoboRIO::DIOSystem::getEnabledOutputs()const{
+    	return enabled_outputs;
+    }
+    
+    void RoboRIO::DIOSystem::setEnabledOutputs(tDIO::tOutputEnable value){
+    	enabled_outputs = value;
+    }
 
-	tDIO::tPulse RoboRIO::DIOSystem::getPulses()const{
-		return pulses;
-	}
-	
-	void RoboRIO::DIOSystem::setPulses(tDIO::tPulse value){
-		pulses = value;
-	}
+    tDIO::tPulse RoboRIO::DIOSystem::getPulses()const{
+    	return pulses;
+    }
+    
+    void RoboRIO::DIOSystem::setPulses(tDIO::tPulse value){
+    	pulses = value;
+    }
 
-	tDIO::tDI RoboRIO::DIOSystem::getInputs()const{
-		return inputs;
-	}
+    tDIO::tDI RoboRIO::DIOSystem::getInputs()const{
+    	return inputs;
+    }
 
-	void RoboRIO::DIOSystem::setInputs(tDIO::tDI value){
-		inputs = value;
-	}
+    void RoboRIO::DIOSystem::setInputs(tDIO::tDI value){
+    	inputs = value;
+    }
 
-	uint16_t RoboRIO::DIOSystem::getMXPSpecialFunctionsEnabled()const{
-			return mxp_special_functions_enabled;
-	}
+    uint16_t RoboRIO::DIOSystem::getMXPSpecialFunctionsEnabled()const{
+    		return mxp_special_functions_enabled;
+    }
 
-	void RoboRIO::DIOSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
-		mxp_special_functions_enabled = value;
-	}
+    void RoboRIO::DIOSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
+    	mxp_special_functions_enabled = value;
+    }
 
-	uint8_t RoboRIO::DIOSystem::getPulseLength()const{
-		return pulse_length;
-	}
+    uint8_t RoboRIO::DIOSystem::getPulseLength()const{
+    	return pulse_length;
+    }
 
-	void RoboRIO::DIOSystem::setPulseLength(uint8_t value){
-		pulse_length = value;
-	}
+    void RoboRIO::DIOSystem::setPulseLength(uint8_t value){
+    	pulse_length = value;
+    }
 
-	uint8_t RoboRIO::DIOSystem::getPWMDutyCycle(uint8_t index)const{
-		return pwm[index];
-	}
+    uint8_t RoboRIO::DIOSystem::getPWMDutyCycle(uint8_t index)const{
+    	return pwm[index];
+    }
 
-	void RoboRIO::DIOSystem::setPWMDutyCycle(uint8_t index, uint8_t value){
-		pwm[index] = value;
-	}
+    void RoboRIO::DIOSystem::setPWMDutyCycle(uint8_t index, uint8_t value){
+    	pwm[index] = value;
+    }
 
     struct DIOManager: public tDIO{
         tSystemInterface* getSystemInterface() override{
             return nullptr;
         }
-	
+    
         void writeDO(tDIO::tDO value, tRioStatusCode* status){
             writeDO_Headers(value.Headers, status);
             writeDO_SPIPort(value.SPIPort, status);
@@ -95,7 +95,7 @@ namespace hel{
             }
             //TODO error handling
         }
-	
+    
         void writeDO_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
             if(allowOutput(value, RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().SPIPort, false)){
                 tDIO::tDO outputs = RoboRIOManager::getInstance()->digital_system.getOutputs();
@@ -104,7 +104,7 @@ namespace hel{
             }
             //TODO error handling
         }
-	
+    
         void writeDO_Reserved(uint8_t value, tRioStatusCode* /*status*/){
             if(allowOutput(value, RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Reserved, false)){
                 tDIO::tDO outputs = RoboRIOManager::getInstance()->digital_system.getOutputs();
@@ -113,7 +113,7 @@ namespace hel{
             }
             //TODO error handling
         }
-	
+    
         void writeDO_MXP(uint16_t value, tRioStatusCode* /*status*/){
             if(allowOutput(value, RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, false)){
                 tDIO::tDO outputs = RoboRIOManager::getInstance()->digital_system.getOutputs();
@@ -138,7 +138,7 @@ namespace hel{
         uint8_t readDO_Reserved(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getOutputs().Reserved;
         }
-	
+    
         uint16_t readDO_MXP(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getOutputs().MXP;
         }
@@ -179,19 +179,19 @@ namespace hel{
             enabled_outputs.Headers = value;
             RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(enabled_outputs);
         }
-	
+    
         void writeOutputEnable_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
             tDIO::tOutputEnable enabled_outputs = RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
             enabled_outputs.SPIPort = value;
             RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(enabled_outputs);
         }
-	
+    
         void writeOutputEnable_Reserved(uint8_t value, tRioStatusCode* /*status*/){
             tDIO::tOutputEnable enabled_outputs = RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
             enabled_outputs.Reserved = value;
             RoboRIOManager::getInstance()->digital_system.setEnabledOutputs(enabled_outputs);
         }
-	
+    
         void writeOutputEnable_MXP(uint16_t value, tRioStatusCode* /*status*/){
             tDIO::tOutputEnable enabled_outputs = RoboRIOManager::getInstance()->digital_system.getEnabledOutputs();
             enabled_outputs.MXP = value;
@@ -205,11 +205,11 @@ namespace hel{
         uint16_t readOutputEnable_Headers(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Headers;
         }
-	
+    
         uint8_t readOutputEnable_SPIPort(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().SPIPort;
         }
-	
+    
         uint8_t readOutputEnable_Reserved(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().Reserved;
         }
@@ -257,15 +257,15 @@ namespace hel{
         uint16_t readPulse_Headers(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getPulses().Headers;
         }
-	
+    
         uint8_t readPulse_SPIPort(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getPulses().SPIPort;
         }
-	
+    
         uint8_t readPulse_Reserved(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getPulses().Reserved;
         }
-	
+    
         uint16_t readPulse_MXP(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getPulses().MXP;
         }
@@ -277,18 +277,18 @@ namespace hel{
         uint16_t readDI_Headers(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getInputs().Headers;
         }
-	
+    
         uint8_t readDI_SPIPort(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getInputs().SPIPort;
         }
-	
+    
         uint8_t readDI_Reserved(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getInputs().Reserved;
         }
-	
+    
         uint16_t readDI_MXP(tRioStatusCode* /*status*/){
             return RoboRIOManager::getInstance()->digital_system.getInputs().MXP;
-        }		
+        }    	
 
         void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
             RoboRIOManager::getInstance()->digital_system.setMXPSpecialFunctionsEnabled(value);
@@ -337,20 +337,20 @@ namespace hel{
 }
 
 namespace nFPGA{
-	namespace nRoboRIO_FPGANamespace{
-		tDIO* tDIO::create(tRioStatusCode* /*status*/){
-			return new hel::DIOManager();
-		}
-	}
+    namespace nRoboRIO_FPGANamespace{
+    	tDIO* tDIO::create(tRioStatusCode* /*status*/){
+    		return new hel::DIOManager();
+    	}
+    }
 }
 
 #ifdef DIGITAL_IO_TEST
 
 int main(){
-	uint16_t value = 1u << 3;
-	tDIO* a = tDIO::create(nullptr);
-	a->writeOutputEnable_Headers(1u << 3, nullptr);
-	a->writeDO_Headers(value, nullptr);
+    uint16_t value = 1u << 3;
+    tDIO* a = tDIO::create(nullptr);
+    a->writeOutputEnable_Headers(1u << 3, nullptr);
+    a->writeDO_Headers(value, nullptr);
 }
 
 #endif

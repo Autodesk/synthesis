@@ -4,13 +4,13 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-	uint16_t RoboRIO::AnalogOutputs::getMXPOutput(uint8_t index)const{
-		return mxp_outputs[index];
-	}
+    uint16_t RoboRIO::AnalogOutputs::getMXPOutput(uint8_t index)const{
+    	return mxp_outputs[index];
+    }
 
-	void RoboRIO::AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
-		mxp_outputs[index] = value;
-	}
+    void RoboRIO::AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
+    	mxp_outputs[index] = value;
+    }
 
 
     struct AnalogOutputManager: public tAO{
@@ -29,17 +29,17 @@ namespace hel{
 }
 
 namespace nFPGA{
-	namespace nRoboRIO_FPGANamespace{
-		tAO* tAO::create(tRioStatusCode* /*status*/){
-			return new hel::AnalogOutputManager();
-		}
-	}
+    namespace nRoboRIO_FPGANamespace{
+    	tAO* tAO::create(tRioStatusCode* /*status*/){
+    		return new hel::AnalogOutputManager();
+    	}
+    }
 }
 
 #ifdef ANALOG_OUTPUT_TEST
 
 int main(){
-	//tAO* a = tAO::create(nullptr);
+    //tAO* a = tAO::create(nullptr);
 }
 
 #endif
