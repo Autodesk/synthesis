@@ -13,18 +13,18 @@ namespace hel{
      * \param value the integer to analyze
      * \return the zero-indexed index of the most significant bit
      */
-	
+    
     template<typename T>
-	unsigned findMostSignificantBit(T value){
-		unsigned most_significant_bit = 0;
-		
-		while(value != 0){
-			value /= 2;
-			most_significant_bit++;
-		}
-		
-		return most_significant_bit;
-	}
+    unsigned findMostSignificantBit(T value){
+    	unsigned most_significant_bit = 0;
+    	
+    	while(value != 0){
+    		value /= 2;
+    		most_significant_bit++;
+    	}
+    	
+    	return most_significant_bit;
+    }
 
     /**
      * \fn bool checkBitHigh(T value, unsigned index)
@@ -35,11 +35,11 @@ namespace hel{
      * \return true if the bit is high
      */
 
-	template<typename T>
-	bool checkBitHigh(T value,unsigned index){
-		index = 1u << index; 
-		return value & index;
-	}
+    template<typename T>
+    bool checkBitHigh(T value,unsigned index){
+    	index = 1u << index; 
+    	return value & index;
+    }
 
     template<typename T>
     struct Maybe {
