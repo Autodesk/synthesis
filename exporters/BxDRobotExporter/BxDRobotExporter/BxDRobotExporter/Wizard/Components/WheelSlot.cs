@@ -27,6 +27,7 @@ namespace BxDRobotExporter.Wizard
         public WheelSlotPanel()
         {
             InitializeComponent();
+            MinimumSize = new Size(0, 0); // Minimum size only used in editor
             BackColor = Color.White;
             IsFilled = false;
         }

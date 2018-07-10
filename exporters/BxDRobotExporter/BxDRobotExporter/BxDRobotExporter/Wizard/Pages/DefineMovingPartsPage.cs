@@ -23,6 +23,32 @@ namespace BxDRobotExporter.Wizard
         public DefineMovingPartsPage()
         {
             InitializeComponent();
+            DefinePartsLayout.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
+
+            // Hide horizontal scrollbar
+            DefinePartsLayout.AutoScroll = false;
+            DefinePartsLayout.HorizontalScroll.Maximum = 0;
+            DefinePartsLayout.AutoScroll = true;
+
+            Initialized = false;
+        }
+
+        /// <summary>
+        /// Adds a control to a new row at the end of the table.
+        /// </summary>
+        /// <param name="control">Control to append to table.</param>
+        /// <param name="table">Table to add control to.</param>
+        /// <param name="rowStyle">Style of the new row. Autosized if left null.</param>
+        private void AddControlToNewTableRow(Control control, TableLayoutPanel table, RowStyle rowStyle = null)
+        {
+            if (rowStyle == null)
+                rowStyle = new RowStyle();
+
+            table.RowCount++;
+            table.RowStyles.Add(rowStyle);
+            table.Controls.Add(control);
+            table.SetRow(control, table.RowCount - 1);
+            table.SetColumn(control, 0);
         }
 
         #region IWizardPage Implementation
@@ -34,7 +60,9 @@ namespace BxDRobotExporter.Wizard
             {
                 if (!value) // Page is being invalidated, reset interface
                 {
-                    DefinePartsPanelLayout.Controls.Clear();
+                    DefinePartsLayout.Controls.Clear();
+                    DefinePartsLayout.RowCount = 0;
+                    DefinePartsLayout.RowStyles.Clear();
                     foreach (DefinePartPanel panel in panels)
                         panel.Dispose();
                     panels.Clear();
@@ -49,15 +77,19 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Initialize()
         {
+            SuspendLayout();
+
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
                 if (node.GetSkeletalJoint() != null && !WizardData.Instance.WheelNodes.Contains(node))
                 {
                     DefinePartPanel panel = new DefinePartPanel(node);
                     panels.Add(panel);
-                    DefinePartsPanelLayout.Controls.Add(panel);
+                    AddControlToNewTableRow(panel, DefinePartsLayout);
                 }
             }
+
+            ResumeLayout();
 
             _initialized = true;
         }

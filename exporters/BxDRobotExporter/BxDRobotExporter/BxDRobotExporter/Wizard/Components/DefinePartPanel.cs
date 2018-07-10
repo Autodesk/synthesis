@@ -35,8 +35,14 @@ namespace BxDRobotExporter.Wizard
         {
             InitializeComponent();
             BackColor = Color.White;
+            Dock = DockStyle.Top;
+            MinimumSize = new Size(0, 0); // Minimum size only needed in editor
+
             this.node = node;
-            NodeGroupBox.Text = node.ModelFileName;
+
+            string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+            readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+            NodeGroupBox.Text = readableName;
 
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
@@ -75,7 +81,8 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = false;
-                    PortOneLabel.Text = "Port:";
+                    PortsGroupBox.Text = "Port";
+                    PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
                     UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
@@ -86,7 +93,8 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
-                    PortOneLabel.Text = "Port:";
+                    PortsGroupBox.Text = "Port";
+                    PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
                     unit = "cm";
@@ -96,7 +104,8 @@ namespace BxDRobotExporter.Wizard
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortOneLabel.Text = "Port 1:";
+                    PortsGroupBox.Text = "Ports";
+                    PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
                     unit = "cm";
@@ -106,7 +115,8 @@ namespace BxDRobotExporter.Wizard
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortOneLabel.Text = "Port:";
+                    PortsGroupBox.Text = "Port";
+                    PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
                     unit = "cm";
@@ -115,7 +125,8 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
-                    PortOneLabel.Text = "Port 1:";
+                    PortsGroupBox.Text = "Ports";
+                    PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
                     UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;

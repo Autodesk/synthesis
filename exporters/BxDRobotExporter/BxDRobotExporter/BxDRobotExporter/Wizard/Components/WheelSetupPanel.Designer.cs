@@ -29,32 +29,49 @@
         private void InitializeComponent()
         {
             this.MainGroupBox = new System.Windows.Forms.GroupBox();
+            this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.ConfigLayout = new System.Windows.Forms.TableLayoutPanel();
             this.WheelTypeComboBox = new System.Windows.Forms.ComboBox();
             this.FrictionComboBox = new System.Windows.Forms.ComboBox();
             this.WheelTypeLabel = new System.Windows.Forms.Label();
             this.FrictionLabel = new System.Windows.Forms.Label();
             this.removeButton = new System.Windows.Forms.Button();
-            this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.MainGroupBox.SuspendLayout();
-            this.ConfigLayout.SuspendLayout();
             this.MainLayout.SuspendLayout();
+            this.ConfigLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainGroupBox
             // 
-            this.MainGroupBox.BackColor = System.Drawing.Color.Transparent;
             this.MainGroupBox.AllowDrop = true;
             this.MainGroupBox.AutoSize = true;
             this.MainGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.MainGroupBox.Controls.Add(this.ConfigLayout);
+            this.MainGroupBox.BackColor = System.Drawing.Color.Transparent;
+            this.MainGroupBox.Controls.Add(this.MainLayout);
             this.MainGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.MainGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.MainGroupBox.Location = new System.Drawing.Point(0, 0);
             this.MainGroupBox.Name = "MainGroupBox";
-            this.MainGroupBox.Size = new System.Drawing.Size(194, 73);
+            this.MainGroupBox.Size = new System.Drawing.Size(175, 101);
             this.MainGroupBox.TabIndex = 0;
             this.MainGroupBox.TabStop = false;
             this.MainGroupBox.Text = "node__.bxda";
+            // 
+            // MainLayout
+            // 
+            this.MainLayout.AutoSize = true;
+            this.MainLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.MainLayout.ColumnCount = 1;
+            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.MainLayout.Controls.Add(this.ConfigLayout, 0, 0);
+            this.MainLayout.Controls.Add(this.removeButton, 0, 1);
+            this.MainLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.MainLayout.Location = new System.Drawing.Point(3, 16);
+            this.MainLayout.Name = "MainLayout";
+            this.MainLayout.RowCount = 2;
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.MainLayout.Size = new System.Drawing.Size(169, 82);
+            this.MainLayout.TabIndex = 3;
             // 
             // ConfigLayout
             // 
@@ -68,12 +85,13 @@
             this.ConfigLayout.Controls.Add(this.WheelTypeLabel, 0, 0);
             this.ConfigLayout.Controls.Add(this.FrictionLabel, 0, 1);
             this.ConfigLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ConfigLayout.Location = new System.Drawing.Point(3, 16);
+            this.ConfigLayout.Location = new System.Drawing.Point(0, 0);
+            this.ConfigLayout.Margin = new System.Windows.Forms.Padding(0);
             this.ConfigLayout.Name = "ConfigLayout";
             this.ConfigLayout.RowCount = 2;
             this.ConfigLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ConfigLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.ConfigLayout.Size = new System.Drawing.Size(188, 54);
+            this.ConfigLayout.Size = new System.Drawing.Size(169, 54);
             this.ConfigLayout.TabIndex = 4;
             // 
             // WheelTypeComboBox
@@ -87,7 +105,7 @@
             "Mecanum"});
             this.WheelTypeComboBox.Location = new System.Drawing.Point(84, 3);
             this.WheelTypeComboBox.Name = "WheelTypeComboBox";
-            this.WheelTypeComboBox.Size = new System.Drawing.Size(101, 21);
+            this.WheelTypeComboBox.Size = new System.Drawing.Size(82, 21);
             this.WheelTypeComboBox.TabIndex = 0;
             this.WheelTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.WheelTypeComboBox_SelectedIndexChanged);
             // 
@@ -102,7 +120,7 @@
             "High"});
             this.FrictionComboBox.Location = new System.Drawing.Point(84, 30);
             this.FrictionComboBox.Name = "FrictionComboBox";
-            this.FrictionComboBox.Size = new System.Drawing.Size(101, 21);
+            this.FrictionComboBox.Size = new System.Drawing.Size(82, 21);
             this.FrictionComboBox.TabIndex = 3;
             // 
             // WheelTypeLabel
@@ -132,30 +150,14 @@
             // removeButton
             // 
             this.removeButton.Dock = System.Windows.Forms.DockStyle.Top;
-            this.removeButton.Location = new System.Drawing.Point(3, 82);
+            this.removeButton.Location = new System.Drawing.Point(2, 57);
+            this.removeButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.removeButton.Name = "removeButton";
-            this.removeButton.Size = new System.Drawing.Size(194, 22);
+            this.removeButton.Size = new System.Drawing.Size(165, 22);
             this.removeButton.TabIndex = 2;
             this.removeButton.Text = "Remove";
             this.removeButton.UseVisualStyleBackColor = true;
             this.removeButton.Click += new System.EventHandler(this.remove_Click);
-            // 
-            // MainLayout
-            // 
-            this.MainLayout.AutoSize = true;
-            this.MainLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.MainLayout.ColumnCount = 1;
-            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.MainLayout.Controls.Add(this.MainGroupBox, 0, 0);
-            this.MainLayout.Controls.Add(this.removeButton, 0, 1);
-            this.MainLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.MainLayout.Location = new System.Drawing.Point(0, 0);
-            this.MainLayout.Name = "MainLayout";
-            this.MainLayout.RowCount = 2;
-            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainLayout.Size = new System.Drawing.Size(200, 107);
-            this.MainLayout.TabIndex = 3;
             // 
             // WheelSetupPanel
             // 
@@ -163,17 +165,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Controls.Add(this.MainLayout);
+            this.Controls.Add(this.MainGroupBox);
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.MinimumSize = new System.Drawing.Size(200, 0);
+            this.MinimumSize = new System.Drawing.Size(175, 0);
             this.Name = "WheelSetupPanel";
-            this.Size = new System.Drawing.Size(200, 107);
+            this.Size = new System.Drawing.Size(175, 101);
             this.MainGroupBox.ResumeLayout(false);
             this.MainGroupBox.PerformLayout();
-            this.ConfigLayout.ResumeLayout(false);
-            this.ConfigLayout.PerformLayout();
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
+            this.ConfigLayout.ResumeLayout(false);
+            this.ConfigLayout.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
