@@ -130,6 +130,7 @@
             this.AutoFill.TabIndex = 7;
             this.AutoFill.Text = "AutoFill";
             this.AutoFill.UseVisualStyleBackColor = true;
+            this.AutoFill.Click += new System.EventHandler(this.AutoFill_Click);
             // 
             // LeftWheelsGroup
             // 
