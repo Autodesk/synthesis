@@ -75,13 +75,14 @@
             // DefinePartsLayout
             // 
             this.DefinePartsLayout.AutoScroll = true;
-            this.DefinePartsLayout.ColumnCount = 1;
-            this.DefinePartsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.DefinePartsLayout.ColumnCount = 2;
+            this.DefinePartsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.DefinePartsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.DefinePartsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DefinePartsLayout.Location = new System.Drawing.Point(3, 35);
             this.DefinePartsLayout.Name = "DefinePartsLayout";
             this.DefinePartsLayout.RowCount = 1;
-            this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.DefinePartsLayout.Size = new System.Drawing.Size(454, 592);
             this.DefinePartsLayout.TabIndex = 2;
             // 

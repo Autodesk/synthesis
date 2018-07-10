@@ -274,9 +274,9 @@
             this.PortLayout.AutoSize = true;
             this.PortLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PortLayout.ColumnCount = 4;
-            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 45F));
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 45F));
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.PortLayout.Controls.Add(this.PortOneLabel, 0, 0);
             this.PortLayout.Controls.Add(this.PortTwoLabel, 2, 0);
@@ -293,31 +293,31 @@
             // PortOneLabel
             // 
             this.PortOneLabel.AutoSize = true;
-            this.PortOneLabel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.PortOneLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PortOneLabel.Location = new System.Drawing.Point(3, 3);
             this.PortOneLabel.Margin = new System.Windows.Forms.Padding(3);
             this.PortOneLabel.Name = "PortOneLabel";
-            this.PortOneLabel.Size = new System.Drawing.Size(35, 20);
+            this.PortOneLabel.Size = new System.Drawing.Size(39, 20);
             this.PortOneLabel.TabIndex = 1;
             this.PortOneLabel.Text = "Port 1";
-            this.PortOneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.PortOneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // PortTwoLabel
             // 
             this.PortTwoLabel.AutoSize = true;
-            this.PortTwoLabel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.PortTwoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PortTwoLabel.Location = new System.Drawing.Point(194, 3);
             this.PortTwoLabel.Margin = new System.Windows.Forms.Padding(3);
             this.PortTwoLabel.Name = "PortTwoLabel";
-            this.PortTwoLabel.Size = new System.Drawing.Size(35, 20);
+            this.PortTwoLabel.Size = new System.Drawing.Size(39, 20);
             this.PortTwoLabel.TabIndex = 2;
             this.PortTwoLabel.Text = "Port 2";
-            this.PortTwoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.PortTwoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // PortTwoUpDown
             // 
             this.PortTwoUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortTwoUpDown.Location = new System.Drawing.Point(235, 3);
+            this.PortTwoUpDown.Location = new System.Drawing.Point(239, 3);
             this.PortTwoUpDown.Maximum = new decimal(new int[] {
             20,
             0,
@@ -329,7 +329,7 @@
             0,
             0});
             this.PortTwoUpDown.Name = "PortTwoUpDown";
-            this.PortTwoUpDown.Size = new System.Drawing.Size(144, 20);
+            this.PortTwoUpDown.Size = new System.Drawing.Size(140, 20);
             this.PortTwoUpDown.TabIndex = 3;
             this.PortTwoUpDown.Value = new decimal(new int[] {
             3,
@@ -340,7 +340,7 @@
             // PortOneUpDown
             // 
             this.PortOneUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortOneUpDown.Location = new System.Drawing.Point(44, 3);
+            this.PortOneUpDown.Location = new System.Drawing.Point(48, 3);
             this.PortOneUpDown.Maximum = new decimal(new int[] {
             20,
             0,
@@ -352,7 +352,7 @@
             0,
             0});
             this.PortOneUpDown.Name = "PortOneUpDown";
-            this.PortOneUpDown.Size = new System.Drawing.Size(144, 20);
+            this.PortOneUpDown.Size = new System.Drawing.Size(140, 20);
             this.PortOneUpDown.TabIndex = 0;
             this.PortOneUpDown.Value = new decimal(new int[] {
             2,

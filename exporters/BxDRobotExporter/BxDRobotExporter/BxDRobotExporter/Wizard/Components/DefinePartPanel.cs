@@ -35,7 +35,6 @@ namespace BxDRobotExporter.Wizard
         {
             InitializeComponent();
             BackColor = Color.White;
-            Dock = DockStyle.Top;
             this.node = node;
             NodeGroupBox.Text = node.ModelFileName;
 
