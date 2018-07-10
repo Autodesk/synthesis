@@ -30,17 +30,21 @@ namespace BxDRobotExporter.Wizard
             /// </summary>
             Hidden = 0b00000100,
             /// <summary>
+            /// Both buttons are hidden, but a loading message is displayed.
+            /// </summary>
+            Loading = 0b00001000,
+            /// <summary>
             /// Default state. <see cref="NextButton"/> and <see cref="BackButton"/> both are enabled.
             /// </summary>
-            Clean = 0b0001000,
+            Clean = 0b00010000,
             /// <summary>
             /// <see cref="NextButton"/> is disabled.
             /// </summary>
-            NextDisabled = 0b00010000,
+            NextDisabled = 0b00100000,
             /// <summary>
             /// <see cref="BackButton"/> is hidden.
             /// </summary>
-            BackHidden = 0b00100000
+            BackHidden = 0b01000000
         }
         public WizardNavigator()
         {
@@ -71,33 +75,37 @@ namespace BxDRobotExporter.Wizard
             if ((state & WizardNavigatorState.Clean) > 0)
             {
                 this.Visible = true;
-                NextButton.Text = "Next >";
+                NextButton.Text = "Next";
                 NextButton.Enabled = true;
-                BackButton.Text = "< Back";
+                NextButton.Visible = true;
+                BackButton.Text = "Back";
+                BackButton.Enabled = true;
                 BackButton.Visible = true;
-                Progress.Text = "Click \'Next\' to continue.";
+                ProgressLabel.Text = "Click \'Next\' to continue.";
             }
 
             if ((state & WizardNavigatorState.NextDisabled) > 0)
             {
                 this.Visible = true;
-                NextButton.Text = "Next >";
+                NextButton.Text = "Next";
                 NextButton.Enabled = false;
+                NextButton.Visible = true;
             }
 
             if ((state & WizardNavigatorState.BackHidden) > 0)
             {
                 this.Visible = true;
-                BackButton.Text = "< Back";
+                BackButton.Text = "Back";
                 BackButton.Visible = false;
             }
 
             if ((state & WizardNavigatorState.StartEnabled) > 0)
             {
                 this.Visible = true;
-                NextButton.Text = "Start >";
+                NextButton.Text = "Start";
                 NextButton.Enabled = true;
-                Progress.Text = "Click \'Start\' to begin.";
+                NextButton.Visible = true;
+                ProgressLabel.Text = "Click \'Start\' to begin.";
             }
 
             if ((state & WizardNavigatorState.FinishEnabled) > 0)
@@ -105,7 +113,18 @@ namespace BxDRobotExporter.Wizard
                 this.Visible = true;
                 NextButton.Text = "Finish";
                 NextButton.Enabled = true;
-                Progress.Text = "Click \'Finish\' to exit the wizard.";
+                NextButton.Visible = true;
+                ProgressLabel.Text = "Click \'Finish\' to exit the wizard.";
+            }
+
+            if ((state & WizardNavigatorState.Loading) > 0)
+            {
+                this.Visible = true;
+                NextButton.Enabled = false;
+                NextButton.Visible = false;
+                BackButton.Enabled = false;
+                BackButton.Visible = false;
+                ProgressLabel.Text = "Preparing menu...";
             }
 
             if ((state & WizardNavigatorState.Hidden) > 0)
