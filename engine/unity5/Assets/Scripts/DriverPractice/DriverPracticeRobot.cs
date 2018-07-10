@@ -41,9 +41,7 @@ namespace Synthesis.DriverPractice
         public List<GameObject> secondaryHeld;
 
         public List<string> gamepieceNames; //list of the identifiers of gamepieces
-        public List<List<GameObject>> spawnedGamepieces;
-        public List<GameObject> spawnedPrimary;
-        public List<GameObject> spawnedSecondary;
+        
 
         public List<bool> displayTrajectories; //projects gamepiece trajectories if true
         private List<LineRenderer> drawnTrajectory;
@@ -124,12 +122,7 @@ namespace Synthesis.DriverPractice
             gamepieceNames = new List<string>();
             gamepieceNames.Add("NOT CONFIGURED");
             gamepieceNames.Add("NOT CONFIGURED");
-
-            spawnedGamepieces = new List<List<GameObject>>();
-            spawnedPrimary = new List<GameObject>();
-            spawnedSecondary = new List<GameObject>();
-            spawnedGamepieces.Add(spawnedPrimary);
-            spawnedGamepieces.Add(spawnedSecondary);
+            
 
             holdingLimit = new List<int>();
             holdingLimit.Add(30);
@@ -428,7 +421,7 @@ namespace Synthesis.DriverPractice
                     gameobject.name = gamepieceNames[index] + "(Clone)";
                     gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                     gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
-                    spawnedGamepieces[index].Add(gameobject);
+                    MainState.spawnedGamepieces[index].Add(gameobject);
                 }
                 catch
                 {
@@ -443,12 +436,13 @@ namespace Synthesis.DriverPractice
         /// </summary>
         public void ClearGamepieces()
         {
-            for (int i = 0; i < spawnedGamepieces.Count; i++)
+            for (int i = 0; i < MainState.spawnedGamepieces.Count; i++)
             {
-                foreach (GameObject g in spawnedGamepieces[i])
+                foreach (GameObject g in MainState.spawnedGamepieces[i])
                 {
                     Destroy(g);
                 }
+                MainState.spawnedGamepieces[i].Clear();
             }
         }
 
