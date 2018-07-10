@@ -1,6 +1,8 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
 
+#include <functional>
+
 namespace hel{
 
     /**
@@ -38,6 +40,61 @@ namespace hel{
 		index = 1u << index; 
 		return value & index;
 	}
+
+    template<typename T>
+    struct Maybe {
+
+    private:
+
+        T _data;
+        bool _is_valid;
+
+    public:
+        template<typename R>
+        Maybe<R> bind(std::function<Maybe<R>(T)> f) {
+            if (!_is_valid) {
+                return Maybe<R>();
+            }
+            return f(_data);
+        }
+
+        template<typename R>
+        Maybe<R> operator>>=(std::function<Maybe<R>(T)> f) {
+            bind(f);
+        }
+
+        template<typename R>
+        std::function<Maybe<R>(Maybe<T>)> liftM(std::function<R(T)> f) {
+            return [f](Maybe<T> arg) {
+                return Maybe(f(arg._data));
+            };
+        }
+
+        template<typename R>
+        Maybe<R> fmap(std::function<Maybe<R>(Maybe<T>)> f) {
+            if(!_is_valid) {
+                return Maybe<R>();
+            }
+            return f(this);
+        }
+
+        T get() {return _data;}
+        void set(T data) {_data=data;_is_valid=true;}
+
+        operator bool()const{return _is_valid;}
+
+        Maybe& operator=(const Maybe& m) {_data = m._data; _is_valid = m._is_valid;}
+
+        T operator*() {
+            if (!_is_valid) {
+                throw "Bad Access";
+            }
+            return _data;
+        }
+
+        Maybe(T data) : _data(data), _is_valid(true) {};
+        Maybe() : _is_valid(false) {};
+    };
 }
 
 #endif
