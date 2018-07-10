@@ -88,8 +88,6 @@ namespace BxDRobotExporter.Wizard
 
             NodeListBox.Enabled = true;
             Initialize();
-
-            OnInvalidatePage();
         }
 
         /// <summary>
@@ -138,6 +136,8 @@ namespace BxDRobotExporter.Wizard
 
             Dictionary<string, RigidNode_Base> availableNodes = new Dictionary<string, RigidNode_Base>(); // TODO: Rename this to availableNodes after a different merge
             wheelSlots = new Dictionary<string, WheelSlotPanel>();
+            leftOrder = new List<string>();
+            rightOrder = new List<string>();
             
             // Find all nodes that can be wheels
             Dictionary<string, int> duplicatePartNames = new Dictionary<string, int>();
@@ -197,6 +197,7 @@ namespace BxDRobotExporter.Wizard
             _initialized = true;
 
             UpdateUI();
+            OnInvalidatePage(); // Reset the next page in the wizard
         }
 
         private bool _initialized = false;
@@ -205,6 +206,14 @@ namespace BxDRobotExporter.Wizard
             get => _initialized;
             set
             {
+                if (!value)
+                {
+                    wheelSlots = new Dictionary<string, WheelSlotPanel>();
+                    leftOrder = new List<string>();
+                    rightOrder = new List<string>();
+                    UpdateUI();
+                }
+
                 _initialized = value;
             }
         }
@@ -218,20 +227,19 @@ namespace BxDRobotExporter.Wizard
         public event Action<bool> SetEndEarly;
         private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
 
+        // Called when the next page needs to be re-initialized
         public event InvalidatePageEventHandler InvalidatePage;
-        public void OnInvalidatePage()
-        {
-            InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
-        }
+        public void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
         #endregion
-        
+
         /// <summary>
         /// Sets the side that a wheel is on. This will update the wizard UI to show the changes.
         /// </summary>
         /// <param name="nodeName">Readable name of the node to set side of.</param>
         /// <param name="side">Side to move node to.</param>
         /// <param name="insertBefore">Node to insert before in layout. Null indicates to add to end of column. Does not apply for unassigned wheels.</param>
-        public void SetWheelSide(string nodeName, WheelSide side, string insertBefore = null)
+        /// <param name="updateUI">Update the UI after the wheel has been moved. Disable this if moving multiple wheels at once.</param>
+        public void SetWheelSide(string nodeName, WheelSide side, string insertBefore = null, bool updateUI = true)
         {
             if (nodeName == null)
                 return;
@@ -240,12 +248,8 @@ namespace BxDRobotExporter.Wizard
                 return;
 
             // Remove from current orders
-            if (leftOrder.Contains(nodeName))
-                leftOrder.Remove(nodeName);
-
-            // Remove from current orders
-            if (rightOrder.Contains(nodeName))
-                rightOrder.Remove(nodeName);
+            leftOrder.Remove(nodeName);
+            rightOrder.Remove(nodeName);
 
             // Update side of wheel data
             wheelSlots[nodeName].SetupPanel.Side = side;
@@ -266,15 +270,21 @@ namespace BxDRobotExporter.Wizard
                     rightOrder.Insert(rightOrder.IndexOf(insertBefore), nodeName);
             }
 
-            UpdateUI();
+            // Update the interface
+            if (updateUI)
+            {
+                UpdateUI();
+                OnInvalidatePage(); // Reset the next page in the wizard
+            }
         }
 
         /// <summary>
         /// Sets the side that a wheel is on. This will update the wizard UI to show the changes.
         /// </summary>
-        /// <param name="nodeName">Node to set side of.</param>
+        /// <param name="node">Node to set side of.</param>
         /// <param name="side">Side to move node to.</param>
-        public void SetWheelSide(RigidNode_Base node, WheelSide side)
+        /// <param name="updateUI">Update the UI after the wheel has been moved. Disable this if moving multiple wheels at once.</param>
+        public void SetWheelSide(RigidNode_Base node, WheelSide side, bool updateUI = true)
         {
             if (node == null)
                 return;
@@ -283,7 +293,7 @@ namespace BxDRobotExporter.Wizard
             {
                 if (slot.Value.SetupPanel.Node == node)
                 {
-                    SetWheelSide(slot.Key, side);
+                    SetWheelSide(slot.Key, side, null, updateUI);
                     return;
                 }
             }
@@ -478,10 +488,10 @@ namespace BxDRobotExporter.Wizard
         }
 
         /// <summary>
-        /// Called when the user drops a dragged item into either panel.
+        /// Called when a dragged part is placed in either wheel panel.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="nodeName">Name of the node being dragged.</param>
+        /// <param name="side">Side that the node was placed in.</param>
         private void WheelsPanel_DragDrop(string nodeName, WheelSide side)// called when the user "drops" a seleected value into the group
         {
             TableLayoutPanel wheelPanel = (side == WheelSide.LEFT) ? LeftWheelsPanel : RightWheelsPanel;
@@ -519,6 +529,12 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Adds a control to a new row at the end of the table.
+        /// </summary>
+        /// <param name="control">Control to append to table.</param>
+        /// <param name="table">Table to add control to.</param>
+        /// <param name="rowStyle">Style of the new row. Autosized if left null.</param>
         private void AddControlToNewTableRow(Control control, TableLayoutPanel table, RowStyle rowStyle = null)
         {
             if (rowStyle == null)
@@ -531,11 +547,20 @@ namespace BxDRobotExporter.Wizard
             table.SetColumn(control, 0);
         }
 
+        /// <summary>
+        /// Removes a node from any wheel panel it is attached to.
+        /// </summary>
+        /// <param name="name">Name of the node to remove.</param>
         private void RemoveNodeFromPanel(string name)
         {
             SetWheelSide(name, WheelSide.UNASSIGNED);
         }
 
+        /// <summary>
+        /// Called when the user selects a new part in the list box at the top of the form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NodeListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (NodeListBox.SelectedItem != null)
