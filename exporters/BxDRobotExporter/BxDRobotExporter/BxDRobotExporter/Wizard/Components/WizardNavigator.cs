@@ -81,7 +81,7 @@ namespace BxDRobotExporter.Wizard
                 BackButton.Text = "< Back";
                 BackButton.Enabled = true;
                 BackButton.Visible = true;
-                Progress.Text = "Click \'Next\' to continue.";
+                ProgressLabel.Text = "Click \'Next\' to continue.";
             }
 
             if ((state & WizardNavigatorState.NextDisabled) > 0)
@@ -105,7 +105,7 @@ namespace BxDRobotExporter.Wizard
                 NextButton.Text = "Start >";
                 NextButton.Enabled = true;
                 NextButton.Visible = true;
-                Progress.Text = "Click \'Start\' to begin.";
+                ProgressLabel.Text = "Click \'Start\' to begin.";
             }
 
             if ((state & WizardNavigatorState.FinishEnabled) > 0)
@@ -114,7 +114,7 @@ namespace BxDRobotExporter.Wizard
                 NextButton.Text = "Finish";
                 NextButton.Enabled = true;
                 NextButton.Visible = true;
-                Progress.Text = "Click \'Finish\' to exit the wizard.";
+                ProgressLabel.Text = "Click \'Finish\' to exit the wizard.";
             }
 
             if ((state & WizardNavigatorState.Loading) > 0)
@@ -124,7 +124,7 @@ namespace BxDRobotExporter.Wizard
                 NextButton.Visible = false;
                 BackButton.Enabled = false;
                 BackButton.Visible = false;
-                Progress.Text = "Preparing menu...";
+                ProgressLabel.Text = "Preparing menu...";
             }
 
             if ((state & WizardNavigatorState.Hidden) > 0)

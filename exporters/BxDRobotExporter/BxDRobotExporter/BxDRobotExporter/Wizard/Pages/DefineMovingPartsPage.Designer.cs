@@ -55,6 +55,7 @@
             this.MainLayout.Controls.Add(this.DefinePartsLayout, 0, 1);
             this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainLayout.Location = new System.Drawing.Point(0, 0);
+            this.MainLayout.Margin = new System.Windows.Forms.Padding(0);
             this.MainLayout.Name = "MainLayout";
             this.MainLayout.RowCount = 2;
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
