@@ -26,6 +26,8 @@ namespace Synthesis.GUI
     /// </summary>
     public class SimUI : StateBehaviour<MainState>
     {
+        RobotBase Robot;
+
         DynamicCamera camera;
         Toolkit toolkit;
         DriverPracticeMode dpm;
@@ -38,7 +40,7 @@ namespace Synthesis.GUI
         GameObject canvas;
 
         GameObject freeroamCameraWindow;
-        GameObject spawnpointWindow;
+        GameObject spawnPointPanel;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
@@ -154,7 +156,7 @@ namespace Synthesis.GUI
             canvas = GameObject.Find("Canvas");
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
-            spawnpointWindow = Auxiliary.FindObject(canvas, "SpawnpointPanel");
+            spawnPointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
             multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
@@ -186,7 +188,7 @@ namespace Synthesis.GUI
 
             //Fix this - temporary workaround
             panels.Add(freeroamCameraWindow);
-            panels.Add(spawnpointWindow);
+            panels.Add(spawnPointPanel);
             panels.Add(multiplayerPanel);
             panels.Add(driverStationPanel);
             panels.Add(changeRobotPanel);
@@ -602,14 +604,21 @@ namespace Synthesis.GUI
         {
             if (State.ActiveRobot.IsResetting)
             {
-                spawnpointWindow.SetActive(true);
+                spawnPointPanel.SetActive(true);
                 orientWindow.SetActive(true);
             }
             else
             {
-                spawnpointWindow.SetActive(false);
+                spawnPointPanel.SetActive(false);
                 orientWindow.SetActive(false);
             }
+        }
+
+        public void ResetArrowPosition()
+        {
+            State.BeginRobotReset();
+            State.EndRobotReset();
+            State.BeginRobotReset();
         }
 
         /// <summary>
@@ -714,7 +723,9 @@ namespace Synthesis.GUI
             if (PlayerPrefs.GetInt("analytics") == 0)
             {
                 PlayerPrefs.SetInt("analytics", 1);
-            }else{
+            }
+            else
+            {
                 PlayerPrefs.SetInt("analytics", 0);
             }
         }
