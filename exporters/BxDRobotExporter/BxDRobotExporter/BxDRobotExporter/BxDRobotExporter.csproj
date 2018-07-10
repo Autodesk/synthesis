@@ -270,6 +270,10 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Images\Weight32.png" />
+    <None Include="Images\Weight16.png" />
+    <None Include="Images\Wand32.png" />
+    <None Include="Images\Wand16.png" />
     <None Include="Images\ViewerSettings32.bmp" />
     <None Include="Images\ViewerSettings16.bmp" />
     <None Include="FodyWeavers.xml">
@@ -285,6 +289,8 @@
     <None Include="Images\ExportJoints32.bmp" />
     <None Include="Images\ExportMeshes16.bmp" />
     <None Include="Images\ExportMeshes32.bmp" />
+    <None Include="Images\Export16.png" />
+    <None Include="Images\Export32.png" />
     <Content Include="Images\ExportRobot16.bmp" />
     <Content Include="Images\ExportRobot32.bmp" />
     <None Include="Images\Help16.bmp" />
@@ -299,6 +305,10 @@
     <None Include="Images\RobotClick32.bmp" />
     <None Include="Images\RobotMagicWand16.bmp" />
     <None Include="Images\RobotMagicWand32.bmp" />
+    <None Include="Images\Gears16.png" />
+    <None Include="Images\Gears32.png" />
+    <None Include="Images\Save16.png" />
+    <None Include="Images\Save32.png" />
     <Content Include="Images\SelectJointInsideJoint16.bmp" />
     <Content Include="Images\SelectJointInsideJoint32.bmp" />
     <Content Include="Images\StartRobotExporter16.bmp" />
