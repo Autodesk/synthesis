@@ -13460,7 +13460,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.25
-  m_Text: 'Use the ARROW KEYS to change the horizontal position.
+  m_Text: 'Use the WASD KEYS to change the horizontal position.
 
 
     Press the ENTER key to apply changes.'
