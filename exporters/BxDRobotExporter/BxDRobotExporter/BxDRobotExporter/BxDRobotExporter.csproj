@@ -189,12 +189,6 @@
     <Compile Include="Wizard\Components\WheelSetupPanel.Designer.cs">
       <DependentUpon>WheelSetupPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\Components\WheelSlot.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Components\WheelSlot.Designer.cs">
-      <DependentUpon>WheelSlot.cs</DependentUpon>
-    </Compile>
     <Compile Include="Wizard\WizardForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -237,9 +231,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Components\WheelSlot.resx">
-      <DependentUpon>WheelSlot.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Components\DefinePartPanel.resx">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>

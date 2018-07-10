@@ -19,13 +19,14 @@ namespace BxDRobotExporter.Wizard
         public event OnWheelSlotMouseDown mouseDownHandler;// sends the mouse down event to the class that actually needs it(WheelSlot)
         public String NodeName;// the name of the node, makes removal/ adding easier for the definewheel class
         public RigidNode_Base Node;
-        public WheelSide Side;// helps in automatically assigning PWM ports
+        public WheelSide Side = WheelSide.UNASSIGNED;// helps in automatically assigning PWM ports
 
         public WheelSetupPanel(RigidNode_Base node, String name, WizardData.WizardWheelType WheelType = WizardData.WizardWheelType.NORMAL)
         {
             NodeName = name;// sets the internal name so we can easily work with the panels
             InitializeComponent();
             MinimumSize = new Size(0, 0); // Min size is only used in editor
+            Dock = DockStyle.Top;
 
             WheelTypeComboBox.SelectedIndex = ((int)WheelType) - 1;
             FrictionComboBox.SelectedIndex = 1;
