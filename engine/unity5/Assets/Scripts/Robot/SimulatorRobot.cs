@@ -337,6 +337,9 @@ namespace Synthesis.Robot
         /// </summary>
         public void UnlockRobot()
         {
+            if (IsResetting)
+                return;
+
             foreach (RigidNode n in RootNode.ListAllNodes())
             {
                 BRigidBody br = n.MainObject.GetComponent<BRigidBody>();

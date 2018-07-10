@@ -330,6 +330,8 @@ namespace Synthesis.DriverPractice
                 configWindow.SetActive(true);
                 dpmRobot.displayTrajectories[0] = true;
                 dpmRobot.displayTrajectories[1] = false;
+                dpmRobot.moveArrows[0].SetActive(true);
+                dpmRobot.RefreshMoveArrows();
             }
             else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
         }
@@ -348,6 +350,8 @@ namespace Synthesis.DriverPractice
                 configWindow.SetActive(true);
                 dpmRobot.displayTrajectories[0] = false;
                 dpmRobot.displayTrajectories[1] = true;
+                dpmRobot.moveArrows[1].SetActive(true);
+                dpmRobot.RefreshMoveArrows();
             }
             else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
         }
@@ -374,6 +378,7 @@ namespace Synthesis.DriverPractice
             configWindow.SetActive(false);
             configuring = false;
             dpmRobot.displayTrajectories[configuringIndex] = false;
+            dpmRobot.moveArrows[configuringIndex].SetActive(false);
             dpmRobot.Save();
         }
 
@@ -513,6 +518,8 @@ namespace Synthesis.DriverPractice
                 temp = 0;
                 if (float.TryParse(releaseVerticalEntry.GetComponent<InputField>().text, out temp))
                     dpmRobot.releaseVelocity[configuringIndex][2] = temp;
+
+                dpmRobot.RefreshMoveArrows();
             }
         }
         #endregion

@@ -39,27 +39,27 @@ namespace Synthesis.GUI
             mKeyText.color = Color.white;
             mKeyText.fontSize = 13;
 
-            //Checks if the currentInput uses the ignoreMouseMovement or useKeyModifiers
+            //Checks if the CurrentInput uses the ignoreMouseMovement or useKeyModifiers
             //Currently DISABLED (hidden in the Unity menu) due to inconsistent toggle to key updates 08/2017
             if (selectedButton == this)
             {
-                CustomInput currentInput = Input.InputControl.currentInput(ignoreMouseMovement, useKeyModifiers);
+                CustomInput CurrentInput = Input.InputControl.CurrentInput(ignoreMouseMovement, useKeyModifiers);
 
-                if (currentInput != null)
+                if (CurrentInput != null)
                 {
-                    if (currentInput.modifiers == KeyModifier.NoModifier && currentInput is KeyboardInput
-                        && ((KeyboardInput)currentInput).key == KeyCode.Backspace) //Allows users to use the BACKSPACE to set "None" to their controls.
+                    if (CurrentInput.modifiers == KeyModifier.NoModifier && CurrentInput is KeyboardInput
+                        && ((KeyboardInput)CurrentInput).key == KeyCode.Backspace) //Allows users to use the BACKSPACE to set "None" to their controls.
                     {
                         SetInput(new KeyboardInput());
                     }
-                    else if (currentInput.modifiers == KeyModifier.NoModifier && currentInput is KeyboardInput
-                        && ((KeyboardInput)currentInput).key == KeyCode.Backspace || Binded())
+                    else if (CurrentInput.modifiers == KeyModifier.NoModifier && CurrentInput is KeyboardInput
+                        && ((KeyboardInput)CurrentInput).key == KeyCode.Backspace || Binded())
                     {
                         SetInput(new KeyboardInput());
                     }
                     else
                     {
-                        SetInput(currentInput);
+                        SetInput(CurrentInput);
                     }
                 }
             }

@@ -30,27 +30,27 @@ static Controls()
     buttons.lookLeft  = InputControl.setKey("LookLeft",  MouseAxis.MouseLeft,  KeyCode.None,        new JoystickInput(JoystickAxis.Axis3Negative));
     buttons.lookRight = InputControl.setKey("LookRight", MouseAxis.MouseRight, KeyCode.None,        new JoystickInput(JoystickAxis.Axis3Positive));
 
-    axes.vertical     = InputControl.setAxis("Vertical",   buttons.down,     buttons.up);
-    axes.horizontal   = InputControl.setAxis("Horizontal", buttons.left,     buttons.right);
-    axes.mouseX       = InputControl.setAxis("Mouse X",    buttons.lookDown, buttons.lookUp);
-    axes.mouseY       = InputControl.setAxis("Mouse Y",    buttons.lookLeft, buttons.lookRight);
+    axes.vertical     = InputControl.SetAxis("Vertical",   buttons.down,     buttons.up);
+    axes.horizontal   = InputControl.SetAxis("Horizontal", buttons.left,     buttons.right);
+    axes.mouseX       = InputControl.SetAxis("Mouse X",    buttons.lookDown, buttons.lookUp);
+    axes.mouseY       = InputControl.SetAxis("Mouse Y",    buttons.lookLeft, buttons.lookRight);
 }
 
-You can easy change this configuration in Runtime by calling InputControl.setKey() and InputControl.setAxis()
+You can easy change this configuration in Runtime by calling InputControl.setKey() and InputControl.SetAxis()
 
 
 
 Please use InputControl.getKeysList() to get list of all configured buttons.
-It is possible to get current active input with InputControl.currentInput():
+It is possible to get current active input with InputControl.CurrentInput():
 
-CustomInput curInput = InputControl.currentInput();
+CustomInput curInput = InputControl.CurrentInput();
 Debug.Log(curInput == null ? "null" : curInput.ToString());
 
 
 
 Another way to modify some button (Please check demo for details):
 
-CustomInput curInput = InputControl.currentInput();
+CustomInput curInput = InputControl.CurrentInput();
 
 if (curInput != null) // if something pressed
 {
@@ -92,7 +92,7 @@ buttons.paste = InputControl.setKey("Paste", new KeyboardInput(KeyCode.V, KeyMod
 
 It might be useful if you want use shortcuts in your application.
 
-Please call InputControl.currentInput() with argument useModifiers set to true if you want to allow user to setup shortcut
+Please call InputControl.CurrentInput() with argument useModifiers set to true if you want to allow user to setup shortcut
 Please call InputControl.getButton() or InputControl.getAxis() with argument exactKeyModifiers set to true if you want to use shortcuts
 
 

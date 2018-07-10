@@ -217,7 +217,6 @@ namespace Synthesis.Camera
                 configureRobotCameraButton.SetActive(false);
 
                 robotCameraManager.ArrowsActive = false;
-                State.UnlockRobots();
             }
             CameraIndicator.SetActive(indicatorActive);
         }
@@ -237,7 +236,6 @@ namespace Synthesis.Camera
                 cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
 
-                State.LockRobots();
                 robotCameraManager.ArrowsActive = true;
             }
             else
@@ -247,7 +245,6 @@ namespace Synthesis.Camera
                 dynamicCamera.SwitchToState(preConfigCamState);
 
                 robotCameraManager.ArrowsActive = false;
-                State.UnlockRobots();
             }
         }
 
