@@ -34,16 +34,18 @@
             this.SelectDriverLabel = new System.Windows.Forms.Label();
             this.DriverComboBox = new System.Windows.Forms.ComboBox();
             this.JointLimitGroupBox = new System.Windows.Forms.GroupBox();
+            this.LimitLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.UpperLimitLabel = new System.Windows.Forms.Label();
             this.TotalFreedomLabel = new System.Windows.Forms.Label();
+            this.LowerLimitLabel = new System.Windows.Forms.Label();
             this.FreedomFactorLabel = new System.Windows.Forms.Label();
             this.UpperLimitUpDown = new System.Windows.Forms.NumericUpDown();
-            this.UpperLimitLabel = new System.Windows.Forms.Label();
-            this.LowerLimitLabel = new System.Windows.Forms.Label();
             this.LowerLimitUpDown = new System.Windows.Forms.NumericUpDown();
             this.PortsGroupBox = new System.Windows.Forms.GroupBox();
-            this.PortTwoUpDown = new System.Windows.Forms.NumericUpDown();
-            this.PortTwoLabel = new System.Windows.Forms.Label();
+            this.PortLayout = new System.Windows.Forms.TableLayoutPanel();
             this.PortOneLabel = new System.Windows.Forms.Label();
+            this.PortTwoLabel = new System.Windows.Forms.Label();
+            this.PortTwoUpDown = new System.Windows.Forms.NumericUpDown();
             this.PortOneUpDown = new System.Windows.Forms.NumericUpDown();
             this.MetaTabControl = new System.Windows.Forms.TabControl();
             this.PneumaticTab = new System.Windows.Forms.TabPage();
@@ -56,9 +58,11 @@
             this.MainTableLayout.SuspendLayout();
             this.DriverLayout.SuspendLayout();
             this.JointLimitGroupBox.SuspendLayout();
+            this.LimitLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UpperLimitUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LowerLimitUpDown)).BeginInit();
             this.PortsGroupBox.SuspendLayout();
+            this.PortLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).BeginInit();
             this.MetaTabControl.SuspendLayout();
@@ -71,11 +75,10 @@
             this.NodeGroupBox.AutoSize = true;
             this.NodeGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.NodeGroupBox.Controls.Add(this.MainTableLayout);
+            this.NodeGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
-            this.NodeGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.NodeGroupBox.Name = "NodeGroupBox";
-            this.NodeGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.NodeGroupBox.Size = new System.Drawing.Size(556, 312);
+            this.NodeGroupBox.Size = new System.Drawing.Size(400, 235);
             this.NodeGroupBox.TabIndex = 0;
             this.NodeGroupBox.TabStop = false;
             this.NodeGroupBox.Text = "Empty";
@@ -91,14 +94,14 @@
             this.MainTableLayout.Controls.Add(this.JointLimitGroupBox, 0, 2);
             this.MainTableLayout.Controls.Add(this.PortsGroupBox, 0, 1);
             this.MainTableLayout.Controls.Add(this.MetaTabControl, 1, 2);
-            this.MainTableLayout.Location = new System.Drawing.Point(8, 23);
-            this.MainTableLayout.Margin = new System.Windows.Forms.Padding(4);
+            this.MainTableLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.MainTableLayout.Location = new System.Drawing.Point(3, 16);
             this.MainTableLayout.Name = "MainTableLayout";
             this.MainTableLayout.RowCount = 3;
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainTableLayout.Size = new System.Drawing.Size(540, 266);
+            this.MainTableLayout.Size = new System.Drawing.Size(394, 216);
             this.MainTableLayout.TabIndex = 14;
             // 
             // DriverLayout
@@ -117,19 +120,19 @@
             this.DriverLayout.Name = "DriverLayout";
             this.DriverLayout.RowCount = 1;
             this.DriverLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.DriverLayout.Size = new System.Drawing.Size(540, 33);
+            this.DriverLayout.Size = new System.Drawing.Size(394, 27);
             this.DriverLayout.TabIndex = 0;
             // 
             // SelectDriverLabel
             // 
             this.SelectDriverLabel.AutoSize = true;
             this.SelectDriverLabel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.SelectDriverLabel.Location = new System.Drawing.Point(4, 4);
-            this.SelectDriverLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.SelectDriverLabel.Location = new System.Drawing.Point(3, 3);
+            this.SelectDriverLabel.Margin = new System.Windows.Forms.Padding(3);
             this.SelectDriverLabel.Name = "SelectDriverLabel";
-            this.SelectDriverLabel.Size = new System.Drawing.Size(93, 25);
+            this.SelectDriverLabel.Size = new System.Drawing.Size(60, 21);
             this.SelectDriverLabel.TabIndex = 1;
-            this.SelectDriverLabel.Text = "Select Driver:";
+            this.SelectDriverLabel.Text = "Joint Driver";
             this.SelectDriverLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // DriverComboBox
@@ -144,117 +147,184 @@
             "Bumper Pneumatic",
             "Relay Pneumatic",
             "Dual Motor"});
-            this.DriverComboBox.Location = new System.Drawing.Point(105, 4);
-            this.DriverComboBox.Margin = new System.Windows.Forms.Padding(4);
+            this.DriverComboBox.Location = new System.Drawing.Point(69, 3);
             this.DriverComboBox.Name = "DriverComboBox";
-            this.DriverComboBox.Size = new System.Drawing.Size(431, 24);
+            this.DriverComboBox.Size = new System.Drawing.Size(322, 21);
             this.DriverComboBox.TabIndex = 2;
             this.DriverComboBox.SelectedIndexChanged += new System.EventHandler(this.DriverComboBox_SelectedIndexChanged);
             // 
             // JointLimitGroupBox
             // 
-            this.JointLimitGroupBox.Controls.Add(this.TotalFreedomLabel);
-            this.JointLimitGroupBox.Controls.Add(this.FreedomFactorLabel);
-            this.JointLimitGroupBox.Controls.Add(this.UpperLimitUpDown);
-            this.JointLimitGroupBox.Controls.Add(this.UpperLimitLabel);
-            this.JointLimitGroupBox.Controls.Add(this.LowerLimitLabel);
-            this.JointLimitGroupBox.Controls.Add(this.LowerLimitUpDown);
+            this.JointLimitGroupBox.AutoSize = true;
+            this.JointLimitGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.JointLimitGroupBox.Controls.Add(this.LimitLayout);
             this.JointLimitGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.JointLimitGroupBox.Location = new System.Drawing.Point(4, 108);
-            this.JointLimitGroupBox.Margin = new System.Windows.Forms.Padding(4);
+            this.JointLimitGroupBox.Location = new System.Drawing.Point(3, 81);
             this.JointLimitGroupBox.Name = "JointLimitGroupBox";
-            this.JointLimitGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.JointLimitGroupBox.Size = new System.Drawing.Size(262, 102);
+            this.JointLimitGroupBox.Size = new System.Drawing.Size(191, 71);
             this.JointLimitGroupBox.TabIndex = 13;
             this.JointLimitGroupBox.TabStop = false;
             this.JointLimitGroupBox.Text = "Joint Limits";
             // 
-            // TotalFreedomLabel
+            // LimitLayout
             // 
-            this.TotalFreedomLabel.AutoSize = true;
-            this.TotalFreedomLabel.Location = new System.Drawing.Point(157, 34);
-            this.TotalFreedomLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.TotalFreedomLabel.Name = "TotalFreedomLabel";
-            this.TotalFreedomLabel.Size = new System.Drawing.Size(62, 17);
-            this.TotalFreedomLabel.TabIndex = 5;
-            this.TotalFreedomLabel.Text = "0.0 units";
-            // 
-            // FreedomFactorLabel
-            // 
-            this.FreedomFactorLabel.AutoSize = true;
-            this.FreedomFactorLabel.Location = new System.Drawing.Point(157, 20);
-            this.FreedomFactorLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.FreedomFactorLabel.Name = "FreedomFactorLabel";
-            this.FreedomFactorLabel.Size = new System.Drawing.Size(68, 17);
-            this.FreedomFactorLabel.TabIndex = 4;
-            this.FreedomFactorLabel.Text = "Freedom:";
-            // 
-            // UpperLimitUpDown
-            // 
-            this.UpperLimitUpDown.Location = new System.Drawing.Point(96, 32);
-            this.UpperLimitUpDown.Margin = new System.Windows.Forms.Padding(4);
-            this.UpperLimitUpDown.Name = "UpperLimitUpDown";
-            this.UpperLimitUpDown.Size = new System.Drawing.Size(61, 22);
-            this.UpperLimitUpDown.TabIndex = 3;
-            this.UpperLimitUpDown.ValueChanged += new System.EventHandler(this.UpperLimitUpDown_ValueChanged);
+            this.LimitLayout.AutoSize = true;
+            this.LimitLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LimitLayout.ColumnCount = 3;
+            this.LimitLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.LimitLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.LimitLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
+            this.LimitLayout.Controls.Add(this.UpperLimitLabel, 0, 0);
+            this.LimitLayout.Controls.Add(this.TotalFreedomLabel, 2, 1);
+            this.LimitLayout.Controls.Add(this.LowerLimitLabel, 0, 1);
+            this.LimitLayout.Controls.Add(this.FreedomFactorLabel, 2, 0);
+            this.LimitLayout.Controls.Add(this.UpperLimitUpDown, 1, 0);
+            this.LimitLayout.Controls.Add(this.LowerLimitUpDown, 1, 1);
+            this.LimitLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.LimitLayout.Location = new System.Drawing.Point(3, 16);
+            this.LimitLayout.Name = "LimitLayout";
+            this.LimitLayout.RowCount = 2;
+            this.LimitLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.LimitLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.LimitLayout.Size = new System.Drawing.Size(185, 52);
+            this.LimitLayout.TabIndex = 6;
             // 
             // UpperLimitLabel
             // 
             this.UpperLimitLabel.AutoSize = true;
-            this.UpperLimitLabel.Location = new System.Drawing.Point(8, 34);
-            this.UpperLimitLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.UpperLimitLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.UpperLimitLabel.Location = new System.Drawing.Point(3, 3);
+            this.UpperLimitLabel.Margin = new System.Windows.Forms.Padding(3);
             this.UpperLimitLabel.Name = "UpperLimitLabel";
-            this.UpperLimitLabel.Size = new System.Drawing.Size(80, 17);
+            this.UpperLimitLabel.Size = new System.Drawing.Size(60, 20);
             this.UpperLimitLabel.TabIndex = 2;
             this.UpperLimitLabel.Text = "Upper Limit";
+            this.UpperLimitLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // TotalFreedomLabel
+            // 
+            this.TotalFreedomLabel.AutoSize = true;
+            this.TotalFreedomLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.TotalFreedomLabel.Location = new System.Drawing.Point(113, 29);
+            this.TotalFreedomLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.TotalFreedomLabel.Name = "TotalFreedomLabel";
+            this.TotalFreedomLabel.Size = new System.Drawing.Size(69, 13);
+            this.TotalFreedomLabel.TabIndex = 5;
+            this.TotalFreedomLabel.Text = "0.0 units";
+            this.TotalFreedomLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // LowerLimitLabel
             // 
             this.LowerLimitLabel.AutoSize = true;
-            this.LowerLimitLabel.Location = new System.Drawing.Point(8, 68);
-            this.LowerLimitLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.LowerLimitLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.LowerLimitLabel.Location = new System.Drawing.Point(3, 29);
+            this.LowerLimitLabel.Margin = new System.Windows.Forms.Padding(3);
             this.LowerLimitLabel.Name = "LowerLimitLabel";
-            this.LowerLimitLabel.Size = new System.Drawing.Size(79, 17);
+            this.LowerLimitLabel.Size = new System.Drawing.Size(60, 20);
             this.LowerLimitLabel.TabIndex = 1;
             this.LowerLimitLabel.Text = "Lower Limit";
+            this.LowerLimitLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // FreedomFactorLabel
+            // 
+            this.FreedomFactorLabel.AutoSize = true;
+            this.FreedomFactorLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.FreedomFactorLabel.Location = new System.Drawing.Point(113, 10);
+            this.FreedomFactorLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.FreedomFactorLabel.Name = "FreedomFactorLabel";
+            this.FreedomFactorLabel.Size = new System.Drawing.Size(69, 13);
+            this.FreedomFactorLabel.TabIndex = 4;
+            this.FreedomFactorLabel.Text = "Freedom:";
+            this.FreedomFactorLabel.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            // 
+            // UpperLimitUpDown
+            // 
+            this.UpperLimitUpDown.Dock = System.Windows.Forms.DockStyle.Top;
+            this.UpperLimitUpDown.Location = new System.Drawing.Point(69, 3);
+            this.UpperLimitUpDown.Name = "UpperLimitUpDown";
+            this.UpperLimitUpDown.Size = new System.Drawing.Size(38, 20);
+            this.UpperLimitUpDown.TabIndex = 3;
+            this.UpperLimitUpDown.ValueChanged += new System.EventHandler(this.UpperLimitUpDown_ValueChanged);
             // 
             // LowerLimitUpDown
             // 
-            this.LowerLimitUpDown.Location = new System.Drawing.Point(96, 65);
-            this.LowerLimitUpDown.Margin = new System.Windows.Forms.Padding(4);
+            this.LowerLimitUpDown.Dock = System.Windows.Forms.DockStyle.Top;
+            this.LowerLimitUpDown.Location = new System.Drawing.Point(69, 29);
             this.LowerLimitUpDown.Name = "LowerLimitUpDown";
-            this.LowerLimitUpDown.Size = new System.Drawing.Size(60, 22);
+            this.LowerLimitUpDown.Size = new System.Drawing.Size(38, 20);
             this.LowerLimitUpDown.TabIndex = 0;
             this.LowerLimitUpDown.ValueChanged += new System.EventHandler(this.LowerLimitUpDown_ValueChanged);
             // 
             // PortsGroupBox
             // 
+            this.PortsGroupBox.AutoSize = true;
+            this.PortsGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.MainTableLayout.SetColumnSpan(this.PortsGroupBox, 2);
-            this.PortsGroupBox.Controls.Add(this.PortTwoUpDown);
-            this.PortsGroupBox.Controls.Add(this.PortTwoLabel);
-            this.PortsGroupBox.Controls.Add(this.PortOneLabel);
-            this.PortsGroupBox.Controls.Add(this.PortOneUpDown);
+            this.PortsGroupBox.Controls.Add(this.PortLayout);
             this.PortsGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortsGroupBox.Location = new System.Drawing.Point(4, 37);
-            this.PortsGroupBox.Margin = new System.Windows.Forms.Padding(4);
+            this.PortsGroupBox.Location = new System.Drawing.Point(3, 30);
             this.PortsGroupBox.Name = "PortsGroupBox";
-            this.PortsGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.PortsGroupBox.Size = new System.Drawing.Size(532, 63);
+            this.PortsGroupBox.Size = new System.Drawing.Size(388, 45);
             this.PortsGroupBox.TabIndex = 6;
             this.PortsGroupBox.TabStop = false;
             this.PortsGroupBox.Text = "Ports";
             // 
+            // PortLayout
+            // 
+            this.PortLayout.AutoSize = true;
+            this.PortLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PortLayout.ColumnCount = 4;
+            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PortLayout.Controls.Add(this.PortOneLabel, 0, 0);
+            this.PortLayout.Controls.Add(this.PortTwoLabel, 2, 0);
+            this.PortLayout.Controls.Add(this.PortTwoUpDown, 3, 0);
+            this.PortLayout.Controls.Add(this.PortOneUpDown, 1, 0);
+            this.PortLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PortLayout.Location = new System.Drawing.Point(3, 16);
+            this.PortLayout.Name = "PortLayout";
+            this.PortLayout.RowCount = 1;
+            this.PortLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.PortLayout.Size = new System.Drawing.Size(382, 26);
+            this.PortLayout.TabIndex = 4;
+            // 
+            // PortOneLabel
+            // 
+            this.PortOneLabel.AutoSize = true;
+            this.PortOneLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PortOneLabel.Location = new System.Drawing.Point(3, 3);
+            this.PortOneLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.PortOneLabel.Name = "PortOneLabel";
+            this.PortOneLabel.Size = new System.Drawing.Size(35, 20);
+            this.PortOneLabel.TabIndex = 1;
+            this.PortOneLabel.Text = "Port 1";
+            this.PortOneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // PortTwoLabel
+            // 
+            this.PortTwoLabel.AutoSize = true;
+            this.PortTwoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PortTwoLabel.Location = new System.Drawing.Point(194, 3);
+            this.PortTwoLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.PortTwoLabel.Name = "PortTwoLabel";
+            this.PortTwoLabel.Size = new System.Drawing.Size(35, 20);
+            this.PortTwoLabel.TabIndex = 2;
+            this.PortTwoLabel.Text = "Port 2";
+            this.PortTwoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // PortTwoUpDown
             // 
-            this.PortTwoUpDown.Location = new System.Drawing.Point(196, 23);
-            this.PortTwoUpDown.Margin = new System.Windows.Forms.Padding(4);
+            this.PortTwoUpDown.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PortTwoUpDown.Location = new System.Drawing.Point(235, 3);
             this.PortTwoUpDown.Maximum = new decimal(new int[] {
             8,
             0,
             0,
             0});
             this.PortTwoUpDown.Name = "PortTwoUpDown";
-            this.PortTwoUpDown.Size = new System.Drawing.Size(63, 22);
+            this.PortTwoUpDown.Size = new System.Drawing.Size(144, 20);
             this.PortTwoUpDown.TabIndex = 3;
             this.PortTwoUpDown.Value = new decimal(new int[] {
             3,
@@ -262,37 +332,17 @@
             0,
             0});
             // 
-            // PortTwoLabel
-            // 
-            this.PortTwoLabel.AutoSize = true;
-            this.PortTwoLabel.Location = new System.Drawing.Point(137, 26);
-            this.PortTwoLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.PortTwoLabel.Name = "PortTwoLabel";
-            this.PortTwoLabel.Size = new System.Drawing.Size(50, 17);
-            this.PortTwoLabel.TabIndex = 2;
-            this.PortTwoLabel.Text = "Port 2:";
-            // 
-            // PortOneLabel
-            // 
-            this.PortOneLabel.AutoSize = true;
-            this.PortOneLabel.Location = new System.Drawing.Point(8, 26);
-            this.PortOneLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.PortOneLabel.Name = "PortOneLabel";
-            this.PortOneLabel.Size = new System.Drawing.Size(50, 17);
-            this.PortOneLabel.TabIndex = 1;
-            this.PortOneLabel.Text = "Port 1:";
-            // 
             // PortOneUpDown
             // 
-            this.PortOneUpDown.Location = new System.Drawing.Point(67, 23);
-            this.PortOneUpDown.Margin = new System.Windows.Forms.Padding(4);
+            this.PortOneUpDown.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PortOneUpDown.Location = new System.Drawing.Point(44, 3);
             this.PortOneUpDown.Maximum = new decimal(new int[] {
             8,
             0,
             0,
             0});
             this.PortOneUpDown.Name = "PortOneUpDown";
-            this.PortOneUpDown.Size = new System.Drawing.Size(63, 22);
+            this.PortOneUpDown.Size = new System.Drawing.Size(144, 20);
             this.PortOneUpDown.TabIndex = 0;
             this.PortOneUpDown.Value = new decimal(new int[] {
             2,
@@ -304,21 +354,21 @@
             // 
             this.MetaTabControl.Controls.Add(this.PneumaticTab);
             this.MetaTabControl.Dock = System.Windows.Forms.DockStyle.Top;
-            this.MetaTabControl.Location = new System.Drawing.Point(273, 106);
-            this.MetaTabControl.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.MetaTabControl.Location = new System.Drawing.Point(199, 80);
+            this.MetaTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.MetaTabControl.Name = "MetaTabControl";
             this.MetaTabControl.SelectedIndex = 0;
-            this.MetaTabControl.Size = new System.Drawing.Size(264, 158);
+            this.MetaTabControl.Size = new System.Drawing.Size(193, 134);
             this.MetaTabControl.TabIndex = 12;
             this.MetaTabControl.Visible = false;
             // 
             // PneumaticTab
             // 
             this.PneumaticTab.Controls.Add(this.PneumaticLayout);
-            this.PneumaticTab.Location = new System.Drawing.Point(4, 25);
-            this.PneumaticTab.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.PneumaticTab.Location = new System.Drawing.Point(4, 22);
+            this.PneumaticTab.Margin = new System.Windows.Forms.Padding(2);
             this.PneumaticTab.Name = "PneumaticTab";
-            this.PneumaticTab.Size = new System.Drawing.Size(256, 129);
+            this.PneumaticTab.Size = new System.Drawing.Size(185, 108);
             this.PneumaticTab.TabIndex = 1;
             this.PneumaticTab.Text = "Pneumatic";
             this.PneumaticTab.UseVisualStyleBackColor = true;
@@ -335,33 +385,32 @@
             this.PneumaticLayout.Controls.Add(this.PneumaticDiameterComboBox, 0, 1);
             this.PneumaticLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.PneumaticLayout.Location = new System.Drawing.Point(0, 0);
-            this.PneumaticLayout.Margin = new System.Windows.Forms.Padding(4);
             this.PneumaticLayout.Name = "PneumaticLayout";
             this.PneumaticLayout.RowCount = 4;
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PneumaticLayout.Size = new System.Drawing.Size(256, 108);
+            this.PneumaticLayout.Size = new System.Drawing.Size(185, 92);
             this.PneumaticLayout.TabIndex = 15;
             // 
             // PressureLabel
             // 
             this.PressureLabel.AutoSize = true;
-            this.PressureLabel.Location = new System.Drawing.Point(4, 58);
-            this.PressureLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.PressureLabel.Location = new System.Drawing.Point(3, 49);
+            this.PressureLabel.Margin = new System.Windows.Forms.Padding(3);
             this.PressureLabel.Name = "PressureLabel";
-            this.PressureLabel.Size = new System.Drawing.Size(65, 17);
+            this.PressureLabel.Size = new System.Drawing.Size(48, 13);
             this.PressureLabel.TabIndex = 13;
             this.PressureLabel.Text = "Pressure";
             // 
             // DiameterLabel
             // 
             this.DiameterLabel.AutoSize = true;
-            this.DiameterLabel.Location = new System.Drawing.Point(4, 4);
-            this.DiameterLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.DiameterLabel.Location = new System.Drawing.Point(3, 3);
+            this.DiameterLabel.Margin = new System.Windows.Forms.Padding(3);
             this.DiameterLabel.Name = "DiameterLabel";
-            this.DiameterLabel.Size = new System.Drawing.Size(116, 17);
+            this.DiameterLabel.Size = new System.Drawing.Size(87, 13);
             this.DiameterLabel.TabIndex = 9;
             this.DiameterLabel.Text = "Internal Diameter";
             // 
@@ -375,10 +424,9 @@
             "60 psi",
             "20 psi",
             "10 psi"});
-            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(3, 81);
-            this.PneumaticPressureComboBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(3, 68);
             this.PneumaticPressureComboBox.Name = "PneumaticPressureComboBox";
-            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(250, 24);
+            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(179, 21);
             this.PneumaticPressureComboBox.TabIndex = 6;
             // 
             // PneumaticDiameterComboBox
@@ -390,22 +438,21 @@
             "1 in",
             ".5 in",
             ".25 in"});
-            this.PneumaticDiameterComboBox.Location = new System.Drawing.Point(3, 27);
-            this.PneumaticDiameterComboBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.PneumaticDiameterComboBox.Location = new System.Drawing.Point(3, 22);
             this.PneumaticDiameterComboBox.Name = "PneumaticDiameterComboBox";
-            this.PneumaticDiameterComboBox.Size = new System.Drawing.Size(250, 24);
+            this.PneumaticDiameterComboBox.Size = new System.Drawing.Size(179, 21);
             this.PneumaticDiameterComboBox.TabIndex = 12;
             // 
             // DefinePartPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.NodeGroupBox);
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MinimumSize = new System.Drawing.Size(400, 0);
             this.Name = "DefinePartPanel";
-            this.Size = new System.Drawing.Size(560, 316);
+            this.Size = new System.Drawing.Size(400, 235);
             this.NodeGroupBox.ResumeLayout(false);
             this.NodeGroupBox.PerformLayout();
             this.MainTableLayout.ResumeLayout(false);
@@ -414,10 +461,14 @@
             this.DriverLayout.PerformLayout();
             this.JointLimitGroupBox.ResumeLayout(false);
             this.JointLimitGroupBox.PerformLayout();
+            this.LimitLayout.ResumeLayout(false);
+            this.LimitLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UpperLimitUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LowerLimitUpDown)).EndInit();
             this.PortsGroupBox.ResumeLayout(false);
             this.PortsGroupBox.PerformLayout();
+            this.PortLayout.ResumeLayout(false);
+            this.PortLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).EndInit();
             this.MetaTabControl.ResumeLayout(false);
@@ -456,5 +507,7 @@
         private System.Windows.Forms.TableLayoutPanel MainTableLayout;
         private System.Windows.Forms.TableLayoutPanel DriverLayout;
         private System.Windows.Forms.TableLayoutPanel PneumaticLayout;
+        private System.Windows.Forms.TableLayoutPanel PortLayout;
+        private System.Windows.Forms.TableLayoutPanel LimitLayout;
     }
 }

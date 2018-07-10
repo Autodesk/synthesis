@@ -327,8 +327,7 @@ namespace BxDRobotExporter.Wizard
             RightWheelsPanel.RowStyles.Clear();
 
             // Pause layout calculations to prevent siezures
-            LeftWheelsPanel.SuspendLayout();
-            RightWheelsPanel.SuspendLayout();
+            SuspendLayout();
 
             // Add left items to left side
             foreach (string name in leftOrder)
@@ -350,22 +349,21 @@ namespace BxDRobotExporter.Wizard
             }
 
             // Shrink items width if a scroll bar will appear
-            if (leftOrder.Count <= 3)
+            if (LeftWheelsPanel.PreferredSize.Height < LeftWheelsGroup.Height)
                 LeftWheelsPanel.ColumnStyles[1].Width = 0;
             else
-                LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
+                LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
 
             // Shrink items width if a scroll bar will appear
-            if (rightOrder.Count <= 3)
+            if (RightWheelsPanel.PreferredSize.Height < RightWheelsGroup.Height)
                 RightWheelsPanel.ColumnStyles[1].Width = 0;
             else
-                RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth;
+                RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
 
             OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
 
             // Resume layout calculations
-            LeftWheelsPanel.ResumeLayout();
-            RightWheelsPanel.ResumeLayout();
+            ResumeLayout();
         }
 
         /// <summary>
