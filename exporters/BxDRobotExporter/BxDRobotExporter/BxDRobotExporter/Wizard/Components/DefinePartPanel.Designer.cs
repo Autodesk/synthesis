@@ -78,7 +78,7 @@
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
             this.NodeGroupBox.MinimumSize = new System.Drawing.Size(400, 0);
             this.NodeGroupBox.Name = "NodeGroupBox";
-            this.NodeGroupBox.Size = new System.Drawing.Size(400, 395);
+            this.NodeGroupBox.Size = new System.Drawing.Size(400, 235);
             this.NodeGroupBox.TabIndex = 0;
             this.NodeGroupBox.TabStop = false;
             this.NodeGroupBox.Text = "Empty";
@@ -101,7 +101,7 @@
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainTableLayout.Size = new System.Drawing.Size(394, 376);
+            this.MainTableLayout.Size = new System.Drawing.Size(394, 216);
             this.MainTableLayout.TabIndex = 14;
             // 
             // DriverLayout
@@ -368,7 +368,7 @@
             this.MetaTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.MetaTabControl.Name = "MetaTabControl";
             this.MetaTabControl.SelectedIndex = 0;
-            this.MetaTabControl.Size = new System.Drawing.Size(193, 294);
+            this.MetaTabControl.Size = new System.Drawing.Size(193, 134);
             this.MetaTabControl.TabIndex = 12;
             this.MetaTabControl.Visible = false;
             // 
@@ -378,7 +378,7 @@
             this.PneumaticTab.Location = new System.Drawing.Point(4, 22);
             this.PneumaticTab.Margin = new System.Windows.Forms.Padding(2);
             this.PneumaticTab.Name = "PneumaticTab";
-            this.PneumaticTab.Size = new System.Drawing.Size(185, 268);
+            this.PneumaticTab.Size = new System.Drawing.Size(185, 108);
             this.PneumaticTab.TabIndex = 1;
             this.PneumaticTab.Text = "Pneumatic";
             this.PneumaticTab.UseVisualStyleBackColor = true;
@@ -461,7 +461,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.NodeGroupBox);
             this.Name = "DefinePartPanel";
-            this.Size = new System.Drawing.Size(403, 398);
+            this.Size = new System.Drawing.Size(403, 238);
             this.NodeGroupBox.ResumeLayout(false);
             this.NodeGroupBox.PerformLayout();
             this.MainTableLayout.ResumeLayout(false);

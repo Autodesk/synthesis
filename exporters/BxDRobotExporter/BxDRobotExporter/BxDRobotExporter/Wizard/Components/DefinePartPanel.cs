@@ -35,9 +35,8 @@ namespace BxDRobotExporter.Wizard
         {
             InitializeComponent();
             BackColor = Color.White;
-            MetaTabControl.AutoSize = true;
-            PneumaticTab.AutoSize = true;
-            PneumaticTab.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            Dock = DockStyle.Top;
+            MinimumSize = new Size(0, 0); // Minimum size only needed in editor
 
             this.node = node;
             NodeGroupBox.Text = node.ModelFileName;
