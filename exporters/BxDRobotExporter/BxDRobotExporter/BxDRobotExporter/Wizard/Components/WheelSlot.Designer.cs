@@ -28,54 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.MainGroupBox = new System.Windows.Forms.GroupBox();
-            this.EmptyLabel = new System.Windows.Forms.Label();
-            this.MainGroupBox.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // MainGroupBox
-            // 
-            this.MainGroupBox.BackColor = System.Drawing.SystemColors.Control;
-            this.MainGroupBox.Controls.Add(this.EmptyLabel);
-            this.MainGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainGroupBox.Location = new System.Drawing.Point(0, 0);
-            this.MainGroupBox.Margin = new System.Windows.Forms.Padding(4);
-            this.MainGroupBox.Name = "MainGroupBox";
-            this.MainGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.MainGroupBox.Size = new System.Drawing.Size(271, 140);
-            this.MainGroupBox.TabIndex = 0;
-            this.MainGroupBox.TabStop = false;
-            this.MainGroupBox.Text = "Undefined Node";
-            // 
-            // EmptyLabel
-            // 
-            this.EmptyLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.EmptyLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EmptyLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.EmptyLabel.Location = new System.Drawing.Point(4, 19);
-            this.EmptyLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.EmptyLabel.Name = "EmptyLabel";
-            this.EmptyLabel.Size = new System.Drawing.Size(263, 117);
-            this.EmptyLabel.TabIndex = 0;
-            this.EmptyLabel.Text = "Empty Wheel Slot";
-            this.EmptyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // WheelSlotPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.MainGroupBox);
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.MinimumSize = new System.Drawing.Size(200, 10);
             this.Name = "WheelSlotPanel";
-            this.Size = new System.Drawing.Size(271, 140);
-            this.MainGroupBox.ResumeLayout(false);
+            this.Size = new System.Drawing.Size(200, 0);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox MainGroupBox;
-        private System.Windows.Forms.Label EmptyLabel;
     }
 }

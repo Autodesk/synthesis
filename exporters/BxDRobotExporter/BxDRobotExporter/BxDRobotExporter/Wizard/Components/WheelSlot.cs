@@ -21,38 +21,36 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// Field containing the <see cref="WheelSetupPanel"/> in this slot.
         /// </summary>
-        public WheelSetupPanel wheelSetupPanel;
+        public WheelSetupPanel SetupPanel;
         public String name;
-        String usedString;
-        public  bool potentiallyDragging = false;
+
         public WheelSlotPanel()
         {
-            WheelSetupPanel.mouseDownHandler += new OnWheelSlotMouseDown(this.PotenetialDragAndDrop);// subscribes the mouse down handler to the event in the panel
-            WheelSetupPanel.mouseUpHandler += new OnWheelSlotMouseUp(this.CancelDragAndDrop);// subscribes the mouse up handler to the event in the panel
-            WheelSetupPanel.mouseMoveHandler += new OnWheelSetupPanelMouseMove(this.MouseLeaving);// subscribes the mouse move handler to the event in the panel
             InitializeComponent();
             BackColor = Color.White;
             IsFilled = false;
         }
 
-        
-
-        public void FillSlot(RigidNode_Base node, String name, bool isRight, WizardData.WizardWheelType wheelType = WizardData.WizardWheelType.NORMAL)
+        public void FillSlot(RigidNode_Base node, String name, WheelSide side, WizardData.WizardWheelType wheelType = WizardData.WizardWheelType.NORMAL)
         {
             this.name = name;
-            wheelSetupPanel = new WheelSetupPanel(node, name, wheelType);
-            wheelSetupPanel.Dock = DockStyle.Fill;
-            wheelSetupPanel.isRightWheel = isRight;
-            this.SuspendLayout();
+            SetupPanel = new WheelSetupPanel(node, name, wheelType);
+            
+            SetupPanel.Dock = DockStyle.Top;
+            Dock = DockStyle.Top;
+            SetupPanel.Side = side;
+            SuspendLayout();
+
             while (Controls.Count > 0)
             {
                 Controls[0].Dispose();
             }
-            this.Controls.Add(wheelSetupPanel);
-            wheelSetupPanel.Visible = true;
-            this.ResumeLayout();
 
-            wheelSetupPanel._WheelTypeChangedInternal += delegate () { OnWheelTypeChanged(); };
+            Controls.Add(SetupPanel);
+            SetupPanel.Visible = true;
+            ResumeLayout();
+            
+            SetupPanel._WheelTypeChangedInternal += delegate () { OnWheelTypeChanged(); };
 
             IsFilled = true;
         }
@@ -63,9 +61,9 @@ namespace BxDRobotExporter.Wizard
         /// <param name="setupPanel"></param>
         public void FillSlot(WheelSetupPanel setupPanel)
         {
-            wheelSetupPanel = setupPanel;
-            wheelSetupPanel.Dock = DockStyle.Fill;
-            this.Controls.Add(wheelSetupPanel);
+            SetupPanel = setupPanel;
+            SetupPanel.Dock = DockStyle.Fill;
+            this.Controls.Add(SetupPanel);
 
             IsFilled = true;
         }
@@ -75,7 +73,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void FreeSlot()
         {
-            wheelSetupPanel.Dispose();
+            SetupPanel.Dispose();
             InitializeComponent();
 
             IsFilled = false;
@@ -84,17 +82,17 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// If the slot is filled, gets the <see cref="WizardData.WheelSetupData"/> via <see cref="WheelSetupPanel.GetWheelData()"/>
         /// </summary>
-        public WizardData.WheelSetupData WheelData { get => IsFilled ? wheelSetupPanel.GetWheelData() : new WizardData.WheelSetupData(); }
+        public WizardData.WheelSetupData WheelData { get => IsFilled ? SetupPanel.GetWheelData() : new WizardData.WheelSetupData(); }
 
         /// <summary>
         /// If the slot is filled, gets the <see cref="WizardData.WizardWheelType"/> from the panel via the <see cref="WheelSetupPanel.WheelType"/> property.
         /// </summary>
-        public WizardData.WizardWheelType WheelType { get => IsFilled ? wheelSetupPanel.WheelType : 0; }
+        public WizardData.WizardWheelType WheelType { get => IsFilled ? SetupPanel.WheelType : 0; }
 
         /// <summary>
         /// Gets the <see cref="RigidNode_Base"/> from the <see cref="WheelSetupPanel"/> if it isn't null.
         /// </summary>
-        public RigidNode_Base Node { get => wheelSetupPanel?.node; }
+        public RigidNode_Base Node { get => SetupPanel?.Node; }
 
         /// <summary>
         /// Property used for filling the correct slots on the <see cref="DefineWheelsPage"/>
@@ -108,29 +106,6 @@ namespace BxDRobotExporter.Wizard
         private void OnWheelTypeChanged()
         {
             WheelTypeChanged?.Invoke(this, new WheelTypeChangedEventArgs { NewWheelType = WheelType });
-        }
-        
-        private String CancelDragAndDrop(String s)// handles the mouse up event
-        {
-            potentiallyDragging = false;// tells the mouse move event that we don't want to be dragging because the user isn't clicking, so pass the event through to the form properly
-            return "";// needed because c# gets real ticked if this isn't here
-        }
-
-        private String MouseLeaving(String s)// called when the mouse moves in the background label
-        {
-            if (potentiallyDragging)// checks if the mouse is down, and thus potentially dragging
-            {
-                this.DoDragDrop(usedString + " From Node Group", DragDropEffects.Copy | DragDropEffects.Move); // enable the drag and drop with the correct name so we can call all the things to the correct slot
-            }
-            potentiallyDragging = false;// reset the dragging value because we have already begun dragging
-            return "";// needed because c# gets real ticked if this isn't here
-        }
-
-        private String PotenetialDragAndDrop(String s)// handles the mouse down event
-        {
-            potentiallyDragging = true;// tells the mouse move that we want to 
-            usedString = s;
-            return "";// needed because c# gets real ticked if this isn't here
         }
     }
 }
