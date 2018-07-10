@@ -40,6 +40,23 @@ namespace Synthesis.Camera
         public bool IsShowingAngle { get; set; }
         public bool IsChangingFOV { get; set; }
 
+        private bool arrowsActive;
+
+        public bool ArrowsActive
+        {
+            get
+            {
+                return arrowsActive;
+            }
+            set
+            {
+                arrowsActive = value;
+
+                foreach (GameObject g in robotCameraList)
+                    g.GetComponent<RobotCamera>().ArrowsActive = arrowsActive;
+            }
+        }
+
         private void Start()
         {
             robotCameraListObject = GameObject.Find("RobotCameraList");
@@ -347,15 +364,7 @@ namespace Synthesis.Camera
                 {
                     CurrentCamera.transform.Rotate(new Vector3(-UnityEngine.Input.GetAxis("CameraVertical") * rotationSpeed, UnityEngine.Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
                 }
-                else if (!IsChangingHeight) //Control horizontal plane transform
-                {
-                    CurrentCamera.transform.Translate(new Vector3(UnityEngine.Input.GetAxis("CameraHorizontal") * positionSpeed, 0, UnityEngine.Input.GetAxis("CameraVertical") * positionSpeed) * Time.deltaTime);
-                }
-                else //Control height transform
-                {
-                    CurrentCamera.transform.Translate(new Vector3(0, UnityEngine.Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
-                }
-                //Update configuration info of the current camera
+
                 CurrentCamera.GetComponent<RobotCamera>().UpdateConfiguration();
             }
         }
