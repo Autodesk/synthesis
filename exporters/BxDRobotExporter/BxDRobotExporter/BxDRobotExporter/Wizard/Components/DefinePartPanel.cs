@@ -39,7 +39,10 @@ namespace BxDRobotExporter.Wizard
             MinimumSize = new Size(0, 0); // Minimum size only needed in editor
 
             this.node = node;
-            NodeGroupBox.Text = node.ModelFileName;
+
+            string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+            readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+            NodeGroupBox.Text = readableName;
 
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
