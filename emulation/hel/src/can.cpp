@@ -21,13 +21,6 @@ namespace hel{
 
 }
 
-struct AnalogOutputManager: public tAO{
-	tSystemInterface* getSystemInterface(){
-		return nullptr;
-	}
-
-};
-
 void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
 	hel::RoboRIO::CANBus::Message m;
 	m.id = messageID;

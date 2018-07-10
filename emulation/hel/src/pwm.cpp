@@ -58,31 +58,31 @@ namespace hel{
         }
 
         void writeConfig(tPWM::tConfig value, tRioStatusCode* /*status*/){
-            hel::RoboRIOManager::getInstance()->pwm_system.setConfig(value);
+            RoboRIOManager::getInstance()->pwm_system.setConfig(value);
         }
 
         void writeConfig_Period(uint16_t value, tRioStatusCode* /*status*/){
-            tPWM::tConfig config = hel::RoboRIOManager::getInstance()->pwm_system.getConfig();
+            tPWM::tConfig config = RoboRIOManager::getInstance()->pwm_system.getConfig();
             config.Period = value;
-            hel::RoboRIOManager::getInstance()->pwm_system.setConfig(config);
+            RoboRIOManager::getInstance()->pwm_system.setConfig(config);
         }
 
         void writeConfig_MinHigh(uint16_t value, tRioStatusCode* /*status*/){
-            tPWM::tConfig config = hel::RoboRIOManager::getInstance()->pwm_system.getConfig();
+            tPWM::tConfig config = RoboRIOManager::getInstance()->pwm_system.getConfig();
             config.MinHigh = value;
-            hel::RoboRIOManager::getInstance()->pwm_system.setConfig(config);
+            RoboRIOManager::getInstance()->pwm_system.setConfig(config);
         }
 
         tPWM::tConfig readConfig(tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->pwm_system.getConfig();
+            return RoboRIOManager::getInstance()->pwm_system.getConfig();
         }
 
         uint16_t readConfig_Period(tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->pwm_system.getConfig().Period;
+            return RoboRIOManager::getInstance()->pwm_system.getConfig().Period;
         }
 
         uint16_t readConfig_MinHigh(tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->pwm_system.getConfig().MinHigh;
+            return RoboRIOManager::getInstance()->pwm_system.getConfig().MinHigh;
         }
 
         uint32_t readCycleStartTimeUpper(tRioStatusCode* /*status*/){
@@ -94,19 +94,19 @@ namespace hel{
         }
 
         void writePeriodScaleMXP(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-            hel::RoboRIOManager::getInstance()->pwm_system.setMXPPeriodScale(bitfield_index, value);
+            RoboRIOManager::getInstance()->pwm_system.setMXPPeriodScale(bitfield_index, value);
         }
 
         uint8_t readPeriodScaleMXP(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->pwm_system.getMXPPeriodScale(bitfield_index);
+            return RoboRIOManager::getInstance()->pwm_system.getMXPPeriodScale(bitfield_index);
         }
 
         void writePeriodScaleHdr(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-            hel::RoboRIOManager::getInstance()->pwm_system.setHdrPeriodScale(bitfield_index, value);
+            RoboRIOManager::getInstance()->pwm_system.setHdrPeriodScale(bitfield_index, value);
         }
 
         uint8_t readPeriodScaleHdr(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->pwm_system.getHdrPeriodScale(bitfield_index);
+            return RoboRIOManager::getInstance()->pwm_system.getHdrPeriodScale(bitfield_index);
         }
 
         void writeZeroLatch(uint8_t bitfield_index, bool value, tRioStatusCode* /*status*/){
@@ -119,11 +119,11 @@ namespace hel{
         }
 
         void writeHdr(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-            hel::RoboRIOManager::getInstance()->pwm_system.setHdrDutyCycle(reg_index, value);
+            RoboRIOManager::getInstance()->pwm_system.setHdrDutyCycle(reg_index, value);
         }
 
         uint16_t readHdr(uint8_t reg_index, tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->pwm_system.getHdrDutyCycle(reg_index);
+            return RoboRIOManager::getInstance()->pwm_system.getHdrDutyCycle(reg_index);
         }
 
         void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
@@ -135,16 +135,16 @@ namespace hel{
 				return reg_index;
 			}();
 			if( 
-				hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, DO_index) && //Allow MXP output if pin is output-enabled
-				hel::checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), DO_index) //Allow MXP outout if DO is using special function
+				checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, DO_index) && //Allow MXP output if pin is output-enabled
+				checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), DO_index) //Allow MXP outout if DO is using special function
 			){
-				hel::RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
+				RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
 			}
             //TODO error handling
         }
 
         uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->pwm_system.getMXPDutyCycle(reg_index);
+            return RoboRIOManager::getInstance()->pwm_system.getMXPDutyCycle(reg_index);
         }
     };
 }

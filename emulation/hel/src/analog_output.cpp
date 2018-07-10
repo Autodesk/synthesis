@@ -19,11 +19,11 @@ namespace hel{
         }
 
         void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-            hel::RoboRIOManager::getInstance()->analog_outputs.setMXPOutput(reg_index, value);
+            RoboRIOManager::getInstance()->analog_outputs.setMXPOutput(reg_index, value);
         }
 
         uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->analog_outputs.getMXPOutput(reg_index);
+            return RoboRIOManager::getInstance()->analog_outputs.getMXPOutput(reg_index);
         }
     };
 }

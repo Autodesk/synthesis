@@ -6,12 +6,11 @@
  * This file defines the RoboRIOs structure
  */
 
-
-
 #include <array>
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <vector>
 
 #include "FRC_NetworkCommunication/FRCComm.h"
 
@@ -20,6 +19,8 @@
 
 #include "DriverStation.h"
 #include "GenericHID.h"
+
+#include "error.h"
 
 namespace hel{
     using namespace nFPGA;
@@ -79,12 +80,12 @@ namespace hel{
             struct AnalogInput{
                 /**
                  * \var uint8_t oversample_bits.
-                 * \brief Number bits to oversample.
+                 * \brief When storing analog value history, keep 2**(oversample_bits + average_bits) samples.
                  */
                 uint8_t oversample_bits;
                 /**
                  * \var uint8_t average_bits.
-                 * \brief Number bits to to average.
+                 * \brief When averaging, average 2**average_bits samples.
                  */
                 uint8_t average_bits;
                 /**
@@ -92,6 +93,14 @@ namespace hel{
                  * \brief Currently unknown functionality.
                  */
                 uint8_t scan_list;
+
+                /**
+                 * \var int32_t value
+                 * \brief The history of analog input values
+                 * The most recent value is the last element.
+                 */
+
+                std::vector<int32_t> values;
             };
 
             /**
@@ -132,20 +141,18 @@ namespace hel{
 
             /**
              * \fn void setOversampleBits(uint8_t channel, uint8_t value)
-             * \brief Sets analog input configuration.
-             * Sets number of oversample bits on analog input channel \b channel to value \b value.
+             * \brief Sets number of samples to keep beyond those needed for averaging.
              * \param channel a byte representing the hardware channel of the desired analog input.
-             * \param value a byte representing the number of bits to oversample per sample.
+             * \param value a byte representing the number of samples to collect after that need for the average.
              */
 
             void setOversampleBits(uint8_t, uint8_t);
 
             /**
              * \fn void setOversampleBits(uint8_t channel, uint8_t value)
-             * \brief Sets number of bits to sample.
-             * Sets number of bits to sample on analog input channel \b channel to value \b value.
+             * \brief Sets number of sample to average to 2**value.
              * \param channel a byte representing the hardware channel of the desired analog input.
-             * \param value a byte representing the number of bits to collect per sample.
+             * \param value a byte representing the number of samples to use in averaging.
              */
 
             void setAverageBits(uint8_t, uint8_t);
@@ -158,6 +165,15 @@ namespace hel{
              * \param value a byte representing the scan list.
              */
             void setScanList(uint8_t, uint8_t);
+
+            /**
+             * \fn void setValue(uint8_t channel, std::vector<int32_t> values)
+             * \brief Sets the history of analog input values.
+             * \param channel a byte representing the hardware channel of the desired analog input.
+             * \param value a vector history of 32-bit integers representing the value of the input.
+             */
+
+            void setValues(uint8_t, std::vector<int32_t>);
 
             /**
              * \fn uint8_t getOversampleBits(uint8_t channel)
@@ -188,6 +204,15 @@ namespace hel{
              */
 
             uint8_t getScanList(uint8_t);
+
+            /**
+             * \fn uint8_t getValue(uint8_t channel)
+             * \brief Get the recent history of analog input values.
+             * \param channel a byte representing the hardware channel of the desired analog input.
+             * \return a vector of 32-bit integer representing the recent history of the analog input value for analog input \b channel.
+             */
+
+            std::vector<int32_t> getValues(uint8_t);
 
         private:
 
@@ -1342,7 +1367,8 @@ namespace hel{
 		CANBus can_bus;
         std::array<Counter, Counter::MAX_COUNTER_COUNT> counters;
         DIOSystem digital_system;
-		DriverStationInfo driver_station_info;
+        std::vector<DSError> ds_errors;
+        DriverStationInfo driver_station_info;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
         PWMSystem pwm_system;
 		RelaySystem relay_system;
