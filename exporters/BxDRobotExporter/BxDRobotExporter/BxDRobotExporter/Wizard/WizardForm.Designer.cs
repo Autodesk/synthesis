@@ -56,7 +56,7 @@
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(500, 750);
             this.Name = "WizardForm";
-            this.Text = "Quick Setup";
+            this.Text = "Exporter Setup";
             this.ResumeLayout(false);
 
         }
