@@ -75,10 +75,10 @@ namespace BxDRobotExporter.Wizard
             if ((state & WizardNavigatorState.Clean) > 0)
             {
                 this.Visible = true;
-                NextButton.Text = "Next >";
+                NextButton.Text = "Next";
                 NextButton.Enabled = true;
                 NextButton.Visible = true;
-                BackButton.Text = "< Back";
+                BackButton.Text = "Back";
                 BackButton.Enabled = true;
                 BackButton.Visible = true;
                 ProgressLabel.Text = "Click \'Next\' to continue.";
@@ -87,7 +87,7 @@ namespace BxDRobotExporter.Wizard
             if ((state & WizardNavigatorState.NextDisabled) > 0)
             {
                 this.Visible = true;
-                NextButton.Text = "Next >";
+                NextButton.Text = "Next";
                 NextButton.Enabled = false;
                 NextButton.Visible = true;
             }
@@ -95,14 +95,14 @@ namespace BxDRobotExporter.Wizard
             if ((state & WizardNavigatorState.BackHidden) > 0)
             {
                 this.Visible = true;
-                BackButton.Text = "< Back";
+                BackButton.Text = "Back";
                 BackButton.Visible = false;
             }
 
             if ((state & WizardNavigatorState.StartEnabled) > 0)
             {
                 this.Visible = true;
-                NextButton.Text = "Start >";
+                NextButton.Text = "Start";
                 NextButton.Enabled = true;
                 NextButton.Visible = true;
                 ProgressLabel.Text = "Click \'Start\' to begin.";
