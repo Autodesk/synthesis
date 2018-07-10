@@ -43,7 +43,7 @@
             this.NextButton.Name = "NextButton";
             this.NextButton.Size = new System.Drawing.Size(75, 23);
             this.NextButton.TabIndex = 1;
-            this.NextButton.Text = "Next >";
+            this.NextButton.Text = "Next";
             this.NextButton.UseVisualStyleBackColor = true;
             // 
             // BackButton
@@ -54,7 +54,7 @@
             this.BackButton.Name = "BackButton";
             this.BackButton.Size = new System.Drawing.Size(75, 23);
             this.BackButton.TabIndex = 2;
-            this.BackButton.Text = "< Back";
+            this.BackButton.Text = "Back";
             this.BackButton.UseVisualStyleBackColor = true;
             // 
             // ButtonLayout
