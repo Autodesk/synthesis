@@ -63,7 +63,7 @@ namespace Synthesis.Input
         ///Adapted from: https://github.com/Gris87/InputControl
         //=================================================================================================
 
-        #region setKey() and setAxis() Functions
+        #region setKey() and SetAxis() Functions
         /// <summary>
         /// Creates new <see cref="KeyMapping"/> with specified name, primary KeyCode, and secondary CustomInput.
         /// </summary>
@@ -73,8 +73,10 @@ namespace Synthesis.Input
         /// <param name="secondary">Secondary input.</param>
         public KeyMapping setKey(string name, KeyCode primary, CustomInput secondary)
         {
-            return setKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, argToInput(primary), argToInput(secondary));
         }
+
+
 
         /// <summary>
         /// Creates new <see cref="KeyMapping"/> with specified name, primary CustomInput, and secondary CustomInput.
@@ -84,7 +86,7 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public KeyMapping setKey(string name, CustomInput primary = null, CustomInput secondary = null, bool isTankDrive = false)
+        public KeyMapping SetKey(string name, CustomInput primary = null, CustomInput secondary = null, bool isTankDrive = false)
         {
             KeyMapping outKey = null; //Key to return
             KeyMapping defaultKey = null; //Key to store default key preferances (for resetting individual player lists)
@@ -146,7 +148,7 @@ namespace Synthesis.Input
         /// <param name="negative">Negative KeyMapping.</param>
         /// <param name="positive">Positive KeyMapping.</param>
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public Axis setAxis(string name, KeyMapping negative, KeyMapping positive, bool isTankDrive = false)
+        public Axis SetAxis(string name, KeyMapping negative, KeyMapping positive, bool isTankDrive = false)
         {
             Axis outAxis = null;
 
@@ -182,7 +184,7 @@ namespace Synthesis.Input
         }
         #endregion
 
-        #region argToInput Helper Functions for setKey() and setAxis()
+        #region argToInput Helper Functions for setKey() and SetAxis()
         //Source: https://github.com/Gris87/InputControl
         /// <summary>
         /// Convert argument to <see cref="CustomInput"/>.
