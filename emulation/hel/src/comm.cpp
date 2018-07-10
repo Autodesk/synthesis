@@ -224,8 +224,8 @@ int FRC_NetworkCommunication_sendConsoleLine(const char* /*line*/){ //unnecessar
 	return 0;
 }
 
-int FRC_NetworkCommunication_sendError(int isError, int32_t errorCode, int isLVCode, const char* details, const char* location, const char* callStack){
-    //TODO
+int FRC_NetworkCommunication_sendError(int isError, int32_t errorCode, int /*isLVCode*/, const char* details, const char* location, const char* callStack){
+    hel::RoboRIOManager::getInstance()->ds_errors.push_back({isError, errorCode, details, location, callStack}); //assuming isLVCode = false (not supporting LabView
     return 0; //TODO retruns a status
 }
 
