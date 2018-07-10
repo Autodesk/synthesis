@@ -249,12 +249,7 @@
             this.PortTwoUpDown.Location = new System.Drawing.Point(196, 23);
             this.PortTwoUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.PortTwoUpDown.Maximum = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            this.PortTwoUpDown.Minimum = new decimal(new int[] {
-            2,
+            8,
             0,
             0,
             0});
@@ -292,12 +287,7 @@
             this.PortOneUpDown.Location = new System.Drawing.Point(67, 23);
             this.PortOneUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.PortOneUpDown.Maximum = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            this.PortOneUpDown.Minimum = new decimal(new int[] {
-            2,
+            8,
             0,
             0,
             0});

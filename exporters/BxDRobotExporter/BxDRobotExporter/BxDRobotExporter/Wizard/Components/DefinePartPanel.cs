@@ -40,8 +40,6 @@ namespace BxDRobotExporter.Wizard
 
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
-            PortOneUpDown.Minimum = 3;
-            PortTwoUpDown.Minimum = 3;
 
             PortOneUpDown.Value = WizardData.Instance.NextFreePort;
             PortTwoUpDown.Value = PortOneUpDown.Value + 1; // This may overlap with ports on next panel, but this only matters if the user chooses a two-port driver, which are less common
