@@ -25,7 +25,8 @@ namespace BxDRobotExporter.Wizard
         {
             NodeName = name;// sets the internal name so we can easily work with the panels
             InitializeComponent();
-            
+            MinimumSize = new Size(0, 0); // Min size is only used in editor
+
             WheelTypeComboBox.SelectedIndex = ((int)WheelType) - 1;
             FrictionComboBox.SelectedIndex = 1;
 
