@@ -62,13 +62,14 @@
             // 
             // DefineWheelsTitleLabel
             // 
-            this.DefineWheelsTitleLabel.AutoSize = true;
+            this.DefineWheelsTitleLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this.DefineWheelsTitleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DefineWheelsTitleLabel.Location = new System.Drawing.Point(-4, 0);
+            this.DefineWheelsTitleLabel.Location = new System.Drawing.Point(0, 0);
             this.DefineWheelsTitleLabel.Name = "DefineWheelsTitleLabel";
-            this.DefineWheelsTitleLabel.Size = new System.Drawing.Size(232, 20);
+            this.DefineWheelsTitleLabel.Size = new System.Drawing.Size(460, 20);
             this.DefineWheelsTitleLabel.TabIndex = 0;
-            this.DefineWheelsTitleLabel.Text = "Step 2: Define Your Wheels";
+            this.DefineWheelsTitleLabel.Text = "Define Robot Wheels";
+            this.DefineWheelsTitleLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // DefineWheelsInstruction1
             // 
@@ -386,7 +387,6 @@
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

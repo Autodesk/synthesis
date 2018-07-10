@@ -37,13 +37,14 @@
             // 
             // DefineMovingPartsLabel
             // 
-            this.DefineMovingPartsLabel.AutoSize = true;
+            this.DefineMovingPartsLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this.DefineMovingPartsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DefineMovingPartsLabel.Location = new System.Drawing.Point(-4, 0);
+            this.DefineMovingPartsLabel.Location = new System.Drawing.Point(0, 0);
             this.DefineMovingPartsLabel.Name = "DefineMovingPartsLabel";
-            this.DefineMovingPartsLabel.Size = new System.Drawing.Size(283, 20);
+            this.DefineMovingPartsLabel.Size = new System.Drawing.Size(460, 20);
             this.DefineMovingPartsLabel.TabIndex = 0;
-            this.DefineMovingPartsLabel.Text = "Step 3: Define Other Moving Parts";
+            this.DefineMovingPartsLabel.Text = "Define Other Moving Parts";
+            this.DefineMovingPartsLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // Step3InfoLabel
             // 
@@ -97,7 +98,6 @@
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
