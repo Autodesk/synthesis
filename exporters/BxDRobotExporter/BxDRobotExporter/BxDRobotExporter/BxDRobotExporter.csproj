@@ -291,6 +291,8 @@
     <None Include="Images\ExportMeshes32.bmp" />
     <None Include="Images\Export16.png" />
     <None Include="Images\Export32.png" />
+    <None Include="Images\Export16.bmp" />
+    <None Include="Images\Export32.bmp" />
     <Content Include="Images\ExportRobot16.bmp" />
     <Content Include="Images\ExportRobot32.bmp" />
     <None Include="Images\Help16.bmp" />
@@ -309,6 +311,8 @@
     <None Include="Images\Gears32.png" />
     <None Include="Images\Save16.png" />
     <None Include="Images\Save32.png" />
+    <None Include="Images\Save16.bmp" />
+    <None Include="Images\Save32.bmp" />
     <Content Include="Images\SelectJointInsideJoint16.bmp" />
     <Content Include="Images\SelectJointInsideJoint32.bmp" />
     <Content Include="Images\StartRobotExporter16.bmp" />
