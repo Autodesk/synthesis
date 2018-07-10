@@ -90,12 +90,20 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// Gets the <see cref="WizardData.WizardFrictionLevel"/> from the FrictionComboBox
         /// </summary>
-        public WizardData.WizardFrictionLevel FrictionLevel { get => (WizardData.WizardFrictionLevel)this.FrictionComboBox.SelectedIndex; }
+        public WizardData.WizardFrictionLevel FrictionLevel
+        {
+            get => (WizardData.WizardFrictionLevel)FrictionComboBox.SelectedIndex;
+            set => FrictionComboBox.SelectedIndex = (int)value;
+        }
 
         /// <summary>
         /// Gets the <see cref="WizardData.WizardWheelType"/> from the WheelTypeComboBox.
         /// </summary>
-        public WizardData.WizardWheelType WheelType { get => (WizardData.WizardWheelType)(this.WheelTypeComboBox.SelectedIndex + 1); }
+        public WizardData.WizardWheelType WheelType
+        {
+            get => (WizardData.WizardWheelType)(WheelTypeComboBox.SelectedIndex + 1);
+            set => WheelTypeComboBox.SelectedIndex = (int)value - 1;
+        }
 
         /// <summary>
         /// Used to invoke the <see cref="WheelSlotPanel.WheelTypeChanged"/> event in the parent <see cref="WheelSlotPanel"/>

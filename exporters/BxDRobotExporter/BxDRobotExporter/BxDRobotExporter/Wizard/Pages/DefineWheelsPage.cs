@@ -301,6 +301,26 @@ namespace BxDRobotExporter.Wizard
         }
 
         /// <summary>
+        /// Sets the type of a specific wheel. Used in Auto Fill.
+        /// </summary>
+        /// <param name="node">Wheel to set type of</param>
+        /// <param name="type">New wheel type</param>
+        public void SetWheelType(RigidNode_Base node, WizardData.WizardWheelType type)
+        {
+            if (node == null)
+                return;
+
+            foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
+            {
+                if (panel.Value.Node == node)
+                {
+                    panel.Value.WheelType = type;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
         /// Removes a node from any wheel panel it is attached to.
         /// </summary>
         /// <param name="name">Name of the node to remove.</param>
