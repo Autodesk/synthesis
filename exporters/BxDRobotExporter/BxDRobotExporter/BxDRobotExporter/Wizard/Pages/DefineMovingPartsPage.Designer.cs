@@ -28,23 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.DefineMovingPartsLabel = new System.Windows.Forms.Label();
             this.Step3InfoLabel = new System.Windows.Forms.Label();
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.DefinePartsLayout = new System.Windows.Forms.TableLayoutPanel();
             this.MainLayout.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // DefineMovingPartsLabel
-            // 
-            this.DefineMovingPartsLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.DefineMovingPartsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DefineMovingPartsLabel.Location = new System.Drawing.Point(0, 0);
-            this.DefineMovingPartsLabel.Name = "DefineMovingPartsLabel";
-            this.DefineMovingPartsLabel.Size = new System.Drawing.Size(460, 20);
-            this.DefineMovingPartsLabel.TabIndex = 0;
-            this.DefineMovingPartsLabel.Text = "Define Other Moving Parts";
-            this.DefineMovingPartsLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // Step3InfoLabel
             // 
@@ -65,12 +53,13 @@
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.MainLayout.Controls.Add(this.Step3InfoLabel, 0, 0);
             this.MainLayout.Controls.Add(this.DefinePartsLayout, 0, 1);
-            this.MainLayout.Location = new System.Drawing.Point(0, 23);
+            this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainLayout.Location = new System.Drawing.Point(0, 0);
             this.MainLayout.Name = "MainLayout";
             this.MainLayout.RowCount = 2;
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.MainLayout.Size = new System.Drawing.Size(460, 630);
+            this.MainLayout.Size = new System.Drawing.Size(460, 653);
             this.MainLayout.TabIndex = 3;
             // 
             // DefinePartsLayout
@@ -84,7 +73,7 @@
             this.DefinePartsLayout.Name = "DefinePartsLayout";
             this.DefinePartsLayout.RowCount = 1;
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.DefinePartsLayout.Size = new System.Drawing.Size(454, 592);
+            this.DefinePartsLayout.Size = new System.Drawing.Size(454, 615);
             this.DefinePartsLayout.TabIndex = 2;
             // 
             // DefineMovingPartsPage
@@ -92,7 +81,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.MainLayout);
-            this.Controls.Add(this.DefineMovingPartsLabel);
             this.Name = "DefineMovingPartsPage";
             this.Size = new System.Drawing.Size(460, 653);
             this.MainLayout.ResumeLayout(false);
@@ -102,8 +90,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label DefineMovingPartsLabel;
         private System.Windows.Forms.Label Step3InfoLabel;
         private System.Windows.Forms.TableLayoutPanel MainLayout;
         private System.Windows.Forms.TableLayoutPanel DefinePartsLayout;
