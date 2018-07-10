@@ -14,6 +14,19 @@ namespace BxDRobotExporter.Wizard
     {        
         WizardData data = new WizardData();
 
+        // Reduce flickering - https://stackoverflow.com/questions/2612487/how-to-fix-the-flickering-in-user-controls
+        
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED // This forces all children to use double buffering, which eliminates the flickering caused by moving elements
+                cp.Style &= ~0x02000000;  // Turn off WS_CLIPCHILDREN // This prevents parts of the form from appearing black at first
+                return cp;
+            }
+        }
+
         public WizardForm()
         {
             InitializeComponent();
