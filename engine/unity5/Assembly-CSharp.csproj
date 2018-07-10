@@ -205,6 +205,7 @@
     <Compile Include="Assets\Scripts\FEA\ReplayImporter.cs" />
     <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
+    <Compile Include="Assets\Scripts\FSM\ObjectStateLinker.cs" />
     <Compile Include="Assets\Scripts\FSM\State.cs" />
     <Compile Include="Assets\Scripts\FSM\StateBehaviour.cs" />
     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />

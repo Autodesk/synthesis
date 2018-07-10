@@ -936,7 +936,7 @@ namespace Synthesis.DriverPractice
             arrows.GetComponent<MoveArrows>().OnClick = () => GetComponent<SimulatorRobot>().LockRobot();
             arrows.GetComponent<MoveArrows>().OnRelease = () => GetComponent<SimulatorRobot>().UnlockRobot();
 
-            arrows.SetActive(false);
+            StateMachine.Link<MainState>(arrows, false);
 
             return arrows;
         }
