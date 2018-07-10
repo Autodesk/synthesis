@@ -78,7 +78,7 @@
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
             this.NodeGroupBox.MinimumSize = new System.Drawing.Size(400, 0);
             this.NodeGroupBox.Name = "NodeGroupBox";
-            this.NodeGroupBox.Size = new System.Drawing.Size(400, 216);
+            this.NodeGroupBox.Size = new System.Drawing.Size(400, 395);
             this.NodeGroupBox.TabIndex = 0;
             this.NodeGroupBox.TabStop = false;
             this.NodeGroupBox.Text = "Empty";
@@ -101,7 +101,7 @@
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainTableLayout.Size = new System.Drawing.Size(394, 197);
+            this.MainTableLayout.Size = new System.Drawing.Size(394, 376);
             this.MainTableLayout.TabIndex = 14;
             // 
             // DriverLayout
@@ -274,9 +274,9 @@
             this.PortLayout.AutoSize = true;
             this.PortLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PortLayout.ColumnCount = 4;
-            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 45F));
+            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 45F));
+            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.PortLayout.Controls.Add(this.PortOneLabel, 0, 0);
             this.PortLayout.Controls.Add(this.PortTwoLabel, 2, 0);
@@ -297,7 +297,7 @@
             this.PortOneLabel.Location = new System.Drawing.Point(3, 3);
             this.PortOneLabel.Margin = new System.Windows.Forms.Padding(3);
             this.PortOneLabel.Name = "PortOneLabel";
-            this.PortOneLabel.Size = new System.Drawing.Size(39, 20);
+            this.PortOneLabel.Size = new System.Drawing.Size(35, 20);
             this.PortOneLabel.TabIndex = 1;
             this.PortOneLabel.Text = "Port 1";
             this.PortOneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -309,7 +309,7 @@
             this.PortTwoLabel.Location = new System.Drawing.Point(194, 3);
             this.PortTwoLabel.Margin = new System.Windows.Forms.Padding(3);
             this.PortTwoLabel.Name = "PortTwoLabel";
-            this.PortTwoLabel.Size = new System.Drawing.Size(39, 20);
+            this.PortTwoLabel.Size = new System.Drawing.Size(35, 20);
             this.PortTwoLabel.TabIndex = 2;
             this.PortTwoLabel.Text = "Port 2";
             this.PortTwoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -317,7 +317,7 @@
             // PortTwoUpDown
             // 
             this.PortTwoUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortTwoUpDown.Location = new System.Drawing.Point(239, 3);
+            this.PortTwoUpDown.Location = new System.Drawing.Point(235, 3);
             this.PortTwoUpDown.Maximum = new decimal(new int[] {
             20,
             0,
@@ -329,7 +329,7 @@
             0,
             0});
             this.PortTwoUpDown.Name = "PortTwoUpDown";
-            this.PortTwoUpDown.Size = new System.Drawing.Size(140, 20);
+            this.PortTwoUpDown.Size = new System.Drawing.Size(144, 20);
             this.PortTwoUpDown.TabIndex = 3;
             this.PortTwoUpDown.Value = new decimal(new int[] {
             3,
@@ -340,7 +340,7 @@
             // PortOneUpDown
             // 
             this.PortOneUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortOneUpDown.Location = new System.Drawing.Point(48, 3);
+            this.PortOneUpDown.Location = new System.Drawing.Point(44, 3);
             this.PortOneUpDown.Maximum = new decimal(new int[] {
             20,
             0,
@@ -352,7 +352,7 @@
             0,
             0});
             this.PortOneUpDown.Name = "PortOneUpDown";
-            this.PortOneUpDown.Size = new System.Drawing.Size(140, 20);
+            this.PortOneUpDown.Size = new System.Drawing.Size(144, 20);
             this.PortOneUpDown.TabIndex = 0;
             this.PortOneUpDown.Value = new decimal(new int[] {
             2,
@@ -368,7 +368,7 @@
             this.MetaTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.MetaTabControl.Name = "MetaTabControl";
             this.MetaTabControl.SelectedIndex = 0;
-            this.MetaTabControl.Size = new System.Drawing.Size(193, 115);
+            this.MetaTabControl.Size = new System.Drawing.Size(193, 294);
             this.MetaTabControl.TabIndex = 12;
             this.MetaTabControl.Visible = false;
             // 
@@ -378,7 +378,7 @@
             this.PneumaticTab.Location = new System.Drawing.Point(4, 22);
             this.PneumaticTab.Margin = new System.Windows.Forms.Padding(2);
             this.PneumaticTab.Name = "PneumaticTab";
-            this.PneumaticTab.Size = new System.Drawing.Size(185, 89);
+            this.PneumaticTab.Size = new System.Drawing.Size(185, 268);
             this.PneumaticTab.TabIndex = 1;
             this.PneumaticTab.Text = "Pneumatic";
             this.PneumaticTab.UseVisualStyleBackColor = true;
@@ -401,13 +401,13 @@
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PneumaticLayout.Size = new System.Drawing.Size(185, 88);
+            this.PneumaticLayout.Size = new System.Drawing.Size(185, 92);
             this.PneumaticLayout.TabIndex = 15;
             // 
             // PressureLabel
             // 
             this.PressureLabel.AutoSize = true;
-            this.PressureLabel.Location = new System.Drawing.Point(3, 47);
+            this.PressureLabel.Location = new System.Drawing.Point(3, 49);
             this.PressureLabel.Margin = new System.Windows.Forms.Padding(3);
             this.PressureLabel.Name = "PressureLabel";
             this.PressureLabel.Size = new System.Drawing.Size(48, 13);
@@ -434,10 +434,9 @@
             "60 psi",
             "20 psi",
             "10 psi"});
-            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(2, 65);
-            this.PneumaticPressureComboBox.Margin = new System.Windows.Forms.Padding(2);
+            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(3, 68);
             this.PneumaticPressureComboBox.Name = "PneumaticPressureComboBox";
-            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(181, 21);
+            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(179, 21);
             this.PneumaticPressureComboBox.TabIndex = 6;
             // 
             // PneumaticDiameterComboBox
@@ -449,10 +448,9 @@
             "1 in",
             ".5 in",
             ".25 in"});
-            this.PneumaticDiameterComboBox.Location = new System.Drawing.Point(2, 21);
-            this.PneumaticDiameterComboBox.Margin = new System.Windows.Forms.Padding(2);
+            this.PneumaticDiameterComboBox.Location = new System.Drawing.Point(3, 22);
             this.PneumaticDiameterComboBox.Name = "PneumaticDiameterComboBox";
-            this.PneumaticDiameterComboBox.Size = new System.Drawing.Size(181, 21);
+            this.PneumaticDiameterComboBox.Size = new System.Drawing.Size(179, 21);
             this.PneumaticDiameterComboBox.TabIndex = 12;
             // 
             // DefinePartPanel
@@ -463,7 +461,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.NodeGroupBox);
             this.Name = "DefinePartPanel";
-            this.Size = new System.Drawing.Size(403, 219);
+            this.Size = new System.Drawing.Size(403, 398);
             this.NodeGroupBox.ResumeLayout(false);
             this.NodeGroupBox.PerformLayout();
             this.MainTableLayout.ResumeLayout(false);
