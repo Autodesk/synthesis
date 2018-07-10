@@ -206,12 +206,7 @@ namespace Synthesis.Robot
                 //Where "save orientation" works
                 RotateRobot(robotStartOrientation);
 
-                if (resetMoveArrows != null)
-                    Destroy(resetMoveArrows);
-
-                resetMoveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"),
-                    GetComponentInChildren<BRigidBody>().transform);
-                resetMoveArrows.name = "MoveArrows";
+                AttachMoveArrows();
             }
             else
             {
@@ -242,7 +237,7 @@ namespace Synthesis.Robot
                     UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f);
 
                 if (!transposition.Equals(Vector3.zero))
-                    TransposeRobot(transposition);
+                    TranslateRobot(transposition);
             }
 
             //Update robotStartPosition when hit enter
@@ -252,6 +247,20 @@ namespace Synthesis.Robot
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
                 EndReset();
             }
+        }
+
+        /// <summary>
+        /// Attaches the movement arrows to the robot.
+        /// </summary>
+        private void AttachMoveArrows()
+        {
+            if (resetMoveArrows != null)
+                Destroy(resetMoveArrows);
+
+            resetMoveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"),
+                GetComponentInChildren<BRigidBody>().transform);
+            resetMoveArrows.name = "ResetMoveArrows";
+            resetMoveArrows.GetComponent<MoveArrows>().Translate = TranslateRobot;
         }
 
         /// <summary>
@@ -285,7 +294,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// Shifts the robot by a set position vector
         /// </summary>
-        public void TransposeRobot(Vector3 transposition)
+        public void TranslateRobot(Vector3 transposition)
         {
             foreach (RigidNode n in RootNode.ListAllNodes())
             {
@@ -302,6 +311,43 @@ namespace Synthesis.Robot
             }
 
             OnTransposeRobot(transposition);
+        }
+
+        /// <summary>
+        /// Locks the robot in place.
+        /// </summary>
+        public void LockRobot()
+        {
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+            }
+        }
+
+        /// <summary>
+        /// If the robot is locked in place, unlocks the robot.
+        /// </summary>
+        public void UnlockRobot()
+        {
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+            }
         }
 
         /// <summary>
