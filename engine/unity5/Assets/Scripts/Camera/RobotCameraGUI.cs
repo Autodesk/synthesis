@@ -41,7 +41,6 @@ namespace Synthesis.Camera
         //The indicator object is originally under robot camera list in unity scene
         public GameObject CameraIndicator;
         GameObject showCameraButton;
-        GameObject moveArrows;
 
         //Camera configuration
         GameObject configureRobotCameraButton;

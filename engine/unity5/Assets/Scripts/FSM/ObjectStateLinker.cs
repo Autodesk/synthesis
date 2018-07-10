@@ -69,8 +69,7 @@ namespace Assets.Scripts.FSM
             else if (stateObjects[typeof(S)].ContainsKey(obj))
                 return;
 
-            Dictionary<T, LinkDescriptor> currentObjects = stateObjects[typeof(S)];
-            currentObjects.Add(obj, new LinkDescriptor(enableWithState, useStrictLinking));
+            stateObjects[typeof(S)].Add(obj, new LinkDescriptor(enableWithState, useStrictLinking));
 
             setEnabled(obj, inActiveState && enableWithState);
         }

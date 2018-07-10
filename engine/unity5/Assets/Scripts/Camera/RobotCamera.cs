@@ -1,6 +1,8 @@
 ﻿using Synthesis.Configuration;
+using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Robot;
+using Synthesis.States;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,6 +48,7 @@ namespace Synthesis.Camera
             moveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
             moveArrows.name = "CameraMoveArrows";
             moveArrows.transform.parent = gameObject.transform;
+            moveArrows.transform.localPosition = Vector3.zero;
 
             moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
                 gameObject.transform.Translate(translation, Space.World);
@@ -53,7 +56,7 @@ namespace Synthesis.Camera
             moveArrows.GetComponent<MoveArrows>().OnClick = () => robot.LockRobot();
             moveArrows.GetComponent<MoveArrows>().OnRelease = () => robot.UnlockRobot();
 
-            ArrowsActive = false;
+            StateMachine.SceneGlobal.Link<MainState>(moveArrows, false);
         }
 
         /// <summary>
