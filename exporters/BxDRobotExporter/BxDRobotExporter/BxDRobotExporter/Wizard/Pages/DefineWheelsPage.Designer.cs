@@ -177,7 +177,6 @@
             // 
             this.RobotInfoGroupBox.AutoSize = true;
             this.RobotInfoGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.RobotInfoGroupBox.BackColor = System.Drawing.SystemColors.Control;
             this.MainLayout.SetColumnSpan(this.RobotInfoGroupBox, 2);
             this.RobotInfoGroupBox.Controls.Add(this.RobotInfoLayout);
             this.RobotInfoGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
