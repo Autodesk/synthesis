@@ -545,8 +545,10 @@ namespace BxDRobotExporter.Wizard
             if (e.Data.GetDataPresent(DataFormats.StringFormat))
             {
                 string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
-
-                SetWheelSide(nodeName, WheelSide.UNASSIGNED);
+                
+                // Don't do drag action if the item is already in the nodeListBox. This allows user to click on items without updating the UI.
+                if (wheelSlots[nodeName].SetupPanel.Side != WheelSide.UNASSIGNED) 
+                    SetWheelSide(nodeName, WheelSide.UNASSIGNED);
             }
         }
 
