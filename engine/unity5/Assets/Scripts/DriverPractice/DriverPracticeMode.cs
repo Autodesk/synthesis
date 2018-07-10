@@ -73,8 +73,11 @@ namespace Synthesis.DriverPractice
         private float deltaReleaseVertical;
 
         private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
+        
 
         bool isEditing = false;
+
+        public List<List<GameObject>> spawnedGampieces;
 
         protected override void Awake()
         {
@@ -97,6 +100,7 @@ namespace Synthesis.DriverPractice
 
                 if (settingControl != 0) ListenControl();
             }
+
         }
 
         void FindElements()
@@ -138,6 +142,8 @@ namespace Synthesis.DriverPractice
 
             primaryCountText = Auxiliary.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
             secondaryCountText = Auxiliary.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
+            
+
         }
 
         /// <summary>
@@ -151,8 +157,8 @@ namespace Synthesis.DriverPractice
             if (dpmRobot.gamepieceNames[1] == null) secondaryGamepieceText.text = "Secondary Gamepiece:  NOT CONFIGURED";
             else secondaryGamepieceText.text = "Secondary Gamepiece:  " + dpmRobot.gamepieceNames[1];
 
-            primaryCountText.text = "Spawned: " + dpmRobot.spawnedGamepieces[0].Count + "\nHeld: " + dpmRobot.objectsHeld[0].Count;
-            secondaryCountText.text = "Spawned: " + dpmRobot.spawnedGamepieces[1].Count + "\nHeld: " + dpmRobot.objectsHeld[1].Count;
+            primaryCountText.text = "Spawned: " + MainState.spawnedGamepieces[0].Count + "\nHeld: " + dpmRobot.objectsHeld[0].Count;
+            secondaryCountText.text = "Spawned: " + MainState.spawnedGamepieces[1].Count + "\nHeld: " + dpmRobot.objectsHeld[1].Count;
 
             if (configuring)
             {
