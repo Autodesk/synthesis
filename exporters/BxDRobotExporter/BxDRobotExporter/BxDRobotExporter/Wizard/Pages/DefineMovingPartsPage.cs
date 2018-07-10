@@ -26,8 +26,23 @@ namespace BxDRobotExporter.Wizard
         }
 
         #region IWizardPage Implementation
-        public bool Initialized { get => _initialized; set => _initialized = value; }
         private bool _initialized = false;
+        public bool Initialized
+        {
+            get => _initialized;
+            set
+            {
+                if (!value) // Page is being invalidated, reset interface
+                {
+                    DefinePartsPanelLayout.Controls.Clear();
+                    foreach (DefinePartPanel panel in panels)
+                        panel.Dispose();
+                    panels.Clear();
+                }
+
+                _initialized = value;
+            }
+        }
 
         /// <summary>
         /// Adds all of the remaining <see cref="RigidNode_Base"/> objects to <see cref="DefinePartPanel"/>s and adds them to <see cref="DefinePartsPanelLayout"/>
