@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using EditorsLibrary;
 using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace BxDRobotExporter
 {
@@ -46,7 +47,9 @@ namespace BxDRobotExporter
             }
         }
         private bool pendingChanges = false;
-        
+
+        ArrayList jointRelatedOccurences;
+        ArrayList disabledOccurences;
         public Inventor.Application MainApplication;
 
         AssemblyDocument AsmDocument;
@@ -289,6 +292,38 @@ namespace BxDRobotExporter
             
             EnvironmentEnabled = true;
 
+
+            jointRelatedOccurences = new ArrayList();
+            foreach (ComponentOccurrence c in ((AssemblyDocument)MainApplication.ActiveDocument).ComponentDefinition.Occurrences)
+            {
+                foreach (AssemblyJoint j in c.Joints)
+                {// look at all joints inside of the main doc
+                    if (!j.Definition.JointType.Equals(AssemblyJointTypeEnum.kRigidJointType))
+                    {
+                        jointRelatedOccurences.Add(j.AffectedOccurrenceOne);
+                        jointRelatedOccurences.Add(j.AffectedOccurrenceTwo);
+                    }
+                }
+            }
+            Boolean contains = false;
+            disabledOccurences = new ArrayList();
+            foreach (ComponentOccurrence c in AsmDocument.ComponentDefinition.Occurrences)
+            {// looks at all parts/ assemblies in the main assembly
+                contains = false;
+                foreach (ComponentOccurrence j in jointRelatedOccurences)
+                {
+                    if ((j.Equals(c)))
+                    {// checks is the part/ assembly is in a joint
+                        contains = true;
+                    }
+                }
+                if (!contains)
+                {// if the assembly/ part isn't part of a joint then hide it
+                    disabledOccurences.Add(c);
+                    c.Enabled = false;
+                }
+            }
+
             // Load robot skeleton and prepare UI
             if (!Utilities.GUI.LoadRobotSkeleton())
             {
@@ -322,6 +357,10 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
+            foreach (ComponentOccurrence c in disabledOccurences)
+            {
+                c.Enabled = true;
+            }
             WarnIfUnsaved(false);
 
             // Close add-in
@@ -426,6 +465,7 @@ namespace BxDRobotExporter
         {
             if (WarnIfUnsaved())
             {
+
                 if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                     return;
 
