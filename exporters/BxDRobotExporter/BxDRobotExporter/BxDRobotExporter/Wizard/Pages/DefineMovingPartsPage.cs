@@ -77,6 +77,8 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Initialize()
         {
+            SuspendLayout();
+
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
                 if (node.GetSkeletalJoint() != null && !WizardData.Instance.WheelNodes.Contains(node))
@@ -86,6 +88,8 @@ namespace BxDRobotExporter.Wizard
                     AddControlToNewTableRow(panel, DefinePartsLayout);
                 }
             }
+
+            ResumeLayout();
 
             _initialized = true;
         }
