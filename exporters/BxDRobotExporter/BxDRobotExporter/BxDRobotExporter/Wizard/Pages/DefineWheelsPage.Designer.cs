@@ -157,7 +157,7 @@
             this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(0);
             this.LeftWheelsPanel.Name = "LeftWheelsPanel";
             this.LeftWheelsPanel.RowCount = 1;
-            this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 438F));
+            this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 461F));
             this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
             this.LeftWheelsPanel.TabIndex = 0;
             this.LeftWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
@@ -326,7 +326,7 @@
             this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(0);
             this.RightWheelsPanel.Name = "RightWheelsPanel";
             this.RightWheelsPanel.RowCount = 1;
-            this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 438F));
+            this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 461F));
             this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
             this.RightWheelsPanel.TabIndex = 1;
             this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
@@ -343,6 +343,7 @@
             this.MainLayout.Controls.Add(this.LeftWheelsGroup, 0, 2);
             this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainLayout.Location = new System.Drawing.Point(0, 0);
+            this.MainLayout.Margin = new System.Windows.Forms.Padding(0);
             this.MainLayout.Name = "MainLayout";
             this.MainLayout.RowCount = 3;
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());

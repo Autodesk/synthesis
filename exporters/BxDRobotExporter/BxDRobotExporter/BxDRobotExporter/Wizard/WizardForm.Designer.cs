@@ -35,9 +35,10 @@
             // WizardPages
             // 
             this.WizardPages.BackColor = System.Drawing.Color.Transparent;
-            this.WizardPages.Location = new System.Drawing.Point(13, 13);
+            this.WizardPages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.WizardPages.Location = new System.Drawing.Point(0, 0);
             this.WizardPages.Name = "WizardPages";
-            this.WizardPages.Size = new System.Drawing.Size(460, 687);
+            this.WizardPages.Size = new System.Drawing.Size(484, 711);
             this.WizardPages.TabIndex = 0;
             // 
             // WizardForm
