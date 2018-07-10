@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Synthesis.Configuration
 {
-    public class MoveArrows : StateBehaviour<MainState>
+    public class MoveArrows : MonoBehaviour
     {
         private const float Scale = 0.075f;
         private Vector3 initialScale;
@@ -40,10 +40,32 @@ namespace Synthesis.Configuration
         /// Returns a <see cref="Vector3"/> representing the direction the selected
         /// arrow is facing, or <see cref="Vector3.zero"/> if no arrow is selected.
         /// </summary>
-        private Vector3 ArrowDirection => ActiveArrow <= ArrowType.Center ? Vector3.zero :
-                ActiveArrow == ArrowType.X ? transform.right :
-                ActiveArrow == ArrowType.Y ? transform.up :
-                transform.forward;
+        private Vector3 ArrowDirection
+        {
+            get
+            {
+                switch (ActiveArrow)
+                {
+                    case ArrowType.X:
+                    case ArrowType.YZ:
+                        return transform.right;
+                    case ArrowType.Y:
+                    case ArrowType.XZ:
+                        return transform.up;
+                    case ArrowType.Z:
+                    case ArrowType.XY:
+                        return transform.forward;
+                    default:
+                        return Vector3.zero;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when the arrows are dragged.
+        /// The input parameter is the position delta of the <see cref="MoveArrows"/>.
+        /// </summary>
+        public Action<Vector3> Translate { get; set; }
 
         /// <summary>
         /// Sets the initial position and rotation.
@@ -65,33 +87,28 @@ namespace Synthesis.Configuration
                 return;
 
             Ray mouseRay = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
+            Vector3 currentArrowPoint;
 
-            if (activeArrow == ArrowType.Center)
+            if (activeArrow <= ArrowType.Z)
             {
-                Plane plane = new Plane(UnityEngine.Camera.main.transform.forward, transform.position);
+                Vector3 closestPointScreenRay;
+                Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out currentArrowPoint,
+                    mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection);
+            }
+            else
+            {
+                Plane plane = new Plane(ArrowDirection, transform.position);
 
                 float enter;
                 plane.Raycast(mouseRay, out enter);
 
-                Vector3 position = mouseRay.GetPoint(enter);
-
-                State.TransposeRobot(mouseRay.GetPoint(enter) -
-                    State.ActiveRobot.GetComponentInChildren<BRigidBody>().GetCollisionObject().WorldTransform.Origin.ToUnity());
+                currentArrowPoint = mouseRay.GetPoint(enter);
             }
-            else
-            {
-                Vector3 closestPointScreenRay;
-                Vector3 closestPointArrowRay;
 
-                if (!Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out closestPointArrowRay,
-                    mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection))
-                    return;
+            if (lastArrowPoint != Vector3.zero)
+                Translate?.Invoke(currentArrowPoint - lastArrowPoint);
 
-                if (lastArrowPoint != Vector3.zero)
-                    State.TransposeRobot(closestPointArrowRay - lastArrowPoint);
-
-                lastArrowPoint = closestPointArrowRay;
-            }
+            lastArrowPoint = currentArrowPoint;
         }
 
         /// <summary>

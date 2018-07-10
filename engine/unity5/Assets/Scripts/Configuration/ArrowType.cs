@@ -1,14 +1,16 @@
 ﻿namespace Synthesis.Configuration
 {
     /// <summary>
-    /// Used for specifying an X, Y, Z, or Center arrow.
+    /// Used for specifying an X, Y, Z, YZ, XZ, or XY arrow type.
     /// </summary>
     public enum ArrowType
     {
         None,
-        Center,
         X,
         Y,
         Z,
+        YZ,
+        XZ,
+        XY,
     }
 }
