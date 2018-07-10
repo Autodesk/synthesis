@@ -77,8 +77,6 @@ namespace Synthesis.DriverPractice
 
         bool isEditing = false;
 
-        public List<List<GameObject>> spawnedGampieces;
-
         protected override void Awake()
         {
             base.Awake();
