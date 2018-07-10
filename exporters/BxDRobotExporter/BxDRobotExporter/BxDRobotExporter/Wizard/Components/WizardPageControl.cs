@@ -37,17 +37,18 @@ namespace BxDRobotExporter.Wizard
         {
             if (ActivePageIndex > 0)
             {
+                // Hide current page
+                Controls[ActivePageIndex + 1].Visible = false;
+
                 ActivePageIndex--;
-                for (int i = 1; i < Controls.Count; i++)
-                {
-                    if (i == ActivePageIndex + 1)
-                        Controls[i].Visible = true;
-                    else
-                        Controls[i].Visible = false;
-                }
-                WizardNavigator.UpdateState(defaultNavigatorStates[ActivePageIndex + 1]);
+
+                // Initialize the next page
                 if (!((IWizardPage)(this.Controls[ActivePageIndex + 1])).Initialized)
                     ((IWizardPage)(this.Controls[ActivePageIndex + 1])).Initialize();
+
+                // Show previous page
+                Controls[ActivePageIndex + 1].Visible = true;
+                WizardNavigator.UpdateState(defaultNavigatorStates[ActivePageIndex + 1]);
             }
         }
 
@@ -63,17 +64,18 @@ namespace BxDRobotExporter.Wizard
                 ((IWizardPage)(this.Controls[ActivePageIndex + 1])).OnNext();
                 if (ActivePageIndex < Controls.Count - 1 && WizardNavigator.NextButton.Text == "Next >" || WizardNavigator.NextButton.Text == "Start >")
                 {
+                    // Hide current page
+                    Controls[ActivePageIndex + 1].Visible = false;
+
                     ActivePageIndex++;
-                    for (int i = 1; i < Controls.Count; i++)
-                    {
-                        if (i == ActivePageIndex + 1)
-                            Controls[i].Visible = true;
-                        else
-                            Controls[i].Visible = false;
-                    }
-                    WizardNavigator.UpdateState(defaultNavigatorStates[ActivePageIndex + 1]);
+
+                    // Initialize the next page
                     if (!((IWizardPage)(this.Controls[ActivePageIndex + 1])).Initialized)
                         ((IWizardPage)(this.Controls[ActivePageIndex + 1])).Initialize();
+
+                    // Show next page
+                    Controls[ActivePageIndex + 1].Visible = true;
+                    WizardNavigator.UpdateState(defaultNavigatorStates[ActivePageIndex + 1]);
                 }
                 else if (WizardNavigator.NextButton.Text == "Finish")
                     FinishClicked?.Invoke();
@@ -175,12 +177,12 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void BeginWizard()
         {
-            Controls[1].Visible = true;
-            WizardNavigator.UpdateState(defaultNavigatorStates[1]);
-
             // Initialize first page
             if (!((IWizardPage)(Controls[1])).Initialized)
                 ((IWizardPage)(Controls[1])).Initialize();
+
+            Controls[1].Visible = true;
+            WizardNavigator.UpdateState(defaultNavigatorStates[1]);
         }
     }
 }
