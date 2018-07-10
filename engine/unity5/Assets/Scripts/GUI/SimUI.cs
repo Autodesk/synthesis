@@ -64,8 +64,6 @@ namespace Synthesis.GUI
 
         GameObject toolbar;
 
-        //bool changeAnalytics = true;
-
         GameObject exitPanel;
 
         GameObject orientWindow;
@@ -629,7 +627,6 @@ namespace Synthesis.GUI
                     break;
                 case 2:
                     EndOtherProcesses();
-                    camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
                     DynamicCamera.ControlEnabled = true;
                     State.BeginRobotReset();
                     resetDropdown.GetComponent<Dropdown>().value = 0;

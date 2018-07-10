@@ -41,6 +41,8 @@ namespace Synthesis.Robot
 
         private GameObject resetMoveArrows;
 
+        private DynamicCamera.CameraState lastCameraState;
+
         /// <summary>
         /// Initializes sensors and driver practice data.
         /// </summary>
@@ -174,6 +176,11 @@ namespace Synthesis.Robot
         /// <param name="resetTransform"></param>
         public void BeginReset()
         {
+            DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
+            lastCameraState = dynamicCamera.cameraState;
+            Debug.Log(lastCameraState);
+            dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
+
             foreach (SimulatorRobot robot in State.SpawnedRobots)
                 foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
                     if (rb != null && !rb.GetCollisionObject().IsActive)
@@ -245,6 +252,14 @@ namespace Synthesis.Robot
             {
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
+
+                if (lastCameraState != null)
+                {
+                    DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
+                    dynamicCamera.SwitchCameraState(lastCameraState);
+                    lastCameraState = null;
+                }
+
                 EndReset();
             }
         }
