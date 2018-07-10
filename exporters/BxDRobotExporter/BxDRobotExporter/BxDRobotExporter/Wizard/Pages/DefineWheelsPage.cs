@@ -31,7 +31,7 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
-        private Dictionary<string, WheelSlotPanel> wheelSlots = new Dictionary<string, WheelSlotPanel>();
+        private Dictionary<string, WheelSetupPanel> setupPanels = new Dictionary<string, WheelSetupPanel>();
         private List<string> leftOrder = new List<string>();
         private List<string> rightOrder = new List<string>();
 
@@ -115,10 +115,10 @@ namespace BxDRobotExporter.Wizard
             WizardData.Instance.preferMetric = preferMetric;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
 
-            foreach(KeyValuePair<string, WheelSlotPanel> slot in wheelSlots)
+            foreach(KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
             {
-                if (slot.Value.SetupPanel.Side != WheelSide.UNASSIGNED)
-                    WizardData.Instance.wheels.Add(slot.Value.WheelData);
+                if (panel.Value.Side != WheelSide.UNASSIGNED)
+                    WizardData.Instance.wheels.Add(panel.Value.GetWheelData());
             }
         }
 
@@ -135,7 +135,7 @@ namespace BxDRobotExporter.Wizard
                 RightWheelsPanel.Controls[0].Dispose();
 
             Dictionary<string, RigidNode_Base> availableNodes = new Dictionary<string, RigidNode_Base>(); // TODO: Rename this to availableNodes after a different merge
-            wheelSlots = new Dictionary<string, WheelSlotPanel>();
+            setupPanels = new Dictionary<string, WheelSetupPanel>();
             leftOrder = new List<string>();
             rightOrder = new List<string>();
             
@@ -175,7 +175,6 @@ namespace BxDRobotExporter.Wizard
             // Generate panels
             foreach (KeyValuePair<string, RigidNode_Base> node in availableNodes)
             {
-                WheelSlotPanel panel = new WheelSlotPanel();
 
                 // Get default wheel type based on drive train
                 WizardData.WizardWheelType type;
@@ -187,11 +186,11 @@ namespace BxDRobotExporter.Wizard
                     type = WizardData.WizardWheelType.NORMAL;
 
                 // Create panel
-                panel.FillSlot(node.Value, node.Key, WheelSide.UNASSIGNED, type);
-                panel.SetupPanel.removeHandler += RemoveNodeFromPanel;
-                panel.SetupPanel.mouseDownHandler += SetupPanel_StartDrag;
+                WheelSetupPanel panel = new WheelSetupPanel(node.Value, node.Key, type);
+                panel.removeHandler += RemoveNodeFromPanel;
+                panel.mouseDownHandler += SetupPanel_StartDrag;
                 
-                wheelSlots.Add(node.Key, panel);
+                setupPanels.Add(node.Key, panel);
             }
 
             _initialized = true;
@@ -208,9 +207,9 @@ namespace BxDRobotExporter.Wizard
             {
                 if (!value) // Page is being invalidated, reset interface
                 {
-                    foreach (KeyValuePair<string, WheelSlotPanel> panel in wheelSlots)
+                    foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
                         panel.Value.Dispose();
-                    wheelSlots.Clear();
+                    setupPanels.Clear();
                     leftOrder.Clear();
                     rightOrder.Clear();
                     UpdateUI();
@@ -246,7 +245,7 @@ namespace BxDRobotExporter.Wizard
             if (nodeName == null)
                 return;
 
-            if (!wheelSlots.ContainsKey(nodeName))
+            if (!setupPanels.ContainsKey(nodeName))
                 return;
 
             // Remove from current orders
@@ -254,7 +253,7 @@ namespace BxDRobotExporter.Wizard
             rightOrder.Remove(nodeName);
 
             // Update side of wheel data
-            wheelSlots[nodeName].SetupPanel.Side = side;
+            setupPanels[nodeName].Side = side;
 
             // Insert into appropriate order
             if (side == WheelSide.LEFT)
@@ -291,11 +290,11 @@ namespace BxDRobotExporter.Wizard
             if (node == null)
                 return;
 
-            foreach(KeyValuePair<string, WheelSlotPanel> slot in wheelSlots)
+            foreach(KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
             {
-                if (slot.Value.SetupPanel.Node == node)
+                if (panel.Value.Node == node)
                 {
-                    SetWheelSide(slot.Key, side, null, updateUI);
+                    SetWheelSide(panel.Key, side, null, updateUI);
                     return;
                 }
             }
@@ -331,17 +330,17 @@ namespace BxDRobotExporter.Wizard
 
             // Add left items to left side
             foreach (string name in leftOrder)
-                AddControlToNewTableRow(wheelSlots[name], LeftWheelsPanel);
+                AddControlToNewTableRow(setupPanels[name], LeftWheelsPanel);
 
             // Add right items to right side
             foreach (string name in rightOrder)
-                AddControlToNewTableRow(wheelSlots[name], RightWheelsPanel);
+                AddControlToNewTableRow(setupPanels[name], RightWheelsPanel);
 
             // Add all remaining items to list box
             int unassignedNodes = 0;
-            foreach (KeyValuePair<string, WheelSlotPanel> slot in wheelSlots)
+            foreach (KeyValuePair<string, WheelSetupPanel> slot in setupPanels)
             {
-                if (slot.Value.SetupPanel.Side == WheelSide.UNASSIGNED)
+                if (slot.Value.Side == WheelSide.UNASSIGNED)
                 {
                     NodeListBox.Items.Add(slot.Key);
                     unassignedNodes++;
@@ -375,7 +374,7 @@ namespace BxDRobotExporter.Wizard
             int n = 0;
             while (n < leftOrder.Count)
             {
-                if (wheelSlots[leftOrder[n]].SetupPanel.Side != WheelSide.LEFT)
+                if (setupPanels[leftOrder[n]].Side != WheelSide.LEFT)
                     leftOrder.RemoveAt(n);
                 else
                     n++;
@@ -385,23 +384,23 @@ namespace BxDRobotExporter.Wizard
             n = 0;
             while (n < rightOrder.Count)
             {
-                if (wheelSlots[rightOrder[n]].SetupPanel.Side != WheelSide.RIGHT)
+                if (setupPanels[rightOrder[n]].Side != WheelSide.RIGHT)
                     rightOrder.RemoveAt(n);
                 else
                     n++;
             }
 
-            foreach (KeyValuePair<string, WheelSlotPanel> wheelSlot in wheelSlots)
+            foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
             {
                 // If it should exist in the left order, add it to the left order
-                if (wheelSlot.Value.SetupPanel.Side == WheelSide.LEFT)
-                    if (!leftOrder.Contains(wheelSlot.Key))
-                        leftOrder.Add(wheelSlot.Key);
+                if (panel.Value.Side == WheelSide.LEFT)
+                    if (!leftOrder.Contains(panel.Key))
+                        leftOrder.Add(panel.Key);
 
                 // If it should exist in the right order, add it to the right order
-                if (wheelSlot.Value.SetupPanel.Side == WheelSide.RIGHT)
-                    if (!rightOrder.Contains(wheelSlot.Key))
-                        rightOrder.Add(wheelSlot.Key);
+                if (panel.Value.Side == WheelSide.RIGHT)
+                    if (!rightOrder.Contains(panel.Key))
+                        rightOrder.Add(panel.Key);
             }
         }
 
@@ -442,7 +441,7 @@ namespace BxDRobotExporter.Wizard
             if (NodeListBox.SelectedItem != null)
             {
                 // Highlight node in Inventor
-                StandardAddInServer.Instance.WizardSelect(wheelSlots[NodeListBox.SelectedItem.ToString()].Node);
+                StandardAddInServer.Instance.WizardSelect(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
                 // Start drag-and-drop process
                 NodeListBox.DoDragDrop(NodeListBox.SelectedItem.ToString(), DragDropEffects.Move);
             }
@@ -457,11 +456,11 @@ namespace BxDRobotExporter.Wizard
             if (name == null)
                 return;
 
-            if (!wheelSlots.ContainsKey(name))
+            if (!setupPanels.ContainsKey(name))
                 return;
 
             // Highlight node in Inventor
-            StandardAddInServer.Instance.WizardSelect(wheelSlots[name].SetupPanel.Node);
+            StandardAddInServer.Instance.WizardSelect(setupPanels[name].Node);
             // Start drag-and-drop process
             NodeListBox.DoDragDrop(name, DragDropEffects.Move);
         }
@@ -520,10 +519,9 @@ namespace BxDRobotExporter.Wizard
             {
                 if (c.PointToClient(MousePosition).Y < c.Height / 2) // Check if mouse is above the center of the control
                 {
-                    WheelSlotPanel slotPanel = (WheelSlotPanel)c;
-                    if (slotPanel != null)
+                    if (c is WheelSetupPanel)
                     {
-                        SetWheelSide(nodeName, side, slotPanel.SetupPanel.NodeName); // Insert above the control
+                        SetWheelSide(nodeName, side, ((WheelSetupPanel)c).NodeName); // Insert above the control
                         return;
                     }
                 }
@@ -545,7 +543,7 @@ namespace BxDRobotExporter.Wizard
                 string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
                 
                 // Don't do drag action if the item is already in the nodeListBox. This allows user to click on items without updating the UI.
-                if (wheelSlots[nodeName].SetupPanel.Side != WheelSide.UNASSIGNED) 
+                if (setupPanels[nodeName].Side != WheelSide.UNASSIGNED) 
                     SetWheelSide(nodeName, WheelSide.UNASSIGNED);
             }
         }
@@ -578,7 +576,7 @@ namespace BxDRobotExporter.Wizard
             if (NodeListBox.SelectedItem != null)
             {
                 // Highlight node in Inventor
-                StandardAddInServer.Instance.WizardSelect(wheelSlots[NodeListBox.SelectedItem.ToString()].Node);
+                StandardAddInServer.Instance.WizardSelect(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
             }
         }
     }
