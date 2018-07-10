@@ -23,7 +23,7 @@ namespace BxDRobotExporter.Wizard
         public DefineMovingPartsPage()
         {
             InitializeComponent();
-            DefinePartsLayout.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, SystemInformation.VerticalScrollBarWidth);
+            DefinePartsLayout.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
 
             // Hide horizontal scrollbar
             DefinePartsLayout.AutoScroll = false;
@@ -84,7 +84,6 @@ namespace BxDRobotExporter.Wizard
                     DefinePartPanel panel = new DefinePartPanel(node);
                     panels.Add(panel);
                     AddControlToNewTableRow(panel, DefinePartsLayout);
-                    panel.Dock = DockStyle.Top;
                 }
             }
 
