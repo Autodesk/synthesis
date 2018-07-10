@@ -581,5 +581,11 @@ namespace BxDRobotExporter.Wizard
                 StandardAddInServer.Instance.WizardSelect(wheelSlots[NodeListBox.SelectedItem.ToString()].Node);
             }
         }
+
+        private void AutoFill_Click(Object sender, EventArgs e) // Initializes autofill process
+        {
+            AutoFillPage autoForm = new AutoFillPage(this);
+            autoForm.ShowDialog(); // opens page that takes info on number of wheels
+        }
     }
 }
