@@ -67,10 +67,9 @@ namespace BxDRobotExporter.Wizard
         private void AddInteractEventsToAll(Control baseControl)
         {
             if (!(baseControl is Button || baseControl is ComboBox)) // Add other interactable items to this check as needed
-            {
-                baseControl.MouseHover += HighlightNode;
                 baseControl.MouseDown += WheelSetupPanel_MouseDown;
-            }
+
+            baseControl.MouseHover += HighlightNode;
 
             foreach (Control control in baseControl.Controls)
                 AddInteractEventsToAll(control);
