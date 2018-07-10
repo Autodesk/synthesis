@@ -302,6 +302,15 @@ namespace BxDRobotExporter.Wizard
         }
 
         /// <summary>
+        /// Removes a node from any wheel panel it is attached to.
+        /// </summary>
+        /// <param name="name">Name of the node to remove.</param>
+        private void RemoveNodeFromPanel(string name)
+        {
+            SetWheelSide(name, WheelSide.UNASSIGNED);
+        }
+
+        /// <summary>
         /// Reloads node list view and left/right wheel panels.
         /// </summary>
         private void UpdateUI()
@@ -359,6 +368,9 @@ namespace BxDRobotExporter.Wizard
             RightWheelsPanel.ResumeLayout();
         }
 
+        /// <summary>
+        /// Makes sure nobody did something stupid and modified the side variable of a wheel setup panel without moving it to the correct list.
+        /// </summary>
         private void ValidateLeftRightLists()
         {
             // Make sure all items in left orders are left wheels
@@ -395,6 +407,9 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        /// <summary>
+        /// Updates the calculated weight info.
+        /// </summary>
         private void UpdateWeight()
         {
             if (WeightUnitSelector.SelectedIndex == 0)
@@ -405,6 +420,10 @@ namespace BxDRobotExporter.Wizard
             preferMetric = WeightUnitSelector.SelectedIndex == 1;
         }
 
+        /// <summary>
+        /// Sets the value of the weight box. This should be used to prevent going over the max/below the min.
+        /// </summary>
+        /// <param name="value"></param>
         private void SetWeightBoxValue(float value)
         {
             if ((decimal)value > WeightBox.Maximum)
@@ -454,7 +473,7 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void WheelsPanel_DragEnter(object sender, DragEventArgs e)
+        private void Field_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Move;
         }
@@ -547,15 +566,6 @@ namespace BxDRobotExporter.Wizard
             table.Controls.Add(control);
             table.SetRow(control, table.RowCount - 1);
             table.SetColumn(control, 0);
-        }
-
-        /// <summary>
-        /// Removes a node from any wheel panel it is attached to.
-        /// </summary>
-        /// <param name="name">Name of the node to remove.</param>
-        private void RemoveNodeFromPanel(string name)
-        {
-            SetWheelSide(name, WheelSide.UNASSIGNED);
         }
 
         /// <summary>
