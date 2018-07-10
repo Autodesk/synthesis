@@ -49,7 +49,7 @@ namespace BxDRobotExporter.Wizard
             PortOneUpDown.Minimum = 3;
             PortTwoUpDown.Minimum = 3;
 
-            PortOneUpDown.Value = WizardData.Instance.NextFreePort;
+            PortOneUpDown.Value = WizardData.Instance.NextFreePort < 19 ? WizardData.Instance.NextFreePort : 19;
             PortTwoUpDown.Value = PortOneUpDown.Value + 1; // This may overlap with ports on next panel, but this only matters if the user chooses a two-port driver, which are less common
 
             // Add a highlight component action to all children. This is simpler than manually adding the hover event to each control.
