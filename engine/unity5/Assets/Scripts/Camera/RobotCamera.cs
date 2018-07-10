@@ -19,7 +19,7 @@ namespace Synthesis.Camera
         private float FOV;
         private GameObject moveArrows;
 
-        public RobotBase robot;
+        public SimulatorRobot robot;
 
         /// <summary>
         /// Returns true if the <see cref="MoveArrows"/> are active.
@@ -46,8 +46,12 @@ namespace Synthesis.Camera
             moveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
             moveArrows.name = "CameraMoveArrows";
             moveArrows.transform.parent = gameObject.transform;
+
             moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
                 gameObject.transform.Translate(translation, Space.World);
+
+            moveArrows.GetComponent<MoveArrows>().OnClick = () => robot.LockRobot();
+            moveArrows.GetComponent<MoveArrows>().OnRelease = () => robot.UnlockRobot();
 
             ArrowsActive = false;
         }
@@ -68,7 +72,7 @@ namespace Synthesis.Camera
         /// Set the parent robot of the robot cameras
         /// </summary>
         /// <param name="robot"></param>
-        public void SetParentRobot(RobotBase robot)
+        public void SetParentRobot(SimulatorRobot robot)
         {
             this.robot = robot;
         }
