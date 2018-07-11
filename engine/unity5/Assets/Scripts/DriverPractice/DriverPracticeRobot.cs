@@ -15,6 +15,7 @@ using Synthesis.States;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Configuration;
+using Synthesis.FEA;
 
 namespace Synthesis.DriverPractice
 {
@@ -465,6 +466,8 @@ namespace Synthesis.DriverPractice
                         spawnIndicator = Instantiate(Auxiliary.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
                         spawnIndicator.name = "SpawnIndicator";
                         Destroy(spawnIndicator.GetComponent<BRigidBody>());
+                        Destroy(spawnIndicator.GetComponent<BCollisionShape>());
+                        Destroy(spawnIndicator.GetComponent<Tracker>());
                         if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
                         Renderer render = spawnIndicator.GetComponentInChildren<Renderer>();
                         render.material.shader = Shader.Find("Transparent/Diffuse");
@@ -475,9 +478,20 @@ namespace Synthesis.DriverPractice
                     spawnIndicator.transform.position = gamepieceSpawn[index];
                     settingSpawn = index + 1;
 
+                    GameObject moveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+                    moveArrows.name = "IndicatorMoveArrows";
+                    moveArrows.transform.parent = spawnIndicator.transform;
+                    moveArrows.transform.localPosition = UnityEngine.Vector3.zero;
+
+                    moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
+                        spawnIndicator.transform.Translate(translation, Space.World);
+
+                    StateMachine.SceneGlobal.Link<MainState>(moveArrows);
+
                     DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
-                    dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+                    //dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+                    dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, spawnIndicator));
 
                     //MainState.ControlsDisabled = true;
                 }
@@ -491,7 +505,6 @@ namespace Synthesis.DriverPractice
             int index = settingSpawn - 1;
             if (spawnIndicator != null)
             {
-                ((DynamicCamera.SateliteState)UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
                 if (UnityEngine.Input.GetKey(KeyCode.A)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
                 if (UnityEngine.Input.GetKey(KeyCode.D)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
                 if (UnityEngine.Input.GetKey(KeyCode.W)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
