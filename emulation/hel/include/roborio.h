@@ -1485,7 +1485,16 @@ namespace hel{
             std::function<void(uint32_t)> occurFunction;
         };
 
-    	/**
+        struct SysWatchdog{
+        private:
+            tSysWatchdog::tStatus status;
+        
+        public:
+            tSysWatchdog::tStatus getStatus()const;
+            void setStatus(tSysWatchdog::tStatus);
+        };
+    	
+        /**
     	 * \var bool user_button
     	 * \represents the state of the user button on the roborio
     	 */
@@ -1508,6 +1517,7 @@ namespace hel{
         PWMSystem pwm_system;
     	RelaySystem relay_system;
     	RobotState robot_state;
+        SysWatchdog watchdog;
 
         explicit RoboRIO() = default;
 
