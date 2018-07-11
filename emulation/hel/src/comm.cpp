@@ -231,7 +231,8 @@ int FRC_NetworkCommunication_sendError(int isError, int32_t errorCode, int /*isL
 
 void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation
 
-int setNewDataOccurRef(uint32_t /*refnum*/){ //unnecessary for emulation
+int setNewDataOccurRef(uint32_t refnum){ 
+    hel::RoboRIOManager::getInstance()->net_comm.ref_num = refnum;
     return 0; //TODO returns a status
 }
 
