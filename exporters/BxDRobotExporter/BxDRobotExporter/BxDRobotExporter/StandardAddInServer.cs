@@ -47,12 +47,11 @@ namespace BxDRobotExporter
             }
         }
         private bool pendingChanges = false;
-
-        ArrayList jointRelatedOccurences;
-        ArrayList disabledOccurences;
+        
         public Inventor.Application MainApplication;
 
         AssemblyDocument AsmDocument;
+        List<ComponentOccurrence> disabledAssemblyOccurences;
         Inventor.Environment ExporterEnv;
         bool EnvironmentEnabled = false;
 
@@ -291,46 +290,17 @@ namespace BxDRobotExporter
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
             
             EnvironmentEnabled = true;
-
-
-            jointRelatedOccurences = new ArrayList();
-            foreach (ComponentOccurrence c in ((AssemblyDocument)MainApplication.ActiveDocument).ComponentDefinition.Occurrences)
-            {
-                foreach (AssemblyJoint j in c.Joints)
-                {// look at all joints inside of the main doc
-                    if (!j.Definition.JointType.Equals(AssemblyJointTypeEnum.kRigidJointType))
-                    {
-                        jointRelatedOccurences.Add(j.AffectedOccurrenceOne);
-                        jointRelatedOccurences.Add(j.AffectedOccurrenceTwo);
-                    }
-                }
-            }
-            Boolean contains = false;
-            disabledOccurences = new ArrayList();
-            foreach (ComponentOccurrence c in AsmDocument.ComponentDefinition.Occurrences)
-            {// looks at all parts/ assemblies in the main assembly
-                contains = false;
-                foreach (ComponentOccurrence j in jointRelatedOccurences)
-                {
-                    if ((j.Equals(c)))
-                    {// checks is the part/ assembly is in a joint
-                        contains = true;
-                    }
-                }
-                if (!contains)
-                {// if the assembly/ part isn't part of a joint then hide it
-                    disabledOccurences.Add(c);
-                    c.Enabled = false;
-                }
-            }
-
+            
             // Load robot skeleton and prepare UI
             if (!Utilities.GUI.LoadRobotSkeleton())
             {
                 ForceQuitExporter();
                 return;
             }
-            
+
+            // Hide non-jointed components
+            disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
+
             // If fails to load existing data, restart wizard
             if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
@@ -357,11 +327,11 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            foreach (ComponentOccurrence c in disabledOccurences)
-            {
-                c.Enabled = true;
-            }
             WarnIfUnsaved(false);
+
+            // Re-enable disabled components
+            EnableComponents(disabledAssemblyOccurences);
+            disabledAssemblyOccurences.Clear();
 
             // Close add-in
             AsmDocument = null;
@@ -599,6 +569,54 @@ namespace BxDRobotExporter
         #endregion
 
         #region Miscellaneous Methods and Nested Classes
+        /// <summary>
+        /// Disables all components in a document that are not connected to another component by a joint.
+        /// </summary>
+        /// <param name="asmDocument">Document to traverse.</param>
+        /// <returns>List of disabled components.</returns>
+        private List<ComponentOccurrence> DisableUnconnectedComponents(AssemblyDocument asmDocument)
+        {
+            // Find all components in the assembly that are connected to a jojnt
+            List<ComponentOccurrence> jointedAssemblyOccurences = new List<ComponentOccurrence>();
+            foreach (ComponentOccurrence c in asmDocument.ComponentDefinition.Occurrences)
+            {
+                // Look at all joints inside of the main document
+                foreach (AssemblyJoint j in c.Joints)
+                {
+                    if (!j.Definition.JointType.Equals(AssemblyJointTypeEnum.kRigidJointType))
+                    {
+                        jointedAssemblyOccurences.Add(j.AffectedOccurrenceOne);
+                        jointedAssemblyOccurences.Add(j.AffectedOccurrenceTwo);
+                    }
+                }
+            }
+
+            // Hide any components not associated with a joint
+            List<ComponentOccurrence> disabledAssemblyOccurences = new List<ComponentOccurrence>();
+            foreach (ComponentOccurrence c in asmDocument.ComponentDefinition.Occurrences)
+            {
+                if (jointedAssemblyOccurences.Contains(c))
+                {
+                    disabledAssemblyOccurences.Add(c);
+                    c.Enabled = false;
+                }
+            }
+
+            return disabledAssemblyOccurences;
+        }
+
+        /// <summary>
+        /// Enables all components in a list.
+        /// </summary>
+        /// <param name="components">Components to enable.</param>
+        private void EnableComponents(List<ComponentOccurrence> components)
+        {
+            foreach (ComponentOccurrence c in components)
+            {
+                c.Enabled = true;
+            }
+        }
+
         /// <summary>
         /// Checks if a baseNode matches up with the assembly. Passed as a <see cref="ValidationAction"/> to
         /// </summary>
