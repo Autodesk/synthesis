@@ -1442,6 +1442,43 @@ namespace hel{
             void setTimerConfig(tEncoder::tTimerConfig);
         };
 
+        /**
+         * \struct Power roborio.h
+         * \brief Data model for RoboRIO voltmeter and power manager
+         */
+
+        struct Power{
+        private:
+
+            /**
+             * \var tPower::tStatus status
+             * \brief The active state of the power supply rails
+             */
+
+            tPower::tStatus status;
+
+            /**
+             * \var tPower::tFaultCounts fault_counts
+             * \brief A running count of faults for each rail
+             */
+
+            tPower::tFaultCounts fault_counts;
+            
+            /**
+             * \var tPower::tDisable disabled
+             * \brief Which power rails have been disabled
+             */
+
+            tPower::tDisable disabled;
+
+        public:
+            tPower::tStatus getStatus()const;
+            void setStatus(tPower::tStatus);
+            tPower::tFaultCounts getFaultCounts()const;
+            void setFaultCounts(tPower::tFaultCounts);
+            tPower::tDisable getDisabled()const;
+            void setDisabled(tPower::tDisable);
+        };
     	/**
     	 * \var bool user_button
     	 * \represents the state of the user button on the roborio
@@ -1460,6 +1497,7 @@ namespace hel{
         DriverStationInfo driver_station_info;
         std::array<Encoder, hal::kNumEncoders> encoders;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
+        Power power;
         PWMSystem pwm_system;
     	RelaySystem relay_system;
     	RobotState robot_state;
