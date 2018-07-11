@@ -86,7 +86,40 @@ namespace Synthesis.Configuration
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
 
-            initialScale = transform.localScale;
+            initialScale = new Vector3(transform.localScale.x / transform.lossyScale.x,
+                transform.localScale.y / transform.lossyScale.y, transform.localScale.z / transform.lossyScale.z);
+        }
+
+        /// <summary>
+        /// Enables all colliders of any parent objects to allow for their own click detection. 
+        /// </summary>
+        private void OnBeforeTransformParentChanged()
+        {
+            SetOtherCollidersEnabled(true);
+        }
+
+        /// <summary>
+        /// Disables all colliders of any parent objects to allow for proper click detection.
+        /// </summary>
+        private void OnTransformParentChanged()
+        {
+            SetOtherCollidersEnabled(false);
+        }
+
+        /// <summary>
+        /// Disables all colliders of any parent objects to allow for proper click detection.
+        /// </summary>
+        private void OnEnable()
+        {
+            SetOtherCollidersEnabled(false);
+        }
+
+        /// <summary>
+        /// Re-enables all colliders of any parent objects to allow for their own click detection.
+        /// </summary>
+        private void OnDisable()
+        {
+            SetOtherCollidersEnabled(true);
         }
 
         /// <summary>
@@ -163,6 +196,29 @@ namespace Synthesis.Configuration
             DynamicCamera.MovementEnabled = true;
 
             OnRelease?.Invoke();
+        }
+
+        /// <summary>
+        /// Enables or disables other colliders to ensure proper arrow click
+        /// detection.
+        /// </summary>
+        /// <param name="enabled"></param>
+        private void SetOtherCollidersEnabled(bool enabled)
+        {
+            foreach (Collider c in GetComponentsInParent<Collider>(true))
+                c.enabled = enabled;
+
+            if (transform.parent == null)
+                return;
+
+            foreach (Transform child in transform.parent)
+            {
+                if (child == transform)
+                    continue;
+
+                foreach (Collider c in child.GetComponentsInChildren<Collider>(true))
+                    c.enabled = enabled;
+            }
         }
     }
 }
