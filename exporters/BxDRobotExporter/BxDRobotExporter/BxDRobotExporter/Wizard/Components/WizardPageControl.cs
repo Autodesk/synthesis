@@ -65,7 +65,7 @@ namespace BxDRobotExporter.Wizard
             {
                 ((IWizardPage)(pageControls[ActivePageIndex])).OnNext();
 
-                if (ActivePageIndex < pageControls.Count - 1 && WizardNavigator.NextButton.Text == "Next >" || WizardNavigator.NextButton.Text == "Start >")
+                if (ActivePageIndex < pageControls.Count - 1 && (WizardNavigator.NextButton.Text == "Next" || WizardNavigator.NextButton.Text == "Start"))
                 {
                     // Hide current page
                     pageControls[ActivePageIndex].Visible = false;
@@ -158,7 +158,7 @@ namespace BxDRobotExporter.Wizard
         {
             if (PageType != null)
             {
-                foreach (var page in Controls)
+                foreach (UserControl page in pageControls)
                 {
                     if (page.GetType() == PageType)
                     {
