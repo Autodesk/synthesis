@@ -253,10 +253,6 @@ namespace BxDRobotExporter
         /// </summary>
         private void OpeningExporter()
         {
-            // Don't open the exporter if it's already open
-            if (AsmDocument != null)
-                ForceQuitExporter(true);
-
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument)MainApplication.ActiveDocument;
             Utilities.CreateDockableWindows(MainApplication);
@@ -274,7 +270,7 @@ namespace BxDRobotExporter
             // Load robot skeleton and prepare UI
             if (!Utilities.GUI.LoadRobotSkeleton())
             {
-                ForceQuitExporter();
+                ForceQuitExporter(AsmDocument);
                 return;
             }
 
@@ -332,11 +328,11 @@ namespace BxDRobotExporter
         /// Causes the exporter to close.
         /// </summary>
         /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
-        private async void ForceQuitExporter(bool suppressClosingEvent = false)
+        private async void ForceQuitExporter(AssemblyDocument asmDocument, bool suppressClosingEvent = false)
         {
             await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
             suppressClosing = suppressClosingEvent;
-            AsmDocument.EnvironmentManager.SetCurrentEnvironment(AsmDocument.EnvironmentManager.EditObjectEnvironment);
+            asmDocument.EnvironmentManager.SetCurrentEnvironment(asmDocument.EnvironmentManager.EditObjectEnvironment);
         }
         private bool suppressClosing = false;
         #endregion
@@ -438,9 +434,12 @@ namespace BxDRobotExporter
         {
             if (Environment.Equals(ExporterEnv) && BeforeOrAfter == EventTimingEnum.kBefore)
             {
-                if (EnvironmentState == EnvironmentStateEnum.kActivateEnvironmentState && !EnvironmentEnabled)
+                if (EnvironmentState == EnvironmentStateEnum.kActivateEnvironmentState)
                 {
-                    OpeningExporter();
+                    if (!EnvironmentEnabled)
+                        OpeningExporter();
+                    else
+                        ForceQuitExporter((AssemblyDocument)MainApplication.ActiveDocument, true);
                 }
                 else if (EnvironmentState == EnvironmentStateEnum.kTerminateEnvironmentState && EnvironmentEnabled)
                 {
