@@ -436,13 +436,13 @@ namespace BxDRobotExporter
         /// <param name="HandlingCode"></param>
         private void UIEvents_OnEnvironmentChange(Inventor.Environment Environment, EnvironmentStateEnum EnvironmentState, EventTimingEnum BeforeOrAfter, NameValueMap Context, out HandlingCodeEnum HandlingCode)
         {
-            if (Environment.Equals(ExporterEnv))
+            if (Environment.Equals(ExporterEnv) && BeforeOrAfter == EventTimingEnum.kBefore)
             {
-                if (EnvironmentState == EnvironmentStateEnum.kActivateEnvironmentState && !EnvironmentEnabled && BeforeOrAfter == EventTimingEnum.kBefore)
+                if (EnvironmentState == EnvironmentStateEnum.kActivateEnvironmentState && !EnvironmentEnabled)
                 {
                     OpeningExporter();
                 }
-                else if (EnvironmentState == EnvironmentStateEnum.kTerminateEnvironmentState && EnvironmentEnabled && BeforeOrAfter == EventTimingEnum.kBefore)
+                else if (EnvironmentState == EnvironmentStateEnum.kTerminateEnvironmentState && EnvironmentEnabled)
                 {
                     ClosingExporter();
                 }
