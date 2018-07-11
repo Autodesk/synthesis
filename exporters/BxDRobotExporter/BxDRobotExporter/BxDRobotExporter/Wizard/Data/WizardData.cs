@@ -24,7 +24,7 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// The next free PWM port to assign a driver to.
         /// </summary>
-        private int _nextFreePort = 3;
+        private int _nextFreePort = 2;
         public int NextFreePort
         {
             get => _nextFreePort++;
