@@ -46,7 +46,7 @@ namespace BxDRobotExporter.Wizard
 
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
-
+            
             int nextPort = WizardData.Instance.NextFreePort;
             if (nextPort < PortOneUpDown.Maximum - 1)
             {

@@ -166,7 +166,6 @@
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.MainGroupBox);
-            this.Margin = new System.Windows.Forms.Padding(0);
             this.MinimumSize = new System.Drawing.Size(175, 0);
             this.Name = "WheelSetupPanel";
             this.Size = new System.Drawing.Size(175, 101);
