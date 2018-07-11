@@ -490,7 +490,7 @@ namespace Synthesis.DriverPractice
 
                     DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
-                    //dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+
                     dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, spawnIndicator));
 
                     //MainState.ControlsDisabled = true;
