@@ -69,8 +69,7 @@ namespace Assets.Scripts.FSM
             else if (stateObjects[typeof(S)].ContainsKey(obj))
                 return;
 
-            Dictionary<T, LinkDescriptor> currentObjects = stateObjects[typeof(S)];
-            currentObjects.Add(obj, new LinkDescriptor(enableWithState, useStrictLinking));
+            stateObjects[typeof(S)].Add(obj, new LinkDescriptor(enableWithState, useStrictLinking));
 
             setEnabled(obj, inActiveState && enableWithState);
         }
@@ -124,7 +123,7 @@ namespace Assets.Scripts.FSM
             if (!stateObjects.ContainsKey(stateType) || (currentObjects = stateObjects[stateType]) == null)
                 return null;
 
-            foreach (T key in currentObjects.Where(o => o.Equals(null)).Select(o => o.Key))
+            foreach (T key in currentObjects.Keys.Where(o => o.Equals(null)).ToList())
                 currentObjects.Remove(key);
 
             return currentObjects;

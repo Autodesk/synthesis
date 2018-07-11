@@ -35,15 +35,21 @@ namespace BxDRobotExporter.Wizard
         {
             InitializeComponent();
             BackColor = Color.White;
+            Dock = DockStyle.Top;
+            MinimumSize = new Size(0, 0); // Minimum size only needed in editor
+
             this.node = node;
-            NodeGroupBox.Text = node.ModelFileName;
+
+            string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+            readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+            NodeGroupBox.Text = readableName;
 
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
             PortOneUpDown.Minimum = 3;
             PortTwoUpDown.Minimum = 3;
 
-            PortOneUpDown.Value = WizardData.Instance.NextFreePort;
+            PortOneUpDown.Value = WizardData.Instance.NextFreePort < 19 ? WizardData.Instance.NextFreePort : 19;
             PortTwoUpDown.Value = PortOneUpDown.Value + 1; // This may overlap with ports on next panel, but this only matters if the user chooses a two-port driver, which are less common
 
             // Add a highlight component action to all children. This is simpler than manually adding the hover event to each control.
@@ -68,7 +74,8 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = false;
-                    PortOneLabel.Text = "Port:";
+                    PortsGroupBox.Text = "Port";
+                    PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
                     UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
@@ -79,7 +86,8 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
-                    PortOneLabel.Text = "Port:";
+                    PortsGroupBox.Text = "Port";
+                    PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
                     unit = "cm";
@@ -89,7 +97,8 @@ namespace BxDRobotExporter.Wizard
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortOneLabel.Text = "Port 1:";
+                    PortsGroupBox.Text = "Ports";
+                    PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
                     unit = "cm";
@@ -99,7 +108,8 @@ namespace BxDRobotExporter.Wizard
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortOneLabel.Text = "Port:";
+                    PortsGroupBox.Text = "Port";
+                    PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
                     unit = "cm";
@@ -108,7 +118,8 @@ namespace BxDRobotExporter.Wizard
                     this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
-                    PortOneLabel.Text = "Port 1:";
+                    PortsGroupBox.Text = "Ports";
+                    PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
                     UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;

@@ -157,6 +157,12 @@
     </Compile>
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="Wizard\AutoFillPage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizard\AutoFillPage.Designer.cs">
+      <DependentUpon>AutoFillPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Wizard\Components\DefinePartPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -188,12 +194,6 @@
     </Compile>
     <Compile Include="Wizard\Components\WheelSetupPanel.Designer.cs">
       <DependentUpon>WheelSetupPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\Components\WheelSlot.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Components\WheelSlot.Designer.cs">
-      <DependentUpon>WheelSlot.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\WizardForm.cs">
       <SubType>Form</SubType>
@@ -238,8 +238,8 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Components\WheelSlot.resx">
-      <DependentUpon>WheelSlot.cs</DependentUpon>
+    <EmbeddedResource Include="Wizard\AutoFillPage.resx">
+      <DependentUpon>AutoFillPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Components\DefinePartPanel.resx">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
@@ -270,6 +270,10 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Images\Weight32.png" />
+    <None Include="Images\Weight16.png" />
+    <None Include="Images\Wand32.png" />
+    <None Include="Images\Wand16.png" />
     <None Include="Images\ViewerSettings32.bmp" />
     <None Include="Images\ViewerSettings16.bmp" />
     <None Include="FodyWeavers.xml">
@@ -285,6 +289,8 @@
     <None Include="Images\ExportJoints32.bmp" />
     <None Include="Images\ExportMeshes16.bmp" />
     <None Include="Images\ExportMeshes32.bmp" />
+    <None Include="Images\Export16.bmp" />
+    <None Include="Images\Export32.bmp" />
     <Content Include="Images\ExportRobot16.bmp" />
     <Content Include="Images\ExportRobot32.bmp" />
     <None Include="Images\Help16.bmp" />
@@ -299,6 +305,10 @@
     <None Include="Images\RobotClick32.bmp" />
     <None Include="Images\RobotMagicWand16.bmp" />
     <None Include="Images\RobotMagicWand32.bmp" />
+    <None Include="Images\Gears16.png" />
+    <None Include="Images\Gears32.png" />
+    <None Include="Images\Save16.bmp" />
+    <None Include="Images\Save32.bmp" />
     <Content Include="Images\SelectJointInsideJoint16.bmp" />
     <Content Include="Images\SelectJointInsideJoint32.bmp" />
     <Content Include="Images\StartRobotExporter16.bmp" />

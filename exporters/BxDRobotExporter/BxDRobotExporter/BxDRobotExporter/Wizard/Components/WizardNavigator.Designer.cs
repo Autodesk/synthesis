@@ -28,50 +28,67 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.Progress = new System.Windows.Forms.ToolStripStatusLabel();
             this.NextButton = new System.Windows.Forms.Button();
             this.BackButton = new System.Windows.Forms.Button();
-            this.statusStrip1.SuspendLayout();
+            this.ButtonLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.ProgressLabel = new System.Windows.Forms.Label();
+            this.ButtonLayout.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.BackColor = System.Drawing.Color.Transparent;
-            this.statusStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Progress});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 0);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(460, 28);
-            this.statusStrip1.TabIndex = 0;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // Progress
-            // 
-            this.Progress.Name = "Progress";
-            this.Progress.Size = new System.Drawing.Size(133, 17);
-            this.Progress.Text = "Click \'Next\' to continue.";
             // 
             // NextButton
             // 
             this.NextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.NextButton.Location = new System.Drawing.Point(382, 5);
+            this.NextButton.Location = new System.Drawing.Point(397, 86);
+            this.NextButton.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.NextButton.Name = "NextButton";
             this.NextButton.Size = new System.Drawing.Size(75, 23);
             this.NextButton.TabIndex = 1;
-            this.NextButton.Text = "Next >";
+            this.NextButton.Text = "Next";
             this.NextButton.UseVisualStyleBackColor = true;
             // 
             // BackButton
             // 
             this.BackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BackButton.Location = new System.Drawing.Point(301, 5);
+            this.BackButton.Location = new System.Drawing.Point(316, 86);
+            this.BackButton.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.BackButton.Name = "BackButton";
             this.BackButton.Size = new System.Drawing.Size(75, 23);
             this.BackButton.TabIndex = 2;
-            this.BackButton.Text = "< Back";
+            this.BackButton.Text = "Back";
             this.BackButton.UseVisualStyleBackColor = true;
+            // 
+            // ButtonLayout
+            // 
+            this.ButtonLayout.AutoSize = true;
+            this.ButtonLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ButtonLayout.ColumnCount = 4;
+            this.ButtonLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.ButtonLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.ButtonLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.ButtonLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.ButtonLayout.Controls.Add(this.NextButton, 3, 0);
+            this.ButtonLayout.Controls.Add(this.BackButton, 2, 0);
+            this.ButtonLayout.Controls.Add(this.ProgressLabel, 0, 0);
+            this.ButtonLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ButtonLayout.Location = new System.Drawing.Point(0, 0);
+            this.ButtonLayout.Margin = new System.Windows.Forms.Padding(0);
+            this.ButtonLayout.Name = "ButtonLayout";
+            this.ButtonLayout.RowCount = 1;
+            this.ButtonLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.ButtonLayout.Size = new System.Drawing.Size(472, 109);
+            this.ButtonLayout.TabIndex = 3;
+            // 
+            // ProgressLabel
+            // 
+            this.ProgressLabel.AutoSize = true;
+            this.ProgressLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.ProgressLabel.Location = new System.Drawing.Point(3, 3);
+            this.ProgressLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.ProgressLabel.Name = "ProgressLabel";
+            this.ProgressLabel.Size = new System.Drawing.Size(118, 103);
+            this.ProgressLabel.TabIndex = 3;
+            this.ProgressLabel.Text = "Click \'Next\' to continue.";
+            this.ProgressLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // WizardNavigator
             // 
@@ -79,23 +96,20 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Transparent;
-            this.Controls.Add(this.BackButton);
-            this.Controls.Add(this.NextButton);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.ButtonLayout);
             this.Name = "WizardNavigator";
-            this.Size = new System.Drawing.Size(460, 28);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.Size = new System.Drawing.Size(472, 109);
+            this.ButtonLayout.ResumeLayout(false);
+            this.ButtonLayout.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel Progress;
         public System.Windows.Forms.Button NextButton;
         public System.Windows.Forms.Button BackButton;
+        private System.Windows.Forms.TableLayoutPanel ButtonLayout;
+        private System.Windows.Forms.Label ProgressLabel;
     }
 }
