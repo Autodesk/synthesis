@@ -109,13 +109,10 @@ namespace hel{
             return RoboRIOManager::getInstance()->pwm_system.getHdrPeriodScale(bitfield_index);
         }
 
-        void writeZeroLatch(uint8_t bitfield_index, bool value, tRioStatusCode* /*status*/){
-            //TODO
-        }
+        void writeZeroLatch(uint8_t /*bitfield_index*/, bool /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
 
-        bool readZeroLatch(uint8_t bitfield_index, tRioStatusCode* /*status*/){
+        bool readZeroLatch(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){ //unnecessary for emulation
             return false;
-            //TODO
         }
 
         void writeHdr(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
