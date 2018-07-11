@@ -223,4 +223,34 @@
   <data name="RobotMagicWand32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Images\RobotMagicWand32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Export16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Export16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Export32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Export32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gears16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Gears16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gears32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Gears32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Save16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Save16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Save32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Save32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Wand16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Wand16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Wand32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Wand32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Weight16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Weight16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Weight32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Weight32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

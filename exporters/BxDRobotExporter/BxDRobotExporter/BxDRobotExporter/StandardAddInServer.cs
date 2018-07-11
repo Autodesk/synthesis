@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using EditorsLibrary;
 using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace BxDRobotExporter
 {
@@ -46,7 +47,9 @@ namespace BxDRobotExporter
             }
         }
         private bool pendingChanges = false;
-        
+
+        ArrayList jointRelatedOccurences;
+        ArrayList disabledOccurences;
         public Inventor.Application MainApplication;
 
         AssemblyDocument AsmDocument;
@@ -100,43 +103,26 @@ namespace BxDRobotExporter
             #region Add Parallel Environment
 
             #region Load Images
-            stdole.IPictureDisp StartExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.StartRobotExporter16));
-            stdole.IPictureDisp StartExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.StartRobotExporter32));
+      
+            stdole.IPictureDisp ExportRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Export16));
+            stdole.IPictureDisp ExportRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Export32));
 
-            stdole.IPictureDisp ExportMeshesIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExportMeshes16));
-            stdole.IPictureDisp ExportMeshesIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExportMeshes32));
+            stdole.IPictureDisp SaveRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save16));
+            stdole.IPictureDisp SaveRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save32));
 
-            stdole.IPictureDisp ExportRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExportRobot16));
-            stdole.IPictureDisp ExportRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExportRobot32));
+            stdole.IPictureDisp ExportSetupRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears16));
+            stdole.IPictureDisp ExportSetupRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears32));
 
-            stdole.IPictureDisp ExporterSettingsIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExporterSettings16));
-            stdole.IPictureDisp ExporterSettingsIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExporterSettings32));
+            stdole.IPictureDisp YeetRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand16));//these are still here at request of QA
+            stdole.IPictureDisp YeetRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand32));
 
-            stdole.IPictureDisp HelpButtonIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Help16));
-            stdole.IPictureDisp HelpButtonIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Help32));
-
-            stdole.IPictureDisp LoadExportedRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.LoadRobot16));
-            stdole.IPictureDisp LoadExportedRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.LoadRobot32));
-
-            stdole.IPictureDisp PreviewRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SelectJointInsideJoint16));
-            stdole.IPictureDisp PreviewRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SelectJointInsideJoint32));
-
-            stdole.IPictureDisp SaveRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SaveRobot16));
-            stdole.IPictureDisp SaveRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SaveRobot32));
-
-            stdole.IPictureDisp SaveRobotAsIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SaveRobotAs16));
-            stdole.IPictureDisp SaveRobotAsIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SaveRobotAs32));
-
-            stdole.IPictureDisp WizardExportIconSmall   = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotMagicWand16));
-            stdole.IPictureDisp WizardExportIconLarge   = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotMagicWand32));
-
-            stdole.IPictureDisp OneClickExportIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotClick16));
-            stdole.IPictureDisp OneClickExportIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotClick32));
+            stdole.IPictureDisp WeightRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight16));
+            stdole.IPictureDisp WeightRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight32));
 
             #region DEBUG
 #if DEBUG
-            stdole.IPictureDisp DebugButtonSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ViewerSettings16));
-            stdole.IPictureDisp DebugButtonLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ViewerSettings32));
+            stdole.IPictureDisp DebugButtonSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand16));
+            stdole.IPictureDisp DebugButtonLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand32));
 #endif
             #endregion
 
@@ -146,7 +132,7 @@ namespace BxDRobotExporter
 
             #region Setup New Environment and Ribbon
             Environments environments = MainApplication.UserInterfaceManager.Environments;
-            ExporterEnv = environments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, StartExporterIconSmall, StartExporterIconLarge);
+            ExporterEnv = environments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, ExportRobotIconSmall, ExportRobotIconLarge);
 
             Ribbon assemblyRibbon = MainApplication.UserInterfaceManager.Ribbons["Assembly"];
             RibbonTab ExporterTab = assemblyRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter:RobotExporterTab", ClientID, "", false, true);
@@ -164,13 +150,13 @@ namespace BxDRobotExporter
 
             #region Setup Buttons
             //Begin Wizard Export
-            WizardExportButton = ControlDefs.AddButtonDefinition("Quick Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", WizardExportIconSmall, WizardExportIconLarge);
+            WizardExportButton = ControlDefs.AddButtonDefinition("Exporter Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", ExportSetupRobotIconSmall, ExportSetupRobotIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
 
             //Set Weight
-            SetWeightButton = ControlDefs.AddButtonDefinition("Robot Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            SetWeightButton = ControlDefs.AddButtonDefinition("Robot Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", WeightRobotIconSmall, WeightRobotIconLarge);
             SetWeightButton.OnExecute += SetWeight_OnExecute;
             SetWeightButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
@@ -306,6 +292,38 @@ namespace BxDRobotExporter
             
             EnvironmentEnabled = true;
 
+
+            jointRelatedOccurences = new ArrayList();
+            foreach (ComponentOccurrence c in ((AssemblyDocument)MainApplication.ActiveDocument).ComponentDefinition.Occurrences)
+            {
+                foreach (AssemblyJoint j in c.Joints)
+                {// look at all joints inside of the main doc
+                    if (!j.Definition.JointType.Equals(AssemblyJointTypeEnum.kRigidJointType))
+                    {
+                        jointRelatedOccurences.Add(j.AffectedOccurrenceOne);
+                        jointRelatedOccurences.Add(j.AffectedOccurrenceTwo);
+                    }
+                }
+            }
+            Boolean contains = false;
+            disabledOccurences = new ArrayList();
+            foreach (ComponentOccurrence c in AsmDocument.ComponentDefinition.Occurrences)
+            {// looks at all parts/ assemblies in the main assembly
+                contains = false;
+                foreach (ComponentOccurrence j in jointRelatedOccurences)
+                {
+                    if ((j.Equals(c)))
+                    {// checks is the part/ assembly is in a joint
+                        contains = true;
+                    }
+                }
+                if (!contains)
+                {// if the assembly/ part isn't part of a joint then hide it
+                    disabledOccurences.Add(c);
+                    c.Enabled = false;
+                }
+            }
+
             // Load robot skeleton and prepare UI
             if (!Utilities.GUI.LoadRobotSkeleton())
             {
@@ -339,6 +357,10 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
+            foreach (ComponentOccurrence c in disabledOccurences)
+            {
+                c.Enabled = true;
+            }
             WarnIfUnsaved(false);
 
             // Close add-in
@@ -443,6 +465,7 @@ namespace BxDRobotExporter
         {
             if (WarnIfUnsaved())
             {
+
                 if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                     return;
 

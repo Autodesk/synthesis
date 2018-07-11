@@ -64,6 +64,7 @@ namespace Synthesis.States
 
         public bool IsMetric;
 
+        public static List<List<GameObject>> spawnedGamepieces = new List<List<GameObject>>() {new List<GameObject>(), new List<GameObject>()};
         /// <summary>
         /// Called when the script instance is being initialized.
         /// Initializes the bullet physics environment
@@ -575,9 +576,6 @@ namespace Synthesis.States
         /// </summary>
         public void UnlockRobots()
         {
-            if (ActiveRobot.IsResetting)
-                return;
-
             foreach (SimulatorRobot robot in SpawnedRobots)
                 robot.UnlockRobot();
         }
