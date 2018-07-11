@@ -249,28 +249,14 @@ namespace BxDRobotExporter
 
         #region Environment Switching
         /// <summary>
-        /// Enables or disables the <see cref="Inventor.Environment"/>
-        /// </summary>
-        /// <remarks>
-        /// calls StartExporter and EndExporter
-        /// </remarks>
-        public void ToggleEnvironment()
-        {
-            if (EnvironmentEnabled)
-            {
-                ClosingExporter();
-            }
-            else
-            {
-                OpeningExporter();
-            }
-        }
-
-        /// <summary>
         /// Gets the assembly document and makes the <see cref="DockableWindows"/>
         /// </summary>
         private void OpeningExporter()
         {
+            // Don't open the exporter if it's already open
+            if (AsmDocument != null)
+                ForceQuitExporter(true);
+
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument)MainApplication.ActiveDocument;
             Utilities.CreateDockableWindows(MainApplication);
@@ -316,6 +302,12 @@ namespace BxDRobotExporter
         /// </summary>
         private void ClosingExporter()
         {
+            if (suppressClosing)
+            {
+                suppressClosing = false;
+                return;
+            }
+
             WarnIfUnsaved(false);
 
             // Re-enable disabled components
@@ -325,10 +317,12 @@ namespace BxDRobotExporter
 
             // Close add-in
             Utilities.DisposeDockableWindows();
+
+            // Dispose of document
             if (AsmDocument != null)
                 Marshal.ReleaseComObject(AsmDocument);
-
             AsmDocument = null;
+
             ChildHighlight = null;
 
             EnvironmentEnabled = false;
@@ -337,11 +331,14 @@ namespace BxDRobotExporter
         /// <summary>
         /// Causes the exporter to close.
         /// </summary>
-        private async void ForceQuitExporter()
+        /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
+        private async void ForceQuitExporter(bool suppressClosingEvent = false)
         {
             await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
+            suppressClosing = suppressClosingEvent;
             AsmDocument.EnvironmentManager.SetCurrentEnvironment(AsmDocument.EnvironmentManager.EditObjectEnvironment);
         }
+        private bool suppressClosing = false;
         #endregion
 
         #region Event Callbacks and Button Commands
@@ -362,13 +359,6 @@ namespace BxDRobotExporter
                 {
                     Utilities.HideDockableWindows();
                     HiddenExporter = true;
-                }
-
-                if (BeforeOrAfter == EventTimingEnum.kAfter)
-                {
-                    // Re-enable the exporter in this assembly if it was disabled
-                    if (DocumentObject is AssemblyDocument assembly)
-                        EnableExporterInDoc(assembly);
                 }
             }
 
@@ -405,10 +395,6 @@ namespace BxDRobotExporter
                         Utilities.ShowDockableWindows();
                         HiddenExporter = false;
                     }
-                    else if (!assembly.Equals(AsmDocument))
-                    {
-                        DisableExporterInDoc(assembly);
-                    }
                 }
             }
 
@@ -429,14 +415,11 @@ namespace BxDRobotExporter
             if (BeforeOrAfter == EventTimingEnum.kBefore && EnvironmentEnabled)
             {
                 if (DocumentObject is AssemblyDocument assembly)
-                    if (assembly == AsmDocument)
-                        ToggleEnvironment();
-
-                // Enable the exporter button in all other documents
-                foreach (Document otherDoc in MainApplication.Documents)
                 {
-                    if (otherDoc is AssemblyDocument otherAssembly)
-                        EnableExporterInDoc(otherAssembly);
+                    if (assembly == AsmDocument)
+                    {
+                        ClosingExporter();
+                    }
                 }
             }
 
@@ -457,11 +440,11 @@ namespace BxDRobotExporter
             {
                 if (EnvironmentState == EnvironmentStateEnum.kActivateEnvironmentState && !EnvironmentEnabled && BeforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    ToggleEnvironment();
+                    OpeningExporter();
                 }
                 else if (EnvironmentState == EnvironmentStateEnum.kTerminateEnvironmentState && EnvironmentEnabled && BeforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    ToggleEnvironment();
+                    ClosingExporter();
                 }
             }
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
@@ -590,42 +573,6 @@ namespace BxDRobotExporter
         #endregion
 
         #region Miscellaneous Methods and Nested Classes
-        /// <summary>
-        /// Disable the exporter command for an open document.
-        /// </summary>
-        /// <param name="doc">Document to disable.</param>
-        void DisableExporterInDoc(AssemblyDocument doc)
-        {
-            ControlDefinition exporterControl = MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"];
-
-            // Don't disable when doc already has exporter disabled
-            foreach (ControlDefinition control in doc.DisabledCommandList)
-                if (control == exporterControl)
-                    return;
-
-            // Disable exporter in doc
-            doc.DisabledCommandList.Add(exporterControl);
-        }
-
-        /// <summary>
-        /// Enable the exporter command for an open document.
-        /// </summary>
-        /// <param name="doc">Document to enable.</param>
-        void EnableExporterInDoc(AssemblyDocument doc)
-        {
-            ControlDefinition exporterControl = MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"];
-
-            // Remove the exporter control from the disable commands list
-            for (int i = 1; i < doc.DisabledCommandList.Count + 1; i++) // WHY DOES THIS ARRAY START AT ONE?!?!?!?!
-            {
-                if (doc.DisabledCommandList[i] == exporterControl)
-                {
-                    doc.DisabledCommandList.Remove(i);
-                    return;
-                }
-            }
-        }
-
         /// <summary>
         /// Disables all components in a document that are not connected to another component by a joint.
         /// </summary>
