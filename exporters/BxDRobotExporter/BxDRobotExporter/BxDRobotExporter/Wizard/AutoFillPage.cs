@@ -24,9 +24,7 @@ namespace BxDRobotExporter.Wizard
         private void StartButton_Click(object sender, EventArgs e)
         {
             DoAutoFill(); //Initializes autofill
-
-
-
+            
             Close(); //closes popup
         }
 
