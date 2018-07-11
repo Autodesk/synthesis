@@ -18,14 +18,14 @@ public static partial class BXDJSkeleton
     /// </summary>
     /// <param name="baseNode">The base node of the skeleton</param>
     /// <param name="overwrite">Overwrite existing</param>
-    public static void SetupFileNames(RigidNode_Base baseNode, bool overwrite = false)
+    public static void SetupFileNames(RigidNode_Base baseNode)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
         for (int i = 0; i < nodes.Count; i++)
         {
-            if (nodes[i].ModelFileName == null || overwrite) 
+            if (nodes[i].ModelFileName == null) 
                 nodes[i].ModelFileName = ("node_" + i + ".bxda");
         }
     }
@@ -75,9 +75,7 @@ public static partial class BXDJSkeleton
 
             writer.WriteElementString("ParentID", parentID[i].ToString());
 
-            nodes[i].ModelFileName = FileUtilities.SanatizeFileName("node_" + i + ".bxda");
-
-            writer.WriteElementString("ModelFileName", nodes[i].ModelFileName);
+            writer.WriteElementString("ModelFileName", FileUtilities.SanatizeFileName("node_" + i + ".bxda"));
 
             writer.WriteElementString("ModelID", nodes[i].GetModelID());
 

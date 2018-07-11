@@ -55,7 +55,7 @@ namespace BxDRobotExporter.Wizard
             {
                 FrictionLevel = (WizardData.WizardFrictionLevel)this.FrictionComboBox.SelectedIndex,
                 WheelType = (WizardData.WizardWheelType)(this.WheelTypeComboBox.SelectedIndex + 1),
-                PWMPort = (Side == WheelSide.RIGHT) ? (byte)0x02 : (byte)0x01,
+                PWMPort = (Side == WheelSide.RIGHT) ? (byte)0x01 : (byte)0x00,
                 Node = this.Node
             };
         }
