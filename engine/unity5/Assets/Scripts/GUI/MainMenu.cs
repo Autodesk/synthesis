@@ -141,7 +141,7 @@ namespace Synthesis.GUI
             GameObject tab = Auxiliary.FindGameObject(tabName);
 
             if (tab != null)
-                StateMachine.SceneGlobal.Link<T>(tab, strict);
+                StateMachine.SceneGlobal.Link<T>(tab, true, strict);
         }
 
         /// <summary>

@@ -436,7 +436,7 @@ namespace Synthesis.Input.Inputs
             if (
                 ((int)mAxis) % 2 == 1
                 &&
-                joyAxis < -InputControl.joystickThreshold
+                joyAxis < -InputControl.JoystickThreshold
                )
             {
                 return -joyAxis;
@@ -445,7 +445,7 @@ namespace Synthesis.Input.Inputs
             if (
                 ((int)mAxis) % 2 == 0
                 &&
-                joyAxis > InputControl.joystickThreshold
+                joyAxis > InputControl.JoystickThreshold
                )
             {
                 return joyAxis;

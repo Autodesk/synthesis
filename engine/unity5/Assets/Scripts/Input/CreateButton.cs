@@ -49,7 +49,7 @@ namespace Synthesis.Input
             float contentHeight = 4;
 
             //Defaults to player one's keys at Start
-            ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(0);
+            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(0);
 
             foreach (KeyMapping key in keys)
             {
@@ -140,7 +140,7 @@ namespace Synthesis.Input
             float contentHeight = 4;
 
             //Retrieves and updates the active player's keys
-            ReadOnlyCollection<KeyMapping> keys = InputControl.getActivePlayerKeys();
+            ReadOnlyCollection<KeyMapping> keys = InputControl.GetActivePlayerKeys();
 
             foreach (KeyMapping key in keys)
             {
@@ -217,7 +217,7 @@ namespace Synthesis.Input
             float maxNameWidth = 0;
             float contentHeight = 4;
 
-            ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(0);
+            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(0);
 
             foreach (KeyMapping key in keys)
             {
@@ -294,7 +294,7 @@ namespace Synthesis.Input
             float maxNameWidth = 0;
             float contentHeight = 4;
 
-            ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(1);
+            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(1);
 
             foreach (KeyMapping key in keys)
             {
@@ -371,7 +371,7 @@ namespace Synthesis.Input
             float maxNameWidth = 0;
             float contentHeight = 4;
 
-            ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(2);
+            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(2);
 
             foreach (KeyMapping key in keys)
             {
@@ -448,7 +448,7 @@ namespace Synthesis.Input
             float maxNameWidth = 0;
             float contentHeight = 4;
 
-            ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(3);
+            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(3);
 
             foreach (KeyMapping key in keys)
             {
@@ -525,7 +525,7 @@ namespace Synthesis.Input
             float maxNameWidth = 0;
             float contentHeight = 4;
 
-            ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(4);
+            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(4);
 
             foreach (KeyMapping key in keys)
             {
@@ -602,7 +602,7 @@ namespace Synthesis.Input
             float maxNameWidth = 0;
             float contentHeight = 4;
 
-            ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(5);
+            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(5);
 
             foreach (KeyMapping key in keys)
             {

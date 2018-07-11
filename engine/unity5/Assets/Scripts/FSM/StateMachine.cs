@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.FSM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,8 +11,8 @@ namespace Synthesis.FSM
         private static StateMachine sceneGlobal;
 
         private Stack<State> activeStates;
-        private readonly Dictionary<Type, Tuple<bool, HashSet<Behaviour>>> stateBehaviours;
-        private readonly Dictionary<Type, Tuple<bool, HashSet<GameObject>>> stateGameObjects;
+        private readonly ObjectStateLinker<Behaviour> stateBehaviours;
+        private readonly ObjectStateLinker<GameObject> stateGameObjects;
 
         /// <summary>
         /// (Defined from the editor)
@@ -48,8 +49,8 @@ namespace Synthesis.FSM
         private StateMachine()
         {
             activeStates = new Stack<State>();
-            stateBehaviours = new Dictionary<Type, Tuple<bool, HashSet<Behaviour>>>();
-            stateGameObjects = new Dictionary<Type, Tuple<bool, HashSet<GameObject>>>();
+            stateBehaviours = new ObjectStateLinker<Behaviour>((b, e) => b.enabled = e, (b) => b.enabled);
+            stateGameObjects = new ObjectStateLinker<GameObject>((g, e) => g.SetActive(e), (g) => g.activeSelf);
         }
 
         /// <summary>
@@ -69,25 +70,27 @@ namespace Synthesis.FSM
         /// <summary>
         /// Links the given MonoBehaviour script to the provided state type.
         /// </summary>
-        /// <typeparam name="T">The type of state with which to link the <see cref="Behaviour"/></typeparam>
-        /// <param name="behaviour">The MonoBehaviour to link</param>
-        public void Link<T>(Behaviour behaviour, bool strict = true) where T : State
+        /// <typeparam name="T">The type of state with which to link the <see cref="Behaviour"/>.</typeparam>
+        /// <param name="behaviour">The MonoBehaviour to link.</param>
+        /// <param name="enabledByDefault">If true, this object will be enabled when its scene becomes active.</param>
+        /// <param name="useStrictLinking">When true, this Behaviour will be disabled when a new <see cref="State"/>
+        /// is pushed before its parent <see cref="State"/> is popped.</param>
+        public void Link<T>(Behaviour behaviour, bool enabledByDefault = true, bool useStrictLinking = true) where T : State
         {
-            if (Link<Behaviour, T>(stateBehaviours, behaviour, strict))
-                behaviour.enabled = CurrentState is T;
+            stateBehaviours.Link<T>(behaviour, CurrentState is T, enabledByDefault, useStrictLinking);
         }
 
         /// <summary>
         /// Links the given GameObject to the provided state type.
         /// </summary>
-        /// <typeparam name="T">The type of state with which to link the GameObject</typeparam>
-        /// <param name="gameObject">The GameObject to link</param>
-        /// <param name="strict">When true, this GameObject should be disabled when a <see cref="State"/>
-        /// is pushed before the current one is popped.</param>
-        public void Link<T>(GameObject gameObject, bool strict = true) where T : State
+        /// <typeparam name="T">The type of state with which to link the <see cref="GameObject"/>.</typeparam>
+        /// <param name="gameObject">The GameObject to link.</param>
+        /// <param name="enabledByDefault">If true, this object will be enabled when its scene becomes active.</param>
+        /// <param name="useStrictLinking">When true, this GameObject will be disabled when a new <see cref="State"/>
+        /// is pushed before its parent <see cref="State"/> is popped.</param>
+        public void Link<T>(GameObject gameObject, bool enabledByDefault = true, bool useStrictLinking = true) where T : State
         {
-            if (Link<GameObject, T>(stateGameObjects, gameObject, strict))
-                gameObject.SetActive(CurrentState is T);
+            stateGameObjects.Link<T>(gameObject, CurrentState is T, enabledByDefault, useStrictLinking);
         }
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace Synthesis.FSM
             if (CurrentState != null)
                 CurrentState.Pause();
 
-            SetObjectsEnabled(false, false);
+            DisableAllObjects(false);
 
             if (!activeStates.Contains(state))
                 activeStates.Push(state);
@@ -108,7 +111,7 @@ namespace Synthesis.FSM
             CurrentState.StateMachine = this;
             CurrentState.Awake();
 
-            SetObjectsEnabled(true);
+            EnableAllObjects();
 
             CurrentState.Start();
             CurrentState.Resume();
@@ -126,7 +129,7 @@ namespace Synthesis.FSM
             CurrentState.End();
             CurrentState.StateMachine = null;
 
-            SetObjectsEnabled(false);
+            DisableAllObjects(true);
 
             activeStates.Pop();
 
@@ -134,7 +137,7 @@ namespace Synthesis.FSM
             {
                 CurrentState = activeStates.First();
 
-                SetObjectsEnabled(true);
+                EnableAllObjects();
 
                 CurrentState.Resume();
             }
@@ -157,65 +160,29 @@ namespace Synthesis.FSM
         }
 
         /// <summary>
-        /// Links the given item to the type of <see cref="State"/> specified.
+        /// Enables all objects linked to the current state.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="S"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="item"></param>
-        /// <param name="strict"></param>
-        /// <returns></returns>
-        private bool Link<T, S>(Dictionary<Type, Tuple<bool, HashSet<T>>> items, T item, bool strict)
+        private void EnableAllObjects()
         {
-            if (!items.ContainsKey(typeof(S)))
-                items[typeof(S)] = Tuple.Create(strict, new HashSet<T>());
-            else if (items[typeof(S)].Item2.Contains(item))
-                return false;
+            Type stateType = CurrentState.GetType();
 
-            items[typeof(S)].Item2.Add(item);
-
-            return true;
+            stateBehaviours.EnableObjects(stateType);
+            stateGameObjects.EnableObjects(stateType);
         }
 
         /// <summary>
-        /// Used to enable and disable objects associated with the current state.
+        /// Disables all objects linked to the current state.
         /// </summary>
-        /// <param name="objectsEnabled">true if the object should be enabled, otherwise false</param>
-        /// <param name="force">If true, then objects should always be disabled when
-        /// enabled = false, even if they have non-strict linking</param>
-        private bool SetObjectsEnabled(bool objectsEnabled, bool force = true)
+        /// <param name="force"></param>
+        private void DisableAllObjects(bool force)
         {
             if (CurrentState == null)
-                return false;
-
-            SetEnabled(stateBehaviours, force, (behaviour) => behaviour.enabled = objectsEnabled);
-            SetEnabled(stateGameObjects, force, (gameObject) => gameObject.SetActive(objectsEnabled));
-
-            return true;
-        }
-
-        /// <summary>
-        /// Enables or disables the given items via the callback method provided.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="force"></param>
-        /// <param name="setItemEnabled"></param>
-        private void SetEnabled<T>(Dictionary<Type, Tuple<bool, HashSet<T>>> items, bool force, Action<T> setItemEnabled)
-        {
-            Type currentType = CurrentState.GetType();
-            Tuple<bool, HashSet<T>> currentItems;
-
-            if (!items.ContainsKey(currentType) || (currentItems = items[currentType]) == null)
                 return;
 
-            currentItems.Item2.RemoveWhere(o => o.Equals(null));
+            Type stateType = CurrentState.GetType();
 
-            if (!force && !currentItems.Item1)
-                return;
-
-            foreach (T value in currentItems.Item2)
-                setItemEnabled(value);
+            stateBehaviours.DisableObjects(stateType, force);
+            stateGameObjects.DisableObjects(stateType, force);
         }
 
         /// <summary>
@@ -232,7 +199,8 @@ namespace Synthesis.FSM
         /// </summary>
         private void OnDestroy()
         {
-            SceneGlobal = null;
+            if (sceneGlobalInstance)
+                SceneGlobal = null;
         }
 
         /// <summary>

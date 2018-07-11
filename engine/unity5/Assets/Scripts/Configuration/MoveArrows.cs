@@ -17,6 +17,7 @@ namespace Synthesis.Configuration
         private Vector3 initialScale;
         private Vector3 lastArrowPoint;
         private ArrowType activeArrow;
+        private bool bufferPassed;
 
         /// <summary>
         /// Gets or sets the active selected arrow. When <see cref="ActiveArrow"/>
@@ -68,14 +69,57 @@ namespace Synthesis.Configuration
         public Action<Vector3> Translate { get; set; }
 
         /// <summary>
+        /// Called when an arrow is first clicked.
+        /// </summary>
+        public Action OnClick { get; set; }
+
+        /// <summary>
+        /// Called when an arrow is released.
+        /// </summary>
+        public Action OnRelease { get; set; }
+
+        /// <summary>
         /// Sets the initial position and rotation.
         /// </summary>
-        private void Start()
+        private void Awake()
         {
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
 
-            initialScale = transform.localScale;
+            initialScale = new Vector3(transform.localScale.x / transform.lossyScale.x,
+                transform.localScale.y / transform.lossyScale.y, transform.localScale.z / transform.lossyScale.z);
+        }
+
+        /// <summary>
+        /// Enables all colliders of any parent objects to allow for their own click detection. 
+        /// </summary>
+        private void OnBeforeTransformParentChanged()
+        {
+            SetOtherCollidersEnabled(true);
+        }
+
+        /// <summary>
+        /// Disables all colliders of any parent objects to allow for proper click detection.
+        /// </summary>
+        private void OnTransformParentChanged()
+        {
+            SetOtherCollidersEnabled(false);
+        }
+
+        /// <summary>
+        /// Disables all colliders of any parent objects to allow for proper click detection.
+        /// </summary>
+        private void OnEnable()
+        {
+            SetOtherCollidersEnabled(false);
+        }
+
+        /// <summary>
+        /// Re-enables all colliders of any parent objects to allow for their own click detection.
+        /// </summary>
+        private void OnDisable()
+        {
+            SetOtherCollidersEnabled(true);
         }
 
         /// <summary>
@@ -85,6 +129,13 @@ namespace Synthesis.Configuration
         {
             if (activeArrow == ArrowType.None)
                 return;
+
+            // This allows for any updates from OnClick to complete before translation starts
+            if (!bufferPassed)
+            {
+                bufferPassed = true;
+                return;
+            }
 
             Ray mouseRay = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
             Vector3 currentArrowPoint;
@@ -130,6 +181,9 @@ namespace Synthesis.Configuration
             ActiveArrow = arrowType;
             DynamicCamera.MovementEnabled = false;
             lastArrowPoint = Vector3.zero;
+            bufferPassed = false;
+
+            OnClick?.Invoke();
         }
 
         /// <summary>
@@ -140,6 +194,31 @@ namespace Synthesis.Configuration
         {
             ActiveArrow = ArrowType.None;
             DynamicCamera.MovementEnabled = true;
+
+            OnRelease?.Invoke();
+        }
+
+        /// <summary>
+        /// Enables or disables other colliders to ensure proper arrow click
+        /// detection.
+        /// </summary>
+        /// <param name="enabled"></param>
+        private void SetOtherCollidersEnabled(bool enabled)
+        {
+            foreach (Collider c in GetComponentsInParent<Collider>(true))
+                c.enabled = enabled;
+
+            if (transform.parent == null)
+                return;
+
+            foreach (Transform child in transform.parent)
+            {
+                if (child == transform)
+                    continue;
+
+                foreach (Collider c in child.GetComponentsInChildren<Collider>(true))
+                    c.enabled = enabled;
+            }
         }
     }
 }
