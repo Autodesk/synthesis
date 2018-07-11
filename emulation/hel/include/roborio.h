@@ -808,7 +808,7 @@ namespace hel{
             /**
              * \fn void setFMSAttached(bool fms_attached)
              * \brief Set robot FMS connection state
-             * \param fmd_attached a bool representing the robot FMS connection state
+             * \param fms_attached a bool representing the robot FMS connection state
              */
 
             void setFMSAttached(bool);
@@ -1354,6 +1354,21 @@ namespace hel{
             std::pair<uint8_t, uint8_t> convertAccel(float);
         };
 
+        struct Accumulator{
+        private:
+            tAccumulator::tOutput output;
+            int32_t center;
+            int32_t deadband;
+
+        public:
+            tAccumulator::tOutput getOutput()const;
+            void setOutput(tAccumulator::tOutput);
+            int32_t getCenter()const;
+            void setCenter(int32_t);
+            int32_t getDeadband()const;
+            void setDeadband(int32_t);
+        };
+
     	/**
     	 * \var bool user_button
     	 * \represents the state of the user button on the roborio
@@ -1362,6 +1377,7 @@ namespace hel{
     	bool user_button;
 
         Accelerometer accelerometer;
+        std::array<Accumulator, hal::kNumAnalogInputs> accumulators; 
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
     	CANBus can_bus;
