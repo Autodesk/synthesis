@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.DefineWheelsInstruction1 = new System.Windows.Forms.Label();
+            this.DefineWheelsInstruction = new System.Windows.Forms.Label();
             this.WheelNodeGroupBox = new System.Windows.Forms.GroupBox();
             this.WheelJointsLayout = new System.Windows.Forms.TableLayoutPanel();
             this.NodeListBox = new System.Windows.Forms.ListBox();
@@ -61,17 +61,16 @@
             this.MainLayout.SuspendLayout();
             this.SuspendLayout();
             // 
-            // DefineWheelsInstruction1
+            // DefineWheelsInstruction
             // 
-            this.DefineWheelsInstruction1.AutoSize = true;
-            this.DefineWheelsInstruction1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DefineWheelsInstruction1.Location = new System.Drawing.Point(227, 3);
-            this.DefineWheelsInstruction1.Margin = new System.Windows.Forms.Padding(3);
-            this.DefineWheelsInstruction1.Name = "DefineWheelsInstruction1";
-            this.DefineWheelsInstruction1.Size = new System.Drawing.Size(218, 55);
-            this.DefineWheelsInstruction1.TabIndex = 2;
-            this.DefineWheelsInstruction1.Text = "Drag the appropriate parts from the list to the left into their respective column" +
-    "s below.";
+            this.DefineWheelsInstruction.AutoSize = true;
+            this.DefineWheelsInstruction.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DefineWheelsInstruction.Location = new System.Drawing.Point(227, 3);
+            this.DefineWheelsInstruction.Margin = new System.Windows.Forms.Padding(3);
+            this.DefineWheelsInstruction.Name = "DefineWheelsInstruction";
+            this.DefineWheelsInstruction.Size = new System.Drawing.Size(218, 55);
+            this.DefineWheelsInstruction.TabIndex = 2;
+            this.DefineWheelsInstruction.Text = "Drag wheel parts from the list to the left into the appropriate column below.";
             // 
             // WheelNodeGroupBox
             // 
@@ -96,7 +95,7 @@
             this.WheelJointsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.WheelJointsLayout.Controls.Add(this.NodeListBox, 0, 0);
             this.WheelJointsLayout.Controls.Add(this.AutoFillButton, 1, 1);
-            this.WheelJointsLayout.Controls.Add(this.DefineWheelsInstruction1, 1, 0);
+            this.WheelJointsLayout.Controls.Add(this.DefineWheelsInstruction, 1, 0);
             this.WheelJointsLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.WheelJointsLayout.Location = new System.Drawing.Point(3, 16);
             this.WheelJointsLayout.Name = "WheelJointsLayout";
@@ -384,7 +383,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.Label DefineWheelsInstruction1;
+        private System.Windows.Forms.Label DefineWheelsInstruction;
         private System.Windows.Forms.GroupBox WheelNodeGroupBox;
         private System.Windows.Forms.GroupBox RobotInfoGroupBox;
         private System.Windows.Forms.ComboBox DriveTrainDropdown;
