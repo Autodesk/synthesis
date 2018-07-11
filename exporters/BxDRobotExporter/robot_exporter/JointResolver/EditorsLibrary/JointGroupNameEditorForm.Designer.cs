@@ -90,7 +90,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "JointGroupNameEditorForm";
-            this.Text = "JointGroupNameEditorForm";
+            this.Text = "Joint Group Name Editor";
             this.ResumeLayout(false);
             this.PerformLayout();
 

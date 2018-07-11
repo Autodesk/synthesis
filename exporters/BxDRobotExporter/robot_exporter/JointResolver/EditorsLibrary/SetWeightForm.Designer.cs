@@ -152,7 +152,6 @@
             this.UnitBox.Name = "UnitBox";
             this.UnitBox.Size = new System.Drawing.Size(75, 21);
             this.UnitBox.TabIndex = 2;
-            this.UnitBox.SelectedIndex = 0;
             // 
             // SetWeightForm
             // 
@@ -169,6 +168,7 @@
             this.Name = "SetWeightForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Set Weight";
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
