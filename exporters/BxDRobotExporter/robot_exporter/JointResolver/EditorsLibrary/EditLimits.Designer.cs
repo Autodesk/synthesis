@@ -30,26 +30,28 @@ namespace EditorsLibrary
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditLimits));
-            this.tabDOF = new System.Windows.Forms.TabControl();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOkay = new System.Windows.Forms.Button();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.Angular_Group_Box = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.Angular_Start_textbox = new System.Windows.Forms.TextBox();
+            this.Angular_Current_textbox = new System.Windows.Forms.TextBox();
+            this.Angular_End_textbox = new System.Windows.Forms.TextBox();
+            this.Angular_Start = new System.Windows.Forms.CheckBox();
+            this.Angular_End = new System.Windows.Forms.CheckBox();
+            this.Angular_Current = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.Angular_Group_Box.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // tabDOF
-            // 
-            this.tabDOF.Location = new System.Drawing.Point(11, 11);
-            this.tabDOF.Margin = new System.Windows.Forms.Padding(2);
-            this.tabDOF.Name = "tabDOF";
-            this.tabDOF.SelectedIndex = 0;
-            this.tabDOF.Size = new System.Drawing.Size(277, 141);
-            this.tabDOF.TabIndex = 0;
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(11, 156);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
+            this.btnCancel.Location = new System.Drawing.Point(15, 192);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(91, 22);
+            this.btnCancel.Size = new System.Drawing.Size(121, 27);
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -57,39 +59,150 @@ namespace EditorsLibrary
             // 
             // btnOkay
             // 
-            this.btnOkay.Location = new System.Drawing.Point(195, 157);
-            this.btnOkay.Margin = new System.Windows.Forms.Padding(2);
+            this.btnOkay.Location = new System.Drawing.Point(260, 193);
+            this.btnOkay.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnOkay.Name = "btnOkay";
-            this.btnOkay.Size = new System.Drawing.Size(93, 21);
+            this.btnOkay.Size = new System.Drawing.Size(124, 26);
             this.btnOkay.TabIndex = 0;
             this.btnOkay.Text = "Okay";
             this.btnOkay.UseVisualStyleBackColor = true;
             this.btnOkay.Click += new System.EventHandler(this.btnOkay_Click);
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Controls.Add(this.Angular_Group_Box, 0, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 13);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(374, 174);
+            this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // Angular_Group_Box
+            // 
+            this.Angular_Group_Box.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Angular_Group_Box.Controls.Add(this.tableLayoutPanel2);
+            this.Angular_Group_Box.Location = new System.Drawing.Point(3, 3);
+            this.Angular_Group_Box.Name = "Angular_Group_Box";
+            this.Angular_Group_Box.Size = new System.Drawing.Size(368, 81);
+            this.Angular_Group_Box.TabIndex = 0;
+            this.Angular_Group_Box.TabStop = false;
+            this.Angular_Group_Box.Text = "Angular";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.Controls.Add(this.Angular_Start_textbox, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.Angular_Current_textbox, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.Angular_End_textbox, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.Angular_End, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.Angular_Current, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.Angular_Start, 0, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(7, 22);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(355, 53);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // Angular_Start_textbox
+            // 
+            this.Angular_Start_textbox.Location = new System.Drawing.Point(3, 29);
+            this.Angular_Start_textbox.Name = "Angular_Start_textbox";
+            this.Angular_Start_textbox.Size = new System.Drawing.Size(112, 22);
+            this.Angular_Start_textbox.TabIndex = 0;
+            // 
+            // Angular_Current_textbox
+            // 
+            this.Angular_Current_textbox.Location = new System.Drawing.Point(121, 29);
+            this.Angular_Current_textbox.Name = "Angular_Current_textbox";
+            this.Angular_Current_textbox.Size = new System.Drawing.Size(112, 22);
+            this.Angular_Current_textbox.TabIndex = 1;
+            // 
+            // Angular_End_textbox
+            // 
+            this.Angular_End_textbox.Location = new System.Drawing.Point(239, 29);
+            this.Angular_End_textbox.Name = "Angular_End_textbox";
+            this.Angular_End_textbox.Size = new System.Drawing.Size(113, 22);
+            this.Angular_End_textbox.TabIndex = 2;
+            // 
+            // Angular_Start
+            // 
+            this.Angular_Start.AutoSize = true;
+            this.Angular_Start.Location = new System.Drawing.Point(3, 3);
+            this.Angular_Start.Name = "Angular_Start";
+            this.Angular_Start.Size = new System.Drawing.Size(60, 20);
+            this.Angular_Start.TabIndex = 3;
+            this.Angular_Start.Text = "Start";
+            this.Angular_Start.UseVisualStyleBackColor = true;
+            this.Angular_Start.CheckedChanged += new System.EventHandler(this.Angular_Start_CheckedChanged);
+            // 
+            // Angular_End
+            // 
+            this.Angular_End.AutoSize = true;
+            this.Angular_End.Location = new System.Drawing.Point(239, 3);
+            this.Angular_End.Name = "Angular_End";
+            this.Angular_End.Size = new System.Drawing.Size(55, 20);
+            this.Angular_End.TabIndex = 5;
+            this.Angular_End.Text = "End";
+            this.Angular_End.UseVisualStyleBackColor = true;
+            this.Angular_End.CheckedChanged += new System.EventHandler(this.Angular_End_CheckedChanged);
+            // 
+            // Angular_Current
+            // 
+            this.Angular_Current.AutoSize = true;
+            this.Angular_Current.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Angular_Current.Location = new System.Drawing.Point(121, 4);
+            this.Angular_Current.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.Angular_Current.Name = "Angular_Current";
+            this.Angular_Current.Size = new System.Drawing.Size(112, 22);
+            this.Angular_Current.TabIndex = 4;
+            this.Angular_Current.Text = "       Current";
+            // 
             // EditLimits
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(299, 189);
+            this.ClientSize = new System.Drawing.Size(399, 233);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.btnOkay);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.tabDOF);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EditLimits";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Edit Limits";
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.Angular_Group_Box.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
         #endregion
-
-        private System.Windows.Forms.TabControl tabDOF;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnOkay;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.GroupBox Angular_Group_Box;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TextBox Angular_Start_textbox;
+        private System.Windows.Forms.TextBox Angular_Current_textbox;
+        private System.Windows.Forms.TextBox Angular_End_textbox;
+        private System.Windows.Forms.CheckBox Angular_Start;
+        private System.Windows.Forms.Label Angular_Current;
+        private System.Windows.Forms.CheckBox Angular_End;
 
         private class LimitPane<T> : System.Windows.Forms.TabPage
         {
