@@ -90,13 +90,13 @@
     <Compile Include="Assets\BulletUnity\Scripts\Editor\EditorInterface.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\Editor\PrimitiveEditor.cs" />
     <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
@@ -345,31 +345,31 @@
       <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/NuGet/Editor/DotNetZip.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/NuGet/Editor/DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="NugetForUnity">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/NuGet/Editor/NugetForUnity.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/NuGet/Editor/NugetForUnity.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.Advertisements">
       <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
-      <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.Analytics">
-      <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/Editor/UnityEditor.Analytics.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/Editor/UnityEditor.Analytics.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.Purchasing">
       <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.purchasing@2.0.3/Editor/UnityEditor.Purchasing.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
-      <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
