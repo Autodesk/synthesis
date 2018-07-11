@@ -13,15 +13,14 @@ namespace EditorsLibrary
 {
     public partial class EditLimits : Form
     {
+        //UnitsOfMeasure measure;
         SkeletalJoint_Base joint;
         public EditLimits(SkeletalJoint_Base joint)
         {
             this.joint = joint;
             InitializeComponent();
-            if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits)
-            {
-                MessageBox.Show(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue + " ");
-            }
+            //measure = SynthesisGUI.Instance.MainApplication.UnitsOfMeasure;
+            //MessageBox.Show(measure.MassUnits.GetType().ToString());
             IEnumerator<AngularDOF> angularDOF = joint.GetAngularDOF().GetEnumerator();
             {
                 int i = 0;
@@ -30,9 +29,9 @@ namespace EditorsLibrary
                 {
                     this.Angular_Start.Checked = true;
                     this.Angular_End.Checked = true;
-                    this.Angular_Current_textbox.Text = Convert.ToString(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).ModelValue);
-                    this.Angular_Start_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue ));
-                    this.Angular_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue));
+                    this.Angular_Current_textbox.Text = Convert.ToString(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).ModelValue * (180/Math.PI));
+                    this.Angular_Start_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue * (180 / Math.PI)));
+                    this.Angular_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue * (180 / Math.PI)));
                 } else if(! (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
                     ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
                 {
@@ -66,7 +65,7 @@ namespace EditorsLibrary
                 ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = true;
                 try
                 {
-                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = Convert.ToDouble(Angular_Current_textbox.Text);
+                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = Convert.ToDouble(Angular_Current_textbox.Text) * (Math.PI / 180);
                 }
                 catch (Exception)
                 {
@@ -82,7 +81,7 @@ namespace EditorsLibrary
                 }
                 try
                 {
-                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = Convert.ToDouble(Angular_Start_textbox.Text);
+                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = Convert.ToDouble(Angular_Start_textbox.Text) * (Math.PI/180);
                 }
                 catch (Exception)
                 {
@@ -98,7 +97,7 @@ namespace EditorsLibrary
                 }
                 try
                 {
-                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = Convert.ToDouble(Angular_End_textbox.Text);
+                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = Convert.ToDouble(Angular_End_textbox.Text) * (Math.PI / 180);
                 }
                 catch (Exception)
                 {

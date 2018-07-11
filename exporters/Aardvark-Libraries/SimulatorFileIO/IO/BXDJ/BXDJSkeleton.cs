@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-
 /// <summary>
 /// Utility functions for reading/writing BXDJ files
 /// </summary>
+
 public static partial class BXDJSkeleton
 {
     /// <summary>
@@ -192,7 +192,7 @@ public static partial class BXDJSkeleton
 
         if (joint.hasUpperLimit)
             writer.WriteElementString("LinearUpperLimit", joint.linearLimitHigh.ToString("F4"));
-
+               
         writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
 
         writer.WriteEndElement();
@@ -227,7 +227,7 @@ public static partial class BXDJSkeleton
         WriteBXDVector3(joint.basePoint, writer, "BasePoint");
         WriteBXDVector3(joint.axis, writer, "Axis");
 
-        if (joint.hasAngularLimit)
+        if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint)
         {
             writer.WriteElementString("AngularLowLimit", joint.angularLimitLow.ToString("F4"));
             writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F4"));

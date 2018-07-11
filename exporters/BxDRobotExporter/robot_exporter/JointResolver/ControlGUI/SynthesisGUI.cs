@@ -70,20 +70,15 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
-
+    public Inventor.Application MainApplication;
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
 
-    static SynthesisGUI()
-    {
-    }
-
-    public SynthesisGUI(bool MakeOwners = false)
+    public SynthesisGUI(Inventor.Application MainApplication, bool MakeOwners = false)
     {
         InitializeComponent();
-
+        this.MainApplication = MainApplication;
         Instance = this;
-
         JointPaneForm.Controls.Add(jointEditorPane1);
         if (MakeOwners) JointPaneForm.Owner = this;
         JointPaneForm.FormClosing += Generic_FormClosing;
@@ -334,7 +329,6 @@ public partial class SynthesisGUI : Form
 
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
-
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
 
