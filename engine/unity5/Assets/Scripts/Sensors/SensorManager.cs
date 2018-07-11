@@ -7,6 +7,7 @@ using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.States;
 using Synthesis.Robot;
+using Synthesis.Configuration;
 
 namespace Synthesis.Sensors
 {
@@ -305,7 +306,6 @@ namespace Synthesis.Sensors
             }
             return sensorsOnRobot;
         }
-
 
         /// <summary>
         /// Remove all sensors attached to the given robot and destroy them, reset all lists
