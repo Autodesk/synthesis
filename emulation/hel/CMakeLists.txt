@@ -17,7 +17,7 @@ set (hel_VERSION_MINOR 0)
 
 set (WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/../external/allwpilib")
 set (WPIUTIL_DIRECTORY "${CMAKE_BINARY_DIR}/../external/allwpilib/wpiutil")
-set (WPILIB_SO_DIRECTORY "${CMAKE_BINARY_DIR}/../../../wpilib")
+set (WPILIB_SO_DIRECTORY "${CMAKE_BINARY_DIR}/../external/wpilib")
 
 #set (VM_BUILD_COMMAND "./download_vm.sh && ./run_vm.sh")
 set (VM_BUILD_COMMAND "./run_vm.sh")
