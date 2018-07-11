@@ -232,7 +232,7 @@
             this.DriveTrainDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DriveTrainDropdown.FormattingEnabled = true;
             this.DriveTrainDropdown.Items.AddRange(new object[] {
-            "Select Drive Train...",
+            "Select drive train...",
             "Tank",
             "Mecanum",
             "Swerve",

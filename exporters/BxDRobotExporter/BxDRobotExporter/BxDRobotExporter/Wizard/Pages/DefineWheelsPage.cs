@@ -48,12 +48,8 @@ namespace BxDRobotExporter.Wizard
             RightWheelsPanel.HorizontalScroll.Maximum = 0;
             RightWheelsPanel.AutoScroll = true;
 
+            // Prepare drivetrain dropdown menu
             DriveTrainDropdown.SelectedIndex = 0;
-
-            // Disable controls that need drivetrain type
-            NodeListBox.Enabled = false;
-            AutoFillButton.Enabled = false;
-            DefineWheelsInstruction.Text = "Please select a drivetrain to perform wheel setup.";
 
             // Load weight information
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
@@ -90,9 +86,19 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
 
-            NodeListBox.Enabled = true;
-            AutoFillButton.Enabled = true;
-            DefineWheelsInstruction.Text = "Drag wheel parts from the list to the left into the appropriate column below.";
+            if (DriveTrainDropdown.SelectedIndex > 0)
+            {
+                NodeListBox.Enabled = true;
+                AutoFillButton.Enabled = true;
+                DefineWheelsInstruction.Text = "Drag wheel parts from the list to the left into the appropriate column below.";
+            }
+            else
+            {
+                NodeListBox.Enabled = false;
+                AutoFillButton.Enabled = false;
+                DefineWheelsInstruction.Text = "Please select a drive train to perform wheel setup.";
+            }
+
             Initialize();
         }
 
