@@ -157,12 +157,6 @@
     </Compile>
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="Wizard\AutoFillPage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Wizard\AutoFillPage.Designer.cs">
-      <DependentUpon>AutoFillPage.cs</DependentUpon>
-    </Compile>
     <Compile Include="Wizard\Components\DefinePartPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -174,12 +168,6 @@
     </Compile>
     <Compile Include="Wizard\Pages\DefineMovingPartsPage.Designer.cs">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\OneClickExport\OneClickExportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Wizard\OneClickExport\OneClickExportForm.Designer.cs">
-      <DependentUpon>OneClickExportForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\Data\WizardData.cs" />
     <Compile Include="Wizard\Pages\DefineWheelsPage.cs">
@@ -238,17 +226,11 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\AutoFillPage.resx">
-      <DependentUpon>AutoFillPage.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Components\DefinePartPanel.resx">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\DefineMovingPartsPage.resx">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\OneClickExport\OneClickExportForm.resx">
-      <DependentUpon>OneClickExportForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\DefineWheelsPage.resx">
       <DependentUpon>DefineWheelsPage.cs</DependentUpon>
