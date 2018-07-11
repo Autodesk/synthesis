@@ -576,18 +576,14 @@ namespace BxDRobotExporter
         /// <returns>List of disabled components.</returns>
         private List<ComponentOccurrence> DisableUnconnectedComponents(AssemblyDocument asmDocument)
         {
-            // Find all components in the assembly that are connected to a jojnt
+            // Find all components in the assembly that are connected to a joint
             List<ComponentOccurrence> jointedAssemblyOccurences = new List<ComponentOccurrence>();
-            foreach (ComponentOccurrence c in asmDocument.ComponentDefinition.Occurrences)
+            foreach (AssemblyJoint joint in asmDocument.ComponentDefinition.Joints)
             {
-                // Look at all joints inside of the main document
-                foreach (AssemblyJoint j in c.Joints)
+                if (!joint.Definition.JointType.Equals(AssemblyJointTypeEnum.kRigidJointType))
                 {
-                    if (!j.Definition.JointType.Equals(AssemblyJointTypeEnum.kRigidJointType))
-                    {
-                        jointedAssemblyOccurences.Add(j.AffectedOccurrenceOne);
-                        jointedAssemblyOccurences.Add(j.AffectedOccurrenceTwo);
-                    }
+                    jointedAssemblyOccurences.Add(joint.AffectedOccurrenceOne);
+                    jointedAssemblyOccurences.Add(joint.AffectedOccurrenceTwo);
                 }
             }
 
@@ -595,7 +591,7 @@ namespace BxDRobotExporter
             List<ComponentOccurrence> disabledAssemblyOccurences = new List<ComponentOccurrence>();
             foreach (ComponentOccurrence c in asmDocument.ComponentDefinition.Occurrences)
             {
-                if (jointedAssemblyOccurences.Contains(c))
+                if (!jointedAssemblyOccurences.Contains(c) || c.Grounded)
                 {
                     disabledAssemblyOccurences.Add(c);
                     c.Enabled = false;
