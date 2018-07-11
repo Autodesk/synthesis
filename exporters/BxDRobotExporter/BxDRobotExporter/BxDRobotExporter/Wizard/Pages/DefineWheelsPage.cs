@@ -38,6 +38,7 @@ namespace BxDRobotExporter.Wizard
         public DefineWheelsPage()
         {
             InitializeComponent();
+            AutoFillToolTip.SetToolTip(AutoFillButton, "Attempt to detect left and right wheels automatically. Remember to double check your configuration after using this tool.");
 
             // Hide horizontal scroll bars
             LeftWheelsPanel.AutoScroll = false;

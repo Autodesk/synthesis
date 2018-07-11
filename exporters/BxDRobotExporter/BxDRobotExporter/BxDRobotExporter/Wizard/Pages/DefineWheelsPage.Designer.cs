@@ -28,11 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.DefineWheelsInstruction1 = new System.Windows.Forms.Label();
             this.WheelNodeGroupBox = new System.Windows.Forms.GroupBox();
             this.WheelJointsLayout = new System.Windows.Forms.TableLayoutPanel();
             this.NodeListBox = new System.Windows.Forms.ListBox();
-            this.AutoFill = new System.Windows.Forms.Button();
+            this.AutoFillButton = new System.Windows.Forms.Button();
             this.LeftWheelsGroup = new System.Windows.Forms.GroupBox();
             this.LeftWheelsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.RobotInfoGroupBox = new System.Windows.Forms.GroupBox();
@@ -47,6 +48,7 @@
             this.RightWheelsGroup = new System.Windows.Forms.GroupBox();
             this.RightWheelsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.AutoFillToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.WheelNodeGroupBox.SuspendLayout();
             this.WheelJointsLayout.SuspendLayout();
             this.LeftWheelsGroup.SuspendLayout();
@@ -93,7 +95,7 @@
             this.WheelJointsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.WheelJointsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.WheelJointsLayout.Controls.Add(this.NodeListBox, 0, 0);
-            this.WheelJointsLayout.Controls.Add(this.AutoFill, 1, 1);
+            this.WheelJointsLayout.Controls.Add(this.AutoFillButton, 1, 1);
             this.WheelJointsLayout.Controls.Add(this.DefineWheelsInstruction1, 1, 0);
             this.WheelJointsLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.WheelJointsLayout.Location = new System.Drawing.Point(3, 16);
@@ -121,16 +123,16 @@
             this.NodeListBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
             this.NodeListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NodeListBox_MouseDown);
             // 
-            // AutoFill
+            // AutoFillButton
             // 
-            this.AutoFill.Dock = System.Windows.Forms.DockStyle.Top;
-            this.AutoFill.Location = new System.Drawing.Point(227, 64);
-            this.AutoFill.Name = "AutoFill";
-            this.AutoFill.Size = new System.Drawing.Size(218, 23);
-            this.AutoFill.TabIndex = 7;
-            this.AutoFill.Text = "Auto Fill";
-            this.AutoFill.UseVisualStyleBackColor = true;
-            this.AutoFill.Click += new System.EventHandler(this.AutoFill_Click);
+            this.AutoFillButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.AutoFillButton.Location = new System.Drawing.Point(227, 64);
+            this.AutoFillButton.Name = "AutoFillButton";
+            this.AutoFillButton.Size = new System.Drawing.Size(218, 23);
+            this.AutoFillButton.TabIndex = 7;
+            this.AutoFillButton.Text = "Attempt Auto Fill";
+            this.AutoFillButton.UseVisualStyleBackColor = true;
+            this.AutoFillButton.Click += new System.EventHandler(this.AutoFill_Click);
             // 
             // LeftWheelsGroup
             // 
@@ -387,7 +389,7 @@
         private System.Windows.Forms.GroupBox RobotInfoGroupBox;
         private System.Windows.Forms.ComboBox DriveTrainDropdown;
         private System.Windows.Forms.Label DriveTrainLabel;
-        private System.Windows.Forms.Button AutoFill; 
+        private System.Windows.Forms.Button AutoFillButton; 
         private System.Windows.Forms.ListBox NodeListBox;
         private System.Windows.Forms.NumericUpDown WeightBox;
         private System.Windows.Forms.Label label3;
@@ -401,5 +403,6 @@
         private System.Windows.Forms.TableLayoutPanel WeightLayout;
         private System.Windows.Forms.TableLayoutPanel LeftWheelsPanel;
         private System.Windows.Forms.TableLayoutPanel RightWheelsPanel;
+        private System.Windows.Forms.ToolTip AutoFillToolTip;
     }
 }
