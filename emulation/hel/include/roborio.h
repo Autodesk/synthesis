@@ -1479,6 +1479,11 @@ namespace hel{
             tPower::tDisable getDisabled()const;
             void setDisabled(tPower::tDisable);
         };
+
+        struct NetComm{
+            std::function<void(uint32_t)> occurFunction;
+        };
+
     	/**
     	 * \var bool user_button
     	 * \represents the state of the user button on the roborio
@@ -1497,6 +1502,7 @@ namespace hel{
         DriverStationInfo driver_station_info;
         std::array<Encoder, hal::kNumEncoders> encoders;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
+        NetComm net_comm;
         Power power;
         PWMSystem pwm_system;
     	RelaySystem relay_system;
