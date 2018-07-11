@@ -7,6 +7,7 @@ using Synthesis.GUI;
 using Synthesis.Camera;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Configuration;
 
 namespace Synthesis.Sensors
 {
@@ -513,6 +514,7 @@ namespace Synthesis.Sensors
             configureSensorPanel.SetActive(true);
             sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
+            currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -891,6 +893,7 @@ namespace Synthesis.Sensors
             isChoosingOption = false;
             if (currentSensor != null)
             {
+                currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(false);
                 currentSensor.ResetConfigurationState();
                 currentSensor = null;
             }

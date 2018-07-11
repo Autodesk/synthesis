@@ -9,6 +9,7 @@ using System;
 using Synthesis.States;
 using Synthesis.Utils;
 using Synthesis.Robot;
+using Synthesis.Configuration;
 
 namespace Synthesis.Sensors
 {
@@ -26,12 +27,19 @@ namespace Synthesis.Sensors
         public bool IsVisible = true;
         protected bool IsMetric = false;
         protected MainState main;
-        public RobotBase Robot { get; set; }
+        public SimulatorRobot Robot { get; set; }
 
         // Use this for initialization
         void Start()
         {
             IsVisible = true;
+
+            MoveArrows moveArrows = GetComponentInChildren<MoveArrows>();
+            moveArrows.Translate = (translation) => transform.Translate(translation, Space.World);
+            moveArrows.OnClick = () => Robot.LockRobot();
+            moveArrows.OnRelease = () => Robot.UnlockRobot();
+
+            StateMachine.SceneGlobal.Link<MainState>(moveArrows.gameObject, false);
         }
 
         // Update is called once per frame
