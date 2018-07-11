@@ -579,6 +579,11 @@ namespace Synthesis.States
                 robot.UnlockRobot();
         }
 
+        public void RevertSpawnpoint()
+        {
+            ActiveRobot.BeginRevertSpawnpoint();
+        }
+
         /// <summary>
         /// Starts the resetting process of the active robot
         /// </summary>

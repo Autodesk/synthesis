@@ -614,11 +614,12 @@ namespace Synthesis.GUI
             }
         }
 
-        public void ResetArrowPosition()
+        /// <summary>
+        /// Allows for user to reset their robot to the default spawnpoint 
+        /// </summary>
+        public void RevertToDefaultSpawnPoint()
         {
-            State.BeginRobotReset();
-            State.EndRobotReset();
-            State.BeginRobotReset();
+            State.RevertSpawnpoint();
         }
 
         /// <summary>

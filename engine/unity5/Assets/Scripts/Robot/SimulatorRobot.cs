@@ -171,6 +171,17 @@ namespace Synthesis.Robot
         }
 
         /// <summary>
+        /// Returns the robot to a default starting spawnpoint
+        /// </summary>
+        public void BeginRevertSpawnpoint()
+        {
+            robotStartPosition = new Vector3(0f, 1f, 0f);
+            State.BeginRobotReset();
+            State.EndRobotReset();
+            State.BeginRobotReset();
+        }
+
+        /// <summary>
         /// Return the robot to robotStartPosition and destroy extra game pieces
         /// </summary>
         /// <param name="resetTransform"></param>
