@@ -222,8 +222,6 @@ namespace BxDRobotExporter
         public void Deactivate()
         {
             Marshal.ReleaseComObject(MainApplication);
-            if (AsmDocument != null)
-                Marshal.ReleaseComObject(AsmDocument);
             MainApplication = null;
             FilePanel.Parent.Delete();
             ExporterEnv.Delete();
@@ -264,18 +262,18 @@ namespace BxDRobotExporter
         {
             if (EnvironmentEnabled)
             {
-                EndExporter();
+                ClosingExporter();
             }
             else
             {
-                StartExporter();
+                OpeningExporter();
             }
         }
 
         /// <summary>
         /// Gets the assembly document and makes the <see cref="DockableWindows"/>
         /// </summary>
-        private void StartExporter()
+        private void OpeningExporter()
         {
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument)MainApplication.ActiveDocument;
@@ -299,6 +297,7 @@ namespace BxDRobotExporter
             }
 
             // Hide non-jointed components
+            disabledAssemblyOccurences = new List<ComponentOccurrence>();
             disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
 
             // If fails to load existing data, restart wizard
@@ -315,17 +314,11 @@ namespace BxDRobotExporter
             Utilities.GUI.ReloadPanels();
             Utilities.ShowDockableWindows();
         }
-
-        private async void ForceQuitExporter()
-        {
-            await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
-            AsmDocument.EnvironmentManager.SetCurrentEnvironment(AsmDocument.EnvironmentManager.EditObjectEnvironment);
-        }
         
         /// <summary>
         /// Disposes of some COM objects and exits the environment
         /// </summary>
-        private void EndExporter()
+        private void ClosingExporter()
         {
             WarnIfUnsaved(false);
 
@@ -334,23 +327,36 @@ namespace BxDRobotExporter
             disabledAssemblyOccurences.Clear();
 
             // Close add-in
-            AsmDocument = null;
+            // Enable the exporter in other documents
+            foreach (var doc in DisabledCommandDocuments)
+                doc.Key.DisabledCommandList.Remove(doc.Value);
+            DisabledCommandDocuments.Clear();
+
             Utilities.DisposeDockableWindows();
+            if (AsmDocument != null)
+                Marshal.ReleaseComObject(AsmDocument);
+
+            AsmDocument = null;
             ChildHighlight = null;
 
-            foreach (var doc in DisabledCommandDocuments)
-            {
-                doc.Key.DisabledCommandList.Remove(doc.Value);
-            }
-
             EnvironmentEnabled = false;
+        }
+
+        /// <summary>
+        /// Causes the exporter to close.
+        /// </summary>
+        private async void ForceQuitExporter()
+        {
+            await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
+            AsmDocument.EnvironmentManager.SetCurrentEnvironment(AsmDocument.EnvironmentManager.EditObjectEnvironment);
         }
         #endregion
 
         #region Event Callbacks and Button Commands
         #region Application, Document, UI Event Handlers
         /// <summary>
-        /// Makes the dockable windows invisible when the document switches. This avoids data loss.
+        /// Makes the dockable windows invisible when the document switches. This avoids data loss. 
+        /// Also re-enables the exporter in the document if it was disabled. This allows the user to use the exporter in that document at a later point.
         /// </summary>
         /// <param name="DocumentObject"></param>
         /// <param name="BeforeOrAfter"></param>
@@ -363,11 +369,22 @@ namespace BxDRobotExporter
                 Utilities.HideDockableWindows();
                 HiddenExporter = true;
             }
+            
+            // Re-enable the exporter in this assembly if it was disabled
+            if (DocumentObject is AssemblyDocument assembly)
+            {
+                if (DisabledCommandDocuments.ContainsKey(assembly))
+                {
+                    assembly.DisabledCommandList.Remove(DisabledCommandDocuments[assembly]);
+                    DisabledCommandDocuments.Remove(assembly);
+                }
+            }
+
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
         /// <summary>
-        /// Disables the environment button if you aren't in an assembly document.
+        /// Disables the environment button if you aren't in the assembly document that the exporter was originally opened in.
         /// </summary>
         /// <param name="DocumentObject"></param>
         /// <param name="BeforeOrAfter"></param>
@@ -375,28 +392,32 @@ namespace BxDRobotExporter
         /// <param name="HandlingCode"></param>
         private void ApplicationEvents_OnActivateDocument(_Document DocumentObject, EventTimingEnum BeforeOrAfter, NameValueMap Context, out HandlingCodeEnum HandlingCode)
         {
-            if (DocumentObject is PartDocument Part)
+            if (DocumentObject is PartDocument part)
             {
-                Part.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+                part.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
             }
-            else if (DocumentObject is PresentationDocument Presentation)
+            else if (DocumentObject is PresentationDocument presentation)
             {
-                Presentation.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+                presentation.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
             }
-            else if (DocumentObject is DrawingDocument Drawing)
+            else if (DocumentObject is DrawingDocument drawing)
             {
-                Drawing.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+                drawing.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
             }
-            else if (DocumentObject.Equals(AsmDocument) && HiddenExporter)
+            else if (DocumentObject is AssemblyDocument assembly)
             {
-                Utilities.ShowDockableWindows();
-                HiddenExporter = false;
+                if (assembly.Equals(AsmDocument) && HiddenExporter)
+                {
+                    Utilities.ShowDockableWindows();
+                    HiddenExporter = false;
+                }
+                else if (!assembly.Equals(AsmDocument))
+                {
+                    assembly.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+                    DisabledCommandDocuments.Add(assembly, assembly.DisabledCommandList.Count - 1); // Keep track of which assemblies have had the exporter disabled in
+                }
             }
-            else if (!DocumentObject.Equals(AsmDocument) && HiddenExporter)
-            {
-                DisabledCommandDocuments.Add((AssemblyDocument)DocumentObject, ((AssemblyDocument)DocumentObject).DisabledCommandList.Count);
-                ((AssemblyDocument)DocumentObject).DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
-            }
+
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
@@ -449,17 +470,6 @@ namespace BxDRobotExporter
             }
         }
 
-
-        //File
-        /// <summary>
-        /// Opens a standalone robot viewer to that will display joint information and such
-        /// </summary>
-        /// <param name="Context"></param>
-        private void PreviewRobotButton_OnExecute(NameValueMap Context)
-        {
-            Utilities.GUI.PreviewRobot(Properties.Settings.Default.SaveLocation);
-        }
-
         /// <summary>
         /// Saves the active robot to the active directory
         /// </summary>
@@ -490,17 +500,6 @@ namespace BxDRobotExporter
         {
             if (Utilities.GUI.PromptRobotWeight())
                 PendingChanges = true;
-        }
-
-
-        //Settings
-        /// <summary>
-        /// Opens the <see cref="PluginSettingsForm"/> form to allow the user to customize their experience
-        /// </summary>
-        /// <param name="Context"></param>
-        private void ExporterSettings_OnExecute(NameValueMap Context)
-        {
-            Utilities.GUI.SettingsExporter_OnClick(this, null);
         }
 
         /// <summary>

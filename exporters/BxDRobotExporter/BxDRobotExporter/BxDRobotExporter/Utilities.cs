@@ -30,8 +30,7 @@ namespace BxDRobotExporter
             UserInterfaceManager uiMan = app.UserInterfaceManager;
             EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Robot Joint Editor");
             EmbededBxDViewer = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:BxDViewer", "Robot BxD Viewer");
-
-
+            
             #region EmbededJointPane
             EmbededJointPane.DockingState = DockingStateEnum.kDockBottom;
             EmbededJointPane.Height = 250;
