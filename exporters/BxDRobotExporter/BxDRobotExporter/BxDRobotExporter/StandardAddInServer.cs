@@ -404,14 +404,14 @@ namespace BxDRobotExporter
             {
                 drawing.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
             }
-            else if (DocumentObject is AssemblyDocument assembly)
+            else if (DocumentObject is AssemblyDocument assembly && AsmDocument != null) // Don't disable the exporter if it isn't open
             {
                 if (assembly.Equals(AsmDocument) && HiddenExporter)
                 {
                     Utilities.ShowDockableWindows();
                     HiddenExporter = false;
                 }
-                else if (!assembly.Equals(AsmDocument))
+                else if (!assembly.Equals(AsmDocument) && !DisabledCommandDocuments.ContainsKey(assembly))
                 {
                     assembly.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
                     DisabledCommandDocuments.Add(assembly, assembly.DisabledCommandList.Count - 1); // Keep track of which assemblies have had the exporter disabled in
