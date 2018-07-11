@@ -55,11 +55,6 @@ namespace BxDRobotExporter
         Inventor.Environment ExporterEnv;
         bool EnvironmentEnabled = false;
 
-        /// <summary>
-        /// A dictionary containing all of the other open assembly documents. 
-        /// </summary>
-        Dictionary<AssemblyDocument, int> DisabledCommandDocuments = new Dictionary<AssemblyDocument, int>();
-
         //Makes sure that the application doesn't create a bunch of dockable windows. Nobody wants that crap.
         bool HiddenExporter = false;
 
@@ -327,11 +322,6 @@ namespace BxDRobotExporter
             disabledAssemblyOccurences.Clear();
 
             // Close add-in
-            // Enable the exporter in other documents
-            foreach (var doc in DisabledCommandDocuments)
-                doc.Key.DisabledCommandList.Remove(doc.Value);
-            DisabledCommandDocuments.Clear();
-
             Utilities.DisposeDockableWindows();
             if (AsmDocument != null)
                 Marshal.ReleaseComObject(AsmDocument);
@@ -372,13 +362,7 @@ namespace BxDRobotExporter
             
             // Re-enable the exporter in this assembly if it was disabled
             if (DocumentObject is AssemblyDocument assembly)
-            {
-                if (DisabledCommandDocuments.ContainsKey(assembly))
-                {
-                    assembly.DisabledCommandList.Remove(DisabledCommandDocuments[assembly]);
-                    DisabledCommandDocuments.Remove(assembly);
-                }
-            }
+                EnableExporterInDoc(assembly);
 
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
         }
@@ -411,10 +395,9 @@ namespace BxDRobotExporter
                     Utilities.ShowDockableWindows();
                     HiddenExporter = false;
                 }
-                else if (!assembly.Equals(AsmDocument) && !DisabledCommandDocuments.ContainsKey(assembly))
+                else if (!assembly.Equals(AsmDocument))
                 {
-                    assembly.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
-                    DisabledCommandDocuments.Add(assembly, assembly.DisabledCommandList.Count - 1); // Keep track of which assemblies have had the exporter disabled in
+                    DisableExporterInDoc(assembly);
                 }
             }
 
@@ -568,6 +551,42 @@ namespace BxDRobotExporter
         #endregion
 
         #region Miscellaneous Methods and Nested Classes
+        /// <summary>
+        /// Disable the exporter command for an open document.
+        /// </summary>
+        /// <param name="doc">Document to disable.</param>
+        void DisableExporterInDoc(AssemblyDocument doc)
+        {
+            ControlDefinition exporterControl = MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"];
+
+            // Don't disable when doc already has exporter disabled
+            foreach (ControlDefinition control in doc.DisabledCommandList)
+                if (control == exporterControl)
+                    return;
+
+            // Disable exporter in doc
+            doc.DisabledCommandList.Add(exporterControl);
+        }
+
+        /// <summary>
+        /// Enable the exporter command for an open document.
+        /// </summary>
+        /// <param name="doc">Document to enable.</param>
+        void EnableExporterInDoc(AssemblyDocument doc)
+        {
+            ControlDefinition exporterControl = MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"];
+
+            // Remove the exporter control from the disable commands list
+            for (int i = 0; i < doc.DisabledCommandList.Count; i++)
+            {
+                if (doc.DisabledCommandList[i] == exporterControl)
+                {
+                    doc.DisabledCommandList.Remove(i);
+                    return;
+                }
+            }
+        }
+
         /// <summary>
         /// Disables all components in a document that are not connected to another component by a joint.
         /// </summary>
