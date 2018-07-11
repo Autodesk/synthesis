@@ -128,7 +128,7 @@
             this.AutoFill.Name = "AutoFill";
             this.AutoFill.Size = new System.Drawing.Size(218, 23);
             this.AutoFill.TabIndex = 7;
-            this.AutoFill.Text = "AutoFill";
+            this.AutoFill.Text = "Auto Fill";
             this.AutoFill.UseVisualStyleBackColor = true;
             this.AutoFill.Click += new System.EventHandler(this.AutoFill_Click);
             // 
