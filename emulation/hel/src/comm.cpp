@@ -237,6 +237,11 @@ int setNewDataOccurRef(uint32_t /*refnum*/){ //unnecessary for emulation
 
 int FRC_NetworkCommunication_getControlWord(struct ControlWord_t* controlWord){
     *controlWord = hel::RoboRIOManager::getInstance()->robot_state.toControlWord();
+    controlWord->enabled = 1;
+    controlWord->autonomous = 0;
+    controlWord->test = 0;
+    controlWord->dsAttached = 1;
+    controlWord->eStop = 0;
     return 0; //TODO returns a status
 }
 
