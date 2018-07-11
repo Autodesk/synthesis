@@ -18,7 +18,7 @@ namespace BxDRobotExporter.Wizard
         public enum WizardNavigatorState : byte
         {
             /// <summary>
-            /// <see cref="NextButton"/> reads "Start >". <see cref="BackButton"/> is disabled.
+            /// <see cref="NextButton"/> reads "Start >".
             /// </summary>
             StartEnabled = 0b00000001,
             /// <summary>
@@ -26,17 +26,25 @@ namespace BxDRobotExporter.Wizard
             /// </summary>
             FinishEnabled = 0b00000010,
             /// <summary>
-            /// The entire control is invisible. TODO: Use this to export the meshes within the Wizard.
+            /// The entire control is invisible.
             /// </summary>
             Hidden = 0b00000100,
             /// <summary>
+            /// Both buttons are hidden, but a loading message is displayed.
+            /// </summary>
+            Loading = 0b00001000,
+            /// <summary>
             /// Default state. <see cref="NextButton"/> and <see cref="BackButton"/> both are enabled.
             /// </summary>
-            Clean = 0b0001000,
+            Clean = 0b00010000,
             /// <summary>
-            /// Same as <see cref="WizardNavigatorState.Clean"/> except <see cref="NextButton"/> is enabled.
+            /// <see cref="NextButton"/> is disabled.
             /// </summary>
-            NextDisabled = 0b00010000
+            NextDisabled = 0b00100000,
+            /// <summary>
+            /// <see cref="BackButton"/> is hidden.
+            /// </summary>
+            BackHidden = 0b01000000
         }
         public WizardNavigator()
         {
@@ -64,49 +72,65 @@ namespace BxDRobotExporter.Wizard
         /// <param name="state"></param>
         public void UpdateState(WizardNavigatorState state)
         {
-            switch(state)
+            if ((state & WizardNavigatorState.Clean) > 0)
             {
-                case WizardNavigatorState.Clean:
-                    this.Visible = true;
-                    NextButton.Text = "Next >";
-                    NextButton.Enabled = true;
-                    BackButton.Text = "< Back";
-                    BackButton.Enabled = true;
-                    Progress.Text = "Click \'Next\' to continue.";
-                    Progress.Enabled = true;
-                    break;
-                case WizardNavigatorState.NextDisabled:
-                    this.Visible = true;
-                    NextButton.Text = "Next >";
-                    NextButton.Enabled = false;
-                    BackButton.Text = "< Back";
-                    BackButton.Enabled = true;
-                    Progress.Text = "Click \'Next\' to continue.";
-                    Progress.Enabled = true;
-                    break;
-                case WizardNavigatorState.Hidden:
-                    this.Visible = false;
-                    break;
-                case WizardNavigatorState.FinishEnabled:
-                    this.Visible = true;
-                    NextButton.Text = "Finish";
-                    NextButton.Enabled = true;
-                    BackButton.Text = "< Back";
-                    BackButton.Enabled = true;
-                    Progress.Text = "Click \'Finish\' to exit the wizard.";
-                    Progress.Enabled = true;
-                    break;
-                case WizardNavigatorState.StartEnabled:
-                    this.Visible = true;
-                    NextButton.Text = "Start >";
-                    NextButton.Enabled = true;
-                    BackButton.Text = "< Back";
-                    BackButton.Enabled = false;
-                    Progress.Text = "Click \'Start\' to begin.";
-                    Progress.Enabled = true;
-                    break;
+                this.Visible = true;
+                NextButton.Text = "Next";
+                NextButton.Enabled = true;
+                NextButton.Visible = true;
+                BackButton.Text = "Back";
+                BackButton.Enabled = true;
+                BackButton.Visible = true;
+                ProgressLabel.Text = "Click \'Next\' to continue.";
             }
 
+            if ((state & WizardNavigatorState.NextDisabled) > 0)
+            {
+                this.Visible = true;
+                NextButton.Text = "Next";
+                NextButton.Enabled = false;
+                NextButton.Visible = true;
+            }
+
+            if ((state & WizardNavigatorState.BackHidden) > 0)
+            {
+                this.Visible = true;
+                BackButton.Text = "Back";
+                BackButton.Visible = false;
+            }
+
+            if ((state & WizardNavigatorState.StartEnabled) > 0)
+            {
+                this.Visible = true;
+                NextButton.Text = "Start";
+                NextButton.Enabled = true;
+                NextButton.Visible = true;
+                ProgressLabel.Text = "Click \'Start\' to begin.";
+            }
+
+            if ((state & WizardNavigatorState.FinishEnabled) > 0)
+            { 
+                this.Visible = true;
+                NextButton.Text = "Finish";
+                NextButton.Enabled = true;
+                NextButton.Visible = true;
+                ProgressLabel.Text = "Click \'Finish\' to exit the wizard.";
+            }
+
+            if ((state & WizardNavigatorState.Loading) > 0)
+            {
+                this.Visible = true;
+                NextButton.Enabled = false;
+                NextButton.Visible = false;
+                BackButton.Enabled = false;
+                BackButton.Visible = false;
+                ProgressLabel.Text = "Preparing menu...";
+            }
+
+            if ((state & WizardNavigatorState.Hidden) > 0)
+            {
+                this.Visible = false;
+            }
         }
     }
 }

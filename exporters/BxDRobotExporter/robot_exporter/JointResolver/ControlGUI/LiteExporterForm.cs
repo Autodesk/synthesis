@@ -143,7 +143,7 @@ public partial class LiteExporterForm : Form
         if (SynthesisGUI.Instance.SkeletonBase == null)
             return; // Skeleton has not been built
 
-        List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase, SynthesisGUI.Instance.TotalWeightKg);
+        List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase, SynthesisGUI.Instance.RMeta.TotalWeightKg);
 
         SynthesisGUI.Instance.Meshes = Meshes;
     }

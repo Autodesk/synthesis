@@ -38,8 +38,6 @@ namespace EditorsLibrary
             base.Text = joint.GetType().Name.Replace("_Base", "").Replace("Joint", " Joint");
 
             base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
-
-            FormClosing += delegate (object sender, FormClosingEventArgs e) { LegacyInterchange.LegacyEvents.OnRobotModified(); };
         }
 
         private void btnOkay_Click(object sender, EventArgs e)
@@ -52,6 +50,7 @@ namespace EditorsLibrary
                 else if (page is LimitPane<AngularDOF> && !((LimitPane<AngularDOF>) page).changedProps(true))
                     return;
             }
+            LegacyInterchange.LegacyEvents.OnRobotModified();
             Close();
         }
 

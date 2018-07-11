@@ -22,28 +22,24 @@ namespace BxDRobotExporter.Wizard
             
             this.Resize += WizardForm_Resize;
 
-            //Start page
-            StartPage startPage = new StartPage();
-            startPage.ActivateNext += ActivateNext;
-            startPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(startPage, WizardNavigator.WizardNavigatorState.StartEnabled);
-            
             //Step 1: Define Wheels
             DefineWheelsPage defineWheelsPage = new DefineWheelsPage();
             defineWheelsPage.ActivateNext += ActivateNext;
             defineWheelsPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.Clean);
+            defineWheelsPage.SetEndEarly += SetEndEarly;
+            WizardPages.Add(defineWheelsPage, WizardNavigator.WizardNavigatorState.Clean | WizardNavigator.WizardNavigatorState.BackHidden);
 
             //Step 2: Define other moving parts
             DefineMovingPartsPage defineMovingPartsPage = new DefineMovingPartsPage();
             defineMovingPartsPage.ActivateNext += ActivateNext;
             defineMovingPartsPage.DeactivateNext += DeactivateNext;
-            WizardPages.Add(defineMovingPartsPage, WizardNavigator.WizardNavigatorState.FinishEnabled);
+            WizardPages.Add(defineMovingPartsPage, WizardNavigator.WizardNavigatorState.Clean | WizardNavigator.WizardNavigatorState.FinishEnabled);
             
             WizardPages.BeginWizard();
             WizardPages.FinishClicked += delegate ()
             {
                 WizardData.Instance.Apply();
+                StandardAddInServer.Instance.PendingChanges = true;
                 Close();
             };
         }
@@ -61,6 +57,11 @@ namespace BxDRobotExporter.Wizard
         private void DeactivateNext()
         {
             WizardPages.WizardNavigator.NextButton.Enabled = false;
+        }
+
+        private void SetEndEarly(bool enabled)
+        {
+            WizardPages.EndEarly = enabled;
         }
     }
 }
