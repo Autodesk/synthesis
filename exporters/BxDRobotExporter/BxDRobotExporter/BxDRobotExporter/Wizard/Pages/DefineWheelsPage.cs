@@ -50,6 +50,7 @@ namespace BxDRobotExporter.Wizard
 
             // Prepare drivetrain dropdown menu
             DriveTrainDropdown.SelectedIndex = 0;
+            DriveTrainDropdown_SelectedIndexChanged(null, null);
 
             // Load weight information
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
