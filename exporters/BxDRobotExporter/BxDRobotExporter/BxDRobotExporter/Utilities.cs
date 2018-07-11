@@ -44,7 +44,7 @@ namespace BxDRobotExporter
         {
             try
             {
-                GUI = new SynthesisGUI()
+                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication)
                 {
                     Opacity = 0.00d
                 };

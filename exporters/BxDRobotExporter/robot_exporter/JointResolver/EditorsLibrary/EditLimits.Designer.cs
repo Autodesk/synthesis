@@ -38,9 +38,9 @@ namespace EditorsLibrary
             this.Angular_Start_textbox = new System.Windows.Forms.TextBox();
             this.Angular_Current_textbox = new System.Windows.Forms.TextBox();
             this.Angular_End_textbox = new System.Windows.Forms.TextBox();
-            this.Angular_Start = new System.Windows.Forms.CheckBox();
             this.Angular_End = new System.Windows.Forms.CheckBox();
             this.Angular_Current = new System.Windows.Forms.Label();
+            this.Angular_Start = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.Angular_Group_Box.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -92,7 +92,7 @@ namespace EditorsLibrary
             this.Angular_Group_Box.Size = new System.Drawing.Size(368, 81);
             this.Angular_Group_Box.TabIndex = 0;
             this.Angular_Group_Box.TabStop = false;
-            this.Angular_Group_Box.Text = "Angular";
+            this.Angular_Group_Box.Text = "Angular (Degrees)";
             // 
             // tableLayoutPanel2
             // 
@@ -135,17 +135,6 @@ namespace EditorsLibrary
             this.Angular_End_textbox.Size = new System.Drawing.Size(113, 22);
             this.Angular_End_textbox.TabIndex = 2;
             // 
-            // Angular_Start
-            // 
-            this.Angular_Start.AutoSize = true;
-            this.Angular_Start.Location = new System.Drawing.Point(3, 3);
-            this.Angular_Start.Name = "Angular_Start";
-            this.Angular_Start.Size = new System.Drawing.Size(60, 20);
-            this.Angular_Start.TabIndex = 3;
-            this.Angular_Start.Text = "Start";
-            this.Angular_Start.UseVisualStyleBackColor = true;
-            this.Angular_Start.CheckedChanged += new System.EventHandler(this.Angular_Start_CheckedChanged);
-            // 
             // Angular_End
             // 
             this.Angular_End.AutoSize = true;
@@ -167,6 +156,17 @@ namespace EditorsLibrary
             this.Angular_Current.Size = new System.Drawing.Size(112, 22);
             this.Angular_Current.TabIndex = 4;
             this.Angular_Current.Text = "       Current";
+            // 
+            // Angular_Start
+            // 
+            this.Angular_Start.AutoSize = true;
+            this.Angular_Start.Location = new System.Drawing.Point(3, 3);
+            this.Angular_Start.Name = "Angular_Start";
+            this.Angular_Start.Size = new System.Drawing.Size(60, 20);
+            this.Angular_Start.TabIndex = 3;
+            this.Angular_Start.Text = "Start";
+            this.Angular_Start.UseVisualStyleBackColor = true;
+            this.Angular_Start.CheckedChanged += new System.EventHandler(this.Angular_Start_CheckedChanged);
             // 
             // EditLimits
             // 

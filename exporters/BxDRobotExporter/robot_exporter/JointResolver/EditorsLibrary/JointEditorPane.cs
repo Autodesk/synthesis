@@ -24,6 +24,7 @@ namespace EditorsLibrary
         /// A JointEditorEvent triggered upon joint modification
         /// </summary>
         public event JointEditorEvent ModifiedJoint;
+       
 
         /// <summary>
         /// Whether or not joint data is currently being edited
