@@ -79,168 +79,101 @@ namespace BxDRobotExporter.Wizard
         /// <summary>
         /// Detects all the wheel nodes in a robot. Needs improvement
         /// </summary>
-        /// <param name="baseNode"></param>
-        /// <param name="driveTrain"></param>
-        /// <param name="wheelCount"></param>
-        /// <returns></returns>
-        public static List<RigidNode_Base> DetectWheels(RigidNode_Base baseNode, WizardData.WizardDriveTrain driveTrain, int wheelCount)
+        /// <param name="baseNode">Base node of the robot.</param>
+        /// <param name="leftWheels">Detected wheels on the left side.</param>
+        /// <param name="rightWheels">Detected wheels on the right side.</param>
+        /// <param name="threshold">Threshold distance for wheels to be detected.</param>
+        /// <returns>True if successful</returns>
+        public static bool DetectWheels(RigidNode_Base baseNode, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels, double threshold = 2d)
         {
-            List<RigidNode_Base> jointParentFilter = new List<RigidNode_Base>();
+            List<RigidNode_Base> potentialWheels = new List<RigidNode_Base>();
 
             foreach(RigidNode_Base node in baseNode.ListAllNodes())
             {
                 //For the first filter, we take out any nodes that do not have parents and rotational joints.
                 if (node.GetParent() != null && node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
                 {
-                    jointParentFilter.Add(node);
+                    potentialWheels.Add(node);
                 }
             }
 
-            //Find node with the lowest y value
-            RigidNode_Base lowestNode = null; double lowestY = double.MaxValue;
-            foreach(RigidNode_Base node in jointParentFilter)
+            //Find node with the lowest y value to filter out all nodes above bottom of robot
+            RigidNode_Base lowestNode = null; double lowestY = 0;
+            foreach(RigidNode_Base node in potentialWheels)
             {
+                float nodeY = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y;
+
                 if (lowestNode == null)
                 {
                     lowestNode = node;
-                    lowestY = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y;
+                    lowestY = nodeY;
                 }
                 else
                 {
-                    if (node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y < lowestY)
+                    if (nodeY < lowestY)
                     {
                         lowestNode = node;
-                        lowestY = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y;
+                        lowestY = nodeY;
                     }
                 }
             }
 
-            //Find all nodes with y values within 0.1
-            List<RigidNode_Base> lowestNodesFilter = new List<RigidNode_Base>();
-            foreach (RigidNode_Base node in jointParentFilter)
+            //Find all nodes with y values within 0.1 of the lowest node
+            List<RigidNode_Base> nodesToFilter = potentialWheels;
+            potentialWheels = new List<RigidNode_Base>();
+            foreach (RigidNode_Base node in nodesToFilter)
             {
-                if (node == lowestNode)
-                    lowestNodesFilter.Add(node);
-                else if (lowestY - node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y <= 0.1d && lowestY - node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y >= -0.1d)
-                    lowestNodesFilter.Add(node);
-            }
-            //Hopefully this will be enough filtering :point_right:
-            if (lowestNodesFilter.Count == wheelCount)
-            {
-                BXDJSkeleton.SetupFileNames(baseNode);
-                StandardAddInServer.Instance.JointEditorPane_SelectedJoint(lowestNodesFilter);
-                return lowestNodesFilter;
+                float nodeY = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.y;
+
+                if (lowestY - nodeY <= threshold && lowestY - nodeY >= -threshold)
+                    potentialWheels.Add(node);
             }
 
             //Find the nodes with the highest and lowest x values
-            RigidNode_Base leftMostNode = null; double highestX = double.MinValue;
-            RigidNode_Base rightMostNode = null; double lowestX = double.MaxValue;
-            foreach(RigidNode_Base node in lowestNodesFilter)
+            RigidNode_Base leftMostNode = null; double highestX = 0;
+            RigidNode_Base rightMostNode = null; double lowestX = 0;
+            foreach(RigidNode_Base node in potentialWheels)
             {
-                if (highestX == double.MinValue)
+                float nodeX = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x;
+
+                if (leftMostNode == null)
                 {
                     leftMostNode = node;
-                    highestX = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x;
+                    highestX = nodeX;
                 }
-                else if (node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x > highestX)
+                else if (nodeX > highestX)
                 {
                     leftMostNode = node;
-                    highestX = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x;
+                    highestX = nodeX;
                 }
 
-                if (lowestX == double.MaxValue)
+                if (rightMostNode == null)
                 {
                     rightMostNode = node;
-                    lowestX = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x;
+                    lowestX = nodeX;
                 }
                 else if (node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x < lowestX)
                 {
                     leftMostNode = node;
-                    lowestX = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x;
+                    lowestX = nodeX;
                 }
             }
 
-
             //Find all the nodes with x values within 0.1 of both.
-            List<RigidNode_Base> rightWheels = new List<RigidNode_Base> { rightMostNode };
-            List<RigidNode_Base> leftWheels = new List<RigidNode_Base> { leftMostNode };
+            rightWheels = new List<RigidNode_Base>();
+            leftWheels = new List<RigidNode_Base>();
 
-            foreach (RigidNode_Base node in lowestNodesFilter)
+            foreach (RigidNode_Base node in potentialWheels)
             {
-                if (node == leftMostNode || node == rightMostNode)
-                    continue;
-                if (node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x - lowestX <= 0.1d && node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x - lowestX >= -0.1d)
+                float nodeX = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x;
+
+                if (nodeX - lowestX <= threshold && nodeX - lowestX >= -threshold)
                     rightWheels.Add(node);
-                else if (node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x - highestX <= 0.1d && node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x - highestX >= -0.1d)
+                else if (nodeX - highestX <= threshold && nodeX - highestX >= -threshold)
                     leftWheels.Add(node);
             }
 
-            string nodes = "Nodes detected: ";
-            List<RigidNode_Base> wheels = new List<RigidNode_Base>();
-            wheels.AddRange(rightWheels);
-            wheels.AddRange(leftWheels);
-
-            BXDJSkeleton.SetupFileNames(baseNode);
-            foreach(var node in wheels)
-            {
-                nodes += node.ModelFileName + ", ";
-            }
-            #region DEBUG
-#if DEBUG
-            MessageBox.Show(nodes); 
-#endif 
-            #endregion
-
-            return wheels;
-        }
-
-        /// <summary>
-        /// Sorts all the wheels into left and right.
-        /// </summary>
-        /// <param name="nodes"></param>
-        /// <param name="IsHDrive"></param>
-        /// <returns></returns>
-        public static RigidNode_Base[][] SortWheels(List<RigidNode_Base> nodes, bool IsHDrive = false)
-        {
-            if (!IsHDrive)
-            {
-                Dictionary<GUIDDoublePair, RigidNode_Base> nodeDict = new Dictionary<GUIDDoublePair, RigidNode_Base>();
-                foreach (var node in nodes)
-                {
-                    nodeDict.Add(new GUIDDoublePair { guid = Guid.NewGuid(), d = node.GetSkeletalJoint().GetAngularDOF().First().basePoint.x }, node);
-                }
-                List<GUIDDoublePair> newKeyOrder = nodeDict.Keys.OrderBy(x => x.d).ToList();
-                RigidNode_Base[] left = new RigidNode_Base[nodes.Count / 2];
-                RigidNode_Base[] right = new RigidNode_Base[nodes.Count / 2];
-                string leftNodes = "Left Nodes: ", rightNodes = "Right Nodes: ";
-                int i = 0;
-                foreach (GUIDDoublePair key in newKeyOrder)
-                {
-                    if(i < nodes.Count / 2)
-                    {
-                        left[i] = nodeDict[key];
-                        leftNodes += nodeDict[key].ModelFileName + ", ";
-                    }
-                    else
-                    {
-                        right[i - (nodes.Count / 2)] = nodeDict[key];
-                        rightNodes += nodeDict[key].ModelFileName + ", ";
-                    }
-                    i++;
-                }
-                #region DEBUG
-#if DEBUG
-                MessageBox.Show(leftNodes.Substring(0, leftNodes.Length - 2) + "\n" + rightNodes.Substring(0, rightNodes.Length - 2)); 
-#endif 
-                #endregion
-
-                return new RigidNode_Base[][] { left, right };
-            }
-            else
-            {
-                return null;
-            }
-
+            return true;
         }
     }
 }
