@@ -187,7 +187,7 @@
             this.lblPort.Name = "lblPort";
             this.lblPort.Size = new System.Drawing.Size(51, 17);
             this.lblPort.TabIndex = 1;
-            this.lblPort.Text = "Port ID";
+            this.lblPort.Text = "Port";
             // 
             // txtLowLimit
             // 

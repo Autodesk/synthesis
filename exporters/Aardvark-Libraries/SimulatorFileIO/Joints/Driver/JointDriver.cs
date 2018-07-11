@@ -209,8 +209,8 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     public void WriteBinaryData(System.IO.BinaryWriter writer)
     {
         writer.Write((byte) ((int) GetDriveType()));
-        writer.Write((short) portA);
-        writer.Write((short) portB);
+        writer.Write((short)portA); 
+        writer.Write((short)portB);
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
         writer.Write(isCan);

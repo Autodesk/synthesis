@@ -120,24 +120,6 @@
     <Compile Include="ControlGUI\InventorChooserPane.Designer.cs">
       <DependentUpon>InventorChooserPane.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorsLibrary\AboutDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\AboutDialog.Designer.cs">
-      <DependentUpon>AboutDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditorsLibrary\BXDAEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\BXDAEditorForm.Designer.cs">
-      <DependentUpon>BXDAEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditorsLibrary\BXDAEditorPane.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\BXDAEditorPane.Designer.cs">
-      <DependentUpon>BXDAEditorPane.cs</DependentUpon>
-    </Compile>
     <Compile Include="EditorsLibrary\DriveChooser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -165,12 +147,6 @@
     <Compile Include="EditorsLibrary\JointEditorPane.Designer.cs">
       <DependentUpon>JointEditorPane.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorsLibrary\JointGroupNameEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\JointGroupNameEditorForm.Designer.cs">
-      <DependentUpon>JointGroupNameEditorForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="EditorsLibrary\ExporterSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,12 +161,6 @@
     </Compile>
     <Compile Include="EditorsLibrary\SetWeightForm.Designer.cs">
       <DependentUpon>SetWeightForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditorsLibrary\ViewerSettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\ViewerSettingsForm.Designer.cs">
-      <DependentUpon>ViewerSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
@@ -270,15 +240,6 @@
     <EmbeddedResource Include="ControlGUI\InventorChooserPane.resx">
       <DependentUpon>InventorChooserPane.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\AboutDialog.resx">
-      <DependentUpon>AboutDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\BXDAEditorForm.resx">
-      <DependentUpon>BXDAEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\BXDAEditorPane.resx">
-      <DependentUpon>BXDAEditorPane.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </EmbeddedResource>
@@ -294,17 +255,11 @@
     <EmbeddedResource Include="EditorsLibrary\JointEditorPane.resx">
       <DependentUpon>JointEditorPane.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\JointGroupNameEditorForm.resx">
-      <DependentUpon>JointGroupNameEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\SensorListForm.resx">
       <DependentUpon>SensorListForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\SetWeightForm.resx">
       <DependentUpon>SetWeightForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\ViewerSettingsForm.resx">
-      <DependentUpon>ViewerSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
