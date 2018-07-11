@@ -53,6 +53,7 @@ namespace BxDRobotExporter.Wizard
             // Disable controls that need drivetrain type
             NodeListBox.Enabled = false;
             AutoFillButton.Enabled = false;
+            DefineWheelsInstruction.Text = "Please select a drivetrain to perform wheel setup.";
 
             // Load weight information
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
@@ -91,6 +92,7 @@ namespace BxDRobotExporter.Wizard
 
             NodeListBox.Enabled = true;
             AutoFillButton.Enabled = true;
+            DefineWheelsInstruction.Text = "Drag wheel parts from the list to the left into the appropriate column below.";
             Initialize();
         }
 
