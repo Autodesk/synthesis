@@ -7,6 +7,7 @@ using BulletUnity.Debugging;
 using System;
 using Synthesis.BUExtensions;
 using BulletUnity;
+using Synthesis.Utils;
 
 namespace Synthesis.DriverPractice
 {
@@ -22,11 +23,12 @@ namespace Synthesis.DriverPractice
         public string[] collisionKeyword = new string[2];
 
         public List<GameObject> heldGamepieces = new List<GameObject>();
-
+        
         private void Awake()
         {
             if (GetComponent<BMultiCallbacks>() != null)
                 GetComponent<BMultiCallbacks>().AddCallback(this);
+            
         }
 
         /// <summary>
@@ -37,13 +39,11 @@ namespace Synthesis.DriverPractice
         /// <param name="manifoldList">List of collision manifolds--this isn't used</param>
         public void BOnCollisionEnter(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
         {
-            string gamepiece;
             for (int i = 0; i < collisionKeyword.Length; i++)
             {
-                if (collisionKeyword[i] != null)
+                if (collisionKeyword[i] != "NOT CONFIGURED")
                 {
-                    gamepiece = collisionKeyword[i];
-                    if (other.UserObject.ToString().Contains(gamepiece))
+                    if (Auxiliary.FindObject(Auxiliary.FindObject("Field"), collisionKeyword[i]).GetComponent<BRigidBody>().mass == ((BRigidBody)other.UserObject).mass && Auxiliary.FindObject(Auxiliary.FindObject("Field"), collisionKeyword[i]).GetComponent<BRigidBody>().friction == ((BRigidBody)other.UserObject).friction && Auxiliary.FindObject(Auxiliary.FindObject("Field"), collisionKeyword[i]).GetComponent<BRigidBody>().rollingFriction == ((BRigidBody)other.UserObject).rollingFriction)
                     {
                         bool skip = false;
                         //Debug.Log(other.UserObject.ToString());
