@@ -50,7 +50,9 @@ namespace BxDRobotExporter.Wizard
 
             DriveTrainDropdown.SelectedIndex = 0;
 
+            // Disable controls that need drivetrain type
             NodeListBox.Enabled = false;
+            AutoFillButton.Enabled = false;
 
             // Load weight information
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
@@ -88,6 +90,7 @@ namespace BxDRobotExporter.Wizard
             }
 
             NodeListBox.Enabled = true;
+            AutoFillButton.Enabled = true;
             Initialize();
         }
 
