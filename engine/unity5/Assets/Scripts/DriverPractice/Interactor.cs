@@ -41,7 +41,7 @@ namespace Synthesis.DriverPractice
         {
             for (int i = 0; i < collisionKeyword.Length; i++)
             {
-                if (collisionKeyword[i] != "NOT CONFIGURED")
+                if (collisionKeyword[i] != "NOT CONFIGURED" && collisionKeyword[i] != "NOT DEFINED" && collisionKeyword[i] != null && GameObject.Find(collisionKeyword[i]) != null)
                 {
                     if (Auxiliary.FindObject(Auxiliary.FindObject("Field"), collisionKeyword[i]).GetComponent<BRigidBody>().mass == ((BRigidBody)other.UserObject).mass && Auxiliary.FindObject(Auxiliary.FindObject("Field"), collisionKeyword[i]).GetComponent<BRigidBody>().friction == ((BRigidBody)other.UserObject).friction && Auxiliary.FindObject(Auxiliary.FindObject("Field"), collisionKeyword[i]).GetComponent<BRigidBody>().rollingFriction == ((BRigidBody)other.UserObject).rollingFriction)
                     {
