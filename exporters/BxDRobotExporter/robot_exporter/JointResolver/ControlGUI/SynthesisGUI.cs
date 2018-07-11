@@ -61,10 +61,6 @@ public partial class SynthesisGUI : Form
 
     public static PluginSettingsForm.PluginSettingsValues PluginSettings;
 
-    public Form BXDAViewerPaneForm = new Form
-    {
-        FormBorderStyle = FormBorderStyle.None
-    };
     public Form JointPaneForm = new Form
     {
         FormBorderStyle = FormBorderStyle.None
@@ -88,16 +84,10 @@ public partial class SynthesisGUI : Form
 
         Instance = this;
 
-        bxdaEditorPane1.Units = "lbs";
-        BXDAViewerPaneForm.Controls.Add(bxdaEditorPane1);
-        if (MakeOwners) BXDAViewerPaneForm.Owner = this;
-        BXDAViewerPaneForm.FormClosing += Generic_FormClosing;
-
         JointPaneForm.Controls.Add(jointEditorPane1);
         if (MakeOwners) JointPaneForm.Owner = this;
         JointPaneForm.FormClosing += Generic_FormClosing;
-
-
+        
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
             return new OGL_RigidNode(guid);
@@ -135,16 +125,6 @@ public partial class SynthesisGUI : Form
                 }
             }
         };
-
-        jointEditorPane1.SelectedJoint += bxdaEditorPane1.SelectJoints;
-
-        bxdaEditorPane1.NodeSelected += (BXDAMesh mesh) =>
-            {
-                List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-                SkeletonBase.ListAllNodes(nodes);
-
-                jointEditorPane1.AddSelection(nodes[Meshes.IndexOf(mesh)], true);
-            };
     }
 
     private void Generic_FormClosing(object sender, FormClosingEventArgs e)
@@ -160,7 +140,6 @@ public partial class SynthesisGUI : Form
     private void SynthesisGUI_Shown(object sender, EventArgs e)
     {
         Hide();
-        BXDAViewerPaneForm.Show();
         JointPaneForm.Show();
     }
 
@@ -650,7 +629,6 @@ public partial class SynthesisGUI : Form
     public void ReloadPanels()
     {
         jointEditorPane1.SetSkeleton(SkeletonBase);
-        bxdaEditorPane1.loadModel(Meshes);
     }
 
     protected override void OnResize(EventArgs e)
