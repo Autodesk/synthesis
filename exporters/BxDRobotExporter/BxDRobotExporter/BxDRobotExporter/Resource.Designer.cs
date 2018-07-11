@@ -103,6 +103,26 @@ namespace BxDRobotExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Export16 {
+            get {
+                object obj = ResourceManager.GetObject("Export16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Export32 {
+            get {
+                object obj = ResourceManager.GetObject("Export32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ExporterSettings16 {
             get {
                 object obj = ResourceManager.GetObject("ExporterSettings16", resourceCulture);
@@ -183,6 +203,26 @@ namespace BxDRobotExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Gears16 {
+            get {
+                object obj = ResourceManager.GetObject("Gears16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gears32 {
+            get {
+                object obj = ResourceManager.GetObject("Gears32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Help16 {
             get {
                 object obj = ResourceManager.GetObject("Help16", resourceCulture);
@@ -256,6 +296,26 @@ namespace BxDRobotExporter {
         internal static System.Drawing.Bitmap RobotMagicWand32 {
             get {
                 object obj = ResourceManager.GetObject("RobotMagicWand32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Save16 {
+            get {
+                object obj = ResourceManager.GetObject("Save16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Save32 {
+            get {
+                object obj = ResourceManager.GetObject("Save32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -406,6 +466,46 @@ namespace BxDRobotExporter {
         internal static System.Drawing.Bitmap ViewerSettings32 {
             get {
                 object obj = ResourceManager.GetObject("ViewerSettings32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Wand16 {
+            get {
+                object obj = ResourceManager.GetObject("Wand16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Wand32 {
+            get {
+                object obj = ResourceManager.GetObject("Wand32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Weight16 {
+            get {
+                object obj = ResourceManager.GetObject("Weight16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Weight32 {
+            get {
+                object obj = ResourceManager.GetObject("Weight32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
