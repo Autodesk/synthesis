@@ -34,9 +34,9 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.CancelButton = new System.Windows.Forms.Button();
             this.SaveButton = new System.Windows.Forms.Button();
+            this.CalculatedWeightCheck = new System.Windows.Forms.CheckBox();
             this.WeightLabel = new System.Windows.Forms.Label();
             this.UnitBox = new System.Windows.Forms.ComboBox();
-            this.CalculatedWeightCheck = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -44,15 +44,16 @@
             // 
             // WeightBox
             // 
+            this.WeightBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.WeightBox.Location = new System.Drawing.Point(51, 4);
             this.WeightBox.Margin = new System.Windows.Forms.Padding(4);
             this.WeightBox.Maximum = new decimal(new int[] {
-            1000,
+            150,
             0,
             0,
             0});
             this.WeightBox.Name = "WeightBox";
-            this.WeightBox.Size = new System.Drawing.Size(200, 20);
+            this.WeightBox.Size = new System.Drawing.Size(166, 20);
             this.WeightBox.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -72,7 +73,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(301, 57);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(302, 57);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // tableLayoutPanel2
@@ -94,13 +95,13 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(301, 29);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(302, 29);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // CancelButton
             // 
             this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelButton.Location = new System.Drawing.Point(223, 3);
+            this.CancelButton.Location = new System.Drawing.Point(224, 3);
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.Size = new System.Drawing.Size(75, 23);
             this.CancelButton.TabIndex = 1;
@@ -109,13 +110,25 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(142, 3);
+            this.SaveButton.Location = new System.Drawing.Point(143, 3);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(75, 23);
             this.SaveButton.TabIndex = 2;
             this.SaveButton.Text = "OK";
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            // 
+            // CalculatedWeightCheck
+            // 
+            this.CalculatedWeightCheck.AutoSize = true;
+            this.CalculatedWeightCheck.Dock = System.Windows.Forms.DockStyle.Left;
+            this.CalculatedWeightCheck.Location = new System.Drawing.Point(3, 3);
+            this.CalculatedWeightCheck.Name = "CalculatedWeightCheck";
+            this.CalculatedWeightCheck.Size = new System.Drawing.Size(131, 23);
+            this.CalculatedWeightCheck.TabIndex = 3;
+            this.CalculatedWeightCheck.Text = "Use calculated weight";
+            this.CalculatedWeightCheck.UseVisualStyleBackColor = true;
+            this.CalculatedWeightCheck.CheckedChanged += new System.EventHandler(this.CalculatedWeightCheck_CheckedChanged);
             // 
             // WeightLabel
             // 
@@ -133,24 +146,13 @@
             // 
             this.UnitBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.UnitBox.Items.AddRange(new object[] {
-            "lbs",
-            "kg"});
-            this.UnitBox.Location = new System.Drawing.Point(258, 3);
+            "Pounds",
+            "Kilograms"});
+            this.UnitBox.Location = new System.Drawing.Point(224, 3);
             this.UnitBox.Name = "UnitBox";
-            this.UnitBox.Size = new System.Drawing.Size(40, 21);
+            this.UnitBox.Size = new System.Drawing.Size(75, 21);
             this.UnitBox.TabIndex = 2;
-            // 
-            // CalculatedWeightCheck
-            // 
-            this.CalculatedWeightCheck.AutoSize = true;
-            this.CalculatedWeightCheck.Dock = System.Windows.Forms.DockStyle.Left;
-            this.CalculatedWeightCheck.Location = new System.Drawing.Point(3, 3);
-            this.CalculatedWeightCheck.Name = "CalculatedWeightCheck";
-            this.CalculatedWeightCheck.Size = new System.Drawing.Size(131, 23);
-            this.CalculatedWeightCheck.TabIndex = 3;
-            this.CalculatedWeightCheck.Text = "Use calculated weight";
-            this.CalculatedWeightCheck.UseVisualStyleBackColor = true;
-            this.CalculatedWeightCheck.CheckedChanged += new System.EventHandler(this.CalculatedWeightCheck_CheckedChanged);
+            this.UnitBox.SelectedIndex = 0;
             // 
             // SetWeightForm
             // 

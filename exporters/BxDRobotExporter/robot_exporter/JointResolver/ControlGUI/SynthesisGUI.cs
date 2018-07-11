@@ -32,6 +32,13 @@ public partial class SynthesisGUI : Form
         public bool UseSettingsDir;
         public string ActiveDir;
         public string ActiveRobotName;
+        private float _totalWeightKg;
+        public float TotalWeightKg
+        {
+            get => _totalWeightKg;
+            set => _totalWeightKg = (value > 0) ? value : 0; // Prevent negative weight values
+        }
+        public bool PreferMetric;
         public string FieldName;
 
         public static RuntimeMeta CreateRuntimeMeta()
@@ -41,6 +48,8 @@ public partial class SynthesisGUI : Form
                 UseSettingsDir = true,
                 ActiveDir = null,
                 ActiveRobotName = null,
+                TotalWeightKg = 0,
+                PreferMetric = false,
                 FieldName = null
             };
         }
@@ -65,8 +74,6 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
-    // TODO: This should be moved to RMeta
-    public float TotalWeightKg = -1; // Negative value indicates default mass should be left alone
 
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
@@ -102,7 +109,6 @@ public partial class SynthesisGUI : Form
 
         FormClosing += new FormClosingEventHandler(delegate (object sender, FormClosingEventArgs e)
         {
-            if (SkeletonBase != null && !WarnUnsaved()) e.Cancel = true;
             InventorManager.ReleaseInventor();
         });
 
@@ -158,13 +164,25 @@ public partial class SynthesisGUI : Form
         JointPaneForm.Show();
     }
 
-    public void SetNew()
+    /// <summary>
+    /// Removes all configuration from the current skeleton.
+    /// </summary>
+    public void ClearConfiguration()
     {
-        if (SkeletonBase == null || !WarnUnsaved()) return;
+        ClearConfiguration(SkeletonBase);
+    }
+    /// <summary>
+    /// Removes all configuration from the current skeleton (recursive utility).
+    /// </summary>
+    private void ClearConfiguration(RigidNode_Base baseNode)
+    {
+        SkeletalJoint_Base joint = baseNode.GetSkeletalJoint();
 
-        SkeletonBase = null;
-        Meshes = null;
-        ReloadPanels();
+        if (joint != null)
+            joint.ClearConfiguration();
+
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseNode.Children)
+            ClearConfiguration(child.Value);
     }
 
     /// <summary>
@@ -197,12 +215,8 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Build the node tree of the robot from Inventor
     /// </summary>
-    public bool LoadRobotSkeleton(bool warnUnsaved = false)
+    public bool LoadRobotSkeleton()
     {
-        if (SkeletonBase != null)
-            if (warnUnsaved && !WarnUnsaved())
-                return false;
-
         try
         {
             var exporterThread = new Thread(() =>
@@ -386,7 +400,8 @@ public partial class SynthesisGUI : Form
             if (propertySet != null)
             {
                 RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
-                TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0);
+                RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
+                RMeta.PreferMetric = Utilities.GetProperty(propertySet, "robot-prefer-metric", false);
             }
 
             // Load joint data
@@ -504,7 +519,8 @@ public partial class SynthesisGUI : Form
 
             if (RMeta.ActiveRobotName != null)
                 Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
-            Utilities.SetProperty(propertySet, "robot-weight-kg", TotalWeightKg);
+            Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
+            Utilities.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
@@ -629,29 +645,6 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Warn the user that they are about to exit without unsaved work
-    /// </summary>
-    /// <returns>Whether the user wishes to continue without saving</returns>
-    public bool WarnUnsaved(bool allowCancel = true)
-    {
-        DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
-                                                  allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
-
-        if (saveResult == DialogResult.Yes)
-        {
-            return SaveRobotData(); // True if saving succeeds. False if fails.
-        }
-        else if (saveResult == DialogResult.No)
-        {
-            return true; // Continue without saving
-        }
-        else
-        {
-            return false; // Don't continue
-        }
-    }
-
-    /// <summary>
     /// Reload all panels with newly loaded robot data
     /// </summary>
     public void ReloadPanels()
@@ -673,7 +666,8 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Opens the <see cref="SetWeightForm"/> form
     /// </summary>
-    public void PromptRobotWeight()
+    /// <returns>True if robot weight was changed.</returns>
+    public bool PromptRobotWeight()
     {
         try
         {
@@ -682,13 +676,19 @@ public partial class SynthesisGUI : Form
             weightForm.ShowDialog();
 
             if (weightForm.DialogResult == DialogResult.OK)
-                TotalWeightKg = weightForm.TotalWeightKg;
+            {
+                RMeta.TotalWeightKg = weightForm.TotalWeightKg;
+                RMeta.PreferMetric = weightForm.PreferMetric;
+                return true;
+            }
         }
         catch (Exception ex)
         {
             MessageBox.Show(ex.ToString());
             throw;
         }
+
+        return false;
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using EditorsLibrary;
 using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace BxDRobotExporter
 {
@@ -35,10 +36,20 @@ namespace BxDRobotExporter
                 else
                     return pendingChanges;
             }
-            set => pendingChanges = value;
+            set
+            {
+                if (SaveButton != null)
+                {
+                    SaveButton.Enabled = value; // Disable save button if changes have been saved
+                }
+
+                pendingChanges = value;
+            }
         }
         private bool pendingChanges = false;
-        
+
+        ArrayList jointRelatedOccurences;
+        ArrayList disabledOccurences;
         public Inventor.Application MainApplication;
 
         AssemblyDocument AsmDocument;
@@ -92,43 +103,26 @@ namespace BxDRobotExporter
             #region Add Parallel Environment
 
             #region Load Images
-            stdole.IPictureDisp StartExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.StartRobotExporter16));
-            stdole.IPictureDisp StartExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.StartRobotExporter32));
+      
+            stdole.IPictureDisp ExportRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Export16));
+            stdole.IPictureDisp ExportRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Export32));
 
-            stdole.IPictureDisp ExportMeshesIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExportMeshes16));
-            stdole.IPictureDisp ExportMeshesIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExportMeshes32));
+            stdole.IPictureDisp SaveRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save16));
+            stdole.IPictureDisp SaveRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save32));
 
-            stdole.IPictureDisp ExportRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExportRobot16));
-            stdole.IPictureDisp ExportRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExportRobot32));
+            stdole.IPictureDisp ExportSetupRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears16));
+            stdole.IPictureDisp ExportSetupRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears32));
 
-            stdole.IPictureDisp ExporterSettingsIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExporterSettings16));
-            stdole.IPictureDisp ExporterSettingsIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ExporterSettings32));
+            stdole.IPictureDisp YeetRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand16));//these are still here at request of QA
+            stdole.IPictureDisp YeetRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand32));
 
-            stdole.IPictureDisp HelpButtonIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Help16));
-            stdole.IPictureDisp HelpButtonIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Help32));
-
-            stdole.IPictureDisp LoadExportedRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.LoadRobot16));
-            stdole.IPictureDisp LoadExportedRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.LoadRobot32));
-
-            stdole.IPictureDisp PreviewRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SelectJointInsideJoint16));
-            stdole.IPictureDisp PreviewRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SelectJointInsideJoint32));
-
-            stdole.IPictureDisp SaveRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SaveRobot16));
-            stdole.IPictureDisp SaveRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SaveRobot32));
-
-            stdole.IPictureDisp SaveRobotAsIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SaveRobotAs16));
-            stdole.IPictureDisp SaveRobotAsIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SaveRobotAs32));
-
-            stdole.IPictureDisp WizardExportIconSmall   = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotMagicWand16));
-            stdole.IPictureDisp WizardExportIconLarge   = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotMagicWand32));
-
-            stdole.IPictureDisp OneClickExportIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotClick16));
-            stdole.IPictureDisp OneClickExportIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotClick32));
+            stdole.IPictureDisp WeightRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight16));
+            stdole.IPictureDisp WeightRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight32));
 
             #region DEBUG
 #if DEBUG
-            stdole.IPictureDisp DebugButtonSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ViewerSettings16));
-            stdole.IPictureDisp DebugButtonLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.ViewerSettings32));
+            stdole.IPictureDisp DebugButtonSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand16));
+            stdole.IPictureDisp DebugButtonLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand32));
 #endif
             #endregion
 
@@ -138,39 +132,43 @@ namespace BxDRobotExporter
 
             #region Setup New Environment and Ribbon
             Environments environments = MainApplication.UserInterfaceManager.Environments;
-            ExporterEnv = environments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, StartExporterIconSmall, StartExporterIconLarge);
+            ExporterEnv = environments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, ExportRobotIconSmall, ExportRobotIconLarge);
 
             Ribbon assemblyRibbon = MainApplication.UserInterfaceManager.Ribbons["Assembly"];
             RibbonTab ExporterTab = assemblyRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter:RobotExporterTab", ClientID, "", false, true);
 
             ControlDefinitions ControlDefs = MainApplication.CommandManager.ControlDefinitions;
 
-            SetupPanel = ExporterTab.RibbonPanels.Add("Setup", "BxD:RobotExporter:SetupPanel", ClientID);
+            SetupPanel = ExporterTab.RibbonPanels.Add("Start Over", "BxD:RobotExporter:SetupPanel", ClientID);
             SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "BxD:RobotExporter:SettingsPanel", ClientID);
             FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
+
+            // Reset positioning of panels
+            SettingsPanel.Reposition("BxD:RobotExporter:SetupPanel", false);
+            FilePanel.Reposition("BxD:RobotExporter:SettingsPanel", false);
             #endregion
 
             #region Setup Buttons
             //Begin Wizard Export
-            WizardExportButton = ControlDefs.AddButtonDefinition("Begin Guided Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", WizardExportIconSmall, WizardExportIconLarge);
+            WizardExportButton = ControlDefs.AddButtonDefinition("Exporter Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", ExportSetupRobotIconSmall, ExportSetupRobotIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
 
             //Set Weight
-            SetWeightButton = ControlDefs.AddButtonDefinition("Set Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", ExporterSettingsIconSmall, ExporterSettingsIconLarge);
+            SetWeightButton = ControlDefs.AddButtonDefinition("Robot Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", WeightRobotIconSmall, WeightRobotIconLarge);
             SetWeightButton.OnExecute += SetWeight_OnExecute;
             SetWeightButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot information to your assembly file.", SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save Configuration", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot configuration to your assembly file for future exporting.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
             SaveButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(SaveButton, true);
 
             //Export Button
-            ExportButton = ControlDefs.AddButtonDefinition("Export", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
+            ExportButton = ControlDefs.AddButtonDefinition("Export to Synthesis", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot's model to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
             ExportButton.OnExecute += ExportButton_OnExecute;
             ExportButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(ExportButton, true);
@@ -211,7 +209,7 @@ namespace BxDRobotExporter
             MainApplication.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange += UIEvents_OnEnvironmentChange;
             MainApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
             MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
-            LegacyInterchange.LegacyEvents.RobotModified += new Action( () => { pendingChanges = true; } );
+            LegacyInterchange.LegacyEvents.RobotModified += new Action( () => { PendingChanges = true; } );
             #endregion 
 
             #endregion
@@ -292,9 +290,39 @@ namespace BxDRobotExporter
             Utilities.GUI.jointEditorPane1.SelectedJoint += JointEditorPane_SelectedJoint;
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
             
-            SaveButton.Enabled = false;
-            
             EnvironmentEnabled = true;
+
+
+            jointRelatedOccurences = new ArrayList();
+            foreach (ComponentOccurrence c in ((AssemblyDocument)MainApplication.ActiveDocument).ComponentDefinition.Occurrences)
+            {
+                foreach (AssemblyJoint j in c.Joints)
+                {// look at all joints inside of the main doc
+                    if (!j.Definition.JointType.Equals(AssemblyJointTypeEnum.kRigidJointType))
+                    {
+                        jointRelatedOccurences.Add(j.AffectedOccurrenceOne);
+                        jointRelatedOccurences.Add(j.AffectedOccurrenceTwo);
+                    }
+                }
+            }
+            Boolean contains = false;
+            disabledOccurences = new ArrayList();
+            foreach (ComponentOccurrence c in AsmDocument.ComponentDefinition.Occurrences)
+            {// looks at all parts/ assemblies in the main assembly
+                contains = false;
+                foreach (ComponentOccurrence j in jointRelatedOccurences)
+                {
+                    if ((j.Equals(c)))
+                    {// checks is the part/ assembly is in a joint
+                        contains = true;
+                    }
+                }
+                if (!contains)
+                {// if the assembly/ part isn't part of a joint then hide it
+                    disabledOccurences.Add(c);
+                    c.Enabled = false;
+                }
+            }
 
             // Load robot skeleton and prepare UI
             if (!Utilities.GUI.LoadRobotSkeleton())
@@ -306,24 +334,16 @@ namespace BxDRobotExporter
             // If fails to load existing data, restart wizard
             if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
-                try
-                {
-                    BeginWizardExport_OnExecute(null);
-                }
-                catch (ExporterFailedException)
-                {
-                    ForceQuitExporter();
-                }
+                Wizard.WizardForm wizard = new Wizard.WizardForm();
+                wizard.ShowDialog();
+                PendingChanges = true; // Force save button on since no data has been saved to this file
             }
             else
-            {
-                // Joint data is already loaded, reload panels in UI
-                Utilities.GUI.ReloadPanels();
-                Utilities.ShowDockableWindows();
-                
-                // Enable save button
-                SaveButton.Enabled = true;
-            }
+                PendingChanges = false; // No changes are pending if data has been loaded
+
+            // Reload panels in UI
+            Utilities.GUI.ReloadPanels();
+            Utilities.ShowDockableWindows();
         }
 
         private async void ForceQuitExporter()
@@ -337,8 +357,11 @@ namespace BxDRobotExporter
         /// </summary>
         private void EndExporter()
         {
-            if (Utilities.GUI.SkeletonBase != null)
-                Utilities.GUI.WarnUnsaved(false);
+            foreach (ComponentOccurrence c in disabledOccurences)
+            {
+                c.Enabled = true;
+            }
+            WarnIfUnsaved(false);
 
             // Close add-in
             AsmDocument = null;
@@ -440,22 +463,19 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if (!PendingChanges || this.WarnUnsaved())
+            if (WarnIfUnsaved())
             {
-                if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton())
-                {
-                    SaveButton.Enabled = true;
 
-                    Wizard.WizardForm wizard = new Wizard.WizardForm();
-                    Utilities.HideDockableWindows();
-                    wizard.ShowDialog();
-                    Utilities.GUI.ReloadPanels();
-                    Utilities.ShowDockableWindows();
-                }
-                else
-                {
-                    throw new ExporterFailedException("Failed to build robot skeleton.");
-                }
+                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
+                    return;
+
+                Wizard.WizardForm wizard = new Wizard.WizardForm();
+                Utilities.HideDockableWindows();
+
+                wizard.ShowDialog();
+                    
+                Utilities.GUI.ReloadPanels();
+                Utilities.ShowDockableWindows();
             }
         }
 
@@ -476,7 +496,8 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveButton_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.SaveRobotData();
+            if (Utilities.GUI.SaveRobotData())
+                PendingChanges = false;
         }
 
         /// <summary>
@@ -497,7 +518,8 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SetWeight_OnExecute(NameValueMap Context)
         {
-            Utilities.GUI.PromptRobotWeight();
+            if (Utilities.GUI.PromptRobotWeight())
+                PendingChanges = true;
         }
 
 
@@ -785,21 +807,29 @@ namespace BxDRobotExporter
                 button.ProgressiveToolTip.IsProgressive = true;
             }
             button.ProgressiveToolTip.Title = title;
-        }        
+        }
 
-        public bool WarnUnsaved()
+        /// <summary>
+        /// If the user has unsaved work, warn them that they are about to exit with unsaved work
+        /// </summary>
+        /// <returns>True if the user wishes to continue without saving/no saving is needed.</returns>
+        public bool WarnIfUnsaved(bool allowCancel = true)
         {
-            switch (MessageBox.Show("Would you like to save your robot?", "Save", MessageBoxButtons.YesNoCancel))
+            if (!PendingChanges)
+                return true; // No changes to save
+
+            DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
+                                                      allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
+
+            if (saveResult == DialogResult.Yes)
             {
-                case DialogResult.Yes:
-                    SaveButton_OnExecute(null);
-                    return true;
-                case DialogResult.No:
-                    return true;
-                case DialogResult.Cancel:
-                    return false;
+                SaveButton_OnExecute(null);
+                return !PendingChanges;
             }
-            return false;
+            else if (saveResult == DialogResult.No)
+                return true; // Continue without saving
+            else
+                return false; // Don't continue
         }
 
         /// <summary>

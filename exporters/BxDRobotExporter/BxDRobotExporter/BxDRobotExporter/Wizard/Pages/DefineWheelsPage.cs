@@ -8,44 +8,53 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace BxDRobotExporter.Wizard
 {
+    public enum WheelSide
+    {
+        UNASSIGNED = 0,
+        LEFT = 1,
+        RIGHT = 2
+    }
+
     /// <summary>
     /// Prompts the user to define all the wheels on the robot.
     /// </summary>
     public partial class DefineWheelsPage : UserControl, IWizardPage
     {
-        private int totalWeightKg = 0;
+        private float totalWeightKg = 0;
+        private bool preferMetric = false;
 
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
-        private Dictionary<string, RigidNode_Base> listItems = new Dictionary<string, RigidNode_Base>();
-
-        /// <summary>
-        /// List of all the <see cref="WheelSlotPanel"/>s in this page. Referenced in <see cref="GetNextEmptyPanel()"/>
-        /// </summary>
-        private List<WheelSlotPanel> rightSlots = new List<WheelSlotPanel>();
-        private List<WheelSlotPanel> leftSlots = new List<WheelSlotPanel>();
+        private Dictionary<string, WheelSetupPanel> setupPanels = new Dictionary<string, WheelSetupPanel>();
+        private List<string> leftOrder = new List<string>();
+        private List<string> rightOrder = new List<string>();
 
         public DefineWheelsPage()
         {
-            WheelSetupPanel.remove += new OnWheelSetupPanelRemove(this.RemoveWheelSetupPanel);
-            WheelSetupPanel.hover += new OnWheelSetupPanelHover(this.WheelSetupHover);
             InitializeComponent();
-            RightWheelsPanel.AllowDrop = true;
-            LeftWheelsPanel.AllowDrop = true;
-            NodeListBox.AllowDrop = true;
+
+            // Hide horizontal scroll bars
+            LeftWheelsPanel.AutoScroll = false;
+            LeftWheelsPanel.HorizontalScroll.Maximum = 0;
+            LeftWheelsPanel.AutoScroll = true;
+            RightWheelsPanel.AutoScroll = false;
+            RightWheelsPanel.HorizontalScroll.Maximum = 0;
+            RightWheelsPanel.AutoScroll = true;
 
             DriveTrainDropdown.SelectedIndex = 0;
-            
-            rightSlots = new List<WheelSlotPanel>();
-            leftSlots = new List<WheelSlotPanel>();
 
             NodeListBox.Enabled = false;
-            Initialize();
-            
+
+            // Load weight information
+            preferMetric = Utilities.GUI.RMeta.PreferMetric;
+            SetWeightBoxValue(Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f));
+            WeightUnitSelector.SelectedIndex = Utilities.GUI.RMeta.PreferMetric ? 1 : 0;
         }
 
         /// <summary>
@@ -59,32 +68,26 @@ namespace BxDRobotExporter.Wizard
             {
                 case 0: //Undefined
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
-                    NodeListBox.Enabled = false;
                     break;
                 case 1: //Tank
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
-                    NodeListBox.Enabled = true;
                     break;
                 case 2: //Mecanum
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.MECANUM;
-                    NodeListBox.Enabled = true;
                     break;
                 case 3: //Swerve
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.SWERVE;
-                    NodeListBox.Enabled = true;
                     break;
                 case 4: //H-Drive
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
-                    NodeListBox.Enabled = true;
                     break;
                 case 5: //Custom
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
-                    NodeListBox.Enabled = true;
                     break;
             }
-            OnInvalidatePage();
-            //checkedListItems.Clear();
-            //UpdateWheelPanes();
+
+            NodeListBox.Enabled = true;
+            Initialize();
         }
 
         /// <summary>
@@ -107,17 +110,15 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void OnNext()
         {
+            UpdateWeight();
             WizardData.Instance.weightKg = totalWeightKg;
+            WizardData.Instance.preferMetric = preferMetric;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
-            foreach(var slot in rightSlots)
+
+            foreach(KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
             {
-                WizardData.Instance.wheels.Add(slot.WheelData);
-                WizardData.WheelSetupData wheel = slot.WheelData;
-            }
-            foreach (var slot in leftSlots)
-            {
-                WizardData.Instance.wheels.Add(slot.WheelData);
-                WizardData.WheelSetupData wheel = slot.WheelData;
+                if (panel.Value.Side != WheelSide.UNASSIGNED)
+                    WizardData.Instance.wheels.Add(panel.Value.GetWheelData());
             }
         }
 
@@ -126,274 +127,483 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public void Initialize()
         {
-            if (WizardData.Instance.driveTrain != WizardData.WizardDriveTrain.SWERVE)
+            // Clear existing panels
+            while (LeftWheelsPanel.Controls.Count > 0)
+                LeftWheelsPanel.Controls[0].Dispose();
+
+            while (RightWheelsPanel.Controls.Count > 0)
+                RightWheelsPanel.Controls[0].Dispose();
+
+            Dictionary<string, RigidNode_Base> availableNodes = new Dictionary<string, RigidNode_Base>(); // TODO: Rename this to availableNodes after a different merge
+            setupPanels = new Dictionary<string, WheelSetupPanel>();
+            leftOrder = new List<string>();
+            rightOrder = new List<string>();
+            
+            // Find all nodes that can be wheels
+            Dictionary<string, int> duplicatePartNames = new Dictionary<string, int>();
+
+            foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                if ((node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL) ||
+                    (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.SWERVE && node.GetParent() != null && node.GetParent().GetParent() != null))
                 {
-                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+                    string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
+                    readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
+
+                    if (availableNodes.ContainsKey(readableName))
                     {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        NodeListBox.Items.Add(readableName);
-                        listItems.Add(readableName, node);
+                        // Add the part name to the list of duplicate parts
+                        if (!duplicatePartNames.ContainsKey(node.ModelFileName))
+                            duplicatePartNames.Add(node.ModelFileName, 2);
+
+                        // Find the next available name
+                        int identNum = duplicatePartNames[node.ModelFileName];
+                        while (availableNodes.ContainsKey(readableName + ' ' + identNum) && identNum <= 100)
+                            identNum++;
+
+                        // Add the joint to the list with the new unique name
+                        readableName += ' ' + identNum.ToString();
+
+                        // Update the next available ID
+                        duplicatePartNames[node.ModelFileName] = identNum;
                     }
-                }
-            }
-            else
-            {
-                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
-                {
-                    if (node.GetParent().GetParent() != null)
-                    {
-                        string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
-                        readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
-                        NodeListBox.Items.Add(readableName);
-                        listItems.Add(readableName, node);
-                    }
+                    
+                    availableNodes.Add(readableName, node);
                 }
             }
 
-            leftSlots = new List<WheelSlotPanel>();
-            rightSlots = new List<WheelSlotPanel>();
-            for (int i = 0; i < WizardData.Instance.wheelCount/2; i++)
+            // Generate panels
+            foreach (KeyValuePair<string, RigidNode_Base> node in availableNodes)
             {
-                WheelSlotPanel leftPanel = new WheelSlotPanel();
-                leftPanel.WheelTypeChanged += Panel_WheelTypeChanged;
-                leftSlots.Add(leftPanel);
-                LeftWheelsPanel.Controls.Add(leftPanel);
 
-                WheelSlotPanel rightPanel = new WheelSlotPanel();
-                rightPanel.WheelTypeChanged += Panel_WheelTypeChanged;
-                rightSlots.Add(rightPanel);
-                RightWheelsPanel.Controls.Add(rightPanel);
+                // Get default wheel type based on drive train
+                WizardData.WizardWheelType type;
+                if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.MECANUM)
+                    type = WizardData.WizardWheelType.MECANUM;
+                else if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
+                    type = WizardData.WizardWheelType.OMNI;
+                else
+                    type = WizardData.WizardWheelType.NORMAL;
+
+                // Create panel
+                WheelSetupPanel panel = new WheelSetupPanel(node.Value, node.Key, type);
+                panel.removeHandler += RemoveNodeFromPanel;
+                panel.mouseDownHandler += SetupPanel_StartDrag;
+                
+                setupPanels.Add(node.Key, panel);
             }
+
             _initialized = true;
 
+            UpdateUI();
+            OnInvalidatePage(); // Reset the next page in the wizard
         }
 
-        public void UpdateWheelPanes()
-        {
-             if (leftSlots.Count > WizardData.Instance.wheelCount)
-            {
-                int downTo = leftSlots.Count;
-                for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
-                {
-                    //NodeListBox.
-
-                    LeftWheelsPanel.Controls.Remove(leftSlots.ElementAt(i));
-                    leftSlots.Remove(leftSlots.ElementAt(i));
-                }
-            }
-           
-            if (rightSlots.Count > WizardData.Instance.wheelCount)
-            {
-                int downTo = rightSlots.Count;
-                for (int i = downTo - 1; i > WizardData.Instance.wheelCount / 2 - 1; i--)
-                {
-                    RightWheelsPanel.Controls.Remove(rightSlots.ElementAt(i));
-                    rightSlots.Remove(rightSlots.ElementAt(i));
-                }
-            }
-            _initialized = true;
-
-        }
-        
-        public event Action ActivateNext;
-        private void OnActivateNext()
-        {
-            this.ActivateNext?.Invoke();
-        }
-
-        public event Action DeactivateNext;
-        private void OnDeactivateNext()
-        {
-            this.DeactivateNext?.Invoke();
-        }
-
-        public event InvalidatePageEventHandler InvalidatePage;
-        public void OnInvalidatePage()
-        {
-            InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
-        }
-      
+        private bool _initialized = false;
         public bool Initialized
         {
             get => _initialized;
             set
             {
-                if (!value)
+                if (!value) // Page is being invalidated, reset interface
                 {
-                    while (LeftWheelsPanel.Controls.Count > 0)
-                        LeftWheelsPanel.Controls[0].Dispose(); 
+                    foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
+                        panel.Value.Dispose();
+                    setupPanels.Clear();
+                    leftOrder.Clear();
+                    rightOrder.Clear();
+                    UpdateUI();
                 }
+
                 _initialized = value;
             }
         }
-        private bool _initialized = false;
+
+        public event Action ActivateNext;
+        private void OnActivateNext() => ActivateNext?.Invoke();
+
+        public event Action DeactivateNext;
+        private void OnDeactivateNext() => DeactivateNext?.Invoke();
+
+        public event Action<bool> SetEndEarly;
+        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
+
+        // Called when the next page needs to be re-initialized
+        public event InvalidatePageEventHandler InvalidatePage;
+        public void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
         #endregion
 
-        private void MetricCheckBox_CheckedChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Sets the side that a wheel is on. This will update the wizard UI to show the changes.
+        /// </summary>
+        /// <param name="nodeName">Readable name of the node to set side of.</param>
+        /// <param name="side">Side to move node to.</param>
+        /// <param name="insertBefore">Node to insert before in layout. Null indicates to add to end of column. Does not apply for unassigned wheels.</param>
+        /// <param name="updateUI">Update the UI after the wheel has been moved. Disable this if moving multiple wheels at once.</param>
+        public void SetWheelSide(string nodeName, WheelSide side, string insertBefore = null, bool updateUI = true)
         {
-            UpdateWeight();
+            if (nodeName == null)
+                return;
+
+            if (!setupPanels.ContainsKey(nodeName))
+                return;
+
+            // Remove from current orders
+            leftOrder.Remove(nodeName);
+            rightOrder.Remove(nodeName);
+
+            // Update side of wheel data
+            setupPanels[nodeName].Side = side;
+
+            // Insert into appropriate order
+            if (side == WheelSide.LEFT)
+            {
+                if (insertBefore == null || !leftOrder.Contains(insertBefore))
+                    leftOrder.Add(nodeName);
+                else
+                    leftOrder.Insert(leftOrder.IndexOf(insertBefore), nodeName);
+            }
+            else if (side == WheelSide.RIGHT)
+            {
+                if (insertBefore == null || !rightOrder.Contains(insertBefore))
+                    rightOrder.Add(nodeName);
+                else
+                    rightOrder.Insert(rightOrder.IndexOf(insertBefore), nodeName);
+            }
+
+            // Update the interface
+            if (updateUI)
+            {
+                UpdateUI();
+                OnInvalidatePage(); // Reset the next page in the wizard
+            }
         }
 
+        /// <summary>
+        /// Sets the side that a wheel is on. This will update the wizard UI to show the changes.
+        /// </summary>
+        /// <param name="node">Node to set side of.</param>
+        /// <param name="side">Side to move node to.</param>
+        /// <param name="updateUI">Update the UI after the wheel has been moved. Disable this if moving multiple wheels at once.</param>
+        public void SetWheelSide(RigidNode_Base node, WheelSide side, bool updateUI = true)
+        {
+            if (node == null)
+                return;
+
+            foreach(KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
+            {
+                if (panel.Value.Node == node)
+                {
+                    SetWheelSide(panel.Key, side, null, updateUI);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the type of a specific wheel. Used in Auto Fill.
+        /// </summary>
+        /// <param name="node">Wheel to set type of</param>
+        /// <param name="type">New wheel type</param>
+        public void SetWheelType(RigidNode_Base node, WizardData.WizardWheelType type)
+        {
+            if (node == null)
+                return;
+
+            foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
+            {
+                if (panel.Value.Node == node)
+                {
+                    panel.Value.WheelType = type;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes a node from any wheel panel it is attached to.
+        /// </summary>
+        /// <param name="name">Name of the node to remove.</param>
+        private void RemoveNodeFromPanel(string name)
+        {
+            SetWheelSide(name, WheelSide.UNASSIGNED);
+        }
+
+        /// <summary>
+        /// Reloads node list view and left/right wheel panels.
+        /// </summary>
+        private void UpdateUI()
+        {
+            ValidateLeftRightLists();
+
+            // Remove all items from
+            NodeListBox.Items.Clear();
+            LeftWheelsPanel.Controls.Clear();
+            LeftWheelsPanel.RowCount = 0;
+            LeftWheelsPanel.RowStyles.Clear();
+            RightWheelsPanel.Controls.Clear();
+            RightWheelsPanel.RowCount = 0;
+            RightWheelsPanel.RowStyles.Clear();
+
+            // Pause layout calculations to prevent siezures
+            SuspendLayout();
+
+            // Add left items to left side
+            foreach (string name in leftOrder)
+                AddControlToNewTableRow(setupPanels[name], LeftWheelsPanel);
+
+            // Add right items to right side
+            foreach (string name in rightOrder)
+                AddControlToNewTableRow(setupPanels[name], RightWheelsPanel);
+
+            // Add all remaining items to list box
+            int unassignedNodes = 0;
+            foreach (KeyValuePair<string, WheelSetupPanel> slot in setupPanels)
+            {
+                if (slot.Value.Side == WheelSide.UNASSIGNED)
+                {
+                    NodeListBox.Items.Add(slot.Key);
+                    unassignedNodes++;
+                }
+            }
+
+            // Shrink items width if a scroll bar will appear
+            if (LeftWheelsPanel.PreferredSize.Height < LeftWheelsGroup.Height)
+                LeftWheelsPanel.ColumnStyles[1].Width = 0;
+            else
+                LeftWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
+
+            // Shrink items width if a scroll bar will appear
+            if (RightWheelsPanel.PreferredSize.Height < RightWheelsGroup.Height)
+                RightWheelsPanel.ColumnStyles[1].Width = 0;
+            else
+                RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
+
+            OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
+
+            // Resume layout calculations
+            ResumeLayout();
+        }
+
+        /// <summary>
+        /// Makes sure nobody did something stupid and modified the side variable of a wheel setup panel without moving it to the correct list.
+        /// </summary>
+        private void ValidateLeftRightLists()
+        {
+            // Make sure all items in left orders are left wheels
+            int n = 0;
+            while (n < leftOrder.Count)
+            {
+                if (setupPanels[leftOrder[n]].Side != WheelSide.LEFT)
+                    leftOrder.RemoveAt(n);
+                else
+                    n++;
+            }
+
+            // Make sure all items in right orders are right wheels
+            n = 0;
+            while (n < rightOrder.Count)
+            {
+                if (setupPanels[rightOrder[n]].Side != WheelSide.RIGHT)
+                    rightOrder.RemoveAt(n);
+                else
+                    n++;
+            }
+
+            foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
+            {
+                // If it should exist in the left order, add it to the left order
+                if (panel.Value.Side == WheelSide.LEFT)
+                    if (!leftOrder.Contains(panel.Key))
+                        leftOrder.Add(panel.Key);
+
+                // If it should exist in the right order, add it to the right order
+                if (panel.Value.Side == WheelSide.RIGHT)
+                    if (!rightOrder.Contains(panel.Key))
+                        rightOrder.Add(panel.Key);
+            }
+        }
+
+        /// <summary>
+        /// Updates the calculated weight info.
+        /// </summary>
         private void UpdateWeight()
         {
             if (WeightUnitSelector.SelectedIndex == 0)
-            {
-                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value) / 2.20462);
-            }
+                totalWeightKg = (float)WeightBox.Value / 2.20462f;
             else
-            {
-                totalWeightKg = (int)Math.Round(Convert.ToDouble(WeightBox.Value));
-            }
+                totalWeightKg = (float)WeightBox.Value;
+
+            preferMetric = WeightUnitSelector.SelectedIndex == 1;
         }
 
+        /// <summary>
+        /// Sets the value of the weight box. This should be used to prevent going over the max/below the min.
+        /// </summary>
+        /// <param name="value"></param>
+        private void SetWeightBoxValue(float value)
+        {
+            if ((decimal)value > WeightBox.Maximum)
+                WeightBox.Value = WeightBox.Maximum;
+            else if ((decimal)value >= WeightBox.Minimum)
+                WeightBox.Value = (decimal)value;
+            else
+                WeightBox.Value = 0;
+        }
+
+        /// <summary>
+        /// Called when an item is selected in the node list. Begins process of drag and drop to a panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NodeListBox_MouseDown(object sender, MouseEventArgs e)
         {
-            try
+            if (NodeListBox.SelectedItem != null)
             {
-                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.SelectedItem.ToString()]);
-                NodeListBox.DoDragDrop(NodeListBox.SelectedItems, DragDropEffects.Copy |
-                            DragDropEffects.Move);
+                // Highlight node in Inventor
+                StandardAddInServer.Instance.WizardSelect(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
+                // Start drag-and-drop process
+                NodeListBox.DoDragDrop(NodeListBox.SelectedItem.ToString(), DragDropEffects.Move);
             }
-            catch (Exception) { }
         }
 
-        private void RightWheelsPanel_DragEnter(object sender, DragEventArgs e)
+        /// <summary>
+        /// Called when the user starts dragging from a setup panel.
+        /// </summary>
+        /// <param name="name">Name of node controlled by setup panel.</param>
+        private void SetupPanel_StartDrag(string name)
         {
-            e.Effect = DragDropEffects.Copy;
+            if (name == null)
+                return;
+
+            if (!setupPanels.ContainsKey(name))
+                return;
+
+            // Highlight node in Inventor
+            StandardAddInServer.Instance.WizardSelect(setupPanels[name].Node);
+            // Start drag-and-drop process
+            NodeListBox.DoDragDrop(name, DragDropEffects.Move);
         }
 
-        private void RightWheelsPanel_DragDrop(object sender, DragEventArgs e)
+        /// <summary>
+        /// Called when the user moves the mouse over a wheel panel while dragging.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Field_DragEnter(object sender, DragEventArgs e)
         {
-            try
+            e.Effect = DragDropEffects.Move;
+        }
+
+        /// <summary>
+        /// Called when the user drops a dragged item into the left wheel panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LeftWheelsPanel_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
+        {
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
             {
-                foreach (String r in NodeListBox.SelectedItems)
+                string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
+
+                WheelsPanel_DragDrop(nodeName, WheelSide.LEFT);
+            }
+        }
+
+        /// <summary>
+        /// Called when the user drops a dragged item into the right wheel panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RightWheelsPanel_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
+        {
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
+
+                WheelsPanel_DragDrop(nodeName, WheelSide.RIGHT);
+            }
+        }
+
+        /// <summary>
+        /// Called when a dragged part is placed in either wheel panel.
+        /// </summary>
+        /// <param name="nodeName">Name of the node being dragged.</param>
+        /// <param name="side">Side that the node was placed in.</param>
+        private void WheelsPanel_DragDrop(string nodeName, WheelSide side)// called when the user "drops" a seleected value into the group
+        {
+            TableLayoutPanel wheelPanel = (side == WheelSide.LEFT) ? LeftWheelsPanel : RightWheelsPanel;
+
+            // Find the wheel control located below the mouse and insert before that node
+            foreach (Control c in wheelPanel.Controls)
+            {
+                if (c.PointToClient(MousePosition).Y < c.Height / 2) // Check if mouse is above the center of the control
                 {
-                    OnInvalidatePage();
-                    WheelSlotPanel panel = new WheelSlotPanel();
-                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                    rightSlots.Add(panel);
-                    RightWheelsPanel.Controls.Add(panel);
-                    switch (WizardData.Instance.driveTrain)
+                    if (c is WheelSetupPanel)
                     {
-                        case WizardData.WizardDriveTrain.TANK:
-                            panel.FillSlot(listItems[r], r, true);
-                            break;
-                        case WizardData.WizardDriveTrain.MECANUM:
-                            panel.FillSlot(listItems[r], r, true, WizardData.WizardWheelType.MECANUM);
-                            break;
-                        case WizardData.WizardDriveTrain.H_DRIVE:
-                            panel.FillSlot(listItems[r], r, true, WizardData.WizardWheelType.OMNI);
-                            break;
-                        case WizardData.WizardDriveTrain.SWERVE:
-                            //TODO implement this crap
-                            panel.FillSlot(listItems[r], r, true);
-                            break;
-                        case WizardData.WizardDriveTrain.CUSTOM:
-                            panel.FillSlot(listItems[r], r, true);
-                            break;
-                    }
-                    NodeListBox.Items.Remove(r);
-                }
-            }
-            catch (Exception) { }
-        }
-
-        private void LeftWheelsPanel_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Copy;
-        }
-
-        private void LeftWheelsPanel_DragDrop(object sender, DragEventArgs e)
-        {
-            try
-            {
-                foreach (String r in NodeListBox.SelectedItems)
-                {
-                    OnInvalidatePage();
-                    WheelSlotPanel panel = new WheelSlotPanel();
-                    panel.WheelTypeChanged += Panel_WheelTypeChanged;
-                    leftSlots.Add(panel);
-                    LeftWheelsPanel.Controls.Add(panel);
-                    switch (WizardData.Instance.driveTrain)
-                    {
-                        case WizardData.WizardDriveTrain.TANK:
-                            panel.FillSlot(listItems[r],r, false);
-                            break;
-                        case WizardData.WizardDriveTrain.MECANUM:
-                            panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.MECANUM);
-                            break;
-                        case WizardData.WizardDriveTrain.H_DRIVE:
-                            panel.FillSlot(listItems[r], r, false, WizardData.WizardWheelType.OMNI);
-                            break;
-                        case WizardData.WizardDriveTrain.SWERVE:
-                            //TODO implement this crap
-                            panel.FillSlot(listItems[r], r, false);
-                            break;
-                        case WizardData.WizardDriveTrain.CUSTOM:
-                            panel.FillSlot(listItems[r], r, false);
-                            break;
-                    }
-                    NodeListBox.Items.Remove(r);
-                }
-            }
-            catch (Exception) { }
-            }
-
-        public String RemoveWheelSetupPanel(String s)
-        {
-            foreach (Object wheel in LeftWheelsPanel.Controls)
-            {
-                if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
-                {
-                    if (((WheelSlotPanel)wheel).name.Equals(s))
-                    {
-                        LeftWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));
-                        leftSlots.Remove(((WheelSlotPanel)wheel));
+                        SetWheelSide(nodeName, side, ((WheelSetupPanel)c).NodeName); // Insert above the control
+                        return;
                     }
                 }
             }
-            foreach (Object wheel in RightWheelsPanel.Controls)
-            {
-                if (wheel.GetType().Equals(typeof(WheelSlotPanel)))
-                {
-                    if (((WheelSlotPanel)wheel).name.Equals(s))
-                    {
-                        RightWheelsPanel.Controls.Remove(((WheelSlotPanel)wheel));
-                        rightSlots.Remove(((WheelSlotPanel)wheel));
-                    }
-                }
-            }
-            NodeListBox.Items.Add(s);
-            return "";
+
+            // Mouse is below all other nodes, place at end
+            SetWheelSide(nodeName, side);
         }
 
-        public String WheelSetupHover(String s)
+        /// <summary>
+        /// Called when the user drops a dragged item into the wheel list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NodeListBox_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
         {
-
-            StandardAddInServer.Instance.WizardSelect(listItems[s]);
-            return "";
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
+                
+                // Don't do drag action if the item is already in the nodeListBox. This allows user to click on items without updating the UI.
+                if (setupPanels[nodeName].Side != WheelSide.UNASSIGNED) 
+                    SetWheelSide(nodeName, WheelSide.UNASSIGNED);
+            }
         }
 
+        /// <summary>
+        /// Adds a control to a new row at the end of the table.
+        /// </summary>
+        /// <param name="control">Control to append to table.</param>
+        /// <param name="table">Table to add control to.</param>
+        /// <param name="rowStyle">Style of the new row. Autosized if left null.</param>
+        private void AddControlToNewTableRow(Control control, TableLayoutPanel table, RowStyle rowStyle = null)
+        {
+            if (rowStyle == null)
+                rowStyle = new RowStyle();
+            
+            table.RowCount++;
+            table.RowStyles.Add(rowStyle);
+            table.Controls.Add(control);
+            table.SetRow(control, table.RowCount - 1);
+            table.SetColumn(control, 0);
+        }
+
+        /// <summary>
+        /// Called when the user selects a new part in the list box at the top of the form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NodeListBox_SelectedIndexChanged(object sender, EventArgs e)
-        { 
-            try
+        {
+            if (NodeListBox.SelectedItem != null)
             {
-                StandardAddInServer.Instance.WizardSelect(listItems[NodeListBox.Items[NodeListBox.SelectedIndex].ToString()]);
+                // Highlight node in Inventor
+                StandardAddInServer.Instance.WizardSelect(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
             }
-            catch (Exception) { }
-        }
-       
-        private void NumericUpDown1_ValueChanged(Object sender, EventArgs e)
-        {
-            UpdateWeight();
         }
 
-        private void DefineWheelsInstruction1_Click(object sender, EventArgs e)
+        private void AutoFill_Click(Object sender, EventArgs e) // Initializes autofill process
         {
-
+            AutoFillPage autoForm = new AutoFillPage(this);
+            autoForm.ShowDialog(); // opens page that takes info on number of wheels
         }
     }
 }
