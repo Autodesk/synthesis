@@ -602,8 +602,25 @@ namespace BxDRobotExporter.Wizard
 
         private void AutoFill_Click(Object sender, EventArgs e) // Initializes autofill process
         {
-            AutoFillPage autoForm = new AutoFillPage(this);
-            autoForm.ShowDialog(); // opens page that takes info on number of wheels
+            if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton()) // Load the robot skeleton
+            {
+                if (WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels)) //finds wheels
+                {
+                    foreach (RigidNode_Base wheel in leftWheels)
+                        SetWheelSide(wheel, WheelSide.LEFT, false);
+
+                    foreach (RigidNode_Base wheel in rightWheels)
+                        SetWheelSide(wheel, WheelSide.RIGHT, false);
+
+                    if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
+                    {
+                        //TODO: Imliment HDRIVE
+                    }
+                }
+            }
+
+            // Refresh the UI with new wheel information
+            UpdateUI();
         }
     }
 }

@@ -175,12 +175,6 @@
     <Compile Include="Wizard\Pages\DefineMovingPartsPage.Designer.cs">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizard\OneClickExport\OneClickExportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Wizard\OneClickExport\OneClickExportForm.Designer.cs">
-      <DependentUpon>OneClickExportForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Wizard\Data\WizardData.cs" />
     <Compile Include="Wizard\Pages\DefineWheelsPage.cs">
       <SubType>UserControl</SubType>
@@ -246,9 +240,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\DefineMovingPartsPage.resx">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\OneClickExport\OneClickExportForm.resx">
-      <DependentUpon>OneClickExportForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\DefineWheelsPage.resx">
       <DependentUpon>DefineWheelsPage.cs</DependentUpon>
