@@ -190,7 +190,7 @@ public partial class LiteExporterForm : Form
     public List<BXDAMesh> ExportMeshesLite(RigidNode_Base baseNode, float totalMassKg)
     {
         SurfaceExporter surfs = new SurfaceExporter();
-        BXDJSkeleton.SetupFileNames(baseNode, true);
+        BXDJSkeleton.SetupFileNames(baseNode);
 
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
