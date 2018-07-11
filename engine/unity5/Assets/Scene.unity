@@ -4510,7 +4510,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: RESET
+  m_Text: Reset
 --- !u!222 &140059707
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8211,8 +8211,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.0000016689, y: 68}
-  m_SizeDelta: {x: 312, y: 119}
+  m_AnchoredPosition: {x: 0.9, y: 78.3}
+  m_SizeDelta: {x: 313.2, y: 102.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &248873593
 MonoBehaviour:
@@ -8246,9 +8246,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Use the WASD keys to move the position of the robot.\nHold RIGHT MOUSE
-    BUTTON and press the A and D keys to rotate the robot. \nPress ENTER to save the
-    new spawn point and orientation.\nClick CANCEL to cancel resetting."
+  m_Text: "Move Robot - WASD\n\nRotate Robot - Hold RIGHT MOUSE BUTTON + A D keys.\n\nSave
+    - ENTER          \t"
 --- !u!222 &248873594
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11447,7 +11446,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &361795414
 RectTransform:
   m_ObjectHideFlags: 0
@@ -43857,7 +43856,7 @@ GameObject:
   - component: {fileID: 1310780534}
   - component: {fileID: 1310780533}
   m_Layer: 5
-  m_Name: CloseConfigButton
+  m_Name: ResetRobotSpawnButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43870,7 +43869,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1310780531}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.00047381}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00045651}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 140059705}
@@ -43879,7 +43878,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -68.55, y: -13.5}
+  m_AnchoredPosition: {x: -183.50002, y: -150.44998}
   m_SizeDelta: {x: 137.1, y: 27}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1310780533
