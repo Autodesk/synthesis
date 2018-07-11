@@ -1354,10 +1354,35 @@ namespace hel{
             std::pair<uint8_t, uint8_t> convertAccel(float);
         };
 
+        /**
+         * \struct Accumulator roborio.h
+         * \brief Data model for an analog accumulator
+         * Accumulates analog values in a total over time while tracking count
+         */
+
         struct Accumulator{
         private:
+
+            /**
+             * \var tAccumulator::tOutput output
+             * \brief Stores the accumulated value of the accumulator
+             */
+
             tAccumulator::tOutput output;
+            
+            /**
+             * \var int32_t center
+             * \brief The center value for the accumulator
+             * This is used to handle device offsets
+             */
+
             int32_t center;
+            
+            /**
+             * \var int32_t deadband
+             * \brief The deadband of the accumulator
+             */
+
             int32_t deadband;
 
         public:
@@ -1367,6 +1392,54 @@ namespace hel{
             void setCenter(int32_t);
             int32_t getDeadband()const;
             void setDeadband(int32_t);
+        };
+
+        /**
+         * \struct Encoder roborio.h
+         * \brief Data model for encoder input data
+         * Holds all the data for encoder inputs
+         */
+
+        struct Encoder{
+        private:
+
+            /**
+             * \var tEnoder::tOutput output
+             * \brief
+             */
+
+            tEncoder::tOutput output;
+ 
+            /**
+             * \var tEnoder::tConfig config
+             * \brief Configuration for count
+             */
+
+            tEncoder::tConfig config;
+ 
+            /**
+             * \var tEnoder::tTimerOutput timer_output
+             * \brief Time-based count
+             */
+
+            tEncoder::tTimerOutput timer_output;
+ 
+            /**
+             * \var tEnoder::tTimerConfig timer_config
+             * \brief Configuration for time-based count
+             */
+
+            tEncoder::tTimerConfig timer_config;
+
+        public:
+            tEncoder::tOutput getOutput()const;
+            void setOutput(tEncoder::tOutput);
+            tEncoder::tConfig getConfig()const;
+            void setConfig(tEncoder::tConfig);
+            tEncoder::tTimerOutput getTimerOutput()const;
+            void setTimerOutput(tEncoder::tTimerOutput);
+            tEncoder::tTimerConfig getTimerConfig()const;
+            void setTimerConfig(tEncoder::tTimerConfig);
         };
 
     	/**
@@ -1385,6 +1458,7 @@ namespace hel{
         DIOSystem digital_system;
         std::vector<DSError> ds_errors;
         DriverStationInfo driver_station_info;
+        std::array<Encoder, hal::kNumEncoders> encoders;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
         PWMSystem pwm_system;
     	RelaySystem relay_system;
