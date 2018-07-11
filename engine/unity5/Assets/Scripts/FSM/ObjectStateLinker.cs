@@ -123,7 +123,7 @@ namespace Assets.Scripts.FSM
             if (!stateObjects.ContainsKey(stateType) || (currentObjects = stateObjects[stateType]) == null)
                 return null;
 
-            foreach (T key in currentObjects.Where(o => o.Equals(null)).Select(o => o.Key))
+            foreach (T key in currentObjects.Keys.Where(o => o.Equals(null)).ToList())
                 currentObjects.Remove(key);
 
             return currentObjects;
