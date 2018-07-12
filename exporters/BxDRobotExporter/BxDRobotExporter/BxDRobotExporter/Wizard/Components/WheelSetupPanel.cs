@@ -38,7 +38,7 @@ namespace BxDRobotExporter.Wizard
             this.MouseClick += delegate (object sender, MouseEventArgs e)
             {
                 if (this.Node != null)
-                    StandardAddInServer.Instance.WizardSelect(this.Node);
+                    StandardAddInServer.Instance.SelectNode(this.Node);
             };
             
             BackColor = Color.White;
@@ -84,7 +84,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void HighlightNode(object sender, EventArgs e)
         {
-            StandardAddInServer.Instance.WizardSelect(Node);
+            StandardAddInServer.Instance.SelectNode(Node);
         }
 
         /// <summary>
