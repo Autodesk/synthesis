@@ -14,14 +14,10 @@ public partial class SurfaceExporter
     private struct ExportPlan
     {
         public SurfaceBody surf;
-        public bool bestResolution;
-        public bool separateFaces;
 
-        public ExportPlan(SurfaceBody b, bool bestResolution, bool separateFaces)
+        public ExportPlan(SurfaceBody surf)
         {
-            this.surf = b;
-            this.bestResolution = bestResolution;
-            this.separateFaces = separateFaces;
+            this.surf = surf;
         }
     }
 
@@ -65,7 +61,7 @@ public partial class SurfaceExporter
     {
         BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
 
-        surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
+        surf.GetExistingFacetTolerances(out int tmpToleranceCount, out double[] tolerances);
 
         int bestIndex = -1;
         for (int i = 0; i < tmpToleranceCount; i++)

@@ -213,6 +213,7 @@ public partial class LiteExporterForm : Form
                     {
                         SetProgress((double) progress / total / nodes.Count + (double) i / nodes.Count);
                     });
+
                     BXDAMesh output = surfs.GetOutput();
                     output.colliders.Clear();
                     output.colliders.AddRange(ConvexHullCalculator.GetHull(output));

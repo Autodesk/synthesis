@@ -284,13 +284,6 @@ public partial class SynthesisGUI : Form
         
         if (liteExporter.DialogResult != DialogResult.OK)
             return false; // Exporter was canceled
-
-        // Export was successful
-        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-        for (int i = 0; i < Meshes.Count; i++)
-        {
-            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
-        }
             
         return true;
     }
