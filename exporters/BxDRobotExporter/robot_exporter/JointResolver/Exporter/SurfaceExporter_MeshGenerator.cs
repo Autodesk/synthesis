@@ -106,11 +106,27 @@ public partial class SurfaceExporter
         }
         #endregion
 
-        if (separateFaces || tmpSurface.vertCount > TMP_VERTICIES)
+        if (separateFaces)
         {
-            foreach (Face f in surf.Faces)
+            foreach (KeyValuePair<string, AssetProperties> asset in sharedAssets)
             {
-                AddFacets(f, tolerances[bestIndex]);
+                foreach (Face face in subSurfaces[asset.Key])
+                {
+                    PartialSurface tmpSurfaceLoop = new PartialSurface();
+
+                    face.GetExistingFacets(tolerances[bestIndex], out tmpSurfaceLoop.vertCount, out tmpSurfaceLoop.facetCount, out tmpSurfaceLoop.verts, out tmpSurfaceLoop.norms, out tmpSurfaceLoop.indicies);
+                    if (tmpSurface.vertCount == 0)
+                    {
+                        face.CalculateFacets(tolerances[bestIndex], out tmpSurfaceLoop.vertCount, out tmpSurfaceLoop.facetCount, out tmpSurfaceLoop.verts, out tmpSurfaceLoop.norms, out tmpSurfaceLoop.indicies);
+                    }
+
+                    for (int i = 0; i < tmpSurfaceLoop.vertCount; i++)
+                        tmpSurface.verts[tmpSurface.vertCount + i] = tmpSurfaceLoop.verts[i];
+                    tmpSurface.vertCount += tmpSurfaceLoop.vertCount;
+                    tmpSurface.vertCount
+                }
+
+                AddFacetsInternal(asset.Value);
             }
         }
         else
