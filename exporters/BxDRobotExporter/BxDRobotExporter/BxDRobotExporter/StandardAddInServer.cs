@@ -304,12 +304,6 @@ namespace BxDRobotExporter
         /// </summary>
         private void ClosingExporter()
         {
-            if (suppressClosing)
-            {
-                suppressClosing = false;
-                return;
-            }
-
             WarnIfUnsaved(false);
 
             // Re-enable disabled components
@@ -334,13 +328,11 @@ namespace BxDRobotExporter
         /// Causes the exporter to close.
         /// </summary>
         /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
-        private async void ForceQuitExporter(AssemblyDocument asmDocument, bool suppressClosingEvent = false)
+        private async void ForceQuitExporter(AssemblyDocument asmDocument)
         {
             await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
-            suppressClosing = suppressClosingEvent;
             asmDocument.EnvironmentManager.SetCurrentEnvironment(asmDocument.EnvironmentManager.EditObjectEnvironment);
         }
-        private bool suppressClosing = false;
         #endregion
 
         #region Event Callbacks and Button Commands
@@ -378,21 +370,9 @@ namespace BxDRobotExporter
         {
             if (BeforeOrAfter == EventTimingEnum.kBefore)
             {
-                if (DocumentObject is PartDocument part)
+                if (DocumentObject is AssemblyDocument assembly)
                 {
-                    part.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
-                }
-                else if (DocumentObject is PresentationDocument presentation)
-                {
-                    presentation.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
-                }
-                else if (DocumentObject is DrawingDocument drawing)
-                {
-                    drawing.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
-                }
-                else if (DocumentObject is AssemblyDocument assembly && AsmDocument != null) // Don't disable the exporter if it isn't open
-                {
-                    if (assembly.Equals(AsmDocument) && HiddenExporter)
+                    if ((AsmDocument == null || assembly == AsmDocument) && HiddenExporter)
                     {
                         Utilities.ShowDockableWindows();
                         HiddenExporter = false;
@@ -418,7 +398,7 @@ namespace BxDRobotExporter
             {
                 if (DocumentObject is AssemblyDocument assembly)
                 {
-                    if (assembly == AsmDocument)
+                    if (AsmDocument != null && assembly == AsmDocument)
                     {
                         ClosingExporter();
                     }
@@ -440,20 +420,44 @@ namespace BxDRobotExporter
         {
             if (Environment.Equals(ExporterEnv) && BeforeOrAfter == EventTimingEnum.kBefore)
             {
-                if (EnvironmentState == EnvironmentStateEnum.kActivateEnvironmentState)
+                if (EnvironmentState == EnvironmentStateEnum.kRequestActivateEnvironmentState)
+                {
+                    if (EnvironmentEnabled)
+                    {
+                        MessageBox.Show("The exporter may only be used in one assembly at a time. Please finish using the exporter in " + AsmDocument.DisplayName + " to continue.");
+                        HandlingCode = HandlingCodeEnum.kEventCanceled;
+                        return;
+                    }
+
+                    if (!(MainApplication.ActiveDocument is AssemblyDocument))
+                    {
+                        MessageBox.Show("Only assemblies can be used with the robot exporter.");
+                        HandlingCode = HandlingCodeEnum.kEventCanceled;
+                        return;
+                    }
+                }
+                else if (EnvironmentState == EnvironmentStateEnum.kActivateEnvironmentState)
                 {
                     if (!EnvironmentEnabled)
                         OpeningExporter();
                     else
-                        ForceQuitExporter((AssemblyDocument)MainApplication.ActiveDocument, true);
+                    {
+                        wrongFile = true;
+                        ForceQuitExporter((AssemblyDocument)MainApplication.ActiveDocument); // Don't allow exporter to open, already open in another assembly
+                    }
                 }
                 else if (EnvironmentState == EnvironmentStateEnum.kTerminateEnvironmentState && EnvironmentEnabled)
                 {
-                    ClosingExporter();
+                    if (wrongFile)
+                        wrongFile = false;
+                    else
+                        ClosingExporter();
                 }
             }
+
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
         }
+        private bool wrongFile;
         #endregion
 
         #region Custom Button Events
