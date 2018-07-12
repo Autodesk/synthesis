@@ -276,7 +276,6 @@ namespace BxDRobotExporter
             // Load robot skeleton and prepare UI
             if (!Utilities.GUI.LoadRobotSkeleton())
             {
-                MessageBox.Show("Failed to load robot.", "Invalid Assembly", MessageBoxButtons.OK);
                 ForceQuitExporter(AsmDocument);
                 return;
             }

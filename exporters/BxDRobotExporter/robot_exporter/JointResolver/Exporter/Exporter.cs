@@ -11,6 +11,11 @@ public class Exporter
 
     private const int MAX_VERTICIES = 8192;
     
+    public class EmptyAssemblyException : ApplicationException
+    {
+        public EmptyAssemblyException() : base("No parts in assembly.") { }
+    }
+
     public class InvalidJointException : ApplicationException
     {
         AssemblyJoint joint;
