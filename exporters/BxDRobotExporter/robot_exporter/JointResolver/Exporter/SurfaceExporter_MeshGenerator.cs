@@ -62,13 +62,18 @@ public partial class SurfaceExporter
         double[] tolerances = new double[10];
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
 
-        int bestIndex = -1;
-        for (int i = 0; i < tmpToleranceCount; i++)
+        double tolerance = 1;
+        if (bestResolution)
         {
-            if (bestIndex < 0 || ((tolerances[i] < tolerances[bestIndex]) == bestResolution))
+            int bestIndex = -1;
+            for (int i = 0; i < tmpToleranceCount; i++)
             {
-                bestIndex = i;
+                if (bestIndex < 0 || tolerances[i] < tolerances[bestIndex])
+                {
+                    bestIndex = i;
+                }
             }
+            tolerance = tolerances[bestIndex];
         }
 
         #region SHOULD_SEPARATE_FACES
@@ -114,10 +119,10 @@ public partial class SurfaceExporter
                 {
                     PartialSurface tmpSurfaceLoop = new PartialSurface();
 
-                    face.GetExistingFacets(tolerances[bestIndex], out tmpSurfaceLoop.vertCount, out tmpSurfaceLoop.facetCount, out tmpSurfaceLoop.verts, out tmpSurfaceLoop.norms, out tmpSurfaceLoop.indicies);
+                    face.GetExistingFacets(tolerance, out tmpSurfaceLoop.vertCount, out tmpSurfaceLoop.facetCount, out tmpSurfaceLoop.verts, out tmpSurfaceLoop.norms, out tmpSurfaceLoop.indicies);
                     if (tmpSurface.vertCount == 0)
                     {
-                        face.CalculateFacets(tolerances[bestIndex], out tmpSurfaceLoop.vertCount, out tmpSurfaceLoop.facetCount, out tmpSurfaceLoop.verts, out tmpSurfaceLoop.norms, out tmpSurfaceLoop.indicies);
+                        face.CalculateFacets(tolerance, out tmpSurfaceLoop.vertCount, out tmpSurfaceLoop.facetCount, out tmpSurfaceLoop.verts, out tmpSurfaceLoop.norms, out tmpSurfaceLoop.indicies);
                     }
 
                     for (int i = 0; i < tmpSurfaceLoop.vertCount; i++)
@@ -129,7 +134,7 @@ public partial class SurfaceExporter
                     tmpSurface.vertCount += tmpSurfaceLoop.vertCount;
                 }
 
-                AddFacetsInternal(asset.Value);
+                AddFacetsInternal(asset.Value); // This is garbage. Faces are not facets. We just need higher tolerance
             }
         }
         else
@@ -141,10 +146,10 @@ public partial class SurfaceExporter
                 surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
             }
 #else
-            surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out tmpSurface.norms, out tmpSurface.indicies);
+            surf.GetExistingFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out tmpSurface.norms, out tmpSurface.indicies);
             if (tmpSurface.vertCount == 0)
             {
-                surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out tmpSurface.norms, out tmpSurface.indicies);
+                surf.CalculateFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out tmpSurface.norms, out tmpSurface.indicies);
             }
 #endif
             AssetProperties assetProps = firstAsset;
