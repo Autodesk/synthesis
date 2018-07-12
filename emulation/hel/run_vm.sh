@@ -3,7 +3,7 @@ SSH_COMMAND="ssh -p 10022 -t synthesis@localhost rm -rf /home/synthesis/FRCUserP
 SCP_COMMAND="scp -P 10022 ./user_code/FRCUserProgram synthesis@localhost:/home/synthesis"
 PASSWORD="synthesis"
 
-./download_vm.sh
+./scripts/download_vm.sh
 printf "Starting VM\n"
 if ! mkdir ./vm_lock > /dev/null ; then 
 	printf "VM already running; vm_lock folder was found.\nChecking VM status:"

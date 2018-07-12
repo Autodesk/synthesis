@@ -18,27 +18,26 @@
  * Runs the motors with arcade steering.
  */
 class Robot : public frc::IterativeRobot {
-	frc::Spark m_leftMotor{0};
-	frc::Spark m_rightMotor{1};
-	frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
-	frc::Joystick m_stick{0};
+    frc::Spark m_leftMotor{0};
+    frc::Spark m_rightMotor{1};
+    frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
+    frc::Joystick m_stick{0};
 
     float newPWMR = 0.0;
     float newPWML = 0.0;
 
 public:
-	void TeleopPeriodic() {
+    void TeleopInit() {
         std::srand(std::time(nullptr));
+    }
+    void TeleopPeriodic() {
         // drive with arcade style
-        newPWML = ((float)((std::rand())/((RAND_MAX + 1u)/2000)-1000)/1000.0f);
-        newPWMR = ((float)((std::rand())/((RAND_MAX + 1u)/2000)-1000)/1000.0f);
-        //m_robotDrive.ArcadeDrive(m_stick.GetY(), m_stick.GetX());
+        auto x = std::rand() % 2000 + (-1000);
+        auto y = std::rand()% 2000 + (-1000);
 
-        m_leftMotor.Set(newPWML);
-        m_rightMotor.Set(newPWMR);
+        m_robotDrive.ArcadeDrive(x/1000.0f, y/1000.0f);
 
-        std::cout << "Excepted Left: " << newPWML << "\nExcepted Right: " << newPWMR << "\n";
-        std::cout << "Actual Left: " << m_leftMotor.Get() << "\nActual Right: " << m_rightMotor.Get() << "\n";
+        std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
 
         Wait(0.045);
     }

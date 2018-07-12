@@ -21,9 +21,10 @@ set (WPILIB_SO_DIRECTORY "${CMAKE_BINARY_DIR}/../external/wpilib")
 
 #set (VM_BUILD_COMMAND "./download_vm.sh && ./run_vm.sh")
 set (VM_BUILD_COMMAND "./run_vm.sh")
+set (CLONE_ASIO_COMMAND "./scripts/clone_asio.sh")
 
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MODE MATCHES "^[Ww][Pp][Ii]")
-  if (TEST_MODE MATCHES "^[Ww][Pp][Ii]")  
+  if (TEST_MODE MATCHES "^[Ww][Pp][Ii]")
     set (CMAKE_C_COMPILER arm-frc-linux-gnueabi-gcc)
     set (CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
     message (STATUS "Configuration: WPILib Tests")
@@ -117,14 +118,20 @@ add_custom_target ( build_vm
 	COMMENT "Download, build, and run synthesis VM",
 	VERBATIM )
 
+add_custom_target ( asio
+  COMMAND ${CLONE_ASIO_COMMAND}
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  COMMENT "Download the C++ ASIO library",
+  VERBATIM )
+
 
 add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp)
-target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "./include")
+add_dependencies(hel asio)
+target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
 
 
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND TEST_MODE MATCHES "^[Ww][Pp][Ii]")
-  link_directories (${WPILIB_SO_DIRECTORY}/common/current/lib/linux/athena/shared ${WPILIB_SO_DIRECTORY}/cpp/current/reflib/linux/athena/shared) 
-  
+  link_directories (${WPILIB_SO_DIRECTORY}/common/current/lib/linux/athena/shared ${WPILIB_SO_DIRECTORY}/cpp/current/reflib/linux/athena/shared)  
   add_executable(FRCUserProgram tests/test_project/robot.cpp)
   target_include_directories(FRCUserProgram PRIVATE "${WPILIB_SO_DIRECTORY}/cpp/current/include")  
   set_target_properties(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user_code")

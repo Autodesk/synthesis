@@ -36,7 +36,7 @@ namespace hel{
     }
 
     void RoboRIO::PWMSystem::setHdrDutyCycle(uint8_t index, uint32_t value){
-    	hdr[index].duty_cycle = value;
+        hdr[index].duty_cycle = value;
     }
 
     uint32_t RoboRIO::PWMSystem::getMXPDutyCycle(uint8_t index)const{
