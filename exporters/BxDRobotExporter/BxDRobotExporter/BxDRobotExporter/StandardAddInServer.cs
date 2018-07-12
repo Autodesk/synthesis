@@ -457,7 +457,7 @@ namespace BxDRobotExporter
                     // User may not open documents other than assemblies
                     if (!(Context.Item["Document"] is AssemblyDocument assembly))
                     {
-                        MessageBox.Show("Only Inventor assemblies can be used with the robot exporter.",
+                        MessageBox.Show("Only assemblies can be used with the robot exporter.",
                                         "Invalid Document", MessageBoxButtons.OK);
                         exporterBlocked = true;
 
