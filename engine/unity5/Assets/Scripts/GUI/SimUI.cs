@@ -82,6 +82,8 @@ namespace Synthesis.GUI
 
         public static bool inputPanelOn = false;
 
+        SettingsMode settingsMode;
+
         private void Update()
         {
             if (dpm == null)
@@ -491,6 +493,12 @@ namespace Synthesis.GUI
         public void ShowControlPanel()
         {
             ShowControlPanel(!inputManagerPanel.activeSelf);
+        }
+
+        public void SaveAndClose()
+        {
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
+            inputManagerPanel.SetActive(false);
         }
 
         /// <summary>

@@ -38,6 +38,7 @@ namespace BxDRobotExporter.Wizard
         public DefineWheelsPage()
         {
             InitializeComponent();
+            AutoFillToolTip.SetToolTip(AutoFillButton, "Attempt to detect left and right wheels automatically. Remember to double check your configuration after using this tool.");
 
             // Hide horizontal scroll bars
             LeftWheelsPanel.AutoScroll = false;
@@ -47,9 +48,9 @@ namespace BxDRobotExporter.Wizard
             RightWheelsPanel.HorizontalScroll.Maximum = 0;
             RightWheelsPanel.AutoScroll = true;
 
+            // Prepare drivetrain dropdown menu
             DriveTrainDropdown.SelectedIndex = 0;
-
-            NodeListBox.Enabled = false;
+            DriveTrainDropdown_SelectedIndexChanged(null, null);
 
             // Load weight information
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
@@ -86,7 +87,19 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
 
-            NodeListBox.Enabled = true;
+            if (DriveTrainDropdown.SelectedIndex > 0)
+            {
+                NodeListBox.Enabled = true;
+                AutoFillButton.Enabled = true;
+                DefineWheelsInstruction.Text = "Drag wheel parts from the list to the left into the appropriate column below.";
+            }
+            else
+            {
+                NodeListBox.Enabled = false;
+                AutoFillButton.Enabled = false;
+                DefineWheelsInstruction.Text = "Please select a drive train to perform wheel setup.";
+            }
+
             Initialize();
         }
 
@@ -602,8 +615,25 @@ namespace BxDRobotExporter.Wizard
 
         private void AutoFill_Click(Object sender, EventArgs e) // Initializes autofill process
         {
-            AutoFillPage autoForm = new AutoFillPage(this);
-            autoForm.ShowDialog(); // opens page that takes info on number of wheels
+            if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton()) // Load the robot skeleton
+            {
+                if (WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels)) //finds wheels
+                {
+                    foreach (RigidNode_Base wheel in leftWheels)
+                        SetWheelSide(wheel, WheelSide.LEFT, false);
+
+                    foreach (RigidNode_Base wheel in rightWheels)
+                        SetWheelSide(wheel, WheelSide.RIGHT, false);
+
+                    if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
+                    {
+                        //TODO: Imliment HDRIVE
+                    }
+                }
+            }
+
+            // Refresh the UI with new wheel information
+            UpdateUI();
         }
     }
 }

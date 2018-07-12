@@ -30,7 +30,6 @@ partial class SynthesisGUI
     {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SynthesisGUI));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.bxdaEditorPane1 = new EditorsLibrary.BXDAEditorPane();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.jointEditorPane1 = new EditorsLibrary.JointEditorPane();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -48,7 +47,6 @@ partial class SynthesisGUI
             this.helpTutorials = new System.Windows.Forms.ToolStripMenuItem();
             this.helpAbout = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -64,10 +62,6 @@ partial class SynthesisGUI
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer1.Name = "splitContainer1";
             // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.bxdaEditorPane1);
-            // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
@@ -75,19 +69,6 @@ partial class SynthesisGUI
             this.splitContainer1.SplitterDistance = 239;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
-            // 
-            // bxdaEditorPane1
-            // 
-            this.bxdaEditorPane1.AutoSize = true;
-            this.bxdaEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.bxdaEditorPane1.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
-            this.bxdaEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bxdaEditorPane1.Location = new System.Drawing.Point(0, 0);
-            this.bxdaEditorPane1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.bxdaEditorPane1.Name = "bxdaEditorPane1";
-            this.bxdaEditorPane1.Size = new System.Drawing.Size(239, 587);
-            this.bxdaEditorPane1.TabIndex = 0;
-            this.bxdaEditorPane1.Units = "lb";
             // 
             // splitContainer2
             // 
@@ -258,8 +239,6 @@ partial class SynthesisGUI
             this.Name = "SynthesisGUI";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "BXD Synthesis";
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
@@ -291,6 +270,5 @@ partial class SynthesisGUI
     private System.Windows.Forms.ToolStripDropDownButton toolstripHelp;
     private System.Windows.Forms.ToolStripMenuItem helpTutorials;
     private System.Windows.Forms.ToolStripMenuItem helpAbout;
-    public BXDAEditorPane bxdaEditorPane1;
     public JointEditorPane jointEditorPane1;
 }
