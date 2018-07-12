@@ -185,11 +185,13 @@
     <Compile Include="RigidAnalyzer\CustomRigidGroup.cs" />
     <Compile Include="RigidAnalyzer\CustomRigidJoint.cs" />
     <Compile Include="SkeletalStructure\BallJoint.cs" />
-    <Compile Include="SkeletalStructure\MotionLimits.cs" />
     <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
     <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
     <Compile Include="SkeletalStructure\LinearJoint.cs" />
+    <Compile Include="SkeletalStructure\MotionLimits.cs" />
     <Compile Include="SkeletalStructure\PlanarJoint.cs" />
+    <Compile Include="SkeletalStructure\RotationalJoint.cs" />
+    <Compile Include="SkeletalStructure\SkeletalJoint.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -199,12 +201,6 @@
     <None Include="packages.config" />
     <None Include="RobotExporterAPI.pfx" />
     <None Include="RobotExporterKey.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="SkeletalStructure\RotationalJoint.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="SkeletalStructure\SkeletalJoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />

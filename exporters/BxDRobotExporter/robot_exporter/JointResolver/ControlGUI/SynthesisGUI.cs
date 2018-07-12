@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using EditorsLibrary;
 using JointResolver.ControlGUI;
 using OGLViewer;
+using Inventor;
 
 public delegate bool ValidationAction(RigidNode_Base baseNode, out string message);
 
@@ -310,7 +311,79 @@ public partial class SynthesisGUI : Form
         }
         return false;
     }
+    public void writeLimits(RigidNode_Base skeleton)
+    {
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        skeleton.ListAllNodes(nodes);
+        int[] parentID = new int[nodes.Count];
 
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i].GetParent() != null)
+            {
+                parentID[i] = nodes.IndexOf(nodes[i].GetParent());
+
+                if (parentID[i] < 0) throw new Exception("Can't resolve parent ID for " + nodes[i].ToString());
+            }
+            else
+            {
+                parentID[i] = -1;
+            }
+        }
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (parentID[i] >= 0)
+            {
+                switch (nodes[i].GetSkeletalJoint().GetJointType())
+                {
+                    case SkeletalJointType.BALL:
+                        break;
+                    case SkeletalJointType.CYLINDRICAL:
+                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasAngularPositionLimits;
+                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit)
+                        {
+                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);
+                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);
+                        }
+                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearStartLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionStartLimit;
+                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearStartLimit)
+                        {
+                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitStart = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);
+                        }
+                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearEndLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;
+                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearEndLimit)
+                        {
+                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitEnd = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue);
+                        }
+                        break;
+                    case SkeletalJointType.LINEAR:
+                        ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionStartLimit;
+                        if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit)
+                        {
+                            ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);
+                        }
+                        ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;
+                        if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit)
+                        {
+                            ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue);
+                        }
+                        break;
+                    case SkeletalJointType.PLANAR:
+                        break;
+                    case SkeletalJointType.ROTATIONAL:
+                        ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasAngularPositionLimits;
+                        if (((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit)
+                        {
+                            ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);
+                            ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);
+                        }
+                        break;
+                    default:
+                        throw new Exception("Could not determine type of joint");
+                }
+            }
+        }
+    }
     /// <summary>
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
@@ -329,6 +402,7 @@ public partial class SynthesisGUI : Form
 
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
+            writeLimits(SkeletonBase);
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
 
