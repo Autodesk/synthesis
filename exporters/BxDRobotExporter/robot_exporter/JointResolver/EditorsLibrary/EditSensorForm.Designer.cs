@@ -167,7 +167,6 @@
             this.AcceptButton = this.SaveButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.CancelButton;
             this.ClientSize = new System.Drawing.Size(300, 168);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.lblEquationParsed);

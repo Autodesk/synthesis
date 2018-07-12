@@ -15,6 +15,20 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// </summary>
     public int portA, portB;
 
+    /// <summary>
+    /// The gear ratio that the input gear uses
+    /// </summary>
+    /// <param name="InputGear">Input gear ratio</param>
+    public double InputGear { get; set; }
+
+    /// <summary>
+    /// The gear ratio that the output gear uses
+    /// </summary>
+    /// <param name="OutputGear">Output gear ratio</param>
+    public double OutputGear { get; set; }
+
+
+    //wat
     public bool isCan = false;
 
     /// <summary>
@@ -163,6 +177,7 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
         this.portB = portB;
     }
 
+
     /// <summary>
     /// Sets the limits for this driver.
     /// </summary>
@@ -211,6 +226,8 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
         writer.Write((byte) ((int) GetDriveType()));
         writer.Write((short)portA); 
         writer.Write((short)portB);
+        writer.Write((double)InputGear);
+        writer.Write((double)OutputGear);
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
         writer.Write(isCan);
@@ -230,6 +247,8 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
         type = (JointDriverType) ((int) reader.ReadByte());
         portA = reader.ReadInt16();
         portB = reader.ReadInt16();
+        InputGear = reader.ReadDouble();
+        OutputGear = reader.ReadDouble();
         lowerLimit = reader.ReadSingle();
         upperLimit = reader.ReadSingle();
         isCan = reader.ReadBoolean();

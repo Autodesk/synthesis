@@ -39,7 +39,8 @@ public class RigidNode : OGL_RigidNode
         {
             foreach (ComponentOccurrence oc in group.occurrences)
             {
-                components.Add(oc.Name);
+                if (oc != null)
+                    components.Add(oc.Name);
             }
         }
         components.Sort();

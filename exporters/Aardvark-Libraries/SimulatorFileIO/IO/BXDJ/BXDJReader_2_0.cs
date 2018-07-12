@@ -49,6 +49,8 @@ public partial class BXDJSkeleton
         <xs:element name='IsDriveWheel' type='xs:boolean'/>
         <xs:element name='PortA' type='xs:integer'/>
         <xs:element name='PortB' type='xs:integer'/>
+        <xs:element name='InputGear' type='xs:double'/>
+        <xs:element name='OutputGear' type='xs:double'/>
         <xs:element name='LowerLimit' type='xs:float'/>
         <xs:element name='UpperLimit' type='xs:float'/>
         <xs:element name='Coefficient' type='xs:decimal'/>
@@ -241,6 +243,8 @@ public partial class BXDJSkeleton
                     <xs:element ref='DriveType'/>
                     <xs:element ref='PortA'/>
                     <xs:element ref='PortB'/>
+                    <xs:element ref='InputGear'/>
+                    <xs:element ref='OutputGear'/>
                     <xs:element ref='LowerLimit'/>
                     <xs:element ref='UpperLimit'/>
                     <xs:element ref='SignalType'/>
@@ -688,6 +692,17 @@ public partial class BXDJSkeleton
                     // Assign a value to portB.
                     driver.portB = reader.ReadElementContentAsInt();
                     break;
+
+                case "InputGear":
+                    // Assign a value to InputGear
+                    driver.InputGear = reader.ReadElementContentAsDouble();
+                    break;
+
+                case "OutputGear":
+                    // Assign a value to OutputGear
+                    driver.InputGear = reader.ReadElementContentAsDouble();
+                    break;
+
                 case "LowerLimit":
                     // Assign a value to the lowerLimit.
                     driver.lowerLimit = float.Parse(reader.ReadElementContentAsString());
