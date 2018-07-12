@@ -276,11 +276,28 @@ public partial class DriveChooser : Form
         else
         {
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
+            double inputGear = 1, outputGear = 1;
+
+            try
+            {
+                inputGear = Convert.ToDouble(InputGeartxt.Text);
+                outputGear = Convert.ToDouble(OutputGeartxt.Text);
+            }
+            catch (FormatException fe)
+            {
+                MessageBox.Show("Error: please make sure that the gear field has only numbers [" + fe.Source + "]");
+            }
+            catch (OverflowException oe)
+            {
+                MessageBox.Show("Error: the number provided is not supported as a possible gear ratio [" + oe.Source + "]");
+            }
 
             joint.cDriver = new JointDriver(cType)
             {
                 portA = (int)txtPortA.Value,
                 portB = (int)txtPortB.Value,
+                InputGear = inputGear,
+                OutputGear = outputGear,
                 lowerLimit = (float)txtLowLimit.Value,
                 upperLimit = (float)txtHighLimit.Value,
                 isCan = rbCAN.Checked
@@ -353,6 +370,8 @@ public partial class DriveChooser : Form
                         portA = joint.cDriver.portA,
                         portB = joint.cDriver.portB,
                         isCan = joint.cDriver.isCan,
+                        OutputGear = joint.cDriver.OutputGear,
+                        InputGear = joint.cDriver.InputGear,
                         lowerLimit = joint.cDriver.lowerLimit,
                         upperLimit = joint.cDriver.upperLimit
                     };
