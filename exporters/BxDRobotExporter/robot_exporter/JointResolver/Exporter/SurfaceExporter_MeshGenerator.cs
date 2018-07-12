@@ -73,6 +73,7 @@ public partial class SurfaceExporter
 
         #region SHOULD_SEPARATE_FACES
         // Bundle faces into separate surfaces based on common assets
+        AssetProperties firstAsset = null;
         Dictionary<string, AssetProperties> sharedAssets = new Dictionary<string, AssetProperties>();
         Dictionary<string, List<Face>> subSurfaces = new Dictionary<string, List<Face>>();
         if (separateFaces) 
@@ -87,6 +88,9 @@ public partial class SurfaceExporter
                     {
                         sharedAssets.Add(asset.DisplayName, new AssetProperties(asset));
                         subSurfaces.Add(asset.DisplayName, new List<Face>());
+
+                        if (firstAsset == null)
+                            firstAsset = sharedAssets[asset.DisplayName];
                     }
 
                     subSurfaces[asset.DisplayName].Add(f);
@@ -124,8 +128,10 @@ public partial class SurfaceExporter
                 surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out tmpSurface.norms, out tmpSurface.indicies);
             }
 #endif
+            AssetProperties assetProps = firstAsset;
 
-            AssetProperties assetProps = AssetProperties.Create(surf);
+            if (assetProps == null)
+                assetProps = AssetProperties.Create(surf);
             
             AddFacetsInternal(assetProps);
         }
