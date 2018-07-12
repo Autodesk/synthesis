@@ -1,0 +1,11 @@
+-Iinclude/
+-I../external/allwpilib/hal/src/main/native/
+-I../external/allwpilib/hal/src/main/native/include
+-I../external/allwpilib/hal/src/main/include/
+-I../external/allwpilib/ni-libraries/include/
+-I../external/allwpilib/wpilibc/src/main/native/include/
+-I../external/allwpilib/wpiutil/src/main/native/include/
+-std=c++14
+-pedantic
+-Wextra
+-Wall
