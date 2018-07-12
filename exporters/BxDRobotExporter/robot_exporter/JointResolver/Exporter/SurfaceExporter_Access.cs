@@ -31,39 +31,15 @@ public partial class SurfaceExporter
     /// <param name="reporter">Progress reporter</param>
     public void ExportAll(CustomRigidGroup group, BXDIO.ProgressReporter reporter = null)
     {
-        List<ExportPlan> plans = GenerateExportList(group);
-        Console.WriteLine();
-        reporter?.Invoke(0, plans.Count);
-        for (int i = 0; i < plans.Count; i++)
-        {
-            AddFacets(plans[i].surf, plans[i].bestResolution, plans[i].separateFaces);
-            reporter?.Invoke((i + 1), plans.Count);
-        }
-    }
+        // Collect faces to export
+        List<SurfaceBody> plannedSurfaces = GenerateExportList(group);
 
-    /// <summary>
-    /// Exports all the components in this enumerable to the in-RAM mesh.
-    /// </summary>
-    /// <param name="enumm">Enumerable to export from</param>
-    /// <param name="reporter">Progress reporter</param>
-    public void ExportAll(IEnumerator<ComponentOccurrence> enumm, BXDIO.ProgressReporter reporter = null)
-    {
-        List<ExportPlan> plans = new List<ExportPlan>();
-        while (enumm.MoveNext()){
-            plans.AddRange(GenerateExportList(enumm.Current));
-        }
-        Console.WriteLine();
-        if (reporter != null)
+        // Export faces
+        reporter?.Invoke(0, plannedSurfaces.Count);
+        for (int i = 0; i < plannedSurfaces.Count; i++)
         {
-            reporter(0, plans.Count);
-        }
-        for (int i = 0; i < plans.Count; i++)
-        {
-            AddFacets(plans[i].surf, plans[i].bestResolution, plans[i].separateFaces);
-            if (reporter != null)
-            {
-                reporter((i + 1), plans.Count);
-            }
+            AddFacets(plannedSurfaces[i], false, SynthesisGUI.PluginSettings.GeneralUseFancyColors);
+            reporter?.Invoke((i + 1), plannedSurfaces.Count);
         }
     }
 }

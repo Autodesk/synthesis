@@ -67,11 +67,6 @@ public partial class NodeEditorPane : UserControl
 
             RigidNode_Base node = (RigidNode_Base)item.Tag;
             CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
-            ExporterHint newHint;
-            newHint.Convex = item.SubItems[2].Text == "False";
-            newHint.MultiColor = item.SubItems[3].Text == "True";
-            newHint.HighResolution = item.SubItems[4].Text == "True";
-            group.hint = newHint;
         }
     }
 
