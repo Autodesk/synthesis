@@ -18,10 +18,11 @@ set (hel_VERSION_MINOR 0)
 set (WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/../external/allwpilib")
 set (WPIUTIL_DIRECTORY "${CMAKE_BINARY_DIR}/../external/allwpilib/wpiutil")
 set (WPILIB_SO_DIRECTORY "${CMAKE_BINARY_DIR}/../external/wpilib")
+set (ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/../external/ASIO/asio/")
 
 #set (VM_BUILD_COMMAND "./download_vm.sh && ./run_vm.sh")
 set (VM_BUILD_COMMAND "./run_vm.sh")
-set (CLONE_ASIO_COMMAND "./scripts/clone_asio.sh")
+set (CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
 
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MODE MATCHES "^[Ww][Pp][Ii]")
   if (TEST_MODE MATCHES "^[Ww][Pp][Ii]")
@@ -120,7 +121,7 @@ add_custom_target ( build_vm
 
 add_custom_target ( asio
   COMMAND ${CLONE_ASIO_COMMAND}
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/scripts
   COMMENT "Download the C++ ASIO library",
   VERBATIM )
 
