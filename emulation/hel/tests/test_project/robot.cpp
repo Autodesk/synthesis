@@ -26,7 +26,7 @@ class Robot : public frc::IterativeRobot {
     float newPWMR = 0.0;
     float newPWML = 0.0;
 
-   public:
+public:
 	void TeleopPeriodic() {
         std::srand(std::time(nullptr));
         // drive with arcade style
