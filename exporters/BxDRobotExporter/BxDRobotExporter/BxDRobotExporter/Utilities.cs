@@ -17,7 +17,6 @@ namespace BxDRobotExporter
 
         static internal SynthesisGUI GUI;
         static DockableWindow EmbededJointPane;
-        static DockableWindow EmbededBxDViewer;
 
         /// <summary>
         /// Creates a <see cref="DockableWindow"/> containing all of the components of the SynthesisGUI object
@@ -29,7 +28,6 @@ namespace BxDRobotExporter
 
             UserInterfaceManager uiMan = app.UserInterfaceManager;
             EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Robot Joint Editor");
-            EmbededBxDViewer = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:BxDViewer", "Robot BxD Viewer");
             
             #region EmbededJointPane
             EmbededJointPane.DockingState = DockingStateEnum.kDockBottom;
@@ -38,16 +36,7 @@ namespace BxDRobotExporter
             EmbededJointPane.ShowTitleBar = true;
             EmbededJointPane.AddChild(children[0]);
             #endregion
-
-            #region EmbededBxDViewer
-            EmbededBxDViewer.DockingState = DockingStateEnum.kDockRight;
-            EmbededBxDViewer.Width = uiMan.DockableWindows["model"].Width;
-            EmbededBxDViewer.ShowVisibilityCheckBox = false;
-            EmbededBxDViewer.ShowTitleBar = true;
-            EmbededBxDViewer.AddChild(children[1]);
-            #endregion
-
-            EmbededBxDViewer.Visible = true;
+            
             EmbededJointPane.Visible = true;
         }
 
@@ -63,7 +52,7 @@ namespace BxDRobotExporter
                 GUI.Hide();
                 GUI.Opacity = 1.00d;
 
-                return new IntPtr[] { GUI.JointPaneForm.Handle, GUI.BXDAViewerPaneForm.Handle };
+                return new IntPtr[] { GUI.JointPaneForm.Handle };
             }
             catch (Exception e)
             {
@@ -77,13 +66,10 @@ namespace BxDRobotExporter
         /// </summary>
         public static void DisposeDockableWindows()
         {
-            if (EmbededJointPane != null && EmbededBxDViewer != null)
+            if (EmbededJointPane != null)
             {
                 EmbededJointPane.Visible = false;
                 EmbededJointPane.Delete();
-
-                EmbededBxDViewer.Visible = false;
-                EmbededBxDViewer.Delete();
             }
         }
 
@@ -92,10 +78,9 @@ namespace BxDRobotExporter
         /// </summary>
         public static void HideDockableWindows()
         {
-            if (EmbededJointPane != null && EmbededBxDViewer != null)
+            if (EmbededJointPane != null)
             {
                 EmbededJointPane.Visible = false;
-                EmbededBxDViewer.Visible = false;
             }
         }
 
@@ -104,10 +89,9 @@ namespace BxDRobotExporter
         /// </summary>
         public static void ShowDockableWindows()
         {
-            if (EmbededJointPane != null && EmbededBxDViewer != null)
+            if (EmbededJointPane != null)
             {
                 EmbededJointPane.Visible = true;
-                EmbededBxDViewer.Visible = true;
             }
         }
 
