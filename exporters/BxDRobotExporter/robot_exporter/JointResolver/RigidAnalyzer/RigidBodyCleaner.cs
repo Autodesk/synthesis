@@ -4,9 +4,6 @@ using Inventor;
 
 static class RigidBodyCleaner
 {
-
-    class NoGroundException : Exception
-
     /// <summary>
     /// Removes all the meaningless items from the given group of rigid body results, simplifying the model.
     /// </summary>

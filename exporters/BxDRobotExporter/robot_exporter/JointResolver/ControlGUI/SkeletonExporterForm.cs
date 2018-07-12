@@ -80,7 +80,7 @@ namespace JointResolver.ControlGUI
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
                 DialogResult r = MessageBox.Show(ex.Message, caption, buttons);
             }
-            catch (Exporter.NoGroundException ex)
+            catch (Exporter.NoGroundException)
             {
                 SetProgressWindowVisisble(false);
 
