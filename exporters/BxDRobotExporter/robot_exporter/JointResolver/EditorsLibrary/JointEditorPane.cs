@@ -190,6 +190,8 @@ namespace EditorsLibrary
                     item.BackColor = System.Drawing.Color.LightSteelBlue;
                 }
 
+                Refresh(); // Force repaint of the view
+
                 SelectedJoint?.Invoke(GetSelectedNodes());
             }
             else
