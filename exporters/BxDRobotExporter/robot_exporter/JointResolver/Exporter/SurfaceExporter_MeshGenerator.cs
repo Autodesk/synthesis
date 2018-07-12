@@ -72,52 +72,35 @@ public partial class SurfaceExporter
         }
 
         #region SHOULD_SEPARATE_FACES
-        // Check to see if the mesh actually contains multiple colors
-        AssetProperties sharedAsset = null;
-        string sharedDisp = null;
+        // Bundle faces into separate surfaces based on common assets
+        Dictionary<string, AssetProperties> sharedAssets = new Dictionary<string, AssetProperties>();
+        Dictionary<string, List<Face>> subSurfaces = new Dictionary<string, List<Face>>();
         if (separateFaces) 
         {
-            separateFaces = false;
-            
             foreach (Face f in surf.Faces)
             {
                 try
                 {
                     Asset asset = f.Appearance;
-                    
-                    if (sharedAsset == null)
+
+                    if (!sharedAssets.ContainsKey(asset.DisplayName))
                     {
-                        sharedAsset = new AssetProperties(asset);
-                        sharedDisp = asset.DisplayName;
+                        sharedAssets.Add(asset.DisplayName, new AssetProperties(asset));
+                        subSurfaces.Add(asset.DisplayName, new List<Face>());
                     }
-                    else if (!asset.DisplayName.Equals(sharedDisp))
-                    {
-                        separateFaces = true;
-                        break;
-                    }
+
+                    subSurfaces[asset.DisplayName].Add(f);
                 }
                 catch
                 {
+                    // Failed to create asset for face
                 }
             }
+
+            if (sharedAssets.Count < 2)
+                separateFaces = false;
         }
         #endregion
-
-#if USE_TEXTURES
-        surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-        if (tmpSurface.vertCount == 0)
-        {
-            surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-        }
-#else
-        surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
-        if (tmpSurface.vertCount == 0)
-        {
-            surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
-        }
-#endif
-
-        // TODO: Find a way to split the surface, instead of exporting each face individually
 
         if (separateFaces || tmpSurface.vertCount > TMP_VERTICIES)
         {
@@ -128,13 +111,22 @@ public partial class SurfaceExporter
         }
         else
         {
-            AssetProperties assetProps = sharedAsset;
-
-            if (sharedAsset == null)
+#if USE_TEXTURES
+            surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
+            if (tmpSurface.vertCount == 0)
             {
-                assetProps = AssetProperties.Create(surf);
+                surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
             }
+#else
+            surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out tmpSurface.norms, out tmpSurface.indicies);
+            if (tmpSurface.vertCount == 0)
+            {
+                surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out tmpSurface.norms, out tmpSurface.indicies);
+            }
+#endif
 
+            AssetProperties assetProps = AssetProperties.Create(surf);
+            
             AddFacetsInternal(assetProps);
         }
     }
@@ -268,10 +260,10 @@ public partial class SurfaceExporter
             surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
         }
 #else
-        face.GetExistingFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
+        face.GetExistingFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out tmpSurface.indicies);
         if (tmpSurface.vertCount == 0)
         {
-            face.CalculateFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies);
+            face.CalculateFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out tmpSurface.indicies);
         }
 #endif
         
