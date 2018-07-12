@@ -33,6 +33,14 @@ namespace EditorsLibrary
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOkay = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.LinearGroup = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.Linear_Start_textbox = new System.Windows.Forms.TextBox();
+            this.Linear_Current_textbox = new System.Windows.Forms.TextBox();
+            this.Linear_End = new System.Windows.Forms.CheckBox();
+            this.Linear_Current = new System.Windows.Forms.Label();
+            this.Linear_Start = new System.Windows.Forms.CheckBox();
+            this.Linear_End_textbox = new System.Windows.Forms.TextBox();
             this.Angular_Group_Box = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.Angular_Start_textbox = new System.Windows.Forms.TextBox();
@@ -42,13 +50,15 @@ namespace EditorsLibrary
             this.Angular_Current = new System.Windows.Forms.Label();
             this.Angular_Start = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
+            this.LinearGroup.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.Angular_Group_Box.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(15, 192);
+            this.btnCancel.Location = new System.Drawing.Point(232, 196);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(121, 27);
@@ -59,12 +69,12 @@ namespace EditorsLibrary
             // 
             // btnOkay
             // 
-            this.btnOkay.Location = new System.Drawing.Point(260, 193);
+            this.btnOkay.Location = new System.Drawing.Point(102, 197);
             this.btnOkay.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnOkay.Name = "btnOkay";
             this.btnOkay.Size = new System.Drawing.Size(124, 26);
             this.btnOkay.TabIndex = 0;
-            this.btnOkay.Text = "Okay";
+            this.btnOkay.Text = "OK";
             this.btnOkay.UseVisualStyleBackColor = true;
             this.btnOkay.Click += new System.EventHandler(this.btnOkay_Click);
             // 
@@ -74,6 +84,7 @@ namespace EditorsLibrary
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Controls.Add(this.LinearGroup, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.Angular_Group_Box, 0, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 13);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -82,6 +93,91 @@ namespace EditorsLibrary
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(374, 174);
             this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // LinearGroup
+            // 
+            this.LinearGroup.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LinearGroup.Controls.Add(this.tableLayoutPanel3);
+            this.LinearGroup.Location = new System.Drawing.Point(3, 90);
+            this.LinearGroup.Name = "LinearGroup";
+            this.LinearGroup.Size = new System.Drawing.Size(368, 81);
+            this.LinearGroup.TabIndex = 1;
+            this.LinearGroup.TabStop = false;
+            this.LinearGroup.Text = "Linear (In)";
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.Controls.Add(this.Linear_Start_textbox, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.Linear_Current_textbox, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.Linear_End, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.Linear_Current, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.Linear_Start, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.Linear_End_textbox, 2, 1);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(7, 22);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(355, 53);
+            this.tableLayoutPanel3.TabIndex = 0;
+            // 
+            // Linear_Start_textbox
+            // 
+            this.Linear_Start_textbox.Location = new System.Drawing.Point(3, 29);
+            this.Linear_Start_textbox.Name = "Linear_Start_textbox";
+            this.Linear_Start_textbox.Size = new System.Drawing.Size(112, 22);
+            this.Linear_Start_textbox.TabIndex = 0;
+            // 
+            // Linear_Current_textbox
+            // 
+            this.Linear_Current_textbox.Location = new System.Drawing.Point(121, 29);
+            this.Linear_Current_textbox.Name = "Linear_Current_textbox";
+            this.Linear_Current_textbox.Size = new System.Drawing.Size(112, 22);
+            this.Linear_Current_textbox.TabIndex = 1;
+            // 
+            // Linear_End
+            // 
+            this.Linear_End.AutoSize = true;
+            this.Linear_End.Location = new System.Drawing.Point(239, 3);
+            this.Linear_End.Name = "Linear_End";
+            this.Linear_End.Size = new System.Drawing.Size(55, 20);
+            this.Linear_End.TabIndex = 5;
+            this.Linear_End.Text = "End";
+            this.Linear_End.UseVisualStyleBackColor = true;
+            this.Linear_End.CheckedChanged += new System.EventHandler(this.Linear_End_CheckedChanged);
+            // 
+            // Linear_Current
+            // 
+            this.Linear_Current.AutoSize = true;
+            this.Linear_Current.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Linear_Current.Location = new System.Drawing.Point(121, 4);
+            this.Linear_Current.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.Linear_Current.Name = "Linear_Current";
+            this.Linear_Current.Size = new System.Drawing.Size(112, 22);
+            this.Linear_Current.TabIndex = 4;
+            this.Linear_Current.Text = "       Current";
+            // 
+            // Linear_Start
+            // 
+            this.Linear_Start.AutoSize = true;
+            this.Linear_Start.Location = new System.Drawing.Point(3, 3);
+            this.Linear_Start.Name = "Linear_Start";
+            this.Linear_Start.Size = new System.Drawing.Size(60, 20);
+            this.Linear_Start.TabIndex = 3;
+            this.Linear_Start.Text = "Start";
+            this.Linear_Start.UseVisualStyleBackColor = true;
+            this.Linear_Start.CheckedChanged += new System.EventHandler(this.Linear_Start_CheckedChanged);
+            // 
+            // Linear_End_textbox
+            // 
+            this.Linear_End_textbox.Location = new System.Drawing.Point(239, 29);
+            this.Linear_End_textbox.Name = "Linear_End_textbox";
+            this.Linear_End_textbox.Size = new System.Drawing.Size(113, 22);
+            this.Linear_End_textbox.TabIndex = 2;
             // 
             // Angular_Group_Box
             // 
@@ -185,6 +281,9 @@ namespace EditorsLibrary
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Edit Limits";
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.LinearGroup.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.Angular_Group_Box.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
@@ -203,6 +302,14 @@ namespace EditorsLibrary
         private System.Windows.Forms.CheckBox Angular_Start;
         private System.Windows.Forms.Label Angular_Current;
         private System.Windows.Forms.CheckBox Angular_End;
+        private System.Windows.Forms.GroupBox LinearGroup;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TextBox Linear_Start_textbox;
+        private System.Windows.Forms.TextBox Linear_Current_textbox;
+        private System.Windows.Forms.TextBox Linear_End_textbox;
+        private System.Windows.Forms.CheckBox Linear_End;
+        private System.Windows.Forms.Label Linear_Current;
+        private System.Windows.Forms.CheckBox Linear_Start;
 
         private class LimitPane<T> : System.Windows.Forms.TabPage
         {

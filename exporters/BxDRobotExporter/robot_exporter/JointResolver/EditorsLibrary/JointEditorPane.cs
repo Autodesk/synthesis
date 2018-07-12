@@ -52,13 +52,20 @@ namespace EditorsLibrary
             RegisterContextAction("Edit Sensors", ListSensors_Internal);
             RegisterContextAction("Edit Limits", (List<RigidNode_Base> nodes) =>
                 {
-                    if (nodes.Count != 1) return;
-
-                    RigidNode_Base node = nodes[0];
-                    if (node != null && node.GetSkeletalJoint() != null)
+                    try
                     {
-                        EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());
-                        limitEditor.ShowDialog(ParentForm);
+                        if (nodes.Count != 1) return;
+
+                        RigidNode_Base node = nodes[0];
+                        if (node != null && node.GetSkeletalJoint() != null)
+                        {
+                            EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());
+                            limitEditor.ShowDialog(ParentForm);
+                        }
+                    }
+                    catch (NullReferenceException)//catch when the user clicks on the pane without a node selected
+                    {
+                        MessageBox.Show("Please select a node!");
                     }
                 });
 

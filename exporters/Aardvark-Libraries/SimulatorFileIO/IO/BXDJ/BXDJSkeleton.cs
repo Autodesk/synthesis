@@ -227,7 +227,7 @@ public static partial class BXDJSkeleton
         WriteBXDVector3(joint.basePoint, writer, "BasePoint");
         WriteBXDVector3(joint.axis, writer, "Axis");
 
-        if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint)
+        if (joint.hasAngularLimit)
         {
             writer.WriteElementString("AngularLowLimit", joint.angularLimitLow.ToString("F4"));
             writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F4"));
