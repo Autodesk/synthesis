@@ -166,9 +166,11 @@ public static partial class BXDJSkeleton
 
         if (joint.hasLinearEndLimit)
             writer.WriteElementString("LinearEndLimit", joint.linearLimitEnd.ToString("F4"));
+        //writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+        //writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
 
-        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
-        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+        writer.WriteElementString("CurrentLinearPosition", joint.linearLimitStart.ToString("F4"));
+        writer.WriteElementString("CurrentAngularPosition", joint.angularLimitLow.ToString("F4"));
 
         writer.WriteEndElement();
     }
@@ -193,7 +195,8 @@ public static partial class BXDJSkeleton
         if (joint.hasUpperLimit)
             writer.WriteElementString("LinearUpperLimit", joint.linearLimitHigh.ToString("F4"));
                
-        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+       // writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+        writer.WriteElementString("CurrentLinearPosition", joint.linearLimitLow.ToString("F4"));
 
         writer.WriteEndElement();
     }
@@ -233,7 +236,8 @@ public static partial class BXDJSkeleton
             writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F4"));
         }
 
-        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+       // writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+        writer.WriteElementString("CurrentAngularPosition", joint.angularLimitLow.ToString("F4"));
 
         writer.WriteEndElement();
     }
