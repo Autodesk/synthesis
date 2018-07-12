@@ -66,11 +66,11 @@ namespace JointResolver.ControlGUI
 
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
-            RigidNode_Base Skeleton = null;
+            RigidNode_Base skeleton = null;
 
             try
             {
-                Skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
+                skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
             }
             catch (Exporter.EmptyAssemblyException)
             {
@@ -96,8 +96,10 @@ namespace JointResolver.ControlGUI
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
                 DialogResult r = MessageBox.Show("Please ground a part in your assembly to export your robot.", caption, buttons);
             }
-
-            SynthesisGUI.Instance.SkeletonBase = Skeleton;
+            finally
+            {
+                SynthesisGUI.Instance.SkeletonBase = skeleton;
+            }
         }
 
         /// <summary>
