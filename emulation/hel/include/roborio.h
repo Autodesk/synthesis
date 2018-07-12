@@ -11,6 +11,7 @@
 #include <mutex>
 #include <queue>
 #include <vector>
+#include <thread>
 
 #include "FRC_NetworkCommunication/FRCComm.h"
 
@@ -21,6 +22,8 @@
 #include "GenericHID.h"
 
 #include "error.h"
+
+extern std::thread __ds_spoofer;
 
 namespace hel{
     using namespace nFPGA;
