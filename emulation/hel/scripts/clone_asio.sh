@@ -1,2 +1,4 @@
 #!/bin/bash
-git clone https://github.com/chriskohlhoff/asio/ ../../external/ASIO
+if [ ! -d ../../external/ASIO ] ; then
+	git clone https://github.com/chriskohlhoff/asio/ ../../external/ASIO
+fi
