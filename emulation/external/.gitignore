@@ -1,1 +1,3 @@
-wpilib/*
+# External folders that aren't submodules
+./wpilib/*
+./ASIO/*

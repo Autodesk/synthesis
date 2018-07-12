@@ -81,9 +81,10 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MOD
     add_executable( ${test_name} ${file} tests/main_stub.cpp)
 
     add_dependencies(${test_name} GoogleTest)
+    add_dependencies(${test_name} asio)
     target_link_libraries(${test_name} gtest gtest_main pthread)
     include_directories("lib/include")
-    target_include_directories(${test_name} PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${ASIO_DIRECTORY}/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "./include")
+    target_include_directories(${test_name} PRIVATE "${ASIO_DIRECTORY}/include" "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "./include")
 
     set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
 
@@ -116,19 +117,19 @@ endif()
 add_custom_target ( build_vm 
 	COMMAND ${VM_BUILD_COMMAND}
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	COMMENT "Download, build, and run synthesis VM",
+	COMMENT "Download, build, and run synthesis VM"
 	VERBATIM )
 
-add_custom_target ( asio
+add_custom_target ( asio ALL
   COMMAND ${CLONE_ASIO_COMMAND}
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/scripts
-  COMMENT "Download the C++ ASIO library",
+  COMMENT "Download the C++ ASIO library"
   VERBATIM )
 
 
 add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/roborio_interface.cpp)
 add_dependencies(hel asio)
-target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${asio_directory}/include" "./include")
+target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
 
 
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND TEST_MODE MATCHES "^[Ww][Pp][Ii]")
