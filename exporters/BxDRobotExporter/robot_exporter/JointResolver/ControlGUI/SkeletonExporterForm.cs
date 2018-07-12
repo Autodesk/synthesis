@@ -72,6 +72,14 @@ namespace JointResolver.ControlGUI
             {
                 Skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
             }
+            catch (Exporter.EmptyAssemblyException)
+            {
+                SetProgressWindowVisisble(false);
+
+                string caption = "Empty Assembly";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                DialogResult r = MessageBox.Show("Assembly has no parts to export.", caption, buttons);
+            }
             catch (Exporter.InvalidJointException ex)
             {
                 SetProgressWindowVisisble(false);
@@ -101,7 +109,7 @@ namespace JointResolver.ControlGUI
         {
             if (occurrences.Count == 0)
             {
-                return null;
+                throw new Exporter.EmptyAssemblyException();
             }
 
             #region CenterJoints
