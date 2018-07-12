@@ -21,6 +21,11 @@ public class Exporter
         }
     }
 
+    public class NoGroundException : ApplicationException
+    {
+        public NoGroundException() : base("Assembly has no ground.") { }
+    }
+
     public static void CenterAllJoints(ComponentOccurrence component)
     {
         Console.Write("Centering: " + component.Name);

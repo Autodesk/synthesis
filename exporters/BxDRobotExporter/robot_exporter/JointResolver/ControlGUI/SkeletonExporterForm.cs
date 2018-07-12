@@ -80,6 +80,14 @@ namespace JointResolver.ControlGUI
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
                 DialogResult r = MessageBox.Show(ex.Message, caption, buttons);
             }
+            catch (Exporter.NoGroundException ex)
+            {
+                SetProgressWindowVisisble(false);
+
+                string caption = "No Ground";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                DialogResult r = MessageBox.Show("Please ground a part in your assembly to export your robot.", caption, buttons);
+            }
 
             SynthesisGUI.Instance.SkeletonBase = Skeleton;
         }

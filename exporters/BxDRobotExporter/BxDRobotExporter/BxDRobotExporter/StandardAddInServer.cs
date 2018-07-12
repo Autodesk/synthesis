@@ -276,7 +276,7 @@ namespace BxDRobotExporter
             // Load robot skeleton and prepare UI
             if (!Utilities.GUI.LoadRobotSkeleton())
             {
-                MessageBox.Show("Failed to load robot.");
+                MessageBox.Show("Failed to load robot.", "Invalid Assembly", MessageBoxButtons.OK);
                 ForceQuitExporter(AsmDocument);
                 return;
             }
@@ -458,7 +458,8 @@ namespace BxDRobotExporter
                     // User may not open documents other than assemblies
                     if (!(Context.Item["Document"] is AssemblyDocument assembly))
                     {
-                        MessageBox.Show("Only Inventor assemblies can be used with the robot exporter.");
+                        MessageBox.Show("Only Inventor assemblies can be used with the robot exporter.",
+                                        "Invalid Document", MessageBoxButtons.OK);
                         exporterBlocked = true;
 
                         // Quit the exporter
@@ -473,7 +474,8 @@ namespace BxDRobotExporter
                     else if (EnvironmentEnabled)
                     {
                         MessageBox.Show("The exporter may only be used in one assembly at a time. " +
-                                        "Please finish using the exporter in \"" + AsmDocument.DisplayName + "\" to continue.");
+                                        "Please finish using the exporter in \"" + AsmDocument.DisplayName + "\" to continue.",
+                                        "Too Many Assemblies", MessageBoxButtons.OK);
                         exporterBlocked = true;
                         ForceQuitExporter(assembly);
                     }

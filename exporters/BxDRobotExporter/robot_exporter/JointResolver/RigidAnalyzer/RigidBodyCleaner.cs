@@ -4,6 +4,9 @@ using Inventor;
 
 static class RigidBodyCleaner
 {
+
+    class NoGroundException : Exception
+
     /// <summary>
     /// Removes all the meaningless items from the given group of rigid body results, simplifying the model.
     /// </summary>
@@ -73,7 +76,7 @@ static class RigidBodyCleaner
         }
         else
         {
-            throw new InvalidOperationException("No ground!");
+            throw new Exporter.NoGroundException();
         }
         CleanMeaningless(results);
     }
