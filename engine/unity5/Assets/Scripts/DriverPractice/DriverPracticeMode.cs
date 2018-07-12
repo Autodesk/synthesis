@@ -435,12 +435,15 @@ namespace Synthesis.DriverPractice
             dpmRobot.StartGamepieceSpawn(configuringIndex);
         }
 
+        public void ResetGampieceSpawn()
+        {
+            dpmRobot.ResettingGamepieceSpawn();
+        }
+
         public void CancelGamepieceSpawn()
         {
             dpmRobot.FinishGamepieceSpawn();
         }
-
-
 
         public void ChangeOffsetX(int sign)
         {
