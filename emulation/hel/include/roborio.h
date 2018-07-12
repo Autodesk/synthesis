@@ -1494,6 +1494,16 @@ namespace hel{
             void setStatus(tSysWatchdog::tStatus);
         };
     	
+        struct Global{
+        private:
+            uint64_t fpga_start_time;
+
+        public:
+            uint64_t getFPGAStartTime()const;
+            static uint64_t getCurrentTime();
+            Global();
+        };
+
         /**
     	 * \var bool user_button
     	 * \represents the state of the user button on the roborio
@@ -1511,6 +1521,7 @@ namespace hel{
         std::vector<DSError> ds_errors;
         DriverStationInfo driver_station_info;
         std::array<Encoder, hal::kNumEncoders> encoders;
+        Global global;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
         NetComm net_comm;
         Power power;
