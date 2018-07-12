@@ -176,7 +176,13 @@ namespace BxDRobotExporter
             DedectionTestButton = ControlDefs.AddButtonDefinition("Detection Test", "BxD:RobotExporter:DetectionTestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
             DedectionTestButton.OnExecute += delegate (NameValueMap context)
             {
-                Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, Wizard.WizardData.WizardDriveTrain.TANK, 6);
+                if (Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels))
+                {
+                    List<RigidNode_Base> allWheels = new List<RigidNode_Base>();
+                    allWheels.AddRange(leftWheels);
+                    allWheels.AddRange(rightWheels);
+                    JointEditorPane_SelectedJoint(allWheels);
+                }
             };
             DebugPanel.CommandControls.AddButton(DedectionTestButton, true);
             //UI Test
@@ -526,17 +532,18 @@ namespace BxDRobotExporter
         public void JointEditorPane_SelectedJoint(List<RigidNode_Base> nodes)
         {
             ChildHighlight.Clear();
+
             if (nodes == null)
             {
                 return;
             }
+
             if (nodes.Count == 1)
             {
                 ComponentOccurrence occurrence = GetOccurrence(nodes[0].GetModelID().Substring(0, nodes[0].GetModelID().Length - 3));
                 SelectNode(occurrence);
-                ViewOccurrence(occurrence, 15, ViewDirection.Y, false);
+                ViewOccurrence(occurrence, 15, ViewDirection.Y);
             }
-
             else
             {
                 List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
@@ -546,9 +553,8 @@ namespace BxDRobotExporter
                     SelectNode(occurrence);
                     occurrences.Add(occurrence);
                 }
-                ViewOccurrences(occurrences, 15, ViewDirection.Y, false);
+                ViewOccurrences(occurrences, 15, ViewDirection.Y);
             }
-
         }
 
         /// <summary>
@@ -692,7 +698,7 @@ namespace BxDRobotExporter
         /// <param name="viewDistance">The distence from <paramref name="occurrence"/> that the camera will be</param>
         /// <param name="viewDirection">The direction of the camera</param>
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
-        public void ViewOccurrence(ComponentOccurrence occurrence, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = true)
+        public void ViewOccurrence(ComponentOccurrence occurrence, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = false)
         {
             //The translation from the origin of occurrence
             Vector translation = occurrence.Transformation.Translation;
@@ -703,22 +709,29 @@ namespace BxDRobotExporter
 
             if ((viewDirection & ViewDirection.Negative) == ViewDirection.Negative)
                 viewDistance = -viewDistance;
+
             Inventor.Point eye = null;
+            Inventor.UnitVector up = null;
+
             if ((viewDirection & ViewDirection.X) == ViewDirection.X)
             {
                 eye = MainApplication.TransientGeometry.CreatePoint(translation.X + viewDistance, translation.Y, translation.Z);
+                up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
             else if ((viewDirection & ViewDirection.Y) == ViewDirection.Y)
             {
                 eye = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y + viewDistance, translation.Z);
+                up = MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
             }
             else if ((viewDirection & ViewDirection.Z) == ViewDirection.Z)
             {
                 eye = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y, translation.Z + viewDistance);
+                up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
 
             cam.Eye = eye;
-            cam.UpVector = MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
+            cam.UpVector = up;
+
             if (animate)
                 cam.Apply();
             else
@@ -752,22 +765,29 @@ namespace BxDRobotExporter
 
             if ((viewDirection & ViewDirection.Negative) == ViewDirection.Negative)
                 viewDistance = -viewDistance;
+
             Inventor.Point eye = null;
+            Inventor.UnitVector up = null;
+
             if ((viewDirection & ViewDirection.X) == ViewDirection.X)
             {
                 eye = MainApplication.TransientGeometry.CreatePoint(translation.X + viewDistance, translation.Y, translation.Z);
+                up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
             else if ((viewDirection & ViewDirection.Y) == ViewDirection.Y)
             {
                 eye = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y + viewDistance, translation.Z);
+                up = MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
             }
             else if ((viewDirection & ViewDirection.Z) == ViewDirection.Z)
             {
                 eye = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y, translation.Z + viewDistance);
+                up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
 
             cam.Eye = eye;
-            cam.UpVector = MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
+            cam.UpVector = up;
+
             if (animate)
                 cam.Apply();
             else
