@@ -5,6 +5,18 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
+    RoboRIO::Global::Global(){
+    	fpga_start_time = getCurrentTime();//std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    }
+    
+    uint64_t RoboRIO::Global::getCurrentTime(){
+        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    }
+
+    uint64_t RoboRIO::Global::getFPGAStartTime()const{
+        return fpga_start_time;
+    }
+
     struct GlobalManager: public tGlobal{
     	tSystemInterface* getSystemInterface(){
     		return nullptr;
@@ -35,7 +47,7 @@ namespace hel{
     	}
 
     	uint32_t readLocalTimeUpper(tRioStatusCode* /*status*/){
-    		return 0; //unclear what this funtion does, but HAL should work if this returns a consistent value
+    		return (RoboRIO::Global::getCurrentTime() - RoboRIOManager::getInstance()->global.getFPGAStartTime()) >> 32;
     	}
 
     	uint16_t readVersion(tRioStatusCode* /*status*/){
@@ -43,7 +55,7 @@ namespace hel{
     	}
 
     	uint32_t readLocalTime(tRioStatusCode* /*status*/){
-    		return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    		return (uint32_t)(RoboRIO::Global::getCurrentTime() - RoboRIOManager::getInstance()->global.getFPGAStartTime());
     	}
 
     	bool readUserButton(tRioStatusCode* /*status*/){
