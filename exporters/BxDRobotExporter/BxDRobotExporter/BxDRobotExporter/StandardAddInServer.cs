@@ -187,7 +187,7 @@ namespace BxDRobotExporter
                     List<RigidNode_Base> allWheels = new List<RigidNode_Base>();
                     allWheels.AddRange(leftWheels);
                     allWheels.AddRange(rightWheels);
-                    JointEditorPane_SelectedJoint(allWheels);
+                    SelectNodes(allWheels);
                 }
             };
             DebugPanel.CommandControls.AddButton(DedectionTestButton, true);
@@ -293,7 +293,7 @@ namespace BxDRobotExporter
             WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
-            Utilities.GUI.jointEditorPane1.SelectedJoint += JointEditorPane_SelectedJoint;
+            Utilities.GUI.jointEditorPane1.SelectedJoint += SelectNodes;
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
             
             EnvironmentEnabled = true;
@@ -553,10 +553,10 @@ namespace BxDRobotExporter
 
         #region RobotExportAPI Events
         /// <summary>
-        /// Selects all the <see cref="ComponentOccurrence"/>s in inventor associated with the given joint or joints. 
+        /// Selects a list of nodes in Inventor.
         /// </summary>
-        /// <param name="nodes"></param>
-        public void JointEditorPane_SelectedJoint(List<RigidNode_Base> nodes)
+        /// <param name="nodes">List of nodes to select.</param>
+        public void SelectNodes(List<RigidNode_Base> nodes)
         {
             ChildHighlight.Clear();
 
@@ -565,23 +565,35 @@ namespace BxDRobotExporter
                 return;
             }
 
-            if (nodes.Count == 1)
+            // Get all node ID's
+            List<string> nodeIDs = new List<string>(); ;
+            foreach (RigidNode_Base node in nodes)
+                nodeIDs.AddRange(node.GetModelID().Split(new String[] { "-_-" }, StringSplitOptions.RemoveEmptyEntries));
+            
+            // Select all nodes
+            List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
+            foreach (string id in nodeIDs)
             {
-                ComponentOccurrence occurrence = GetOccurrence(nodes[0].GetModelID().Substring(0, nodes[0].GetModelID().Length - 3));
-                SelectNode(occurrence);
-                ViewOccurrence(occurrence, 15, ViewDirection.Y);
-            }
-            else
-            {
-                List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
-                foreach (RigidNode_Base node in nodes)
+                ComponentOccurrence occurrence = GetOccurrence(id);
+
+                if (occurrence != null)
                 {
-                    ComponentOccurrence occurrence = GetOccurrence(node.GetModelID().Substring(0, node.GetModelID().Length - 3));
                     SelectNode(occurrence);
                     occurrences.Add(occurrence);
                 }
-                ViewOccurrences(occurrences, 15, ViewDirection.Y);
             }
+
+            // Set camera view
+            ViewOccurrences(occurrences, 15, ViewDirection.Y);
+        }
+        
+        /// <summary>
+        /// Public method used to select a node.
+        /// </summary>
+        /// <param name="node">Node to select.</param>
+        public void SelectNode(RigidNode_Base node)
+        {
+            SelectNodes(new List<RigidNode_Base>() { node });
         }
 
         /// <summary>
@@ -675,46 +687,49 @@ namespace BxDRobotExporter
         }
 
         /// <summary>
-        /// Moves the camera to the specified occurrence. Used in the wizard to point out the specified occurence.
+        /// Sets the position and target of the camera.
         /// </summary>
-        /// <param name="occurrence">The <see cref="ComponentOccurrence"/> for the <see cref="Camera"/> to focus on</param>
-        /// <param name="viewDistance">The distence from <paramref name="occurrence"/> that the camera will be</param>
-        /// <param name="viewDirection">The direction of the camera</param>
-        /// <param name="animate">True if you want to animate the camera moving to the new position</param>
-        public void ViewOccurrence(ComponentOccurrence occurrence, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = false)
+        /// <param name="focus">Point that camera should look at.</param>
+        /// <param name="viewDistance">Distance the camera should be from that point</param>
+        /// <param name="viewDirection">Direction to view the point from.</param>
+        /// <param name="animate">True to animate movement of camera.</param>
+        public void SetCameraView(Vector focus, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = true)
         {
-            //The translation from the origin of occurrence
-            Vector translation = occurrence.Transformation.Translation;
-
             Camera cam = MainApplication.ActiveView.Camera;
-            Inventor.Point partTrans = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y, translation.Z);
-            cam.Target = partTrans;
 
+            Inventor.Point focusPoint = MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
+
+            cam.Target = focusPoint;
+
+            // Flip view for negative direction
             if ((viewDirection & ViewDirection.Negative) == ViewDirection.Negative)
                 viewDistance = -viewDistance;
-
-            Inventor.Point eye = null;
+            
             Inventor.UnitVector up = null;
 
+            // Find camera position and upwards direction
             if ((viewDirection & ViewDirection.X) == ViewDirection.X)
             {
-                eye = MainApplication.TransientGeometry.CreatePoint(translation.X + viewDistance, translation.Y, translation.Z);
+                focus.X += viewDistance;
                 up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
-            else if ((viewDirection & ViewDirection.Y) == ViewDirection.Y)
+
+            if ((viewDirection & ViewDirection.Y) == ViewDirection.Y)
             {
-                eye = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y + viewDistance, translation.Z);
+                focus.Y += viewDistance;
                 up = MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
             }
-            else if ((viewDirection & ViewDirection.Z) == ViewDirection.Z)
+
+            if ((viewDirection & ViewDirection.Z) == ViewDirection.Z)
             {
-                eye = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y, translation.Z + viewDistance);
+                focus.Z += viewDistance;
                 up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
 
-            cam.Eye = eye;
+            cam.Eye = MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
             cam.UpVector = up;
 
+            // Apply settings
             if (animate)
                 cam.Apply();
             else
@@ -730,6 +745,9 @@ namespace BxDRobotExporter
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
         public void ViewOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = true)
         {
+            if (occurrences.Count < 1)
+                return;
+
             double xSum = 0, ySum = 0, zSum = 0;
             int i = 0;
             foreach(ComponentOccurrence occurrence in occurrences)
@@ -742,39 +760,7 @@ namespace BxDRobotExporter
             }
             Vector translation = MainApplication.TransientGeometry.CreateVector((xSum / i), (ySum / i), (zSum / i));
 
-            Camera cam = MainApplication.ActiveView.Camera;
-            Inventor.Point partTrans = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y, translation.Z);
-            cam.Target = partTrans;
-
-            if ((viewDirection & ViewDirection.Negative) == ViewDirection.Negative)
-                viewDistance = -viewDistance;
-
-            Inventor.Point eye = null;
-            Inventor.UnitVector up = null;
-
-            if ((viewDirection & ViewDirection.X) == ViewDirection.X)
-            {
-                eye = MainApplication.TransientGeometry.CreatePoint(translation.X + viewDistance, translation.Y, translation.Z);
-                up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
-            }
-            else if ((viewDirection & ViewDirection.Y) == ViewDirection.Y)
-            {
-                eye = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y + viewDistance, translation.Z);
-                up = MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
-            }
-            else if ((viewDirection & ViewDirection.Z) == ViewDirection.Z)
-            {
-                eye = MainApplication.TransientGeometry.CreatePoint(translation.X, translation.Y, translation.Z + viewDistance);
-                up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
-            }
-
-            cam.Eye = eye;
-            cam.UpVector = up;
-
-            if (animate)
-                cam.Apply();
-            else
-                cam.ApplyWithoutTransition();
+            SetCameraView(translation, viewDistance, viewDirection, animate);
         }
 
         /// <summary>
@@ -850,33 +836,6 @@ namespace BxDRobotExporter
                 return true; // Continue without saving
             else
                 return false; // Don't continue
-        }
-
-        /// <summary>
-        /// Public method used to select a node from the wizard.
-        /// </summary>
-        /// <param name="node"></param>
-        public void WizardSelect(RigidNode_Base node)
-        {
-            ChildHighlight.Clear();
-            
-            if(node.GetModelID().Split(new string[] { "-_-" }, StringSplitOptions.RemoveEmptyEntries).Length == 1)
-            {
-                ComponentOccurrence occurrence = GetOccurrence(node.GetModelID().Substring(0, node.GetModelID().Length - 3));
-                SelectNode(occurrence);
-                ViewOccurrence(occurrence, 15, ViewDirection.Y, false);
-            }
-            else
-            {
-                List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
-                foreach (string s in node.GetModelID().Split(new string[] { "-_-" }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    ComponentOccurrence occurrence = GetOccurrence(s);
-                    SelectNode(occurrence);
-                    occurrences.Add(occurrence);
-                }
-                ViewOccurrences(occurrences, 15, ViewDirection.Y, false);
-            }
         }
 
         /// <summary>
