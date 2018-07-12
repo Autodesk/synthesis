@@ -123,7 +123,10 @@ public partial class SurfaceExporter
                     for (int i = 0; i < tmpSurfaceLoop.vertCount; i++)
                         tmpSurface.verts[tmpSurface.vertCount + i] = tmpSurfaceLoop.verts[i];
                     tmpSurface.vertCount += tmpSurfaceLoop.vertCount;
-                    tmpSurface.vertCount
+
+                    for (int i = 0; i < tmpSurfaceLoop.vertCount; i++)
+                        tmpSurface.verts[tmpSurface.vertCount + i] = tmpSurfaceLoop.verts[i];
+                    tmpSurface.vertCount += tmpSurfaceLoop.vertCount;
                 }
 
                 AddFacetsInternal(asset.Value);
