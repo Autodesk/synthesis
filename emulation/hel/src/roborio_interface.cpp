@@ -58,16 +58,16 @@ std::string hel::RoboRIOInterface::toString()const{
 }
 
 std::string hel::RoboRIOInterface::serialize()const{
-    std::string s = "roborio[";
+    std::string s = "roborio: {";
     
-    std::string += "pwm_hdrs:[";
+    s += "pwm_hdrs: [";
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
         s += std::to_string(pwm_hdrs[i]);
         if((i + 1) < pwm_hdrs.size()){
             s += ",";
         }
     }
-    std::string += "]";
+    s += "],";
     
     //TODO finish
 

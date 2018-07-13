@@ -118,23 +118,30 @@ namespace hel{
         }
 
         void writeDATO(uint8_t value, tRioStatusCode* /*status*/){
-            switch(RoboRIOManager::getInstance()->accelerometer.getControlMode()){
+            auto instance = RoboRIOManager::getInstance();
+            switch(instance.first->accelerometer.getControlMode()){
                 case RoboRIO::Accelerometer::ControlMode::SET_COMM_TARGET:
-                    RoboRIOManager::getInstance()->accelerometer.setCommTargetReg(value);
+                    instance.first->accelerometer.setCommTargetReg(value);
+                    instance.second.unlock();
                     return;
                 case RoboRIO::Accelerometer::ControlMode::SET_DATA:
-                    switch(RoboRIOManager::getInstance()->accelerometer.getCommTargetReg()){
+                    switch(instance.first->accelerometer.getCommTargetReg()){
                         case RoboRIO::Accelerometer::Register::kReg_CtrlReg1:
-                            RoboRIOManager::getInstance()->accelerometer.setActive(value & 1u); //Gets first bit in value
+                            instance.first->accelerometer.setActive(value & 1u); //Gets first bit in value
+                            instance.second.unlock();
                             return;
                         case RoboRIO::Accelerometer::Register::kReg_XYZDataCfg:
-                            RoboRIOManager::getInstance()->accelerometer.setRange(value & 3u); //Gets first two bits in value
+                            instance.first->accelerometer.setRange(value & 3u); //Gets first two bits in value
+                            instance.second.unlock();
                             return;
                         default:
-                           return; //TODO error handling 
+                            instance.second.unlock();
+                            return; //TODO error handling 
                     }
+                    instance.second.unlock();
                     return;
                 default:
+                    instance.second.unlock();
                     return; //TODO error handling
             }
         }
@@ -156,13 +163,15 @@ namespace hel{
         }
 
         void writeCNTL(uint8_t value, tRioStatusCode* /*status*/){
+            auto instance = RoboRIOManager::getInstance();
             RoboRIO::Accelerometer::ControlMode control_mode = [&]{
                 if(value == (CONTROL_START | CONTROL_TX_RX)){
                     return RoboRIO::Accelerometer::ControlMode::SET_COMM_TARGET;
                 }
                 return RoboRIO::Accelerometer::ControlMode::SET_DATA;
             }();
-            RoboRIOManager::getInstance()->accelerometer.setControlMode(control_mode);
+            instance.first->accelerometer.setControlMode(control_mode);
+            instance.second.unlock();
         }
 
         uint8_t readCNTL(tRioStatusCode* /*status*/){ //unnecessary for emulation
@@ -170,26 +179,37 @@ namespace hel{
         }
 
         uint8_t readDATI(tRioStatusCode* /*status*/){
-            switch(RoboRIOManager::getInstance()->accelerometer.getCommTargetReg()){
+            auto instance = RoboRIOManager::getInstance();
+            switch(instance.first->accelerometer.getCommTargetReg()){
                 case RoboRIO::Accelerometer::Register::kReg_WhoAmI:
+                    instance.second.unlock();
                     return ID;
                 case RoboRIO::Accelerometer::Register::kReg_CtrlReg1:
-                    return RoboRIOManager::getInstance()->accelerometer.getActive();
+                    instance.second.unlock();
+                    return instance.first->accelerometer.getActive();
                 case RoboRIO::Accelerometer::Register::kReg_XYZDataCfg:
-                    return RoboRIOManager::getInstance()->accelerometer.getRange();
+                    instance.second.unlock();
+                    return instance.first->accelerometer.getRange();
                 case RoboRIO::Accelerometer::Register::kReg_OutXMSB:
-                    return RoboRIOManager::getInstance()->accelerometer.convertAccel(RoboRIOManager::getInstance()->accelerometer.getXAccel()).first;
+                    instance.second.unlock();
+                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getXAccel()).first;
                 case RoboRIO::Accelerometer::Register::kReg_OutXLSB:
-                    return RoboRIOManager::getInstance()->accelerometer.convertAccel(RoboRIOManager::getInstance()->accelerometer.getXAccel()).second;
+                    instance.second.unlock();
+                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getXAccel()).second;
                 case RoboRIO::Accelerometer::Register::kReg_OutYMSB:
-                    return RoboRIOManager::getInstance()->accelerometer.convertAccel(RoboRIOManager::getInstance()->accelerometer.getYAccel()).first;
+                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).first;
+                    instance.second.unlock();
                 case RoboRIO::Accelerometer::Register::kReg_OutYLSB:
-                    return RoboRIOManager::getInstance()->accelerometer.convertAccel(RoboRIOManager::getInstance()->accelerometer.getYAccel()).second;
+                    instance.second.unlock();
+                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).second;
                 case RoboRIO::Accelerometer::Register::kReg_OutZMSB:
-                    return RoboRIOManager::getInstance()->accelerometer.convertAccel(RoboRIOManager::getInstance()->accelerometer.getZAccel()).first;
+                    instance.second.unlock();
+                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).first;
                 case RoboRIO::Accelerometer::Register::kReg_OutZLSB:
-                    return RoboRIOManager::getInstance()->accelerometer.convertAccel(RoboRIOManager::getInstance()->accelerometer.getZAccel()).second;
+                    instance.second.unlock();
+                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).second;
             }
+            instance.second.unlock();
             return 0; //TODO error handling
         }
 

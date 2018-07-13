@@ -50,202 +50,286 @@ namespace hel{
         }
 
         tOutput readOutput(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getOutput();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getOutput();
         }
 
         bool readOutput_Direction(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getOutput().Direction;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getOutput().Direction;
         }
 
         int32_t readOutput_Value(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getOutput().Value;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getOutput().Value;
         }
 
         void writeConfig(tConfig value, tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->encoders[index].setConfig(value);
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->encoders[index].setConfig(value);
+            instance.second.unlock();
         }
 
         void writeConfig_ASource_Channel(uint8_t value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.ASource_Channel = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_ASource_Module(uint8_t value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.ASource_Module = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_ASource_AnalogTrigger(bool value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.ASource_AnalogTrigger = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_BSource_Channel(uint8_t value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.BSource_Channel = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_BSource_Module(uint8_t value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.BSource_Module = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_BSource_AnalogTrigger(bool value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.BSource_AnalogTrigger = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_IndexSource_Channel(uint8_t value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.IndexSource_Channel = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_IndexSource_Module(uint8_t value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.IndexSource_Module = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_IndexSource_AnalogTrigger(bool value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.IndexSource_AnalogTrigger = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_IndexActiveHigh(bool value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.IndexActiveHigh = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_IndexEdgeSensitive(bool value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.IndexEdgeSensitive = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_Reverse(bool value, tRioStatusCode* /*status*/){
-            tConfig config = RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tConfig config = instance.first->encoders[index].getConfig();
             config.Reverse = value;
-            RoboRIOManager::getInstance()->encoders[index].setConfig(config);
+            instance.first->encoders[index].setConfig(config);
+            instance.second.unlock();
         }
 
         tConfig readConfig(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig();
         }
 
         uint8_t readConfig_ASource_Channel(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().ASource_Channel;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().ASource_Channel;
         }
 
         uint8_t readConfig_ASource_Module(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().ASource_Module;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().ASource_Module;
         }
 
         bool readConfig_ASource_AnalogTrigger(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().ASource_AnalogTrigger;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().ASource_AnalogTrigger;
         }
 
         uint8_t readConfig_BSource_Channel(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().BSource_Channel;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().BSource_Channel;
         }
 
         uint8_t readConfig_BSource_Module(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().BSource_Module;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().BSource_Module;
         }
 
         bool readConfig_BSource_AnalogTrigger(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().BSource_AnalogTrigger;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().BSource_AnalogTrigger;
         }
 
         uint8_t readConfig_IndexSource_Channel(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().IndexSource_Channel;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().IndexSource_Channel;
         }
 
         uint8_t readConfig_IndexSource_Module(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().IndexSource_Module;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().IndexSource_Module;
         }
 
         bool readConfig_IndexSource_AnalogTrigger(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().IndexSource_AnalogTrigger;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().IndexSource_AnalogTrigger;
         }
 
         bool readConfig_IndexActiveHigh(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().IndexActiveHigh;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().IndexActiveHigh;
         }
 
         bool readConfig_IndexEdgeSensitive(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().IndexEdgeSensitive;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().IndexEdgeSensitive;
         }
 
         bool readConfig_Reverse(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getConfig().Reverse;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getConfig().Reverse;
         }
 
         tTimerOutput readTimerOutput(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getTimerOutput();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getTimerOutput();
         }
 
         uint32_t readTimerOutput_Period(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getTimerOutput().Period;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getTimerOutput().Period;
         }
 
         int8_t readTimerOutput_Count(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getTimerOutput().Count;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getTimerOutput().Count;
         }
 
         bool readTimerOutput_Stalled(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getTimerOutput().Stalled;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getTimerOutput().Stalled;
         }
 
         void strobeReset(tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->encoders[index].setOutput(*(new tOutput()));
-            RoboRIOManager::getInstance()->encoders[index].setTimerOutput(*(new tTimerOutput()));
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->encoders[index].setOutput(*(new tOutput()));
+            instance.first->encoders[index].setTimerOutput(*(new tTimerOutput()));
+            instance.second.unlock();
         }
 
         void writeTimerConfig(tTimerConfig value, tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->encoders[index].setTimerConfig(value);
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->encoders[index].setTimerConfig(value);
+            instance.second.unlock();
         }
 
         void writeTimerConfig_StallPeriod(uint32_t value, tRioStatusCode* /*status*/){
-            tTimerConfig config = RoboRIOManager::getInstance()->encoders[index].getTimerConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tTimerConfig config = instance.first->encoders[index].getTimerConfig();
             config.StallPeriod = value;
-            RoboRIOManager::getInstance()->encoders[index].setTimerConfig(config);
+            instance.first->encoders[index].setTimerConfig(config);
+            instance.second.unlock();
         }
 
         void writeTimerConfig_AverageSize(uint8_t value, tRioStatusCode* /*status*/){
-            tTimerConfig config = RoboRIOManager::getInstance()->encoders[index].getTimerConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tTimerConfig config = instance.first->encoders[index].getTimerConfig();
             config.AverageSize = value;
-            RoboRIOManager::getInstance()->encoders[index].setTimerConfig(config);
+            instance.first->encoders[index].setTimerConfig(config);
+            instance.second.unlock();
         }
 
         void writeTimerConfig_UpdateWhenEmpty(bool value, tRioStatusCode* /*status*/){
-            tTimerConfig config = RoboRIOManager::getInstance()->encoders[index].getTimerConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tTimerConfig config = instance.first->encoders[index].getTimerConfig();
             config.UpdateWhenEmpty = value;
-            RoboRIOManager::getInstance()->encoders[index].setTimerConfig(config);
+            instance.first->encoders[index].setTimerConfig(config);
+            instance.second.unlock();
         }
 
         tTimerConfig readTimerConfig(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getTimerConfig();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getTimerConfig();
         }
 
         uint32_t readTimerConfig_StallPeriod(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getTimerConfig().StallPeriod;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getTimerConfig().StallPeriod;
         }
 
         uint8_t readTimerConfig_AverageSize(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getTimerConfig().AverageSize;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getTimerConfig().AverageSize;
         }
 
         bool readTimerConfig_UpdateWhenEmpty(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->encoders[index].getTimerConfig().UpdateWhenEmpty;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->encoders[index].getTimerConfig().UpdateWhenEmpty;
         }
 
         EncoderManager(uint8_t i):index(i){}

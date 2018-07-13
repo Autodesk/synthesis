@@ -42,36 +42,52 @@ namespace hel{
         }
  
         tOutput readOutput(tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->accumulators[index].getOutput();
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->accumulators[index].getOutput();
         }
  
         signed long long readOutput_Value(tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->accumulators[index].getOutput().Value;
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->accumulators[index].getOutput().Value;
         }
  
         uint32_t readOutput_Count(tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->accumulators[index].getOutput().Count;
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->accumulators[index].getOutput().Count;
         }
  
         void writeCenter(int32_t value, tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->accumulators[index].setCenter(value);
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->accumulators[index].setCenter(value);
         }
  
         int32_t readCenter(tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->accumulators[index].getCenter();
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->accumulators[index].getCenter();
         }
  
         void writeDeadband(int32_t value, tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->accumulators[index].setDeadband(value);
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->accumulators[index].setDeadband(value);
         }
  
         int32_t readDeadband(tRioStatusCode* /*status*/){
-            return hel::RoboRIOManager::getInstance()->accumulators[index].getDeadband();
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->accumulators[index].getDeadband();
         }
  
         void strobeReset(tRioStatusCode* /*status*/){
+            auto instance = hel::RoboRIOManager::getInstance();
             tOutput output;
-            return hel::RoboRIOManager::getInstance()->accumulators[index].setOutput(output);
+            instance.second.unlock();
+            return instance.first->accumulators[index].setOutput(output);
         }
 
         AccumulatorManager(uint8_t i):index(i){}

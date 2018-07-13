@@ -5,7 +5,7 @@
 -I../external/allwpilib/ni-libraries/include/
 -I../external/allwpilib/wpilibc/src/main/native/include/
 -I../external/allwpilib/wpiutil/src/main/native/include/
--I../external/ASIO/asio/include
+-I../external/ASIO/asio/include/
 -std=c++14
 -pedantic
 -Wextra
