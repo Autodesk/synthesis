@@ -54,13 +54,13 @@ namespace Synthesis.Input
         public void OnSaveClick()
         {
             Controls.Save();
-            UserMessageManager.Dispatch("Player preferances saved.", 5);
+            UserMessageManager.Dispatch("Player preferences saved.", 5);
         }
 
         public void OnSaveClickMainMenu()
         {
             Controls.Save();
-            UserMessageManager.Dispatch("Player preferances saved.", 5);
+            UserMessageManager.Dispatch("Player preferences saved.", 5);
             StateMachine.SceneGlobal.ChangeState(new HomeTabState());
         }
 

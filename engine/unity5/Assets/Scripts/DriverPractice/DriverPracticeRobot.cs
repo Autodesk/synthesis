@@ -518,6 +518,14 @@ namespace Synthesis.DriverPractice
             }
         }
 
+        public void ResettingGamepieceSpawn()
+        {
+            if (spawnIndicator != null)
+            {
+                spawnIndicator.transform.position = new UnityEngine.Vector3(0, 3, 0);
+            }
+        }
+
         public void FinishGamepieceSpawn()
         {
             settingSpawn = 0;
