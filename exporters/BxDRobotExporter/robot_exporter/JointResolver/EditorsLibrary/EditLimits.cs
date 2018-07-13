@@ -17,20 +17,20 @@ namespace EditorsLibrary
         SkeletalJoint_Base joint;
         public EditLimits(SkeletalJoint_Base joint)
         {
-            this.joint = joint;
+            this.joint = joint;// read in the joint base so we can access the correspodinig Inventor Joint to see/ edit the limits
             InitializeComponent();
             //measure = SynthesisGUI.Instance.MainApplication.UnitsOfMeasure;
             //MessageBox.Show(measure.MassUnits.GetType().ToString());
-            if(!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+            if(!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||// if the joint is a rotational then enable the rotation stuff and disable the linear
                     ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
             {
                 this.LinearGroup.Enabled = false;
-                this.Angular_Current_textbox.Text = Convert.ToString(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).ModelValue * (180 / Math.PI));
+                this.Angular_Current_textbox.Text = Convert.ToString(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).ModelValue * (180 / Math.PI));// convert from RAD to DEG
                 this.Angular_Start.Checked = false;
                 this.Angular_End.Checked = false;
                 this.Angular_Start_textbox.Enabled = false;
                 this.Angular_End_textbox.Enabled = false;
-                if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits)
+                if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits)// check if the joint has limits so we know whether or not to read in the joint data from Inventor and whether or not to activate the angular limits form
                 {
                     this.Angular_Start.Checked = true;
                     this.Angular_End.Checked = true;
@@ -40,21 +40,21 @@ namespace EditorsLibrary
                     this.Angular_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue * (180 / Math.PI)));
                 }
             }
-            else
+            else// if the joint is a linear joint then activate the linear stuff and deactivate the rotational stuff
             {
                 this.Angular_Group_Box.Enabled = false;
-                this.Linear_Current_textbox.Text = Convert.ToString(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).ModelValue / 2.54);
+                this.Linear_Current_textbox.Text = Convert.ToString(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).ModelValue / 2.54);// convert from CM to IN
                 this.Linear_Start.Checked = false;
                 this.Linear_End.Checked = false;
                 this.Linear_Start_textbox.Enabled = false;
                 this.Linear_End_textbox.Enabled = false;
-                if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit)
+                if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit)// if the joint has a start limit then read it in and activate the corresponding fields
                 {
                     this.Linear_Start_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue) / 2.54);
                     this.Linear_Start_textbox.Enabled = true;
                     this.Linear_Start.Checked = true;
                 }
-                if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit)
+                if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit)// if the joint has an end limit then read it in and activate the corresponding fields
                 {
                     this.Linear_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue) / 2.54);
                     this.Linear_End_textbox.Enabled = true;
