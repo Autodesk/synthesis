@@ -78,15 +78,15 @@ public partial class SurfaceExporter
             {
                 try
                 {
-                    Asset asset = f.Appearance;
+                    string assetName = f.Appearance.DisplayName;
 
-                    if (!sharedAssets.ContainsKey(asset.DisplayName))
+                    if (!sharedAssets.ContainsKey(assetName))
                     {
-                        sharedAssets.Add(asset.DisplayName, AssetProperties.Create(asset));
-                        subSurfaces.Add(asset.DisplayName, new List<Face>());
+                        sharedAssets.Add(assetName, AssetProperties.Create(f));
+                        subSurfaces.Add(assetName, new List<Face>());
                     }
 
-                    subSurfaces[asset.DisplayName].Add(f);
+                    subSurfaces[assetName].Add(f);
                 }
                 catch
                 {
