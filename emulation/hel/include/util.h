@@ -2,6 +2,7 @@
 #define _UTIL_H_
 
 #include <functional>
+#include <vector>
 
 namespace hel{
 
@@ -107,7 +108,7 @@ namespace hel{
     };
 
     template<typename T, size_t LEN>
-    std::string serializeArray(std::string label, std::array<T, LEN> arr, std::function<std::string(T)> to_s){
+    std::string serializeList(std::string label, std::array<T, LEN> arr, std::function<std::string(T)> to_s){
         std::string s = label + ":[";
         for(unsigned i = 0; i < arr.size(); i++){
             s += to_s(arr[i]);
@@ -120,10 +121,36 @@ namespace hel{
     }
 
     template<typename T, size_t LEN>
-    std::string serializeArray(std::string label, std::array<T, LEN> arr, std::string(*to_s)(T)){
+    std::string serializeList(std::string label, std::array<T, LEN> arr, std::string(*to_s)(T)){
         std::function<std::string(T)> function_to_s = to_s;
-        return serializeArray(label, arr, function_to_s);
+        return serializeList(label, arr, function_to_s);
     }
+
+    std::string removeExtraneousSpaces(std::string);
+
+    std::string excludeFromString(std::string, std::vector<char>);
+
+    std::string trim(std::string);
+
+    std::vector<std::string> split(std::string, const char);
+
+    template<typename T>
+    std::vector<T> deserializeList(std::string input, std::function<T(std::string)> from_s){
+        input = excludeFromString(input, {'[',']'});
+        std::vector<T> v;
+        for(std::string i: split(input, ',')){
+            v.push_back(from_s(removeExtraneousSpaces(i)));
+        }
+        return v;
+    }
+
+    template<typename T>
+    std::string deserializeList(std::string input, T(*from_s)(std::string)){
+        std::function<std::string(T)> function_from_s = from_s;
+        return deserializeList(input, function_from_s);
+    }
+
+    std::string removeList(std::string,std::string&);
 
     std::string quote(std::string);
 }
