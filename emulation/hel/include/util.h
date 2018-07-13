@@ -41,6 +41,16 @@ namespace hel{
     	return value & index;
     }
 
+    template<typename TInteger, typename TIndex>
+    TInteger setBit(TInteger integer,bool bit, TIndex index){
+        integer &= ~(1u << index);
+        if(bit){
+            integer |= 1u << index;
+        }
+
+        return integer;
+    }
+
     template<typename T>
     struct Maybe {
 

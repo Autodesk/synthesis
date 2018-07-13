@@ -1,9 +1,9 @@
-#include "roborio_interface.h"
+#include "send_data.h"
 
 #include "HAL/HAL.h"
 #include "util.h"
 
-void hel::RoboRIOInterface::update(){
+void hel::SendData::update(){
     auto instance = RoboRIOManager::getInstance();
     int32_t status = 0;
 
@@ -47,7 +47,7 @@ void hel::RoboRIOInterface::update(){
                     i == 12 ||
                     i == 13
                 ){
-                    return MXPData::Config::PWM;
+                    return hel::MXPData::Config::PWM;
                 }
                 if(
                     i == 4 ||
@@ -55,28 +55,32 @@ void hel::RoboRIOInterface::update(){
                     i == 6 ||
                     i == 7
                 ){
-                    return MXPData::Config::SPI;
+                    return hel::MXPData::Config::SPI;
                 }
                 if(
                     i == 14 ||
                     i == 15
                 ){
-                    return MXPData::Config::I2C;
+                    return hel::MXPData::Config::I2C;
                 }
             }
-            return MXPData::Config::DIO;
+            tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+            if(checkBitHigh(output_mode.MXP,i)){
+                return hel::MXPData::Config::DO;
+            }
+            return hel::MXPData::Config::DI;
         }();
         switch(digital_mxp[i].config){
-        case MXPData::Config::DIO:
+        case hel::MXPData::Config::DO:
             digital_mxp[i].value = HAL_GetDIO(i + hal::kNumDigitalHeaders, &status);
             break;
-        case MXPData::Config::PWM:
+        case hel::MXPData::Config::PWM:
             digital_mxp[i].value = HAL_GetPWMSpeed(i + tPWM::kNumHdrRegisters, &status);
             break;
-        case MXPData::Config::SPI:
+        case hel::MXPData::Config::SPI:
             digital_mxp[i].value = 0; //TODO
             break;
-        case MXPData::Config::I2C:
+        case hel::MXPData::Config::I2C:
             digital_mxp[i].value = 0; //TODO
             break;
         default:
@@ -84,46 +88,36 @@ void hel::RoboRIOInterface::update(){
         }
     }
 
-    for(unsigned i = 0; i < digital_hdrs.size(); i++){
-        digital_hdrs[i] = HAL_GetDIO(i, &status);
+    {
+        tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+        for(unsigned i = 0; i < digital_hdrs.size(); i++){
+            if(checkBitHigh(output_mode.MXP,i)){
+                HAL_SetDIO(digital_hdrs[i], i, &status);
+            }
+        }
     }
 }
 
-std::string hel::to_string(hel::RoboRIOInterface::RelayState r){
+std::string hel::to_string(hel::SendData::RelayState r){
     switch(r){
-    case hel::RoboRIOInterface::RelayState::OFF:
+    case hel::SendData::RelayState::OFF:
         return "OFF";
-    case hel::RoboRIOInterface::RelayState::REVERSE:
+    case hel::SendData::RelayState::REVERSE:
         return "REVERSE";
-    case hel::RoboRIOInterface::RelayState::FORWARD:
+    case hel::SendData::RelayState::FORWARD:
         return "FORWARD";
-    case hel::RoboRIOInterface::RelayState::ERROR:
+    case hel::SendData::RelayState::ERROR:
         return "ERROR";
     default:
         return ""; //TODO error handling
     }
 }
 
-std::string hel::RoboRIOInterface::toString()const{
+std::string hel::SendData::toString()const{
     return ""; //TODO implement function in readable print-out
 }
 
-std::string hel::to_string(hel::RoboRIOInterface::MXPData::Config config){
-    switch(config){
-    case hel::RoboRIOInterface::MXPData::Config::DIO:
-        return "DIO";
-    case hel::RoboRIOInterface::MXPData::Config::PWM:
-        return "PWM";
-    case hel::RoboRIOInterface::MXPData::Config::SPI:
-        return "SPI";
-    case hel::RoboRIOInterface::MXPData::Config::I2C:
-        return "I2C";
-    default:
-        return ""; //TODO error handling
-    }
-}
-
-std::string hel::RoboRIOInterface::serialize()const{
+std::string hel::SendData::serialize()const{
     std::string s = "{\"roborio\":{";
 
     s += serializeArray("\"pwm_hdrs\"", pwm_hdrs, static_cast<std::string(*)(double)>(std::to_string));
@@ -141,7 +135,7 @@ std::string hel::RoboRIOInterface::serialize()const{
     s += serializeArray(
         "\"digital_mxp\"",
         digital_mxp,
-        std::function<std::string(MXPData)>([&](MXPData data){
+        std::function<std::string(hel::MXPData)>([&](MXPData data){
             return "{\"config\":" + hel::quote(hel::to_string(data.config)) + ",\"value\":" + std::to_string(data.value) + "}";
         })
     );
