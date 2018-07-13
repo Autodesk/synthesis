@@ -66,11 +66,19 @@ namespace JointResolver.ControlGUI
 
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
-            RigidNode_Base Skeleton = null;
+            RigidNode_Base skeleton = null;
 
             try
             {
-                Skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
+                skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
+            }
+            catch (Exporter.EmptyAssemblyException)
+            {
+                SetProgressWindowVisisble(false);
+
+                string caption = "Empty Assembly";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                DialogResult r = MessageBox.Show("Assembly has no parts to export.", caption, buttons);
             }
             catch (Exporter.InvalidJointException ex)
             {
@@ -80,8 +88,18 @@ namespace JointResolver.ControlGUI
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
                 DialogResult r = MessageBox.Show(ex.Message, caption, buttons);
             }
+            catch (Exporter.NoGroundException)
+            {
+                SetProgressWindowVisisble(false);
 
-            SynthesisGUI.Instance.SkeletonBase = Skeleton;
+                string caption = "No Ground";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                DialogResult r = MessageBox.Show("Please ground a part in your assembly to export your robot.", caption, buttons);
+            }
+            finally
+            {
+                SynthesisGUI.Instance.SkeletonBase = skeleton;
+            }
         }
 
         /// <summary>
@@ -93,7 +111,7 @@ namespace JointResolver.ControlGUI
         {
             if (occurrences.Count == 0)
             {
-                return null;
+                throw new Exporter.EmptyAssemblyException();
             }
 
             #region CenterJoints
