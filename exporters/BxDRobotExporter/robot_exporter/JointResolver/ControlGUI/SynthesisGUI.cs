@@ -433,7 +433,6 @@ public partial class SynthesisGUI : Form
                 joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
                 joint.cDriver.InputGear = Utilities.GetProperty(propertySet, "driver-inputGear", 0.0f);// writes the gearing that the user last had in the exporter to the current gearing value
                 joint.cDriver.OutputGear = Utilities.GetProperty(propertySet, "driver-outputGear", 0.0f);// writes the gearing that the user last had in the exporter to the current gearing value
-                MessageBox.Show(joint.cDriver.InputGear + "");
                 // Get other properties stored in meta
                 // Wheel information
                 if (Utilities.GetProperty(propertySet, "has-wheel", false))
