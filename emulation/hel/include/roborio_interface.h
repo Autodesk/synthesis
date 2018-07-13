@@ -19,13 +19,14 @@ namespace hel{
 
     private:
         std::array<double, tPWM::kNumHdrRegisters> pwm_hdrs;
-        
+
         std::array<RelayState,hal::kNumRelayHeaders> relays;
 
         std::array<double, hal::kNumAnalogOutputs> analog_outputs;
 
         std::array<MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
 
+        std::array<bool, hal::kNumDigitalHeaders> digital_hdrs;
     public:
         void update();
 
@@ -33,6 +34,9 @@ namespace hel{
 
         std::string serialize()const;
     };
+
+    std::string to_string(RoboRIOInterface::MXPData::Config);
+    std::string to_string(RoboRIOInterface::RelayState);
 }
 
 #endif
