@@ -212,26 +212,16 @@ namespace Synthesis.DriverPractice
             if (objectsHeld[index].Count < holdingLimit[index] && intakeInteractor[index].GetDetected(index))
             {
                 for (int i = 0; i < objectsHeld[0].Count; i++)
-                {
-                    if (objectsHeld[0][i].Equals(intakeInteractor[0].GetObject(index))) return; //This makes sure the object the robot is touching isn't an object already being held.
-                }
+                    if (objectsHeld[0][i].Equals(intakeInteractor[0].GetObject(index)))
+                        return; //This makes sure the object the robot is touching isn't an object already being held.
+
                 for (int i = 0; i < objectsHeld[1].Count; i++)
-                {
-                    if (objectsHeld[1][i].Equals(intakeInteractor[1].GetObject(index))) return; //This makes sure the object the robot is touching isn't an object already being held.
-                }
+                    if (objectsHeld[1][i].Equals(intakeInteractor[1].GetObject(index)))
+                        return; //This makes sure the object the robot is touching isn't an object already being held.
 
                 GameObject newObject = intakeInteractor[index].GetObject(index);
-
-                BRigidBody orb = newObject.GetComponent<BRigidBody>();
-
-                // TODO: Something weird is happening when you collect a gamepiece while moving at high speeds.
-                // UPDATE: It seems like the intake is having a bunch of false collisions.
-                // UPDATE 2: Nope, only when things get intense.
-                // UPDATE 3: Wow, even if you disable all collisions and then reenable later, the effect still occurs.
-
-                orb.SetPosition(releaseNode[index].transform.position + releaseNode[index].transform.rotation * positionOffset[index]);
-
-                RigidBody rigidBody = (RigidBody)orb.GetCollisionObject();
+                newObject.GetComponent<BRigidBody>().SetPosition(releaseNode[index].transform.position +
+                    releaseNode[index].transform.rotation * positionOffset[index]);
 
                 BFixedConstraintEx fc = newObject.AddComponent<BFixedConstraintEx>();
                 fc.otherRigidBody = releaseNode[index].GetComponent<BRigidBody>();
@@ -244,8 +234,6 @@ namespace Synthesis.DriverPractice
 
                 foreach (BRigidBody rb in GetComponentsInChildren<BRigidBody>())
                     newObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
-
-                //orb.collisionFlags = BulletSharp.CollisionFlags.NoContactResponse;
 
                 objectsHeld[index].Add(newObject);
                 intakeInteractor[index].heldGamepieces.Add(newObject);
@@ -297,7 +285,6 @@ namespace Synthesis.DriverPractice
 
                 Destroy(orb.GetComponent<BFixedConstraintEx>());
 
-                orb.collisionFlags = BulletSharp.CollisionFlags.None;
                 orb.velocity += releaseNode[index].transform.rotation * releaseVelocityVector[index];
                 orb.angularFactor = UnityEngine.Vector3.one;
             }
@@ -308,11 +295,16 @@ namespace Synthesis.DriverPractice
         /// </summary>
         IEnumerator UnIgnoreCollision(GameObject obj)
         {
+            List<GameObject>[] cachedObjectsHeld = new List<GameObject>[objectsHeld.Count];
+
+            for (int i = 0; i < cachedObjectsHeld.Length; i++)
+                cachedObjectsHeld[i] = objectsHeld[i].ToList();
+
             yield return new WaitForSeconds(0.5f);
 
-            foreach (List<GameObject> l in objectsHeld)
+            foreach (List<GameObject> l in cachedObjectsHeld)
                 foreach (GameObject g in l)
-                    obj.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(g.GetComponent<BRigidBody>().GetCollisionObject(), false);
+                    g.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(obj.GetComponent<BRigidBody>().GetCollisionObject(), false);
 
             foreach (BRigidBody rb in GetComponentsInChildren<BRigidBody>())
                 obj.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), false);
@@ -327,9 +319,6 @@ namespace Synthesis.DriverPractice
             UnityEngine.Quaternion verVector;
             UnityEngine.Vector3 finalVector = UnityEngine.Vector3.zero;
 
-            //finalVector.x = speed * Mathf.Cos(horAngle * Mathf.Deg2Rad);
-            //finalVector.y = speed * Mathf.Sin(verAngle * Mathf.Deg2Rad);
-            //finalVector.z = Mathf.Sqrt(speed * speed - finalVector.y * finalVector.y - finalVector.x * finalVector.x);
             horVector = UnityEngine.Quaternion.AngleAxis(horAngle, UnityEngine.Vector3.up);
             verVector = UnityEngine.Quaternion.AngleAxis(verAngle, UnityEngine.Vector3.right);
 
