@@ -75,8 +75,8 @@ public partial class DriveChooser : Form
 
             txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
-            OutputGeartxt.Text = Convert.ToString(joint.cDriver.OutputGear);
-            InputGeartxt.Text = Convert.ToString(joint.cDriver.InputGear);
+            OutputGeartxt.Text = Convert.ToString(joint.cDriver.OutputGear);// reads the existing gearing and writes it to the input field so the user sees their existing value
+            InputGeartxt.Text = Convert.ToString(joint.cDriver.InputGear);// reads the existing gearing and writes it to the input field so the user sees their existing value
 
             #region Meta info recovery
             {
@@ -160,9 +160,9 @@ public partial class DriveChooser : Form
         try
         {
             inputGear = Convert.ToDouble(InputGeartxt.Text);
-            outputGear = Convert.ToDouble(OutputGeartxt.Text);
+            outputGear = Convert.ToDouble(OutputGeartxt.Text);// reads from the text file to determine whether or not we should save
         }
-        catch (Exception) { 
+        catch (Exception) { // catches any non-numeric values, we tell the user that theres an issue later in the program, this is just a saving program, so it doesn't need to worry too much about the exception
         }
 
         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
@@ -293,14 +293,14 @@ public partial class DriveChooser : Form
 
             try
             {
-                inputGear = Convert.ToDouble(InputGeartxt.Text);
+                inputGear = Convert.ToDouble(InputGeartxt.Text);// tries to parse the double from the input gear
                 outputGear = Convert.ToDouble(OutputGeartxt.Text);
             }
-            catch (FormatException fe)
+            catch (FormatException fe)// catches the user putting non-nummerical characters into the input
             {
                 MessageBox.Show("Error: please make sure that the gear field has only numbers [" + fe.Source + "]");
             }
-            catch (OverflowException oe)
+            catch (OverflowException oe)// catches other issues
             {
                 MessageBox.Show("Error: the number provided is not supported as a possible gear ratio [" + oe.Source + "]");
             }
@@ -309,8 +309,8 @@ public partial class DriveChooser : Form
             {
                 portA = (int)txtPortA.Value,
                 portB = (int)txtPortB.Value,
-                InputGear = inputGear,
-                OutputGear = outputGear,
+                InputGear = inputGear,// writes the input gear to the internal joint driver so it can be exported
+                OutputGear = outputGear,// writes the output gear to the internal joint driver so it can be exported
                 lowerLimit = (float)txtLowLimit.Value,
                 upperLimit = (float)txtHighLimit.Value,
                 isCan = rbCAN.Checked

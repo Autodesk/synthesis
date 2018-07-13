@@ -269,16 +269,16 @@ public static partial class BXDJSkeleton
         writer.WriteElementString("DriveType", driver.GetDriveType().ToString());
         writer.WriteElementString("PortA", (driver.portA + 1).ToString()); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
         writer.WriteElementString("PortB", (driver.portB + 1).ToString()); // For backwards compatibility, ports will be stored one larger than their actual value.
-        if(driver.InputGear == 0)
+        if(driver.InputGear == 0)// prevents a gearing of 0 from being written to the bxdj
         {
             driver.InputGear = 1;
         }
-        if (driver.OutputGear == 0)
+        if (driver.OutputGear == 0)// prevents a gearing of 0 from being written to the bxdj
         {
             driver.OutputGear = 1;
         }
-        writer.WriteElementString("InputGear", driver.InputGear.ToString());
-        writer.WriteElementString("OutputGear", driver.OutputGear.ToString());
+        writer.WriteElementString("InputGear", driver.InputGear.ToString());// writes the input gear's string to the XMLWriter
+        writer.WriteElementString("OutputGear", driver.OutputGear.ToString());// writes the output gear's string to the XMLWriter
         writer.WriteElementString("LowerLimit", driver.lowerLimit.ToString("F4"));
         writer.WriteElementString("UpperLimit", driver.upperLimit.ToString("F4"));
         writer.WriteElementString("SignalType", driver.isCan ? "CAN" : "PWM");

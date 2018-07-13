@@ -40,7 +40,9 @@ public class RigidNode : OGL_RigidNode
             foreach (ComponentOccurrence oc in group.occurrences)
             {
                 if (oc != null)
+                {// prevents weird hidden components from ruining our day-
                     components.Add(oc.Name);
+                }
             }
         }
         components.Sort();
