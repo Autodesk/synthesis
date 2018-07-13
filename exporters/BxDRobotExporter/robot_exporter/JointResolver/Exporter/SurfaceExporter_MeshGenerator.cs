@@ -46,14 +46,12 @@ public partial class SurfaceExporter
     /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
     private void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
     {
-        BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
-
-        // Tolerances
+        // Find the lowest tolerance specified by a facet
+        #region Get Mesh Generation Tolerance
         int tmpToleranceCount = 0;
         double[] tolerances = new double[10];
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
 
-        // Find the lowest tolerance specified by a facet
         double tolerance = DEFAULT_TOLERANCE;
 
         int bestIndex = -1;
@@ -67,54 +65,54 @@ public partial class SurfaceExporter
         
         if (bestResolution || tolerances[bestIndex] > tolerance)
             tolerance = tolerances[bestIndex];
+        #endregion
 
-        #region SHOULD_SEPARATE_FACES
-        // Bundle faces into separate surfaces based on common assets
-        Dictionary<string, AssetProperties> sharedAssets = new Dictionary<string, AssetProperties>();
-        Dictionary<string, List<Face>> subSurfaces = new Dictionary<string, List<Face>>();
-        if (separateFaces) 
+        // Only separate if they are actually different colors
+        #region Should Separate Faces
+        AssetProperties firstAsset = null;
+        Dictionary<string, AssetProperties> assets = new Dictionary<string, AssetProperties>();
+
+        foreach (Face f in surf.Faces)
         {
-            foreach (Face f in surf.Faces)
+            try
             {
-                try
+                if (!assets.ContainsKey(f.Appearance.DisplayName))
                 {
-                    string assetName = f.Appearance.DisplayName;
+                    assets.Add(f.Appearance.DisplayName, new AssetProperties(f.Appearance)); // Used to quickly access asset properties later
 
-                    if (!sharedAssets.ContainsKey(assetName))
-                    {
-                        sharedAssets.Add(assetName, AssetProperties.Create(f));
-                        subSurfaces.Add(assetName, new List<Face>());
-                    }
-
-                    subSurfaces[assetName].Add(f);
-                }
-                catch
-                {
-                    // Failed to create asset for face
+                    if (firstAsset == null)
+                        firstAsset = assets[f.Appearance.DisplayName];
                 }
             }
-
-            if (sharedAssets.Count < 2)
-                separateFaces = false;
+            catch
+            {
+                // Failed to create asset for face
+            }
         }
+
+        // If more than one different assets exist, separate faces
+        separateFaces = separateFaces && assets.Count > 1;
         #endregion
 
         if (separateFaces)
         {
-            foreach (KeyValuePair<string, AssetProperties> asset in sharedAssets)
+            foreach (Face face in surf.Faces) // This should be multithreaded
             {
-                foreach (Face face in subSurfaces[asset.Key])
+#if USE_TEXTURES
+                face.GetExistingFacetsAndTextureMap(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
+                if (tmpSurface.vertCount == 0)
                 {
-                    PartialSurface tmpSurfaceLoop = new PartialSurface();
-
-                    face.GetExistingFacets(tolerance, out tmpSurfaceLoop.vertCount, out tmpSurfaceLoop.facetCount, out tmpSurfaceLoop.verts, out tmpSurfaceLoop.norms, out tmpSurfaceLoop.indicies);
-                    if (tempSurface.vertCount == 0)
-                    {
-                        face.CalculateFacets(tolerance, out tmpSurfaceLoop.vertCount, out tmpSurfaceLoop.facetCount, out tmpSurfaceLoop.verts, out tmpSurfaceLoop.norms, out tmpSurfaceLoop.indicies);
-                    }
-
-                    AddFacetsInternal(asset.Value);
+                    face.CalculateFacetsAndTextureMap(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
                 }
+#else
+                face.GetExistingFacets(tolerance, out tempSurface.vertCount, out tempSurface.facetCount, out tempSurface.verts, out tempSurface.norms, out tempSurface.indicies);
+                if (tempSurface.vertCount == 0)
+                {
+                    face.CalculateFacets(tolerance, out tempSurface.vertCount, out tempSurface.facetCount, out tempSurface.verts, out tempSurface.norms, out tempSurface.indicies);
+                }
+#endif
+                AssetProperties asset = assets[face.Appearance.DisplayName];
+                AddFacetsInternal(asset);
             }
         }
         else
@@ -132,9 +130,12 @@ public partial class SurfaceExporter
                 surf.CalculateFacets(tolerance, out tempSurface.vertCount, out tempSurface.facetCount, out tempSurface.verts, out tempSurface.norms, out tempSurface.indicies);
             }
 #endif
-            AssetProperties assetProps = AssetProperties.Create(surf);
-            
-            AddFacetsInternal(assetProps);
+            AssetProperties asset = firstAsset;
+
+            if (firstAsset == null)
+                asset = AssetProperties.Create(surf);
+
+            AddFacetsInternal(asset);
         }
     }
 
@@ -179,20 +180,20 @@ public partial class SurfaceExporter
 
         BXDAMesh.BXDASurface newMeshSurface = new BXDAMesh.BXDASurface();
 
+        #region Apply asset properties to mesh
         newMeshSurface.hasColor = true;
         newMeshSurface.color = 0xFFFFFFFF;
         newMeshSurface.transparency = 0.0f;
         newMeshSurface.translucency = 0.0f;
         newMeshSurface.specular = 0.5f;
 
-        // Apply asset to new mesh surface 
         if (assetProps != null)
         {
-            if (assetProps.color != null)
+            if (assetProps.color != 0)
             {
                 newMeshSurface.hasColor = true;
                 // Create hex color from RGB components
-                newMeshSurface.color = ((uint)assetProps.color.Red << 0) | ((uint)assetProps.color.Green << 8) | ((uint)assetProps.color.Blue << 16) | ((((uint)(assetProps.color.Opacity * 255)) & 0xFF) << 24);
+                newMeshSurface.color = assetProps.color;
             }
             else
             {
@@ -204,6 +205,7 @@ public partial class SurfaceExporter
             newMeshSurface.translucency = (float)assetProps.translucency;
             newMeshSurface.specular = (float)assetProps.specular;
         }
+        #endregion
 
         // Add temp surface information to the output surface
         // Add vertices and normals to the current output surface
@@ -224,7 +226,6 @@ public partial class SurfaceExporter
         outputSurface.vertCount += tempSurface.vertCount;
 
         outputMeshSurfaces.Add(newMeshSurface);
-
     }
 
     /// <summary>
