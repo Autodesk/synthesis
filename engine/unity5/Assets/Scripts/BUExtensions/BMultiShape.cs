@@ -8,10 +8,10 @@ using UnityEngine;
 
 namespace Synthesis.BUExtensions
 {
-    public class BMultiHullShape : BCollisionShape
+    public class BMultiShape : BCollisionShape
     {
         [SerializeField]
-        protected List<ConvexHullShape> hullShapes = new List<ConvexHullShape>();
+        protected List<CollisionShape> hullShapes = new List<CollisionShape>();
 
         [SerializeField]
         protected CompoundShape compoundShape = new CompoundShape();
@@ -50,11 +50,11 @@ namespace Synthesis.BUExtensions
         }
 
         /// <summary>
-        /// Adds a <see cref="ConvexHullShape"/> to the multi hull shape.
+        /// Adds a <see cref="CollisionShape"/> to the multi hull shape.
         /// </summary>
         /// <param name="hullShape"></param>
         /// <param name="offset"></param>
-        public void AddHullShape(ConvexHullShape hullShape, BulletSharp.Math.Matrix offset)
+        public void AddShape(CollisionShape hullShape, BulletSharp.Math.Matrix offset)
         {
             if (hullShapes.Contains(hullShape))
                 return;
@@ -64,10 +64,10 @@ namespace Synthesis.BUExtensions
         }
 
         /// <summary>
-        /// Removes a <see cref="ConvexHullShape"/> from the multi hull shape.
+        /// Removes a <see cref="CollisionShape"/> from the multi hull shape.
         /// </summary>
         /// <param name="hullShape"></param>
-        public void RemoveHullShape(ConvexHullShape hullShape)
+        public void RemoveShape(CollisionShape hullShape)
         {
             if (!hullShapes.Contains(hullShape))
                 return;
