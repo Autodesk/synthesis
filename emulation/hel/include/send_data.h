@@ -1,20 +1,11 @@
-#ifndef _ROBORIO_INTERFACE_H_
-#define _ROBORIO_INTERFACE_H_
+#ifndef _SEND_DATA_H_
+#define _SEND_DATA_H_
 
 #include "roborio.h"
+#include "mxp_data.h"
 
 namespace hel{
-    struct RoboRIOInterface{
-        struct MXPData{
-            enum class Config{
-                DIO, PWM, SPI, I2C
-            };
-
-            Config config;
-
-            double value;
-        };
-
+    struct SendData{
         enum class RelayState{OFF, REVERSE, FORWARD, ERROR};
 
     private:
@@ -24,8 +15,9 @@ namespace hel{
 
         std::array<double, hal::kNumAnalogOutputs> analog_outputs;
 
-        std::array<MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
+        std::array<hel::MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
 
+        //TODO handle DIO configured for input vs output
         std::array<bool, hal::kNumDigitalHeaders> digital_hdrs;
     public:
         void update();
@@ -35,8 +27,7 @@ namespace hel{
         std::string serialize()const;
     };
 
-    std::string to_string(RoboRIOInterface::MXPData::Config);
-    std::string to_string(RoboRIOInterface::RelayState);
+    std::string to_string(SendData::RelayState);
 }
 
 #endif
