@@ -15,12 +15,7 @@ namespace hel{
             double value;
         };
 
-        enum class RelayState{
-            _00, //Corresponds to off
-            _01, //Corresponds to reverse only
-            _10, //Corresponds to forward only
-            _11  //Corresponds to forward and reverse, an error
-        };
+        enum class RelayState{OFF, REVERSE, FORWARD, ERROR};
 
     private:
         std::array<double, tPWM::kNumHdrRegisters> pwm_hdrs;
@@ -35,6 +30,8 @@ namespace hel{
         void update();
 
         std::string toString()const;
+
+        std::string serialize()const;
     };
 }
 
