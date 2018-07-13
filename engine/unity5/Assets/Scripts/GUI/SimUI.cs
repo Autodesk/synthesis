@@ -311,10 +311,10 @@ namespace Synthesis.GUI
                     });
                     SceneManager.LoadScene("Scene");
                 }
-                else
-                {
-                    UserMessageManager.Dispatch("Field directory not found!", 5);
-                }
+            }
+            else
+            {
+                UserMessageManager.Dispatch("Field directory not found!", 5);
             }
         }
 
