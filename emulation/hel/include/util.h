@@ -13,16 +13,16 @@ namespace hel{
      * \param value the integer to analyze
      * \return the zero-indexed index of the most significant bit
      */
-    
+
     template<typename T>
     unsigned findMostSignificantBit(T value){
     	unsigned most_significant_bit = 0;
-    	
+
     	while(value != 0){
     		value /= 2;
     		most_significant_bit++;
     	}
-    	
+
     	return most_significant_bit;
     }
 
@@ -95,6 +95,25 @@ namespace hel{
         Maybe(T data) : _data(data), _is_valid(true) {};
         Maybe() : _is_valid(false) {};
     };
+
+    template<typename T, size_t LEN>
+    std::string serializeArray(std::string label, std::array<T, LEN> arr, std::function<std::string(T)> to_s){
+        std::string s = label + ":[";
+        for(unsigned i = 0; i < arr.size(); i++){
+            s += to_s(arr[i]);
+            if((i + 1) < arr.size()){
+                s += ",";
+            }
+        }
+        s += "]";
+        return s;
+    }
+
+    template<typename T, size_t LEN>
+    std::string serializeArray(std::string label, std::array<T, LEN> arr, std::string(*to_s)(T)){
+        std::function<std::string(T)> function_to_s = to_s;
+        return serializeArray(label, arr, function_to_s);
+    }
 }
 
 #endif

@@ -126,14 +126,14 @@ add_custom_target ( asio ALL
   COMMENT "Download the C++ ASIO library"
   VERBATIM )
 
+link_directories (${WPILIB_SO_DIRECTORY}/common/current/lib/linux/athena/shared ${WPILIB_SO_DIRECTORY}/cpp/current/reflib/linux/athena/shared)  
 
 add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/roborio_interface.cpp)
 add_dependencies(hel asio)
 target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
-
+target_link_libraries(hel wpi)
 
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND TEST_MODE MATCHES "^[Ww][Pp][Ii]")
-  link_directories (${WPILIB_SO_DIRECTORY}/common/current/lib/linux/athena/shared ${WPILIB_SO_DIRECTORY}/cpp/current/reflib/linux/athena/shared)  
   add_executable(FRCUserProgram tests/test_project/robot.cpp)
   target_include_directories(FRCUserProgram PRIVATE "${WPILIB_SO_DIRECTORY}/cpp/current/include")  
   set_target_properties(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user_code")
