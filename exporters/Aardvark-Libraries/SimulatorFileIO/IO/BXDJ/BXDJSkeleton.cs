@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 
 /// <summary>
@@ -268,6 +269,14 @@ public static partial class BXDJSkeleton
         writer.WriteElementString("DriveType", driver.GetDriveType().ToString());
         writer.WriteElementString("PortA", (driver.portA + 1).ToString()); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
         writer.WriteElementString("PortB", (driver.portB + 1).ToString()); // For backwards compatibility, ports will be stored one larger than their actual value.
+        if(driver.InputGear == 0)
+        {
+            driver.InputGear = 1;
+        }
+        if (driver.OutputGear == 0)
+        {
+            driver.OutputGear = 1;
+        }
         writer.WriteElementString("InputGear", driver.InputGear.ToString());
         writer.WriteElementString("OutputGear", driver.OutputGear.ToString());
         writer.WriteElementString("LowerLimit", driver.lowerLimit.ToString("F4"));

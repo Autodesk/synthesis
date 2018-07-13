@@ -75,6 +75,8 @@ public partial class DriveChooser : Form
 
             txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
+            OutputGeartxt.Text = Convert.ToString(joint.cDriver.OutputGear);
+            InputGeartxt.Text = Convert.ToString(joint.cDriver.InputGear);
 
             #region Meta info recovery
             {
@@ -153,6 +155,16 @@ public partial class DriveChooser : Form
     {
         if (joint.cDriver == null) return true;
 
+        double inputGear = 1, outputGear = 1;
+
+        try
+        {
+            inputGear = Convert.ToDouble(InputGeartxt.Text);
+            outputGear = Convert.ToDouble(OutputGeartxt.Text);
+        }
+        catch (Exception) { 
+        }
+
         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
         WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
@@ -161,7 +173,8 @@ public partial class DriveChooser : Form
             txtPortA.Value != joint.cDriver.portA ||
             txtPortB.Value != joint.cDriver.portB ||
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
-            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit)
+            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit || 
+            inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear)
             return true;
 
         if (pneumatic != null && 

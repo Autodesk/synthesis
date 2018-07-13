@@ -431,7 +431,9 @@ public partial class SynthesisGUI : Form
                 joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
                 joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
                 joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
-
+                joint.cDriver.InputGear = Utilities.GetProperty(propertySet, "driver-inputGear", 0.0f);
+                joint.cDriver.OutputGear = Utilities.GetProperty(propertySet, "driver-outputGear", 0.0f);
+                MessageBox.Show(joint.cDriver.InputGear + "");
                 // Get other properties stored in meta
                 // Wheel information
                 if (Utilities.GetProperty(propertySet, "has-wheel", false))
@@ -543,6 +545,8 @@ public partial class SynthesisGUI : Form
                 Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
                 Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
                 Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
+                Utilities.SetProperty(propertySet, "driver-inputGear", driver.InputGear);
+                Utilities.SetProperty(propertySet, "driver-outputGear", driver.OutputGear);
 
                 // Save other properties stored in meta
                 // Wheel information
