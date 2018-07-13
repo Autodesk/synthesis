@@ -9,13 +9,33 @@ void hel::ReceiveData::update()const{
     for(unsigned i = 0; i < analog_inputs.size(); i++){
         instance.first->analog_inputs.setValues(i, analog_inputs[i]);
     }
-
-    for(unsigned i = 0; i < digital_hdrs.size(); i++){
-        //TODO
+    {
+        tDIO::tDI di = instance.first->digital_system.getInputs();
+        tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+        for(unsigned i = 0; i < digital_hdrs.size(); i++){
+            if(checkBitHigh(output_mode.MXP,i)){
+                di.Headers = setBit(di.Headers, digital_hdrs[i], i);
+            }
+        }
+        instance.first->digital_system.setInputs(di);
     }
     for(unsigned i = 0;i < digital_mxp.size(); i++){
-        if(digital_mxp[i].config == MXPData::Config::DIO){
+        switch(digital_mxp[i].config){
+        case MXPData::Config::DI:
+        {
+            tDIO::tDI di = instance.first->digital_system.getInputs();
+            di.MXP = setBit(di.MXP, digital_mxp[i].value, i);
+            instance.first->digital_system.setInputs(di);
+            break;
+        }
+        case MXPData::Config::I2C:
             //TODO
+            break;
+        case MXPData::Config::SPI:
+            //TODO
+            break;
+        default:
+            ; //Do nothing
         }
     }
     //TODO

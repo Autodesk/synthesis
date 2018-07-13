@@ -7,7 +7,7 @@
 namespace hel{
     struct ReceiveData{
     private:
-        std::array<std::vector<int32_t>, hal::kNumAnalogInputs> analog_inputs;
+        std::array<std::vector<int32_t>, hal::kNumAnalogInputs> analog_inputs; //TODO manage analog history vector
         std::array<bool, hal::kNumDigitalHeaders> digital_hdrs;
         std::array<MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
     public:

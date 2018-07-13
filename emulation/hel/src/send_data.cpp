@@ -64,10 +64,14 @@ void hel::SendData::update(){
                     return hel::MXPData::Config::I2C;
                 }
             }
-            return hel::MXPData::Config::DIO;
+            tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+            if(checkBitHigh(output_mode.MXP,i)){
+                return hel::MXPData::Config::DO;
+            }
+            return hel::MXPData::Config::DI;
         }();
         switch(digital_mxp[i].config){
-        case hel::MXPData::Config::DIO:
+        case hel::MXPData::Config::DO:
             digital_mxp[i].value = HAL_GetDIO(i + hal::kNumDigitalHeaders, &status);
             break;
         case hel::MXPData::Config::PWM:
@@ -84,8 +88,13 @@ void hel::SendData::update(){
         }
     }
 
-    for(unsigned i = 0; i < digital_hdrs.size(); i++){
-        digital_hdrs[i] = HAL_GetDIO(i, &status);
+    {
+        tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+        for(unsigned i = 0; i < digital_hdrs.size(); i++){
+            if(checkBitHigh(output_mode.MXP,i)){
+                HAL_SetDIO(digital_hdrs[i], i, &status);
+            }
+        }
     }
 }
 
