@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Inventor;
-using System;
+﻿using Inventor;
 using OGLViewer;
+using System;
+using System.Collections.Generic;
 
 public class RigidNode : OGL_RigidNode 
 {
@@ -42,13 +41,16 @@ public class RigidNode : OGL_RigidNode
                 components.Add(oc.Name);
             }
         }
-        components.Sort();
-        StringBuilder id = new StringBuilder();
-        foreach (string comp in components)
+
+        string id = "";
+        for (int i = 0; i < components.Count; i++)
         {
-            id.Append(comp);
-            id.Append("-_-");
+            id += components[i];
+
+            // Act as separators
+            if (i < components.Count - 1)
+                id += "-_-";
         }
-        return id.ToString();
+        return id;
     }
 }
