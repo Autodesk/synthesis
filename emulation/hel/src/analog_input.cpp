@@ -49,7 +49,8 @@ namespace hel {
         }
         
         int32_t readOutput(tRioStatusCode* /*status*/){
-            hel::RoboRIO::AnalogInputs analog_inputs = RoboRIOManager::getInstance()->analog_inputs;
+            auto instance = hel::RoboRIOManager::getInstance();
+            hel::RoboRIO::AnalogInputs analog_inputs = instance.first->analog_inputs;
             uint8_t channel = analog_inputs.getReadSelect().Channel;
 
             if(analog_inputs.getReadSelect().Averaged){
@@ -70,84 +71,121 @@ namespace hel {
                 
                 return (int32_t)average;
             }
+            instance.second.unlock();
             return analog_inputs.getValues(channel).back();
         }
 
         void writeConfig(hal::tAI::tConfig value, tRioStatusCode*) {
-            RoboRIOManager::getInstance()->analog_inputs.setConfig(value);
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.first->analog_inputs.setConfig(value);
+            instance.second.unlock();
         }
 
         void writeConfig_ScanSize(uint8_t value, tRioStatusCode*) {
-            auto current_config = RoboRIOManager::getInstance()->analog_inputs.getConfig();
+            auto instance = hel::RoboRIOManager::getInstance();
+            auto current_config = instance.first->analog_inputs.getConfig();
             current_config.ScanSize = value;
-            RoboRIOManager::getInstance()->analog_inputs.setConfig(current_config);
+            instance.first->analog_inputs.setConfig(current_config);
+            instance.second.unlock();
         }
 
         void writeConfig_ConvertRate(uint32_t value, tRioStatusCode*) {
-            auto current_config = RoboRIOManager::getInstance()->analog_inputs.getConfig();
+            auto instance = hel::RoboRIOManager::getInstance();
+            auto current_config = instance.first->analog_inputs.getConfig();
             current_config.ConvertRate = value;
-            RoboRIOManager::getInstance()->analog_inputs.setConfig(current_config);
+            instance.first->analog_inputs.setConfig(current_config);
+            instance.second.unlock();
         }
 
         hal::tAI::tConfig readConfig(tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getConfig();
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->analog_inputs.getConfig();
         }
 
         uint8_t readConfig_ScanSize(tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getConfig().ScanSize;
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->analog_inputs.getConfig().ScanSize;
         }
 
         uint32_t readConfig_ConvertRate(tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getConfig().ConvertRate;
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->analog_inputs.getConfig().ConvertRate;
         }
 
         void writeOversampleBits(uint8_t channel, uint8_t value, tRioStatusCode*) {
-            RoboRIOManager::getInstance()->analog_inputs.setOversampleBits(channel, value);
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.first->analog_inputs.setOversampleBits(channel, value);
+            instance.second.unlock();
         }
         void writeAverageBits(uint8_t channel, uint8_t value, tRioStatusCode*) {
-            RoboRIOManager::getInstance()->analog_inputs.setAverageBits(channel, value);
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.first->analog_inputs.setAverageBits(channel, value);
+            instance.second.unlock();
         }
         void writeScanList(uint8_t channel, uint8_t value, tRioStatusCode*) {
-            RoboRIOManager::getInstance()->analog_inputs.setScanList(channel, value);
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.first->analog_inputs.setScanList(channel, value);
+            instance.second.unlock();
         }
 
         uint8_t readOversampleBits(uint8_t channel, tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getOversampleBits(channel);
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->analog_inputs.getOversampleBits(channel);
         }
 
         uint8_t readAverageBits(uint8_t channel, tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getAverageBits(channel);
+            auto instance = hel::RoboRIOManager::getInstance();
+            return instance.first->analog_inputs.getAverageBits(channel);
+            instance.second.unlock();
         }
 
         uint8_t readScanList(uint8_t channel, tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getAverageBits(channel);
+            auto instance = hel::RoboRIOManager::getInstance();
+            return instance.first->analog_inputs.getAverageBits(channel);
+            instance.second.unlock();
         }
 
         void writeReadSelect(hal::tAI::tReadSelect value, tRioStatusCode*) {
-            RoboRIOManager::getInstance()->analog_inputs.setReadSelect(value);
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.first->analog_inputs.setReadSelect(value);
+            instance.second.unlock();
         }
 
         void writeReadSelect_Channel(uint8_t value, tRioStatusCode*) {
-            auto current_read_select = RoboRIOManager::getInstance()->analog_inputs.getReadSelect();
+            auto instance = hel::RoboRIOManager::getInstance();
+            auto current_read_select = instance.first->analog_inputs.getReadSelect();
             current_read_select.Channel = value;
-            RoboRIOManager::getInstance()->analog_inputs.setReadSelect(current_read_select);
+            instance.first->analog_inputs.setReadSelect(current_read_select);
+            instance.second.unlock();
         }
 
         void writeReadSelect_Averaged(bool value, tRioStatusCode*) {
-            auto current_read_select = RoboRIOManager::getInstance()->analog_inputs.getReadSelect();
+            auto instance = hel::RoboRIOManager::getInstance();
+            auto current_read_select = instance.first->analog_inputs.getReadSelect();
             current_read_select.Channel = value;
-            RoboRIOManager::getInstance()->analog_inputs.setReadSelect(current_read_select);
+            instance.first->analog_inputs.setReadSelect(current_read_select);
+            instance.second.unlock();
         }
 
         hal::tAI::tReadSelect readReadSelect(tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getReadSelect();
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->analog_inputs.getReadSelect();
         }
 
         uint8_t readReadSelect_Channel(tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getReadSelect().Channel;
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->analog_inputs.getReadSelect().Channel;
         }
         bool readReadSelect_Averaged(tRioStatusCode*) {
-            return RoboRIOManager::getInstance()->analog_inputs.getReadSelect().Averaged;
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->analog_inputs.getReadSelect().Averaged;
         }
 
         uint32_t readLoopTiming(tRioStatusCode*) {

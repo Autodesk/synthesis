@@ -19,31 +19,43 @@ namespace hel{
     	}
     	
     	void writeValue(tValue value, tRioStatusCode* /*status*/){
-    		RoboRIOManager::getInstance()->relay_system.setValue(value);
+          auto instance = RoboRIOManager::getInstance();
+          instance.first->relay_system.setValue(value);
+          instance.second.unlock();
     	}
 
     	void writeValue_Forward(uint8_t value, tRioStatusCode* /*status*/){
-    		tRelay::tValue v = RoboRIOManager::getInstance()->relay_system.getValue();
-    		v.Forward = value;
-    		RoboRIOManager::getInstance()->relay_system.setValue(v);
+          auto instance = RoboRIOManager::getInstance();
+          tRelay::tValue v = instance.first->relay_system.getValue();
+          v.Forward = value;
+          instance.first->relay_system.setValue(v);
+          instance.second.unlock();
     	}
 
     	void writeValue_Reverse(uint8_t value, tRioStatusCode* /*status*/){
-    		tRelay::tValue v = RoboRIOManager::getInstance()->relay_system.getValue();
-    		v.Reverse = value;
-    		RoboRIOManager::getInstance()->relay_system.setValue(v);
+          auto instance = RoboRIOManager::getInstance();
+          tRelay::tValue v = instance.first->relay_system.getValue();
+          v.Reverse = value;
+          instance.first->relay_system.setValue(v);
+          instance.second.unlock();
     	}
 
     	tValue readValue(tRioStatusCode* /*status*/){
-    		return RoboRIOManager::getInstance()->relay_system.getValue();
+          auto instance = RoboRIOManager::getInstance();
+          instance.second.unlock();
+          return instance.first->relay_system.getValue();
     	}
 
     	uint8_t readValue_Forward(tRioStatusCode* /*status*/){
-    		return RoboRIOManager::getInstance()->relay_system.getValue().Forward;
+          auto instance = RoboRIOManager::getInstance();
+          instance.second.unlock();
+          return instance.first->relay_system.getValue().Forward;
     	}
 
     	uint8_t readValue_Reverse(tRioStatusCode* /*status*/){
-    		return RoboRIOManager::getInstance()->relay_system.getValue().Reverse;
+          auto instance = RoboRIOManager::getInstance();
+          instance.second.unlock();
+          return instance.first->relay_system.getValue().Reverse;
     	}
     };
 }

@@ -225,131 +225,158 @@ extern "C" {
     }
 
     int FRC_NetworkCommunication_sendError(int isError, int32_t errorCode, int /*isLVCode*/, const char* details, const char* location, const char* callStack){
-        hel::RoboRIOManager::getInstance()->ds_errors.push_back({isError, errorCode, details, location, callStack}); //assuming isLVCode = false (not supporting LabView
+        auto instance = hel::RoboRIOManager::getInstance();
+        instance.first->ds_errors.push_back({isError, errorCode, details, location, callStack}); //assuming isLVCode = false (not supporting LabView
+        instance.second.unlock();
         return 0; //TODO retruns a status
     }
 
     void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation
 
     int setNewDataOccurRef(uint32_t refnum){ 
-        hel::RoboRIOManager::getInstance()->net_comm.ref_num = refnum;
+        auto instance = hel::RoboRIOManager::getInstance();
+        instance.first->net_comm.ref_num = refnum;
+
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_getControlWord(struct ControlWord_t* controlWord){
+        auto instance = hel::RoboRIOManager::getInstance();
         if (controlWord != nullptr) {
-            *controlWord = hel::RoboRIOManager::getInstance()->robot_state.toControlWord();
+            *controlWord = instance.first->robot_state.toControlWord();
             controlWord->enabled = 1;
             controlWord->autonomous = 0;
             controlWord->test = 0;
             controlWord->dsAttached = 1;
             controlWord->eStop = 0;
         }
+
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_getAllianceStation(enum AllianceStationID_t* allianceStation){
+        auto instance = hel::RoboRIOManager::getInstance();
         if (allianceStation != nullptr)
-            *allianceStation = hel::RoboRIOManager::getInstance()->driver_station_info.getAllianceStationID();
+            *allianceStation = instance.first->driver_station_info.getAllianceStationID();
+
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_getMatchInfo(char* eventName, MatchType_t* matchType, uint16_t* matchNumber, uint8_t* replayNumber, uint8_t* gameSpecificMessage, uint16_t* gameSpecificMessageSize){
-        std::string name = hel::RoboRIOManager::getInstance()->driver_station_info.getEventName();
+        auto instance = hel::RoboRIOManager::getInstance();
+        std::string name = instance.first->driver_station_info.getEventName();
         std::copy(std::begin(name), std::end(name), eventName);
 
 
         if (matchType != nullptr)
-            *matchType = hel::RoboRIOManager::getInstance()->driver_station_info.getMatchType();
+            *matchType = instance.first->driver_station_info.getMatchType();
         if (matchNumber != nullptr)
-            *matchNumber = hel::RoboRIOManager::getInstance()->driver_station_info.getMatchNumber();
+            *matchNumber = instance.first->driver_station_info.getMatchNumber();
         if (replayNumber != nullptr)
-            *replayNumber = hel::RoboRIOManager::getInstance()->driver_station_info.getReplayNumber();
+            *replayNumber = instance.first->driver_station_info.getReplayNumber();
 
-        std::string hel_message = hel::RoboRIOManager::getInstance()->driver_station_info.getGameSpecificMessage();
+        std::string hel_message = instance.first->driver_station_info.getGameSpecificMessage();
         std::copy(std::begin(hel_message), std::end(hel_message), gameSpecificMessage);
 
         if (gameSpecificMessageSize != nullptr)
-            *gameSpecificMessageSize = hel::RoboRIOManager::getInstance()->driver_station_info.getGameSpecificMessage().size();
+            *gameSpecificMessageSize = instance.first->driver_station_info.getGameSpecificMessage().size();
 
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_getMatchTime(float* matchTime){
+        auto instance = hel::RoboRIOManager::getInstance();
         if (matchTime != nullptr)
-            *matchTime = hel::RoboRIOManager::getInstance()->driver_station_info.getMatchTime();
+            *matchTime = instance.first->driver_station_info.getMatchTime();
+
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_getJoystickAxes(uint8_t joystickNum, struct JoystickAxes_t* axes, uint8_t /*maxAxes*/){
+        auto instance = hel::RoboRIOManager::getInstance();
         if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
 
-        std::array<int8_t, hel::RoboRIO::Joystick::MAX_AXIS_COUNT> hel_axes = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getAxes();
+        std::array<int8_t, hel::RoboRIO::Joystick::MAX_AXIS_COUNT> hel_axes = instance.first->joysticks[joystickNum].getAxes();
         std::copy(std::begin(hel_axes), std::end(hel_axes), axes->axes);
 
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_getJoystickButtons(uint8_t joystickNum, uint32_t* buttons, uint8_t* count){
+        auto instance = hel::RoboRIOManager::getInstance();
         if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
 
         if (buttons != nullptr)
-            *buttons = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getButtons();
+            *buttons = instance.first->joysticks[joystickNum].getButtons();
         if (count != nullptr)
-            *count = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getButtonCount();
+            *count = instance.first->joysticks[joystickNum].getButtonCount();
     
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_getJoystickPOVs(uint8_t joystickNum, struct JoystickPOV_t* povs, uint8_t /*maxPOVs*/){
+        auto instance = hel::RoboRIOManager::getInstance();
         if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
 
-        std::array<int16_t, hel::RoboRIO::Joystick::MAX_POV_COUNT> hel_povs = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getPOVs();
+        std::array<int16_t, hel::RoboRIO::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
         std::copy(std::begin(hel_povs), std::end(hel_povs), povs->povs);
     
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_setJoystickOutputs(uint8_t joystickNum, uint32_t hidOutputs, uint16_t leftRumble, uint16_t rightRumble){
+        auto instance = hel::RoboRIOManager::getInstance();
         if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
 
-        hel::RoboRIOManager::getInstance()->joysticks[joystickNum].setOutputs(hidOutputs);
-        hel::RoboRIOManager::getInstance()->joysticks[joystickNum].setLeftRumble(leftRumble);
-        hel::RoboRIOManager::getInstance()->joysticks[joystickNum].setRightRumble(rightRumble);
+        instance.first->joysticks[joystickNum].setOutputs(hidOutputs);
+        instance.first->joysticks[joystickNum].setLeftRumble(leftRumble);
+        instance.first->joysticks[joystickNum].setRightRumble(rightRumble);
 
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
     int FRC_NetworkCommunication_getJoystickDesc(uint8_t joystickNum, uint8_t* isXBox, uint8_t* type, char* name, uint8_t* axisCount, uint8_t* axisTypes, uint8_t* buttonCount, uint8_t* povCount){
+        auto instance = hel::RoboRIOManager::getInstance();
+
         if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
-        std::string hel_name = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getName();
+        std::string hel_name = instance.first->joysticks[joystickNum].getName();
         std::copy(std::begin(hel_name), std::end(hel_name), name);
 
         if(isXBox != nullptr)
-            *isXBox = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getIsXBox();
+            *isXBox = instance.first->joysticks[joystickNum].getIsXBox();
         if(type != nullptr)
-            *type = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getType();
+            *type = instance.first->joysticks[joystickNum].getType();
         if(axisCount)
-            *axisCount = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getAxisCount();
+            *axisCount = instance.first->joysticks[joystickNum].getAxisCount();
     
-        std::array<uint8_t, hel::RoboRIO::Joystick::MAX_AXIS_COUNT> hel_axis_types = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getAxisTypes();
+        std::array<uint8_t, hel::RoboRIO::Joystick::MAX_AXIS_COUNT> hel_axis_types = instance.first->joysticks[joystickNum].getAxisTypes();
         std::copy(std::begin(hel_axis_types), std::end(hel_axis_types), axisTypes);
     
         if(buttonCount != nullptr)
-            *buttonCount = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getButtonCount();
+            *buttonCount = instance.first->joysticks[joystickNum].getButtonCount();
         if(povCount != nullptr)
-            *povCount = hel::RoboRIOManager::getInstance()->joysticks[joystickNum].getPOVCount();
+            *povCount = instance.first->joysticks[joystickNum].getPOVCount();
 
+        instance.second.unlock();
         return 0; //TODO returns a status
     }
 
@@ -360,21 +387,37 @@ extern "C" {
     }
 
     void FRC_NetworkCommunication_observeUserProgramDisabled(void){
-        hel::RoboRIOManager::getInstance()->robot_state.setEnabled(false);
+        auto instance = hel::RoboRIOManager::getInstance();
+
+        instance.first->robot_state.setEnabled(false);
+
+        instance.second.unlock();
     }
 
     void FRC_NetworkCommunication_observeUserProgramAutonomous(void){
-        hel::RoboRIOManager::getInstance()->robot_state.setState(hel::RoboRIO::RobotState::State::AUTONOMOUS);
-        hel::RoboRIOManager::getInstance()->robot_state.setEnabled(true);
+        auto instance = hel::RoboRIOManager::getInstance();
+
+        instance.first->robot_state.setState(hel::RoboRIO::RobotState::State::AUTONOMOUS);
+        instance.first->robot_state.setEnabled(true);
+
+        instance.second.unlock();
     }
 
     void FRC_NetworkCommunication_observeUserProgramTeleop(void){
-        hel::RoboRIOManager::getInstance()->robot_state.setState(hel::RoboRIO::RobotState::State::TELEOPERATED);
-        hel::RoboRIOManager::getInstance()->robot_state.setEnabled(true);
+        auto instance = hel::RoboRIOManager::getInstance();
+
+        instance.first->robot_state.setState(hel::RoboRIO::RobotState::State::TELEOPERATED);
+        instance.first->robot_state.setEnabled(true);
+
+        instance.second.unlock();
     }
 
     void FRC_NetworkCommunication_observeUserProgramTest(void){
-        hel::RoboRIOManager::getInstance()->robot_state.setState(hel::RoboRIO::RobotState::State::TEST);
-        hel::RoboRIOManager::getInstance()->robot_state.setEnabled(true);
+        auto instance = hel::RoboRIOManager::getInstance();
+
+        instance.first->robot_state.setState(hel::RoboRIO::RobotState::State::TEST);
+        instance.first->robot_state.setEnabled(true);
+
+        instance.second.unlock();
     }
 }

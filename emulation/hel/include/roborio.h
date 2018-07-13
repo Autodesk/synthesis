@@ -8,7 +8,6 @@
 #define ASIO_HAS_STD_SHARED_PTR
 #define ASIO_HAS_STD_TYPE_TRAITS
 
-#include <asio.hpp>
 
 /**
  * \file roborio.h
@@ -22,8 +21,11 @@
 #include <queue>
 #include <vector>
 #include <thread>
+#include <atomic>
 
 #include "FRC_NetworkCommunication/FRCComm.h"
+
+#include <asio.hpp>
 
 #include "HAL/ChipObject.h"
 #include "athena/PortsInternal.h"
@@ -32,8 +34,6 @@
 #include "GenericHID.h"
 
 #include "error.h"
-
-extern std::thread __ds_spoofer;
 
 namespace hel{
     using namespace nFPGA;
@@ -1548,6 +1548,7 @@ namespace hel{
         friend class RoboRIOManager;
     private:
         RoboRIO(RoboRIO const&) = default;
+        RoboRIO& operator=(const RoboRIO& r) = default;
     };
 
     /**
@@ -1557,19 +1558,61 @@ namespace hel{
     class RoboRIOManager {
 
     public:
-        static std::shared_ptr<RoboRIO> getInstance() {
-            if (instance == nullptr) {
-                instance = std::make_shared<RoboRIO>();
+
+        // This is the only method exposed to the outside.
+        // All other instance getters should be private, accessible through friend classes
+
+        static std::pair<std::shared_ptr<RoboRIO>, std::unique_lock<std::mutex>> getInstance() {
+            std::unique_lock<std::mutex> lock(m, std::defer_lock);
+            lock.lock(); // Blocks by default
+            if (execute_instance == nullptr) {
+                execute_instance = std::make_shared<RoboRIO>();
             }
-            return instance;
+            return std::make_pair(execute_instance, std::move(lock));
+
         }
         static RoboRIO getCopy() {
-            return RoboRIO((*RoboRIOManager::getInstance()));
+            return RoboRIO(*(RoboRIOManager::getInstance().first));
         }
     private:
         RoboRIOManager() {}
-        static std::shared_ptr<RoboRIO> instance;
+        static std::shared_ptr<RoboRIO> execute_instance;
+        static std::shared_ptr<RoboRIO> reciever_instance;
+        static std::shared_ptr<RoboRIO> sender_instance;
+
+        static std::mutex m;
+
+        // The following 2 methods do not lock, as they are only ever called sequentially after recieving or copying data
+        static std::shared_ptr<RoboRIO> getReciever() {
+            if (reciever_instance == nullptr) {
+                reciever_instance = std::make_shared<RoboRIO>();
+            }
+            return reciever_instance;
+        }
+        static std::shared_ptr<RoboRIO> getSender() {
+            if (sender_instance == nullptr) {
+                sender_instance = std::make_shared<RoboRIO>();
+            }
+            return sender_instance;
+        }
+
+        static void copyReciever() {
+            std::unique_lock<std::mutex> lock(m, std::defer_lock);
+            lock.lock();
+            *execute_instance = *reciever_instance;
+            lock.unlock();
+        }
+
+        static void copySender() {
+            std::unique_lock<std::mutex> lock(m, std::defer_lock);
+            lock.lock();
+            *sender_instance = *execute_instance;
+            lock.unlock();
+        }
+
+
     public:
+
         RoboRIOManager(RoboRIOManager const&) = delete;
         void operator=(RoboRIOManager const&) = delete;
     };

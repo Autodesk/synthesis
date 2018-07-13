@@ -58,55 +58,77 @@ namespace hel{
         }
 
         void writeConfig(tPWM::tConfig value, tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->pwm_system.setConfig(value);
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->pwm_system.setConfig(value);
+            instance.second.unlock();
         }
 
         void writeConfig_Period(uint16_t value, tRioStatusCode* /*status*/){
-            tPWM::tConfig config = RoboRIOManager::getInstance()->pwm_system.getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tPWM::tConfig config = instance.first->pwm_system.getConfig();
             config.Period = value;
-            RoboRIOManager::getInstance()->pwm_system.setConfig(config);
+            instance.first->pwm_system.setConfig(config);
+            instance.second.unlock();
         }
 
         void writeConfig_MinHigh(uint16_t value, tRioStatusCode* /*status*/){
-            tPWM::tConfig config = RoboRIOManager::getInstance()->pwm_system.getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            tPWM::tConfig config = instance.first->pwm_system.getConfig();
             config.MinHigh = value;
-            RoboRIOManager::getInstance()->pwm_system.setConfig(config);
+            instance.first->pwm_system.setConfig(config);
+            instance.second.unlock();
         }
 
         tPWM::tConfig readConfig(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->pwm_system.getConfig();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->pwm_system.getConfig();
         }
 
         uint16_t readConfig_Period(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->pwm_system.getConfig().Period;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->pwm_system.getConfig().Period;
         }
 
         uint16_t readConfig_MinHigh(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->pwm_system.getConfig().MinHigh;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->pwm_system.getConfig().MinHigh;
         }
 
         uint32_t readCycleStartTimeUpper(tRioStatusCode* /*status*/){
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
             return 0;//unnecessary for emulation
-        }    
+        }
 
         uint16_t readLoopTiming(tRioStatusCode* /*status*/){
             return hal::kExpectedLoopTiming;
         }
 
         void writePeriodScaleMXP(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->pwm_system.setMXPPeriodScale(bitfield_index, value);
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->pwm_system.setMXPPeriodScale(bitfield_index, value);
+            instance.second.unlock();
         }
 
         uint8_t readPeriodScaleMXP(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->pwm_system.getMXPPeriodScale(bitfield_index);
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->pwm_system.getMXPPeriodScale(bitfield_index);
         }
 
         void writePeriodScaleHdr(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->pwm_system.setHdrPeriodScale(bitfield_index, value);
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->pwm_system.setHdrPeriodScale(bitfield_index, value);
+            instance.second.unlock();
         }
 
         uint8_t readPeriodScaleHdr(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->pwm_system.getHdrPeriodScale(bitfield_index);
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->pwm_system.getHdrPeriodScale(bitfield_index);
         }
 
         void writeZeroLatch(uint8_t /*bitfield_index*/, bool /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
@@ -116,32 +138,40 @@ namespace hel{
         }
 
         void writeHdr(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->pwm_system.setHdrDutyCycle(reg_index, value);
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->pwm_system.setHdrDutyCycle(reg_index, value);
+            instance.second.unlock();
         }
 
         uint16_t readHdr(uint8_t reg_index, tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->pwm_system.getHdrDutyCycle(reg_index);
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->pwm_system.getHdrDutyCycle(reg_index);
         }
 
         void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
+            auto instance = RoboRIOManager::getInstance();
             uint8_t DO_index = [&]{
-    			if(reg_index < 4){ //First four MXP PWM channels line up with DO, but the next six are offset by four
-    				return reg_index;
-    			}
-    			reg_index += 4; 
-    			return reg_index;
-    		}();
-    		if( 
-    			checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getEnabledOutputs().MXP, DO_index) && //Allow MXP output if pin is output-enabled
-    			checkBitHigh(hel::RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), DO_index) //Allow MXP outout if DO is using special function
-    		){
-    			RoboRIOManager::getInstance()->pwm_system.setMXPDutyCycle(reg_index, value);
-    		}
+                if(reg_index < 4){ //First four MXP PWM channels line up with DO, but the next six are offset by four
+                    return reg_index;
+                }
+                reg_index += 4;
+                return reg_index;
+            }();
+            if(
+               checkBitHigh(instance.first->digital_system.getEnabledOutputs().MXP, DO_index) && //Allow MXP output if pin is output-enabled
+               checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index) //Allow MXP outout if DO is using special function
+                ){
+                instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
+            }
+            instance.second.unlock();
             //TODO error handling
         }
 
         uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->pwm_system.getMXPDutyCycle(reg_index);
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->pwm_system.getMXPDutyCycle(reg_index);
         }
     };
 }

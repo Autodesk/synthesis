@@ -18,23 +18,33 @@ namespace hel{
         }
 
         tStatus readStatus(tRioStatusCode* /*status*/){
-           return RoboRIOManager::getInstance()->watchdog.getStatus();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->watchdog.getStatus();
         }
 
         bool readStatus_SystemActive(tRioStatusCode* /*status*/){
-           return RoboRIOManager::getInstance()->watchdog.getStatus().SystemActive;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->watchdog.getStatus().SystemActive;
         }
 
         bool readStatus_PowerAlive(tRioStatusCode* /*status*/){
-           return RoboRIOManager::getInstance()->watchdog.getStatus().PowerAlive;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->watchdog.getStatus().PowerAlive;
         }
 
         uint16_t readStatus_SysDisableCount(tRioStatusCode* /*status*/){
-           return RoboRIOManager::getInstance()->watchdog.getStatus().SysDisableCount;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->watchdog.getStatus().SysDisableCount;
         }
 
         uint16_t readStatus_PowerDisableCount(tRioStatusCode* /*status*/){
-           return RoboRIOManager::getInstance()->watchdog.getStatus().PowerDisableCount;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->watchdog.getStatus().PowerDisableCount;
         }
 
         void writeCommand(uint16_t /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation

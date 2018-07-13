@@ -22,20 +22,24 @@ namespace hel{
 }
 
 void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
+    auto instance = hel::RoboRIOManager::getInstance();
     hel::RoboRIO::CANBus::Message m;
     m.id = messageID;
     m.data_size = dataSize;
     std::copy(data, data + dataSize, std::begin(m.data));
-    hel::RoboRIOManager::getInstance()->can_bus.enqueueMessage(m);
+    instance.first->can_bus.enqueueMessage(m);
+    instance.second.unlock();
     //TODO handle repeating messages - currently unsupported
 }
 
 void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t /*messageIDMask*/, uint8_t* data, uint8_t* dataSize, uint32_t* /*timeStamp*/, int32_t* /*status*/){
-    hel::RoboRIO::CANBus::Message m = hel::RoboRIOManager::getInstance()->can_bus.getNextMessage();
-    hel::RoboRIOManager::getInstance()->can_bus.popNextMessage();
+    auto instance = hel::RoboRIOManager::getInstance();
+    hel::RoboRIO::CANBus::Message m = instance.first->can_bus.getNextMessage();
+    instance.first->can_bus.popNextMessage();
     *messageID = m.id; //TODO use message mask?
     *dataSize = m.data_size;
     std::copy(std::begin(m.data), std::end(m.data), data);
+    instance.second.unlock();
     //TODO figure out what time stamp is marking and add it
 }
 

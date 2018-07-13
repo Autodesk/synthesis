@@ -38,19 +38,27 @@ namespace hel{
         }
 
         tStatus readStatus(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getStatus();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getStatus();
         }
 
         uint8_t readStatus_User3V3(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getStatus().User3V3;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getStatus().User3V3;
         }
 
         uint8_t readStatus_User5V(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getStatus().User5V;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getStatus().User5V;
         }
 
         uint8_t readStatus_User6V(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getStatus().User6V;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getStatus().User6V;
         }
 
         uint16_t readUserVoltage6V(tRioStatusCode* /*status*/){
@@ -66,7 +74,9 @@ namespace hel{
         }
 
         void strobeResetFaultCounts(tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->power.setFaultCounts(*(new tFaultCounts));
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->power.setFaultCounts(*(new tFaultCounts));
+            instance.second.unlock();
         }
 
         uint16_t readIntegratedIO(tRioStatusCode* /*status*/){
@@ -98,23 +108,33 @@ namespace hel{
         }
 
         tFaultCounts readFaultCounts(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getFaultCounts();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getFaultCounts();
         }
 
         uint8_t readFaultCounts_OverCurrentFaultCount3V3(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getFaultCounts().OverCurrentFaultCount3V3;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getFaultCounts().OverCurrentFaultCount3V3;
         }
 
         uint8_t readFaultCounts_OverCurrentFaultCount5V(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getFaultCounts().OverCurrentFaultCount5V;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getFaultCounts().OverCurrentFaultCount5V;
         }
 
         uint8_t readFaultCounts_OverCurrentFaultCount6V(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getFaultCounts().OverCurrentFaultCount6V;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getFaultCounts().OverCurrentFaultCount6V;
         }
 
         uint8_t readFaultCounts_UnderVoltageFaultCount5V(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getFaultCounts().UnderVoltageFaultCount5V;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getFaultCounts().UnderVoltageFaultCount5V;
         }
 
         uint16_t readVinCurrent(tRioStatusCode* /*status*/){
@@ -122,41 +142,57 @@ namespace hel{
         }
 
         void writeDisable(tDisable value, tRioStatusCode* /*status*/){
-            RoboRIOManager::getInstance()->power.setDisabled(value);
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->power.setDisabled(value);
+            instance.second.unlock();
         }
 
         void writeDisable_User3V3(bool value, tRioStatusCode* /*status*/){
-            tDisable disabled = RoboRIOManager::getInstance()->power.getDisabled();
+            auto instance = RoboRIOManager::getInstance();
+            tDisable disabled = instance.first->power.getDisabled();
             disabled.User3V3 = value;
-            RoboRIOManager::getInstance()->power.setDisabled(disabled);
+            instance.first->power.setDisabled(disabled);
+            instance.second.unlock();
         }
 
         void writeDisable_User5V(bool value, tRioStatusCode* /*status*/){
-            tDisable disabled = RoboRIOManager::getInstance()->power.getDisabled();
+            auto instance = RoboRIOManager::getInstance();
+            tDisable disabled = instance.first->power.getDisabled();
             disabled.User5V = value;
-            RoboRIOManager::getInstance()->power.setDisabled(disabled);
+            instance.first->power.setDisabled(disabled);
+            instance.second.unlock();
         }
 
         void writeDisable_User6V(bool value, tRioStatusCode* /*status*/){
-            tDisable disabled = RoboRIOManager::getInstance()->power.getDisabled();
+            auto instance = RoboRIOManager::getInstance();
+            tDisable disabled = instance.first->power.getDisabled();
             disabled.User6V = value;
-            RoboRIOManager::getInstance()->power.setDisabled(disabled);
+            instance.first->power.setDisabled(disabled);
+            instance.second.unlock();
         }
 
         tDisable readDisable(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getDisabled();
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getDisabled();
         }
 
         bool readDisable_User3V3(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getDisabled().User3V3;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getDisabled().User3V3;
         }
 
         bool readDisable_User5V(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getDisabled().User5V;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getDisabled().User5V;
         }
 
         bool readDisable_User6V(tRioStatusCode* /*status*/){
-            return RoboRIOManager::getInstance()->power.getDisabled().User6V;
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->power.getDisabled().User6V;
         }
     };
 }
