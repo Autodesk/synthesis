@@ -269,7 +269,7 @@ namespace hel{
             //note: bitfield_index is mxp remapped dio address corresponding to the mxp pwm output
             auto instance = hel::RoboRIOManager::getInstance();
             tDIO::tOutputEnable enabled_outputs = instance.first->digital_system.getEnabledOutputs();
-            enabled_outputs.MXP &= 1u << bitfield_index;
+            enabled_outputs.MXP = hel::setBit(enabled_outputs.MXP, true, bitfield_index);
             instance.first->digital_system.setEnabledOutputs(enabled_outputs);
             instance.second.unlock();
         }
