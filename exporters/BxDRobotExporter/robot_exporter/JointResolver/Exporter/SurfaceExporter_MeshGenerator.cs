@@ -25,6 +25,11 @@ public partial class SurfaceExporter
 
     private const int MAX_VERTICES = ushort.MaxValue;
 
+    /// <summary>
+    /// Default tolerance used when generating meshes (cm)
+    /// </summary>
+    private const double DEFAULT_TOLERANCE = 1;
+
     // Temporary output
     private PartialSurface tempSurface = new PartialSurface();
 
@@ -48,19 +53,20 @@ public partial class SurfaceExporter
         double[] tolerances = new double[10];
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
 
-        double tolerance = 1;
-        if (bestResolution)
+        // Find the lowest tolerance specified by a facet
+        double tolerance = DEFAULT_TOLERANCE;
+
+        int bestIndex = -1;
+        for (int i = 0; i < tmpToleranceCount; i++)
         {
-            int bestIndex = -1;
-            for (int i = 0; i < tmpToleranceCount; i++)
+            if (bestIndex < 0 || tolerances[i] < tolerances[bestIndex])
             {
-                if (bestIndex < 0 || tolerances[i] < tolerances[bestIndex])
-                {
-                    bestIndex = i;
-                }
+                bestIndex = i;
             }
-            tolerance = tolerances[bestIndex];
         }
+        
+        if (bestResolution || tolerances[bestIndex] > tolerance)
+            tolerance = tolerances[bestIndex];
 
         #region SHOULD_SEPARATE_FACES
         // Bundle faces into separate surfaces based on common assets
@@ -76,7 +82,7 @@ public partial class SurfaceExporter
 
                     if (!sharedAssets.ContainsKey(asset.DisplayName))
                     {
-                        sharedAssets.Add(asset.DisplayName, new AssetProperties(asset));
+                        sharedAssets.Add(asset.DisplayName, AssetProperties.Create(asset));
                         subSurfaces.Add(asset.DisplayName, new List<Face>());
                     }
 
