@@ -19,13 +19,13 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// The gear ratio that the input gear uses
     /// </summary>
     /// <param name="InputGear">Input gear ratio</param>
-    public double InputGear { get; set; }
+    public double InputGear { get; set; }// getter/setter for the input gear internal data structure
 
     /// <summary>
     /// The gear ratio that the output gear uses
     /// </summary>
     /// <param name="OutputGear">Output gear ratio</param>
-    public double OutputGear { get; set; }
+    public double OutputGear { get; set; }// getter/setter for the output gear internal data structure
 
 
     //wat
@@ -226,8 +226,8 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
         writer.Write((byte) ((int) GetDriveType()));
         writer.Write((short)portA); 
         writer.Write((short)portB);
-        writer.Write((double)InputGear);
-        writer.Write((double)OutputGear);
+        writer.Write((double)InputGear);// write the input gear to the Binary writer
+        writer.Write((double)OutputGear);// write the output gear to the Binary writer
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
         writer.Write(isCan);
@@ -243,12 +243,12 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// </summary>
     /// <param name="reader">Input stream</param>
     public void ReadBinaryData(System.IO.BinaryReader reader)
-    {
+    {//these need to stay in the correct order to read the data properly, and need to stay with the same data type so the byte order stays correct
         type = (JointDriverType) ((int) reader.ReadByte());
         portA = reader.ReadInt16();
         portB = reader.ReadInt16();
-        InputGear = reader.ReadDouble();
-        OutputGear = reader.ReadDouble();
+        InputGear = reader.ReadDouble();// reads the input gear from the binary input
+        OutputGear = reader.ReadDouble();// reads the output gear from the binary input
         lowerLimit = reader.ReadSingle();
         upperLimit = reader.ReadSingle();
         isCan = reader.ReadBoolean();
