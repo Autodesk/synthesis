@@ -187,6 +187,8 @@ namespace Synthesis.Robot
         /// <param name="resetTransform"></param>
         public void BeginReset()
         {
+            GetDriverPractice().DestroyAllGamepieces();
+
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             lastCameraState = dynamicCamera.cameraState;
             Debug.Log(lastCameraState);
