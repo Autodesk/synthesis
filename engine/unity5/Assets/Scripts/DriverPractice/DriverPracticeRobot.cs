@@ -291,6 +291,20 @@ namespace Synthesis.DriverPractice
         }
 
         /// <summary>
+        /// Destroys all gamepieces held by this <see cref="DriverPracticeRobot"/>.
+        /// </summary>
+        public void DestroyAllGamepieces()
+        {
+            foreach (List<GameObject> gameObjects in objectsHeld)
+            {
+                foreach (GameObject g in gameObjects)
+                    Destroy(g);
+
+                gameObjects.Clear();
+            }
+        }
+
+        /// <summary>
         /// Waits .5 seconds before renabling collisions between the release gamepiece and the robot.
         /// </summary>
         IEnumerator UnIgnoreCollision(GameObject obj)
