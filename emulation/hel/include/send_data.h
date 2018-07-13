@@ -17,7 +17,6 @@ namespace hel{
 
         std::array<hel::MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
 
-        //TODO handle DIO configured for input vs output
         std::array<bool, hal::kNumDigitalHeaders> digital_hdrs;
     public:
         void update();

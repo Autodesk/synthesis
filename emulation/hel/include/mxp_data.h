@@ -6,7 +6,7 @@
 namespace hel{
     struct MXPData{
         enum class Config{
-            DIO, PWM, SPI, I2C
+            DI, DO, PWM, SPI, I2C
         };
 
         Config config;
