@@ -114,6 +114,8 @@ namespace hel{
         std::function<std::string(T)> function_to_s = to_s;
         return serializeArray(label, arr, function_to_s);
     }
+
+    std::string quote(std::string);
 }
 
 #endif

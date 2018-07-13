@@ -123,11 +123,17 @@ std::string hel::to_string(hel::RoboRIOInterface::MXPData::Config config){
 }
 
 std::string hel::RoboRIOInterface::serialize()const{
-    std::string s = "\"roborio\":{";
+    std::string s = "{\"roborio\":{";
 
     s += serializeArray("\"pwm_hdrs\"", pwm_hdrs, static_cast<std::string(*)(double)>(std::to_string));
     s += ",";
-    s += serializeArray("\"relays\"", relays, static_cast<std::string(*)(RelayState)>(hel::to_string));
+    s += serializeArray(
+        "\"relays\"",
+        relays,
+        std::function<std::string(RelayState)>([&](RelayState r){
+            return hel::quote(hel::to_string(r));
+        })
+    );
     s += ",";
     s += serializeArray("\"analog_outputs\"", analog_outputs, static_cast<std::string(*)(double)>(std::to_string));
     s += ",";
@@ -135,7 +141,7 @@ std::string hel::RoboRIOInterface::serialize()const{
         "\"digital_mxp\"",
         digital_mxp,
         std::function<std::string(MXPData)>([&](MXPData data){
-            return "\"config:\"" + hel::to_string(data.config) + ",\"value\":" + std::to_string(data.value);
+            return "{\"config\":" + hel::quote(hel::to_string(data.config)) + ",\"value\":" + std::to_string(data.value) + "}";
         })
     );
     s += ",";
@@ -148,6 +154,6 @@ std::string hel::RoboRIOInterface::serialize()const{
     );
     //TODO finish
 
-    s += "}";
+    s += "}}";
     return s;
 }
