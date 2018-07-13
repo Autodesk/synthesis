@@ -305,12 +305,11 @@ namespace Synthesis.GUI
                 PlayerPrefs.Save();
 
                 if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                {
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
                     });
-                    SceneManager.LoadScene("Scene");
-                }
+
+                SceneManager.LoadScene("Scene");
             }
             else
             {
