@@ -52,14 +52,14 @@ namespace EditorsLibrary
             RegisterContextAction("Edit Sensors", ListSensors_Internal);
             RegisterContextAction("Edit Limits", (List<RigidNode_Base> nodes) =>
                 {
-                    try
+                    try// prevent the user from just left clicking on the black joint pane and trying to edit nothing
                     {
                         if (nodes.Count != 1) return;
 
                         RigidNode_Base node = nodes[0];
-                        if (node != null && node.GetSkeletalJoint() != null)
+                        if (node != null && node.GetSkeletalJoint() != null)// prevents the user from trying to edit a null joint
                         {
-                            EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());
+                            EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());// show the limit editor form
                             limitEditor.ShowDialog(ParentForm);
                         }
                     }

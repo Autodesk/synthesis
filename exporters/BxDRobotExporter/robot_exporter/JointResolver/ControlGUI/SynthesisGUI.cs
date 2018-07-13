@@ -311,7 +311,9 @@ public partial class SynthesisGUI : Form
         }
         return false;
     }
-    public void writeLimits(RigidNode_Base skeleton)
+    public void writeLimits(RigidNode_Base skeleton)// generally, this class iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
+        //needed because we want to be able to pull the limits into the joint as the exporter exports, but where the joint is actually written to the .bxdj (the SimulatorAPI) is unable
+        //to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         skeleton.ListAllNodes(nodes);
@@ -339,43 +341,43 @@ public partial class SynthesisGUI : Form
                     case SkeletalJointType.BALL:
                         break;
                     case SkeletalJointType.CYLINDRICAL:
-                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasAngularPositionLimits;
-                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit)
+                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasAngularPositionLimits;//sets whether or not the joint has angular limits based off whether or not the joint has limist
+                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit)// if there are limits, write them to the file
                         {
-                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);
-                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);
+                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);// get the JointDef from the joint and write the limits to the internal datatype
+                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);// see above
                         }
-                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearStartLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionStartLimit;
-                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearStartLimit)
+                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearStartLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionStartLimit;// see above
+                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearStartLimit)// see above
                         {
-                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitStart = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);
+                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitStart = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);// see above
                         }
-                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearEndLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;
-                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearEndLimit)
+                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearEndLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;// see above
+                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearEndLimit)// see above
                         {
-                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitEnd = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue);
+                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitEnd = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue);// see above
                         }
                         break;
                     case SkeletalJointType.LINEAR:
-                        ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionStartLimit;
-                        if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit)
+                        ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionStartLimit;// see cylindrical joint above
+                        if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit)// see cylindrical joint above
                         {
-                            ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);
+                            ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);// see cylindrical joint above
                         }
-                        ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;
-                        if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit)
+                        ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;// see cylindrical joint above
+                        if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit)// see cylindrical joint above
                         {
-                            ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue);
+                            ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue);// see cylindrical joint above
                         }
                         break;
                     case SkeletalJointType.PLANAR:
                         break;
                     case SkeletalJointType.ROTATIONAL:
-                        ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasAngularPositionLimits;
-                        if (((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit)
+                        ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasAngularPositionLimits;// see cylindrical joint above
+                        if (((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit)// see cylindrical joint above
                         {
-                            ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);
-                            ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);
+                            ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);// see cylindrical joint above
+                            ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);// see cylindrical joint above
                         }
                         break;
                     default:
@@ -402,7 +404,7 @@ public partial class SynthesisGUI : Form
 
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
-            writeLimits(SkeletonBase);
+            writeLimits(SkeletonBase);// write the limits from Inventor to the skeleton
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
 

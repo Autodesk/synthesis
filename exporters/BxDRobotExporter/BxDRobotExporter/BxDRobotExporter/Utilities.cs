@@ -44,7 +44,7 @@ namespace BxDRobotExporter
         {
             try
             {
-                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication)
+                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication)// pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
                 {
                     Opacity = 0.00d
                 };
