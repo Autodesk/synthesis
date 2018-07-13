@@ -4,6 +4,7 @@
 #include "util.h"
 
 void hel::RoboRIOInterface::update(){
+    auto instance = RoboRIOManager::getInstance();
     int32_t status = 0;
 
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
@@ -33,32 +34,32 @@ void hel::RoboRIOInterface::update(){
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){
         digital_mxp[i].config = [&](){
-            if(checkBitHigh(RoboRIOManager::getInstance()->digital_system.getMXPSpecialFunctionsEnabled(), i)){
-                unsigned mxp_remapped_i = i + hal::kNumDigitalHeaders;
+            if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){
                 if(
-                    mxp_remapped_i == 0 || 
-                    mxp_remapped_i == 1 || 
-                    mxp_remapped_i == 2 || 
-                    mxp_remapped_i == 3 || 
-                    mxp_remapped_i == 8 || 
-                    mxp_remapped_i == 9 || 
-                    mxp_remapped_i == 10 || 
-                    mxp_remapped_i == 11 || 
-                    mxp_remapped_i == 12 || 
-                    mxp_remapped_i == 13
+                    i == 0 ||
+                    i == 1 ||
+                    i == 2 ||
+                    i == 3 ||
+                    i == 8 ||
+                    i == 9 ||
+                    i == 10 ||
+                    i == 11 ||
+                    i == 12 ||
+                    i == 13
                 ){
                     return MXPData::Config::PWM;
                 }
                 if(
-                    mxp_remapped_i == 5 || 
-                    mxp_remapped_i == 6 || 
-                    mxp_remapped_i == 7
+                    i == 4 ||
+                    i == 5 ||
+                    i == 6 ||
+                    i == 7
                 ){
                     return MXPData::Config::SPI;
                 }
                 if(
-                    mxp_remapped_i == 14 || 
-                    mxp_remapped_i == 15
+                    i == 14 ||
+                    i == 15
                 ){
                     return MXPData::Config::I2C;
                 }
