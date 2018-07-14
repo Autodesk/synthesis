@@ -38,6 +38,7 @@ void hel::ReceiveData::update()const{
             ; //Do nothing
         }
     }
+    instance.first->joysticks = joysticks;
     //TODO
 }
 
@@ -45,6 +46,6 @@ std::string hel::ReceiveData::toString()const{
     return ""; //TODO implement function in readable print-out
 }
 
-void hel::ReceiveData::deserialize(std::string)const{
+void hel::ReceiveData::deserialize(std::string input)const{
     //TODO finish
 }

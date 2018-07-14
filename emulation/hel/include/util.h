@@ -134,11 +134,12 @@ namespace hel{
 
     std::vector<std::string> split(std::string, const char);
 
+    std::vector<std::string> splitObject(std::string);
+
     template<typename T>
     std::vector<T> deserializeList(std::string input, std::function<T(std::string)> from_s){
-        input = excludeFromString(input, {'[',']'});
         std::vector<T> v;
-        for(std::string i: split(input, ',')){
+        for(std::string i: splitObject(input)){
             v.push_back(from_s(removeExtraneousSpaces(i)));
         }
         return v;
@@ -150,7 +151,8 @@ namespace hel{
         return deserializeList(input, function_from_s);
     }
 
-    std::string removeList(std::string,std::string&);
+    std::string removeItem(std::string,std::string&);
+    std::string getItem(std::string&);
 
     std::string quote(std::string);
 }
