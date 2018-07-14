@@ -88,7 +88,7 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MOD
 
     set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
 
-    target_link_libraries(${test_name} hel)
+#target_link_libraries(${test_name} hel)
 
   ENDFOREACH( file test_list)
 

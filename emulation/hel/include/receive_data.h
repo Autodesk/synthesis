@@ -16,7 +16,7 @@ namespace hel{
 
         std::string toString()const;
 
-        void deserialize(std::string)const;
+        void deserialize(std::string);
     };
 }
 

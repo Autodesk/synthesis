@@ -2,6 +2,7 @@
 
 #include "HAL/HAL.h"
 #include "util.h"
+#include "json_util.h"
 
 void hel::SendData::update(){
     auto instance = RoboRIOManager::getInstance();
@@ -120,7 +121,7 @@ std::string hel::SendData::toString()const{
 std::string hel::SendData::serialize()const{
     std::string s = "{\"roborio\":{";
 
-    s += serializeList("\"pwm_hdrs\"", pwm_hdrs, static_cast<std::string(*)(double)>(std::to_string));
+    s += serializeList("\"pwm_hdrs\"", pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
     s += ",";
     s += serializeList(
         "\"relays\"",
@@ -130,7 +131,7 @@ std::string hel::SendData::serialize()const{
         })
     );
     s += ",";
-    s += serializeList("\"analog_outputs\"", analog_outputs, static_cast<std::string(*)(double)>(std::to_string));
+    s += serializeList("\"analog_outputs\"", analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
     s += ",";
     s += serializeList(
         "\"digital_mxp\"",
