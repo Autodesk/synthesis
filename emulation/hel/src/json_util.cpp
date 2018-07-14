@@ -1,4 +1,4 @@
-#include "util.h"
+#include "json_util.h"
 
 std::string hel::quote(std::string s){
     return "\"" + s + "\"";
@@ -54,24 +54,34 @@ std::vector<std::string> hel::split(std::string input_str, const char DELIMITER)
     return split_str;
 }
 
+std::string hel::clipList(std::string input){
+    input = trim(input);
+    if(input.size() > 0 && input[0] == '['){
+        input.erase(0,1);
+    }
+    if(input.size() > 0 && input[input.size() - 1] == ']'){
+        input.erase(input.size() - 1, 1);
+    }
+    return input;
+}
+
 std::vector<std::string> hel::splitObject(std::string input){
     std::vector<std::string> v;
-    int i = 0;
     while(input.size() > 0){
-        v.push_back(hel::getItem(input));
-        i++;
-        if(i>9)break;
+        v.push_back(hel::pullObject(input));
+        //TODO could run forever
     }
     return v;
 }
 
-std::string hel::getItem(std::string& search){ //returns the first item that matches labeli
-    unsigned end = 0; //marks end of item
+std::string hel::pullObject(std::string& input){ 
+    unsigned end = 0;
+
     int bracket_count = 0;
     int curly_bracket_count = 0;
 
-    for(; end < search.size(); end++){
-        char c = search[end];
+    for(; end < input.size(); end++){
+        char c = input[end];
         if(c == '['){
             bracket_count++;
         } else if(c == ']'){
@@ -85,47 +95,40 @@ std::string hel::getItem(std::string& search){ //returns the first item that mat
             break;
         }
     }
-    std::string item = search.substr(0, end);
-    search = search.substr(end);
-    if(search.size() > 0 && search[0] == ','){
-        search.erase(0,1);
+
+    std::string item = input.substr(0, end);
+
+    input = input.substr(end);
+
+    if(input.size() > 0 && input[0] == ','){ //When removing object from string, remove comma if necessary
+        input.erase(0,1);
     }
-    return item;
+
+    return trim(item);
 }
 
-std::string hel::removeItem(std::string label, std::string& input){ //returns the first item that matches labeli
-    const std::string ITEM_START_SYM = ":";
-    label += ITEM_START_SYM;
+std::string hel::pullValue(std::string label, std::string& input){ //returns the first item that matches label
+    const std::string OBJECT_START_SYM = ":";
+    label += OBJECT_START_SYM;
+
     std::size_t start = input.find(label);
+
     if(start == std::string::npos){ //check if label is present
         return "";
     }
+
     std::string search = input.substr(start + label.size()); //create string without data before label
+    std::string value = hel::pullObject(search);
 
-    unsigned end = 0; //marks end of item
-    int bracket_count = 0;
-    int curly_bracket_count = 0;
-
-    for(; end < search.size(); end++){
-        char c = search[end];
-        if(c == '['){
-            bracket_count++;
-        } else if(c == ']'){
-            bracket_count--;
-        } else if(c == '{'){
-            curly_bracket_count++;
-        } else if(c == '}'){
-            curly_bracket_count--;
-        }
-        if(c == ',' && bracket_count == 0 && curly_bracket_count == 0){
-            break;
-        }
+    if(value.size() > 0 && (value[value.size() - 1] == '}' || value[value.size() - 1] == ']')){ //remove closing bracket from value if it falls at the end of the object
+        value.erase(value.size() - 1, 1);
     }
-    input = input.substr(0,start) + search.substr(end); //get front of input, exclude found list and following comma, and get back
-    if(start < input.size() && input[start] == ','){
+
+    input = input.substr(0, start) + search; //remove object from input
+    if(start < input.size() && input[start] == ','){ //when removing object, remove comma if necessary
         input.erase(start, 1);
-    } else if((start - 1) >= 0 && input[start - 1] == ','){
+    } else if(((signed int)start - 1) >= 0 && input[start - 1] == ','){
         input.erase(start - 1, 1);
     }
-    return search.substr(0, end);
+    return trim(value);
 }
