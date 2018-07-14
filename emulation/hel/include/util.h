@@ -106,55 +106,6 @@ namespace hel{
         Maybe(T data) : _data(data), _is_valid(true) {};
         Maybe() : _is_valid(false) {};
     };
-
-    template<typename T, size_t LEN>
-    std::string serializeList(std::string label, std::array<T, LEN> arr, std::function<std::string(T)> to_s){
-        std::string s = label + ":[";
-        for(unsigned i = 0; i < arr.size(); i++){
-            s += to_s(arr[i]);
-            if((i + 1) < arr.size()){
-                s += ",";
-            }
-        }
-        s += "]";
-        return s;
-    }
-
-    template<typename T, size_t LEN>
-    std::string serializeList(std::string label, std::array<T, LEN> arr, std::string(*to_s)(T)){
-        std::function<std::string(T)> function_to_s = to_s;
-        return serializeList(label, arr, function_to_s);
-    }
-
-    std::string removeExtraneousSpaces(std::string);
-
-    std::string excludeFromString(std::string, std::vector<char>);
-
-    std::string trim(std::string);
-
-    std::vector<std::string> split(std::string, const char);
-
-    std::vector<std::string> splitObject(std::string);
-
-    template<typename T>
-    std::vector<T> deserializeList(std::string input, std::function<T(std::string)> from_s){
-        std::vector<T> v;
-        for(std::string i: splitObject(input)){
-            v.push_back(from_s(removeExtraneousSpaces(i)));
-        }
-        return v;
-    }
-
-    template<typename T>
-    std::string deserializeList(std::string input, T(*from_s)(std::string)){
-        std::function<std::string(T)> function_from_s = from_s;
-        return deserializeList(input, function_from_s);
-    }
-
-    std::string removeItem(std::string,std::string&);
-    std::string getItem(std::string&);
-
-    std::string quote(std::string);
 }
 
 #endif
