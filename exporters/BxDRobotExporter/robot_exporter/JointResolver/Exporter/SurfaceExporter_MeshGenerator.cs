@@ -43,6 +43,8 @@ public partial class SurfaceExporter
             public ManualResetEvent doneEvent;
         }
 
+        public Exception error = null;
+
         private SurfaceBody surf;
         private bool bestResolution;
         private bool separateFaces;
@@ -74,16 +76,26 @@ public partial class SurfaceExporter
         {
             if (threadContext is JobContext context)
             {
-                CalculateSurfaceFacets();
-                DumpOutputMesh();
-                context.doneEvent.Set();
+                try
+                {
+                    CalculateSurfaceFacets();
+                    DumpOutputMesh();
+                }
+                catch (Exception e)
+                {
+                    error = e;
+                }
+                finally
+                {
+                    context.doneEvent.Set();
+                }
             }
         }
 
         private double GetTolerance()
         {
-            int toleranceCount;
-            double[] tolerances;
+            int toleranceCount = 10;
+            double[] tolerances = new double[10];
             surf.GetExistingFacetTolerances(out toleranceCount, out tolerances);
 
             double tolerance = DEFAULT_TOLERANCE;
