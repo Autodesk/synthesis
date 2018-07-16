@@ -75,16 +75,6 @@ public partial class DriveChooser : Form
 
             txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
-            if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
-            {
-                joint.cDriver.OutputGear = 1;
-            }
-            if (joint.cDriver.InputGear == 0)// prevents input gear from being 0
-            {
-                joint.cDriver.InputGear = 1;
-            }
-            OutputGeartxt.Text = Convert.ToString(joint.cDriver.OutputGear);// reads the existing gearing and writes it to the input field so the user sees their existing value
-            InputGeartxt.Text = Convert.ToString(joint.cDriver.InputGear);// reads the existing gearing and writes it to the input field so the user sees their existing value
 
             #region Meta info recovery
             {
@@ -143,8 +133,6 @@ public partial class DriveChooser : Form
             txtPortB.Value = txtPortB.Minimum;
             txtLowLimit.Value = txtLowLimit.Minimum;
             txtHighLimit.Value = txtHighLimit.Minimum;
-            InputGeartxt.Text = "1";
-            OutputGeartxt.Text = "1";
 
             cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
             cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
@@ -165,16 +153,6 @@ public partial class DriveChooser : Form
     {
         if (joint.cDriver == null) return true;
 
-        double inputGear = 1, outputGear = 1;
-
-        try
-        {
-            inputGear = Convert.ToDouble(InputGeartxt.Text);
-            outputGear = Convert.ToDouble(OutputGeartxt.Text);// reads from the text file to determine whether or not we should save
-        }
-        catch (Exception) { // catches any non-numeric values, we tell the user that theres an issue later in the program, this is just a saving program, so it doesn't need to worry too much about the exception
-        }
-
         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
         WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
@@ -183,8 +161,7 @@ public partial class DriveChooser : Form
             txtPortA.Value != joint.cDriver.portA ||
             txtPortB.Value != joint.cDriver.portB ||
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
-            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit || 
-            inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear)
+            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit)
             return true;
 
         if (pneumatic != null && 
@@ -286,7 +263,6 @@ public partial class DriveChooser : Form
     /// <param name="e"></param>
     private void SaveButton_Click(object sender, EventArgs e)
     {
-        bool canClose = true;
         if (!ShouldSave())
         {
             Close();
@@ -300,44 +276,11 @@ public partial class DriveChooser : Form
         else
         {
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
-            double inputGear = 1, outputGear = 1;
 
-            try
-            {
-                inputGear = Convert.ToDouble(InputGeartxt.Text);// tries to parse the double from the input gear
-            }
-            catch (FormatException fe)// catches the user putting non-nummerical characters into the input
-            {
-                canClose = false;// prevent the user from saving until the issue is fixed
-                MessageBox.Show("Error: please make sure that the gear field has only numbers [ input gear ], please fix before saving");
-            }
-            catch (OverflowException oe)// catches other issues
-            {
-                canClose = false;// prevent the user from saving until the issue is fixed
-                MessageBox.Show("Error: the number provided is not supported as a possible gear ratio [ input gear ], please fix before saving");
-            }
-
-            try
-            {
-                outputGear = Convert.ToDouble(OutputGeartxt.Text);// tries to parse the double from the output gear
-            }
-            catch (FormatException fe)// catches the user putting non-nummerical characters into the input
-            {
-                canClose = false;// prevent the user from saving until the issue is fixed
-                MessageBox.Show("Error: please make sure that the gear field has only numbers [ output gear ], please fix before saving");
-            }
-            catch (OverflowException oe)// catches other issues
-            {
-                canClose = false;// prevent the user from saving until the issue is fixed
-                MessageBox.Show("Error: the number provided is not supported as a possible gear ratio [ output gear ], please fix before saving");
-            }
-            
             joint.cDriver = new JointDriver(cType)
             {
                 portA = (int)txtPortA.Value,
                 portB = (int)txtPortB.Value,
-                InputGear = inputGear,// writes the input gear to the internal joint driver so it can be exported
-                OutputGear = outputGear,// writes the output gear to the internal joint driver so it can be exported
                 lowerLimit = (float)txtLowLimit.Value,
                 upperLimit = (float)txtHighLimit.Value,
                 isCan = rbCAN.Checked
@@ -410,8 +353,6 @@ public partial class DriveChooser : Form
                         portA = joint.cDriver.portA,
                         portB = joint.cDriver.portB,
                         isCan = joint.cDriver.isCan,
-                        OutputGear = joint.cDriver.OutputGear,
-                        InputGear = joint.cDriver.InputGear,
                         lowerLimit = joint.cDriver.lowerLimit,
                         upperLimit = joint.cDriver.upperLimit
                     };
@@ -421,12 +362,10 @@ public partial class DriveChooser : Form
                 }
             }
         }
-        if (canClose)// make sure there are no outstanding issues for the user to fix before we save
-        {
-            Saved = true;
-            LegacyInterchange.LegacyEvents.OnRobotModified();
-            Close();
-        } 
+
+        Saved = true;
+        LegacyInterchange.LegacyEvents.OnRobotModified();
+        Close();
     }
 
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
