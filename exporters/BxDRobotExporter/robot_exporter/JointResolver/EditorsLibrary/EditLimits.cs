@@ -72,28 +72,31 @@ namespace EditorsLibrary
             if (!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
                     ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
             {
-                if (this.Angular_End.Checked && this.Angular_Start.Checked)
+                ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = this.Angular_End.Checked && this.Angular_Start.Checked;
+                double currentPosition = 0, startLimit = 0, endLimit = 0;
+                bool writeCurrentPosition = false, writeStartLimit = false, writeEndLimit = false;
+                try
                 {
-                    ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = true;
+                    currentPosition = Convert.ToDouble(Angular_Current_textbox.Text) * (Math.PI / 180);
+                    writeCurrentPosition = true;
+                }
+                catch (Exception)
+                {
+                    canClose = false;
+                    if (Angular_Current_textbox.Text.Equals(""))
+                    {
+                        MessageBox.Show("Error, please make sure that the Curremt text box has a position");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error, please make sure that the Current text box has a position");
+                    }
+                }
+                if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits) {
                     try
                     {
-                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = Convert.ToDouble(Angular_Current_textbox.Text) * (Math.PI / 180);
-                    }
-                    catch (Exception)
-                    {
-                        canClose = false;
-                        if (Angular_Current_textbox.Text.Equals(""))
-                        {
-                            MessageBox.Show("Error, please make sure that the Curremt text box has a position");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Error, please make sure that the Current text box has a position");
-                        }
-                    }
-                    try
-                    {
-                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = Convert.ToDouble(Angular_Start_textbox.Text) * (Math.PI / 180);
+                        startLimit = Convert.ToDouble(Angular_Start_textbox.Text) * (Math.PI / 180);
+                        writeStartLimit = true;
                     }
                     catch (Exception)
                     {
@@ -109,7 +112,8 @@ namespace EditorsLibrary
                     }
                     try
                     {
-                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = Convert.ToDouble(Angular_End_textbox.Text) * (Math.PI / 180);
+                        endLimit = Convert.ToDouble(Angular_End_textbox.Text) * (Math.PI / 180);
+                        writeEndLimit = true;
                     }
                     catch (Exception)
                     {
@@ -123,6 +127,30 @@ namespace EditorsLibrary
                             MessageBox.Show("Error, please make sure that the End text box has only numbers in it");
                         }
                     }
+                }
+                if (writeCurrentPosition && writeStartLimit && writeEndLimit)
+                {
+                    if (!(endLimit > currentPosition && startLimit > currentPosition) &&
+                        !(endLimit < currentPosition && startLimit < currentPosition))
+                    {
+                        if ((startLimit - endLimit <= 2 * Math.PI))
+                        {
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = currentPosition;
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = startLimit;
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = endLimit;
+                        }
+                        else
+                        {
+                            canClose = false;
+                            MessageBox.Show("Please make sure the start and end limits aren't over 360 degrees apart");
+                        }
+                    }
+                    else
+                    {
+                        canClose = false;
+                        MessageBox.Show("Please make sure the current position is between the start and end limits");
+                    }
+
                 }
                 else
                 {
