@@ -155,16 +155,14 @@ public class Exporter
                 {
                     SynthesisGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
-                    surfs.Reset(node.GUID);
                     Console.WriteLine("Exporting meshes...");
-                    surfs.ExportAll(group, (long progress, long total) =>
+                    BXDAMesh output = surfs.ExportAll(group, node.GUID, (long progress, long total) =>
                     {
                         double totalProgress = (((double)progress / (double)total) * 100.0);
                         SynthesisGUI.Instance.ExporterSetSubText(String.Format("Export {1} / {2}", Math.Round(totalProgress, 2), progress, total));
                         SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                     });
                     Console.WriteLine();
-                    BXDAMesh output = surfs.GetOutput();
                     Console.WriteLine("Output: " + output.meshes.Count + " meshes");
                     Console.WriteLine("Computing colliders...");
                     output.colliders.Clear();
