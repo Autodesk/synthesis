@@ -474,7 +474,7 @@ namespace BxDRobotExporter.Wizard
             if (NodeListBox.SelectedItem != null)
             {
                 // Highlight node in Inventor
-                StandardAddInServer.Instance.WizardSelect(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
+                StandardAddInServer.Instance.SelectNode(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
                 // Start drag-and-drop process
                 NodeListBox.DoDragDrop(NodeListBox.SelectedItem.ToString(), DragDropEffects.Move);
             }
@@ -493,7 +493,7 @@ namespace BxDRobotExporter.Wizard
                 return;
 
             // Highlight node in Inventor
-            StandardAddInServer.Instance.WizardSelect(setupPanels[name].Node);
+            StandardAddInServer.Instance.SelectNode(setupPanels[name].Node);
             // Start drag-and-drop process
             NodeListBox.DoDragDrop(name, DragDropEffects.Move);
         }
@@ -609,7 +609,7 @@ namespace BxDRobotExporter.Wizard
             if (NodeListBox.SelectedItem != null)
             {
                 // Highlight node in Inventor
-                StandardAddInServer.Instance.WizardSelect(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
+                StandardAddInServer.Instance.SelectNode(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
             }
         }
 

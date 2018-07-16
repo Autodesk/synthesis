@@ -73,8 +73,9 @@ namespace Synthesis.States
         {
             Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
             GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
-            BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
-            BPhysicsWorld.Get().DoDebugDraw = false;
+            //BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
+            BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.All;
+            BPhysicsWorld.Get().DoDebugDraw = true;
             ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
 
             CollisionTracker = new CollisionTracker(this);
@@ -578,6 +579,11 @@ namespace Synthesis.States
         {
             foreach (SimulatorRobot robot in SpawnedRobots)
                 robot.UnlockRobot();
+        }
+
+        public void RevertSpawnpoint()
+        {
+            ActiveRobot.BeginRevertSpawnpoint();
         }
 
         /// <summary>

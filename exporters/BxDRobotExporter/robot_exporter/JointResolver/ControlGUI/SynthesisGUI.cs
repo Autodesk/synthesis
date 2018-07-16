@@ -216,7 +216,7 @@ public partial class SynthesisGUI : Form
         }
         catch (TaskCanceledException)
         {
-            return true;
+            return false;
         }
         catch (Exception e)
         {
