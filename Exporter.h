@@ -8,9 +8,12 @@
 #include <Core/UserInterface/CommandEvent.h>
 #include <Core/UserInterface/CommandEventHandler.h>
 #include <Core/UserInterface/CommandEventArgs.h>
+#include <time.h>
 #include "EUI.h"
 #include "BXDA.h"
 #include "BinaryRWObject.h"
+#include <chrono>
+#include <numeric>
 
 //#using "SimulatorAPI.dll"
 

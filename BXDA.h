@@ -43,7 +43,7 @@ namespace BXDATA {
 		~BXDA();
 
 
-		unsigned int Version;		//Version is just 1;
+		unsigned int Version;		//Version is just 2.0.0 i think;
 		string GUID;				//GUID
 		Physics* physics;			//physical properties
 		vector <Submesh*> meshes;			//visual mesh - contains surface
