@@ -305,16 +305,15 @@ namespace Synthesis.GUI
                 PlayerPrefs.Save();
 
                 if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                {
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
                     });
-                    SceneManager.LoadScene("Scene");
-                }
-                else
-                {
-                    UserMessageManager.Dispatch("Field directory not found!", 5);
-                }
+
+                SceneManager.LoadScene("Scene");
+            }
+            else
+            {
+                UserMessageManager.Dispatch("Field directory not found!", 5);
             }
         }
 
