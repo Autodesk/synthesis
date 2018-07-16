@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0.2)
 project (hel)
 
 include(ExternalProject)
@@ -65,7 +65,7 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
     )
 
 link_directories("lib/lib64")
-endif(TEST)
+endif()
 
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MODE MATCHES "^[Ww][Pp][Ii]")
 
@@ -80,9 +80,11 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MOD
 
     add_executable( ${test_name} ${file} tests/main_stub.cpp)
 
+    add_dependencies(${test_name} hel)
     add_dependencies(${test_name} GoogleTest)
     add_dependencies(${test_name} asio)
-    target_link_libraries(${test_name} gtest gtest_main pthread)
+    add_dependencies(${test_name} wpilib)
+    target_link_libraries(${test_name} gtest gtest_main pthread hel)
     include_directories("lib/include")
     target_include_directories(${test_name} PRIVATE "${ASIO_DIRECTORY}/include" "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "./include")
 
@@ -125,6 +127,15 @@ add_custom_target ( asio ALL
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/scripts
   COMMENT "Download the C++ ASIO library"
   VERBATIM )
+
+if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
+    ExternalProject_Add(wpilib 
+        DOWNLOAD_COMMAND bash -c "git submodule update --init && mkdir -p ${CMAKE_BINARY_DIR}/../external/allwpilib/build"
+        CONFIGURE_COMMAND mkdir -p ${CMAKE_BINARY_DIR}/../external/allwpilib/build && cd ${CMAKE_BINARY_DIR}/../external/allwpilib/build && cmake -H.. -B. -DWITHOUT_CSCORE=true
+        BUILD_COMMAND cd ${CMAKE_BINARY_DIR}/../external/allwpilib/build && make -j4
+        INSTALL_COMMAND ""
+        )
+endif()
 
 link_directories (${WPILIB_SO_DIRECTORY}/common/current/lib/linux/athena/shared ${WPILIB_SO_DIRECTORY}/cpp/current/reflib/linux/athena/shared)  
 
