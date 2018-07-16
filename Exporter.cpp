@@ -1,6 +1,7 @@
 #include "Exporter.h"
 
 using namespace Synthesis;
+using namespace std;
 
 Exporter::Exporter(Ptr<Application> app) : _app(app) {
 	_ui = _app->userInterface();
@@ -8,7 +9,6 @@ Exporter::Exporter(Ptr<Application> app) : _app(app) {
 }
 
 Exporter::~Exporter() {
-	
 }
 
 int Exporter::exportCommon() {
@@ -21,7 +21,17 @@ int Exporter::exportCommon() {
 	//LVector3 * _verts = new LVector3();
 	//LVector3 * _norms = new LVector3();
 
-	BinaryWriter * binary = new BinaryWriter("out.txt");
+
+	//Generates timestamp and attaches to file name
+	time_t now = time(NULL);
+	tm * ptm = localtime(&now);
+	char buffer[32];
+	// Format: 20:20:00
+	strftime(buffer, 32, "%H.%M.%S", ptm);
+
+	string filename = doc->name() + "_" + buffer + ".bxda";
+
+	BinaryWriter * binary = new BinaryWriter(filename);
 
 	//Vector3 * _temp = new Vector3();
 	//Vector3 * _temp2 = new Vector3();
@@ -62,8 +72,10 @@ int Exporter::exportCommon() {
 		a += "\n";
 	}
 
-	//binary->Write(bxda);
-	delete binary;					//Close the stream
+	binary->Write(bxda);
+
+
+	//delete binary;					//Close the stream
 
 
 	//delete _temp;
