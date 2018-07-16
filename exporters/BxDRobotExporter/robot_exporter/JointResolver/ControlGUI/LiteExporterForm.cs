@@ -208,13 +208,12 @@ public partial class LiteExporterForm : Form
                 try
                 {
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
-                    surfs.Reset(node.GUID);
-                    surfs.ExportAll(group, (long progress, long total) =>
+
+                    BXDAMesh output = surfs.ExportAll(group, node.GUID, (long progress, long total) =>
                     {
                         SetProgress((double) progress / total / nodes.Count + (double) i / nodes.Count);
                     });
-
-                    BXDAMesh output = surfs.GetOutput();
+                    
                     output.colliders.Clear();
                     output.colliders.AddRange(ConvexHullCalculator.GetHull(output));
 

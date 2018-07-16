@@ -19,12 +19,11 @@ public partial class SurfaceExporter
     /// <summary>
     /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
     /// </summary>
-    /// <param name="occ">The component to export</param>
-    /// <param name="bestResolution">Use the best possible resolution</param>
-    /// <param name="separateFaces">Export each face as a separate mesh</param>
-    /// <param name="ignorePhysics">Don't add the physical properties of this component to the exporter</param>
+    /// <param name="occ">Component occurence to analize.</param>
+    /// <param name="mesh">Mesh to store physics data in.</param>
+    /// <param name="ignorePhysics">True to ignore physics in component.</param>
     /// <returns>All the sufaces to export</returns>
-    private List<SurfaceBody> GenerateExportList(ComponentOccurrence occ, bool ignorePhysics = false)
+    private List<SurfaceBody> GenerateExportList(ComponentOccurrence occ, BXDAMesh mesh, bool ignorePhysics = false)
     {
         List<SurfaceBody> plannedExports = new List<SurfaceBody>();
         
@@ -37,7 +36,7 @@ public partial class SurfaceExporter
             // Compute physics
             try
             {
-                outputMesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
+                mesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
             }
             catch
             {
@@ -63,7 +62,7 @@ public partial class SurfaceExporter
         {
             if (!adaptiveIgnoring || Utilities.BoxVolume(item.RangeBox) >= totalVolume)
             {
-                plannedExports.AddRange(GenerateExportList(item, true));
+                plannedExports.AddRange(GenerateExportList(item, mesh, true));
             }
         }
 
@@ -73,12 +72,10 @@ public partial class SurfaceExporter
     /// <summary>
     /// Adds the mesh for all the components and their subcomponenets in the custom rigid group.  <see cref="ExportAll(ComponentOccurrence,bool,bool,bool)"/>
     /// </summary>
-    /// <remarks>
-    /// This uses the best resolution and separate faces options stored inside the provided custom rigid group.
-    /// </remarks>
     /// <param name="group">The group to export from</param>
+    /// <param name="mesh">Mesh to store physics data in.</param>
     /// <returns>All the sufaces to export</returns>
-    private List<SurfaceBody> GenerateExportList(CustomRigidGroup group)
+    private List<SurfaceBody> GenerateExportList(CustomRigidGroup group, BXDAMesh mesh)
     {
         List<SurfaceBody> plannedExports = new List<SurfaceBody>();
 
@@ -93,7 +90,7 @@ public partial class SurfaceExporter
         {
             if (!adaptiveIgnoring || Utilities.BoxVolume(occ.RangeBox) >= totalVolume)
             {
-                plannedExports.AddRange(GenerateExportList(occ));
+                plannedExports.AddRange(GenerateExportList(occ, mesh));
             }
         }
 
