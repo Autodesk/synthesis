@@ -11,7 +11,7 @@ using Synthesis.States;
 
 namespace Synthesis.FEA
 {
-    public class Tracker : StateBehaviour<MainState>
+    public class Tracker : LinkedMonoBehaviour<MainState>
     {
         private const float fixedTimeStep = 1f / 60f;
 
@@ -68,7 +68,7 @@ namespace Synthesis.FEA
         /// </summary>
         public void AddState(DynamicsWorld world, float timeStep, int numSteps)
         {
-            if (!State.Tracking)
+            if (State == null || !State.Tracking)
                 return;
 
             StateDescriptor nextState = StateDescriptor;
