@@ -73,7 +73,7 @@ static class RigidBodyCleaner
         }
         else
         {
-            throw new InvalidOperationException("No ground!");
+            throw new Exporter.NoGroundException();
         }
         CleanMeaningless(results);
     }
