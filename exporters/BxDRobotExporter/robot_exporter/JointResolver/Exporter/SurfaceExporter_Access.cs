@@ -6,7 +6,12 @@ using System.Threading;
 
 public partial class SurfaceExporter
 {
-    private const int MAX_WAITING_EVENTS = 16;
+    public SurfaceExporter()
+    {
+        ExportJob.ResetAssets();
+    }
+
+    private const int MAX_WAITING_EVENTS = 32;
 
     /// <summary>
     /// Exports all the components in this group to the in-RAM mesh.
@@ -40,7 +45,7 @@ public partial class SurfaceExporter
             int waitSlot = WaitHandle.WaitAny(doneEvents); // Get next available done event handle
             doneEvents[waitSlot].Reset(); // Reset the event
 
-            jobs[i] = new ExportJob(plannedSurfaces[i], outputMesh, false, SynthesisGUI.PluginSettings.GeneralUseFancyColors);
+            jobs[i] = new ExportJob(plannedSurfaces[i], outputMesh, SynthesisGUI.PluginSettings.GeneralUseFancyColors);
 
             // Add the job to the queue
             ThreadPool.QueueUserWorkItem(jobs[i].ThreadPoolCallback, new ExportJob.JobContext { doneEvent = doneEvents[waitSlot], onFinish = () =>
