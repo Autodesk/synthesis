@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0.2)
 project (hel)
 
 include(ExternalProject)
@@ -20,7 +20,6 @@ set (WPIUTIL_DIRECTORY "${CMAKE_BINARY_DIR}/../external/allwpilib/wpiutil")
 set (WPILIB_SO_DIRECTORY "${CMAKE_BINARY_DIR}/../external/wpilib")
 set (ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/../external/ASIO/asio/")
 
-#set (VM_BUILD_COMMAND "./download_vm.sh && ./run_vm.sh")
 set (VM_BUILD_COMMAND "./run_vm.sh")
 set (CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
 
@@ -47,6 +46,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
+add_executable(generate_libwpi src/generate_libwpi.cpp)
+add_custom_target(libwpi.so run_generator)
+add_dependencies(libwpi.so generate_libwpi)
+
+
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
@@ -55,6 +59,23 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
+if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
+  if(TEST_MODE MATCHES "[Ww][Pp][Ii]")
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/lib/libwpi.so
+      COMMAND ./build/generate_libwpi
+      DEPENDS generate_libwpi
+      VERBATIM)
+
+    link_directories ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena )
+  else()
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/lib/libwpi.so x86
+      COMMAND ./build/generate_libwpi
+      DEPENDS generate_libwpi
+      VERBATIM)
+
+    link_directories (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64)
+  endif()
+endif()
 
 # If we decide to add automated unit testing, uncomment this block
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
@@ -65,7 +86,7 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
     )
 
 link_directories("lib/lib64")
-endif(TEST)
+endif()
 
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MODE MATCHES "^[Ww][Pp][Ii]")
 
@@ -80,15 +101,20 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND NOT TEST_MOD
 
     add_executable( ${test_name} ${file} tests/main_stub.cpp)
 
+    add_dependencies(${test_name} hel)
     add_dependencies(${test_name} GoogleTest)
     add_dependencies(${test_name} asio)
-    target_link_libraries(${test_name} gtest gtest_main pthread)
+    add_dependencies(${test_name} wpilib)
+
+    link_directories (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86_64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86_64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 )
+
+    target_link_libraries(${test_name} gtest gtest_main pthread hel)
     include_directories("lib/include")
     target_include_directories(${test_name} PRIVATE "${ASIO_DIRECTORY}/include" "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "./include")
 
     set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
 
-    target_link_libraries(${test_name} hel)
+#target_link_libraries(${test_name} hel)
 
   ENDFOREACH( file test_list)
 
@@ -126,16 +152,24 @@ add_custom_target ( asio ALL
   COMMENT "Download the C++ ASIO library"
   VERBATIM )
 
-link_directories (${WPILIB_SO_DIRECTORY}/common/current/lib/linux/athena/shared ${WPILIB_SO_DIRECTORY}/cpp/current/reflib/linux/athena/shared)  
-
-add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp src/util.cpp)
-add_dependencies(hel asio)
+if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
+    ExternalProject_Add(wpilib 
+        DOWNLOAD_COMMAND bash -c "git submodule update --init && mkdir -p ${CMAKE_BINARY_DIR}/../external/allwpilib/build"
+        CONFIGURE_COMMAND mkdir -p ${CMAKE_BINARY_DIR}/../external/allwpilib/build && cd ${CMAKE_BINARY_DIR}/../external/allwpilib/build && cmake -H.. -B. -DWITHOUT_CSCORE=true
+        BUILD_COMMAND cd ${CMAKE_BINARY_DIR}/../external/allwpilib/build && make -j4
+        INSTALL_COMMAND ""
+        )
+endif()
+add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp)
+add_dependencies(hel asio wpilib generate_libwpi)
 target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
 target_link_libraries(hel wpi)
 
 if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" AND TEST_MODE MATCHES "^[Ww][Pp][Ii]")
   add_executable(FRCUserProgram tests/test_project/robot.cpp)
-  target_include_directories(FRCUserProgram PRIVATE "${WPILIB_SO_DIRECTORY}/cpp/current/include")  
+  target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
+  target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native/include")
+  target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include")
   set_target_properties(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user_code")
   target_compile_options(FRCUserProgram PUBLIC -pthread)
   target_link_libraries(FRCUserProgram wpi)

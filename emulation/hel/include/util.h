@@ -2,6 +2,7 @@
 #define _UTIL_H_
 
 #include <functional>
+#include <vector>
 
 namespace hel{
 
@@ -50,7 +51,20 @@ namespace hel{
 
         return integer;
     }
-
+    /*
+        _   _         _            _             _                _            _        
+       /\_\/\_\ _    /\ \         /\ \     _    / /\             /\ \         / /\      
+      / / / / //\_\ /  \ \       /  \ \   /\_\ / /  \           /  \ \____   / /  \     
+     /\ \/ \ \/ / // /\ \ \     / /\ \ \_/ / // / /\ \         / /\ \_____\ / / /\ \__  
+    /  \____\__/ // / /\ \ \   / / /\ \___/ // / /\ \ \       / / /\/___  // / /\ \___\ 
+   / /\/________// / /  \ \_\ / / /  \/____// / /  \ \ \     / / /   / / / \ \ \ \/___/ 
+  / / /\/_// / // / /   / / // / /    / / // / /___/ /\ \   / / /   / / /   \ \ \       
+ / / /    / / // / /   / / // / /    / / // / /_____/ /\ \ / / /   / / /_    \ \ \      
+/ / /    / / // / /___/ / // / /    / / // /_________/\ \ \\ \ \__/ / //_/\__/ / /      
+\/_/    / / // / /____\/ // / /    / / // / /_       __\ \_\\ \___\/ / \ \/___/ /       
+        \/_/ \/_________/ \/_/     \/_/ \_\___\     /____/_/ \/_____/   \_____\/        
+                                                                                        
+     */
     template<typename T>
     struct Maybe {
 
@@ -105,27 +119,6 @@ namespace hel{
         Maybe(T data) : _data(data), _is_valid(true) {};
         Maybe() : _is_valid(false) {};
     };
-
-    template<typename T, size_t LEN>
-    std::string serializeArray(std::string label, std::array<T, LEN> arr, std::function<std::string(T)> to_s){
-        std::string s = label + ":[";
-        for(unsigned i = 0; i < arr.size(); i++){
-            s += to_s(arr[i]);
-            if((i + 1) < arr.size()){
-                s += ",";
-            }
-        }
-        s += "]";
-        return s;
-    }
-
-    template<typename T, size_t LEN>
-    std::string serializeArray(std::string label, std::array<T, LEN> arr, std::string(*to_s)(T)){
-        std::function<std::string(T)> function_to_s = to_s;
-        return serializeArray(label, arr, function_to_s);
-    }
-
-    std::string quote(std::string);
 }
 
 #endif

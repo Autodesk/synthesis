@@ -1,6 +1,7 @@
 #include "roborio.h"
 #include "HAL/HAL.h"
 #include "util.h"
+#include "json_util.h"
 
 void hel::SendData::update(){
     auto instance = RoboRIOManager::getInstance(nullptr);
@@ -120,9 +121,9 @@ std::string hel::SendData::toString()const{
 std::string hel::SendData::serialize()const{
     std::string s = "{\"roborio\":{";
 
-    s += serializeArray("\"pwm_hdrs\"", pwm_hdrs, static_cast<std::string(*)(double)>(std::to_string));
+    s += serializeList("\"pwm_hdrs\"", pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
     s += ",";
-    s += serializeArray(
+    s += serializeList(
         "\"relays\"",
         relays,
         std::function<std::string(RelayState)>([&](RelayState r){
@@ -130,9 +131,9 @@ std::string hel::SendData::serialize()const{
         })
     );
     s += ",";
-    s += serializeArray("\"analog_outputs\"", analog_outputs, static_cast<std::string(*)(double)>(std::to_string));
+    s += serializeList("\"analog_outputs\"", analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
     s += ",";
-    s += serializeArray(
+    s += serializeList(
         "\"digital_mxp\"",
         digital_mxp,
         std::function<std::string(hel::MXPData)>([&](MXPData data){
@@ -140,7 +141,7 @@ std::string hel::SendData::serialize()const{
         })
     );
     s += ",";
-    s += serializeArray(
+    s += serializeList(
         "\"digital_hdrs\"", 
         digital_hdrs,
         std::function<std::string(bool)>([&](bool b){
