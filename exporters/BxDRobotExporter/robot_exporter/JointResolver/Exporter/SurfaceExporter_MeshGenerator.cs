@@ -192,21 +192,14 @@ public partial class SurfaceExporter
             BXDAMesh.BXDASurface newMeshSurface = new BXDAMesh.BXDASurface();
 
             // Apply Asset Properties
+            if (asset == null)
+                return;
+
             newMeshSurface.hasColor = true;
-            newMeshSurface.color = 0xFFFFFFFF;
-            newMeshSurface.transparency = 0.0f;
-            newMeshSurface.translucency = 0.0f;
-            newMeshSurface.specular = 0.5f;
-
-            if (asset != null)
-            {
-                if (asset.color != 0)
-                    newMeshSurface.color = asset.color;
-
-                newMeshSurface.transparency = (float)asset.transparency;
-                newMeshSurface.translucency = (float)asset.translucency;
-                newMeshSurface.specular = (float)asset.specular;
-            }
+            newMeshSurface.color = asset.color;
+            newMeshSurface.transparency = (float)asset.transparency;
+            newMeshSurface.translucency = (float)asset.translucency;
+            newMeshSurface.specular = (float)asset.specular;
 
             // Copy buffer vertices into output
             Array.Copy(bufferSurface.verts.coordinates, 0, outputVerts.coordinates, outputVerts.count * 3, bufferSurface.verts.count * 3);
