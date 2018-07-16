@@ -16,76 +16,20 @@ public class AssetProperties
 
     public AssetProperties(Asset asset)
     {
-        CopyAsset(asset);
-    }
-
-    public void CopyAsset(Asset asset)
-    {
-        foreach (AssetValue val in asset)
-        {
-            //is this one supposed to be different from the others? "DisplayName vs Name"
-            if (val.DisplayName.Equals("Color") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeColor)
-            {
-                Color tempColor = ((ColorAssetValue)val).Value;
-                color = ((uint)tempColor.Red << 0) | ((uint)tempColor.Green << 8) | ((uint)tempColor.Blue << 16) | ((((uint)(tempColor.Opacity * 255)) & 0xFF) << 24);
-            }
-            /*    //I am unable to find any reference to gloss in the API, and I've found the value changes from material to material
-            else if (val.Name.Equals("generic_glossiness") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
-            {
-                generic_glossiness = ((FloatAssetValue)val).Value;
-            }
-            */
-            //opacity is a double
-            else if (val.DisplayName.Equals("Transparency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
-            {
-                transparency = ((FloatAssetValue)val).Value;
-            }
-            else if (val.DisplayName.Equals("Translucency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
-            {
-                translucency = ((FloatAssetValue)val).Value;
-            }
-            else if (val.ValueType == AssetValueTypeEnum.kAssetValueTextureType)
-            {
-                AssetTexture tex = ((TextureAssetValue)val).Value;
-            }
-            else if (val.Name.Contains("reflectivity") && val.Name.Contains("0deg") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
-            {
-                specular = ((FloatAssetValue)val).Value;
-            }
-        }
-    }
-
-    public static AssetProperties Create(dynamic surf)
-    {
         try
         {
-            return new AssetProperties(surf.Appearance);
+            Color tempColor = ((ColorAssetValue)asset["generic_diffuse"]).Value;
+            color = ((uint)tempColor.Red << 0) | ((uint)tempColor.Green << 8) | ((uint)tempColor.Blue << 16) | ((((uint)(tempColor.Opacity * 255)) & 0xFF) << 24);
         }
-        catch
-        {
-            try
-            {
-                return new AssetProperties(surf.Parent.Appearance);
-            }
-            catch
-            {
-                try
-                {
-                    return new AssetProperties(surf.Parent.Parent.Appearance);
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-        }
-    }
+        catch (ArgumentException) { color = 0xFFFFFFFF; }
 
-    public override bool Equals(object other)
-    {
-        if (other is AssetProperties otherAsset)
-            return color == otherAsset.color && transparency == otherAsset.transparency && translucency == otherAsset.translucency && specular == otherAsset.specular;
-        else
-            return base.Equals(other);
+        try { transparency = ((FloatAssetValue)asset["generic_transparency"]).Value; }
+        catch (ArgumentException) { transparency = 0; }
+
+        try { translucency = ((FloatAssetValue)asset["generic_refraction_translucency_weight"]).Value; }
+        catch (ArgumentException) { translucency = 0; }
+
+        try { specular = ((FloatAssetValue)asset["generic_reflectivity_at_0deg"]).Value; }
+        catch (ArgumentException) { specular = 0.2; }
     }
 }
