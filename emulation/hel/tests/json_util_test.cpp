@@ -11,7 +11,7 @@ std::ostream& operator<<(std::ostream& o, Joystick a){
     return o<<"Joystick(is_xbox:"<<a.is_xbox<<" name:"<<a.name<<")";
 }
 
-TEST(DigitalSystemsTest, SetHeaderDO) {
+TEST(JSONUtilTest, DeserializeTest){
 	{
         //std::string in = "[{\"config\":\"DIO\",\"value\":0.010000},{\"config\":\"DIO\",\"value\":0.020000},{\"config\":\"DIO\",\"value\":0.030000}]";
         std::string in = "\"can\":\"no\",\"dio\":[0, 1,1,1,  0],\"pwm\":0.500,\"joystick\":{\"is_xbox\":1,\"name\":Maxwell}";

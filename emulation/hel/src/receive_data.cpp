@@ -44,23 +44,55 @@ void hel::ReceiveData::update()const{
 }
 
 std::string hel::ReceiveData::toString()const{
-    return ""; //TODO implement function in readable print-out
+    std::string s = "";
+    s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string)));
+    return s; //TODO implement function in readable print-out
 }
 
 void hel::ReceiveData::deserialize(std::string input){
-    {
+    {//TODO use copy_n instead
         unsigned i = 0;
         for(bool a: hel::deserializeList(
-                hel::pullValue("\"dio\"", input),
-                std::function<bool(std::string)>([&](std::string dio_str){
-                    return (bool)std::stoi(dio_str);
-                }),
+                hel::pullValue("\"digital_hdrs\"", input),
+                std::function<bool(std::string)>(hel::stob),
                 true
             )
         ){
+            if(i >= digital_hdrs.size()){
+                //TODO error handling
+            }
             digital_hdrs[i] = a;
             i++;
-            //TODO bounds check i
+        }
+    }
+    {
+        unsigned i = 0;
+        for(RoboRIO::Joystick a: hel::deserializeList(
+                hel::pullValue("\"joysticks\"", input),
+                std::function<RoboRIO::Joystick(std::string)>(RoboRIO::Joystick::deserialize),
+                true
+            )
+        ){
+            if(i >= joysticks .size()){
+                //TODO error handling
+            }
+            joysticks[i] = a;
+            i++;
+        }
+    }
+    {
+        unsigned i = 0;
+        for(MXPData a: hel::deserializeList(
+                hel::pullValue("\"digital_mxp\"", input),
+                std::function<MXPData(std::string)>(MXPData::deserialize),
+                true
+            )
+        ){
+            if(i >= digital_mxp.size()){
+                //TODO error handling
+            }
+            digital_mxp[i] = a;
+            i++;
         }
     }
     //TODO finish

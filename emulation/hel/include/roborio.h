@@ -1207,6 +1207,10 @@ namespace hel{
             uint16_t getRightRumble()const;
 
             void setRightRumble(uint16_t);
+
+            std::string serialize()const;
+
+            static Joystick deserialize(std::string);
         };
 
         struct Counter{
