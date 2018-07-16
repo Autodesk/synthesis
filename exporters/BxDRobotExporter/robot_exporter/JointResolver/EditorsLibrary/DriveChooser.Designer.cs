@@ -56,8 +56,8 @@
             this.lblDiameter = new System.Windows.Forms.Label();
             this.metaGearing = new System.Windows.Forms.TabPage();
             this.GearLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.OutputGeartxt = new System.Windows.Forms.TextBox();
-            this.InputGeartxt = new System.Windows.Forms.TextBox();
+            this.txtGearRationDenom = new System.Windows.Forms.TextBox();
+            this.txtGearRationNum = new System.Windows.Forms.TextBox();
             this.lblOutputGear = new System.Windows.Forms.Label();
             this.lblInputGear = new System.Windows.Forms.Label();
             this.metaElevatorBrake = new System.Windows.Forms.TabPage();
@@ -505,8 +505,8 @@
             this.GearLayout.ColumnCount = 2;
             this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.GearLayout.Controls.Add(this.OutputGeartxt, 1, 1);
-            this.GearLayout.Controls.Add(this.InputGeartxt, 0, 1);
+            this.GearLayout.Controls.Add(this.txtGearRationDenom, 1, 1);
+            this.GearLayout.Controls.Add(this.txtGearRationNum, 0, 1);
             this.GearLayout.Controls.Add(this.lblOutputGear, 1, 0);
             this.GearLayout.Controls.Add(this.lblInputGear, 0, 0);
             this.GearLayout.Dock = System.Windows.Forms.DockStyle.Top;
@@ -519,25 +519,25 @@
             this.GearLayout.Size = new System.Drawing.Size(424, 54);
             this.GearLayout.TabIndex = 13;
             // 
-            // OutputGeartxt
+            // txtGearRationDenom
             // 
-            this.OutputGeartxt.Dock = System.Windows.Forms.DockStyle.Top;
-            this.OutputGeartxt.Location = new System.Drawing.Point(215, 30);
-            this.OutputGeartxt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.OutputGeartxt.Name = "OutputGeartxt";
-            this.OutputGeartxt.Size = new System.Drawing.Size(206, 22);
-            this.OutputGeartxt.TabIndex = 13;
-            this.OutputGeartxt.Text = "1";
+            this.txtGearRationDenom.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtGearRationDenom.Location = new System.Drawing.Point(215, 30);
+            this.txtGearRationDenom.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtGearRationDenom.Name = "txtGearRationDenom";
+            this.txtGearRationDenom.Size = new System.Drawing.Size(206, 22);
+            this.txtGearRationDenom.TabIndex = 13;
+            this.txtGearRationDenom.Text = "1";
             // 
-            // InputGear
+            // txtGearRationNum
             // 
-            this.InputGeartxt.Dock = System.Windows.Forms.DockStyle.Top;
-            this.InputGeartxt.Location = new System.Drawing.Point(3, 30);
-            this.InputGeartxt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.InputGeartxt.Name = "InputGear";
-            this.InputGeartxt.Size = new System.Drawing.Size(206, 22);
-            this.InputGeartxt.TabIndex = 12;
-            this.InputGeartxt.Text = "1";
+            this.txtGearRationNum.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtGearRationNum.Location = new System.Drawing.Point(3, 30);
+            this.txtGearRationNum.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtGearRationNum.Name = "txtGearRationNum";
+            this.txtGearRationNum.Size = new System.Drawing.Size(206, 22);
+            this.txtGearRationNum.TabIndex = 12;
+            this.txtGearRationNum.Text = "1";
             // 
             // lblOutputGear
             // 
@@ -753,8 +753,8 @@
     private System.Windows.Forms.Label lblDiameter;
     private System.Windows.Forms.TabPage metaGearing;
     private System.Windows.Forms.Label lblInputGear;
-    private System.Windows.Forms.TextBox InputGeartxt;
-    private System.Windows.Forms.TextBox OutputGeartxt;
+    private System.Windows.Forms.TextBox txtGearRationNum;
+    private System.Windows.Forms.TextBox txtGearRationDenom;
     private System.Windows.Forms.Label lblPressure;
     private System.Windows.Forms.Label lblOutputGear;
     private System.Windows.Forms.NumericUpDown txtHighLimit;
