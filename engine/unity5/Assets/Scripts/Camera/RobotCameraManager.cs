@@ -173,7 +173,7 @@ namespace Synthesis.Camera
         /// Remove all cameras from a given robot, used when a robot is removed. Use DetachCamerasFromRobot when changing a robot!
         /// </summary>
         /// <param name="parent"></param> The robot whose cameras you want to remove
-        public void RemoveCamerasFromRobot(RobotBase parent)
+        public void RemoveCamerasFromRobot(SimulatorRobot parent)
         {
             List<GameObject> removingCameras = GetRobotCamerasFromRobot(parent);
             //Take out the camera indicator in case it gets destroyed with one of the robots
@@ -198,7 +198,7 @@ namespace Synthesis.Camera
         /// Detach the robot camera from a given robot in preparation for changing robot or other operation that needs to take out a specific group of robot camera
         /// </summary>
         /// <param name="parent"></param> A robot where cameras are going to be detached from
-        public void DetachCamerasFromRobot(RobotBase parent)
+        public void DetachCamerasFromRobot(SimulatorRobot parent)
         {
             List<GameObject> detachingCameras = GetRobotCamerasFromRobot(parent);
 
@@ -213,7 +213,7 @@ namespace Synthesis.Camera
         /// </summary>
         /// <param name="parent"></param> A robot on which cameras are attached to
         /// <returns></returns> A list of camera attach to that robot
-        public List<GameObject> GetRobotCamerasFromRobot(RobotBase parent)
+        public List<GameObject> GetRobotCamerasFromRobot(SimulatorRobot parent)
         {
 
             List<GameObject> camerasOnRobot = new List<GameObject>();

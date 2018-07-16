@@ -8,8 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <ProjectGuid>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -49,13 +48,10 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
     <UnityProjectType>Game:1</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
+    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2018.2.0f2</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SimulatorAPI">
-      <HintPath>Assets\Scripts\SimulatorAPI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -210,9 +206,9 @@
     <Compile Include="Assets\Scripts\FEA\ReplayImporter.cs" />
     <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
+    <Compile Include="Assets\Scripts\FSM\LinkedMonoBehaviour.cs" />
     <Compile Include="Assets\Scripts\FSM\ObjectStateLinker.cs" />
     <Compile Include="Assets\Scripts\FSM\State.cs" />
-    <Compile Include="Assets\Scripts\FSM\StateBehaviour.cs" />
     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
     <Compile Include="Assets\Scripts\GodMode.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
@@ -259,11 +255,19 @@
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
+    <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
+    <Compile Include="Assets\Scripts\NetworkMultiplayer\MultiplayerNetwork.cs" />
+    <Compile Include="Assets\Scripts\NetworkMultiplayer\NetworkElement.cs" />
+    <Compile Include="Assets\Scripts\NetworkMultiplayer\NetworkFileTransfer.cs" />
+    <Compile Include="Assets\Scripts\NetworkMultiplayer\ServerNetworkDiscovery.cs" />
+    <Compile Include="Assets\Scripts\NetworkMultiplayer\ServerStatus.cs" />
     <Compile Include="Assets\Scripts\RN\RNCommon.cs" />
     <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RN\RNWheel.cs" />
     <Compile Include="Assets\Scripts\Robot\MaMRobot.cs" />
+    <Compile Include="Assets\Scripts\Robot\NetworkMesh.cs" />
+    <Compile Include="Assets\Scripts\Robot\NetworkRobot.cs" />
     <Compile Include="Assets\Scripts\Robot\RobotBase.cs" />
     <Compile Include="Assets\Scripts\Robot\SimulatorRobot.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
@@ -287,6 +291,7 @@
     <Compile Include="Assets\Scripts\States\LoadRobotState.cs" />
     <Compile Include="Assets\Scripts\States\MainState.cs" />
     <Compile Include="Assets\Scripts\States\MixAndMatchState.cs" />
+    <Compile Include="Assets\Scripts\States\MultiplayerState.cs" />
     <Compile Include="Assets\Scripts\States\OptionsTabState.cs" />
     <Compile Include="Assets\Scripts\States\ReplayState.cs" />
     <Compile Include="Assets\Scripts\States\SaveReplayState.cs" />
@@ -295,6 +300,7 @@
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
     <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
     <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />
+    <Compile Include="Assets\Scripts\Utils\BulletExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
     <None Include="Assets\Resources\Materials\Arrow Shader.shader" />
@@ -305,16 +311,16 @@
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
     <None Include="Assets\item_data.xml" />
     <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -512,13 +518,16 @@
       <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SimulatorAPI">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
-      <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
-      <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
