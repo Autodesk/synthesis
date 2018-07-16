@@ -160,8 +160,10 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
         INSTALL_COMMAND ""
         )
 endif()
-add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp)
+<<<<<<< HEAD
+add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp)
 add_dependencies(hel asio wpilib generate_libwpi)
+
 target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPIUTIL_DIRECTORY}/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
 target_link_libraries(hel wpi)
 
