@@ -46,6 +46,11 @@ public partial class SurfaceExporter
         // Wait for all jobs to finish
         WaitHandle.WaitAll(doneEvents);
 
+        // Check for errors
+        foreach (ExportJob job in jobs)
+            if (job.error != null)
+                throw job.error;
+
         return outputMesh;
     }
 }
