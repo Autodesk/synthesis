@@ -154,7 +154,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void HighlightNode(object sender, EventArgs e)
         {
-            StandardAddInServer.Instance.WizardSelect(node);
+            StandardAddInServer.Instance.SelectNode(node);
         }
 
         private void AddHighlightAction(Control baseControl)

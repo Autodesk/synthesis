@@ -11,6 +11,11 @@ public class Exporter
 
     private const int MAX_VERTICIES = 8192;
     
+    public class EmptyAssemblyException : ApplicationException
+    {
+        public EmptyAssemblyException() : base("No parts in assembly.") { }
+    }
+
     public class InvalidJointException : ApplicationException
     {
         AssemblyJoint joint;
@@ -19,6 +24,11 @@ public class Exporter
         {
             this.joint = joint;
         }
+    }
+
+    public class NoGroundException : ApplicationException
+    {
+        public NoGroundException() : base("Assembly has no ground.") { }
     }
 
     public static void CenterAllJoints(ComponentOccurrence component)
