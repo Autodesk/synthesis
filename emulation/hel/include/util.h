@@ -106,6 +106,22 @@ namespace hel{
         Maybe(T data) : _data(data), _is_valid(true) {};
         Maybe() : _is_valid(false) {};
     };
+
+    template<typename T, size_t LEN>
+    std::string to_string(std::array<T, LEN> a, std::function<std::string(T)> to_s){
+        std::string s = "[";
+        for(unsigned i = 0; i < a.size(); i++){
+            s += to_s(a[i]);
+            if((i + 1) < a.size()){
+                s += ",";
+            }
+        }
+        s += "]";
+        return s;
+    }
+
+    bool stob(std::string);
+    std::string to_string(bool);
 }
 
 #endif

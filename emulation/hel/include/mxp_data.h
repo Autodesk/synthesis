@@ -12,6 +12,9 @@ namespace hel{
         Config config;
 
         double value;
+
+        std::string serialize()const;
+        static MXPData deserialize(std::string);
     };
 
     std::string to_string(MXPData::Config);
