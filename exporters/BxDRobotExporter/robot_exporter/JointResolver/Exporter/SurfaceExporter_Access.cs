@@ -21,10 +21,10 @@ public partial class SurfaceExporter
     public BXDAMesh ExportAll(CustomRigidGroup group, Guid guid, BXDIO.ProgressReporter reporter = null)
     {
         // Create output mesh
-        BXDAMesh outputMesh = new BXDAMesh(guid);
+        MeshController outputMesh = new MeshController(guid);
 
         // Collect faces to export
-        List<SurfaceBody> plannedSurfaces = GenerateExportList(group, outputMesh);
+        List<SurfaceBody> plannedSurfaces = GenerateExportList(group, outputMesh.Mesh);
 
         // Export faces, multithreaded
         reporter?.Invoke(0, plannedSurfaces.Count);
@@ -68,6 +68,7 @@ public partial class SurfaceExporter
             if (job.error != null)
                 throw job.error;
 
-        return outputMesh;
+        outputMesh.DumpOutput();
+        return outputMesh.Mesh;
     }
 }
