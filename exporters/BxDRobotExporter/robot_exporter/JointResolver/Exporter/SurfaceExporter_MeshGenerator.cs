@@ -109,8 +109,8 @@ public partial class SurfaceExporter
                 }
                 finally
                 {
-                    context.onFinish?.Invoke();
                     context.doneEvent.Set();
+                    context.onFinish?.Invoke();
                 }
             }
         }
