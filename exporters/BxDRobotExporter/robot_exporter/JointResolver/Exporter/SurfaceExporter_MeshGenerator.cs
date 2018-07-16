@@ -44,9 +44,12 @@ public partial class SurfaceExporter
 
     private class ExportJob
     {
+        public delegate void JobFinishedReporter();
+
         public struct JobContext
         {
             public ManualResetEvent doneEvent;
+            public JobFinishedReporter onFinish;
         }
 
         public Exception error = null;
@@ -91,6 +94,7 @@ public partial class SurfaceExporter
                 finally
                 {
                     context.doneEvent.Set();
+                    context.onFinish?.Invoke();
                 }
             }
         }
