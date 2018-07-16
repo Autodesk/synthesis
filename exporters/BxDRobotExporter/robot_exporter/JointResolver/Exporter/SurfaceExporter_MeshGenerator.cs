@@ -49,7 +49,7 @@ public partial class SurfaceExporter
 
         private PartialSurface bufferSurface;
 
-        private const uint MAX_VERTS = uint.MaxValue / 3;
+        private const uint MAX_VERTS = ushort.MaxValue / 3;
         private VertexCollection outputVerts;
         private List<BXDAMesh.BXDASurface> outputMeshSurfaces;
 
