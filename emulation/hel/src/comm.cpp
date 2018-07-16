@@ -1,5 +1,6 @@
 #include "roborio.h"
-
+#include "util.h"
+#include "json_util.h"
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
@@ -213,6 +214,59 @@ namespace hel{
 
     void RoboRIO::Joystick::setRightRumble(uint16_t rumble){
         right_rumble = rumble;
+    }
+
+    std::string RoboRIO::Joystick::serialize()const{
+        std::string s = "\"Joystick:\": {";
+        s += "\"is_xbox\":" + hel::to_string(is_xbox) + ", ";
+        s += "\"type\":" + std::to_string(type) + ", ";
+        s += "\"name\":" + name + ", ";
+        s += "\"buttons\":" + std::to_string(buttons) + ", ";
+        s += "\"button_count\":" + std::to_string((int)button_count) + ", ";
+        s += hel::serializeList("\"axes\"", axes, std::function<std::string(int8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += "\"axis_count\":" + std::to_string(axis_count) + ", ";
+        s += hel::serializeList("\"axis_types\"", axis_types, std::function<std::string(uint8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += hel::serializeList("\"povs\":", povs, std::function<std::string(int16_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += "\"pov_count\":" + std::to_string(pov_count) +", ";
+        s += "\"outputs\":" + std::to_string(outputs) + ", ";
+        s += "\"left_rumble\":" + std::to_string(left_rumble) + ", ";
+        s += "\"right_rumble\":" + std::to_string(right_rumble);
+        s += "}";
+        return s;
+    }
+
+    RoboRIO::Joystick RoboRIO::Joystick::deserialize(std::string s){
+        RoboRIO::Joystick joy;
+        joy.is_xbox = hel::stob(hel::pullValue("\"is_xbox\"", s));
+        joy.type = static_cast<frc::GenericHID::HIDType>(std::stoi(hel::pullValue("\"type\"",s)));
+        joy.name = hel::pullValue("\"name\"", s);
+        joy.buttons = std::stoi(hel::pullValue("\"buttons\"", s));
+        joy.button_count = std::stoi(hel::pullValue("\"button_count\"", s));
+        std::vector<int8_t> axes_deserialized = hel::deserializeList(hel::pullValue("\"axes\"",s), std::function<int8_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
+        if(axes_deserialized.size() == joy.axes.size()){
+            std::copy(axes_deserialized.begin(), axes_deserialized.end(), joy.axes.begin());
+        } else {
+            //TODO error handling
+        }
+        joy.axis_count = std::stoi(hel::pullValue("\"axis_count\"", s));
+        std::vector<uint8_t> axis_types_deserialized = hel::deserializeList(hel::pullValue("\"axis_types\"",s), std::function<uint8_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
+        if(axis_types_deserialized.size() == joy.axis_types.size()){
+            std::copy(axis_types_deserialized.begin(), axis_types_deserialized.end(), joy.axis_types.begin());
+        } else {
+            //TODO error handling
+        }
+        std::vector<int16_t> povs_deserialized = hel::deserializeList(hel::pullValue("\"povs\"",s), std::function<int16_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
+        if(povs_deserialized.size() == joy.povs.size()){
+            std::copy(povs_deserialized.begin(), povs_deserialized.end(), joy.povs.begin());
+        } else {
+            //TODO error handling
+        }
+        joy.pov_count = std::stoi(hel::pullValue("\"pov_count\"", s));
+        joy.outputs = std::stoi(hel::pullValue("\"outputs\"", s));
+        joy.left_rumble = std::stoi(hel::pullValue("\"left_rumble\"", s));
+        joy.right_rumble = std::stoi(hel::pullValue("\"right_rumble\"", s));
+
+        return joy;
     }
 }
 extern "C" {
