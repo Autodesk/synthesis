@@ -12,16 +12,22 @@ using System.Threading;
 /// </summary>
 public partial class SurfaceExporter
 {
+    public class TooManyVerticesException : ApplicationException
+    {
+        public TooManyVerticesException() : base("Too many vertices in a surface.") { }
+    }
+
+    private const uint MAX_VERTS = ushort.MaxValue / 3;
     private class VertexCollection
     {
-        public double[] coordinates = null;
-        public double[] norms = null;
+        public double[] coordinates = new double[MAX_VERTS * 3];
+        public double[] norms = new double[MAX_VERTS * 3];
         public int count = 0;
     }
 
     private class FacetCollection
     {
-        public int[] indices = null;
+        public int[] indices = new int[MAX_VERTS * 3];
         public int count = 0;
     }
 
@@ -51,7 +57,6 @@ public partial class SurfaceExporter
 
         private PartialSurface bufferSurface;
 
-        private const uint MAX_VERTS = ushort.MaxValue / 3;
         private VertexCollection outputVerts;
         private List<BXDAMesh.BXDASurface> outputMeshSurfaces;
 
@@ -65,8 +70,6 @@ public partial class SurfaceExporter
 
             bufferSurface = new PartialSurface();
             outputVerts = new VertexCollection();
-            outputVerts.coordinates = new double[MAX_VERTS * 3];
-            outputVerts.norms = new double[MAX_VERTS * 3];
             outputMeshSurfaces = new List<BXDAMesh.BXDASurface>();
 
             this.outputMesh = outputMesh;
@@ -149,26 +152,26 @@ public partial class SurfaceExporter
             
             if (separateFaces && CheckShouldSeparate(out Dictionary<string, AssetProperties> assets))
             {
+                // Add facets for each face of the surface
                 foreach (Face face in surf.Faces)
                 {
                     face.GetExistingFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+
                     if (bufferSurface.verts.count == 0)
-                    {
                         face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-                    }
 
                     AddBufferToOutput(assets[face.Appearance.DisplayName]);
                 }
             }
             else
             {
-                AssetProperties asset = new AssetProperties(surf.Faces[0].Appearance);
+                // Add facets once for the entire surface
+                AssetProperties asset = new AssetProperties(surf.Faces[1].Appearance);
 
                 surf.GetExistingFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+
                 if (bufferSurface.verts.count == 0)
-                {
                     surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-                }
 
                 AddBufferToOutput(asset);
             }
@@ -177,7 +180,7 @@ public partial class SurfaceExporter
         private void AddBufferToOutput(AssetProperties asset)
         {
             if (bufferSurface.verts.count > MAX_VERTS)
-                return; // Too many vertices!
+                throw new TooManyVerticesException();
 
             if (outputVerts.count + bufferSurface.verts.count > MAX_VERTS)
                 DumpOutputMesh();
