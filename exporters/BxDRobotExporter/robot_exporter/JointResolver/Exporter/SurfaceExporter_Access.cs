@@ -6,7 +6,7 @@ using System.Threading;
 
 public partial class SurfaceExporter
 {
-    private const int MAX_WAITING_EVENTS = 32;
+    private const int MAX_WAITING_EVENTS = 16;
 
     /// <summary>
     /// Exports all the components in this group to the in-RAM mesh.
