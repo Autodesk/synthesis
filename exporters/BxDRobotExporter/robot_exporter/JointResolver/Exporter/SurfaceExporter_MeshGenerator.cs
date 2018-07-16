@@ -99,29 +99,6 @@ public partial class SurfaceExporter
             }
         }
 
-        private double GetTolerance()
-        {
-            int toleranceCount = 10;
-            double[] tolerances = new double[10];
-            surf.GetExistingFacetTolerances(out toleranceCount, out tolerances);
-
-            double tolerance = DEFAULT_TOLERANCE;
-
-            int bestIndex = -1;
-            for (int i = 0; i < toleranceCount; i++)
-            {
-                if (bestIndex < 0 || tolerances[i] < tolerances[bestIndex])
-                {
-                    bestIndex = i;
-                }
-            }
-
-            if (bestResolution || tolerances[bestIndex] > tolerance)
-                tolerance = tolerances[bestIndex];
-
-            return tolerance;
-        }
-
         private bool CheckShouldSeparate(out Dictionary<string, AssetProperties> assets)
         {
             AssetProperties firstAsset = null;
@@ -152,17 +129,16 @@ public partial class SurfaceExporter
 
         private void CalculateSurfaceFacets()
         {
-            double tolerance = GetTolerance();
-            
-            if (separateFaces && CheckShouldSeparate(out Dictionary<string, AssetProperties> assets))
+            double tolerance = DEFAULT_TOLERANCE;
+
+            Dictionary<string, AssetProperties> assets = null;
+
+            if (separateFaces && CheckShouldSeparate(out assets))
             {
                 // Add facets for each face of the surface
                 foreach (Face face in surf.Faces)
                 {
-                    face.GetExistingFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-
-                    if (bufferSurface.verts.count == 0)
-                        face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+                    face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
 
                     AddBufferToOutput(assets[face.Appearance.DisplayName]);
                 }
@@ -170,12 +146,15 @@ public partial class SurfaceExporter
             else
             {
                 // Add facets once for the entire surface
-                AssetProperties asset = new AssetProperties(surf.Faces[1].Appearance);
+                AssetProperties asset = null;
 
-                surf.GetExistingFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+                // Get asset for surface
+                if (assets == null || assets.Count < 1)
+                    asset = new AssetProperties(surf.Faces[1].Appearance);
+                else
+                    asset = assets[surf.Faces[1].Appearance.DisplayName];
 
-                if (bufferSurface.verts.count == 0)
-                    surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+                surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
 
                 AddBufferToOutput(asset);
             }
