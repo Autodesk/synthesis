@@ -1,19 +1,24 @@
 #include "sync_server.h"
 #include "send_data.h"
 
+#include <unistd.h>
 namespace hel {
 
+    void handle(const asio::error_code&, std::size_t){}
+
+
     void SyncServer::startSync() {
-        auto instance_lock = RoboRIOManager::swapBuffer(hel::RoboRIOManager::Buffer::Send);
 
-        SendDataManager::getInstance()->update();
-        auto data = SendDataManager::getInstance()->serialize();
+        auto instance = hel::SendDataManager::getInstance();
+        //auto data =  instance.first->serialize();
 
-        asio::ip::udp::endpoint dest(asio::ip::address::from_string("127.0.0.1"), 11000);
+        //printf("%s\n", data.c_str());
 
-        socket.send_to(asio::buffer(data.c_str(), data.length()),
-                       dest);
-        instance_lock.unlock();
+        //asio::ip::udp::endpoint dest(asio::ip::address::from_string("127.0.0.1"), 11000);
+
+        //socket.send_to(asio::buffer(data.c_str(), data.length()),
+        //                     dest);
+        //usleep(50000);
+        instance.second.unlock();
     }
-
 }
