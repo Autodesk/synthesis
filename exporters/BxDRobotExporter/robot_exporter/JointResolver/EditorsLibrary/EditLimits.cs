@@ -133,7 +133,7 @@ namespace EditorsLibrary
                     if (!(endLimit > currentPosition && startLimit > currentPosition) &&
                         !(endLimit < currentPosition && startLimit < currentPosition))
                     {
-                        if ((startLimit - endLimit <= 2 * Math.PI))
+                        if ((Math.Abs(startLimit - endLimit) <= 2 * Math.PI))
                         {
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = currentPosition;
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = startLimit;
