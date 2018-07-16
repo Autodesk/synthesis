@@ -13,6 +13,7 @@
 #include <ctime>
 #include <iostream>
 #include <Timer.h>
+#include <unistd.h>
 /**
  * This is a demo program showing the use of the DifferentialDrive class.
  * Runs the motors with arcade steering.
@@ -37,9 +38,9 @@ public:
 
         m_robotDrive.ArcadeDrive(x/1000.0f, y/1000.0f);
 
-        std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
+        //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
 
-        Wait(0.045);
+        usleep(45000);
     }
 };
 

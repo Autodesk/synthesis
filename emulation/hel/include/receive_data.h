@@ -1,5 +1,5 @@
-#ifndef _SEND_DATA_H_
-#define _SEND_DATA_H_
+#ifndef _RECIEVE_DATA_H_
+#define _RECIEVE_DATA_H_
 
 #include "roborio.h"
 #include "mxp_data.h"

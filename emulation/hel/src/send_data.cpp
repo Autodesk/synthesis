@@ -1,15 +1,14 @@
-#include "send_data.h"
-
+#include "roborio.h"
 #include "HAL/HAL.h"
 #include "util.h"
 #include "json_util.h"
 
 void hel::SendData::update(){
-    auto instance = RoboRIOManager::getInstance();
+    auto instance = RoboRIOManager::getInstance(nullptr);
     int32_t status = 0;
-
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
         pwm_hdrs[i] = HAL_GetPWMSpeed(i, &status);
+        printf("%f\n", HAL_GetPWMSpeed(i, &status));
     }
 
     for(unsigned i = 0; i < relays.size(); i++){
@@ -97,6 +96,7 @@ void hel::SendData::update(){
             }
         }
     }
+    instance.second.unlock();
 }
 
 std::string hel::to_string(hel::SendData::RelayState r){

@@ -6,14 +6,13 @@
 
 namespace hel {
     class SyncServer {
-        SyncServer(asio::io_service& io_service) : socket(io_service, asio::ip::udp::endpoint(asio::ip::udp::v4(), 11000)) {
-            startSync();
-        }
+    public:
+        SyncServer(asio::io_service& io_service) : socket(io_service) {}
+        void startSync();
 
     private:
         asio::ip::udp::socket socket;
 
-        void startSync();
     };
 }
 
