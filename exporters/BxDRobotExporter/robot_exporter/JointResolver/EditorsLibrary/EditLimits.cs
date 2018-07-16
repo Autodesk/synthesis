@@ -128,71 +128,97 @@ namespace EditorsLibrary
                 {
                     ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = false;
                 }
-            } else
+            }
+            else
             {
+                
+                ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit = this.Linear_Start.Checked;
+                ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit = this.Linear_End.Checked;
+                double currentPosition = 0, startLimit = 0, endLimit = 0;
+                bool writeCurrentPosition = false, writeStartLimit = false, writeEndLimit = false;
                 try
                 {
-                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = Convert.ToDouble(Linear_Current_textbox.Text) * 2.54;
+                    currentPosition = Convert.ToDouble(Linear_Current_textbox.Text) * 2.54;
+                    writeCurrentPosition = true;
                 }
                 catch (Exception)
                 {
                     canClose = false;
-                    if (Angular_Current_textbox.Text.Equals(""))
+                    if (Linear_Current_textbox.Text.Equals(""))
                     {
-                        MessageBox.Show("Error, please make sure that the Curremt text box has a position");
+                        MessageBox.Show("Error, please make sure that the Current text box has a position");
                     }
                     else
                     {
                         MessageBox.Show("Error, please make sure that the Current text box has a position");
                     }
                 }
-                if (this.Linear_Start.Checked)
+                try
                 {
-                    ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit = true;
-                    try
+                    if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit)
                     {
-                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = Convert.ToDouble(Linear_Start_textbox.Text) * 2.54;
+                        startLimit = Convert.ToDouble(Linear_Start_textbox.Text) * 2.54;
+                        writeStartLimit = true;
                     }
-                    catch (Exception)
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                    canClose = false;
+                    if (Linear_Start_textbox.Text.Equals(""))
+                    {
+                        MessageBox.Show("Error, please make sure that the Start text box has a limit");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error, please make sure that the Start text box has only numbers in it");
+                    }
+                }
+                try
+                {
+                    if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit)
+                    {
+                        endLimit = Convert.ToDouble(Linear_End_textbox.Text) * 2.54;
+                        writeEndLimit = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    canClose = false;
+                    if (Linear_End_textbox.Text.Equals(""))
+                    {
+                        MessageBox.Show("Error, please make sure that the End text box has a limit");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error, please make sure that the End text box has only numbers in it");
+                    }
+                }
+                if (writeCurrentPosition && writeStartLimit && writeEndLimit)
+                {
+                    if (!(endLimit > currentPosition && startLimit > currentPosition) &&
+                        !(endLimit < currentPosition && startLimit < currentPosition))
+                    {
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = currentPosition;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = startLimit;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = endLimit;
+                    } else
                     {
                         canClose = false;
-                        if (Linear_Start_textbox.Text.Equals(""))
-                        {
-                            MessageBox.Show("Error, please make sure that the Start text box has a limit");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Error, please make sure that the Start text box has only numbers in it");
-                        }
+                        MessageBox.Show("Please make sure the current position is between the start and end limits");
                     }
-                }
-                else
+
+                } else if(writeCurrentPosition && writeStartLimit)
                 {
-                    ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit = false;
-                }
-                if (this.Linear_End.Checked)
+                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = currentPosition;
+                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = startLimit;
+                } else if (writeCurrentPosition && writeEndLimit)
                 {
-                    ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit = true;
-                    try
-                    {
-                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = Convert.ToDouble(Linear_End_textbox.Text) * 2.54;
-                    }
-                    catch (Exception)
-                    {
-                        canClose = false;
-                        if (Linear_End_textbox.Text.Equals(""))
-                        {
-                            MessageBox.Show("Error, please make sure that the End text box has a limit");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Error, please make sure that the End text box has only numbers in it");
-                        }
-                    }
-                }
-                else
+                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = currentPosition;
+                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = endLimit;
+                } else if (writeCurrentPosition)
                 {
-                    ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit = false;
+                    ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = currentPosition;
                 }
             }
             if (canClose)
