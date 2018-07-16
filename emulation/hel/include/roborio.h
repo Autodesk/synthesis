@@ -23,19 +23,23 @@
 #include <thread>
 #include <atomic>
 
-#include "FRC_NetworkCommunication/FRCComm.h"
-
 #include <asio.hpp>
+
+#include "FRC_NetworkCommunication/FRCComm.h"
 
 #include "HAL/ChipObject.h"
 #include "athena/PortsInternal.h"
+#include "athena/DigitalInternal.h"
 
 #include "DriverStation.h"
 #include "GenericHID.h"
 
 #include "error.h"
 
+#include "send_data.h"
 #include "sync_server.h"
+
+#include <iostream>
 
 namespace hel{
     using namespace nFPGA;
@@ -1552,12 +1556,12 @@ namespace hel{
         RoboRIO(RoboRIO const&) = default;
         RoboRIO& operator=(const RoboRIO& r) = default;
     };
-
-    /**
+      /**
      * 
      */
 
     class RoboRIOManager {
+
 
     public:
 
@@ -1565,13 +1569,28 @@ namespace hel{
         // All other instance getters should be private, accessible through friend classes
 
         static std::pair<std::shared_ptr<RoboRIO>, std::unique_lock<std::recursive_mutex>> getInstance() {
+            static int counter = 0;
             std::unique_lock<std::recursive_mutex> lock(m);
-            if (current_instance == nullptr) {
-                current_instance = getExecute();
+            if (instance == nullptr) {
+                instance = std::make_shared<RoboRIO>();
             }
-            return std::make_pair(current_instance, std::move(lock));
-
+            if (counter > 2000) {
+                auto send_instance = SendDataManager::getInstance();
+                //send_instance.first->update();
+                send_instance.second.unlock();
+            }
+            counter++;
+            return std::make_pair(instance, std::move(lock));
         }
+
+        static std::pair<std::shared_ptr<RoboRIO>, std::unique_lock<std::recursive_mutex>> getInstance(void*) {
+            std::unique_lock<std::recursive_mutex> lock(m);
+            if (instance == nullptr) {
+                instance = std::make_shared<RoboRIO>();
+            }
+            return std::make_pair(instance, std::move(lock));
+        }
+
         static RoboRIO getCopy() {
             return RoboRIO(*(RoboRIOManager::getInstance().first));
         }
@@ -1585,63 +1604,9 @@ namespace hel{
 
     private:
         RoboRIOManager() {}
-        static std::shared_ptr<RoboRIO> execute_instance;
-        static std::shared_ptr<RoboRIO> reciever_instance;
-        static std::shared_ptr<RoboRIO> sender_instance;
-
-        static std::shared_ptr<RoboRIO> current_instance;
+        static std::shared_ptr<RoboRIO> instance;
 
         static std::recursive_mutex m;
-
-        // The following 2 methods do not lock, as they are only ever called sequentially after recieving or copying data
-        static std::shared_ptr<RoboRIO> getReciever() {
-            if (reciever_instance == nullptr) {
-                reciever_instance = std::make_shared<RoboRIO>();
-            }
-            return reciever_instance;
-        }
-        static std::shared_ptr<RoboRIO> getExecute() {
-            printf("Called\n");
-            if (execute_instance == nullptr) {
-                printf("Called\n");
-                execute_instance = std::make_shared<RoboRIO>();
-            }
-            printf("Called\n");
-            return execute_instance;
-        }
-        static std::shared_ptr<RoboRIO> getSender() {
-            if (sender_instance == nullptr) {
-                sender_instance = std::make_shared<RoboRIO>();
-            }
-            return sender_instance;
-        }
-
-        static void copyReciever() {
-            std::unique_lock<std::recursive_mutex> lock(m, std::defer_lock);
-            lock.lock();
-            *execute_instance = *reciever_instance;
-            lock.unlock();
-        }
-
-        static void copySender() {
-            std::unique_lock<std::recursive_mutex> lock(m, std::defer_lock);
-            lock.lock();
-            *sender_instance = *execute_instance;
-            lock.unlock();
-        }
-
-        static std::unique_lock<std::recursive_mutex> swapBuffer(Buffer buf) {
-            std::unique_lock<std::recursive_mutex> lock(m);
-            if(buf == Buffer::Recieve) {
-                current_instance = reciever_instance;
-            } else if(buf == Buffer::Execute) {
-                current_instance = execute_instance;
-            } else if(buf == Buffer::Send) {
-                current_instance = sender_instance;
-            }
-            return lock;
-        }
-
     public:
 
         RoboRIOManager(RoboRIOManager const&) = delete;
@@ -1649,6 +1614,6 @@ namespace hel{
 
         friend class SyncServer;
     };
-
+    
 }
 #endif

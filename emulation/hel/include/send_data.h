@@ -1,17 +1,25 @@
 #ifndef _SEND_DATA_H_
 #define _SEND_DATA_H_
 
-#include "roborio.h"
+
+#include "HAL/HAL.h"
 #include "mxp_data.h"
+#include "athena/PortsInternal.h"
+#include "HAL/ChipObject.h"
+#include <array>
+#include <string>
+#include <memory>
+#include <mutex>
+#include <condition_variable>
 
 namespace hel{
     struct SendData{
         enum class RelayState{OFF, REVERSE, FORWARD, ERROR};
 
     private:
-        std::array<double, tPWM::kNumHdrRegisters> pwm_hdrs;
+        std::array<double, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> pwm_hdrs;
 
-        std::array<RelayState,hal::kNumRelayHeaders> relays;
+        std::array<RelayState, hal::kNumRelayHeaders> relays;
 
         std::array<double, hal::kNumAnalogOutputs> analog_outputs;
 
@@ -25,23 +33,26 @@ namespace hel{
 
         std::string serialize()const;
     };
+    std::string to_string(SendData::RelayState);
 
     class SendDataManager {
-
     public:
-        static std::shared_ptr<SendData> getInstance() {
+        static std::pair<std::shared_ptr<SendData>, std::unique_lock<std::recursive_mutex>> getInstance() {
+            std::unique_lock<std::recursive_mutex> lock(m);
             if (instance == nullptr) {
                 instance = std::make_shared<SendData>();
             }
-            return instance;
+            return std::make_pair(instance, std::move(lock));
         }
+        static std::condition_variable cv;
 
     private:
         static std::shared_ptr<SendData> instance;
+        static std::recursive_mutex m;
 
     };
 
-    std::string to_string(SendData::RelayState);
+
 }
 
 #endif
