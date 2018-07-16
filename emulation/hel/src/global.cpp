@@ -74,10 +74,15 @@ namespace hel{
     };
 }
 
+std::thread sync_thread;
+
 namespace nFPGA{
     namespace nRoboRIO_FPGANamespace{
     	tGlobal* tGlobal::create(tRioStatusCode* /*status*/){
-    		return new hel::GlobalManager();
+          asio::io_service service;
+          hel::SyncServer serv(service);
+          sync_thread = std::thread([&serv](){while(1){serv.startSync();}});
+          return new hel::GlobalManager();
     	}
     }
 }
