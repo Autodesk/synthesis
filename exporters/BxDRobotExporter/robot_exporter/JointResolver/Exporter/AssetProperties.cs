@@ -9,11 +9,6 @@ public class AssetProperties
     public double translucency = 0;
     public double specular = 0;
 
-    public AssetProperties()
-    {
-        
-    }
-
     public AssetProperties(Asset asset)
     {
         try

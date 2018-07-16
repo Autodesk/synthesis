@@ -42,6 +42,9 @@ public partial class SurfaceExporter
     /// </summary>
     private const double DEFAULT_TOLERANCE = 1;
 
+    /// <summary>
+    /// Processes a specific surface and adds it to a mesh.
+    /// </summary>
     private class ExportJob
     {
         public delegate void JobFinishedReporter();
@@ -59,10 +62,7 @@ public partial class SurfaceExporter
 
         private PartialSurface bufferSurface;
 
-        private VertexCollection outputVerts;
-        private List<BXDAMesh.BXDASurface> outputMeshSurfaces;
-
-        private BXDAMesh outputMesh;
+        private MeshController outputMesh;
 
         /// <summary>
         /// Create a job to export a surface to a BXDAMesh
@@ -70,14 +70,12 @@ public partial class SurfaceExporter
         /// <param name="surface">Surface to export.</param>
         /// <param name="outputMesh">Mesh to export to.</param>
         /// <param name="separateFaces">True to separate faces if the surface has multiple colors.</param>
-        public ExportJob(SurfaceBody surface, BXDAMesh outputMesh, bool separateFaces = false)
+        public ExportJob(SurfaceBody surface, MeshController outputMesh, bool separateFaces = false)
         {
             surf = surface;
             this.separateFaces = separateFaces;
 
             bufferSurface = new PartialSurface();
-            outputVerts = new VertexCollection();
-            outputMeshSurfaces = new List<BXDAMesh.BXDASurface>();
 
             this.outputMesh = outputMesh;
         }
@@ -101,7 +99,6 @@ public partial class SurfaceExporter
                 try
                 {
                     CalculateSurfaceFacets();
-                    DumpOutputMesh();
                 }
                 catch (Exception e)
                 {
@@ -136,9 +133,9 @@ public partial class SurfaceExporter
 
                 if (!assets.ContainsKey(assetName))
                     assets.Add(assetName, new AssetProperties(appearance));
-            }
 
-            return assets[assetName];
+                return assets[assetName];
+            }
         }
 
         /// <summary>
@@ -179,29 +176,42 @@ public partial class SurfaceExporter
                 foreach (Face face in faces)
                 {
                     face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-                    AddBufferToOutput(GetAsset(face.Appearance));
+                    outputMesh.AddSurface(ref bufferSurface, GetAsset(face.Appearance));
                 }
             }
             else
             {
                 // Add facets once for the entire surface
                 surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-                AddBufferToOutput(GetAsset(surf.Faces[1].Appearance));
+                outputMesh.AddSurface(ref bufferSurface, GetAsset(surf.Faces[1].Appearance));
             }
+        }
+    }
+
+    /// <summary>
+    /// Used for storing shared mesh data.
+    /// </summary>
+    private class MeshController
+    {
+        private VertexCollection outputVerts = new VertexCollection();
+        private List<BXDAMesh.BXDASurface> outputMeshSurfaces = new List<BXDAMesh.BXDASurface>();
+
+        private BXDAMesh outputMesh;
+        public BXDAMesh Mesh { get => outputMesh; }
+
+        public MeshController(Guid guid)
+        {
+            outputMesh = new BXDAMesh(guid);
         }
 
         /// <summary>
-        /// Adds the vertices and facets in the <see cref="bufferSurface"/> to the <see cref="outputVerts"/> and <see cref="outputMeshSurfaces"/>.
+        /// Adds a surface to the output mesh. Not saved as a sub-surface until <see cref="DumpOutput"/> is called.
         /// </summary>
-        /// <param name="asset">Asset to associate with the buffer surface.</param>
-        private void AddBufferToOutput(AssetProperties asset)
+        /// <param name="bufferSurface">Surface to add to mesh.</param>
+        /// <param name="asset">Asset for surface.</param>
+        public void AddSurface(ref PartialSurface bufferSurface, AssetProperties asset)
         {
-            if (bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
-                throw new TooManyVerticesException();
-
-            if (outputVerts.count + bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
-                DumpOutputMesh();
-
+            // Create new surface
             BXDAMesh.BXDASurface newMeshSurface = new BXDAMesh.BXDASurface();
 
             // Apply Asset Properties
@@ -214,27 +224,55 @@ public partial class SurfaceExporter
             newMeshSurface.translucency = (float)asset.translucency;
             newMeshSurface.specular = (float)asset.specular;
 
-            // Copy buffer vertices into output
-            Array.Copy(bufferSurface.verts.coordinates, 0, outputVerts.coordinates, outputVerts.count * 3, bufferSurface.verts.count * 3);
-            Array.Copy(bufferSurface.verts.norms, 0, outputVerts.norms, outputVerts.count * 3, bufferSurface.verts.count * 3);
+            // Prevent too many vertices
+            if (bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
+                throw new TooManyVerticesException();
+
+            int indexOffset;
+            lock (outputVerts)
+            {
+                // Prevent too many vertices
+                if (outputVerts.count + bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
+                    DumpOutputInternal();
+                
+                // Copy buffer vertices into output
+                Array.Copy(bufferSurface.verts.coordinates, 0, outputVerts.coordinates, outputVerts.count * 3, bufferSurface.verts.count * 3);
+                Array.Copy(bufferSurface.verts.norms, 0, outputVerts.norms, outputVerts.count * 3, bufferSurface.verts.count * 3);
+
+                // Store length of output verts for later
+                indexOffset = outputVerts.count - 1;
+                outputVerts.count += bufferSurface.verts.count;
+            }
 
             // Copy buffer surface into output, incrementing indices relative to where verts where stitched into the vert array
             newMeshSurface.indicies = new int[bufferSurface.facets.count * 3];
             for (int i = 0; i < bufferSurface.facets.count * 3; i++)
-                newMeshSurface.indicies[i] = bufferSurface.facets.indices[i] + outputVerts.count - 1; // Why does Inventor start from 1?!
-
-            // Increment the number of verts in output
-            outputVerts.count += bufferSurface.verts.count;
+                newMeshSurface.indicies[i] = bufferSurface.facets.indices[i] + indexOffset; // Why does Inventor start from 1?!
 
             // Add the new surface to the output
-            outputMeshSurfaces.Add(newMeshSurface);
+            lock (outputMeshSurfaces)
+                outputMeshSurfaces.Add(newMeshSurface);
+
+            // Empty buffer
+            bufferSurface.verts.count = 0;
+            bufferSurface.facets.count = 0;
+        }
+        
+        /// <summary>
+        /// Adds the <see cref="outputVerts"/> and <see cref="outputMeshSurfaces"/> to the <see cref="outputMesh"/>. Thread safe.
+        /// </summary>
+        public void DumpOutput()
+        {
+            lock (outputVerts)
+                lock (outputMeshSurfaces)
+                    DumpOutputInternal();
         }
 
         /// <summary>
         /// Adds the <see cref="outputVerts"/> and <see cref="outputMeshSurfaces"/> to the <see cref="outputMesh"/>.
         /// </summary>
-        private void DumpOutputMesh()
-        {
+        private void DumpOutputInternal()
+        {             
             if (outputVerts.count == 0 || outputMeshSurfaces.Count == 0)
                 return;
 
@@ -253,7 +291,7 @@ public partial class SurfaceExporter
                 outputMesh.meshes.Add(subObject);
 
             // Empty temporary storage
-            outputVerts = new VertexCollection();
+            outputVerts.count = 0;
             outputMeshSurfaces.Clear();
         }
     }
