@@ -6,7 +6,7 @@ using System.Threading;
 
 public partial class SurfaceExporter
 {
-    private const int MAX_WAITING_EVENTS = 64;
+    private const int MAX_WAITING_EVENTS = 32;
 
     /// <summary>
     /// Exports all the components in this group to the in-RAM mesh.
@@ -32,6 +32,9 @@ public partial class SurfaceExporter
             doneEvents[i] = new ManualResetEvent(true); // Start with all events triggered to fill up event space
 
         // Start jobs
+        int totalJobsFinished = 0;
+        object finishLock = new object(); // Used to prevent multiple threads from updating progress bar at the same time.
+
         for (int i = 0; i < plannedSurfaces.Count; i++)
         {
             int waitSlot = WaitHandle.WaitAny(doneEvents); // Get next available done event handle
@@ -39,8 +42,17 @@ public partial class SurfaceExporter
 
             jobs[i] = new ExportJob(plannedSurfaces[i], outputMesh, false, SynthesisGUI.PluginSettings.GeneralUseFancyColors);
 
-            ThreadPool.QueueUserWorkItem(jobs[i].ThreadPoolCallback, new ExportJob.JobContext { doneEvent = doneEvents[waitSlot] }); // Add the job to the queue
-            reporter?.Invoke((i + 1), plannedSurfaces.Count);
+            // Add the job to the queue
+            ThreadPool.QueueUserWorkItem(jobs[i].ThreadPoolCallback, new ExportJob.JobContext { doneEvent = doneEvents[waitSlot], onFinish = () =>
+                {
+                    // Update the progress bar
+                    lock (finishLock)
+                    {
+                        totalJobsFinished++;
+                        reporter?.Invoke(totalJobsFinished, plannedSurfaces.Count);
+                    }
+                }
+            });
         }
 
         // Wait for all jobs to finish
