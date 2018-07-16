@@ -17,17 +17,17 @@ public partial class SurfaceExporter
         public TooManyVerticesException() : base("Too many vertices in a surface.") { }
     }
 
-    private const uint MAX_VERTS = ushort.MaxValue / 3;
+    private const uint MAX_VERTS_OR_FACETS = ushort.MaxValue;
     private class VertexCollection
     {
-        public double[] coordinates = new double[MAX_VERTS * 3];
-        public double[] norms = new double[MAX_VERTS * 3];
+        public double[] coordinates = new double[MAX_VERTS_OR_FACETS * 3];
+        public double[] norms = new double[MAX_VERTS_OR_FACETS * 3];
         public int count = 0;
     }
 
     private class FacetCollection
     {
-        public int[] indices = new int[MAX_VERTS * 3];
+        public int[] indices = new int[MAX_VERTS_OR_FACETS * 3];
         public int count = 0;
     }
 
@@ -179,10 +179,10 @@ public partial class SurfaceExporter
 
         private void AddBufferToOutput(AssetProperties asset)
         {
-            if (bufferSurface.verts.count > MAX_VERTS)
+            if (bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
                 throw new TooManyVerticesException();
 
-            if (outputVerts.count + bufferSurface.verts.count > MAX_VERTS)
+            if (outputVerts.count + bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
                 DumpOutputMesh();
 
             BXDAMesh.BXDASurface newMeshSurface = new BXDAMesh.BXDASurface();
@@ -211,7 +211,7 @@ public partial class SurfaceExporter
             // Copy buffer surface into output, incrementing indices relative to where verts where stitched into the vert array
             newMeshSurface.indicies = new int[bufferSurface.facets.count * 3];
             for (int i = 0; i < bufferSurface.facets.count * 3; i++)
-                newMeshSurface.indicies[i] = bufferSurface.facets.indices[i] + outputVerts.count;
+                newMeshSurface.indicies[i] = bufferSurface.facets.indices[i] + outputVerts.count - 1; // Why does Inventor start from 1?!
 
             // Increment the number of verts in output
             outputVerts.count += bufferSurface.verts.count;
