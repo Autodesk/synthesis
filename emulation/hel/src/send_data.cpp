@@ -3,6 +3,9 @@
 #include "util.h"
 #include "json_util.h"
 
+using namespace nFPGA;
+using namespace nRoboRIO_FPGANamespace;
+
 void hel::SendData::update(){
     auto instance = RoboRIOManager::getInstance(nullptr);
     int32_t status = 0;

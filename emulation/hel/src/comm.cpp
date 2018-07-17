@@ -120,11 +120,11 @@ namespace hel{
          is_xbox = xbox;
     }
 
-    frc::GenericHID::HIDType RoboRIO::Joystick::getType()const{
+    uint8_t RoboRIO::Joystick::getType()const{
          return type;
     }
 
-    void RoboRIO::Joystick::setType(frc::GenericHID::HIDType t){
+    void RoboRIO::Joystick::setType(uint8_t t){
          type = t;
     }
 
@@ -216,17 +216,35 @@ namespace hel{
         right_rumble = rumble;
     }
 
+    std::string RoboRIO::Joystick::toString()const{
+        std::string s = "(";
+        s += "is_xbox:" + hel::to_string(is_xbox) + ", ";
+        s += "type:" + std::to_string(type) + ", ";
+        s += "name:" + name + ", ";
+        s += "buttons:" + std::to_string(buttons) + ", ";
+        s += "button_count:" + std::to_string((int)button_count) + ", ";
+        s += "axes:" + hel::to_string(axes, std::function<std::string(int8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += "axis_count:" + std::to_string(axis_count) + ", ";
+        s += "axis_types" + hel::to_string(axis_types, std::function<std::string(uint8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += "povs:" + hel::to_string(povs, std::function<std::string(int16_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += "pov_count:" + std::to_string(pov_count) +", ";
+        s += "outputs:" + std::to_string(outputs) + ", ";
+        s += "left_rumble:" + std::to_string(left_rumble) + ", ";
+        s += "right_rumble:" + std::to_string(right_rumble);
+        s += ")";
+        return s;
+    }
     std::string RoboRIO::Joystick::serialize()const{
-        std::string s = "\"Joystick:\": {";
+        std::string s = "{";
         s += "\"is_xbox\":" + hel::to_string(is_xbox) + ", ";
         s += "\"type\":" + std::to_string(type) + ", ";
-        s += "\"name\":" + name + ", ";
+        s += "\"name\":" + hel::quote(name) + ", ";
         s += "\"buttons\":" + std::to_string(buttons) + ", ";
         s += "\"button_count\":" + std::to_string((int)button_count) + ", ";
         s += hel::serializeList("\"axes\"", axes, std::function<std::string(int8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
         s += "\"axis_count\":" + std::to_string(axis_count) + ", ";
         s += hel::serializeList("\"axis_types\"", axis_types, std::function<std::string(uint8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
-        s += hel::serializeList("\"povs\":", povs, std::function<std::string(int16_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += hel::serializeList("\"povs\"", povs, std::function<std::string(int16_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
         s += "\"pov_count\":" + std::to_string(pov_count) +", ";
         s += "\"outputs\":" + std::to_string(outputs) + ", ";
         s += "\"left_rumble\":" + std::to_string(left_rumble) + ", ";
@@ -238,8 +256,8 @@ namespace hel{
     RoboRIO::Joystick RoboRIO::Joystick::deserialize(std::string s){
         RoboRIO::Joystick joy;
         joy.is_xbox = hel::stob(hel::pullValue("\"is_xbox\"", s));
-        joy.type = static_cast<frc::GenericHID::HIDType>(std::stoi(hel::pullValue("\"type\"",s)));
-        joy.name = hel::pullValue("\"name\"", s);
+        joy.type = std::stoi(hel::pullValue("\"type\"",s));
+        joy.name = hel::unquote(hel::pullValue("\"name\"", s));
         joy.buttons = std::stoi(hel::pullValue("\"buttons\"", s));
         joy.button_count = std::stoi(hel::pullValue("\"button_count\"", s));
         std::vector<int8_t> axes_deserialized = hel::deserializeList(hel::pullValue("\"axes\"",s), std::function<int8_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
@@ -268,6 +286,12 @@ namespace hel{
 
         return joy;
     }
+
+    RoboRIO::Joystick::Joystick():is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes({}), axis_count(0), axis_types({}), povs({}), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
+
+    RoboRIO::RobotState::RobotState():state(RobotState::State::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){}
+
+    RoboRIO::DriverStationInfo::DriverStationInfo():event_name(),game_specific_message(),match_type(),match_number(0),replay_number(0),alliance_station_id(),match_time(){}
 }
 extern "C" {
     int FRC_NetworkCommunication_Reserve(void* /*instance*/){ //unnecessary for emulation

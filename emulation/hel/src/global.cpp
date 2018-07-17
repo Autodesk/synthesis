@@ -8,7 +8,7 @@ namespace hel{
     RoboRIO::Global::Global(){
     	fpga_start_time = getCurrentTime();//std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     }
-    
+
     uint64_t RoboRIO::Global::getCurrentTime(){
         return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     }
@@ -23,7 +23,7 @@ namespace hel{
         }
 
         void writeLEDs(tLEDs /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
-        
+
         void writeLEDs_Comm(uint8_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
 
         void writeLEDs_Mode(uint8_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation

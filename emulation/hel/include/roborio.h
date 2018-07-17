@@ -27,24 +27,11 @@
 
 #include "FRC_NetworkCommunication/FRCComm.h"
 
-#include "HAL/ChipObject.h"
-#include "athena/PortsInternal.h"
-#include "athena/DigitalInternal.h"
-
-#include "DriverStation.h"
-#include "GenericHID.h"
-
 #include "error.h"
-
 #include "send_data.h"
 #include "sync_server.h"
 
-#include <iostream>
-
 namespace hel{
-    using namespace nFPGA;
-    using namespace nRoboRIO_FPGANamespace;
-
     /**
      * \struct RoboRIO roborio.h
      * \brief Mock RoboRIO implementation
@@ -59,13 +46,13 @@ namespace hel{
          * Holds all internal data needed to model analog outputs on the RoboRIO.
          */
         struct AnalogOutputs{
-    	private:
+        private:
             /**
-             * \var std::array<uint16_t, tAO::kNumMXPRegisters> mxp_outputs
+             * \var std::array<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs
              * \brief Analog output data
-             * 
+             *
              */
-            std::array<uint16_t, tAO::kNumMXPRegisters> mxp_outputs;
+            std::array<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs;
 
         public:
             /**
@@ -75,7 +62,7 @@ namespace hel{
              * \param index an byte representing the index of the analog output.
              * \return an unsigned 16-bit integer representing the current analog output.
              */
-    		uint16_t getMXPOutput(uint8_t)const;
+            uint16_t getMXPOutput(uint8_t)const;
             /**
              * \n void setMXPOutput(uint8_t index, uint16_t value)
              * \brief Set MXP output.
@@ -83,14 +70,18 @@ namespace hel{
              * \param index an byte representing the index of the analog output.
              * \param value an unsigned 16-bit integer representing the value of the analog output.
              */
-    		void setMXPOutput(uint8_t,uint16_t);
+            void setMXPOutput(uint8_t,uint16_t);
+
+            AnalogOutputs();
         };
         /**
          * \struct AnalogInputs roborio.h
          * \brief Data model for analog inputs.
          * Holds all internal data needed to model analog inputs on the RoboRIO.
          */
-    	struct AnalogInputs {
+        struct AnalogInputs {
+            static constexpr const int32_t NUM_ANALOG_INPUTS = 8; //hal::kNumAnalogInputs
+
             /**
              * \struct AnalogInput roborio.h
              * \brief Data model for individual analog input
@@ -129,7 +120,7 @@ namespace hel{
              * \param value a tConfig object containing new configuration data.
              */
 
-            void setConfig(tAI::tConfig value);
+            void setConfig(nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig value);
 
             /**
              * \fn tConfig getConfig()
@@ -138,7 +129,7 @@ namespace hel{
              * \return tConfig representing current analog system configuration.
              */
 
-            tAI::tConfig getConfig();
+            nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig getConfig();
 
             /**
              * \fn void setReadSelect(tReadSelect value)
@@ -147,7 +138,7 @@ namespace hel{
              * \param value a tReadSelect object containing addressing information for the desired analog input.
              */
 
-            void setReadSelect(tAI::tReadSelect);
+            void setReadSelect(nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect);
 
             /**
              * \fn tConfig getReadSelect()
@@ -156,7 +147,7 @@ namespace hel{
              * \return tReadSelect representing current analog system read selection.
              */
 
-            tAI::tReadSelect getReadSelect();
+            nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect getReadSelect();
 
             /**
              * \fn void setOversampleBits(uint8_t channel, uint8_t value)
@@ -233,29 +224,31 @@ namespace hel{
 
             std::vector<int32_t> getValues(uint8_t);
 
+            AnalogInputs();
+
         private:
 
             /**
-             * \var std::array<AnalogInput, hal::kNumAnalogInputs> analog_inputs
+             * \var std::array<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs
              * \brief Array of all analog inputs.
              * A holder array for all analog input objects.
              */
 
-            std::array<AnalogInput, hal::kNumAnalogInputs> analog_inputs;
+            std::array<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs;
 
             /**
              * \var tConfig config;
              * \brief current analog input configuration.
              */
 
-            tAI::tConfig config;
+            nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig config;
 
             /**
              * \var tReadSelect read_select;
              * \brief current analog input read select configuration.
              */
 
-            tAI::tReadSelect read_select;
+            nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect read_select;
         };
 
         /**
@@ -264,15 +257,16 @@ namespace hel{
          * Data model for all PWMS. Holds all internal data for PWMs.
          */
 
-    	struct PWMSystem{
-    	private:
+        struct PWMSystem{
+            static constexpr const int32_t EXPECTED_LOOP_TIMING = 40;
+        private:
 
             /**
              * \var tConfig config
              * \brief Current PWM system configuration.
              */
 
-    		tPWM::tConfig config;
+            nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig config;
 
             /**
              * \struct PWM roborio.h
@@ -280,7 +274,7 @@ namespace hel{
              * Data model used for storing data about an individual PWM.
              */
 
-    		struct PWM{
+            struct PWM{
 
                 /**
                  * \var uint32_t period_scale
@@ -288,7 +282,7 @@ namespace hel{
                  * 2-bit mask for signal masking frequency, effectively scaling the PWM value (0 = 1x 1, = 2x, 3 = 4x)
                  */
 
-    			uint32_t period_scale;
+                uint32_t period_scale;
 
                 /**
                  * \var uint16_t duty_cycle
@@ -297,25 +291,27 @@ namespace hel{
                  */
 
                 uint16_t duty_cycle;
-    		};
+
+                PWM();
+            };
 
             /**
-             * \var std::array<PWM, tPWM::kNumHdrRegisters> hdr;
+             * \var std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> hdr;
              * \brief Array of all PWM Headers on the base RoboRIO board.
              * Array of all PWM headers on the base board of the RoboRIO (not MXP). Numbered 0-10 on the board.
              */
 
-    		std::array<PWM, tPWM::kNumHdrRegisters> hdr;
+            std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> hdr;
 
             /**
-             * \var std::array<PWM, tPWM::kNumMXPRegisters> mxp;
+             * \var std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters> mxp;
              * \brief Array of all PWM Headers on the MXP.
              * Array of all PWM headers on the MXP.
              */
 
-    		std::array<PWM, tPWM::kNumMXPRegisters> mxp;
+            std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters> mxp;
 
-    	public:
+        public:
 
             /**
              * \fn tConfig getConfig()const
@@ -324,7 +320,7 @@ namespace hel{
              * \return tConfig representing current PWM system configuration.
              */
 
-    		tPWM::tConfig getConfig()const;
+            nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig getConfig()const;
 
             /**
              * \fn void setConfig(tConfig config)
@@ -333,7 +329,7 @@ namespace hel{
              * \param tConfig representing new PWM system configuration.
              */
 
-            void setConfig(tPWM::tConfig);
+            void setConfig(nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig);
 
             /**
              * \fn uint32_t getHdrPeriodScale(uint8_t index)
@@ -343,7 +339,7 @@ namespace hel{
              * \return Unsigned 32-bit integer representing the PWM period scale.
              */
 
-    		uint32_t getHdrPeriodScale(uint8_t)const;
+            uint32_t getHdrPeriodScale(uint8_t)const;
 
             /**
              * \fn void setHdrPeriodScale(uint8_t index)
@@ -365,7 +361,7 @@ namespace hel{
              */
 
 
-    		uint32_t getMXPPeriodScale(uint8_t)const;
+            uint32_t getMXPPeriodScale(uint8_t)const;
 
             /**
              * \fn void setMXPPeriodScale(uint8_t index, uint32_t value)
@@ -376,7 +372,7 @@ namespace hel{
              */
 
 
-    		void setMXPPeriodScale(uint8_t, uint32_t);
+            void setMXPPeriodScale(uint8_t, uint32_t);
 
             /**
              * \fn uint32_t getHdrDutyCycle(uint8_t index)
@@ -387,7 +383,7 @@ namespace hel{
              */
 
 
-    		uint32_t getHdrDutyCycle(uint8_t)const;
+            uint32_t getHdrDutyCycle(uint8_t)const;
 
             /**
              * \fn void setHdrDutyCycle(uint8_t index, uint32_t value)
@@ -407,7 +403,7 @@ namespace hel{
              * \return Unsigned 32-bit integer representing the PWM duty cycle.
              */
 
-    		uint32_t getMXPDutyCycle(uint8_t)const;
+            uint32_t getMXPDutyCycle(uint8_t)const;
 
             /**
              * \fn void setMXPDutyCycle(uint8_t index, uint32_t value)
@@ -417,309 +413,320 @@ namespace hel{
              * \param value the new duty cycle to write to the PWM.
              */
             void setMXPDutyCycle(uint8_t, uint32_t);
-    	};
+
+            PWMSystem();
+        };
 
         struct DIOSystem{
-    	private:
+            static constexpr const int32_t NUM_DIGITAL_PWM_OUTPUTS = 6; //hal::kNumDigitalPWMOutputs
+        private:
 
             /**
              * \var
              */
 
-            tDIO::tDO outputs;
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO outputs;
 
             /**
              * \var
              */
 
-            tDIO::tOutputEnable enabled_outputs;
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable enabled_outputs;
 
             /**
              * \var
              */
 
-            tDIO::tPulse pulses;
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse pulses;
 
             /**
              * \var
              */
 
-            tDIO::tDI inputs;
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI inputs;
 
             /**
              * \var
              */
 
-    		uint16_t mxp_special_functions_enabled;//TODO this may be enabled low, double check that
+            uint16_t mxp_special_functions_enabled;//TODO this may be enabled low, double check that
 
             /**
              * \var
              */
 
-    		uint8_t pulse_length;
+            uint8_t pulse_length;
 
-    		std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
+            std::array<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
 
-    	public:
-
-            /**
-             * \fn
-             */
-
-    		tDIO::tDO getOutputs()const;
+        public:
 
             /**
              * \fn
              */
 
-    		void setOutputs(tDIO::tDO);
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO getOutputs()const;
 
             /**
              * \fn
              */
 
-    		tDIO::tOutputEnable getEnabledOutputs()const;
+            void setOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO);
 
             /**
              * \fn
              */
 
-    		void setEnabledOutputs(tDIO::tOutputEnable);
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable getEnabledOutputs()const;
 
             /**
              * \fn
              */
 
-    		uint16_t getMXPSpecialFunctionsEnabled()const;
+            void setEnabledOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable);
 
             /**
              * \fn
              */
 
-    		void setMXPSpecialFunctionsEnabled(uint16_t);
+            uint16_t getMXPSpecialFunctionsEnabled()const;
 
             /**
              * \fn
              */
 
-    		tDIO::tPulse getPulses()const;
+            void setMXPSpecialFunctionsEnabled(uint16_t);
 
             /**
              * \fn
              */
 
-    		void setPulses(tDIO::tPulse);
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse getPulses()const;
 
             /**
              * \fn
              */
 
-    		tDIO::tDI getInputs()const;
+            void setPulses(nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse);
 
             /**
              * \fn
              */
 
-    		void setInputs(tDIO::tDI);
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI getInputs()const;
 
             /**
              * \fn
              */
 
-    		uint8_t getPulseLength()const;
+            void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI);
 
             /**
              * \fn
              */
 
-    		void setPulseLength(uint8_t);
+            uint8_t getPulseLength()const;
 
             /**
              * \fn
              */
 
-    		uint8_t getPWMDutyCycle(uint8_t)const;
+            void setPulseLength(uint8_t);
 
             /**
              * \fn
              */
 
-    		void setPWMDutyCycle(uint8_t, uint8_t);
-    	};
+            uint8_t getPWMDutyCycle(uint8_t)const;
 
-    	/**
-    	 * \struct CANBus roborio.h
-    	 * \brief Models CAN bus input and output.
-    	 * Holds internal queues of CAN messages for input and output.
-    	 */
+            /**
+             * \fn
+             */
 
-    	struct CANBus{
+            void setPWMDutyCycle(uint8_t, uint8_t);
+
+            DIOSystem();
+        };
+
+        /**
+         * \struct CANBus roborio.h
+         * \brief Models CAN bus input and output.
+         * Holds internal queues of CAN messages for input and output.
+         */
+
+        struct CANBus{
     		
-    		/**
-    		 * \struct Message roborio.h
-    		 * \brief Holds internally all parts of a CAN bus message
-    		 */
-    		struct Message{
+            /**
+             * \struct Message roborio.h
+             * \brief Holds internally all parts of a CAN bus message
+             */
+            struct Message{
     			
-    			/**
-    			 * \var uint32_t id
-    			 * \brief the message identifier which also communicates priority 
-    			 * The message ID can be configured to the 11-bit base or 29-bit extended format.
-    			 */
+                /**
+                 * \var uint32_t id
+                 * \brief the message identifier which also communicates priority
+                 * The message ID can be configured to the 11-bit base or 29-bit extended format.
+                 */
 
-    			uint32_t id;
+                uint32_t id;
 
-    			/**
-    			 * \var std::array<uint8_t, 8> data
-    			 * \brief the data transmitted with the message in byte array form
-    			 * The data can array can vary from 0-8 bytes in size.
-    			 */
+                /**
+                 * \var std::array<uint8_t, 8> data
+                 * \brief the data transmitted with the message in byte array form
+                 * The data can array can vary from 0-8 bytes in size.
+                 */
 
-    			std::array<uint8_t, 8> data;
+                std::array<uint8_t, 8> data;
 
-    			/**
-    			 * \var uint8_t data_size
-    			 * \brief four bits representing the number of bytes of data in the message 
-    			 * There can be between 0-8 bytes of data.
-    			 */
+                /**
+                 * \var uint8_t data_size
+                 * \brief four bits representing the number of bytes of data in the message
+                 * There can be between 0-8 bytes of data.
+                 */
 
-    			uint8_t data_size: 4;
+                uint8_t data_size: 4;
 
-    			/**
-    			 * \var uint32_t time_stamp
-    			 * \brief time stamp of message send/receive in milliseconds
-    			 */
+                /**
+                 * \var uint32_t time_stamp
+                 * \brief time stamp of message send/receive in milliseconds
+                 */
 
-    			uint32_t time_stamp;
+                uint32_t time_stamp;
 
-    			/**
-    			 * \var static constexpr int32_t CAN_SEND_PERIOD_NO_REPEAT
-    			 * \brief a send period communicating the message should not be repeated
-    			 */
+                /**
+                 * \var static constexpr int32_t CAN_SEND_PERIOD_NO_REPEAT
+                 * \brief a send period communicating the message should not be repeated
+                 */
 
-    			static constexpr int32_t CAN_SEND_PERIOD_NO_REPEAT = 0;
+                static constexpr const int32_t CAN_SEND_PERIOD_NO_REPEAT = 0;
 
-    			/**
-    			 * \var static constexpr int32_t CAN_SEND_PERIOD_STOP_REPEATING
-    			 * \brief a send period communicating the message with the associated ID should stop repeating
-    			 */
+                /**
+                 * \var static constexpr int32_t CAN_SEND_PERIOD_STOP_REPEATING
+                 * \brief a send period communicating the message with the associated ID should stop repeating
+                 */
 
-    			static constexpr int32_t CAN_SEND_PERIOD_STOP_REPEATING = -1;
+                static constexpr int32_t CAN_SEND_PERIOD_STOP_REPEATING = -1;
 
-    			/**
-    			 * \var static constexpr uint32_t CAN_IS_FRAME_REMOTE
-    			 * \brief used to identify a message ID as that of a remote frame
-    			 * Remote CAN frames are requests for data from a different source.
-    			 */
+                /**
+                 * \var static constexpr uint32_t CAN_IS_FRAME_REMOTE
+                 * \brief used to identify a message ID as that of a remote frame
+                 * Remote CAN frames are requests for data from a different source.
+                 */
 
-    			static constexpr uint32_t CAN_IS_FRAME_REMOTE = 0x80000000;
+                static constexpr uint32_t CAN_IS_FRAME_REMOTE = 0x80000000;
 
-    			/**
-    			 * \var static constexpr uint32_t CAN_IS_FRAME_11BIT
-    			 * \brief used to identify a message ID as using 11-bit, base formatting
-    			 */
+                /**
+                 * \var static constexpr uint32_t CAN_IS_FRAME_11BIT
+                 * \brief used to identify a message ID as using 11-bit, base formatting
+                 */
 
-    			static constexpr uint32_t CAN_IS_FRAME_11BIT = 0x40000000;
+                static constexpr uint32_t CAN_IS_FRAME_11BIT = 0x40000000;
 
-    			/**
-    			 * \var static constexpr uint32_t CAN_29BIT_MESSAGE_ID_MASK
-    			 * \brief used as a message ID mask to communicate the message ID is in 29-bit, extended formatting
-    			 */
+                /**
+                 * \var static constexpr uint32_t CAN_29BIT_MESSAGE_ID_MASK
+                 * \brief used as a message ID mask to communicate the message ID is in 29-bit, extended formatting
+                 */
 
-    			static constexpr uint32_t CAN_29BIT_MESSAGE_ID_MASK = 0x1FFFFFFF;
+                static constexpr uint32_t CAN_29BIT_MESSAGE_ID_MASK = 0x1FFFFFFF;
 
-    			/**
-    			 * \var static constexpr uint32_t CAN_11BIT_MESSAGE_ID_MASK
-    			 * \brief used as a message ID mask to communicate the message ID is in 11-bit, base formatting
-    			 */
+                /**
+                 * \var static constexpr uint32_t CAN_11BIT_MESSAGE_ID_MASK
+                 * \brief used as a message ID mask to communicate the message ID is in 11-bit, base formatting
+                 */
 
-    			static constexpr uint32_t CAN_11BIT_MESSAGE_ID_MASK = 0x000007FF;
-    		};
-    	private:
+                static constexpr uint32_t CAN_11BIT_MESSAGE_ID_MASK = 0x000007FF;
 
-    		/**
-    		 * \var std::queue<Message> in_message_queue
-    		 * \brief a queue of CAN messages to send
-    		 */
+                Message();
+            };
+        private:
 
-    		std::queue<Message> in_message_queue;
+            /**
+             * \var std::queue<Message> in_message_queue
+             * \brief a queue of CAN messages to send
+             */
 
-    		/**
-    		 * \var std::queue<Message> out_message_queue
-    		 * \brief a queue of CAN messages that have been receieved
-    		 */
+            std::queue<Message> in_message_queue;
 
-    		std::queue<Message> out_message_queue;
-    
-    	public:
+            /**
+             * \var std::queue<Message> out_message_queue
+             * \brief a queue of CAN messages that have been receieved
+             */
 
-    		/**
-    		 * \fn void enqueueMessage(Message m)
-    		 * \brief Add a CAN message to the output queue.
-    		 * \param value a Message object to add to the message output queue.
-    		 */
-    
-    		void enqueueMessage(Message);
+            std::queue<Message> out_message_queue;
+
+        public:
+
+            /**
+             * \fn void enqueueMessage(Message m)
+             * \brief Add a CAN message to the output queue.
+             * \param value a Message object to add to the message output queue.
+             */
+
+            void enqueueMessage(Message);
     		
-    		/**
-    		 * \fn Message getNextMessage()const
-    		 * \brief Get the oldest received message (i.e. the next in queue)
-    		 * \return the next received CAN message in queue.
-    		 */
+            /**
+             * \fn Message getNextMessage()const
+             * \brief Get the oldest received message (i.e. the next in queue)
+             * \return the next received CAN message in queue.
+             */
 
-    		Message getNextMessage()const;
+            Message getNextMessage()const;
 
-    		/**
-    		 * \fn void popNextMessage()
-    		 * \brief removes the oldest received message from the input queue
-    		 */
+            /**
+             * \fn void popNextMessage()
+             * \brief removes the oldest received message from the input queue
+             */
 
-    		void popNextMessage();
-    	};
+            void popNextMessage();
 
-    	/**
-    	 * \struct RelaySystem roborio.h
-    	 * \brief Data model for Relay system.
-    	 * Holds all internal data to model relay outputs.
-    	 */
+            CANBus();
+        };
 
-    	struct RelaySystem{
-    	private:
+        /**
+         * \struct RelaySystem roborio.h
+         * \brief Data model for Relay system.
+         * Holds all internal data to model relay outputs.
+         */
+
+        struct RelaySystem{
+        private:
     		
-    		/**
-    		 * \var tRelay::tValue value
-    		 * \brief Relay output data
-    		 */
-            
-    		tRelay::tValue value;
+            /**
+             * \var nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value
+             * \brief Relay output data
+             */
 
-    	public:
+            nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value;
 
-    		/**
-    		 * \fn tRelay::tValue getValue()const
-    		 * \brief Get relay output.
-    		 * Returns the relay output
-    		 * \return a tRelay::tValue object representing the reverse and forward channel outputs.
-    		 */
+        public:
+
+            /**
+             * \fn nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue getValue()const
+             * \brief Get relay output.
+             * Returns the relay output
+             * \return a nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue object representing the reverse and forward channel outputs.
+             */
     		
-    		tRelay::tValue getValue()const;
+            nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue getValue()const;
 
-    		/**
-    		 * \fn void setValue(tRelay::tValue value)
-    		 * \brief Set relay output.
-    		 * Sets the relay output to \b value
-    		 * \param value a tRelay::tValue object representing the reverse and forward channel outputs.
-    		 */
+            /**
+             * \fn void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value)
+             * \brief Set relay output.
+             * Sets the relay output to \b value
+             * \param value a nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue object representing the reverse and forward channel outputs.
+             */
     		
-    		void setValue(tRelay::tValue);
-    	};
+            void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue);
+
+            RelaySystem();
+        };
 
         /**
          * \struct RobotState roborio.h
          * \brief Represents match phase and robot enabled state
          */
 
-    	struct RobotState{
+        struct RobotState{ //TODO merge with DriverStationInfo?
 
             /**
              * \enum State
@@ -727,9 +734,9 @@ namespace hel{
              * Represents whether robot is in autonomous, teleoperated, or test/practice mode.
              */
 
-    		enum class State{AUTONOMOUS,TELEOPERATED,TEST};
+            enum class State{AUTONOMOUS,TELEOPERATED,TEST};
 
-    	private:
+        private:
 
             /**
              * \var State state
@@ -743,7 +750,7 @@ namespace hel{
              * \brief Robot enabled state
              */
 
-    		bool enabled;
+            bool enabled;
 
             /**
              * \var bool emergency_stopped
@@ -766,7 +773,7 @@ namespace hel{
 
             bool ds_attached;
 
-    	public:
+        public:
 
             /**
              * \fn State getState()const
@@ -774,7 +781,7 @@ namespace hel{
              * \return a State object representing the robot running state
              */
 
-    		State getState()const;
+            State getState()const;
 
             /**
              * \fn void setState(State state)
@@ -782,7 +789,7 @@ namespace hel{
              * \param state a State object representing the robot running state
              */
 
-    		void setState(State);
+            void setState(State);
 
             /**
              * \fn bool getEnabled()const
@@ -790,7 +797,7 @@ namespace hel{
              * \return true if the robot is enabled
              */
 
-    		bool getEnabled()const;
+            bool getEnabled()const;
 
             /**
              * \fn void setEnabled(bool enabled)
@@ -798,7 +805,7 @@ namespace hel{
              * \param enabled a bool representing the robot enabled state
              */
 
-        	void setEnabled(bool);
+            void setEnabled(bool);
 
             /**
              * \fn bool getEmergencyStopped()const
@@ -807,7 +814,7 @@ namespace hel{
              */
 
             bool getEmergencyStopped()const;
-            
+
             /**
              * \fn void setEmergencyStopped(bool emergency_stopped)
              * \brief Set the robot emergency stopped state
@@ -815,7 +822,7 @@ namespace hel{
              */
 
             void setEmergencyStopped(bool);
-            
+
             /**
              * \fn bool getFMSAttached()const
              * \brief Get robot FMS connection state
@@ -823,7 +830,7 @@ namespace hel{
              */
 
             bool getFMSAttached()const;
-            
+
             /**
              * \fn void setFMSAttached(bool fms_attached)
              * \brief Set robot FMS connection state
@@ -839,7 +846,7 @@ namespace hel{
              */
 
             bool getDSAttached()const;
-            
+
             /**
              * \fn void setDSAttached(bool ds_attached)
              * \brief Set robot driver station connection state
@@ -855,23 +862,25 @@ namespace hel{
              */
 
             ControlWord_t toControlWord()const;
-    	};
-    	
+
+            RobotState();
+        };
+
         /**
          * \struct DriverStationInfo roborio.h
          * \brief A data container for match/driver station information
          * Holds all of the match data communicated to the robot via the driver station
-    	 */
+         */
 
         struct DriverStationInfo{
-    	private:
+        private:
 
             /**
              * \var std::string event_name
              * \brief A string representing the name of the event
              */
 
-    		std::string event_name;
+            std::string event_name;
 
             /**
              * \var std::string game_specific_message
@@ -879,7 +888,7 @@ namespace hel{
              * The FMS will generate any game-specific information and communicate it to the robots.
              */
 
-    	    std::string game_specific_message; 
+            std::string game_specific_message;
 
             /**
              * \var MatchType_t match_type
@@ -888,7 +897,7 @@ namespace hel{
 
             MatchType_t match_type;
 
-    		/**
+            /**
              * \var uint16_t match_number
              * \brief Represents the match number at the event
              */
@@ -900,31 +909,31 @@ namespace hel{
              * \brief An byte representing if the match is a replay and which it is
              */
 
-        	uint8_t replay_number;
+            uint8_t replay_number;
 
             /**
              * \var AllianceStationID_t alliance_station_id
              * \brief Represents which driver station position the robot is running from
              */
 
-        	AllianceStationID_t alliance_station_id;
-           
+            AllianceStationID_t alliance_station_id;
+ 
             /**
              * \var double match_time
              * \brief Represents match time in seconds
              */
 
-        	double match_time; 
+            double match_time;
 
-    	public:
+        public:
 
             /**
              * \fn std::string getEventName()const
-             * \brief Fetch a string representing the event name 
+             * \brief Fetch a string representing the event name
              * return a standard string representing the event name
              */
 
-    		std::string getEventName()const;
+            std::string getEventName()const;
 
             /**
              * \fn void setEventName(std::string event_name)
@@ -932,7 +941,7 @@ namespace hel{
              * \param event_name a standard string representing the name of the event
              */
 
-    		void setEventName(std::string);
+            void setEventName(std::string);
 
             /**
              * \fn std::string getGameSpecificMessage()const
@@ -940,7 +949,7 @@ namespace hel{
              * \return a standard string representing any game specific message
              */
 
-    		std::string getGameSpecificMessage()const;
+            std::string getGameSpecificMessage()const;
 
             /**
              * \fn void setGameSpecificMessage(std::string game_specific_message)
@@ -948,7 +957,7 @@ namespace hel{
              * \param game_specific_message the game specific message for the match
              */
 
-    		void setGameSpecificMessage(std::string);
+            void setGameSpecificMessage(std::string);
 
             /**
              * \fn MatchType_t getMatchType()const
@@ -956,7 +965,7 @@ namespace hel{
              * \return a MatchType_t object representing the type of match
              */
 
-    		MatchType_t getMatchType()const;
+            MatchType_t getMatchType()const;
 
             /**
              * \fn void setMatchType(MatchType_t match_type)
@@ -964,7 +973,7 @@ namespace hel{
              * \param match_type the type of match running
              */
 
-    		void setMatchType(MatchType_t);
+            void setMatchType(MatchType_t);
 
             /**
              * \fn uint16_t getMatchNumber()const
@@ -972,7 +981,7 @@ namespace hel{
              * \return a 16-bit integer representing the match number
              */
 
-    		uint16_t getMatchNumber()const;
+            uint16_t getMatchNumber()const;
 
             /**
              * \fn void setMatchNumber(uint16_t match_number)
@@ -980,7 +989,7 @@ namespace hel{
              * \param match_number the running match number
              */
 
-    		void setMatchNumber(uint16_t);
+            void setMatchNumber(uint16_t);
 
             /**
              * \fn uint8_t getReplayNumber()const
@@ -988,7 +997,7 @@ namespace hel{
              * \return a byte representing the replay number of the running match (0 if not a replay)
              */
 
-    		uint8_t getReplayNumber()const;
+            uint8_t getReplayNumber()const;
 
             /**
              * \fn void setReplayNumber(uint8_t replay_number)
@@ -996,7 +1005,7 @@ namespace hel{
              * \param replay_number a byte representing the replay number for the running match (0 if not a replay)
              */
 
-    		void setReplayNumber(uint8_t);
+            void setReplayNumber(uint8_t);
 
             /**
              * \fn AllianceStationID_t getAllianceStationID()const
@@ -1004,7 +1013,7 @@ namespace hel{
              * \return an AllianceStationID_t object representing the robot's driver station ID
              */
 
-    		AllianceStationID_t getAllianceStationID()const;
+            AllianceStationID_t getAllianceStationID()const;
     		
             /**
              * \fn void setAllianceStationID(AllianceStationID_t alliance_station_id)
@@ -1020,8 +1029,8 @@ namespace hel{
              * \return a double representing the match time in seconds
              */
 
-    		double getMatchTime()const;
-    		
+            double getMatchTime()const;
+
             /**
              * \fn void SetMatchTime(double match_time)
              * \brief Set the match time
@@ -1029,12 +1038,14 @@ namespace hel{
              */
 
             void setMatchTime(double);
-    	};
+
+            DriverStationInfo();
+        };
 
         /**
          * \struct Joystick roborio.h
          * \brief A data container for joystick data
-         * Holds data surrounding joystick inputs and outputs and a description 
+         * Holds data surrounding joystick inputs and outputs and a description
          */
 
         struct Joystick{
@@ -1044,15 +1055,15 @@ namespace hel{
              * \brief The maximum number of joysticks supported by WPILib
              */
 
-            static constexpr uint8_t MAX_JOYSTICK_COUNT = frc::DriverStation::kJoystickPorts;
-            
+            static constexpr uint8_t MAX_JOYSTICK_COUNT = 6; //kJoystickPorts from frc::DriverStation
+
             /**
              * \var static constexpr uint8_t MAX_AXIS_COUNT
              * \brief The maximum number of joystick axes supported by HAL
              */
 
             static constexpr uint8_t MAX_AXIS_COUNT = HAL_kMaxJoystickAxes;
-            
+
             /**
              * \var static constexpr uint8_t MAX_POV_COUNT
              * \brief The maximum number of joystick POVs supported by HAL
@@ -1061,20 +1072,20 @@ namespace hel{
             static constexpr uint8_t MAX_POV_COUNT = HAL_kMaxJoystickPOVs;
 
         private:
-            
+
             /**
              * \var bool is_xbox
              * \brief Whether the joystick is an XBox controller or not
              */
 
             bool is_xbox;
-             
+
             /**
-             * \var frc::GenericHID::HIDType type
+             * \var uint8_t type
              * \brief The joystick type
              */
 
-            frc::GenericHID::HIDType type;
+            uint8_t type;
 
             /**
              * \var std::string name
@@ -1082,21 +1093,21 @@ namespace hel{
              */
 
             std::string name;
-             
+
             /**
              * \var uint32_t buttons
              * \brief A bit mask of joystick button states
              */
 
             uint32_t buttons;
-             
+
             /**
              * \var uint8_t button_count
              * \brief The number of buttons on the joystick
              */
 
             uint8_t button_count;
- 
+
             /**
              * \var std::array<int8_t> MAX_AXIS_COUNT> axes
              * \brief Array containing joystick axis states
@@ -1111,22 +1122,22 @@ namespace hel{
              */
 
             uint8_t axis_count;
-             
+
             /**
              * \var std::array<uint8_t, MAX_AXIS_COUNT> axis_types
              * \brief Array containing joystick axis types
              */
 
             std::array<uint8_t, MAX_AXIS_COUNT> axis_types; //TODO It is unclear how to interpret the bytes representing axis type
-             
+
             /**
-             * \var std::array<int16_t, MAX_POV_COUNT> povs 
+             * \var std::array<int16_t, MAX_POV_COUNT> povs
              * \brief Array containing joystick POV states
              * The states of each POV stored as 16-bit integers representing the angle in degrees that is pressed, -1 if none are pressed
              */
 
             std::array<int16_t, MAX_POV_COUNT> povs;
-             
+
             /**
              * \var uint8_t pov_count
              * \brief The number of POVs on the joystick
@@ -1140,7 +1151,7 @@ namespace hel{
              */
 
             uint32_t outputs;
-             
+
             /**
              * \var uint16_t left_rumble
              * \brief A 16-bit mapped percent of output to the left rumble
@@ -1160,9 +1171,9 @@ namespace hel{
 
             void setIsXBox(bool);
 
-            frc::GenericHID::HIDType getType()const;
+            uint8_t getType()const;
 
-            void setType(frc::GenericHID::HIDType);
+            void setType(uint8_t);
 
             std::string getName()const;
 
@@ -1211,52 +1222,58 @@ namespace hel{
             std::string serialize()const;
 
             static Joystick deserialize(std::string);
+
+            std::string toString()const;
+
+            Joystick();
         };
 
         struct Counter{
-            static constexpr uint8_t MAX_COUNTER_COUNT = tCounter::kNumSystems;
+            static constexpr uint8_t MAX_COUNTER_COUNT = nFPGA::nRoboRIO_FPGANamespace::tCounter::kNumSystems;
         private:
-            
-            /** 
-             * \var tCounter::tOutput output
+
+            /**
+             * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput output
              * \brief The counter's count
              */
 
-            tCounter::tOutput output;
-            
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput output;
+
             /**
-             * \var tCounter::tConfig config
+             * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig config
              * \brief Configuration for the counter
              */
 
-            tCounter::tConfig config;
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig config;
 
             /**
-             * \var tCounter::tTimerOutput timer_output
+             * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput timer_output
              * \brief The time count (period)
              */
 
-           tCounter::tTimerOutput timer_output;
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput timer_output;
 
             /**
-             * \var tCounter::tTimerConfig timer_config
+             * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig timer_config
              * \brief Configuration for the time counter
              */
 
-            tCounter::tTimerConfig timer_config;
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig timer_config;
 
         public:
-            tCounter::tOutput getOutput()const;
-            void setOutput(tCounter::tOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getOutput()const;
+            void setOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput);
 
-            tCounter::tConfig getConfig()const;
-            void setConfig(tCounter::tConfig);
- 
-            tCounter::tTimerOutput getTimerOutput()const;
-            void setTimerOutput(tCounter::tTimerOutput);
- 
-            tCounter::tTimerConfig getTimerConfig()const;
-            void setTimerConfig(tCounter::tTimerConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig getConfig()const;
+            void setConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig);
+
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput getTimerOutput()const;
+            void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput);
+
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig getTimerConfig()const;
+            void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig);
+
+            Counter();
         };
 
         struct Accelerometer{
@@ -1308,28 +1325,28 @@ namespace hel{
             enum class ControlMode{SET_COMM_TARGET,SET_DATA};
         private:
 
-             /**
+            /**
              * \var ControlMode control_mode
              * \brief Changes what value NI FPGA accelerometer writes data to
              */
 
             ControlMode control_mode;
-            
+
             /**
              * \var uint8_t comm_target_reg
-             * \brief The type of target to open communication with 
+             * \brief The type of target to open communication with
              */
 
             uint8_t comm_target_reg;
 
-             /**
+            /**
              * \var bool active
              * \brief Whether the accelerometer is active
              */
 
             bool active;
 
-             /**
+            /**
              * \var uin8_t range
              * \brief The range of the accelerometer
              * The ranges map as such: 0 is 2G, 1 is 4G, and 3 is 8G
@@ -1337,21 +1354,21 @@ namespace hel{
 
             uint8_t range;
 
-             /**
+            /**
              * \var float x_accel
              * \brief The x component of acceleration in g's
              */
 
-            float x_accel; 
+            float x_accel;
 
-             /**
+            /**
              * \var float y_accel
              * \brief The y component of acceleration in g's
              */
 
             float y_accel;
 
-             /**
+            /**
              * \var float z_accel
              * \brief The z component of acceleration in g's
              */
@@ -1375,6 +1392,7 @@ namespace hel{
             void setZAccel(bool);
             float convertAccel(std::pair<uint8_t,uint8_t>);
             std::pair<uint8_t, uint8_t> convertAccel(float);
+            Accelerometer();
         };
 
         /**
@@ -1387,12 +1405,12 @@ namespace hel{
         private:
 
             /**
-             * \var tAccumulator::tOutput output
+             * \var nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput output
              * \brief Stores the accumulated value of the accumulator
              */
 
-            tAccumulator::tOutput output;
-            
+            nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput output;
+
             /**
              * \var int32_t center
              * \brief The center value for the accumulator
@@ -1400,7 +1418,7 @@ namespace hel{
              */
 
             int32_t center;
-            
+
             /**
              * \var int32_t deadband
              * \brief The deadband of the accumulator
@@ -1409,12 +1427,13 @@ namespace hel{
             int32_t deadband;
 
         public:
-            tAccumulator::tOutput getOutput()const;
-            void setOutput(tAccumulator::tOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput getOutput()const;
+            void setOutput(nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput);
             int32_t getCenter()const;
             void setCenter(int32_t);
             int32_t getDeadband()const;
             void setDeadband(int32_t);
+            Accumulator();
         };
 
         /**
@@ -1424,6 +1443,7 @@ namespace hel{
          */
 
         struct Encoder{
+            static constexpr const int32_t NUM_ENCODERS = 8; //hal::kNumEncoders
         private:
 
             /**
@@ -1431,38 +1451,39 @@ namespace hel{
              * \brief
              */
 
-            tEncoder::tOutput output;
- 
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput output;
+
             /**
              * \var tEnoder::tConfig config
              * \brief Configuration for count
              */
 
-            tEncoder::tConfig config;
- 
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig config;
+
             /**
              * \var tEnoder::tTimerOutput timer_output
              * \brief Time-based count
              */
 
-            tEncoder::tTimerOutput timer_output;
- 
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput timer_output;
+
             /**
              * \var tEnoder::tTimerConfig timer_config
              * \brief Configuration for time-based count
              */
 
-            tEncoder::tTimerConfig timer_config;
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig timer_config;
 
         public:
-            tEncoder::tOutput getOutput()const;
-            void setOutput(tEncoder::tOutput);
-            tEncoder::tConfig getConfig()const;
-            void setConfig(tEncoder::tConfig);
-            tEncoder::tTimerOutput getTimerOutput()const;
-            void setTimerOutput(tEncoder::tTimerOutput);
-            tEncoder::tTimerConfig getTimerConfig()const;
-            void setTimerConfig(tEncoder::tTimerConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getOutput()const;
+            void setOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const;
+            void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const;
+            void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const;
+            void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig);
+            Encoder();
         };
 
         /**
@@ -1474,49 +1495,52 @@ namespace hel{
         private:
 
             /**
-             * \var tPower::tStatus status
+             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status
              * \brief The active state of the power supply rails
              */
 
-            tPower::tStatus status;
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status;
 
             /**
-             * \var tPower::tFaultCounts fault_counts
+             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts
              * \brief A running count of faults for each rail
              */
 
-            tPower::tFaultCounts fault_counts;
-            
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts;
+
             /**
-             * \var tPower::tDisable disabled
+             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled
              * \brief Which power rails have been disabled
              */
 
-            tPower::tDisable disabled;
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled;
 
         public:
-            tPower::tStatus getStatus()const;
-            void setStatus(tPower::tStatus);
-            tPower::tFaultCounts getFaultCounts()const;
-            void setFaultCounts(tPower::tFaultCounts);
-            tPower::tDisable getDisabled()const;
-            void setDisabled(tPower::tDisable);
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus getStatus()const;
+            void setStatus(nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus);
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts getFaultCounts()const;
+            void setFaultCounts(nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts);
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable getDisabled()const;
+            void setDisabled(nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable);
+            Power();
         };
 
         struct NetComm{
             uint32_t ref_num;
             std::function<void(uint32_t)> occurFunction;
+            NetComm();
         };
 
         struct SysWatchdog{
         private:
-            tSysWatchdog::tStatus status;
-        
+            nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus status;
+
         public:
-            tSysWatchdog::tStatus getStatus()const;
-            void setStatus(tSysWatchdog::tStatus);
+            nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus getStatus()const;
+            void setStatus(nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus);
+            SysWatchdog();
         };
-    	
+
         struct Global{
         private:
             uint64_t fpga_start_time;
@@ -1529,49 +1553,56 @@ namespace hel{
 
         struct SPISystem{
         private:
-            tSPI::tAutoTriggerConfig auto_trigger_config;
-            tSPI::tAutoByteCount auto_byte_count;
-            tSPI::tChipSelectActiveHigh chip_select_active_high;
-            /*
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig auto_trigger_config;
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoByteCount auto_byte_count;
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tChipSelectActiveHigh chip_select_active_high;
             uint8_t auto_chip_select;
             bool auto_spi_1_select;
             uint32_t auto_rate;
-            uint8_t enable_dio;
-            */
+            uint8_t enabled_dio;
 
         public:
-            tSPI::tAutoTriggerConfig getAutoTriggerConfig()const;
-            void setAutoTriggerConfig(tSPI::tAutoTriggerConfig);
-            tSPI::tAutoByteCount getAutoByteCount()const;
-            void setAutoByteCount(tSPI::tAutoByteCount);
-            tSPI::tChipSelectActiveHigh getChipSelectActiveHigh()const;
-            void setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh);
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig getAutoTriggerConfig()const;
+            void setAutoTriggerConfig(nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoByteCount getAutoByteCount()const;
+            void setAutoByteCount(nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoByteCount);
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tChipSelectActiveHigh getChipSelectActiveHigh()const;
+            void setChipSelectActiveHigh(nFPGA::nRoboRIO_FPGANamespace::tSPI::tChipSelectActiveHigh);
+            uint8_t getAutoChipSelect()const;
+            void setAutoChipSelect(uint8_t);
+            bool getAutoSPI1Select()const;
+            void setAutoSPI1Select(bool);
+            uint32_t getAutoRate()const;
+            void setAutoRate(uint32_t);
+            uint8_t getEnabledDIO()const;
+            void setEnabledDIO(uint8_t);
+            SPISystem();
         };
 
         /**
-    	 * \var bool user_button
-    	 * \represents the state of the user button on the roborio
-    	 */
+         * \var bool user_button
+         * \represents the state of the user button on the roborio
+         */
 
-    	bool user_button;
+        bool user_button;
 
         Accelerometer accelerometer;
-        std::array<Accumulator, hal::kNumAnalogInputs> accumulators; 
+        std::array<Accumulator, AnalogInputs::NUM_ANALOG_INPUTS> accumulators;
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
-    	CANBus can_bus;
+        CANBus can_bus;
         std::array<Counter, Counter::MAX_COUNTER_COUNT> counters;
         DIOSystem digital_system;
         std::vector<DSError> ds_errors;
         DriverStationInfo driver_station_info;
-        std::array<Encoder, hal::kNumEncoders> encoders;
+        std::array<Encoder, Encoder::NUM_ENCODERS> encoders;
         Global global;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
         NetComm net_comm;
         Power power;
         PWMSystem pwm_system;
-    	RelaySystem relay_system;
-    	RobotState robot_state;
+        RelaySystem relay_system;
+        RobotState robot_state;
         SPISystem spi_system;
         SysWatchdog watchdog;
 
@@ -1582,12 +1613,11 @@ namespace hel{
         RoboRIO(RoboRIO const&) = default;
         RoboRIO& operator=(const RoboRIO& r) = default;
     };
-      /**
-     * 
+    /**
+     *
      */
 
     class RoboRIOManager {
-
 
     public:
 
@@ -1640,6 +1670,6 @@ namespace hel{
 
         friend class SyncServer;
     };
-    
+
 }
 #endif
