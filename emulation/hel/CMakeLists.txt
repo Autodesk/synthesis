@@ -95,8 +95,8 @@ add_custom_target ( asio ALL
 ExternalProject_Add(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
-  CONFIGURE_COMMAND mkdir -p ${WPILIB_DIRECTORY}/build && cd ${WPILIB_DIRECTORY}/build && cmake -H.. -B. -DWITHOUT_CSCORE=true
-  BUILD_COMMAND cd ${WPILIB_DIRECTORY}/build && make -j4
+  CONFIGURE_COMMAND cd ${WPILIB_DIRECTORY} && ./gradlew :wpilibc:build
+  BUILD_COMMAND ""
   INSTALL_COMMAND ""
   )
 
