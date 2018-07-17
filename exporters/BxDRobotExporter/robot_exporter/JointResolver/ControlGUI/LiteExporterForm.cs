@@ -211,7 +211,7 @@ public partial class LiteExporterForm : Form
 
                     BXDAMesh output = surfs.ExportAll(group, node.GUID, (long progress, long total) =>
                     {
-                        SetProgress((double) progress / total / nodes.Count + (double) i / nodes.Count);
+                        SetProgress(((double)progress / total) / nodes.Count + (double)i / nodes.Count);
                     });
                     
                     output.colliders.Clear();

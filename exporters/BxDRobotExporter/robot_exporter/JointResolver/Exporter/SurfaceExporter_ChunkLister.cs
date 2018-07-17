@@ -10,11 +10,10 @@ public partial class SurfaceExporter
     /// </summary>
     private bool adaptiveIgnoring = true;
     /// <summary>
-    /// The minimum ratio between a sub component's bounding box volume and the average bounding box volume for an object
-    /// to be considered small.  The higher the number the less that is dropped, while if the value is one about half the objects
-    /// would be dropped.
+    /// The minimum percent a sub component's bounding box volume of the largest bounding box volume for an object
+    /// to be considered small. The lower the number the less that is dropped.
     /// </summary>
-    private double adaptiveDegredation = 7;
+    private double minVolumePercent = 0.1;
 
     /// <summary>
     /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
@@ -67,13 +66,14 @@ public partial class SurfaceExporter
         List<SurfaceBody> plannedExports = new List<SurfaceBody>();
 
         // Calculate minimum volume to export a component
-        double avgVolume = 0;
+        double maxVolume = 0;
         foreach (ComponentOccurrence occ in group.occurrences)
         {
-            avgVolume += Utilities.BoxVolume(occ.RangeBox);
+            double curVolume = Utilities.BoxVolume(occ.RangeBox);
+            if (curVolume > maxVolume)
+                maxVolume = curVolume;
         }
-        avgVolume /= group.occurrences.Count;
-        double minVolume = avgVolume * adaptiveDegredation;
+        double minVolume = maxVolume * minVolumePercent;
 
         // Analyze all component occurrences
         foreach (ComponentOccurrence occ in group.occurrences)
@@ -83,7 +83,7 @@ public partial class SurfaceExporter
                 GenerateExportList(occ, plannedExports, physics, minVolume);
             }
         }
-        
-        return plannedExports
+
+        return plannedExports;
     }
 }

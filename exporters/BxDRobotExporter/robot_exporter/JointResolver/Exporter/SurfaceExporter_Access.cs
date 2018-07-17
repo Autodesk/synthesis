@@ -25,25 +25,30 @@ public partial class SurfaceExporter
         List<SurfaceBody> plannedSurfaces = GenerateExportList(group, outputMesh.Mesh.physics);
 
         // Export faces, multithreaded
-        reporter?.Invoke(0, plannedSurfaces.Count);
-
-        // Start jobs
-        int totalJobsFinished = 0;
-        object finishLock = new object(); // Used to prevent multiple threads from updating progress bar at the same time.
-
-        Parallel.ForEach(plannedSurfaces, (SurfaceBody surface) =>
+        if (plannedSurfaces.Count > 0)
         {
-        //SurfaceBody surface = plan.surface;
-            CalculateSurfaceFacets(surface, outputMesh, SynthesisGUI.PluginSettings.GeneralUseFancyColors);// && !plan.simplify);
+            // Reset progress bar
+            reporter?.Invoke(0, plannedSurfaces.Count);
 
-            lock (finishLock)
+            // Start jobs
+            int totalJobsFinished = 0;
+            object finishLock = new object(); // Used to prevent multiple threads from updating progress bar at the same time.
+
+            Parallel.ForEach(plannedSurfaces, (SurfaceBody surface) =>
             {
-                totalJobsFinished++;
-                reporter?.Invoke(totalJobsFinished, plannedSurfaces.Count);
-            }
-        });
+                //SurfaceBody surface = plan.surface;
+                CalculateSurfaceFacets(surface, outputMesh, SynthesisGUI.PluginSettings.GeneralUseFancyColors);
 
-        outputMesh.DumpOutput();
+                lock (finishLock)
+                {
+                    totalJobsFinished++;
+                    reporter?.Invoke(totalJobsFinished, plannedSurfaces.Count);
+                }
+            });
+
+            outputMesh.DumpOutput();
+        }
+
         return outputMesh.Mesh;
     }
 }
