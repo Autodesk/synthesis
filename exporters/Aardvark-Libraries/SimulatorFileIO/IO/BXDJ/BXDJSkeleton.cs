@@ -12,7 +12,7 @@ public static partial class BXDJSkeleton
     /// <summary>
     /// Represents the current version of the BXDA file.
     /// </summary>
-    public const string BXDJ_CURRENT_VERSION = "2.0.0";
+    public const string BXDJ_CURRENT_VERSION = "3.0.0";
 
     /// <summary>
     /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name.
@@ -425,6 +425,8 @@ public static partial class BXDJSkeleton
 
             switch (version.Substring(0, version.LastIndexOf('.')))
             {
+                case "3.0":
+                    return ReadSkeleton_3_0(path);
                 case "2.0":
                     return ReadSkeleton_2_0(path);
                 default: // If version is unknown.
