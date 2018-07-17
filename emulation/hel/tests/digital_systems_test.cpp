@@ -10,5 +10,7 @@ TEST(DigitalSystemsTest, SetHeaderDO) {
 	a->writeOutputEnable_Headers(1u << 3, nullptr);
 	a->writeDO_Headers(1u << 3, nullptr);
 
-    EXPECT_EQ(1u << 3, hel::RoboRIOManager::getInstance()->digital_system.getOutputs().Headers);
+    auto instance = hel::RoboRIOManager::getInstance();
+    EXPECT_EQ(1u << 3, instance.first->digital_system.getOutputs().Headers);
+    instance.second.unlock();
 }

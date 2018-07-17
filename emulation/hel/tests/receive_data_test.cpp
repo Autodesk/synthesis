@@ -1,4 +1,4 @@
-//#include "gtest/gtest.h"
+#include "gtest/gtest.h"
 #include "receive_data.h"
 #include <iostream>
 
@@ -9,6 +9,6 @@ TEST(ReceiveDataTest, Deserialize){
     hel::ReceiveData receiver;
     receiver.deserialize(in);
 
-    //EXPECT_EQ(0, 0); //TODO
+    EXPECT_EQ(0, 0); //TODO
 }
 
