@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -118,7 +119,7 @@ public partial class BXDJSkeleton
         <xs:attribute name='Version'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
-                    <xs:pattern value='2\.0\.\d+'/>
+                    <xs:pattern value='3\.0\.\d+'/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
@@ -309,7 +310,7 @@ public partial class BXDJSkeleton
         {
             settings.ValidationType = ValidationType.None;
         }
-
+        
         XmlReader reader = XmlReader.Create(path, settings);
 
         try
