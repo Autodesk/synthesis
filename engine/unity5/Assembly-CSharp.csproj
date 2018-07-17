@@ -214,6 +214,7 @@
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\GUI\NetworkMultiplayerUI.cs" />
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
@@ -256,6 +257,7 @@
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
+    <Compile Include="Assets\Scripts\Network\IPCrypt.cs" />
     <Compile Include="Assets\Scripts\Network\MultiplayerNetwork.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkElement.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkFileTransfer.cs" />
@@ -284,12 +286,16 @@
     <Compile Include="Assets\Scripts\States\BrowseFieldState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
+    <Compile Include="Assets\Scripts\States\ConnectingState.cs" />
     <Compile Include="Assets\Scripts\States\DefaultSimulatorState.cs" />
+    <Compile Include="Assets\Scripts\States\EnterInfoState.cs" />
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
     <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
+    <Compile Include="Assets\Scripts\States\HostJoinState.cs" />
     <Compile Include="Assets\Scripts\States\LoadFieldState.cs" />
     <Compile Include="Assets\Scripts\States\LoadReplayState.cs" />
     <Compile Include="Assets\Scripts\States\LoadRobotState.cs" />
+    <Compile Include="Assets\Scripts\States\LobbyState.cs" />
     <Compile Include="Assets\Scripts\States\MainState.cs" />
     <Compile Include="Assets\Scripts\States\MixAndMatchState.cs" />
     <Compile Include="Assets\Scripts\States\MultiplayerState.cs" />
