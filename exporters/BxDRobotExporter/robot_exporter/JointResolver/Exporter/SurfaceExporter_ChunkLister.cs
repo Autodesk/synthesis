@@ -13,7 +13,7 @@ public partial class SurfaceExporter
     /// The minimum percent a sub component's bounding box volume of the largest bounding box volume for an object
     /// to be considered small. The lower the number the less that is dropped.
     /// </summary>
-    private double minVolumePercent = 0.005;
+    private double minVolumePercent = 0.001;
 
     /// <summary>
     /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
@@ -46,11 +46,11 @@ public partial class SurfaceExporter
             plannedExports.Add(surf);
 
         // Add sub-occurences
-        foreach (ComponentOccurrence item in occ.SubOccurrences)
+        foreach (ComponentOccurrence subOcc in occ.SubOccurrences)
         {
-            if (!adaptiveIgnoring || Utilities.BoxVolume(item.RangeBox) >= minVolume)
+            if (!adaptiveIgnoring || Utilities.BoxVolume(subOcc.RangeBox) >= minVolume)
             {
-                GenerateExportList(item, plannedExports, physics, minVolume, true);
+                GenerateExportList(subOcc, plannedExports, physics, minVolume, true);
             }
         }
     }
