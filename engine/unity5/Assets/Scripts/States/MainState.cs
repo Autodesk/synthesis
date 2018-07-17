@@ -73,8 +73,9 @@ namespace Synthesis.States
         {
             Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
             GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
-            BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
-            BPhysicsWorld.Get().DoDebugDraw = false;
+            //BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
+            BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.All;
+            BPhysicsWorld.Get().DoDebugDraw = true;
             ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
 
             CollisionTracker = new CollisionTracker(this);
@@ -381,7 +382,7 @@ namespace Synthesis.States
                 SwitchActiveRobot();
 
                 int i = 0;
-                foreach (RobotBase robot in SpawnedRobots)
+                foreach (SimulatorRobot robot in SpawnedRobots)
                 {
                     robot.ControlIndex = i;
                     i++;
@@ -660,7 +661,7 @@ namespace Synthesis.States
         private void SendRobotPackets()
         {
             ActiveRobot.Packet = unityPacket.GetLastPacket();
-            foreach (RobotBase robot in SpawnedRobots)
+            foreach (SimulatorRobot robot in SpawnedRobots)
             {
                 if (robot != ActiveRobot) robot.Packet = null;
             }

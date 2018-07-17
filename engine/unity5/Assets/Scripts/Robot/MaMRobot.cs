@@ -267,9 +267,9 @@ namespace Synthesis.Robot
         /// <summary>
         /// Updates the motors of the robot.
         /// </summary>
-        protected override void UpdateMotors()
+        protected override void UpdateMotors(float[] pwm = null)
         {
-            base.UpdateMotors();
+            base.UpdateMotors(pwm);
 
             if (RobotHasManipulator)
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, ControlIndex);

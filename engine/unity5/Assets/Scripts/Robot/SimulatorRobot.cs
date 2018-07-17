@@ -4,11 +4,13 @@ using Synthesis.Camera;
 using Synthesis.Configuration;
 using Synthesis.DriverPractice;
 using Synthesis.FEA;
+using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Input;
 using Synthesis.MixAndMatch;
 using Synthesis.RN;
 using Synthesis.Sensors;
+using Synthesis.States;
 using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
@@ -42,6 +44,24 @@ namespace Synthesis.Robot
         private GameObject resetMoveArrows;
 
         private DynamicCamera.CameraState lastCameraState;
+
+        private MainState state;
+
+        /// <summary>
+        /// Links this instance to the <see cref="MainState"/> state.
+        /// </summary>
+        private void Awake()
+        {
+            StateMachine.SceneGlobal.Link<MainState>(this);
+        }
+
+        /// <summary>
+        /// Creates a reference to the <see cref="MainState"/> instance.
+        /// </summary>
+        private void OnEnable()
+        {
+            state = StateMachine.SceneGlobal.CurrentState as MainState;
+        }
 
         /// <summary>
         /// Initializes sensors and driver practice data.
@@ -147,7 +167,7 @@ namespace Synthesis.Robot
                 SceneManager.LoadScene("Scene");
             }
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen &&
-                !State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+                !state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HoldTime)
                     BeginReset();
@@ -166,6 +186,13 @@ namespace Synthesis.Robot
         {
             base.UpdatePhysics();
 
+            if (!state.IsMetric)
+            {
+                Speed = (float)Math.Round(Speed * 3.28084, 3);
+                Acceleration = (float)Math.Round(Acceleration * 3.28084, 3);
+                Weight = (float)Math.Round(Weight * 2.20462, 3);
+            }
+
             if (IsResetting)
                 Resetting();
         }
@@ -176,9 +203,9 @@ namespace Synthesis.Robot
         public void BeginRevertSpawnpoint()
         {
             robotStartPosition = new Vector3(0f, 1f, 0f);
-            State.BeginRobotReset();
-            State.EndRobotReset();
-            State.BeginRobotReset();
+            state.BeginRobotReset();
+            state.EndRobotReset();
+            state.BeginRobotReset();
         }
 
         /// <summary>
@@ -187,17 +214,19 @@ namespace Synthesis.Robot
         /// <param name="resetTransform"></param>
         public void BeginReset()
         {
+            GetDriverPractice().DestroyAllGamepieces();
+
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             lastCameraState = dynamicCamera.cameraState;
             Debug.Log(lastCameraState);
             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
 
-            foreach (SimulatorRobot robot in State.SpawnedRobots)
+            foreach (SimulatorRobot robot in state.SpawnedRobots)
                 foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
                     if (rb != null && !rb.GetCollisionObject().IsActive)
                         rb.GetCollisionObject().Activate();
 
-            if (!State.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+            if (!state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 IsResetting = true;
 
