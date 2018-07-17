@@ -27,24 +27,11 @@
 
 #include "FRC_NetworkCommunication/FRCComm.h"
 
-#include "HAL/ChipObject.h"
-#include "athena/PortsInternal.h"
-#include "athena/DigitalInternal.h"
-
-#include "DriverStation.h"
-#include "GenericHID.h"
-
 #include "error.h"
-
 #include "send_data.h"
 #include "sync_server.h"
 
-#include <iostream>
-
 namespace hel{
-    using namespace nFPGA;
-    using namespace nRoboRIO_FPGANamespace;
-
     /**
      * \struct RoboRIO roborio.h
      * \brief Mock RoboRIO implementation
@@ -61,11 +48,11 @@ namespace hel{
         struct AnalogOutputs{
     	private:
             /**
-             * \var std::array<uint16_t, tAO::kNumMXPRegisters> mxp_outputs
+             * \var std::array<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs
              * \brief Analog output data
              * 
              */
-            std::array<uint16_t, tAO::kNumMXPRegisters> mxp_outputs;
+            std::array<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs;
 
         public:
             /**
@@ -91,6 +78,8 @@ namespace hel{
          * Holds all internal data needed to model analog inputs on the RoboRIO.
          */
     	struct AnalogInputs {
+          static constexpr const int32_t NUM_ANALOG_INPUTS = 8; //hal::kNumAnalogInputs
+
             /**
              * \struct AnalogInput roborio.h
              * \brief Data model for individual analog input
@@ -129,7 +118,7 @@ namespace hel{
              * \param value a tConfig object containing new configuration data.
              */
 
-            void setConfig(tAI::tConfig value);
+            void setConfig(nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig value);
 
             /**
              * \fn tConfig getConfig()
@@ -138,7 +127,7 @@ namespace hel{
              * \return tConfig representing current analog system configuration.
              */
 
-            tAI::tConfig getConfig();
+            nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig getConfig();
 
             /**
              * \fn void setReadSelect(tReadSelect value)
@@ -147,7 +136,7 @@ namespace hel{
              * \param value a tReadSelect object containing addressing information for the desired analog input.
              */
 
-            void setReadSelect(tAI::tReadSelect);
+            void setReadSelect(nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect);
 
             /**
              * \fn tConfig getReadSelect()
@@ -156,7 +145,7 @@ namespace hel{
              * \return tReadSelect representing current analog system read selection.
              */
 
-            tAI::tReadSelect getReadSelect();
+            nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect getReadSelect();
 
             /**
              * \fn void setOversampleBits(uint8_t channel, uint8_t value)
@@ -236,26 +225,26 @@ namespace hel{
         private:
 
             /**
-             * \var std::array<AnalogInput, hal::kNumAnalogInputs> analog_inputs
+             * \var std::array<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs
              * \brief Array of all analog inputs.
              * A holder array for all analog input objects.
              */
 
-            std::array<AnalogInput, hal::kNumAnalogInputs> analog_inputs;
+            std::array<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs;
 
             /**
              * \var tConfig config;
              * \brief current analog input configuration.
              */
 
-            tAI::tConfig config;
+            nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig config;
 
             /**
              * \var tReadSelect read_select;
              * \brief current analog input read select configuration.
              */
 
-            tAI::tReadSelect read_select;
+            nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect read_select;
         };
 
         /**
@@ -265,6 +254,7 @@ namespace hel{
          */
 
     	struct PWMSystem{
+          static constexpr const int32_t EXPECTED_LOOP_TIMING = 40;
     	private:
 
             /**
@@ -272,7 +262,7 @@ namespace hel{
              * \brief Current PWM system configuration.
              */
 
-    		tPWM::tConfig config;
+    		nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig config;
 
             /**
              * \struct PWM roborio.h
@@ -300,20 +290,20 @@ namespace hel{
     		};
 
             /**
-             * \var std::array<PWM, tPWM::kNumHdrRegisters> hdr;
+             * \var std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> hdr;
              * \brief Array of all PWM Headers on the base RoboRIO board.
              * Array of all PWM headers on the base board of the RoboRIO (not MXP). Numbered 0-10 on the board.
              */
 
-    		std::array<PWM, tPWM::kNumHdrRegisters> hdr;
+    		std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> hdr;
 
             /**
-             * \var std::array<PWM, tPWM::kNumMXPRegisters> mxp;
+             * \var std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters> mxp;
              * \brief Array of all PWM Headers on the MXP.
              * Array of all PWM headers on the MXP.
              */
 
-    		std::array<PWM, tPWM::kNumMXPRegisters> mxp;
+    		std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters> mxp;
 
     	public:
 
@@ -324,7 +314,7 @@ namespace hel{
              * \return tConfig representing current PWM system configuration.
              */
 
-    		tPWM::tConfig getConfig()const;
+    		nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig getConfig()const;
 
             /**
              * \fn void setConfig(tConfig config)
@@ -333,7 +323,7 @@ namespace hel{
              * \param tConfig representing new PWM system configuration.
              */
 
-            void setConfig(tPWM::tConfig);
+            void setConfig(nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig);
 
             /**
              * \fn uint32_t getHdrPeriodScale(uint8_t index)
@@ -420,31 +410,32 @@ namespace hel{
     	};
 
         struct DIOSystem{
+            static constexpr const int32_t NUM_DIGITAL_PWM_OUTPUTS = 6; //hal::kNumDigitalPWMOutputs
     	private:
 
             /**
              * \var
              */
 
-            tDIO::tDO outputs;
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO outputs;
 
             /**
              * \var
              */
 
-            tDIO::tOutputEnable enabled_outputs;
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable enabled_outputs;
 
             /**
              * \var
              */
 
-            tDIO::tPulse pulses;
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse pulses;
 
             /**
              * \var
              */
 
-            tDIO::tDI inputs;
+            nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI inputs;
 
             /**
              * \var
@@ -458,7 +449,7 @@ namespace hel{
 
     		uint8_t pulse_length;
 
-    		std::array<uint8_t, hal::kNumDigitalPWMOutputs> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
+            std::array<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
 
     	public:
 
@@ -466,25 +457,25 @@ namespace hel{
              * \fn
              */
 
-    		tDIO::tDO getOutputs()const;
+    		nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO getOutputs()const;
 
             /**
              * \fn
              */
 
-    		void setOutputs(tDIO::tDO);
+    		void setOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO);
 
             /**
              * \fn
              */
 
-    		tDIO::tOutputEnable getEnabledOutputs()const;
+    		nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable getEnabledOutputs()const;
 
             /**
              * \fn
              */
 
-    		void setEnabledOutputs(tDIO::tOutputEnable);
+    		void setEnabledOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable);
 
             /**
              * \fn
@@ -502,25 +493,25 @@ namespace hel{
              * \fn
              */
 
-    		tDIO::tPulse getPulses()const;
+    		nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse getPulses()const;
 
             /**
              * \fn
              */
 
-    		void setPulses(tDIO::tPulse);
+    		void setPulses(nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse);
 
             /**
              * \fn
              */
 
-    		tDIO::tDI getInputs()const;
+    		nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI getInputs()const;
 
             /**
              * \fn
              */
 
-    		void setInputs(tDIO::tDI);
+    		void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI);
 
             /**
              * \fn
@@ -687,31 +678,31 @@ namespace hel{
     	private:
     		
     		/**
-    		 * \var tRelay::tValue value
+    		 * \var nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value
     		 * \brief Relay output data
     		 */
             
-    		tRelay::tValue value;
+    		nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value;
 
     	public:
 
     		/**
-    		 * \fn tRelay::tValue getValue()const
+    		 * \fn nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue getValue()const
     		 * \brief Get relay output.
     		 * Returns the relay output
-    		 * \return a tRelay::tValue object representing the reverse and forward channel outputs.
+    		 * \return a nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue object representing the reverse and forward channel outputs.
     		 */
     		
-    		tRelay::tValue getValue()const;
+    		nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue getValue()const;
 
     		/**
-    		 * \fn void setValue(tRelay::tValue value)
+    		 * \fn void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value)
     		 * \brief Set relay output.
     		 * Sets the relay output to \b value
-    		 * \param value a tRelay::tValue object representing the reverse and forward channel outputs.
+    		 * \param value a nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue object representing the reverse and forward channel outputs.
     		 */
     		
-    		void setValue(tRelay::tValue);
+    		void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue);
     	};
 
         /**
@@ -1044,7 +1035,7 @@ namespace hel{
              * \brief The maximum number of joysticks supported by WPILib
              */
 
-            static constexpr uint8_t MAX_JOYSTICK_COUNT = frc::DriverStation::kJoystickPorts;
+            static constexpr uint8_t MAX_JOYSTICK_COUNT = 6; //kJoystickPorts from frc::DriverStation
             
             /**
              * \var static constexpr uint8_t MAX_AXIS_COUNT
@@ -1070,11 +1061,11 @@ namespace hel{
             bool is_xbox;
              
             /**
-             * \var frc::GenericHID::HIDType type
+             * \var uint8_t type
              * \brief The joystick type
              */
 
-            frc::GenericHID::HIDType type;
+            uint8_t type;
 
             /**
              * \var std::string name
@@ -1160,9 +1151,9 @@ namespace hel{
 
             void setIsXBox(bool);
 
-            frc::GenericHID::HIDType getType()const;
+            uint8_t getType()const;
 
-            void setType(frc::GenericHID::HIDType);
+            void setType(uint8_t);
 
             std::string getName()const;
 
@@ -1218,49 +1209,49 @@ namespace hel{
         };
 
         struct Counter{
-            static constexpr uint8_t MAX_COUNTER_COUNT = tCounter::kNumSystems;
+            static constexpr uint8_t MAX_COUNTER_COUNT = nFPGA::nRoboRIO_FPGANamespace::tCounter::kNumSystems;
         private:
             
             /** 
-             * \var tCounter::tOutput output
+             * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput output
              * \brief The counter's count
              */
 
-            tCounter::tOutput output;
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput output;
             
             /**
-             * \var tCounter::tConfig config
+             * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig config
              * \brief Configuration for the counter
              */
 
-            tCounter::tConfig config;
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig config;
 
             /**
-             * \var tCounter::tTimerOutput timer_output
+             * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput timer_output
              * \brief The time count (period)
              */
 
-           tCounter::tTimerOutput timer_output;
+           nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput timer_output;
 
             /**
-             * \var tCounter::tTimerConfig timer_config
+             * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig timer_config
              * \brief Configuration for the time counter
              */
 
-            tCounter::tTimerConfig timer_config;
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig timer_config;
 
         public:
-            tCounter::tOutput getOutput()const;
-            void setOutput(tCounter::tOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getOutput()const;
+            void setOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput);
 
-            tCounter::tConfig getConfig()const;
-            void setConfig(tCounter::tConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig getConfig()const;
+            void setConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig);
  
-            tCounter::tTimerOutput getTimerOutput()const;
-            void setTimerOutput(tCounter::tTimerOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput getTimerOutput()const;
+            void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput);
  
-            tCounter::tTimerConfig getTimerConfig()const;
-            void setTimerConfig(tCounter::tTimerConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig getTimerConfig()const;
+            void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig);
         };
 
         struct Accelerometer{
@@ -1391,11 +1382,11 @@ namespace hel{
         private:
 
             /**
-             * \var tAccumulator::tOutput output
+             * \var nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput output
              * \brief Stores the accumulated value of the accumulator
              */
 
-            tAccumulator::tOutput output;
+            nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput output;
             
             /**
              * \var int32_t center
@@ -1413,8 +1404,8 @@ namespace hel{
             int32_t deadband;
 
         public:
-            tAccumulator::tOutput getOutput()const;
-            void setOutput(tAccumulator::tOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput getOutput()const;
+            void setOutput(nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput);
             int32_t getCenter()const;
             void setCenter(int32_t);
             int32_t getDeadband()const;
@@ -1428,6 +1419,7 @@ namespace hel{
          */
 
         struct Encoder{
+            static constexpr const int32_t NUM_ENCODERS = 8; //hal::kNumEncoders
         private:
 
             /**
@@ -1435,38 +1427,38 @@ namespace hel{
              * \brief
              */
 
-            tEncoder::tOutput output;
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput output;
  
             /**
              * \var tEnoder::tConfig config
              * \brief Configuration for count
              */
 
-            tEncoder::tConfig config;
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig config;
  
             /**
              * \var tEnoder::tTimerOutput timer_output
              * \brief Time-based count
              */
 
-            tEncoder::tTimerOutput timer_output;
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput timer_output;
  
             /**
              * \var tEnoder::tTimerConfig timer_config
              * \brief Configuration for time-based count
              */
 
-            tEncoder::tTimerConfig timer_config;
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig timer_config;
 
         public:
-            tEncoder::tOutput getOutput()const;
-            void setOutput(tEncoder::tOutput);
-            tEncoder::tConfig getConfig()const;
-            void setConfig(tEncoder::tConfig);
-            tEncoder::tTimerOutput getTimerOutput()const;
-            void setTimerOutput(tEncoder::tTimerOutput);
-            tEncoder::tTimerConfig getTimerConfig()const;
-            void setTimerConfig(tEncoder::tTimerConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getOutput()const;
+            void setOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const;
+            void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const;
+            void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput);
+            nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const;
+            void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig);
         };
 
         /**
@@ -1478,33 +1470,33 @@ namespace hel{
         private:
 
             /**
-             * \var tPower::tStatus status
+             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status
              * \brief The active state of the power supply rails
              */
 
-            tPower::tStatus status;
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status;
 
             /**
-             * \var tPower::tFaultCounts fault_counts
+             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts
              * \brief A running count of faults for each rail
              */
 
-            tPower::tFaultCounts fault_counts;
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts;
             
             /**
-             * \var tPower::tDisable disabled
+             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled
              * \brief Which power rails have been disabled
              */
 
-            tPower::tDisable disabled;
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled;
 
         public:
-            tPower::tStatus getStatus()const;
-            void setStatus(tPower::tStatus);
-            tPower::tFaultCounts getFaultCounts()const;
-            void setFaultCounts(tPower::tFaultCounts);
-            tPower::tDisable getDisabled()const;
-            void setDisabled(tPower::tDisable);
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus getStatus()const;
+            void setStatus(nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus);
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts getFaultCounts()const;
+            void setFaultCounts(nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts);
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable getDisabled()const;
+            void setDisabled(nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable);
         };
 
         struct NetComm{
@@ -1514,11 +1506,11 @@ namespace hel{
 
         struct SysWatchdog{
         private:
-            tSysWatchdog::tStatus status;
+            nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus status;
         
         public:
-            tSysWatchdog::tStatus getStatus()const;
-            void setStatus(tSysWatchdog::tStatus);
+            nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus getStatus()const;
+            void setStatus(nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus);
         };
     	
         struct Global{
@@ -1533,9 +1525,9 @@ namespace hel{
 
         struct SPISystem{
         private:
-            tSPI::tAutoTriggerConfig auto_trigger_config;
-            tSPI::tAutoByteCount auto_byte_count;
-            tSPI::tChipSelectActiveHigh chip_select_active_high;
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig auto_trigger_config;
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoByteCount auto_byte_count;
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tChipSelectActiveHigh chip_select_active_high;
             uint8_t auto_chip_select;
             bool auto_spi_1_select;
             uint32_t auto_rate;
@@ -1544,12 +1536,12 @@ namespace hel{
             std::queue<uint8_t> data_in;
 
         public:
-            tSPI::tAutoTriggerConfig getAutoTriggerConfig()const;
-            void setAutoTriggerConfig(tSPI::tAutoTriggerConfig);
-            tSPI::tAutoByteCount getAutoByteCount()const;
-            void setAutoByteCount(tSPI::tAutoByteCount);
-            tSPI::tChipSelectActiveHigh getChipSelectActiveHigh()const;
-            void setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh);
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig getAutoTriggerConfig()const;
+            void setAutoTriggerConfig(nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig);
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoByteCount getAutoByteCount()const;
+            void setAutoByteCount(nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoByteCount);
+            nFPGA::nRoboRIO_FPGANamespace::tSPI::tChipSelectActiveHigh getChipSelectActiveHigh()const;
+            void setChipSelectActiveHigh(nFPGA::nRoboRIO_FPGANamespace::tSPI::tChipSelectActiveHigh);
             uint8_t getAutoChipSelect()const;
             void setAutoChipSelect(uint8_t);
             bool getAutoSPI1Select()const;
@@ -1568,7 +1560,7 @@ namespace hel{
     	bool user_button;
 
         Accelerometer accelerometer;
-        std::array<Accumulator, hal::kNumAnalogInputs> accumulators; 
+        std::array<Accumulator, AnalogInputs::NUM_ANALOG_INPUTS> accumulators; 
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
     	CANBus can_bus;
@@ -1576,7 +1568,7 @@ namespace hel{
         DIOSystem digital_system;
         std::vector<DSError> ds_errors;
         DriverStationInfo driver_station_info;
-        std::array<Encoder, hal::kNumEncoders> encoders;
+        std::array<Encoder, Encoder::NUM_ENCODERS> encoders;
         Global global;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
         NetComm net_comm;

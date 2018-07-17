@@ -4,6 +4,9 @@
 #include "util.h"
 #include "json_util.h"
 
+using namespace nFPGA;
+using namespace nRoboRIO_FPGANamespace;
+
 void hel::ReceiveData::update()const{
     auto instance = hel::RoboRIOManager::getInstance();
 
