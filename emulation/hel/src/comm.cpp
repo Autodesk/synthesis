@@ -120,11 +120,11 @@ namespace hel{
          is_xbox = xbox;
     }
 
-    frc::GenericHID::HIDType RoboRIO::Joystick::getType()const{
+    uint8_t RoboRIO::Joystick::getType()const{
          return type;
     }
 
-    void RoboRIO::Joystick::setType(frc::GenericHID::HIDType t){
+    void RoboRIO::Joystick::setType(uint8_t t){
          type = t;
     }
 
@@ -256,7 +256,7 @@ namespace hel{
     RoboRIO::Joystick RoboRIO::Joystick::deserialize(std::string s){
         RoboRIO::Joystick joy;
         joy.is_xbox = hel::stob(hel::pullValue("\"is_xbox\"", s));
-        joy.type = static_cast<frc::GenericHID::HIDType>(std::stoi(hel::pullValue("\"type\"",s)));
+        joy.type = std::stoi(hel::pullValue("\"type\"",s));
         joy.name = hel::unquote(hel::pullValue("\"name\"", s));
         joy.buttons = std::stoi(hel::pullValue("\"buttons\"", s));
         joy.button_count = std::stoi(hel::pullValue("\"button_count\"", s));
@@ -287,7 +287,7 @@ namespace hel{
         return joy;
     }
 
-    RoboRIO::Joystick::Joystick():is_xbox(false), type(static_cast<frc::GenericHID::HIDType>(0)), name(""), buttons(0), button_count(0), axes({}), axis_count(0), axis_types({}), povs({}), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
+    RoboRIO::Joystick::Joystick():is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes({}), axis_count(0), axis_types({}), povs({}), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
 }
 extern "C" {
     int FRC_NetworkCommunication_Reserve(void* /*instance*/){ //unnecessary for emulation

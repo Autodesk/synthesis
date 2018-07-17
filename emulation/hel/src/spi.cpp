@@ -1,5 +1,8 @@
 #include "roborio.h"
 
+using namespace nFPGA;
+using namespace nRoboRIO_FPGANamespace;
+
 namespace hel{
     tSPI::tAutoTriggerConfig RoboRIO::SPISystem::getAutoTriggerConfig()const{
         return auto_trigger_config;
