@@ -73,24 +73,19 @@ namespace BxDRobotExporter.Wizard
             switch (DriverComboBox.SelectedIndex)
             {
                 case 0: // No Driver
-                    this.JointLimitGroupBox.Visible = false;
                     this.PortsGroupBox.Visible = false;
                     this.MetaTabControl.Visible = false;
                     break;
                 case 1: //Motor
-                    this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = false;
                     PortsGroupBox.Text = "Port";
                     PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
-                    UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
-                    UpperLimitUpDown.Minimum = LowerLimitUpDown.Minimum = 0;
                     unit = "°";
                     break;
                 case 2: //Servo
-                    this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
                     PortsGroupBox.Text = "Port";
@@ -100,7 +95,6 @@ namespace BxDRobotExporter.Wizard
                     unit = "cm";
                     break;
                 case 3: //Bumper Pneumatics
-                    this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
@@ -111,7 +105,6 @@ namespace BxDRobotExporter.Wizard
                     unit = "cm";
                     break;
                 case 4: //Relay Pneumatics
-                    this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
                     if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
@@ -122,30 +115,18 @@ namespace BxDRobotExporter.Wizard
                     unit = "cm";
                     break;
                 case 5: //Dual Motor
-                    this.JointLimitGroupBox.Visible = true;
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
                     PortsGroupBox.Text = "Ports";
                     PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
-                    UpperLimitUpDown.Maximum = LowerLimitUpDown.Maximum = 360;
-                    UpperLimitUpDown.Minimum = LowerLimitUpDown.Minimum = 0;
                     unit = "°";
                     break;
             }
 
         }
-
-        private void UpperLimitUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            TotalFreedomLabel.Text = (UpperLimitUpDown.Value - LowerLimitUpDown.Value).ToString() + unit;
-        }
-
-        private void LowerLimitUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            TotalFreedomLabel.Text = (UpperLimitUpDown.Value - LowerLimitUpDown.Value).ToString() + unit;
-        }
+        
 
         /// <summary>
         /// Highlights the node in inventor.
@@ -178,30 +159,23 @@ namespace BxDRobotExporter.Wizard
                 case 1: //Motor
                     JointDriver driver = new JointDriver(JointDriverType.MOTOR);
                     ((RotationalJoint_Base)node.GetSkeletalJoint()).hasAngularLimit = true;
-                    ((RotationalJoint_Base)node.GetSkeletalJoint()).angularLimitLow = (float)(LowerLimitUpDown.Value * (decimal)(Math.PI / 180));
-                    ((RotationalJoint_Base)node.GetSkeletalJoint()).angularLimitHigh = (float)(UpperLimitUpDown.Value * (decimal)(Math.PI / 180));
                     driver.SetPort((int)PortOneUpDown.Value, 1);
                     return driver;
                 case 2: //Servo
                     driver = new JointDriver(JointDriverType.SERVO);
-                    driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
                     driver.SetPort((int)PortOneUpDown.Value, 1);
                     return driver;
                 case 3: //Bumper Pneumatic
                     driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
-                    driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
                     driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
                     return driver;
                 case 4: //Relay Pneumatic
                     driver = new JointDriver(JointDriverType.RELAY_PNEUMATIC);
-                    driver.SetLimits((float)(LowerLimitUpDown.Value / 100), (float)(UpperLimitUpDown.Value / 100));
                     driver.SetPort((int)PortOneUpDown.Value, 1);
                     return driver;
                 case 5: //Dual Motor
                     driver = new JointDriver(JointDriverType.DUAL_MOTOR);
                     ((RotationalJoint_Base)node.GetSkeletalJoint()).hasAngularLimit = true;
-                    ((RotationalJoint_Base)node.GetSkeletalJoint()).angularLimitLow = (float)(LowerLimitUpDown.Value * (decimal)(Math.PI / 180));
-                    ((RotationalJoint_Base)node.GetSkeletalJoint()).angularLimitHigh = (float)(UpperLimitUpDown.Value * (decimal)(Math.PI / 180));
                     driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
                     return driver;
             }

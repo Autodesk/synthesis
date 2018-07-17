@@ -9,7 +9,6 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
     {
         return wrapped;
     }
-
     public void DetermineLimits()
     {
         MotionLimits cache = new MotionLimits();
