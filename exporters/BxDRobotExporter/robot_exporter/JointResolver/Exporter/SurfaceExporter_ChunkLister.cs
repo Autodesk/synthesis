@@ -2,8 +2,6 @@
 using System.IO;
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 public partial class SurfaceExporter
 {
@@ -25,7 +23,7 @@ public partial class SurfaceExporter
     /// <param name="mesh">Mesh to store physics data in.</param>
     /// <param name="ignorePhysics">True to ignore physics in component.</param>
     /// <returns>All the sufaces to export</returns>
-    private void GenerateExportList(ComponentOccurrence occ, ConcurrentBag<SurfaceBody> plannedExports, PhysicalProperties physics, bool ignorePhysics = false)
+    private void GenerateExportList(ComponentOccurrence occ, List<SurfaceBody> plannedExports, PhysicalProperties physics, double minVolume = 0, bool ignorePhysics = false)
     {
         // Invisible objects don't need to be exported
         if (!occ.Visible)
@@ -46,23 +44,14 @@ public partial class SurfaceExporter
 
         // Prepare exporting surfaces
         foreach (SurfaceBody surf in occ.SurfaceBodies)
-        {
             plannedExports.Add(surf);
-        }
 
         // Add sub-occurences
-        double totalVolume = 0;
-        foreach (ComponentOccurrence occ2 in occ.SubOccurrences)
-        {
-            totalVolume += Utilities.BoxVolume(occ2.RangeBox);
-        }
-        totalVolume /= occ.SubOccurrences.Count * adaptiveDegredation;
-
         foreach (ComponentOccurrence item in occ.SubOccurrences)
         {
-            if (!adaptiveIgnoring || Utilities.BoxVolume(item.RangeBox) >= totalVolume)
+            if (!adaptiveIgnoring || Utilities.BoxVolume(item.RangeBox) >= minVolume)
             {
-                GenerateExportList(item, plannedExports, physics, true);
+                GenerateExportList(item, plannedExports, physics, minVolume, true);
             }
         }
     }
@@ -75,24 +64,26 @@ public partial class SurfaceExporter
     /// <returns>All the sufaces to export</returns>
     private List<SurfaceBody> GenerateExportList(CustomRigidGroup group, PhysicalProperties physics)
     {
-        ConcurrentBag<SurfaceBody> plannedExports = new ConcurrentBag<SurfaceBody>();
+        List<SurfaceBody> plannedExports = new List<SurfaceBody>();
 
-        double totalVolume = 0;
+        // Calculate minimum volume to export a component
+        double avgVolume = 0;
         foreach (ComponentOccurrence occ in group.occurrences)
         {
-            totalVolume += Utilities.BoxVolume(occ.RangeBox);
+            avgVolume += Utilities.BoxVolume(occ.RangeBox);
         }
-        totalVolume /= group.occurrences.Count * adaptiveDegredation;
+        avgVolume /= group.occurrences.Count;
+        double minVolume = avgVolume * adaptiveDegredation;
 
-        Parallel.ForEach(group.occurrences, (ComponentOccurrence occ) =>
+        // Analyze all component occurrences
+        foreach (ComponentOccurrence occ in group.occurrences)
         {
-            if (!adaptiveIgnoring || Utilities.BoxVolume(occ.RangeBox) >= totalVolume)
+            if (!adaptiveIgnoring || Utilities.BoxVolume(occ.RangeBox) >= minVolume)
             {
-                GenerateExportList(occ, plannedExports, physics);
+                GenerateExportList(occ, plannedExports, physics, minVolume);
             }
-        });
-
-        List<SurfaceBody> plannedExportList = new List<SurfaceBody>(plannedExports);
-        return plannedExportList;
+        }
+        
+        return plannedExports
     }
 }
