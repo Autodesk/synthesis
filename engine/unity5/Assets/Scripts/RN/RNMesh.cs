@@ -100,7 +100,10 @@ namespace Synthesis.RN
                 foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
                     rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
 
-                MainObject.AddComponent<BMultiCallbacks>().AddCallback((StateMachine.SceneGlobal.CurrentState as MainState).CollisionTracker);
+                MainState mainState = StateMachine.SceneGlobal.FindState<MainState>();
+
+                if (mainState != null)
+                    MainObject.AddComponent<BMultiCallbacks>().AddCallback(mainState.CollisionTracker);
             }
 
             if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)
