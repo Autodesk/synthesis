@@ -256,15 +256,16 @@
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\MultiplayerNetwork.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\NetworkElement.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\NetworkFileTransfer.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\ServerNetworkDiscovery.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\ServerStatus.cs" />
+    <Compile Include="Assets\Scripts\Network\MultiplayerNetwork.cs" />
+    <Compile Include="Assets\Scripts\Network\NetworkElement.cs" />
+    <Compile Include="Assets\Scripts\Network\NetworkFileTransfer.cs" />
+    <Compile Include="Assets\Scripts\Network\ServerNetworkDiscovery.cs" />
+    <Compile Include="Assets\Scripts\Network\ServerStatus.cs" />
     <Compile Include="Assets\Scripts\RN\RNCommon.cs" />
     <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RN\RNWheel.cs" />
+    <Compile Include="Assets\Scripts\Robot\IRobotProvider.cs" />
     <Compile Include="Assets\Scripts\Robot\MaMRobot.cs" />
     <Compile Include="Assets\Scripts\Robot\NetworkMesh.cs" />
     <Compile Include="Assets\Scripts\Robot\NetworkRobot.cs" />
@@ -519,6 +520,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SimulatorAPI">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
       <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>

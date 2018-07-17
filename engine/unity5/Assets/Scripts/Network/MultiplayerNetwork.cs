@@ -1,4 +1,5 @@
-﻿using Synthesis.Utils;
+﻿using Synthesis.States;
+using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Synthesis.NetworkMultiplayer
+namespace Synthesis.Network
 {
     public class MultiplayerNetwork : NetworkManager
     {
