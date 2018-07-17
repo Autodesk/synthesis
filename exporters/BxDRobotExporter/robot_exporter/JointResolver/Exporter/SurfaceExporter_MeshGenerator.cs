@@ -5,8 +5,6 @@ using Inventor;
 using System.IO;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 /// <summary>
 /// Exports Inventor objects into the BXDA format.  One instance per thread.
@@ -53,7 +51,7 @@ public partial class SurfaceExporter
     /// </summary>
     /// <param name="appearance">Inventor Asset to find AssetProperties based on.</param>
     /// <returns>AssetProperties based on the Inventor Asset. May be pre-existing or newly created.</returns>
-    private AssetProperties GetAsset(Asset appearance)
+    private AssetProperties GetAssetProperties(Asset appearance)
     {
         string assetName = appearance.DisplayName;
 
@@ -77,28 +75,30 @@ public partial class SurfaceExporter
     /// <returns>True if multiple assets exist on the surface.</returns>
     private bool AnalyzeFaces(SurfaceBody surf, out List<Face> faces)
     {
-        List<string> uniqueAssets = new List<string>();
         faces = new List<Face>();
 
         Faces surfaceFaces = surf.Faces;
         Face face = null;
-        string assetName = null;
+
+        string firstAssetName = null;
+        bool multipleAssets = false;
 
         for (int f = 1; f <= surfaceFaces.Count; f++)
         {
             face = surfaceFaces[f];
             faces.Add(face);
 
-            assetName = face.Appearance.DisplayName;
-            if (!uniqueAssets.Contains(assetName))
-                uniqueAssets.Add(assetName);
+            if (firstAssetName == null)
+                firstAssetName = face.Appearance.DisplayName;
+            else if (!multipleAssets && face.Appearance.DisplayName != firstAssetName)
+                multipleAssets = true;
         }
 
-        return uniqueAssets.Count > 1;
+        return multipleAssets;
     }
 
     /// <summary>
-    /// Calculates the facets of a surface, storing them in <see cref="outputVerts"/> and <see cref="outputMeshSurfaces"/>.
+    /// Calculates the facets of a surface, storing them in a <see cref="MeshController"/>.
     /// </summary>
     private void CalculateSurfaceFacets(SurfaceBody surf, MeshController outputMesh, bool separateFaces = false)
     {
@@ -106,23 +106,22 @@ public partial class SurfaceExporter
 
         // Stores a list of faces separate from the Inventor API
         List<Face> faces;
+        PartialSurface bufferSurface = new PartialSurface();
 
         if (separateFaces && AnalyzeFaces(surf, out faces))
         {
             // Add facets for each face of the surface
-            Parallel.ForEach(faces, (Face face) =>
+            foreach (Face face in faces)
             {
-                PartialSurface bufferSurface = new PartialSurface();
                 face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-                outputMesh.AddSurface(ref bufferSurface, GetAsset(face.Appearance));
-            });
+                outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(face.Appearance));
+            }
         }
         else
         {
             // Add facets once for the entire surface
-            PartialSurface bufferSurface = new PartialSurface();
             surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-            outputMesh.AddSurface(ref bufferSurface, GetAsset(surf.Faces[1].Appearance));
+            outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(surf.Faces[1].Appearance));
         }
     }
 
