@@ -71,6 +71,8 @@ namespace hel{
              * \param value an unsigned 16-bit integer representing the value of the analog output.
              */
             void setMXPOutput(uint8_t,uint16_t);
+
+            AnalogOutputs();
         };
         /**
          * \struct AnalogInputs roborio.h
@@ -222,6 +224,8 @@ namespace hel{
 
             std::vector<int32_t> getValues(uint8_t);
 
+            AnalogInputs();
+
         private:
 
             /**
@@ -287,6 +291,8 @@ namespace hel{
                  */
 
                 uint16_t duty_cycle;
+
+                PWM();
             };
 
             /**
@@ -407,6 +413,8 @@ namespace hel{
              * \param value the new duty cycle to write to the PWM.
              */
             void setMXPDutyCycle(uint8_t, uint32_t);
+
+            PWMSystem();
         };
 
         struct DIOSystem{
@@ -536,6 +544,8 @@ namespace hel{
              */
 
             void setPWMDutyCycle(uint8_t, uint8_t);
+
+            DIOSystem();
         };
 
         /**
@@ -588,7 +598,7 @@ namespace hel{
                  * \brief a send period communicating the message should not be repeated
                  */
 
-                static constexpr int32_t CAN_SEND_PERIOD_NO_REPEAT = 0;
+                static constexpr const int32_t CAN_SEND_PERIOD_NO_REPEAT = 0;
 
                 /**
                  * \var static constexpr int32_t CAN_SEND_PERIOD_STOP_REPEATING
@@ -625,6 +635,8 @@ namespace hel{
                  */
 
                 static constexpr uint32_t CAN_11BIT_MESSAGE_ID_MASK = 0x000007FF;
+
+                Message();
             };
         private:
 
@@ -666,6 +678,8 @@ namespace hel{
              */
 
             void popNextMessage();
+
+            CANBus();
         };
 
         /**
@@ -703,6 +717,8 @@ namespace hel{
              */
     		
             void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue);
+
+            RelaySystem();
         };
 
         /**
@@ -710,7 +726,7 @@ namespace hel{
          * \brief Represents match phase and robot enabled state
          */
 
-        struct RobotState{
+        struct RobotState{ //TODO merge with DriverStationInfo?
 
             /**
              * \enum State
@@ -846,8 +862,10 @@ namespace hel{
              */
 
             ControlWord_t toControlWord()const;
+
+            RobotState();
         };
-    	
+
         /**
          * \struct DriverStationInfo roborio.h
          * \brief A data container for match/driver station information
@@ -1012,7 +1030,7 @@ namespace hel{
              */
 
             double getMatchTime()const;
-    		
+
             /**
              * \fn void SetMatchTime(double match_time)
              * \brief Set the match time
@@ -1020,6 +1038,8 @@ namespace hel{
              */
 
             void setMatchTime(double);
+
+            DriverStationInfo();
         };
 
         /**
@@ -1252,6 +1272,8 @@ namespace hel{
 
             nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig getTimerConfig()const;
             void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig);
+
+            Counter();
         };
 
         struct Accelerometer{
@@ -1370,6 +1392,7 @@ namespace hel{
             void setZAccel(bool);
             float convertAccel(std::pair<uint8_t,uint8_t>);
             std::pair<uint8_t, uint8_t> convertAccel(float);
+            Accelerometer();
         };
 
         /**
@@ -1410,6 +1433,7 @@ namespace hel{
             void setCenter(int32_t);
             int32_t getDeadband()const;
             void setDeadband(int32_t);
+            Accumulator();
         };
 
         /**
@@ -1459,6 +1483,7 @@ namespace hel{
             void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput);
             nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const;
             void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig);
+            Encoder();
         };
 
         /**
@@ -1497,11 +1522,13 @@ namespace hel{
             void setFaultCounts(nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts);
             nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable getDisabled()const;
             void setDisabled(nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable);
+            Power();
         };
 
         struct NetComm{
             uint32_t ref_num;
             std::function<void(uint32_t)> occurFunction;
+            NetComm();
         };
 
         struct SysWatchdog{
@@ -1511,8 +1538,9 @@ namespace hel{
         public:
             nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus getStatus()const;
             void setStatus(nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus);
+            SysWatchdog();
         };
-    	
+
         struct Global{
         private:
             uint64_t fpga_start_time;
@@ -1532,8 +1560,6 @@ namespace hel{
             bool auto_spi_1_select;
             uint32_t auto_rate;
             uint8_t enabled_dio;
-            std::queue<uint8_t> data_out;
-            std::queue<uint8_t> data_in;
 
         public:
             nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig getAutoTriggerConfig()const;
@@ -1550,6 +1576,7 @@ namespace hel{
             void setAutoRate(uint32_t);
             uint8_t getEnabledDIO()const;
             void setEnabledDIO(uint8_t);
+            SPISystem();
         };
 
         /**
@@ -1591,7 +1618,6 @@ namespace hel{
      */
 
     class RoboRIOManager {
-
 
     public:
 

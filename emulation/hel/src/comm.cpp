@@ -288,6 +288,10 @@ namespace hel{
     }
 
     RoboRIO::Joystick::Joystick():is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes({}), axis_count(0), axis_types({}), povs({}), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
+
+    RoboRIO::RobotState::RobotState():state(RobotState::State::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){}
+
+    RoboRIO::DriverStationInfo::DriverStationInfo():event_name(),game_specific_message(),match_type(),match_number(0),replay_number(0),alliance_station_id(),match_time(){}
 }
 extern "C" {
     int FRC_NetworkCommunication_Reserve(void* /*instance*/){ //unnecessary for emulation

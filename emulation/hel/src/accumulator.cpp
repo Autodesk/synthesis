@@ -28,6 +28,8 @@ namespace hel{
         deadband = d;
     }
 
+    RoboRIO::Accumulator::Accumulator():output(),center(),deadband(){}
+
     struct AccumulatorManager: public tAccumulator{
     private:
         uint8_t index;

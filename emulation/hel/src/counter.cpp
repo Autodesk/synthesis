@@ -36,6 +36,8 @@ namespace hel{
         timer_config = c;
     }
 
+    RoboRIO::Counter::Counter():output(),config(),timer_output(),timer_config(){}
+
     struct CounterManager: public tCounter{
     private:
         uint8_t index;
