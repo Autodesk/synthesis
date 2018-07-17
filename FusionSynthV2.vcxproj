@@ -94,6 +94,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BinaryRWObject.cpp" />
+    <ClCompile Include="BM.cpp" />
     <ClCompile Include="BXDA.cpp" />
     <ClCompile Include="CustomHandlers.cpp" />
     <ClCompile Include="EUI.cpp" />
