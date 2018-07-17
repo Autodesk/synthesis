@@ -11,7 +11,7 @@ public partial class SurfaceExporter
         ExportJob.ResetAssets();
     }
 
-    private const int MAX_WAITING_EVENTS = 32;
+    private const int MAX_WAITING_JOBS = 32;
 
     /// <summary>
     /// Exports all the components in this group to the in-RAM mesh.
@@ -29,11 +29,11 @@ public partial class SurfaceExporter
         // Export faces, multithreaded
         reporter?.Invoke(0, plannedSurfaces.Count);
 
-        ManualResetEvent[] doneEvents = new ManualResetEvent[MAX_WAITING_EVENTS];
+        ManualResetEvent[] doneEvents = new ManualResetEvent[MAX_WAITING_JOBS];
         ExportJob[] jobs = new ExportJob[plannedSurfaces.Count];
 
         // Create wait events
-        for (int i = 0; i < MAX_WAITING_EVENTS; i++)
+        for (int i = 0; i < MAX_WAITING_JOBS; i++)
             doneEvents[i] = new ManualResetEvent(true); // Start with all events triggered to fill up event space
 
         // Start jobs
