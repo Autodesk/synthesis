@@ -1536,12 +1536,12 @@ namespace hel{
             tSPI::tAutoTriggerConfig auto_trigger_config;
             tSPI::tAutoByteCount auto_byte_count;
             tSPI::tChipSelectActiveHigh chip_select_active_high;
-            /*
             uint8_t auto_chip_select;
             bool auto_spi_1_select;
             uint32_t auto_rate;
-            uint8_t enable_dio;
-            */
+            uint8_t enabled_dio;
+            std::queue<uint8_t> data_out;
+            std::queue<uint8_t> data_in;
 
         public:
             tSPI::tAutoTriggerConfig getAutoTriggerConfig()const;
@@ -1550,6 +1550,14 @@ namespace hel{
             void setAutoByteCount(tSPI::tAutoByteCount);
             tSPI::tChipSelectActiveHigh getChipSelectActiveHigh()const;
             void setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh);
+            uint8_t getAutoChipSelect()const;
+            void setAutoChipSelect(uint8_t);
+            bool getAutoSPI1Select()const;
+            void setAutoSPI1Select(bool);
+            uint32_t getAutoRate()const;
+            void setAutoRate(uint32_t);
+            uint8_t getEnabledDIO()const;
+            void setEnabledDIO(uint8_t);
         };
 
         /**
