@@ -678,7 +678,7 @@ public partial class BXDJSkeleton
 
                 case "OutputGear":
                     // Assign a value to OutputGear
-                    driver.InputGear = reader.ReadElementContentAsDouble();
+                    driver.OutputGear = reader.ReadElementContentAsDouble();
                     break;
 
                 case "LowerLimit":

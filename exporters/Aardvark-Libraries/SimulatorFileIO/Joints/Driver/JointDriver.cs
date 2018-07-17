@@ -14,7 +14,20 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// The port(s) that this joint driver uses.
     /// </summary>
     public int portA, portB;
+     /// <summary>
+    /// The gear ratio that the input gear uses
+    /// </summary>
+    /// <param name="InputGear">Input gear ratio</param>
+    public double InputGear { get; set; }// getter/setter for the input gear internal data structure
 
+    /// <summary>
+    /// The gear ratio that the output gear uses
+    /// </summary>
+    /// <param name="OutputGear">Output gear ratio</param>
+    public double OutputGear { get; set; }// getter/setter for the output gear internal data structure
+
+
+    //wat
     public bool isCan = false;
 
     /// <summary>
@@ -207,10 +220,12 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// </summary>
     /// <param name="writer">Output stream</param>
     public void WriteBinaryData(System.IO.BinaryWriter writer)
-    {
+    {//these need to stay in the correct order to read the data properly, and need to stay with the same data type so the byte order stays correct
         writer.Write((byte) ((int) GetDriveType()));
         writer.Write((short)portA); 
         writer.Write((short)portB);
+        writer.Write((double)InputGear);// write the input gear to the Binary writer
+        writer.Write((double)OutputGear);// write the output gear to the Binary writer
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
         writer.Write(isCan);
