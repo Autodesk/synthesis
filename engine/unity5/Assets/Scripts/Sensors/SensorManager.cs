@@ -294,7 +294,7 @@ namespace Synthesis.Sensors
         /// </summary>
         /// <param name="robot"></param> The robot where sensors are attached to
         /// <returns></returns> A list of sensors attached to the robot
-        public List<GameObject> GetSensorsFromRobot(RobotBase robot)
+        public List<GameObject> GetSensorsFromRobot(SimulatorRobot robot)
         {
             List<GameObject> sensorsOnRobot = new List<GameObject>();
             foreach (GameObject sensor in activeSensorList)
@@ -311,7 +311,7 @@ namespace Synthesis.Sensors
         /// Remove all sensors attached to the given robot and destroy them, reset all lists
         /// </summary>
         /// <param name="robot"></param> The robot where sensors are attached to
-        public void RemoveSensorsFromRobot(RobotBase robot)
+        public void RemoveSensorsFromRobot(SimulatorRobot robot)
         {
             List<GameObject> sensorsOnRobot = GetSensorsFromRobot(robot);
             foreach (GameObject removingSensors in sensorsOnRobot)

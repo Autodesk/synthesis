@@ -382,7 +382,7 @@ namespace Synthesis.States
                 SwitchActiveRobot();
 
                 int i = 0;
-                foreach (RobotBase robot in SpawnedRobots)
+                foreach (SimulatorRobot robot in SpawnedRobots)
                 {
                     robot.ControlIndex = i;
                     i++;
@@ -661,7 +661,7 @@ namespace Synthesis.States
         private void SendRobotPackets()
         {
             ActiveRobot.Packet = unityPacket.GetLastPacket();
-            foreach (RobotBase robot in SpawnedRobots)
+            foreach (SimulatorRobot robot in SpawnedRobots)
             {
                 if (robot != ActiveRobot) robot.Packet = null;
             }

@@ -23,12 +23,14 @@ namespace Synthesis.DriverPractice
 
         public List<GameObject> heldGamepieces = new List<GameObject>();
 
-        private PersistentManifold lastManifold;
+        private List<PersistentManifold> lastManifolds;
 
         private void Awake()
         {
             if (GetComponent<BMultiCallbacks>() != null)
                 GetComponent<BMultiCallbacks>().AddCallback(this);
+
+            lastManifolds = new List<PersistentManifold>();
         }
 
         /// <summary>
@@ -94,7 +96,6 @@ namespace Synthesis.DriverPractice
         public GameObject GetObject(int index)
         {
             collisionDetected[index] = false;
-            lastManifold?.ClearManifold();
             return collisionObject[index];
         }
 
@@ -110,12 +111,15 @@ namespace Synthesis.DriverPractice
 
         public void OnVisitPersistentManifold(PersistentManifold pm)
         {
-            lastManifold = pm;
+            lastManifolds.Add(pm);
         }
 
         public void OnFinishedVisitingManifolds()
         {
-            // Not implemented
+            foreach (PersistentManifold pm in lastManifolds)
+                pm.ClearManifold();
+
+            lastManifolds.Clear();
         }
     }
 }

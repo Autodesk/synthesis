@@ -15,7 +15,7 @@ using Synthesis.Utils;
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer
 /// </summary>
-public class LocalMultiplayer : StateBehaviour<MainState> {
+public class LocalMultiplayer : LinkedMonoBehaviour<MainState> {
 
     private GameObject canvas;
     private SimUI simUI;
@@ -42,7 +42,7 @@ public class LocalMultiplayer : StateBehaviour<MainState> {
             robotButtons[i] = Auxiliary.FindObject(canvas, "Robot" + (i + 1) + "Button");
         }
 
-        simUI = StateMachine.gameObject.GetComponent<SimUI>();
+        simUI = StateMachine.SceneGlobal.gameObject.GetComponent<SimUI>();
         highlight = Auxiliary.FindObject(canvas, "HighlightActiveRobot");
         mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
     }

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-
 /// <summary>
 /// Utility functions for reading/writing BXDJ files
 /// </summary>
+
 public static partial class BXDJSkeleton
 {
     /// <summary>
@@ -166,9 +166,13 @@ public static partial class BXDJSkeleton
 
         if (joint.hasLinearEndLimit)
             writer.WriteElementString("LinearEndLimit", joint.linearLimitEnd.ToString("F4"));
+        //writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+        //writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
 
-        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
-        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+        writer.WriteElementString("CurrentLinearPosition", joint.linearLimitStart.ToString("F4"));// writes the lowest point of the joint to the file as the positon so the joint starts at the bottom, hopefully prevents any weird issues with the joint limits being messed up do to being relative to the start of the joint
+
+        writer.WriteElementString("CurrentAngularPosition", joint.angularLimitLow.ToString("F4"));// writes the lowest point of the joint to the file as the positon so the joint starts at the bottom, hopefully prevents any weird issues with the joint limits being messed up do to being relative to the start of the joint
+
 
         writer.WriteEndElement();
     }
@@ -192,8 +196,9 @@ public static partial class BXDJSkeleton
 
         if (joint.hasUpperLimit)
             writer.WriteElementString("LinearUpperLimit", joint.linearLimitHigh.ToString("F4"));
-
-        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+               
+       // writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+        writer.WriteElementString("CurrentLinearPosition", joint.linearLimitLow.ToString("F4"));// writes the lowest point of the joint to the file as the positon so the joint starts at the bottom, hopefully prevents any weird issues with the joint limits being messed up do to being relative to the start of the joint
 
         writer.WriteEndElement();
     }
@@ -233,7 +238,9 @@ public static partial class BXDJSkeleton
             writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F4"));
         }
 
-        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+       // writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+        writer.WriteElementString("CurrentAngularPosition", joint.angularLimitLow.ToString("F4"));// writes the lowest point of the joint to the file as the positon so the joint starts at the bottom, hopefully prevents any weird issues with the joint limits being messed up do to being relative to the start of the joint
+
 
         writer.WriteEndElement();
     }

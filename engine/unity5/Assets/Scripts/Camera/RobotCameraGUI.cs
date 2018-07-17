@@ -11,7 +11,7 @@ namespace Synthesis.Camera
     /// <summary>
     /// This class handles all GUI elements related to robot camera in Unity
     /// </summary>
-    class RobotCameraGUI : StateBehaviour<MainState>
+    class RobotCameraGUI : LinkedMonoBehaviour<MainState>
     {
         //Stuff needed to make gui work
         GameObject canvas;
