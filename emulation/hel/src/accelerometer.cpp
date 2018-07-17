@@ -98,6 +98,8 @@ namespace hel{
         return {first, second};
     }
 
+    RoboRIO::Accelerometer::Accelerometer():control_mode(),comm_target_reg(),active(),range(),x_accel(),y_accel(),z_accel(){}
+
     struct AccelerometerManager: public tAccel{
     private:
         static constexpr uint8_t ID = 0x2a;
@@ -197,8 +199,8 @@ namespace hel{
                     instance.second.unlock();
                     return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getXAccel()).second;
                 case RoboRIO::Accelerometer::Register::kReg_OutYMSB:
-                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).first;
                     instance.second.unlock();
+                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).first;
                 case RoboRIO::Accelerometer::Register::kReg_OutYLSB:
                     instance.second.unlock();
                     return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).second;

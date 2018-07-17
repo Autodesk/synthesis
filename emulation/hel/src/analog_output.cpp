@@ -12,6 +12,7 @@ namespace hel{
     	mxp_outputs[index] = value;
     }
 
+    RoboRIO::AnalogOutputs::AnalogOutputs():mxp_outputs(){}
 
     struct AnalogOutputManager: public tAO{
         tSystemInterface* getSystemInterface(){

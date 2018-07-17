@@ -13,6 +13,8 @@ namespace hel{
     	value = v;
     }
 
+    RoboRIO::RelaySystem::RelaySystem():value(){}
+
     struct RelayManager: public tRelay{
     	tSystemInterface* getSystemInterface(){
     		return nullptr;

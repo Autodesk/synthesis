@@ -10,8 +10,6 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
-
-
     void RoboRIO::AnalogInputs::setConfig(tAI::tConfig value) {config = value;}
     tAI::tConfig RoboRIO::AnalogInputs::getConfig() {return config;}
 
@@ -42,6 +40,8 @@ namespace hel {
     void RoboRIO::AnalogInputs::setValues(uint8_t channel, std::vector<int32_t> values){
         analog_inputs[channel].values = values;
     }
+
+    RoboRIO::AnalogInputs::AnalogInputs():analog_inputs(),config(),read_select(){}
 
     struct AnalogInputManager: public tAI{
         tSystemInterface* getSystemInterface(){
@@ -75,7 +75,7 @@ namespace hel {
             return analog_inputs.getValues(channel).back();
         }
 
-        void writeConfig(hal::tAI::tConfig value, tRioStatusCode*) {
+        void writeConfig(tAI::tConfig value, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
             instance.first->analog_inputs.setConfig(value);
             instance.second.unlock();
@@ -97,7 +97,7 @@ namespace hel {
             instance.second.unlock();
         }
 
-        hal::tAI::tConfig readConfig(tRioStatusCode*) {
+        tAI::tConfig readConfig(tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->analog_inputs.getConfig();
@@ -149,7 +149,7 @@ namespace hel {
             instance.second.unlock();
         }
 
-        void writeReadSelect(hal::tAI::tReadSelect value, tRioStatusCode*) {
+        void writeReadSelect(tAI::tReadSelect value, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
             instance.first->analog_inputs.setReadSelect(value);
             instance.second.unlock();
@@ -171,7 +171,7 @@ namespace hel {
             instance.second.unlock();
         }
 
-        hal::tAI::tReadSelect readReadSelect(tRioStatusCode*) {
+        tAI::tReadSelect readReadSelect(tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->analog_inputs.getReadSelect();
@@ -189,7 +189,7 @@ namespace hel {
         }
 
         uint32_t readLoopTiming(tRioStatusCode*) {
-            return hal::kExpectedLoopTiming;
+            return 0; //TODO
         }
 
         void strobeLatchOutput(tRioStatusCode*) {}

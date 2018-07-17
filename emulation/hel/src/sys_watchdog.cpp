@@ -11,7 +11,9 @@ namespace hel{
     void RoboRIO::SysWatchdog::setStatus(tSysWatchdog::tStatus s){
         status = s;
     }
-    
+
+    RoboRIO::SysWatchdog::SysWatchdog():status(){}
+
     struct SysWatchdogManager: public tSysWatchdog{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation
            return nullptr;

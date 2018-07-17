@@ -1,5 +1,8 @@
 #include "roborio.h"
 
+using namespace nFPGA;
+using namespace nRoboRIO_FPGANamespace;
+
 namespace hel{
     tSPI::tAutoTriggerConfig RoboRIO::SPISystem::getAutoTriggerConfig()const{
         return auto_trigger_config;
@@ -24,6 +27,40 @@ namespace hel{
     void RoboRIO::SPISystem::setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh select){
         chip_select_active_high = select;
     }
+
+    uint8_t RoboRIO::SPISystem::getAutoChipSelect()const{
+        return auto_chip_select;
+    }
+
+    void RoboRIO::SPISystem::setAutoChipSelect(uint8_t select){
+        auto_chip_select = select;
+    }
+
+    bool RoboRIO::SPISystem::getAutoSPI1Select()const{
+        return auto_spi_1_select;
+    }
+
+    void RoboRIO::SPISystem::setAutoSPI1Select(bool select){
+        auto_spi_1_select = select;
+    }
+
+    uint32_t RoboRIO::SPISystem::getAutoRate()const{
+        return auto_rate;
+    }
+
+    void RoboRIO::SPISystem::setAutoRate(uint32_t rate){
+        auto_rate = rate;
+    }
+
+    uint8_t RoboRIO::SPISystem::getEnabledDIO()const{
+        return enabled_dio;
+    }
+
+    void RoboRIO::SPISystem::setEnabledDIO(uint8_t enabled){
+        enabled_dio = enabled;
+    }
+
+    RoboRIO::SPISystem::SPISystem():auto_trigger_config(),auto_byte_count(),chip_select_active_high(),auto_chip_select(),auto_spi_1_select(),auto_rate(),enabled_dio(){}
 
     struct SPIManager: public tSPI{
         tSystemInterface* getSystemInterface(){
@@ -135,11 +172,15 @@ namespace hel{
         }
 
         void writeAutoChipSelect(uint8_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->spi_system.setAutoChipSelect(value);
+            instance.second.unlock();
         }
 
         uint8_t readAutoChipSelect(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoChipSelect();
         }
 
         uint32_t readDebugRevision(tRioStatusCode* /*status*/){ //unnecessary for emulation
@@ -199,11 +240,15 @@ namespace hel{
         }
 
         void writeAutoSPI1Select(bool value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->spi_system.setAutoSPI1Select(value);
+            instance.second.unlock();
         }
 
         bool readAutoSPI1Select(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoSPI1Select();
         }
 
         uint8_t readDebugSubstate(tRioStatusCode* /*status*/){ //unnecessary for emulation
@@ -211,19 +256,27 @@ namespace hel{
         }
 
         void writeAutoRate(uint32_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->spi_system.setAutoRate(value);
+            instance.second.unlock();
         }
 
         uint32_t readAutoRate(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoRate();
         }
 
         void writeEnableDIO(uint8_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->spi_system.setEnabledDIO(value);
+            instance.second.unlock();
         }
 
         uint8_t readEnableDIO(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getEnabledDIO();
         }
 
         void writeChipSelectActiveHigh(tChipSelectActiveHigh value, tRioStatusCode* /*status*/){
@@ -275,7 +328,7 @@ namespace hel{
         }
 
         uint8_t readAutoTx(uint8_t reg_index, uint8_t bitfield_index, tRioStatusCode* /*status*/){
-             //TODO
+            //TODO
         }
     };
 }

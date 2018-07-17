@@ -5,6 +5,10 @@
 
 std::thread ds_spoofer;
 
+namespace hel{
+    RoboRIO::NetComm::NetComm():ref_num(),occurFunction(){}
+}
+
 extern "C" {
     // TODO Fix
     void NetCommRPCProxy_SetOccurFuncPointer(void (*Occur)(uint32_t)){

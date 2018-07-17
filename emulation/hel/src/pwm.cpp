@@ -47,6 +47,9 @@ namespace hel{
     	mxp[index].duty_cycle = value;
     }
 
+    RoboRIO::PWMSystem::PWM::PWM():period_scale(0), duty_cycle(0){}
+
+    RoboRIO::PWMSystem::PWMSystem():hdr(),mxp(){}
 
     struct PWMManager: public tPWM{
         tSystemInterface* getSystemInterface(){
@@ -104,7 +107,7 @@ namespace hel{
         }
 
         uint16_t readLoopTiming(tRioStatusCode* /*status*/){
-            return hal::kExpectedLoopTiming;
+            return RoboRIO::PWMSystem::EXPECTED_LOOP_TIMING;
         }
 
         void writePeriodScaleMXP(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){

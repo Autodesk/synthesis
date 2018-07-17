@@ -4,6 +4,17 @@ std::string hel::quote(std::string s){
     return "\"" + s + "\"";
 }
 
+std::string hel::unquote(std::string s){
+    s = hel::trim(s);
+    if(s.size() > 0 && s[0] == '\"'){
+        s.erase(0,1);
+    }
+    if(s.size() > 0 && s[s.size() - 1] == '\"'){
+        s.erase(s.size() - 1, 1);
+    }
+    return s;
+}
+
 std::string hel::removeExtraneousSpaces(std::string input_str){
 	const std::string DOUBLE_SPACE = "  ";
 	while(input_str.find(DOUBLE_SPACE) != std::string::npos){
