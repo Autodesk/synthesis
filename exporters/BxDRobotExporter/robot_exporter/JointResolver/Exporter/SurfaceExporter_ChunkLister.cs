@@ -2,6 +2,8 @@
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 public partial class SurfaceExporter
 {
@@ -23,20 +25,18 @@ public partial class SurfaceExporter
     /// <param name="mesh">Mesh to store physics data in.</param>
     /// <param name="ignorePhysics">True to ignore physics in component.</param>
     /// <returns>All the sufaces to export</returns>
-    private List<SurfaceBody> GenerateExportList(ComponentOccurrence occ, BXDAMesh mesh, bool ignorePhysics = false)
+    private void GenerateExportList(ComponentOccurrence occ, ConcurrentBag<SurfaceBody> plannedExports, PhysicalProperties physics, bool ignorePhysics = false)
     {
-        List<SurfaceBody> plannedExports = new List<SurfaceBody>();
-        
         // Invisible objects don't need to be exported
         if (!occ.Visible)
-            return plannedExports;
+            return;
 
         if (!ignorePhysics)
         {
             // Compute physics
             try
             {
-                mesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
+                physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
             }
             catch
             {
@@ -62,11 +62,9 @@ public partial class SurfaceExporter
         {
             if (!adaptiveIgnoring || Utilities.BoxVolume(item.RangeBox) >= totalVolume)
             {
-                plannedExports.AddRange(GenerateExportList(item, mesh, true));
+                GenerateExportList(item, plannedExports, physics, true);
             }
         }
-
-        return plannedExports;
     }
 
     /// <summary>
@@ -75,9 +73,9 @@ public partial class SurfaceExporter
     /// <param name="group">The group to export from</param>
     /// <param name="mesh">Mesh to store physics data in.</param>
     /// <returns>All the sufaces to export</returns>
-    private List<SurfaceBody> GenerateExportList(CustomRigidGroup group, BXDAMesh mesh)
+    private List<SurfaceBody> GenerateExportList(CustomRigidGroup group, PhysicalProperties physics)
     {
-        List<SurfaceBody> plannedExports = new List<SurfaceBody>();
+        ConcurrentBag<SurfaceBody> plannedExports = new ConcurrentBag<SurfaceBody>();
 
         double totalVolume = 0;
         foreach (ComponentOccurrence occ in group.occurrences)
@@ -86,14 +84,15 @@ public partial class SurfaceExporter
         }
         totalVolume /= group.occurrences.Count * adaptiveDegredation;
 
-        foreach (ComponentOccurrence occ in group.occurrences)
+        Parallel.ForEach(group.occurrences, (ComponentOccurrence occ) =>
         {
             if (!adaptiveIgnoring || Utilities.BoxVolume(occ.RangeBox) >= totalVolume)
             {
-                plannedExports.AddRange(GenerateExportList(occ, mesh));
+                GenerateExportList(occ, plannedExports, physics);
             }
-        }
+        });
 
-        return plannedExports;
+        List<SurfaceBody> plannedExportList = new List<SurfaceBody>(plannedExports);
+        return plannedExportList;
     }
 }
