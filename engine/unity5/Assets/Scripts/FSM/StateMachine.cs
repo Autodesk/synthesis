@@ -10,8 +10,8 @@ namespace Synthesis.FSM
         private static StateMachine sceneGlobal;
 
         private Stack<State> activeStates;
-        private readonly ObjectStateLinker<Behaviour> stateBehaviours;
-        private readonly ObjectStateLinker<GameObject> stateGameObjects;
+        private ObjectStateLinker<Behaviour> stateBehaviours;
+        private ObjectStateLinker<GameObject> stateGameObjects;
 
         /// <summary>
         /// (Defined from the editor)
@@ -38,19 +38,9 @@ namespace Synthesis.FSM
         }
 
         /// <summary>
-        /// The current state in the StateMachine.
+        /// The current state in the <see cref="StateMachine"/>.
         /// </summary>
         public State CurrentState { get; private set; }
-
-        /// <summary>
-        /// Initializes the StateMachine.
-        /// </summary>
-        private StateMachine()
-        {
-            activeStates = new Stack<State>();
-            stateBehaviours = new ObjectStateLinker<Behaviour>((b, e) => b.enabled = e, (b) => b.enabled);
-            stateGameObjects = new ObjectStateLinker<GameObject>((g, e) => g.SetActive(e), (g) => g.activeSelf);
-        }
 
         /// <summary>
         /// Finds the states of the given type in the stack of active states.
@@ -151,10 +141,11 @@ namespace Synthesis.FSM
         /// <summary>
         /// Pops all open States and pushes the given State.
         /// </summary>
-        /// <param name="state"></param>
-        public void ChangeState(State state)
+        /// <param name="state">The <see cref="State"/> to change to.</param>
+        /// <param name="hardReset">If true, any existing states on the stack will be popped.</param>
+        public void ChangeState(State state, bool hardReset = true)
         {
-            while (PopState()) ;
+            while (PopState() && hardReset) ;
             PushState(state);
         }
 
@@ -189,6 +180,10 @@ namespace Synthesis.FSM
         /// </summary>
         private void Awake()
         {
+            activeStates = new Stack<State>();
+            stateBehaviours = new ObjectStateLinker<Behaviour>((b, e) => b.enabled = e, (b) => b.enabled);
+            stateGameObjects = new ObjectStateLinker<GameObject>((g, e) => g.SetActive(e), (g) => g.activeSelf);
+
             if (sceneGlobalInstance)
                 SceneGlobal = this;
         }

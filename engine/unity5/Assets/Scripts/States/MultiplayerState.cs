@@ -88,6 +88,8 @@ namespace Synthesis.States
             BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
             BPhysicsWorld.Get().DoDebugDraw = false;
             ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
+
+            clientNetworkMode = NetworkMode.Disconnected;
         }
 
         /// <summary>
@@ -133,17 +135,17 @@ namespace Synthesis.States
         {
             if (clientNetworkMode == NetworkMode.Disconnected)
             {
-                if (UnityEngine.Input.GetKey(KeyCode.G))
-                {
-                    clientNetworkMode = NetworkMode.Client;
-                    Network.StartClient();
-                    //GameObject.Find("Network Manager").AddComponent<ServerNetworkDiscovery>();
-                }
-                else if (UnityEngine.Input.GetKey(KeyCode.H))
-                {
-                    clientNetworkMode = NetworkMode.Host;
-                    Network.StartHost();
-                }
+                //if (UnityEngine.Input.GetKey(KeyCode.G))
+                //{
+                //    clientNetworkMode = NetworkMode.Client;
+                //    Network.StartClient();
+                //    //GameObject.Find("Network Manager").AddComponent<ServerNetworkDiscovery>();
+                //}
+                //else if (UnityEngine.Input.GetKey(KeyCode.H))
+                //{
+                //    clientNetworkMode = NetworkMode.Host;
+                //    Network.StartHost();
+                //}
             }
 
             if (ActiveRobot == null)
