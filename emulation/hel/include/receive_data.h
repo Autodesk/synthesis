@@ -3,14 +3,15 @@
 
 #include "roborio.h"
 #include "mxp_data.h"
+#include "bounds_checked_array.h"
 
 namespace hel{
     struct ReceiveData{
     private:
         std::array<std::vector<int32_t>, hal::kNumAnalogInputs> analog_inputs; //TODO manage analog history vector
-        std::array<bool, hal::kNumDigitalHeaders> digital_hdrs;
-        std::array<MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
-        std::array<RoboRIO::Joystick, RoboRIO::Joystick::MAX_JOYSTICK_COUNT>  joysticks;
+        BoundsCheckedArray<bool, hal::kNumDigitalHeaders> digital_hdrs;
+        BoundsCheckedArray<MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
+        BoundsCheckedArray<RoboRIO::Joystick, RoboRIO::Joystick::MAX_JOYSTICK_COUNT>  joysticks;
     public:
         void update()const;
 

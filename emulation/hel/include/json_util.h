@@ -53,6 +53,7 @@ namespace hel{
     }
 
     std::string quote(std::string);
+    std::string unquote(std::string);
 }
 
 #endif

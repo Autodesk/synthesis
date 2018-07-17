@@ -72,6 +72,14 @@ namespace hel{
             return internal.back();
         }
 
+        constexpr const std::array<T, LEN>& toArray()const{
+            return internal;
+        }
+
+        constexpr std::array<T, LEN>*& toArray(){
+            return internal;
+        }
+
         constexpr const T* data()const{
             if(LEN == 0){
                 return nullptr;
@@ -114,11 +122,6 @@ namespace hel{
             return internal.end();
         }
 
-        BoundsCheckedArray& operator=(std::array<T, LEN> const& a){
-            internal = a;
-            return *this;
-        }
-
         BoundsCheckedArray(){}
 
         BoundsCheckedArray(std::initializer_list<T> list){
@@ -133,8 +136,13 @@ namespace hel{
             if(iterable.size() != LEN){
                 throw std::out_of_range("Exception: assignement to array of size " + std::to_string(LEN) + " to iterable of different size " + std::to_string(iterable.size()));
             }
+            if(iterable.size() > 0 && !std::is_same<typename decltype(iterable)::value_type, T>::value){
+                throw std::bad_cast();
+            }
             std::copy(iterable.begin(), iterable.end(), internal.begin());
         }
+
+        ~BoundsCheckedArray() = default;
 
         bool operator==(const BoundsCheckedArray<T, LEN>& b){
             return internal == b.internal;

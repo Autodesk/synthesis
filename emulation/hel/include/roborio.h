@@ -1211,6 +1211,10 @@ namespace hel{
             std::string serialize()const;
 
             static Joystick deserialize(std::string);
+
+            std::string toString()const;
+
+            Joystick();
         };
 
         struct Counter{
