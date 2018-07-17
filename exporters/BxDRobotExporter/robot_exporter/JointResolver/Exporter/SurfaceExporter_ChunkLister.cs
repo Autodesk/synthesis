@@ -13,7 +13,7 @@ public partial class SurfaceExporter
     /// The minimum percent a sub component's bounding box volume of the largest bounding box volume for an object
     /// to be considered small. The lower the number the less that is dropped.
     /// </summary>
-    private double minVolumePercent = 0.1;
+    private double minVolumePercent = 0.005;
 
     /// <summary>
     /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
