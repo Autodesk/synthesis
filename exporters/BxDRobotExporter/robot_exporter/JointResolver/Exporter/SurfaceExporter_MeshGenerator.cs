@@ -6,6 +6,7 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 /// <summary>
 /// Exports Inventor objects into the BXDA format.  One instance per thread.
@@ -60,8 +61,6 @@ public partial class SurfaceExporter
         private SurfaceBody surf;
         private bool separateFaces;
 
-        private PartialSurface bufferSurface;
-
         private MeshController outputMesh;
 
         /// <summary>
@@ -74,8 +73,6 @@ public partial class SurfaceExporter
         {
             surf = surface;
             this.separateFaces = separateFaces;
-
-            bufferSurface = new PartialSurface();
 
             this.outputMesh = outputMesh;
         }
@@ -147,14 +144,20 @@ public partial class SurfaceExporter
         private bool AnalyzeFaces(SurfaceBody surf, out List<Face> faces)
         {
             List<string> uniqueAssets = new List<string>();
-
             faces = new List<Face>();
-            foreach (Face face in surf.Faces)
+
+            Faces surfaceFaces = surf.Faces;
+            Face face = null;
+            string assetName = null;
+
+            for (int f = 1; f <= surfaceFaces.Count; f++)
             {
+                face = surfaceFaces[f];
                 faces.Add(face);
 
-                if (!uniqueAssets.Contains(face.Appearance.DisplayName))
-                    uniqueAssets.Add(face.Appearance.DisplayName);
+                assetName = face.Appearance.DisplayName;
+                if (!uniqueAssets.Contains(assetName))
+                    uniqueAssets.Add(assetName);
             }
 
             return uniqueAssets.Count > 1;
@@ -170,18 +173,20 @@ public partial class SurfaceExporter
             // Stores a list of faces separate from the Inventor API
             List<Face> faces;
 
-            if (separateFaces && AnalyzeFaces(surf, out faces))
+            if (separateFaces && Utilities.BoxVolume(surf.RangeBox) > 100 && AnalyzeFaces(surf, out faces))
             {
                 // Add facets for each face of the surface
-                foreach (Face face in faces)
+                Parallel.ForEach(faces, (Face face) =>
                 {
+                    PartialSurface bufferSurface = new PartialSurface();
                     face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
                     outputMesh.AddSurface(ref bufferSurface, GetAsset(face.Appearance));
-                }
+                });
             }
             else
             {
                 // Add facets once for the entire surface
+                PartialSurface bufferSurface = new PartialSurface();
                 surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
                 outputMesh.AddSurface(ref bufferSurface, GetAsset(surf.Faces[1].Appearance));
             }
