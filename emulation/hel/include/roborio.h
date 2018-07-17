@@ -1527,6 +1527,27 @@ namespace hel{
             Global();
         };
 
+        struct SPISystem{
+        private:
+            tSPI::tAutoTriggerConfig auto_trigger_config;
+            tSPI::tAutoByteCount auto_byte_count;
+            tSPI::tChipSelectActiveHigh chip_select_active_high;
+            /*
+            uint8_t auto_chip_select;
+            bool auto_spi_1_select;
+            uint32_t auto_rate;
+            uint8_t enable_dio;
+            */
+
+        public:
+            tSPI::tAutoTriggerConfig getAutoTriggerConfig()const;
+            void setAutoTriggerConfig(tSPI::tAutoTriggerConfig);
+            tSPI::tAutoByteCount getAutoByteCount()const;
+            void setAutoByteCount(tSPI::tAutoByteCount);
+            tSPI::tChipSelectActiveHigh getChipSelectActiveHigh()const;
+            void setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh);
+        };
+
         /**
     	 * \var bool user_button
     	 * \represents the state of the user button on the roborio
@@ -1551,6 +1572,7 @@ namespace hel{
         PWMSystem pwm_system;
     	RelaySystem relay_system;
     	RobotState robot_state;
+        SPISystem spi_system;
         SysWatchdog watchdog;
 
         explicit RoboRIO() = default;
