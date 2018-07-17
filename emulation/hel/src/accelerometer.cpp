@@ -197,8 +197,8 @@ namespace hel{
                     instance.second.unlock();
                     return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getXAccel()).second;
                 case RoboRIO::Accelerometer::Register::kReg_OutYMSB:
-                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).first;
                     instance.second.unlock();
+                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).first;
                 case RoboRIO::Accelerometer::Register::kReg_OutYLSB:
                     instance.second.unlock();
                     return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).second;

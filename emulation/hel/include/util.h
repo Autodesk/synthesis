@@ -135,6 +135,10 @@ namespace hel{
 
     bool stob(std::string);
     std::string to_string(bool);
+
+    constexpr std::size_t hasher(const char* input){
+        return *input ? static_cast<unsigned>(*input) + 33 * hasher(input + 1) : 5381;
+    }
 }
 
 #endif

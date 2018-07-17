@@ -1,4 +1,5 @@
 #include "mxp_data.h"
+#include "util.h"
 #include "json_util.h"
 
 std::string hel::to_string(hel::MXPData::Config config){
@@ -18,9 +19,28 @@ std::string hel::to_string(hel::MXPData::Config config){
     }
 }
 
+hel::MXPData::Config hel::s_to_mxp_config(std::string s){
+    switch(hasher(s.c_str())){
+    case hasher("DI"):
+        return hel::MXPData::Config::DI;
+    case hasher("DO"):
+        return hel::MXPData::Config::DO;
+    case hasher("PWM"):
+        return hel::MXPData::Config::PWM;
+    case hasher("SPI"):
+        return hel::MXPData::Config::SPI;
+    case hasher("I2C"):
+        return hel::MXPData::Config::I2C;
+    default:
+        ; //TODO error handling
+    }
+}
+
+hel::MXPData::MXPData():config(hel::MXPData::Config::DI),value(0.0){}
+
 std::string hel::MXPData::serialize()const{
-    std::string s = "MXPData: {";
-    s += "\"config\":" + hel::to_string(config) + ", ";
+    std::string s = "{";
+    s += "\"config\":" + hel::quote(hel::to_string(config)) + ", ";
     s += "\"value\":" + std::to_string(value);
     s += "}";
     return s;
@@ -28,7 +48,7 @@ std::string hel::MXPData::serialize()const{
 
 hel::MXPData hel::MXPData::deserialize(std::string s){
     MXPData m;
-    m.config = static_cast<hel::MXPData::Config>(std::stoi(hel::pullValue("\"config\"",s)));
+    m.config = s_to_mxp_config(hel::unquote(hel::pullValue("\"config\"",s)));
     m.value = std::stod(hel::pullValue("\"value\"",s));
     return m;
 }
