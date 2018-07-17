@@ -57,7 +57,7 @@ namespace Synthesis.FSM
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T FindState<T>() where T : State
+        public T FindState<T>() where T : class
         {
             foreach (State state in activeStates)
                 if (state is T)

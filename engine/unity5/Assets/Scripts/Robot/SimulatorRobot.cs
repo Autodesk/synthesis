@@ -167,7 +167,7 @@ namespace Synthesis.Robot
                 SceneManager.LoadScene("Scene");
             }
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen &&
-                !state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+                !state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HoldTime)
                     BeginReset();
@@ -217,7 +217,7 @@ namespace Synthesis.Robot
             GetDriverPractice().DestroyAllGamepieces();
 
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-            lastCameraState = dynamicCamera.cameraState;
+            lastCameraState = dynamicCamera.ActiveState;
             Debug.Log(lastCameraState);
             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
 
@@ -226,7 +226,7 @@ namespace Synthesis.Robot
                     if (rb != null && !rb.GetCollisionObject().IsActive)
                         rb.GetCollisionObject().Activate();
 
-            if (!state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+            if (!state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 IsResetting = true;
 
