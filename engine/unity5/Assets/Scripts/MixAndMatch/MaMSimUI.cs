@@ -11,7 +11,7 @@ using Synthesis.Utils;
 
 namespace Synthesis.MixAndMatch
 {
-    public class MaMSimUI : StateBehaviour<MainState>
+    public class MaMSimUI : LinkedMonoBehaviour<MainState>
     {
         GameObject canvas;
 
@@ -40,7 +40,7 @@ namespace Synthesis.MixAndMatch
             mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
             multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
 
-            simUI = StateMachine.gameObject.GetComponent<SimUI>();
+            simUI = StateMachine.SceneGlobal.gameObject.GetComponent<SimUI>();
         }
 
         public void ToggleMaMPanel()
