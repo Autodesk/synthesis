@@ -10,8 +10,6 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
-
-
     void RoboRIO::AnalogInputs::setConfig(tAI::tConfig value) {config = value;}
     tAI::tConfig RoboRIO::AnalogInputs::getConfig() {return config;}
 
@@ -42,6 +40,8 @@ namespace hel {
     void RoboRIO::AnalogInputs::setValues(uint8_t channel, std::vector<int32_t> values){
         analog_inputs[channel].values = values;
     }
+
+    RoboRIO::AnalogInputs::AnalogInputs():analog_inputs(),config(),read_select(){}
 
     struct AnalogInputManager: public tAI{
         tSystemInterface* getSystemInterface(){

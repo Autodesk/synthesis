@@ -36,6 +36,8 @@ namespace hel{
         timer_config = c;
     }
 
+    RoboRIO::Encoder::Encoder():output(),config(),timer_output(),timer_config(){}
+
     struct EncoderManager: public tEncoder{
     private:
         uint8_t index;

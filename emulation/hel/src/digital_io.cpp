@@ -61,6 +61,8 @@ namespace hel{
     	pwm[index] = value;
     }
 
+    RoboRIO::DIOSystem::DIOSystem():outputs(),enabled_outputs(),pulses(),inputs(),mxp_special_functions_enabled(),pulse_length(),pwm(){}
+
     struct DIOManager: public tDIO{
         tSystemInterface* getSystemInterface() override{
             return nullptr;

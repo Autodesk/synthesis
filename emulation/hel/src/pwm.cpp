@@ -47,6 +47,9 @@ namespace hel{
     	mxp[index].duty_cycle = value;
     }
 
+    RoboRIO::PWMSystem::PWM::PWM():period_scale(0), duty_cycle(0){}
+
+    RoboRIO::PWMSystem::PWMSystem():hdr(),mxp(){}
 
     struct PWMManager: public tPWM{
         tSystemInterface* getSystemInterface(){

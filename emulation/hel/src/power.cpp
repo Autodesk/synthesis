@@ -28,6 +28,8 @@ namespace hel{
         disabled = d;
     }
 
+    RoboRIO::Power::Power():status(),fault_counts(),disabled(){}
+
     struct PowerManager: public tPower{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation
             return nullptr;

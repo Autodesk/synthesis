@@ -60,6 +60,8 @@ namespace hel{
         enabled_dio = enabled;
     }
 
+    RoboRIO::SPISystem::SPISystem():auto_trigger_config(),auto_byte_count(),chip_select_active_high(),auto_chip_select(),auto_spi_1_select(),auto_rate(),enabled_dio(){}
+
     struct SPIManager: public tSPI{
         tSystemInterface* getSystemInterface(){
             return nullptr;
