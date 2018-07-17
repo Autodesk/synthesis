@@ -15,7 +15,11 @@ namespace hel{
 
         std::string serialize()const;
         static MXPData deserialize(std::string);
+
+        MXPData();
     };
+
+    MXPData::Config s_to_mxp_config(std::string);
 
     std::string to_string(MXPData::Config);
 }
