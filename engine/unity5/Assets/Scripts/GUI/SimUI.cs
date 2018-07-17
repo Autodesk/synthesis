@@ -24,11 +24,11 @@ namespace Synthesis.GUI
     /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
     /// It acomplishes this by having a public function for each button that interacts with the Main State to complete various tasks.
     /// </summary>
-    public class SimUI : StateBehaviour<MainState>
+    public class SimUI : LinkedMonoBehaviour<MainState>
     {
         RobotBase Robot;
 
-        DynamicCamera camera;
+        new DynamicCamera camera;
         Toolkit toolkit;
         DriverPracticeMode dpm;
         LocalMultiplayer multiplayer;
@@ -305,16 +305,15 @@ namespace Synthesis.GUI
                 PlayerPrefs.Save();
 
                 if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                {
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
                     });
-                    SceneManager.LoadScene("Scene");
-                }
-                else
-                {
-                    UserMessageManager.Dispatch("Field directory not found!", 5);
-                }
+
+                SceneManager.LoadScene("Scene");
+            }
+            else
+            {
+                UserMessageManager.Dispatch("Field directory not found!", 5);
             }
         }
 

@@ -216,7 +216,7 @@ public partial class SynthesisGUI : Form
         }
         catch (TaskCanceledException)
         {
-            return true;
+            return false;
         }
         catch (Exception e)
         {
@@ -431,8 +431,7 @@ public partial class SynthesisGUI : Form
                 joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
                 joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
                 joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
-                joint.cDriver.InputGear = Utilities.GetProperty(propertySet, "driver-inputGear", 0.0f);// writes the gearing that the user last had in the exporter to the current gearing value
-                joint.cDriver.OutputGear = Utilities.GetProperty(propertySet, "driver-outputGear", 0.0f);// writes the gearing that the user last had in the exporter to the current gearing value
+
                 // Get other properties stored in meta
                 // Wheel information
                 if (Utilities.GetProperty(propertySet, "has-wheel", false))
@@ -544,8 +543,6 @@ public partial class SynthesisGUI : Form
                 Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
                 Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
                 Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
-                Utilities.SetProperty(propertySet, "driver-inputGear", driver.InputGear);// writes the input gear to the .IAM file incase the user wants to reexport their robot later
-                Utilities.SetProperty(propertySet, "driver-outputGear", driver.OutputGear);// writes the ouotput gear to the .IAM file incase the user wants to reexport their robot later
 
                 // Save other properties stored in meta
                 // Wheel information
