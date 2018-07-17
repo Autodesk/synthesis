@@ -1,73 +1,137 @@
 #include "roborio.h"
 
 namespace hel{
+    tSPI::tAutoTriggerConfig RoboRIO::SPISystem::getAutoTriggerConfig()const{
+        return auto_trigger_config;
+    }
+
+    void RoboRIO::SPISystem::setAutoTriggerConfig(tSPI::tAutoTriggerConfig config){
+        auto_trigger_config = config;
+    }
+
+    tSPI::tAutoByteCount RoboRIO::SPISystem::getAutoByteCount()const{
+        return auto_byte_count;
+    }
+
+    void RoboRIO::SPISystem::setAutoByteCount(tSPI::tAutoByteCount count){
+        auto_byte_count = count;
+    }
+
+    tSPI::tChipSelectActiveHigh RoboRIO::SPISystem::getChipSelectActiveHigh()const{
+        return chip_select_active_high;
+    }
+
+    void RoboRIO::SPISystem::setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh select){
+        chip_select_active_high = select;
+    }
+
     struct SPIManager: public tSPI{
         tSystemInterface* getSystemInterface(){
-            //TODO
+            return nullptr;
         }
 
-        uint32_t readDebugIntStatReadCount(tRioStatusCode* /*status*/){
-             //TODO
+        uint32_t readDebugIntStatReadCount(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
-        uint16_t readDebugState(tRioStatusCode* /*status*/){
-             //TODO
+        uint16_t readDebugState(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
         void writeAutoTriggerConfig(tAutoTriggerConfig value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->spi_system.setAutoTriggerConfig(value);
+            instance.second.unlock();
         }
 
         void writeAutoTriggerConfig_ExternalClockSource_Channel(uint8_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
+            config.ExternalClockSource_Channel = value;
+            instance.first->spi_system.setAutoTriggerConfig(config);
+            instance.second.unlock();
         }
 
         void writeAutoTriggerConfig_ExternalClockSource_Module(uint8_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
+            config.ExternalClockSource_Module = value;
+            instance.first->spi_system.setAutoTriggerConfig(config);
+            instance.second.unlock();
         }
 
         void writeAutoTriggerConfig_ExternalClockSource_AnalogTrigger(bool value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
+            config.ExternalClockSource_AnalogTrigger = value;
+            instance.first->spi_system.setAutoTriggerConfig(config);
+            instance.second.unlock();
         }
 
         void writeAutoTriggerConfig_RisingEdge(bool value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
+            config.RisingEdge = value;
+            instance.first->spi_system.setAutoTriggerConfig(config);
+            instance.second.unlock();
         }
 
         void writeAutoTriggerConfig_FallingEdge(bool value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
+            config.FallingEdge = value;
+            instance.first->spi_system.setAutoTriggerConfig(config);
+            instance.second.unlock();
         }
 
         void writeAutoTriggerConfig_ExternalClock(bool value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
+            config.ExternalClock = value;
+            instance.first->spi_system.setAutoTriggerConfig(config);
+            instance.second.unlock();
         }
 
         tAutoTriggerConfig readAutoTriggerConfig(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoTriggerConfig();
         }
 
         uint8_t readAutoTriggerConfig_ExternalClockSource_Channel(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoTriggerConfig().ExternalClockSource_Channel;
         }
 
         uint8_t readAutoTriggerConfig_ExternalClockSource_Module(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoTriggerConfig().ExternalClockSource_Module;
         }
 
         bool readAutoTriggerConfig_ExternalClockSource_AnalogTrigger(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoTriggerConfig().ExternalClockSource_AnalogTrigger;
         }
 
         bool readAutoTriggerConfig_RisingEdge(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoTriggerConfig().RisingEdge;
         }
 
         bool readAutoTriggerConfig_FallingEdge(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoTriggerConfig().FallingEdge;
         }
 
         bool readAutoTriggerConfig_ExternalClock(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoTriggerConfig().ExternalClock;
         }
 
         void writeAutoChipSelect(uint8_t value, tRioStatusCode* /*status*/){
@@ -78,44 +142,60 @@ namespace hel{
              //TODO
         }
 
-        uint32_t readDebugRevision(tRioStatusCode* /*status*/){
-             //TODO
+        uint32_t readDebugRevision(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
-        uint32_t readTransferSkippedFullCount(tRioStatusCode* /*status*/){
-             //TODO
+        uint32_t readTransferSkippedFullCount(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
         void writeAutoByteCount(tAutoByteCount value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->spi_system.setAutoByteCount(value);
+            instance.second.unlock();
         }
 
         void writeAutoByteCount_TxByteCount(uint8_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tAutoByteCount count = instance.first->spi_system.getAutoByteCount();
+            count.TxByteCount = value;
+            instance.first->spi_system.setAutoByteCount(count);
+            instance.second.unlock();
         }
 
         void writeAutoByteCount_ZeroByteCount(uint8_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tAutoByteCount count = instance.first->spi_system.getAutoByteCount();
+            count.ZeroByteCount = value;
+            instance.first->spi_system.setAutoByteCount(count);
+            instance.second.unlock();
         }
 
         tAutoByteCount readAutoByteCount(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoByteCount();
         }
 
         uint8_t readAutoByteCount_TxByteCount(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoByteCount().TxByteCount;
         }
 
         uint8_t readAutoByteCount_ZeroByteCount(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getAutoByteCount().ZeroByteCount;
         }
 
-        uint32_t readDebugIntStat(tRioStatusCode* /*status*/){
-             //TODO
+        uint32_t readDebugIntStat(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
-        uint32_t readDebugEnabled(tRioStatusCode* /*status*/){
-             //TODO
+        uint32_t readDebugEnabled(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
         void writeAutoSPI1Select(bool value, tRioStatusCode* /*status*/){
@@ -126,8 +206,8 @@ namespace hel{
              //TODO
         }
 
-        uint8_t readDebugSubstate(tRioStatusCode* /*status*/){
-             //TODO
+        uint8_t readDebugSubstate(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
         void writeAutoRate(uint32_t value, tRioStatusCode* /*status*/){
@@ -147,27 +227,43 @@ namespace hel{
         }
 
         void writeChipSelectActiveHigh(tChipSelectActiveHigh value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->spi_system.setChipSelectActiveHigh(value);
+            instance.second.unlock();
         }
 
         void writeChipSelectActiveHigh_Hdr(uint8_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tChipSelectActiveHigh select = instance.first->spi_system.getChipSelectActiveHigh();
+            select.Hdr = value;
+            instance.first->spi_system.setChipSelectActiveHigh(select);
+            instance.second.unlock();
         }
 
         void writeChipSelectActiveHigh_MXP(uint8_t value, tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            tChipSelectActiveHigh select = instance.first->spi_system.getChipSelectActiveHigh();
+            select.MXP = value;
+            instance.first->spi_system.setChipSelectActiveHigh(select);
+            instance.second.unlock();
         }
 
         tChipSelectActiveHigh readChipSelectActiveHigh(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getChipSelectActiveHigh();
         }
 
         uint8_t readChipSelectActiveHigh_Hdr(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getChipSelectActiveHigh().Hdr;
         }
 
         uint8_t readChipSelectActiveHigh_MXP(tRioStatusCode* /*status*/){
-             //TODO
+            auto instance = RoboRIOManager::getInstance();
+            instance.second.unlock();
+            return instance.first->spi_system.getChipSelectActiveHigh().MXP;
         }
 
         void strobeAutoForceOne(tRioStatusCode* /*status*/){
