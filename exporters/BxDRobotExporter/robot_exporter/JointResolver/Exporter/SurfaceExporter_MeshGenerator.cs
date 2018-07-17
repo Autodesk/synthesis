@@ -107,7 +107,7 @@ public partial class SurfaceExporter
         // Stores a list of faces separate from the Inventor API
         List<Face> faces;
 
-        if (separateFaces && Utilities.BoxVolume(surf.RangeBox) > 100 && AnalyzeFaces(surf, out faces))
+        if (separateFaces && AnalyzeFaces(surf, out faces))
         {
             // Add facets for each face of the surface
             Parallel.ForEach(faces, (Face face) =>

@@ -22,7 +22,7 @@ public partial class SurfaceExporter
         MeshController outputMesh = new MeshController(guid);
 
         // Collect surfaces to export
-        List<SurfaceBody> plannedSurfaces = GenerateExportList(group, outputMesh.Mesh);
+        List<SurfaceBody> plannedSurfaces = GenerateExportList(group, outputMesh.Mesh.physics);
 
         // Export faces, multithreaded
         reporter?.Invoke(0, plannedSurfaces.Count);
