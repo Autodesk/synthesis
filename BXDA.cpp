@@ -3,7 +3,7 @@ using namespace BXDATA;
 
 BXDA::BXDA() {
 	Version = 2.0;
-	GUID = "aaaaaaaaaaa;";
+	GUID = "aaaaaaaaaaa";
 }
 
 BXDA::~BXDA() {

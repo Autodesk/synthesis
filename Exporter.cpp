@@ -3,15 +3,18 @@
 using namespace Synthesis;
 using namespace std;
 
-Exporter::Exporter(Ptr<Application> app) : _app(app) {
+Exporter::Exporter(Ptr<Application> app) : _app(app)
+{
 	_ui = _app->userInterface();
 	//outFile = spdlog::stdout_color_mt("console");
 }
 
-Exporter::~Exporter() {
+Exporter::~Exporter()
+{
 }
 
-int Exporter::exportCommon() {
+int Exporter::exportCommon()
+{
 	Ptr<FusionDocument> doc = _app->activeDocument();
 
 	string a = "";
@@ -40,9 +43,10 @@ int Exporter::exportCommon() {
 
 	Ptr<TriangleMeshCalculator> calc;
 
-	for (Ptr<Component> comp : doc->design()->allComponents()) {
-		a += "name : " + comp->name() + "\n";
-		for (Ptr<BRepBody> m_bod : comp->bRepBodies()) {
+	for (Ptr<Component> comp : doc->design()->allComponents())
+	{
+		for (Ptr<BRepBody> m_bod : comp->bRepBodies())
+		{
 
 			_tempS->verts.clear();
 			_tempS->verts.shrink_to_fit();
@@ -53,13 +57,15 @@ int Exporter::exportCommon() {
 			calc->setQuality(LowQualityTriangleMesh);
 			Ptr<TriangleMesh> mesh = calc->calculate();
 
-			for (Ptr<Vector3D> ve : mesh->normalVectors()) {
+			for (Ptr<Vector3D> ve : mesh->normalVectors())
+			{
 				_tempS->verts.push_back(ve->x());
 				_tempS->verts.push_back(ve->y());
 				_tempS->verts.push_back(ve->z());
 			}
 
-			for (Ptr<Point3D> no : mesh->nodeCoordinates()) {
+			for (Ptr<Point3D> no : mesh->nodeCoordinates())
+			{
 				_tempS->norms.push_back(no->x());
 				_tempS->norms.push_back(no->y());
 				_tempS->norms.push_back(no->z());
@@ -69,7 +75,12 @@ int Exporter::exportCommon() {
 			bxda->colliders.push_back(new Submesh(_tempS));
 		}
 
-		a += "\n";
+		for (Ptr<Joint> joint : comp->allJoints())
+		{
+			a += "Parent of joint: " + joint->parentComponent()->name();
+
+			a += "\n";
+		}
 	}
 
 	binary->Write(bxda);
@@ -79,14 +90,15 @@ int Exporter::exportCommon() {
 
 
 	//delete _temp;
-	
+
 	_ui->messageBox(a);
 
 	return 0;
 }
 
 
-int Exporter::exportWheel() {
+int Exporter::exportWheel()
+{
 	if (!_ui)
 		return 1;
 
@@ -96,9 +108,11 @@ int Exporter::exportWheel() {
 	string a = "";
 
 
-	for (Ptr<Component> comp : doc->design()->allComponents()) {
+	for (Ptr<Component> comp : doc->design()->allComponents())
+	{
 		a += "Component : " + comp->name() + "\n";
-		for (Ptr<Joint> j : comp->joints()) {
+		for (Ptr<Joint> j : comp->joints())
+		{
 			a += j->name() + " ";
 		}
 		a += "\n";
@@ -108,28 +122,3 @@ int Exporter::exportWheel() {
 
 	return 0;
 }
-
-void Exporter::writeToFile(string a, logLevels lvl) {
-
-	switch (lvl)
-	{
-	case Synthesis::info:
-		//console->info(a);
-		break;
-	case Synthesis::warn:
-		//console->warn(a);
-		break;
-	case Synthesis::critikal:
-		//console->critical(a);
-		break;
-	default:
-		//console->info(a);
-		break;
-	}
-}
-
-/*
-Ptr<CommandDefinition> Exporter::expCommand() {
-	//Ptr<>
-}
- */
