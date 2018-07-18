@@ -27,7 +27,7 @@ namespace BxDRobotExporter.Wizard
     {
         private float totalWeightKg = 0;
         private bool preferMetric = false;
-
+        private int numberOfJoints;
         /// <summary>
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
@@ -154,6 +154,16 @@ namespace BxDRobotExporter.Wizard
             
             // Find all nodes that can be wheels
             Dictionary<string, int> duplicatePartNames = new Dictionary<string, int>();
+
+            numberOfJoints = 0;
+
+            foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+            {
+                if ((node.GetSkeletalJoint() != null))
+                {
+                    numberOfJoints++;
+                }
+            }
 
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
@@ -392,7 +402,7 @@ namespace BxDRobotExporter.Wizard
             else
                 RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
 
-            OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
+            OnSetEndEarly(leftOrder.Count + rightOrder.Count >= numberOfJoints); // Skip next page if no parts are left
 
             // Resume layout calculations
             ResumeLayout();
