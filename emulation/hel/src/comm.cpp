@@ -304,19 +304,19 @@ extern "C" {
 
     int FRC_NetworkCommunication_sendError(int isError, int32_t errorCode, int /*isLVCode*/, const char* details, const char* location, const char* callStack){
         auto instance = hel::RoboRIOManager::getInstance();
-        instance.first->ds_errors.push_back({isError, errorCode, details, location, callStack}); //assuming isLVCode = false (not supporting LabView
+        instance.first->ds_errors.push_back({(bool)isError, errorCode, details, location, callStack}); //assuming isLVCode = false (not supporting LabView
         instance.second.unlock();
-        return 0; //TODO retruns a status
+        return 0;
     }
 
     void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation
 
-    int setNewDataOccurRef(uint32_t refnum){ 
+    int setNewDataOccurRef(uint32_t refnum){
         auto instance = hel::RoboRIOManager::getInstance();
         instance.first->net_comm.ref_num = refnum;
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
     int FRC_NetworkCommunication_getControlWord(struct ControlWord_t* controlWord){
@@ -331,7 +331,7 @@ extern "C" {
         }
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0; //HAL does not expect error status if parameters are nullptr
     }
 
     int FRC_NetworkCommunication_getAllianceStation(enum AllianceStationID_t* allianceStation){
@@ -340,15 +340,15 @@ extern "C" {
             *allianceStation = instance.first->match_info.getAllianceStationID();
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0; //HAL does not expect error status if parameters are nullptr
     }
 
     int FRC_NetworkCommunication_getMatchInfo(char* eventName, MatchType_t* matchType, uint16_t* matchNumber, uint8_t* replayNumber, uint8_t* gameSpecificMessage, uint16_t* gameSpecificMessageSize){
         auto instance = hel::RoboRIOManager::getInstance();
-        std::string name = instance.first->match_info.getEventName();
-        std::copy(std::begin(name), std::end(name), eventName);
-
-
+        if (eventName != nullptr){
+            std::string name = instance.first->match_info.getEventName();
+            std::copy(std::begin(name), std::end(name), eventName);
+        }
         if (matchType != nullptr)
             *matchType = instance.first->match_info.getMatchType();
         if (matchNumber != nullptr)
@@ -356,14 +356,16 @@ extern "C" {
         if (replayNumber != nullptr)
             *replayNumber = instance.first->match_info.getReplayNumber();
 
-        std::string hel_message = instance.first->match_info.getGameSpecificMessage();
-        std::copy(std::begin(hel_message), std::end(hel_message), gameSpecificMessage);
+        if (gameSpecificMessage != nullptr){
+            std::string hel_message = instance.first->match_info.getGameSpecificMessage();
+            std::copy(std::begin(hel_message), std::end(hel_message), gameSpecificMessage);
+        }
 
         if (gameSpecificMessageSize != nullptr)
             *gameSpecificMessageSize = instance.first->match_info.getGameSpecificMessage().size();
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0; //HAL does not expect error status if parameters are nullptr
     }
 
     int FRC_NetworkCommunication_getMatchTime(float* matchTime){
@@ -372,7 +374,7 @@ extern "C" {
             *matchTime = instance.first->match_info.getMatchTime();
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0; //HAL does not expect error status if parameters are nullptr
     }
 
     int FRC_NetworkCommunication_getJoystickAxes(uint8_t joystickNum, struct JoystickAxes_t* axes, uint8_t /*maxAxes*/){
@@ -398,7 +400,7 @@ extern "C" {
             *buttons = instance.first->joysticks[joystickNum].getButtons();
         if (count != nullptr)
             *count = instance.first->joysticks[joystickNum].getButtonCount();
-    
+
         instance.second.unlock();
         return 0; //TODO returns a status
     }
@@ -411,7 +413,7 @@ extern "C" {
 
         std::array<int16_t, hel::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
         std::copy(std::begin(hel_povs), std::end(hel_povs), povs->povs);
-    
+
         instance.second.unlock();
         return 0; //TODO returns a status
     }
@@ -436,26 +438,30 @@ extern "C" {
         if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
-        std::string hel_name = instance.first->joysticks[joystickNum].getName();
-        std::copy(std::begin(hel_name), std::end(hel_name), name);
 
+        if(name != nullptr){
+            std::string hel_name = instance.first->joysticks[joystickNum].getName();
+            std::copy(std::begin(hel_name), std::end(hel_name), name);
+        }
         if(isXBox != nullptr)
             *isXBox = instance.first->joysticks[joystickNum].getIsXBox();
         if(type != nullptr)
             *type = instance.first->joysticks[joystickNum].getType();
         if(axisCount)
             *axisCount = instance.first->joysticks[joystickNum].getAxisCount();
-    
-        std::array<uint8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axis_types = instance.first->joysticks[joystickNum].getAxisTypes();
-        std::copy(std::begin(hel_axis_types), std::end(hel_axis_types), axisTypes);
-    
+
+        if(axisTypes != nullptr){
+            std::array<uint8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axis_types = instance.first->joysticks[joystickNum].getAxisTypes();
+            std::copy(std::begin(hel_axis_types), std::end(hel_axis_types), axisTypes);
+        }
+
         if(buttonCount != nullptr)
             *buttonCount = instance.first->joysticks[joystickNum].getButtonCount();
         if(povCount != nullptr)
             *povCount = instance.first->joysticks[joystickNum].getPOVCount();
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0; //HAL does not expect error status if parameters are nullptr
     }
 
     void FRC_NetworkCommunication_getVersionString(char* /*version*/){} //unnecessary for emulation

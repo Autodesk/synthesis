@@ -36,7 +36,7 @@ namespace hel{
         }
 
         uint16_t readUserVoltage3V3(tRioStatusCode* /*status*/){
-            return 0; //TODO
+            return (3.3 + 0.01) * 4.096 / 0.004902; //reverse HAL math to return expected value
         }
 
         tStatus readStatus(tRioStatusCode* /*status*/){
@@ -64,15 +64,15 @@ namespace hel{
         }
 
         uint16_t readUserVoltage6V(tRioStatusCode* /*status*/){
-            return 0; //TODO
+            return (6.0 + 0.014) * 4.096 / 0.007019; //reverse HAL math to return expected value
         }
 
-        uint16_t readOnChipTemperature(tRioStatusCode* /*status*/){
-            return 0; //TODO
+        uint16_t readOnChipTemperature(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0; 
         }
 
         uint16_t readUserVoltage5V(tRioStatusCode* /*status*/){
-            return 0; //TODO
+            return (5.0 + 0.013) * 4.096 / 0.005962; //reverse HAL math to return expected value
         }
 
         void strobeResetFaultCounts(tRioStatusCode* /*status*/){
@@ -81,32 +81,32 @@ namespace hel{
             instance.second.unlock();
         }
 
-        uint16_t readIntegratedIO(tRioStatusCode* /*status*/){
-            return 0; //TODO
+        uint16_t readIntegratedIO(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
-        uint16_t readMXP_DIOVoltage(tRioStatusCode* /*status*/){
-            return 0; //TODO
+        uint16_t readMXP_DIOVoltage(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
         uint16_t readUserCurrent3V3(tRioStatusCode* /*status*/){
-            return 0; //TODO
+            return 0;
         }
 
         uint16_t readVinVoltage(tRioStatusCode* /*status*/){
-            return 0; //TODO
+            return 0;
         }
 
         uint16_t readUserCurrent6V(tRioStatusCode* /*status*/){
-            return 0; //TODO
+            return 0;
         }
 
         uint16_t readUserCurrent5V(tRioStatusCode* /*status*/){
-            return 0; //TODO
+            return 0;
         }
 
-        uint16_t readAOVoltage(tRioStatusCode* /*status*/){
-            return 0; //TODO
+        uint16_t readAOVoltage(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
         tFaultCounts readFaultCounts(tRioStatusCode* /*status*/){
@@ -140,7 +140,7 @@ namespace hel{
         }
 
         uint16_t readVinCurrent(tRioStatusCode* /*status*/){
-            return 0; //TODO
+            return 0;
         }
 
         void writeDisable(tDisable value, tRioStatusCode* /*status*/){

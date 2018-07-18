@@ -51,7 +51,7 @@ namespace hel{
             instance.second.unlock();
             return (Global::getCurrentTime() - instance.first->global.getFPGAStartTime()) >> 32;
         }
-        
+
         uint16_t readVersion(tRioStatusCode* /*status*/){
           return 2018; //WPILib assumes this is the competition year
         }
@@ -68,8 +68,8 @@ namespace hel{
             return instance.first->user_button;
         }
 
-        uint32_t readRevision(tRioStatusCode* /*status*/){
-            return 0; //TODO?
+        uint32_t readRevision(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
     };
 }

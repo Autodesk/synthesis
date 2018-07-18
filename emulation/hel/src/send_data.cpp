@@ -75,6 +75,10 @@ void hel::SendData::update(){
         switch(digital_mxp[i].config){
         case hel::MXPData::Config::DO:
             digital_mxp[i].value = HAL_GetDIO(i + hal::kNumDigitalHeaders, &status);
+            if(!digital_mxp[i].value){
+                status = 0;
+                digital_mxp[i].value = HAL_IsPulsing(i + hal::kNumDigitalHeaders, &status);
+            }
             break;
         case hel::MXPData::Config::PWM:
             digital_mxp[i].value = HAL_GetPWMSpeed(i + tPWM::kNumHdrRegisters, &status);
@@ -95,6 +99,10 @@ void hel::SendData::update(){
         for(unsigned i = 0; i < digital_hdrs.size(); i++){
             if(checkBitHigh(output_mode.MXP,i)){
                 digital_hdrs[i] = HAL_GetDIO(i, &status);
+                if(!digital_hdrs[i]){
+                    status = 0;
+                    digital_hdrs[i] = HAL_IsPulsing(i, &status);
+                }
             }
             status = 0; //reset status between HAL calls
         }
@@ -118,7 +126,14 @@ std::string hel::to_string(hel::SendData::RelayState r){
 }
 
 std::string hel::SendData::toString()const{
-    return ""; //TODO implement function in readable print-out
+    std::string s = "(";
+    s += "pwm_hdrs:" + hel::to_string(pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
+    s += "relays:" + hel::to_string(relays, std::function<std::string(hel::SendData::RelayState)>(static_cast<std::string(*)(hel::SendData::RelayState)>(hel::to_string)));
+    s += "analog_outputs:" + hel::to_string(analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
+    s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+    s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string)));
+    s += ")";
+    return s;
 }
 
 std::string hel::SendData::serialize()const{

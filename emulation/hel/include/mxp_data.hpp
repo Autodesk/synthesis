@@ -1,5 +1,5 @@
-#ifndef _MXP_DATA_H_
-#define _MXP_DATA_H_
+#ifndef _MXP_DATA_HPP_
+#define _MXP_DATA_HPP_
 
 #include <string>
 

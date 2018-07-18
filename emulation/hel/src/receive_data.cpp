@@ -13,9 +13,11 @@ void hel::ReceiveData::update()const{
     }
     auto instance = hel::RoboRIOManager::getInstance();
 
+    /*
     for(unsigned i = 0; i < analog_inputs.size(); i++){
         instance.first->analog_inputs.setValues(i, analog_inputs[i]);
     }
+    */
     {
         tDIO::tDI di = instance.first->digital_system.getInputs();
         tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
@@ -46,7 +48,6 @@ void hel::ReceiveData::update()const{
         }
     }
     instance.first->joysticks = joysticks.toArray();
-    //TODO
 }
 
 std::string hel::ReceiveData::toString()const{
@@ -55,7 +56,7 @@ std::string hel::ReceiveData::toString()const{
     s += "joysticks:" + hel::to_string(joysticks, std::function<std::string(hel::Joystick)>([&](hel::Joystick joy){ return joy.toString(); })) + ", ";
     s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>([&](hel::MXPData mxp){ return mxp.serialize();}));
     s += ")";
-    return s; //TODO implement function in readable print-out
+    return s;
 }
 
 void hel::ReceiveData::deserialize(std::string input){

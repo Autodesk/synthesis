@@ -1,5 +1,5 @@
-#ifndef _ENGINE_INTERFACE_H_
-#define _ENGINE_INTERFACE_H_
+#ifndef _ENGINE_INTERFACE_HPP_
+#define _ENGINE_INTERFACE_HPP_
 
 #include <string>
 

@@ -67,7 +67,7 @@ namespace hel{
         tSystemInterface* getSystemInterface() override{
             return nullptr;
         }
-    
+
         void writeDO(tDIO::tDO value, tRioStatusCode* status){
             writeDO_Headers(value.Headers, status);
             writeDO_SPIPort(value.SPIPort, status);
@@ -80,15 +80,17 @@ namespace hel{
         bool allowOutput(T output,S enabled, bool requires_special_function){
             auto instance = hel::RoboRIOManager::getInstance();
             for(unsigned i = 1; i < findMostSignificantBit(output); i++){
-                if(checkBitHigh(output, i) && hel::checkBitHigh(enabled, i)){ //Attempt output if bit in value is high, allow write if enabled_outputs bit is also high 
-                    bool special_enabled = checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
+                if(checkBitHigh(output, i) && !hel::checkBitHigh(enabled, i)){ //If output is set but output is not enabled, don't allow output
                     instance.second.unlock();
-
-                    return requires_special_function ? special_enabled : !special_enabled; //If it's DO, special function should be disabled. Otherwise, it should be enabled
+                    return false;
+                }
+                if(requires_special_function && !checkBitLow(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it reqiores MXP special function, and it's not, don't allow output
+                    instance.second.unlock();
+                    return false;
                 }
             }
             instance.second.unlock();
-            return false;
+            return true;
         }
 
     public:
@@ -99,11 +101,12 @@ namespace hel{
                 tDIO::tDO outputs = instance.first->digital_system.getOutputs();
                 outputs.Headers = value;
                 instance.first->digital_system.setOutputs(outputs);
+                instance.second.unlock();
+            } else {
+                //TODO error handling
             }
-            instance.second.unlock();
-            //TODO error handling
         }
-    
+
         void writeDO_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             if(allowOutput(value, instance.first->digital_system.getEnabledOutputs().SPIPort, false)){
@@ -111,31 +114,34 @@ namespace hel{
                 tDIO::tDO outputs = instance.first->digital_system.getOutputs();
                 outputs.SPIPort = value;
                 instance.first->digital_system.setOutputs(outputs);
+                instance.second.unlock();
+            } else {
+                //TODO error handling
             }
-            instance.second.unlock();
-            //TODO error handling
         }
-    
+
         void writeDO_Reserved(uint8_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             if(allowOutput(value, instance.first->digital_system.getEnabledOutputs().Reserved, false)){
                 tDIO::tDO outputs = instance.first->digital_system.getOutputs();
                 outputs.Reserved = value;
                 instance.first->digital_system.setOutputs(outputs);
+                instance.second.unlock();
+            } else {
+                //TODO error handling
             }
-            instance.second.unlock();
-            //TODO error handling
         }
-    
+
         void writeDO_MXP(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             if(allowOutput(value, instance.first->digital_system.getEnabledOutputs().MXP, false)){
                 tDIO::tDO outputs = instance.first->digital_system.getOutputs();
                 outputs.MXP = value;
                 instance.first->digital_system.setOutputs(outputs);
+                instance.second.unlock();
+            } else {
+                //TODO error handling
             }
-            instance.second.unlock();
-            //TODO error handling
         }
 
         tDO readDO(tRioStatusCode* /*status*/){
@@ -161,7 +167,7 @@ namespace hel{
             instance.second.unlock();
             return instance.first->digital_system.getOutputs().Reserved;
         }
-    
+
         uint16_t readDO_MXP(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
@@ -212,7 +218,7 @@ namespace hel{
             instance.first->digital_system.setEnabledOutputs(enabled_outputs);
             instance.second.unlock();
         }
-    
+
         void writeOutputEnable_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             tDIO::tOutputEnable enabled_outputs = instance.first->digital_system.getEnabledOutputs();
@@ -220,7 +226,7 @@ namespace hel{
             instance.first->digital_system.setEnabledOutputs(enabled_outputs);
             instance.second.unlock();
         }
-    
+
         void writeOutputEnable_Reserved(uint8_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             tDIO::tOutputEnable enabled_outputs = instance.first->digital_system.getEnabledOutputs();
@@ -228,7 +234,7 @@ namespace hel{
             instance.first->digital_system.setEnabledOutputs(enabled_outputs);
             instance.second.unlock();
         }
-    
+
         void writeOutputEnable_MXP(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             tDIO::tOutputEnable enabled_outputs = instance.first->digital_system.getEnabledOutputs();
@@ -248,13 +254,13 @@ namespace hel{
             instance.second.unlock();
             return instance.first->digital_system.getEnabledOutputs().Headers;
         }
-    
+
         uint8_t readOutputEnable_SPIPort(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getEnabledOutputs().SPIPort;
         }
-    
+
         uint8_t readOutputEnable_Reserved(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
@@ -280,27 +286,59 @@ namespace hel{
             return 0;//unnecessary for emulation
         }
 
-        void writePulse(tDIO::tPulse value, tRioStatusCode* /*status*/){
+    private:
+        void pulse(tPulse value){
             auto instance = hel::RoboRIOManager::getInstance();
+
             instance.first->digital_system.setPulses(value);
-            //TODO this should only last for pulse_length seconds, and only one pulse should be active at a time? Also need to use allowOutput() too
+            uint8_t length = instance.first->digital_system.getPulseLength();
+
+            instance.second.unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(length * 1000));
+            instance.second.lock();
+
+            instance.first->digital_system.setPulses(*(new tPulse));
             instance.second.unlock();
         }
 
-        void writePulse_Headers(uint16_t /*value*/, tRioStatusCode* /*status*/){
-            //TODO
+    public:
+
+        void writePulse(tPulse value, tRioStatusCode* /*status*/){
+            auto instance = hel::RoboRIOManager::getInstance();
+            if(instance.first->digital_system.getPulses().value != (new tPulse)->value){
+                //TODO error handling multiple pulses active at once
+            }
+            if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){
+                instance.second.unlock();
+                std::thread(&DIOManager::pulse, this, value).detach();
+            } else {
+                instance.second.unlock();
+                //TODO error handling
+            }
         }
 
-        void writePulse_SPIPort(uint8_t /*value*/, tRioStatusCode* /*status*/){
-            //TODO
+        void writePulse_Headers(uint16_t value, tRioStatusCode* status){
+            tPulse pulse;
+            pulse.Headers = value;
+            writePulse(pulse, status);
         }
 
-        void writePulse_Reserved(uint8_t /*value*/, tRioStatusCode* /*status*/){
-            //TODO
+        void writePulse_SPIPort(uint8_t value, tRioStatusCode* status){
+            tPulse pulse;
+            pulse.SPIPort = value;
+            writePulse(pulse, status);
         }
 
-        void writePulse_MXP(uint16_t /*value*/, tRioStatusCode* /*status*/){
-            //TODO
+        void writePulse_Reserved(uint8_t value, tRioStatusCode* status){
+            tPulse pulse;
+            pulse.Reserved = value;
+            writePulse(pulse, status);
+        }
+
+        void writePulse_MXP(uint16_t value, tRioStatusCode* status){
+            tPulse pulse;
+            pulse.MXP = value;
+            writePulse(pulse, status);
         }
 
         tPulse readPulse(tRioStatusCode* /*status*/){
