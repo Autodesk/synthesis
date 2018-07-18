@@ -13,7 +13,7 @@ Exporter::~Exporter()
 {
 }
 
-int Exporter::exportCommon()
+void Exporter::loadMeshes()
 {
 	Ptr<FusionDocument> doc = _app->activeDocument();
 
@@ -90,33 +90,6 @@ int Exporter::exportCommon()
 
 
 	//delete _temp;
-
-	_ui->messageBox(a);
-
-	return 0;
-}
-
-
-int Exporter::exportWheel()
-{
-	if (!_ui)
-		return 1;
-
-
-	Ptr<FusionDocument> doc = _app->activeDocument();
-
-	string a = "";
-
-
-	for (Ptr<Component> comp : doc->design()->allComponents())
-	{
-		a += "Component : " + comp->name() + "\n";
-		for (Ptr<Joint> j : comp->joints())
-		{
-			a += j->name() + " ";
-		}
-		a += "\n";
-	}
 
 	_ui->messageBox(a);
 

@@ -20,10 +20,6 @@ namespace BXDATA {
 
 		void addSurface(Surface*);
 
-
-		//LVector3 * verts;				//Should be private
-		//LVector3 * norms;				//Should be private
-
 		vector<double> verts;
 		vector<double> norms;
 

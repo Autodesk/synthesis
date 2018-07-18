@@ -4,7 +4,7 @@
 
 using namespace std;
 
-namespace BXDATA{
+namespace BXDATA {
 	class Surface {
 	public:
 		Surface();
@@ -27,9 +27,7 @@ namespace BXDATA{
 		float translucency;
 		float specular;
 
-		//Inidicies ?
-		//LVector3* facet;
-
-		list<double> facet;
+		// Stores the indices used for each triangle
+		list<int> indices;
 	};
 }
