@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -14,12 +15,11 @@ public partial class BXDJSkeleton
     /// <summary>
     /// The XSD markup to ensure valid document reading.
     /// </summary>
-    private const string BXDJ_XSD_2_0 =
+    private const string BXDJ_XSD_3_0 =
         @"
         <xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
         
         <!-- definition of simple elements -->
-
         <xs:element name='ParentID' type='xs:integer'/>
         <xs:element name='ModelFileName' type='xs:string'/>
         <xs:element name='ModelID' type='xs:string'/>
@@ -49,13 +49,14 @@ public partial class BXDJSkeleton
         <xs:element name='IsDriveWheel' type='xs:boolean'/>
         <xs:element name='PortA' type='xs:integer'/>
         <xs:element name='PortB' type='xs:integer'/>
+        <xs:element name='InputGear' type='xs:double'/>
+        <xs:element name='OutputGear' type='xs:double'/>
         <xs:element name='LowerLimit' type='xs:float'/>
         <xs:element name='UpperLimit' type='xs:float'/>
         <xs:element name='Coefficient' type='xs:decimal'/>
         <xs:element name='SensorModule' type='xs:integer'/>
         <xs:element name='SensorPort' type='xs:integer'/>
         <xs:element name='UseSecondarySource' type='xs:boolean'/>
-
         <xs:element name='ElevatorType'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
@@ -67,7 +68,6 @@ public partial class BXDJSkeleton
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
-
         <xs:element name='DriveType'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
@@ -81,7 +81,6 @@ public partial class BXDJSkeleton
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
-
         <xs:element name='SignalType'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
@@ -90,7 +89,6 @@ public partial class BXDJSkeleton
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
-
         <xs:element name='WheelType'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
@@ -101,7 +99,6 @@ public partial class BXDJSkeleton
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
-
         <xs:element name='SensorType'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
@@ -115,21 +112,17 @@ public partial class BXDJSkeleton
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
-
         <!-- definition of attributes -->
-
         <xs:attribute name='GUID' type='xs:string'/>
         <xs:attribute name='VectorID' type='xs:string'/>
         <xs:attribute name='DriverMetaID' type='xs:integer'/>
-
         <xs:attribute name='Version'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
-                    <xs:pattern value='2\.0\.\d+'/>
+                    <xs:pattern value='3\.0\.\d+'/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
-
         <!-- definition of complex elements -->
         
         <xs:element name='BXDVector3'>
@@ -142,7 +135,6 @@ public partial class BXDJSkeleton
                 <xs:attribute ref='VectorID' use='required'/>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='BallJoint'>
             <xs:complexType>
                 <xs:sequence>
@@ -150,7 +142,6 @@ public partial class BXDJSkeleton
                 </xs:sequence>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='CylindricalJoint'>
             <xs:complexType>
                 <xs:sequence>
@@ -164,7 +155,6 @@ public partial class BXDJSkeleton
                 </xs:sequence>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='LinearJoint'>
             <xs:complexType>
                 <xs:sequence>
@@ -175,7 +165,6 @@ public partial class BXDJSkeleton
                 </xs:sequence>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='PlanarJoint'>
             <xs:complexType>
                 <xs:sequence>
@@ -183,7 +172,6 @@ public partial class BXDJSkeleton
                 </xs:sequence>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='RotationalJoint'>
             <xs:complexType>
                 <xs:sequence>
@@ -194,7 +182,6 @@ public partial class BXDJSkeleton
                 </xs:sequence>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='ElevatorDriverMeta'>
             <xs:complexType>
                 <xs:sequence>
@@ -203,7 +190,6 @@ public partial class BXDJSkeleton
                 <xs:attribute ref='DriverMetaID' use='required'/>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='PneumaticDriverMeta'>
             <xs:complexType>
                 <xs:sequence>
@@ -213,7 +199,6 @@ public partial class BXDJSkeleton
                 <xs:attribute ref='DriverMetaID' use='required'/>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='WheelDriverMeta'>
             <xs:complexType>
                 <xs:sequence>
@@ -234,13 +219,14 @@ public partial class BXDJSkeleton
                 <xs:attribute ref='DriverMetaID' use='required'/>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='JointDriver'>
             <xs:complexType>
                 <xs:sequence>
                     <xs:element ref='DriveType'/>
                     <xs:element ref='PortA'/>
                     <xs:element ref='PortB'/>
+                    <xs:element ref='InputGear'/>
+                    <xs:element ref='OutputGear'/>
                     <xs:element ref='LowerLimit'/>
                     <xs:element ref='UpperLimit'/>
                     <xs:element ref='SignalType'/>
@@ -252,7 +238,6 @@ public partial class BXDJSkeleton
                 </xs:sequence>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='Polynomial'>
             <xs:complexType>
                 <xs:sequence>
@@ -260,7 +245,6 @@ public partial class BXDJSkeleton
                 </xs:sequence>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='RobotSensor'>
             <xs:complexType>
                 <xs:sequence>
@@ -272,7 +256,6 @@ public partial class BXDJSkeleton
                 </xs:sequence>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='Node'>
             <xs:complexType>
                 <xs:sequence>
@@ -292,7 +275,6 @@ public partial class BXDJSkeleton
                 <xs:attribute ref='GUID' use='required'/>
             </xs:complexType>
         </xs:element>
-
         <xs:element name='BXDJ'>
             <xs:complexType>
                 <xs:sequence>
@@ -312,7 +294,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="path"></param>
     /// <param name="useValidation"></param>
-    private static RigidNode_Base ReadSkeleton_2_0(string path, bool useValidation = true)
+    private static RigidNode_Base ReadSkeleton_3_0(string path, bool useValidation = true)
     {
         RigidNode_Base root = null;
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
@@ -321,14 +303,14 @@ public partial class BXDJSkeleton
 
         if (useValidation)
         {
-            settings.Schemas.Add(XmlSchema.Read(new StringReader(BXDJ_XSD_2_0), null));
+            settings.Schemas.Add(XmlSchema.Read(new StringReader(BXDJ_XSD_3_0), null));
             settings.ValidationType = ValidationType.Schema;
         }
         else
         {
             settings.ValidationType = ValidationType.None;
         }
-
+        
         XmlReader reader = XmlReader.Create(path, settings);
 
         try
@@ -339,7 +321,7 @@ public partial class BXDJSkeleton
                 {
                     case "Node":
                         // Reads the current element as a node.
-                        ReadNode_2_0(reader.ReadSubtree(), nodes, ref root);
+                        ReadNode_3_0(reader.ReadSubtree(), nodes, ref root);
                         break;
                 }
             }
@@ -364,7 +346,7 @@ public partial class BXDJSkeleton
     /// <param name="reader"></param>
     /// <param name="nodes"></param>
     /// <param name="root"></param>
-    private static void ReadNode_2_0(XmlReader reader, List<RigidNode_Base> nodes, ref RigidNode_Base root)
+    private static void ReadNode_3_0(XmlReader reader, List<RigidNode_Base> nodes, ref RigidNode_Base root)
     {
         int parentID = -1;
 
@@ -393,30 +375,30 @@ public partial class BXDJSkeleton
                     break;
                 case "BallJoint":
                     // Reads the current element as a BallJoint.
-                    nodes[parentID].AddChild(ReadBallJoint_2_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadBallJoint_3_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "CylindricalJoint":
                     // Reads the current element as a CylindricalJoint.
-                    nodes[parentID].AddChild(ReadCylindricalJoint_2_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadCylindricalJoint_3_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "LinearJoint":
                     // Reads the current element as a LinearJoint.
-                    nodes[parentID].AddChild(ReadLinearJoint_2_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadLinearJoint_3_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "PlanarJoint":
                     // Reads the current element as a PlanarJoint.
-                    nodes[parentID].AddChild(ReadPlanarJoint_2_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadPlanarJoint_3_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "RotationalJoint":
                     // Reads the current elemenet as a RotationalJoint.
-                    nodes[parentID].AddChild(ReadRotationalJoint_2_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadRotationalJoint_3_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "JointDriver":
                     // Add a joint driver to the skeletal joint of the current node.
-                    nodes[nodes.Count - 1].GetSkeletalJoint().cDriver = ReadJointDriver_2_0(reader.ReadSubtree());
+                    nodes[nodes.Count - 1].GetSkeletalJoint().cDriver = ReadJointDriver_3_0(reader.ReadSubtree());
                     break;
                 case "RobotSensor":
-                    nodes[nodes.Count - 1].GetSkeletalJoint().attachedSensors.Add(ReadRobotSensor_2_0(reader.ReadSubtree()));
+                    nodes[nodes.Count - 1].GetSkeletalJoint().attachedSensors.Add(ReadRobotSensor_3_0(reader.ReadSubtree()));
                     break;
             }
         }
@@ -427,7 +409,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static BallJoint_Base ReadBallJoint_2_0(XmlReader reader)
+    private static BallJoint_Base ReadBallJoint_3_0(XmlReader reader)
     {
         // Create a new BallJoint_Base.
         BallJoint_Base ballJoint = (BallJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.BALL);
@@ -438,7 +420,7 @@ public partial class BXDJSkeleton
             {
                 case "BXDVector3":
                     // Read the BXDVector3 as the basePoint.
-                    ballJoint.basePoint = ReadBXDVector3_2_0(reader.ReadSubtree());
+                    ballJoint.basePoint = ReadBXDVector3_3_0(reader.ReadSubtree());
                     break;
             }
         }
@@ -451,7 +433,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static CylindricalJoint_Base ReadCylindricalJoint_2_0(XmlReader reader)
+    private static CylindricalJoint_Base ReadCylindricalJoint_3_0(XmlReader reader)
     {
         // Create a new CylindricalJoint_Base.
         CylindricalJoint_Base cylindricalJoint = (CylindricalJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.CYLINDRICAL);
@@ -465,11 +447,11 @@ public partial class BXDJSkeleton
                     {
                         case "BasePoint":
                             // Assign the BXDVector3 to the basePoint.
-                            cylindricalJoint.basePoint = ReadBXDVector3_2_0(reader.ReadSubtree());
+                            cylindricalJoint.basePoint = ReadBXDVector3_3_0(reader.ReadSubtree());
                             break;
                         case "Axis":
                             // Assign the BXDVector3 to the axis.
-                            cylindricalJoint.axis = ReadBXDVector3_2_0(reader.ReadSubtree());
+                            cylindricalJoint.axis = ReadBXDVector3_3_0(reader.ReadSubtree());
                             break;
                     }
                     break;
@@ -511,7 +493,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static LinearJoint_Base ReadLinearJoint_2_0(XmlReader reader)
+    private static LinearJoint_Base ReadLinearJoint_3_0(XmlReader reader)
     {
         // Create a new LinearJoint_Base.
         LinearJoint_Base linearJoint = (LinearJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.LINEAR);
@@ -525,11 +507,11 @@ public partial class BXDJSkeleton
                     {
                         case "BasePoint":
                             // Assign the BXDVector3 to the basePoint.
-                            linearJoint.basePoint = ReadBXDVector3_2_0(reader.ReadSubtree());
+                            linearJoint.basePoint = ReadBXDVector3_3_0(reader.ReadSubtree());
                             break;
                         case "Axis":
                             // Assign the BXDVector3 to the axis.
-                            linearJoint.axis = ReadBXDVector3_2_0(reader.ReadSubtree());
+                            linearJoint.axis = ReadBXDVector3_3_0(reader.ReadSubtree());
                             break;
                     }
                     break;
@@ -558,7 +540,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static PlanarJoint_Base ReadPlanarJoint_2_0(XmlReader reader)
+    private static PlanarJoint_Base ReadPlanarJoint_3_0(XmlReader reader)
     {
         // Create a new PlanarJoint_Base.
         PlanarJoint_Base planarJoint = (PlanarJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.PLANAR);
@@ -572,11 +554,11 @@ public partial class BXDJSkeleton
                     {
                         case "Normal":
                             // Assign the BXDVector3 to the normal.
-                            planarJoint.normal = ReadBXDVector3_2_0(reader.ReadSubtree());
+                            planarJoint.normal = ReadBXDVector3_3_0(reader.ReadSubtree());
                             break;
                         case "BasePoint":
                             // Assign the BXDVector3 to the basePoint.s
-                            planarJoint.basePoint = ReadBXDVector3_2_0(reader.ReadSubtree());
+                            planarJoint.basePoint = ReadBXDVector3_3_0(reader.ReadSubtree());
                             break;
                     }
                     break;
@@ -591,7 +573,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static RotationalJoint_Base ReadRotationalJoint_2_0(XmlReader reader)
+    private static RotationalJoint_Base ReadRotationalJoint_3_0(XmlReader reader)
     {
         // Create a new RotationalJoint_Base.
         RotationalJoint_Base rotationalJoint = (RotationalJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.ROTATIONAL);
@@ -605,11 +587,11 @@ public partial class BXDJSkeleton
                     {
                         case "BasePoint":
                             // Read the BXDVector3 as the basePoint.
-                            rotationalJoint.basePoint = ReadBXDVector3_2_0(reader.ReadSubtree());
+                            rotationalJoint.basePoint = ReadBXDVector3_3_0(reader.ReadSubtree());
                             break;
                         case "Axis":
                             // Read the BXDVector3 as the axis.
-                            rotationalJoint.axis = ReadBXDVector3_2_0(reader.ReadSubtree());
+                            rotationalJoint.axis = ReadBXDVector3_3_0(reader.ReadSubtree());
                             break;
                     }
                     break;
@@ -637,7 +619,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static BXDVector3 ReadBXDVector3_2_0(XmlReader reader)
+    private static BXDVector3 ReadBXDVector3_3_0(XmlReader reader)
     {
         BXDVector3 vec = new BXDVector3();
 
@@ -668,7 +650,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static JointDriver ReadJointDriver_2_0(XmlReader reader)
+    private static JointDriver ReadJointDriver_3_0(XmlReader reader)
     {
         JointDriver driver = null;
 
@@ -688,6 +670,17 @@ public partial class BXDJSkeleton
                     // Assign a value to portB.
                     driver.portB = reader.ReadElementContentAsInt();
                     break;
+
+                case "InputGear":
+                    // Assign a value to InputGear
+                    driver.InputGear = reader.ReadElementContentAsDouble();
+                    break;
+
+                case "OutputGear":
+                    // Assign a value to OutputGear
+                    driver.OutputGear = reader.ReadElementContentAsDouble();
+                    break;
+
                 case "LowerLimit":
                     // Assign a value to the lowerLimit.
                     driver.lowerLimit = float.Parse(reader.ReadElementContentAsString());
@@ -702,15 +695,15 @@ public partial class BXDJSkeleton
                     break;
                 case "ElevatorDriverMeta":
                     // Add an ElevatorDriverMeta.
-                    driver.AddInfo(ReadElevatorDriverMeta_2_0(reader.ReadSubtree()));
+                    driver.AddInfo(ReadElevatorDriverMeta_3_0(reader.ReadSubtree()));
                     break;
                 case "PneumaticDriverMeta":
                     // Add a PneumaticsDriverMeta.
-                    driver.AddInfo(ReadPneumaticDriverMeta_2_0(reader.ReadSubtree()));
+                    driver.AddInfo(ReadPneumaticDriverMeta_3_0(reader.ReadSubtree()));
                     break;
                 case "WheelDriverMeta":
                     // Add a WheelDriverMeta.
-                    driver.AddInfo(ReadWheelDriverMeta_2_0(reader.ReadSubtree()));
+                    driver.AddInfo(ReadWheelDriverMeta_3_0(reader.ReadSubtree()));
                     break;
             }
         }
@@ -723,7 +716,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static ElevatorDriverMeta ReadElevatorDriverMeta_2_0(XmlReader reader)
+    private static ElevatorDriverMeta ReadElevatorDriverMeta_3_0(XmlReader reader)
     {
         // Create a new ElevatorDriveMeta.
         ElevatorDriverMeta elevatorDriverMeta = new ElevatorDriverMeta();
@@ -747,7 +740,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static PneumaticDriverMeta ReadPneumaticDriverMeta_2_0(XmlReader reader)
+    private static PneumaticDriverMeta ReadPneumaticDriverMeta_3_0(XmlReader reader)
     {
         // Create a new pneumaticDriverMeta.
         PneumaticDriverMeta pneumaticDriverMeta = new PneumaticDriverMeta();
@@ -775,7 +768,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static WheelDriverMeta ReadWheelDriverMeta_2_0(XmlReader reader)
+    private static WheelDriverMeta ReadWheelDriverMeta_3_0(XmlReader reader)
     {
         // Create new WheelDriveMeta.
         WheelDriverMeta wheelDriverMeta = new WheelDriverMeta();
@@ -798,7 +791,7 @@ public partial class BXDJSkeleton
                     break;
                 case "BXDVector3":
                     // Assign a value to the center.
-                    wheelDriverMeta.center = ReadBXDVector3_2_0(reader.ReadSubtree());
+                    wheelDriverMeta.center = ReadBXDVector3_3_0(reader.ReadSubtree());
                     break;
                 case "ForwardAsympSlip":
                     // Assign a value to the forwardAsympSlip.
@@ -847,7 +840,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static RobotSensor ReadRobotSensor_2_0(XmlReader reader)
+    private static RobotSensor ReadRobotSensor_3_0(XmlReader reader)
     {
         RobotSensor robotSensor = null;
 
@@ -869,7 +862,7 @@ public partial class BXDJSkeleton
                     break;
                 case "Polynomial":
                     // Create a polynomial and assign it to the equation.
-                    robotSensor.equation = ReadPolynomial_2_0(reader.ReadSubtree());
+                    robotSensor.equation = ReadPolynomial_3_0(reader.ReadSubtree());
                     break;
                 case "UseSecondarySource":
                     // Assign a value to useSecondarySource.
@@ -886,7 +879,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static Polynomial ReadPolynomial_2_0(XmlReader reader)
+    private static Polynomial ReadPolynomial_3_0(XmlReader reader)
     {
         // Initialize a list of floats.
         List<float> coeff = new List<float>();
