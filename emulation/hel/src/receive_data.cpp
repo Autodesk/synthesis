@@ -8,6 +8,9 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 void hel::ReceiveData::update()const{
+    if(!hel::hal_is_initialized){
+        return;
+    }
     auto instance = hel::RoboRIOManager::getInstance();
 
     for(unsigned i = 0; i < analog_inputs.size(); i++){
