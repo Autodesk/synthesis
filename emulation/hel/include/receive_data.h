@@ -11,7 +11,7 @@ namespace hel{
         std::array<std::vector<int32_t>, hal::kNumAnalogInputs> analog_inputs; //TODO manage analog history vector
         BoundsCheckedArray<bool, hal::kNumDigitalHeaders> digital_hdrs;
         BoundsCheckedArray<MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
-        BoundsCheckedArray<RoboRIO::Joystick, RoboRIO::Joystick::MAX_JOYSTICK_COUNT>  joysticks;
+        BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT>  joysticks;
     public:
         void update()const;
 

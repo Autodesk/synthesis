@@ -4,39 +4,39 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tCounter::tOutput RoboRIO::Counter::getOutput()const{
+    tCounter::tOutput Counter::getOutput()const{
         return output;
     }
 
-    void RoboRIO::Counter::setOutput(tCounter::tOutput out){
+    void Counter::setOutput(tCounter::tOutput out){
         output = out;
     }
 
-    tCounter::tConfig RoboRIO::Counter::getConfig()const{
+    tCounter::tConfig Counter::getConfig()const{
         return config;
     }
 
-    void RoboRIO::Counter::setConfig(tCounter::tConfig c){
+    void Counter::setConfig(tCounter::tConfig c){
         config = c;
     }
 
-    tCounter::tTimerOutput RoboRIO::Counter::getTimerOutput()const{
+    tCounter::tTimerOutput Counter::getTimerOutput()const{
         return timer_output;
     }
 
-    void RoboRIO::Counter::setTimerOutput(tCounter::tTimerOutput out){
+    void Counter::setTimerOutput(tCounter::tTimerOutput out){
         timer_output = out;
     }
 
-    tCounter::tTimerConfig RoboRIO::Counter::getTimerConfig()const{
+    tCounter::tTimerConfig Counter::getTimerConfig()const{
         return timer_config;
     }
 
-    void RoboRIO::Counter::setTimerConfig(tCounter::tTimerConfig c){
+    void Counter::setTimerConfig(tCounter::tTimerConfig c){
         timer_config = c;
     }
 
-    RoboRIO::Counter::Counter():output(),config(),timer_output(),timer_config(){}
+    Counter::Counter():output(),config(),timer_output(),timer_config(){}
 
     struct CounterManager: public tCounter{
     private:

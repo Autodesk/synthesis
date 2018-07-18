@@ -6,7 +6,7 @@
 std::thread ds_spoofer;
 
 namespace hel{
-    RoboRIO::NetComm::NetComm():ref_num(),occurFunction(){}
+    NetComm::NetComm():ref_num(),occurFunction(){}
 }
 
 extern "C" {

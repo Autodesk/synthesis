@@ -4,15 +4,15 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    uint16_t RoboRIO::AnalogOutputs::getMXPOutput(uint8_t index)const{
+    uint16_t AnalogOutputs::getMXPOutput(uint8_t index)const{
     	return mxp_outputs[index];
     }
 
-    void RoboRIO::AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
+    void AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
     	mxp_outputs[index] = value;
     }
 
-    RoboRIO::AnalogOutputs::AnalogOutputs():mxp_outputs(){}
+    AnalogOutputs::AnalogOutputs():mxp_outputs(){}
 
     struct AnalogOutputManager: public tAO{
         tSystemInterface* getSystemInterface(){

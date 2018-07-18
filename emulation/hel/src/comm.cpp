@@ -5,218 +5,218 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    RoboRIO::RobotState::State RoboRIO::RobotState::getState()const{
-    	return state;
+    RobotMode::Mode RobotMode::getMode()const{
+    	return mode;
     }
 
-    void RoboRIO::RobotState::setState(RoboRIO::RobotState::State s){
-    	state = s;
+    void RobotMode::setMode(RobotMode::Mode m){
+    	mode = m;
     }
 
-    bool RoboRIO::RobotState::getEnabled()const{
+    bool RobotMode::getEnabled()const{
     	return enabled;
     }
 
-    void RoboRIO::RobotState::setEnabled(bool e){
+    void RobotMode::setEnabled(bool e){
     	enabled = e;
     }
 
-    bool RoboRIO::RobotState::getEmergencyStopped()const{
+    bool RobotMode::getEmergencyStopped()const{
         return emergency_stopped;
     }
 
-    void RoboRIO::RobotState::setEmergencyStopped(bool e){
+    void RobotMode::setEmergencyStopped(bool e){
         emergency_stopped = e;
     }
 
-    bool RoboRIO::RobotState::getFMSAttached()const{
+    bool RobotMode::getFMSAttached()const{
         return fms_attached;
     }
 
-    void RoboRIO::RobotState::setFMSAttached(bool attached){
+    void RobotMode::setFMSAttached(bool attached){
         fms_attached = attached;
     }
 
-    bool RoboRIO::RobotState::getDSAttached()const{
+    bool RobotMode::getDSAttached()const{
         return ds_attached;
     }
 
-    void RoboRIO::RobotState::setDSAttached(bool attached){
+    void RobotMode::setDSAttached(bool attached){
         ds_attached = attached;
     }
 
-    ControlWord_t RoboRIO::RobotState::toControlWord()const{
+    ControlWord_t RobotMode::toControlWord()const{
         ControlWord_t control_word;
         control_word.enabled = enabled;
-        control_word.autonomous = state == State::AUTONOMOUS;
-        control_word.test = state == State::TEST;
+        control_word.autonomous = mode == Mode::AUTONOMOUS;
+        control_word.test = mode == Mode::TEST;
         control_word.eStop = emergency_stopped;
         control_word.fmsAttached = fms_attached;
         control_word.dsAttached = ds_attached;
         return control_word;
     }
 
-    std::string RoboRIO::DriverStationInfo::getEventName()const{
+    std::string MatchInfo::getEventName()const{
     	return event_name;
     }
 
-    void RoboRIO::DriverStationInfo::setEventName(std::string name){
+    void MatchInfo::setEventName(std::string name){
     	event_name = name;
     }
 
-    std::string RoboRIO::DriverStationInfo::getGameSpecificMessage()const{
+    std::string MatchInfo::getGameSpecificMessage()const{
     	return game_specific_message;
     }
 
-    void RoboRIO::DriverStationInfo::setGameSpecificMessage(std::string message){
+    void MatchInfo::setGameSpecificMessage(std::string message){
     	game_specific_message = message;
     }
 
-    MatchType_t RoboRIO::DriverStationInfo::getMatchType()const{
+    MatchType_t MatchInfo::getMatchType()const{
     	return match_type;
     }
 
-    void RoboRIO::DriverStationInfo::setMatchType(MatchType_t type){
+    void MatchInfo::setMatchType(MatchType_t type){
     	match_type = type;
     }
 
-    uint16_t RoboRIO::DriverStationInfo::getMatchNumber()const{
+    uint16_t MatchInfo::getMatchNumber()const{
     	return match_number;
     }
 
-    void RoboRIO::DriverStationInfo::setMatchNumber(uint16_t number){
+    void MatchInfo::setMatchNumber(uint16_t number){
     	match_number = number;
     }
 
-    uint8_t RoboRIO::DriverStationInfo::getReplayNumber()const{
+    uint8_t MatchInfo::getReplayNumber()const{
     	return replay_number;
     }
 
-    void RoboRIO::DriverStationInfo::setReplayNumber(uint8_t number){
+    void MatchInfo::setReplayNumber(uint8_t number){
     	replay_number = number;
     }
 
-    AllianceStationID_t RoboRIO::DriverStationInfo::getAllianceStationID()const{
+    AllianceStationID_t MatchInfo::getAllianceStationID()const{
     	return alliance_station_id;
     }
 
-    void RoboRIO::DriverStationInfo::setAllianceStationID(AllianceStationID_t id){
+    void MatchInfo::setAllianceStationID(AllianceStationID_t id){
     	alliance_station_id = id;
     }
 
-    double RoboRIO::DriverStationInfo::getMatchTime()const{
+    double MatchInfo::getMatchTime()const{
     	return match_time;
     }
 
-    void RoboRIO::DriverStationInfo::setMatchTime(double time){
+    void MatchInfo::setMatchTime(double time){
     	match_time = time;
     }
 
-    bool RoboRIO::Joystick::getIsXBox()const{
+    bool Joystick::getIsXBox()const{
          return is_xbox;
     }
 
-    void RoboRIO::Joystick::setIsXBox(bool xbox){
+    void Joystick::setIsXBox(bool xbox){
          is_xbox = xbox;
     }
 
-    uint8_t RoboRIO::Joystick::getType()const{
+    uint8_t Joystick::getType()const{
          return type;
     }
 
-    void RoboRIO::Joystick::setType(uint8_t t){
+    void Joystick::setType(uint8_t t){
          type = t;
     }
 
-    std::string RoboRIO::Joystick::getName()const{
+    std::string Joystick::getName()const{
          return name;
     }
 
-    void RoboRIO::Joystick::setName(std::string n){
+    void Joystick::setName(std::string n){
          name = n;
     }
 
-    uint32_t RoboRIO::Joystick::getButtons()const{
+    uint32_t Joystick::getButtons()const{
          return buttons;
     }
 
-    void RoboRIO::Joystick::setButtons(uint32_t b){
+    void Joystick::setButtons(uint32_t b){
          buttons = b;
     }
 
-    uint8_t RoboRIO::Joystick::getButtonCount()const{
+    uint8_t Joystick::getButtonCount()const{
          return button_count;
     }
 
-    void RoboRIO::Joystick::setButtonCount(uint8_t count){
+    void Joystick::setButtonCount(uint8_t count){
          button_count = count;
     }
 
-    std::array<int8_t, RoboRIO::Joystick::MAX_AXIS_COUNT> RoboRIO::Joystick::getAxes()const{
+    std::array<int8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxes()const{
          return axes;
     }
 
-    void RoboRIO::Joystick::setAxes(std::array<int8_t, RoboRIO::Joystick::MAX_AXIS_COUNT> a){
+    void Joystick::setAxes(std::array<int8_t, Joystick::MAX_AXIS_COUNT> a){
          axes = a;
     }
 
-    uint8_t RoboRIO::Joystick::getAxisCount()const{
+    uint8_t Joystick::getAxisCount()const{
          return axis_count;
     }
 
-    void RoboRIO::Joystick::setAxisCount(uint8_t count){
+    void Joystick::setAxisCount(uint8_t count){
          axis_count = count;
     }
 
-    std::array<uint8_t, RoboRIO::Joystick::MAX_AXIS_COUNT> RoboRIO::Joystick::getAxisTypes()const{
+    std::array<uint8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxisTypes()const{
          return axis_types;
     }
 
-    void RoboRIO::Joystick::setAxisTypes(std::array<uint8_t, RoboRIO::Joystick::MAX_AXIS_COUNT> types){
+    void Joystick::setAxisTypes(std::array<uint8_t, Joystick::MAX_AXIS_COUNT> types){
          axis_types = types;
     }
 
-    std::array<int16_t, RoboRIO::Joystick::MAX_POV_COUNT> RoboRIO::Joystick::getPOVs()const{
+    std::array<int16_t, Joystick::MAX_POV_COUNT> Joystick::getPOVs()const{
          return povs;
     }
 
-    void RoboRIO::Joystick::setPOVs(std::array<int16_t, RoboRIO::Joystick::MAX_POV_COUNT> p){
+    void Joystick::setPOVs(std::array<int16_t, Joystick::MAX_POV_COUNT> p){
          povs = p;
     }
 
-    uint8_t RoboRIO::Joystick::getPOVCount()const{
+    uint8_t Joystick::getPOVCount()const{
          return pov_count;
     }
 
-    void RoboRIO::Joystick::setPOVCount(uint8_t count){
+    void Joystick::setPOVCount(uint8_t count){
          pov_count = count;
     }
 
-    uint32_t RoboRIO::Joystick::getOutputs()const{
+    uint32_t Joystick::getOutputs()const{
          return outputs;
     }
 
-    void RoboRIO::Joystick::setOutputs(uint32_t outs){
+    void Joystick::setOutputs(uint32_t outs){
          outputs = outs;
     }
 
-    uint16_t RoboRIO::Joystick::getLeftRumble()const{
+    uint16_t Joystick::getLeftRumble()const{
          return left_rumble;
     }
 
-    void RoboRIO::Joystick::setLeftRumble(uint16_t rumble){
+    void Joystick::setLeftRumble(uint16_t rumble){
          left_rumble = rumble;
     }
 
-    uint16_t RoboRIO::Joystick::getRightRumble()const{
+    uint16_t Joystick::getRightRumble()const{
          return right_rumble;
     }
 
-    void RoboRIO::Joystick::setRightRumble(uint16_t rumble){
+    void Joystick::setRightRumble(uint16_t rumble){
         right_rumble = rumble;
     }
 
-    std::string RoboRIO::Joystick::toString()const{
+    std::string Joystick::toString()const{
         std::string s = "(";
         s += "is_xbox:" + hel::to_string(is_xbox) + ", ";
         s += "type:" + std::to_string(type) + ", ";
@@ -234,7 +234,7 @@ namespace hel{
         s += ")";
         return s;
     }
-    std::string RoboRIO::Joystick::serialize()const{
+    std::string Joystick::serialize()const{
         std::string s = "{";
         s += "\"is_xbox\":" + hel::to_string(is_xbox) + ", ";
         s += "\"type\":" + std::to_string(type) + ", ";
@@ -253,8 +253,8 @@ namespace hel{
         return s;
     }
 
-    RoboRIO::Joystick RoboRIO::Joystick::deserialize(std::string s){
-        RoboRIO::Joystick joy;
+    Joystick Joystick::deserialize(std::string s){
+        Joystick joy;
         joy.is_xbox = hel::stob(hel::pullValue("\"is_xbox\"", s));
         joy.type = std::stoi(hel::pullValue("\"type\"",s));
         joy.name = hel::unquote(hel::pullValue("\"name\"", s));
@@ -287,11 +287,11 @@ namespace hel{
         return joy;
     }
 
-    RoboRIO::Joystick::Joystick():is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes({}), axis_count(0), axis_types({}), povs({}), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
+    Joystick::Joystick():is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes({}), axis_count(0), axis_types({}), povs({}), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
 
-    RoboRIO::RobotState::RobotState():state(RobotState::State::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){}
+    RobotMode::RobotMode():mode(RobotMode::Mode::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){}
 
-    RoboRIO::DriverStationInfo::DriverStationInfo():event_name(),game_specific_message(),match_type(),match_number(0),replay_number(0),alliance_station_id(),match_time(){}
+    MatchInfo::MatchInfo():event_name(),game_specific_message(),match_type(),match_number(0),replay_number(0),alliance_station_id(),match_time(){}
 }
 extern "C" {
     int FRC_NetworkCommunication_Reserve(void* /*instance*/){ //unnecessary for emulation
@@ -322,7 +322,7 @@ extern "C" {
     int FRC_NetworkCommunication_getControlWord(struct ControlWord_t* controlWord){
         auto instance = hel::RoboRIOManager::getInstance();
         if (controlWord != nullptr) {
-            *controlWord = instance.first->robot_state.toControlWord();
+            *controlWord = instance.first->robot_mode.toControlWord();
             controlWord->enabled = 1;
             controlWord->autonomous = 0;
             controlWord->test = 0;
@@ -337,7 +337,7 @@ extern "C" {
     int FRC_NetworkCommunication_getAllianceStation(enum AllianceStationID_t* allianceStation){
         auto instance = hel::RoboRIOManager::getInstance();
         if (allianceStation != nullptr)
-            *allianceStation = instance.first->driver_station_info.getAllianceStationID();
+            *allianceStation = instance.first->match_info.getAllianceStationID();
 
         instance.second.unlock();
         return 0; //TODO returns a status
@@ -345,22 +345,22 @@ extern "C" {
 
     int FRC_NetworkCommunication_getMatchInfo(char* eventName, MatchType_t* matchType, uint16_t* matchNumber, uint8_t* replayNumber, uint8_t* gameSpecificMessage, uint16_t* gameSpecificMessageSize){
         auto instance = hel::RoboRIOManager::getInstance();
-        std::string name = instance.first->driver_station_info.getEventName();
+        std::string name = instance.first->match_info.getEventName();
         std::copy(std::begin(name), std::end(name), eventName);
 
 
         if (matchType != nullptr)
-            *matchType = instance.first->driver_station_info.getMatchType();
+            *matchType = instance.first->match_info.getMatchType();
         if (matchNumber != nullptr)
-            *matchNumber = instance.first->driver_station_info.getMatchNumber();
+            *matchNumber = instance.first->match_info.getMatchNumber();
         if (replayNumber != nullptr)
-            *replayNumber = instance.first->driver_station_info.getReplayNumber();
+            *replayNumber = instance.first->match_info.getReplayNumber();
 
-        std::string hel_message = instance.first->driver_station_info.getGameSpecificMessage();
+        std::string hel_message = instance.first->match_info.getGameSpecificMessage();
         std::copy(std::begin(hel_message), std::end(hel_message), gameSpecificMessage);
 
         if (gameSpecificMessageSize != nullptr)
-            *gameSpecificMessageSize = instance.first->driver_station_info.getGameSpecificMessage().size();
+            *gameSpecificMessageSize = instance.first->match_info.getGameSpecificMessage().size();
 
         instance.second.unlock();
         return 0; //TODO returns a status
@@ -369,7 +369,7 @@ extern "C" {
     int FRC_NetworkCommunication_getMatchTime(float* matchTime){
         auto instance = hel::RoboRIOManager::getInstance();
         if (matchTime != nullptr)
-            *matchTime = instance.first->driver_station_info.getMatchTime();
+            *matchTime = instance.first->match_info.getMatchTime();
 
         instance.second.unlock();
         return 0; //TODO returns a status
@@ -377,11 +377,11 @@ extern "C" {
 
     int FRC_NetworkCommunication_getJoystickAxes(uint8_t joystickNum, struct JoystickAxes_t* axes, uint8_t /*maxAxes*/){
         auto instance = hel::RoboRIOManager::getInstance();
-        if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
+        if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
 
-        std::array<int8_t, hel::RoboRIO::Joystick::MAX_AXIS_COUNT> hel_axes = instance.first->joysticks[joystickNum].getAxes();
+        std::array<int8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axes = instance.first->joysticks[joystickNum].getAxes();
         std::copy(std::begin(hel_axes), std::end(hel_axes), axes->axes);
 
         instance.second.unlock();
@@ -390,7 +390,7 @@ extern "C" {
 
     int FRC_NetworkCommunication_getJoystickButtons(uint8_t joystickNum, uint32_t* buttons, uint8_t* count){
         auto instance = hel::RoboRIOManager::getInstance();
-        if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
+        if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
 
@@ -405,11 +405,11 @@ extern "C" {
 
     int FRC_NetworkCommunication_getJoystickPOVs(uint8_t joystickNum, struct JoystickPOV_t* povs, uint8_t /*maxPOVs*/){
         auto instance = hel::RoboRIOManager::getInstance();
-        if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
+        if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
 
-        std::array<int16_t, hel::RoboRIO::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
+        std::array<int16_t, hel::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
         std::copy(std::begin(hel_povs), std::end(hel_povs), povs->povs);
     
         instance.second.unlock();
@@ -418,7 +418,7 @@ extern "C" {
 
     int FRC_NetworkCommunication_setJoystickOutputs(uint8_t joystickNum, uint32_t hidOutputs, uint16_t leftRumble, uint16_t rightRumble){
         auto instance = hel::RoboRIOManager::getInstance();
-        if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
+        if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
 
@@ -433,7 +433,7 @@ extern "C" {
     int FRC_NetworkCommunication_getJoystickDesc(uint8_t joystickNum, uint8_t* isXBox, uint8_t* type, char* name, uint8_t* axisCount, uint8_t* axisTypes, uint8_t* buttonCount, uint8_t* povCount){
         auto instance = hel::RoboRIOManager::getInstance();
 
-        if(joystickNum <= hel::RoboRIO::Joystick::MAX_JOYSTICK_COUNT){
+        if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
             //TODO error handling
         }
         std::string hel_name = instance.first->joysticks[joystickNum].getName();
@@ -446,7 +446,7 @@ extern "C" {
         if(axisCount)
             *axisCount = instance.first->joysticks[joystickNum].getAxisCount();
     
-        std::array<uint8_t, hel::RoboRIO::Joystick::MAX_AXIS_COUNT> hel_axis_types = instance.first->joysticks[joystickNum].getAxisTypes();
+        std::array<uint8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axis_types = instance.first->joysticks[joystickNum].getAxisTypes();
         std::copy(std::begin(hel_axis_types), std::end(hel_axis_types), axisTypes);
     
         if(buttonCount != nullptr)
@@ -467,7 +467,7 @@ extern "C" {
     void FRC_NetworkCommunication_observeUserProgramDisabled(void){
         auto instance = hel::RoboRIOManager::getInstance();
 
-        instance.first->robot_state.setEnabled(false);
+        instance.first->robot_mode.setEnabled(false);
 
         instance.second.unlock();
     }
@@ -475,8 +475,8 @@ extern "C" {
     void FRC_NetworkCommunication_observeUserProgramAutonomous(void){
         auto instance = hel::RoboRIOManager::getInstance();
 
-        instance.first->robot_state.setState(hel::RoboRIO::RobotState::State::AUTONOMOUS);
-        instance.first->robot_state.setEnabled(true);
+        instance.first->robot_mode.setMode(hel::RobotMode::Mode::AUTONOMOUS);
+        instance.first->robot_mode.setEnabled(true);
 
         instance.second.unlock();
     }
@@ -484,8 +484,8 @@ extern "C" {
     void FRC_NetworkCommunication_observeUserProgramTeleop(void){
         auto instance = hel::RoboRIOManager::getInstance();
 
-        instance.first->robot_state.setState(hel::RoboRIO::RobotState::State::TELEOPERATED);
-        instance.first->robot_state.setEnabled(true);
+        instance.first->robot_mode.setMode(hel::RobotMode::Mode::TELEOPERATED);
+        instance.first->robot_mode.setEnabled(true);
 
         instance.second.unlock();
     }
@@ -493,8 +493,8 @@ extern "C" {
     void FRC_NetworkCommunication_observeUserProgramTest(void){
         auto instance = hel::RoboRIOManager::getInstance();
 
-        instance.first->robot_state.setState(hel::RoboRIO::RobotState::State::TEST);
-        instance.first->robot_state.setEnabled(true);
+        instance.first->robot_mode.setMode(hel::RobotMode::Mode::TEST);
+        instance.first->robot_mode.setEnabled(true);
 
         instance.second.unlock();
     }

@@ -4,31 +4,31 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
  
 namespace hel{
-    tAccumulator::tOutput RoboRIO::Accumulator::getOutput()const{
+    tAccumulator::tOutput Accumulator::getOutput()const{
         return output;
     }
     
-    void RoboRIO::Accumulator::setOutput(tAccumulator::tOutput out){
+    void Accumulator::setOutput(tAccumulator::tOutput out){
         output = out;
     }
 
-    int32_t RoboRIO::Accumulator::getCenter()const{
+    int32_t Accumulator::getCenter()const{
         return center;
     }
 
-    void RoboRIO::Accumulator::setCenter(int32_t c){
+    void Accumulator::setCenter(int32_t c){
         center = c;
     }
 
-    int32_t RoboRIO::Accumulator::getDeadband()const{
+    int32_t Accumulator::getDeadband()const{
         return deadband;
     }
 
-    void RoboRIO::Accumulator::setDeadband(int32_t d){
+    void Accumulator::setDeadband(int32_t d){
         deadband = d;
     }
 
-    RoboRIO::Accumulator::Accumulator():output(),center(),deadband(){}
+    Accumulator::Accumulator():output(),center(),deadband(){}
 
     struct AccumulatorManager: public tAccumulator{
     private:
