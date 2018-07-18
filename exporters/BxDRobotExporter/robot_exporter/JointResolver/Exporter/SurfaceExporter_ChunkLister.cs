@@ -6,14 +6,10 @@ using System.Collections.Generic;
 public partial class SurfaceExporter
 {
     /// <summary>
-    /// Should the exporter attempt to automatically ignore small parts.
-    /// </summary>
-    private bool adaptiveIgnoring = true;
-    /// <summary>
     /// The minimum percent a sub component's bounding box volume of the largest bounding box volume for an object
     /// to be considered small. The lower the number the less that is dropped.
     /// </summary>
-    private double minVolumePercent = 0.0001;
+    private const double MIN_VOLUME_PERCENT = 0.0002;
 
     /// <summary>
     /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
@@ -48,7 +44,7 @@ public partial class SurfaceExporter
         // Add sub-occurences
         foreach (ComponentOccurrence subOcc in occ.SubOccurrences)
         {
-            if (!adaptiveIgnoring || Utilities.BoxVolume(subOcc.RangeBox) >= minVolume)
+            if (Utilities.BoxVolume(subOcc.RangeBox) >= minVolume)
             {
                 GenerateExportList(subOcc, plannedExports, physics, minVolume, true);
             }
@@ -73,12 +69,12 @@ public partial class SurfaceExporter
             if (curVolume > maxVolume)
                 maxVolume = curVolume;
         }
-        double minVolume = maxVolume * minVolumePercent;
+        double minVolume = maxVolume * MIN_VOLUME_PERCENT;
 
         // Analyze all component occurrences
         foreach (ComponentOccurrence occ in group.occurrences)
         {
-            if (!adaptiveIgnoring || Utilities.BoxVolume(occ.RangeBox) >= minVolume)
+            if (Utilities.BoxVolume(occ.RangeBox) >= minVolume)
             {
                 GenerateExportList(occ, plannedExports, physics, minVolume);
             }
