@@ -11,14 +11,13 @@ namespace Synthesis.Network
 {
     public class MultiplayerNetwork : NetworkManager
     {
-        // TODO: Add event listeners for connection.
-        
         public enum ConnectionStatus
         {
             Connected,
             Disconnected,
-            Failed
         }
+
+        public static MultiplayerNetwork Instance => singleton as MultiplayerNetwork;
         
         public MultiplayerState State { get; set; }
 
@@ -53,10 +52,12 @@ namespace Synthesis.Network
 
         public override void OnClientDisconnect(NetworkConnection conn)
         {
-            base.OnClientConnect(conn);
+            ConnectionStatusChanged?.Invoke(this, ConnectionStatus.Disconnected);
+        }
 
-            if (conn.lastError != NetworkError.Ok)
-                ConnectionStatusChanged?.Invoke(this, ConnectionStatus.Failed);
+        public override void OnServerDisconnect(NetworkConnection conn)
+        {
+            // TODO, called on the server when a client disconnects.
         }
 
         public override void OnStartClient(NetworkClient client)

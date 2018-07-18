@@ -18,25 +18,32 @@ namespace Synthesis.States
         private readonly string lobbyCode;
         private readonly string networkAddress;
 
+        private bool connected;
+
         public ConnectingState(string lobbyCode, string networkAddress)
         {
             this.lobbyCode = lobbyCode;
             this.networkAddress = networkAddress;
+
         }
 
         public override void Start()
         {
-            MultiplayerNetwork network = NetworkManager.singleton as MultiplayerNetwork;
+            connected = false;
+
+            MultiplayerNetwork network = MultiplayerNetwork.Instance;
             network.networkAddress = networkAddress;
             network.ConnectionStatusChanged += OnConnectionStatusChanged;
             network.StartClient();
         }
 
-        private void OnError(NetworkMessage netMsg)
+        public override void End()
         {
-            netMsg.ReadMessage<ErrorMessage>();
-            UserMessageManager.Dispatch("Unable to connect to the lobby!", 5f);
-            StateMachine.PopState();
+            MultiplayerNetwork network = MultiplayerNetwork.Instance;
+            network.ConnectionStatusChanged -= OnConnectionStatusChanged;
+
+            if (!connected)
+                network.StopClient();
         }
 
         private void OnConnectionStatusChanged(object sender, MultiplayerNetwork.ConnectionStatus status)
@@ -44,9 +51,10 @@ namespace Synthesis.States
             switch (status)
             {
                 case MultiplayerNetwork.ConnectionStatus.Connected:
+                    connected = true;
                     StateMachine.ChangeState(new LobbyState(false, lobbyCode), false);
                     break;
-                case MultiplayerNetwork.ConnectionStatus.Failed:
+                case MultiplayerNetwork.ConnectionStatus.Disconnected:
                     UserMessageManager.Dispatch("Unable to connect to the lobby!", 5f);
                     StateMachine.PopState();
                     break;

@@ -6,14 +6,16 @@ using UnityEngine;
 
 namespace Synthesis.GUI
 {
+    // TODO: Update this class to work as intended.
+
     /// <summary>
     /// Renders timed messages at the bottom of the screen.
     /// </summary>
     public class UserMessageManager
     {
         // Dimensions of the overlay at the bottom.
-        private const int WIDTH = 400;
-        private const int HEIGHT = 400;
+        private const int Width = 400;
+        private const int Height = 400;
 
         public static float scale = 1;
 
@@ -77,7 +79,10 @@ namespace Synthesis.GUI
                 Color initFG = UnityEngine.GUI.color;
                 Color initBG = UnityEngine.GUI.backgroundColor;
 
-                GUILayout.BeginArea(new Rect((Screen.width / 2) - (WIDTH / 2), Screen.height - HEIGHT - 10, WIDTH, HEIGHT));
+                float width = Width * scale;
+                float height = Height * scale;
+
+                GUILayout.BeginArea(new Rect((Screen.width / 2) - (width / 2), Screen.height - height - 10, width, height));
                 float deltaTime = Time.deltaTime;
                 float y = 0;
 
@@ -92,7 +97,7 @@ namespace Synthesis.GUI
                     UnityEngine.GUI.backgroundColor = bg;
                     GUIContent content = new GUIContent(msg.message);
                     Vector2 size = UnityEngine.GUI.skin.GetStyle("Button").CalcSize(content);
-                    if (UnityEngine.GUI.Button(new Rect((WIDTH - size.x) / 2f, HEIGHT - y - size.y, size.x, size.y), content))
+                    if (UnityEngine.GUI.Button(new Rect((width - size.x) / 2f, height - y - size.y, size.x, size.y), content))
                     {
                         msg.ttl = -1;
                     }
