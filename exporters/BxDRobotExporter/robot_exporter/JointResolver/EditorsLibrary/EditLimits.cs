@@ -453,6 +453,8 @@ namespace EditorsLibrary
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = oldPos;
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = oldStartLimit;
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = oldEndLimit;
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = oldPos + " rad";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
                         }
                         else
                         {
@@ -469,7 +471,7 @@ namespace EditorsLibrary
                     {
                         oldStartLimit = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue;
                         oldEndLimit = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue;
-                        oldPos = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).ModelValue;
+                        oldPos = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).ModelValue;
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue;
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = startLimit;
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = endLimit;
@@ -490,6 +492,8 @@ namespace EditorsLibrary
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = oldPos;
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = oldStartLimit;
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = oldEndLimit;
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = oldPos + " cm";
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
                     }
                     else if (!(this.Angular_Start.Checked && this.Angular_End.Checked))
                     {
@@ -526,6 +530,8 @@ namespace EditorsLibrary
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = oldPos;
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = oldStartLimit;
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = oldEndLimit;
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = oldPos + " rad";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
                         }
                         else
                         {
