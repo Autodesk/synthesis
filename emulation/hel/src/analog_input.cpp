@@ -4,7 +4,7 @@
 
 #include <athena/DigitalInternal.h>
 
-#include "roborio.h"
+#include "roborio.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;

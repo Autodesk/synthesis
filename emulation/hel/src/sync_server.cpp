@@ -1,5 +1,5 @@
-#include "sync_server.h"
-#include "send_data.h"
+#include "sync_server.hpp"
+#include "send_data.hpp"
 
 #include <unistd.h>
 namespace hel {

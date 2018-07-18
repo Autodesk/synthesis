@@ -1,8 +1,8 @@
-#include "receive_data.h"
+#include "receive_data.hpp"
 
 #include "HAL/HAL.h"
-#include "util.h"
-#include "json_util.h"
+#include "util.hpp"
+#include "json_util.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;

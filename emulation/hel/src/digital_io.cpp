@@ -1,5 +1,5 @@
-#include "roborio.h"
-#include "util.h"
+#include "roborio.hpp"
+#include "util.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;

@@ -1,6 +1,6 @@
-#include "mxp_data.h"
-#include "util.h"
-#include "json_util.h"
+#include "mxp_data.hpp"
+#include "util.hpp"
+#include "json_util.hpp"
 
 std::string hel::to_string(hel::MXPData::Config config){
     switch(config){
