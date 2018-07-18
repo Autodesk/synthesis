@@ -68,29 +68,23 @@ public partial class SurfaceExporter
     }
 
     /// <summary>
-    /// Creates a list of faces from a surface.
+    /// Checks if a surface uses multiple assets.
     /// </summary>
     /// <param name="surf">Surface to analyze</param>
-    /// <param name="faces">List of faces on surface</param>
     /// <returns>True if multiple assets exist on the surface.</returns>
-    private bool AnalyzeFaces(Faces surfaceFaces, out List<Face> faces)
+    private bool MultipleAssets(Faces surfaceFaces)
     {
-        faces = new List<Face>();
-
         string firstAssetName = null;
-        bool multipleAssets = false;
 
         foreach (Face face in surfaceFaces)
         {
-            faces.Add(face);
-
             if (firstAssetName == null)
                 firstAssetName = face.Appearance.DisplayName;
-            else if (!multipleAssets && face.Appearance.DisplayName != firstAssetName)
-                multipleAssets = true;
+            else if (face.Appearance.DisplayName != firstAssetName)
+                return true;
         }
 
-        return multipleAssets;
+        return false;
     }
 
     /// <summary>
@@ -103,10 +97,9 @@ public partial class SurfaceExporter
         PartialSurface bufferSurface = new PartialSurface();
 
         // Store a list of faces separate from the Inventor API
-        Faces surfaceFaces = surf.Faces;
-        List<Face> faces;
+        Faces faces = surf.Faces;
 
-        if (separateFaces && AnalyzeFaces(surfaceFaces, out faces))
+        if (separateFaces && MultipleAssets(faces))
         {
             // Add facets for each face of the surface
             foreach (Face face in faces)

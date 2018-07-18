@@ -36,7 +36,6 @@ public partial class SurfaceExporter
 
             Parallel.ForEach(plannedSurfaces, (SurfaceBody surface) =>
             {
-                //SurfaceBody surface = plan.surface;
                 CalculateSurfaceFacets(surface, outputMesh, SynthesisGUI.PluginSettings.GeneralUseFancyColors);
 
                 lock (finishLock)
