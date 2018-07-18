@@ -47,6 +47,9 @@
 #include "sys_watchdog.hpp"
 
 namespace hel{
+
+    extern std::atomic<bool> hal_is_initialized;
+
     /**
      * \struct RoboRIO roborio.h
      * \brief Mock RoboRIO implementation

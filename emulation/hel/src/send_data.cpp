@@ -7,6 +7,10 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 void hel::SendData::update(){
+    if(!hel::hal_is_initialized){
+        return;
+    }
+
     auto instance = RoboRIOManager::getInstance(nullptr);
     int32_t status = 0;
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
@@ -23,10 +27,10 @@ void hel::SendData::update(){
             if(forward){
                 if(reverse){
                     return RelayState::ERROR;
-                } else{
-                    return RelayState::FORWARD;
                 }
-            } else if(reverse){
+                return RelayState::FORWARD;
+            }
+            if(reverse){
                 return RelayState::REVERSE;
             }
             return RelayState::OFF;
@@ -90,7 +94,7 @@ void hel::SendData::update(){
         tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
         for(unsigned i = 0; i < digital_hdrs.size(); i++){
             if(checkBitHigh(output_mode.MXP,i)){
-                HAL_SetDIO(digital_hdrs[i], i, &status);
+                digital_hdrs[i] = HAL_GetDIO(i, &status);
             }
             status = 0; //reset status between HAL calls
         }

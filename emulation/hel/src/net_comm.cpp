@@ -19,6 +19,7 @@ extern "C" {
         };
         instance.first->net_comm.occurFunction = newData;
         ds_spoofer = std::thread([newData](){while(1){newData(42);}});
+        hel::hal_is_initialized.store(true);
         instance.second.unlock();
     }
 }
