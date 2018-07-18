@@ -1,5 +1,5 @@
-#ifndef _UTIL_H_
-#define _UTIL_H_
+#ifndef _UTIL_HPP_
+#define _UTIL_HPP_
 
 #include <functional>
 #include <vector>
@@ -40,6 +40,11 @@ namespace hel{
     bool checkBitHigh(T value,unsigned index){
     	index = 1u << index; 
     	return value & index;
+    }
+
+    template<typename T>
+    bool checkBitLow(T value,unsigned index){
+        return !checkBitHigh(value, index);
     }
 
     template<typename TInteger, typename TIndex>

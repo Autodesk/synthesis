@@ -1,5 +1,5 @@
-#ifndef _SEND_DATA_H_
-#define _SEND_DATA_H_
+#ifndef _SEND_DATA_HPP_
+#define _SEND_DATA_HPP_
 
 
 #include "HAL/HAL.h"

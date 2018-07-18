@@ -189,7 +189,7 @@ namespace hel {
         }
 
         uint32_t readLoopTiming(tRioStatusCode*) {
-            return 0; //TODO
+            return PWMSystem::EXPECTED_LOOP_TIMING; //this is probably fine
         }
 
         void strobeLatchOutput(tRioStatusCode*) {}

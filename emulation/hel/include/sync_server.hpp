@@ -1,5 +1,5 @@
-#ifndef _SYNC_SERVER_H_
-#define _SYNC_SERVER_H_
+#ifndef _SYNC_SERVER_HPP_
+#define _SYNC_SERVER_HPP_
 
 #include "roborio.hpp"
 #include <asio.hpp>
@@ -16,4 +16,4 @@ namespace hel {
     };
 }
 
-#endif /* _SYNC_SERVER_H_ */
+#endif /* _SYNC_SERVER_HPP_ */

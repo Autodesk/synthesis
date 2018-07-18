@@ -1,5 +1,5 @@
-#ifndef _JSON_UTIL_H_
-#define _JSON_UTIL_H_
+#ifndef _JSON_UTIL_HPP_
+#define _JSON_UTIL_HPP_
 
 #include <vector>
 #include <string>

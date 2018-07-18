@@ -1,5 +1,5 @@
-#ifndef _ANALOG_INPUTS_H_
-#define _ANALOG_INPUTS_H_
+#ifndef _ANALOG_INPUTS_HPP_
+#define _ANALOG_INPUTS_HPP_
 
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAI.h"

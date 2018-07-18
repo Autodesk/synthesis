@@ -34,10 +34,12 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI inputs;
 
         /**
-         * \var
+         * \var uint16_t mxp_special_functions_enabled
+         * \brief Bit mask for MXP pins representing if their non-DIO option should be active
+         * Note: the bitmask is default high for DIO, low for MXP special function
          */
 
-        uint16_t mxp_special_functions_enabled;//TODO this may be enabled low, double check that
+        uint16_t mxp_special_functions_enabled;//enabled low, double check that
 
         /**
          * \var
