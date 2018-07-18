@@ -34,10 +34,7 @@ namespace Synthesis {
         Exporter(Ptr<Application>);
         ~Exporter();
 
-		int exportCommon();
-        int exportWheel();
-
-		void writeToFile(string a, logLevels lvl); 
+		void loadMeshes();
 
     private:
         Ptr<Application> _app;
