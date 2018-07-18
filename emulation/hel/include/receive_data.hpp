@@ -1,9 +1,9 @@
 #ifndef _RECIEVE_DATA_H_
 #define _RECIEVE_DATA_H_
 
-#include "roborio.h"
-#include "mxp_data.h"
-#include "bounds_checked_array.h"
+#include "roborio.hpp"
+#include "mxp_data.hpp"
+#include "bounds_checked_array.hpp"
 
 namespace hel{
     struct ReceiveData{

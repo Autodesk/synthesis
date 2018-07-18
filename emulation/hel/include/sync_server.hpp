@@ -1,7 +1,7 @@
 #ifndef _SYNC_SERVER_H_
 #define _SYNC_SERVER_H_
 
-#include "roborio.h"
+#include "roborio.hpp"
 #include <asio.hpp>
 
 namespace hel {

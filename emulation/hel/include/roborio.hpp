@@ -1,5 +1,5 @@
-#ifndef _ROBORIO_H_
-#define _ROBORIO_H_
+#ifndef _ROBORIO_HPP_
+#define _ROBORIO_HPP_
 
 #define ASIO_STANDALONE
 #define ASIO_HAS_STD_ADDRESSOF
@@ -32,7 +32,7 @@
 #include "counter.hpp"
 #include "digital_system.hpp"
 #include "encoder.hpp"
-#include "error.h"
+#include "error.hpp"
 #include "global.hpp"
 #include "joystick.hpp"
 #include "match_info.hpp"
@@ -41,9 +41,9 @@
 #include "pwm_system.hpp"
 #include "relay_system.hpp"
 #include "robot_mode.hpp"
-#include "send_data.h"
+#include "send_data.hpp"
 #include "spi_system.hpp"
-#include "sync_server.h"
+#include "sync_server.hpp"
 #include "sys_watchdog.hpp"
 
 namespace hel{

@@ -1,5 +1,5 @@
-#include "roborio.h"
-#include "send_data.h"
+#include "roborio.hpp"
+#include "send_data.hpp"
 
 std::atomic<bool> hel::hal_is_initialized{false};
 

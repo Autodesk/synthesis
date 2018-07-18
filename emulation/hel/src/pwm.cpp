@@ -1,5 +1,5 @@
-#include "roborio.h"
-#include "util.h"
+#include "roborio.hpp"
+#include "util.hpp"
 
 #include "athena/DigitalInternal.h"
 
