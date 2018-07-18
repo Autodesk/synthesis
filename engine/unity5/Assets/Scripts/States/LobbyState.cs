@@ -1,4 +1,5 @@
 ﻿using Synthesis.FSM;
+using Synthesis.GUI;
 using Synthesis.Network;
 using System;
 using System.Collections.Generic;
@@ -26,16 +27,33 @@ namespace Synthesis.States
         public override void Start()
         {
             GameObject.Find("LobbyCodeText").GetComponent<Text>().text = "Lobby Code: " + lobbyCode;
+
+            if (!host)
+            {
+                MultiplayerNetwork network = MultiplayerNetwork.Instance;
+                network.ConnectionStatusChanged += OnConnectionStatusChanged;
+            }
         }
 
         public override void End()
         {
-            MultiplayerNetwork network = NetworkManager.singleton as MultiplayerNetwork;
+            MultiplayerNetwork network = MultiplayerNetwork.Instance;
+            network.ConnectionStatusChanged -= OnConnectionStatusChanged;
             
             if (network.Host)
                 network.StopHost();
             else
                 network.StopClient();
+        }
+
+        private void OnConnectionStatusChanged(object sender, MultiplayerNetwork.ConnectionStatus e)
+        {
+            if (e == MultiplayerNetwork.ConnectionStatus.Disconnected)
+            {
+                UserMessageManager.Dispatch("Lost connection to the lobby!", 5f);
+                MultiplayerNetwork.Instance.StopClient();
+                StateMachine.PopState();
+            }
         }
     }
 }

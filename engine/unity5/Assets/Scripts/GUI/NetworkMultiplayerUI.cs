@@ -15,7 +15,10 @@ namespace Synthesis.GUI
 {
     public class NetworkMultiplayerUI : MonoBehaviour
     {
+        private const float MessageScaleFactor = 10f;
+
         private StateMachine uiStateMachine;
+        private Canvas canvas;
 
         /// <summary>
         /// Links the <see cref="NetworkMultiplayerUI"/>'s panels to the <see cref="StateMachine"/> and
@@ -24,6 +27,7 @@ namespace Synthesis.GUI
         private void Start()
         {
             uiStateMachine = GetComponent<StateMachine>();
+            canvas = GetComponent<Canvas>();
 
             LinkPanels();
             RegisterButtonCallbacks();
@@ -36,6 +40,7 @@ namespace Synthesis.GUI
         /// </summary>
         void OnGUI()
         {
+            UserMessageManager.scale = canvas.scaleFactor * MessageScaleFactor;
             UserMessageManager.Render();
         }
 
