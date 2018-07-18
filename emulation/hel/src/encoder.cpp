@@ -4,39 +4,39 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tEncoder::tOutput RoboRIO::Encoder::getOutput()const{
+    tEncoder::tOutput Encoder::getOutput()const{
         return output;
     }
 
-    void RoboRIO::Encoder::setOutput(tEncoder::tOutput out){
+    void Encoder::setOutput(tEncoder::tOutput out){
         output = out;
     }
 
-    tEncoder::tConfig RoboRIO::Encoder::getConfig()const{
+    tEncoder::tConfig Encoder::getConfig()const{
         return config;
     }
 
-    void RoboRIO::Encoder::setConfig(tEncoder::tConfig c){
+    void Encoder::setConfig(tEncoder::tConfig c){
         config = c;
     }
 
-    tEncoder::tTimerOutput RoboRIO::Encoder::getTimerOutput()const{
+    tEncoder::tTimerOutput Encoder::getTimerOutput()const{
         return timer_output;
     }
 
-    void RoboRIO::Encoder::setTimerOutput(tEncoder::tTimerOutput output){
+    void Encoder::setTimerOutput(tEncoder::tTimerOutput output){
         timer_output = output;
     }
 
-    tEncoder::tTimerConfig RoboRIO::Encoder::getTimerConfig()const{
+    tEncoder::tTimerConfig Encoder::getTimerConfig()const{
         return timer_config;
     }
 
-    void RoboRIO::Encoder::setTimerConfig(tEncoder::tTimerConfig c){
+    void Encoder::setTimerConfig(tEncoder::tTimerConfig c){
         timer_config = c;
     }
 
-    RoboRIO::Encoder::Encoder():output(),config(),timer_output(),timer_config(){}
+    Encoder::Encoder():output(),config(),timer_output(),timer_config(){}
 
     struct EncoderManager: public tEncoder{
     private:

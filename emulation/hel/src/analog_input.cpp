@@ -10,38 +10,38 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
-    void RoboRIO::AnalogInputs::setConfig(tAI::tConfig value) {config = value;}
-    tAI::tConfig RoboRIO::AnalogInputs::getConfig() {return config;}
+    void AnalogInputs::setConfig(tAI::tConfig value) {config = value;}
+    tAI::tConfig AnalogInputs::getConfig() {return config;}
 
-    void RoboRIO::AnalogInputs::setReadSelect(tAI::tReadSelect value) {read_select = value;}
-    tAI::tReadSelect RoboRIO::AnalogInputs::getReadSelect() {return read_select;}
+    void AnalogInputs::setReadSelect(tAI::tReadSelect value) {read_select = value;}
+    tAI::tReadSelect AnalogInputs::getReadSelect() {return read_select;}
 
-    void RoboRIO::AnalogInputs::setOversampleBits(uint8_t channel, uint8_t value) {
+    void AnalogInputs::setOversampleBits(uint8_t channel, uint8_t value) {
         analog_inputs[channel].oversample_bits = value;
     }
-    uint8_t RoboRIO::AnalogInputs::getOversampleBits(uint8_t channel) {
+    uint8_t AnalogInputs::getOversampleBits(uint8_t channel) {
         return analog_inputs[channel].oversample_bits;
     }
-    void RoboRIO::AnalogInputs::setAverageBits(uint8_t channel, uint8_t value) {
+    void AnalogInputs::setAverageBits(uint8_t channel, uint8_t value) {
             analog_inputs[channel].average_bits = value;
     }
-    uint8_t RoboRIO::AnalogInputs::getAverageBits(uint8_t channel) {
+    uint8_t AnalogInputs::getAverageBits(uint8_t channel) {
         return analog_inputs[channel].average_bits;
     }
-    void RoboRIO::AnalogInputs::setScanList(uint8_t channel, uint8_t value) {
+    void AnalogInputs::setScanList(uint8_t channel, uint8_t value) {
         analog_inputs[channel].scan_list = value;
     }
-    uint8_t RoboRIO::AnalogInputs::getScanList(uint8_t channel) {
+    uint8_t AnalogInputs::getScanList(uint8_t channel) {
         return analog_inputs[channel].scan_list;
     }
-    std::vector<int32_t> RoboRIO::AnalogInputs::getValues(uint8_t channel){
+    std::vector<int32_t> AnalogInputs::getValues(uint8_t channel){
         return analog_inputs[channel].values;
     }
-    void RoboRIO::AnalogInputs::setValues(uint8_t channel, std::vector<int32_t> values){
+    void AnalogInputs::setValues(uint8_t channel, std::vector<int32_t> values){
         analog_inputs[channel].values = values;
     }
 
-    RoboRIO::AnalogInputs::AnalogInputs():analog_inputs(),config(),read_select(){}
+    AnalogInputs::AnalogInputs():analog_inputs(),config(),read_select(){}
 
     struct AnalogInputManager: public tAI{
         tSystemInterface* getSystemInterface(){
@@ -50,7 +50,7 @@ namespace hel {
         
         int32_t readOutput(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
-            hel::RoboRIO::AnalogInputs analog_inputs = instance.first->analog_inputs;
+            hel::AnalogInputs analog_inputs = instance.first->analog_inputs;
             uint8_t channel = analog_inputs.getReadSelect().Channel;
 
             if(analog_inputs.getReadSelect().Averaged){

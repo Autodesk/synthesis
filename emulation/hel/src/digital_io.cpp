@@ -5,63 +5,63 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tDIO::tDO RoboRIO::DIOSystem::getOutputs()const{
+    tDIO::tDO DigitalSystem::getOutputs()const{
     	return outputs;
     }
     
-    void RoboRIO::DIOSystem::setOutputs(tDIO::tDO value){
+    void DigitalSystem::setOutputs(tDIO::tDO value){
     	outputs = value;
     }
 
-    tDIO::tOutputEnable RoboRIO::DIOSystem::getEnabledOutputs()const{
+    tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const{
     	return enabled_outputs;
     }
     
-    void RoboRIO::DIOSystem::setEnabledOutputs(tDIO::tOutputEnable value){
+    void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable value){
     	enabled_outputs = value;
     }
 
-    tDIO::tPulse RoboRIO::DIOSystem::getPulses()const{
+    tDIO::tPulse DigitalSystem::getPulses()const{
     	return pulses;
     }
     
-    void RoboRIO::DIOSystem::setPulses(tDIO::tPulse value){
+    void DigitalSystem::setPulses(tDIO::tPulse value){
     	pulses = value;
     }
 
-    tDIO::tDI RoboRIO::DIOSystem::getInputs()const{
+    tDIO::tDI DigitalSystem::getInputs()const{
     	return inputs;
     }
 
-    void RoboRIO::DIOSystem::setInputs(tDIO::tDI value){
+    void DigitalSystem::setInputs(tDIO::tDI value){
     	inputs = value;
     }
 
-    uint16_t RoboRIO::DIOSystem::getMXPSpecialFunctionsEnabled()const{
+    uint16_t DigitalSystem::getMXPSpecialFunctionsEnabled()const{
     		return mxp_special_functions_enabled;
     }
 
-    void RoboRIO::DIOSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
+    void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
     	mxp_special_functions_enabled = value;
     }
 
-    uint8_t RoboRIO::DIOSystem::getPulseLength()const{
+    uint8_t DigitalSystem::getPulseLength()const{
     	return pulse_length;
     }
 
-    void RoboRIO::DIOSystem::setPulseLength(uint8_t value){
+    void DigitalSystem::setPulseLength(uint8_t value){
     	pulse_length = value;
     }
 
-    uint8_t RoboRIO::DIOSystem::getPWMDutyCycle(uint8_t index)const{
+    uint8_t DigitalSystem::getPWMDutyCycle(uint8_t index)const{
     	return pwm[index];
     }
 
-    void RoboRIO::DIOSystem::setPWMDutyCycle(uint8_t index, uint8_t value){
+    void DigitalSystem::setPWMDutyCycle(uint8_t index, uint8_t value){
     	pwm[index] = value;
     }
 
-    RoboRIO::DIOSystem::DIOSystem():outputs(),enabled_outputs(),pulses(),inputs(),mxp_special_functions_enabled(),pulse_length(),pwm(){}
+    DigitalSystem::DigitalSystem():outputs(),enabled_outputs(),pulses(),inputs(),mxp_special_functions_enabled(),pulse_length(),pwm(){}
 
     struct DIOManager: public tDIO{
         tSystemInterface* getSystemInterface() override{

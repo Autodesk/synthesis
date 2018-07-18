@@ -6,7 +6,7 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 TEST(Accelerometer, convertAccel) {
-    hel::RoboRIO::Accelerometer accelerometer;
+    hel::Accelerometer accelerometer;
 
     std::pair<uint8_t, uint8_t> raw_accel = {0b01100001,0b11010000}; //NI FPGA loses first 4 bits of second byte in conversion, so leave them zero
     std::cout<<"Raw acceleration: ["<<((int)raw_accel.first)<<","<<((int)raw_accel.second)<<"]\n";

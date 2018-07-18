@@ -49,7 +49,7 @@ void hel::ReceiveData::update()const{
 std::string hel::ReceiveData::toString()const{
     std::string s = "(";
     s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
-    s += "joysticks:" + hel::to_string(joysticks, std::function<std::string(hel::RoboRIO::Joystick)>([&](hel::RoboRIO::Joystick joy){ return joy.toString(); })) + ", ";
+    s += "joysticks:" + hel::to_string(joysticks, std::function<std::string(hel::Joystick)>([&](hel::Joystick joy){ return joy.toString(); })) + ", ";
     s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>([&](hel::MXPData mxp){ return mxp.serialize();}));
     s += ")";
     return s; //TODO implement function in readable print-out
@@ -67,7 +67,7 @@ void hel::ReceiveData::deserialize(std::string input){
     try{
     joysticks = hel::deserializeList(
         hel::pullValue("\"joysticks\"", input),
-        std::function<RoboRIO::Joystick(std::string)>(RoboRIO::Joystick::deserialize),
+        std::function<Joystick(std::string)>(Joystick::deserialize),
         true);
     } catch(const std::exception& ex){
         //TODO error handling

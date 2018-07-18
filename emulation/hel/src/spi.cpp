@@ -4,63 +4,63 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tSPI::tAutoTriggerConfig RoboRIO::SPISystem::getAutoTriggerConfig()const{
+    tSPI::tAutoTriggerConfig SPISystem::getAutoTriggerConfig()const{
         return auto_trigger_config;
     }
 
-    void RoboRIO::SPISystem::setAutoTriggerConfig(tSPI::tAutoTriggerConfig config){
+    void SPISystem::setAutoTriggerConfig(tSPI::tAutoTriggerConfig config){
         auto_trigger_config = config;
     }
 
-    tSPI::tAutoByteCount RoboRIO::SPISystem::getAutoByteCount()const{
+    tSPI::tAutoByteCount SPISystem::getAutoByteCount()const{
         return auto_byte_count;
     }
 
-    void RoboRIO::SPISystem::setAutoByteCount(tSPI::tAutoByteCount count){
+    void SPISystem::setAutoByteCount(tSPI::tAutoByteCount count){
         auto_byte_count = count;
     }
 
-    tSPI::tChipSelectActiveHigh RoboRIO::SPISystem::getChipSelectActiveHigh()const{
+    tSPI::tChipSelectActiveHigh SPISystem::getChipSelectActiveHigh()const{
         return chip_select_active_high;
     }
 
-    void RoboRIO::SPISystem::setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh select){
+    void SPISystem::setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh select){
         chip_select_active_high = select;
     }
 
-    uint8_t RoboRIO::SPISystem::getAutoChipSelect()const{
+    uint8_t SPISystem::getAutoChipSelect()const{
         return auto_chip_select;
     }
 
-    void RoboRIO::SPISystem::setAutoChipSelect(uint8_t select){
+    void SPISystem::setAutoChipSelect(uint8_t select){
         auto_chip_select = select;
     }
 
-    bool RoboRIO::SPISystem::getAutoSPI1Select()const{
+    bool SPISystem::getAutoSPI1Select()const{
         return auto_spi_1_select;
     }
 
-    void RoboRIO::SPISystem::setAutoSPI1Select(bool select){
+    void SPISystem::setAutoSPI1Select(bool select){
         auto_spi_1_select = select;
     }
 
-    uint32_t RoboRIO::SPISystem::getAutoRate()const{
+    uint32_t SPISystem::getAutoRate()const{
         return auto_rate;
     }
 
-    void RoboRIO::SPISystem::setAutoRate(uint32_t rate){
+    void SPISystem::setAutoRate(uint32_t rate){
         auto_rate = rate;
     }
 
-    uint8_t RoboRIO::SPISystem::getEnabledDIO()const{
+    uint8_t SPISystem::getEnabledDIO()const{
         return enabled_dio;
     }
 
-    void RoboRIO::SPISystem::setEnabledDIO(uint8_t enabled){
+    void SPISystem::setEnabledDIO(uint8_t enabled){
         enabled_dio = enabled;
     }
 
-    RoboRIO::SPISystem::SPISystem():auto_trigger_config(),auto_byte_count(),chip_select_active_high(),auto_chip_select(),auto_spi_1_select(),auto_rate(),enabled_dio(){}
+    SPISystem::SPISystem():auto_trigger_config(),auto_byte_count(),chip_select_active_high(),auto_chip_select(),auto_spi_1_select(),auto_rate(),enabled_dio(){}
 
     struct SPIManager: public tSPI{
         tSystemInterface* getSystemInterface(){

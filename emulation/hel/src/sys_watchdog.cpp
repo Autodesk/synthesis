@@ -4,15 +4,15 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tSysWatchdog::tStatus RoboRIO::SysWatchdog::getStatus()const{
+    tSysWatchdog::tStatus SysWatchdog::getStatus()const{
         return status;
     }
 
-    void RoboRIO::SysWatchdog::setStatus(tSysWatchdog::tStatus s){
+    void SysWatchdog::setStatus(tSysWatchdog::tStatus s){
         status = s;
     }
 
-    RoboRIO::SysWatchdog::SysWatchdog():status(){}
+    SysWatchdog::SysWatchdog():status(){}
 
     struct SysWatchdogManager: public tSysWatchdog{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation
