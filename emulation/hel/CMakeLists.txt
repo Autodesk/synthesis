@@ -38,46 +38,50 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
-add_executable(generate_libwpi src/generate_libwpi.cpp)
-add_custom_target(libwpi.so generate_libwpi)
-add_dependencies(libwpi.so generate_libwpi)
+add_custom_target ( generate_libwpi
+	COMMAND bash -c "g++ ${CMAKE_BINARY_DIR}/src/generate_libwpi.cpp -o build/generate_libwpi"
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	COMMENT "Generate libwpi.so object file"
+	VERBATIM )
 
 if(ARCH MATCHES "[Aa][Rr][Mm]")
   set (CMAKE_C_COMPILER arm-frc-linux-gnueabi-gcc)
   set (CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
 
   if(NOT NO_UNIT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_UNIT MATCHES "[Oo][Nn]")
-    message(WARNING "Unit tests are not currently available while compliling for ARM. If you wish to build unit tests, please change the architecture to x86_64")
     set(NO_UNIT "TRUE")
   endif()
 
   add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/lib/libwpi.so
     COMMAND ./build/generate_libwpi
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build
     DEPENDS generate_libwpi
     VERBATIM)
 
-  link_directories ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena )
+  link_directories ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/ ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/)
 elseif(ARCH MATCHES "([Xx]86([-_]64)?)")
 
   set (CMAKE_C_COMPILER gcc)
   set (CMAKE_CXX_COMPILER g++)
   add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/lib/libwpi.so
     COMMAND ./build/generate_libwpi
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/build
     DEPENDS generate_libwpi
     VERBATIM)
 
-  link_directories (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64)
+  link_directories (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64 ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/x86-64/ ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared/)
 
 else()
   message(WARNING "No architecture specified; defaulting to x86.")
   set (CMAKE_C_COMPILER gcc)
   set (CMAKE_CXX_COMPILER g++)
+  set (ARCH "x86_64")
   add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/lib/libwpi.so x86
     COMMAND ./build/generate_libwpi
     DEPENDS generate_libwpi
     VERBATIM)
 
-  link_directories (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64)
+  link_directories (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64 ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/x86-64/ ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared/)
 endif()
 
 add_custom_target ( build_vm
@@ -95,36 +99,50 @@ add_custom_target ( asio ALL
 ExternalProject_Add(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
-  CONFIGURE_COMMAND mkdir -p ${WPILIB_DIRECTORY}/build && cd ${WPILIB_DIRECTORY}/build && cmake -H.. -B. -DWITHOUT_CSCORE=true
-  BUILD_COMMAND cd ${WPILIB_DIRECTORY}/build && make -j4
+  CONFIGURE_COMMAND cd ${WPILIB_DIRECTORY} && ./gradlew :wpilibc:build
+  BUILD_COMMAND ""
   INSTALL_COMMAND ""
   )
+add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp)
+add_dependencies(hel asio wpilib generate_libwpi)
+
+target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
+target_link_libraries(hel wpi)
+
 
 if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
-  ExternalProject_Add(GoogleTest
-    PREFIX lib/google_test
-    DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
-    GIT_REPOSITORY https://www.github.com/google/googletest
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-    )
-
-  link_directories("lib/lib64")
+   link_directories("lib/lib64")
 
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
-    add_executable(FRCUserProgram tests/test_project/robot.cpp)
-    add_dependencies(FRCUserProgram wpilib libwpi.so)
-    target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
-    target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native/include")
-    target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include")
-    set_target_properties(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user_code")
-    target_compile_options(FRCUserProgram PUBLIC -pthread)
-    target_link_libraries(FRCUserProgram wpi)
+    if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
+      add_executable(FRCUserProgram tests/test_project/robot.cpp)
+      add_dependencies(FRCUserProgram wpilib generate_libwpi)
+      target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
+      target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native/include")
+      target_include_directories(FRCUserProgram PRIVATE "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include")
+      set_target_properties(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user_code")
+      target_compile_options(FRCUserProgram PUBLIC -pthread)
+      target_link_libraries(FRCUserProgram wpi)
+    else()
+      message(WARNING "Robot code generation not supported on x86_64.")
+    endif()
   else()
     message(STATUS "Skipping test robot code generation.")
   endif()
 
   if(NOT NO_UNIT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_UNIT MATCHES "[Oo][Nn]")
-    MESSAGE("Disovering test files:")
+    if(ARCH MATCHES "[Aa][Rr][Mm]")
+      message(WARNING "Unit tests not currently available in ARM configuratino")
+      return()
+    endif()
+    ExternalProject_Add(GoogleTest
+      PREFIX lib/google_test
+      DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
+      GIT_REPOSITORY https://www.github.com/google/googletest
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+      )
+
+   MESSAGE("Disovering test files:")
 
     file(GLOB test_list tests/*.cpp)
     FOREACH(file ${test_list})
@@ -204,9 +222,3 @@ if(DOXYGEN_FOUND AND CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" OR
 else()
   MESSAGE("Doxygen not found; skipping")
 endif()
-
-add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp)
-add_dependencies(hel asio wpilib libwpi.so)
-
-target_include_directories( hel PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
-target_link_libraries(hel wpi)
