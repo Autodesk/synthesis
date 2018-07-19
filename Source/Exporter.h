@@ -19,8 +19,6 @@
 using namespace adsk::core;
 using namespace adsk::fusion;
 using namespace adsk::cam;
-using namespace std;
-using namespace BXDATA;
 
 namespace Synthesis
 {
