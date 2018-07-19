@@ -2,7 +2,7 @@
 
 BinaryWriter::BinaryWriter(std::string file)
 {
-	outputFile.open(file, std::ios::out | std::ios::binary);
+	outputFile.open(file, std::ios::binary);
 }
 
 BinaryWriter::~BinaryWriter()
