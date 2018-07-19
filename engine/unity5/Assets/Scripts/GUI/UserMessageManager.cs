@@ -14,10 +14,22 @@ namespace Synthesis.GUI
     public class UserMessageManager
     {
         // Dimensions of the overlay at the bottom.
-        private const int Width = 400;
-        private const int Height = 400;
+        private const int Width = 800;
+        private const int Height = 800;
+        private const int FontSize = 24;
 
         public static float scale = 1;
+
+        private static readonly GUIStyle style = new GUIStyle
+        {
+            font = Resources.Load<Font>("Fonts/Russo_One"),
+            fontSize = FontSize,
+            normal = new GUIStyleState
+            {
+                background = Resources.Load<Texture2D>("Images/blacktexture"),
+                textColor = Color.white
+            }
+        };
 
         /// <summary>
         /// Object representing a timed message.
@@ -28,7 +40,7 @@ namespace Synthesis.GUI
             public readonly Color foreground, background;
             public readonly float lifetime;
             public float ttl;
-
+            
             public UserMessage(String msg, float ttl, Color foreground, Color background)
             {
                 this.message = msg;
@@ -66,7 +78,7 @@ namespace Synthesis.GUI
         /// <param name="ttl">Time to live in seconds</param>
         public static void Dispatch(String msg, float ttl)
         {
-            Dispatch(msg, ttl, Color.white, new Color(0f, 0f, 0f, 0.9f));
+            Dispatch(msg, ttl, Color.white, new Color(0f, 0f, 0f, 1f));
         }
 
         /// <summary>
@@ -79,10 +91,7 @@ namespace Synthesis.GUI
                 Color initFG = UnityEngine.GUI.color;
                 Color initBG = UnityEngine.GUI.backgroundColor;
 
-                float width = Width * scale;
-                float height = Height * scale;
-
-                GUILayout.BeginArea(new Rect((Screen.width / 2) - (width / 2), Screen.height - height - 10, width, height));
+                GUILayout.BeginArea(new Rect((Screen.width / 2) - (Width / 2), Screen.height - Height - 10, Width, Height));
                 float deltaTime = Time.deltaTime;
                 float y = 0;
 
@@ -95,9 +104,11 @@ namespace Synthesis.GUI
                     bg.a *= alpha;
                     UnityEngine.GUI.color = fg;
                     UnityEngine.GUI.backgroundColor = bg;
+                    style.fontSize = (int)Math.Round(FontSize * scale);
                     GUIContent content = new GUIContent(msg.message);
-                    Vector2 size = UnityEngine.GUI.skin.GetStyle("Button").CalcSize(content);
-                    if (UnityEngine.GUI.Button(new Rect((width - size.x) / 2f, height - y - size.y, size.x, size.y), content))
+                    Vector2 size = style.CalcSize(content);
+
+                    if (UnityEngine.GUI.Button(new Rect((Width - size.x) / 2f, Height - y - size.y, size.x, size.y), content, style))
                     {
                         msg.ttl = -1;
                     }
