@@ -5,7 +5,6 @@
 using namespace adsk::core;
 using namespace adsk::fusion;
 using namespace adsk::cam;
-using namespace std;
 
 namespace Synthesis
 {

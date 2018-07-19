@@ -16,15 +16,15 @@ namespace BXDA
 
 		void addSubmesh(SubMesh * submesh);
 
-		string getGUID();
+		std::string getGUID();
 		int getVersion();
 
 	private:
 		const int CURRENT_VERSION = 0;
 
-		string guid;
+		std::string guid;
 		Physics physics;
-		vector<SubMesh*> subMeshes;
+		std::vector<SubMesh*> subMeshes;
 
 	};
 }

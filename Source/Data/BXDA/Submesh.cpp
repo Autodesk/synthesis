@@ -21,13 +21,13 @@ SubMesh::SubMesh(SubMesh* s) : vertices(s->vertices.size()), surfaces(s->surface
 		surfaces.push_back(new Surface(surface));
 }
 
-SubMesh::SubMesh(vector<Vertex*> vertices) : vertices(vertices.size())
+SubMesh::SubMesh(std::vector<Vertex*> vertices) : vertices(vertices.size())
 {
 	for (Vertex* vertex : vertices)
 		this->vertices.push_back(new Vertex(vertex));
 }
 
-SubMesh::SubMesh(vector<Vertex*> vertices, vector<Surface*> surfaces) : SubMesh(vertices)
+SubMesh::SubMesh(std::vector<Vertex*> vertices, std::vector<Surface*> surfaces) : SubMesh(vertices)
 {
 	for (Surface* surface : surfaces)
 		this->surfaces.push_back(new Surface(surface));
@@ -35,24 +35,31 @@ SubMesh::SubMesh(vector<Vertex*> vertices, vector<Surface*> surfaces) : SubMesh(
 
 std::ostream& BXDA::operator<<(std::ostream& output, const SubMesh& s)
 {
+	// Output vertices' locations
 	output << (int)s.vertices.size() * 3;
-	for (Vertex* vertex : s.vertices)
+	for (Vertex * vertex : s.vertices)
 		output << vertex->location;
 
+	// Output vertices' normals
 	output << (int)s.vertices.size() * 3;
-	for (Vertex* vertex : s.vertices)
+	for (Vertex * vertex : s.vertices)
 		output << vertex->normal;
+
+	// Output surfaces
+	output << (int)s.surfaces.size();
+	for (Surface * surface : s.surfaces)
+		output << *surface;
 
 	return output;
 }
 
-void BXDA::SubMesh::addVertices(vector<Vertex*> vertices)
+void BXDA::SubMesh::addVertices(std::vector<Vertex*> vertices)
 {
 	for (Vertex* vertex : vertices)
 		this->vertices.push_back(new Vertex(vertex));
 }
 
-void SubMesh::addSurface(Surface* s)
+void SubMesh::addSurface(Surface * s)
 {
 	surfaces.push_back(new Surface(s));
 }
@@ -66,9 +73,9 @@ void BXDA::SubMesh::mergeMesh(const SubMesh* other)
 	addVertices(other->vertices);
 
 	// Add other mesh's triangles to this mesh
-	for (Surface* surface : other->surfaces)
+	for (Surface * surface : other->surfaces)
 	{
-		Surface* newSurface = new Surface(surface);
+		Surface * newSurface = new Surface(surface);
 		newSurface->offsetIndices(offset);
 		addSurface(newSurface);
 	}
@@ -84,10 +91,10 @@ void BXDA::SubMesh::getConvexCollider(SubMesh* outputMesh) const
 
 	Surface * newSurface = new Surface();
 
-	for (Surface surface : surfaces)
+	for (Surface * surface : surfaces)
 		newSurface->addTriangles(surface);
 
 	outputMesh->addSurface(newSurface); // Actual convex hull should have only one surface
-	
+
 	delete newSurface;
 }

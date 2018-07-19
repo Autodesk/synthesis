@@ -29,7 +29,7 @@ Surface::Surface(const Surface * s) : triangles(s->triangles.size())
 		triangles.push_back(new Triangle(triangle));
 }
 
-Surface::Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular, const vector<int> & indices) : triangles(indices.size() / 3)
+Surface::Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular, const std::vector<int> & indices) : triangles(indices.size() / 3)
 {
 	this->hasColor = hasColor;
 	this->color = color;
@@ -43,30 +43,39 @@ Surface::Surface(bool hasColor, unsigned int color, float transparency, float tr
 
 std::ostream & BXDA::operator<<(std::ostream & output, const Surface & s)
 {
+	// Output color
 	output << s.hasColor;
 	if (s.hasColor)
 		output << s.color;
 
+	// Output other material information
 	output << s.transparency;
 	output << s.translucency;
 	output << s.specular;
+
+	// Output triangles
+	output << (int)s.triangles.size() * 3;
+	for (Triangle * triangle : s.triangles)
+		output << *triangle;
+
+	return output;
 }
 
-void Surface::addTriangles(const vector<Triangle>& triangles)
+void Surface::addTriangles(const std::vector<Triangle*>& triangles)
 {
 	for (Triangle * triangle : triangles)
-		this->triangles.push_back(triangle);
+		this->triangles.push_back(new Triangle(triangle));
 }
 
-void BXDA::Surface::addTriangles(const Surface * surface)
+void BXDA::Surface::addTriangles(const Surface* surface)
 {
 	for (Triangle * triangle : surface->triangles)
-		triangles.push_back(triangle);
+		triangles.push_back(new Triangle(triangle));
 }
 
 void Surface::offsetIndices(int offset)
 {
-	for (Triangle* tri : triangles)
+	for (Triangle * tri : triangles)
 	{
 		tri->vertexIndices[0] += offset;
 		tri->vertexIndices[1] += offset;
