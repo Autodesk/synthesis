@@ -10,9 +10,9 @@
 #include <Core/UserInterface/CommandEventHandler.h>
 #include <Core/UserInterface/CommandEventArgs.h>
 #include <time.h>
-#include "../AddIn/EUI.h"
-#include "BXDA/Mesh.h"
-#include "../BinaryRWObject.h"
+#include "AddIn/EUI.h"
+#include "Data/BXDA/Mesh.h"
+#include "Data/BinaryRWObject.h"
 #include <chrono>
 #include <numeric>
 
