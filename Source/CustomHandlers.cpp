@@ -2,32 +2,37 @@
 
 using namespace Synthesis;
 
-void ExportCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs) {
+void ExportCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs)
+{
 	// Code to react to the event.
 	//_app->userInterface.messageBox("test");
 	//_UI->messageBox("Test Export");
 	Exporter * e = new Exporter(_APP);
-	e->exportCommon();
+	//e->exportCommon();
 	//e->~Exporter();
 }
 
-void ExportWheelCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs) {
+void ExportWheelCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs)
+{
 	// Code to react to the event.
 	//_app->userInterface.messageBox("test");
 	//_UI->messageBox("Test Export");
 	Exporter * e = new Exporter(_APP);
-	e->exportWheel();
+	//e->exportWheel();
 }
 
-void MyCloseEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) {
+void MyCloseEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+{
 	//close button is clicked
 }
 
-void MyHTMLEventHandler::notify(const Ptr<HTMLEventArgs>& eventArgs) {
+void MyHTMLEventHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
+{
 
 }
 
-void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs) {
+void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
+{
 	// Create a palette
 	Ptr<UserInterface> _ui = _APP->userInterface();
 
@@ -36,7 +41,8 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 		return;
 
 	Ptr<Palette> palette = palettes->itemById("myPalette");
-	if (!palette) {
+	if (!palette)
+	{
 		palette = palettes->add("myPalette", "My Palette", "palette/palette.html", true, true, true, 300, 200);
 		if (!palette)
 			return;
@@ -64,12 +70,14 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 
 		closeEvent->add(onClose_);
 	}
-	else {
+	else
+	{
 		palette->isVisible(true);
 	}
 }
 
-void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs) {
+void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs)
+{
 	Ptr<UserInterface> _ui = _APP->userInterface();
 	Ptr<Command> command = eventArgs->command();
 	if (!command)
@@ -83,7 +91,8 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 	exec->add(onShowPaletteCommandExecuted_);
 }
 
-void SendInfoCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs) {
+void SendInfoCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
+{
 	// Send information to the palette.
 	Ptr<UserInterface> _ui = _APP->userInterface();
 	Ptr<Palettes> palettes = _ui->palettes();

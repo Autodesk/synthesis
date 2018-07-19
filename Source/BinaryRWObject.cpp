@@ -1,24 +1,28 @@
 #include "BinaryRWObject.h"
 
 using namespace BXDATA;
-using namespace std;
 
-BinaryWriter::BinaryWriter(string file) {
+BinaryWriter::BinaryWriter(string file)
+{
 	ofs.open(file, ios::out | ios::binary);
 }
 
-BinaryWriter::~BinaryWriter() {
-	
+BinaryWriter::~BinaryWriter()
+{
+
 }
 
-bool BinaryWriter::Write(BXDA * bxda) {
-	if (ofs.is_open() == true) {
+bool BinaryWriter::Write(BXDA * bxda)
+{
+	if (ofs.is_open() == true)
+	{
 		ofs << bxda->GUID;
 		ofs << (unsigned char)bxda->Version;
 
 		int countV = 0, countN = 0, countI = 0;
 		size_t countS = bxda->meshes.size();
-		for (int i = 0; i < countS; i++) {
+		for (int i = 0; i < countS; i++)
+		{
 			Submesh * temp = bxda->meshes[i];
 			countV = temp->verts.size() / 3;
 			countN = temp->norms.size() / 3;
@@ -29,12 +33,14 @@ bool BinaryWriter::Write(BXDA * bxda) {
 
 			ofs << (unsigned char)(countV * 3);
 
-			for (double d : temp->verts) {
+			for (double d : temp->verts)
+			{
 				ofs << (unsigned char)d;
 			}
 
 			ofs << (countN * 3);
-			for (double d : temp->norms) {
+			for (double d : temp->norms)
+			{
 				ofs << (unsigned char)d;
 			}
 			delete temp;
@@ -43,7 +49,8 @@ bool BinaryWriter::Write(BXDA * bxda) {
 		ofs.close();
 		return 0;
 	}
-	else {
+	else
+	{
 		//error when opening the file
 		return 1;
 	}

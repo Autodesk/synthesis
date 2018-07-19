@@ -1,12 +1,15 @@
 #pragma once
+
+#include <vector>
 #include "LVector3.h"
 #include "Surface.h"
-#include <vector>
 
 using namespace std;
 
-namespace BXDATA {
-	class Submesh {
+namespace BXDATA
+{
+	class Submesh
+	{
 	public:
 		Submesh();
 		~Submesh();

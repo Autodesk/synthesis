@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
 #include <CAM/CAMAll.h>
@@ -10,12 +11,10 @@
 #include <Core/UserInterface/CommandEventArgs.h>
 #include <time.h>
 #include "EUI.h"
-#include "BXDA.h"
+#include "Data/BXDA.h"
 #include "BinaryRWObject.h"
 #include <chrono>
 #include <numeric>
-
-//#using "SimulatorAPI.dll"
 
 using namespace adsk::core;
 using namespace adsk::fusion;
@@ -23,22 +22,21 @@ using namespace adsk::cam;
 using namespace std;
 using namespace BXDATA;
 
-
-
-namespace Synthesis {
-
+namespace Synthesis
+{
 	enum logLevels { info, warn, critikal };
 
-    class Exporter {
-    public:
-        Exporter(Ptr<Application>);
-        ~Exporter();
+	class Exporter
+	{
+	public:
+		Exporter(Ptr<Application>);
+		~Exporter();
 
 		void loadMeshes();
 
-    private:
-        Ptr<Application> _app;
-        Ptr<UserInterface> _ui;
+	private:
+		Ptr<Application> _app;
+		Ptr<UserInterface> _ui;
 
-    };
+	};
 }

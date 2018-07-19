@@ -1,11 +1,12 @@
 #pragma once
 
-
-namespace BXDATA {
+namespace BXDATA
+{
 #define EPSILON 1.0E-6F;					//This is a tool that will come in handy later
 
 	//Data point <x, y, z>
-	class Vector3 {
+	class Vector3
+	{
 	public:
 		Vector3();
 		Vector3(float, float, float);			//Overloaded Constructor for first item

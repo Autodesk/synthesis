@@ -1,8 +1,11 @@
 #pragma once
-#include "Vector3.h"
 
-namespace BXDATA {
-	class Physics {
+#include "Data/Vector3.h"
+
+namespace BXDATA
+{
+	class Physics
+	{
 	public:
 		Physics();
 		Physics(Vector3*);

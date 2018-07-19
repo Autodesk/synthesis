@@ -7,11 +7,12 @@ using namespace adsk::fusion;
 using namespace adsk::cam;
 using namespace std;
 
-namespace Synthesis {
-
+namespace Synthesis
+{
 	//____________________Button Events_________________________
 
-	class ExportCommandCreatedEventHandler : public adsk::core::CommandCreatedEventHandler {
+	class ExportCommandCreatedEventHandler : public adsk::core::CommandCreatedEventHandler
+	{
 	public:
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
 		Ptr<Application> _APP;
@@ -19,18 +20,19 @@ namespace Synthesis {
 
 	};
 
-	class ExportWheelCommandCreatedEventHandler : public adsk::core::CommandCreatedEventHandler {
+	class ExportWheelCommandCreatedEventHandler : public adsk::core::CommandCreatedEventHandler
+	{
 	public:
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
 		Ptr<Application> _APP;
 	private:
 
 	};
-
 
 	//________________Palette Events__________________________
 
-	class MyCloseEventHandler : public adsk::core::UserInterfaceGeneralEventHandler{
+	class MyCloseEventHandler : public adsk::core::UserInterfaceGeneralEventHandler
+	{
 	public:
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
 		Ptr<Application> _APP;
@@ -56,7 +58,6 @@ namespace Synthesis {
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
 		Ptr<Application> _APP;
 	};
-
 
 	// Event handler for the commandExecuted event to send info to the palette.
 	class SendInfoCommandExecuteHandler : public adsk::core::CommandEventHandler
