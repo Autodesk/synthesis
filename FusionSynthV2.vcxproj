@@ -93,39 +93,37 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BinaryRWObject.cpp" />
-    <ClCompile Include="BM.cpp" />
-    <ClCompile Include="BXDA.cpp" />
-    <ClCompile Include="CustomHandlers.cpp" />
-    <ClCompile Include="EUI.cpp" />
-    <ClCompile Include="Exporter.cpp" />
-    <ClCompile Include="FusionSynthV2.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="LVector3.cpp" />
-    <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="Submesh.cpp" />
-    <ClCompile Include="Surface.cpp" />
-    <ClCompile Include="Vector3.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="FusionSynthV2.manifest">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BinaryRWObject.h" />
-    <ClInclude Include="BXDA.h" />
-    <ClInclude Include="CustomHandlers.h" />
-    <ClInclude Include="EUI.h" />
-    <ClInclude Include="Exporter.h" />
-    <ClInclude Include="LVector3.h" />
-    <ClInclude Include="Physics.h" />
-    <ClInclude Include="Submesh.h" />
-    <ClInclude Include="Surface.h" />
-    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Source\BinaryRWObject.h" />
+    <ClInclude Include="Source\CustomHandlers.h" />
+    <ClInclude Include="Source\Data\BXDA.h" />
+    <ClInclude Include="Source\Data\LVector3.h" />
+    <ClInclude Include="Source\Data\Submesh.h" />
+    <ClInclude Include="Source\Data\Surface.h" />
+    <ClInclude Include="Source\Data\Vector3.h" />
+    <ClInclude Include="Source\EUI.h" />
+    <ClInclude Include="Source\Exporter.h" />
+    <ClInclude Include="Source\Physics.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\BinaryRWObject.cpp" />
+    <ClCompile Include="Source\BM.cpp" />
+    <ClCompile Include="Source\CustomHandlers.cpp" />
+    <ClCompile Include="Source\Data\BXDA.cpp" />
+    <ClCompile Include="Source\Data\LVector3.cpp" />
+    <ClCompile Include="Source\Data\Submesh.cpp" />
+    <ClCompile Include="Source\Data\Surface.cpp" />
+    <ClCompile Include="Source\Data\Vector3.cpp" />
+    <ClCompile Include="Source\EUI.cpp" />
+    <ClCompile Include="Source\Exporter.cpp" />
+    <ClCompile Include="Source\FusionSynth.cpp" />
+    <ClCompile Include="Source\FusionSynthV2.cpp" />
+    <ClCompile Include="Source\Physics.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
