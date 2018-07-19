@@ -102,7 +102,7 @@
     <ClInclude Include="Source\AddIn\CustomHandlers.h" />
     <ClInclude Include="Source\AddIn\EUI.h" />
     <ClInclude Include="Source\Data\BinaryRWObject.h" />
-    <ClInclude Include="Source\Data\BXDA\Submesh.h" />
+    <ClInclude Include="Source\Data\BXDA\SubMesh.h" />
     <ClInclude Include="Source\Data\BXDA\Triangle.h" />
     <ClInclude Include="Source\Data\BXDA\Mesh.h" />
     <ClInclude Include="Source\Data\BXDA\Physics.h" />
@@ -118,7 +118,7 @@
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp" />
     <ClCompile Include="Source\BM.cpp" />
     <ClCompile Include="Source\Data\BinaryRWObject.cpp" />
-    <ClCompile Include="Source\Data\BXDA\Submesh.cpp" />
+    <ClCompile Include="Source\Data\BXDA\SubMesh.cpp" />
     <ClCompile Include="Source\Data\BXDA\Triangle.cpp" />
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp" />
     <ClCompile Include="Source\Data\BXDA\Physics.cpp" />

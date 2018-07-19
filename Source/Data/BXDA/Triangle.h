@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace BXDA
 {
 	class Triangle
@@ -11,5 +13,7 @@ namespace BXDA
 		Triangle(const unsigned int vertexIndices[]);
 		Triangle(const Triangle * triangle);
 		Triangle(unsigned int vertexIndex0, unsigned int vertexIndex1, unsigned int vertexIndex2);
+		
+		friend std::ostream& operator<<(std::ostream&, const Triangle&);
 	};
 }

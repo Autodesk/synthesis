@@ -34,7 +34,7 @@ Vector3 Vector3::operator/(double scale) const
 	return Vector3(x / scale, y / scale, z / scale);
 }
 
-std::ostream& BXDA::operator<<(std::ostream& output, const Vector3& v)
+std::ostream & BXDA::operator<<(std::ostream & output, const Vector3 & v)
 {
 	return output << v.x << v.y << v.z;
 }
