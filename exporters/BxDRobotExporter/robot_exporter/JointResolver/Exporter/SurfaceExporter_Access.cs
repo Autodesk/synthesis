@@ -2,26 +2,13 @@
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public partial class SurfaceExporter
 {
-    /// <summary>
-    /// Clears the mesh structure and physical properties, 
-    /// preparing this exporter for another set of objects.
-    /// </summary>
-    public void Reset(Guid guid)
+    public SurfaceExporter()
     {
-        outputMesh = new BXDAMesh(guid);
-    }
-
-    /// <summary>
-    /// Gets the currently generated mesh object.
-    /// </summary>
-    /// <returns>a BXDA Mesh</returns>
-    public BXDAMesh GetOutput()
-    {
-        DumpMeshBuffer();
-        return outputMesh;
+        assets.Clear();
     }
 
     /// <summary>
@@ -29,41 +16,38 @@ public partial class SurfaceExporter
     /// </summary>
     /// <param name="group">Group to export from</param>
     /// <param name="reporter">Progress reporter</param>
-    public void ExportAll(CustomRigidGroup group, BXDIO.ProgressReporter reporter = null)
+    public BXDAMesh ExportAll(CustomRigidGroup group, Guid guid, BXDIO.ProgressReporter reporter = null)
     {
-        List<ExportPlan> plans = GenerateExportList(group);
-        Console.WriteLine();
-        reporter?.Invoke(0, plans.Count);
-        for (int i = 0; i < plans.Count; i++)
-        {
-            AddFacets(plans[i].surf, plans[i].bestResolution, plans[i].separateFaces);
-            reporter?.Invoke((i + 1), plans.Count);
-        }
-    }
+        // Create output mesh
+        MeshController outputMesh = new MeshController(guid);
 
-    /// <summary>
-    /// Exports all the components in this enumerable to the in-RAM mesh.
-    /// </summary>
-    /// <param name="enumm">Enumerable to export from</param>
-    /// <param name="reporter">Progress reporter</param>
-    public void ExportAll(IEnumerator<ComponentOccurrence> enumm, BXDIO.ProgressReporter reporter = null)
-    {
-        List<ExportPlan> plans = new List<ExportPlan>();
-        while (enumm.MoveNext()){
-            plans.AddRange(GenerateExportList(enumm.Current));
-        }
-        Console.WriteLine();
-        if (reporter != null)
+        // Collect surfaces to export
+        List<SurfaceBody> plannedSurfaces = GenerateExportList(group, outputMesh.Mesh.physics);
+
+        // Export faces, multithreaded
+        if (plannedSurfaces.Count > 0)
         {
-            reporter(0, plans.Count);
-        }
-        for (int i = 0; i < plans.Count; i++)
-        {
-            AddFacets(plans[i].surf, plans[i].bestResolution, plans[i].separateFaces);
-            if (reporter != null)
+            // Reset progress bar
+            reporter?.Invoke(0, plannedSurfaces.Count);
+
+            // Start jobs
+            int totalJobsFinished = 0;
+            object finishLock = new object(); // Used to prevent multiple threads from updating progress bar at the same time.
+
+            Parallel.ForEach(plannedSurfaces, (SurfaceBody surface) =>
             {
-                reporter((i + 1), plans.Count);
-            }
+                CalculateSurfaceFacets(surface, outputMesh, SynthesisGUI.PluginSettings.GeneralUseFancyColors);
+
+                lock (finishLock)
+                {
+                    totalJobsFinished++;
+                    reporter?.Invoke(totalJobsFinished, plannedSurfaces.Count);
+                }
+            });
+
+            outputMesh.DumpOutput();
         }
+
+        return outputMesh.Mesh;
     }
 }
