@@ -1,7 +1,5 @@
 #include "BinaryRWObject.h"
 
-using namespace BXDATA;
-
 BinaryWriter::BinaryWriter(string file)
 {
 	outputFile.open(file, ios::out | ios::binary);
