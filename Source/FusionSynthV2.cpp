@@ -1,4 +1,3 @@
-
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
 #include <CAM/CAMAll.h>
@@ -38,7 +37,6 @@ extern "C" XI_EXPORT bool stop(const char* context)
 
 	return true;
 }
-
 
 #ifdef XI_WIN
 

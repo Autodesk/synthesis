@@ -27,14 +27,17 @@ public void ReadBinaryData(BinaryReader reader)
 }
 */
 
-Physics::Physics() {
+Physics::Physics()
+{
 
 }
 
-Physics::Physics(Vector3 * v) {
+Physics::Physics(Vector3 * v)
+{
 	COM = new Vector3(v);
 }
 
-Physics::~Physics() {
+Physics::~Physics()
+{
 
 }

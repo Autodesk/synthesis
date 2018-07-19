@@ -1,9 +1,8 @@
 #pragma once
+
 #include <string>
 #include "Submesh.h"
-#include "Physics.h"
-
-using namespace std;
+#include "Data/Physics.h"
 
 /*
 #ifdef WIN32
@@ -35,9 +34,10 @@ std::string newUUID()
 }
 */
 
-
-namespace BXDATA {
-	class BXDA {
+namespace BXDATA
+{
+	class BXDA
+	{
 	public:
 		BXDA();
 		~BXDA();

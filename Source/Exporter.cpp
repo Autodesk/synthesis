@@ -1,7 +1,6 @@
 #include "Exporter.h"
 
 using namespace Synthesis;
-using namespace std;
 
 Exporter::Exporter(Ptr<Application> app) : _app(app)
 {
@@ -10,8 +9,7 @@ Exporter::Exporter(Ptr<Application> app) : _app(app)
 }
 
 Exporter::~Exporter()
-{
-}
+{}
 
 void Exporter::loadMeshes()
 {
@@ -86,13 +84,5 @@ void Exporter::loadMeshes()
 
 	binary->Write(bxda);
 
-
-	//delete binary;					//Close the stream
-
-
-	//delete _temp;
-
 	_ui->messageBox(a);
-
-	return 0;
 }

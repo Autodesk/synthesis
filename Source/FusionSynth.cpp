@@ -8,10 +8,11 @@ extern "C" XI_EXPORT bool run(const char* context)
 	app = Application::get();
 	if (!app)
 		return false;
-    
-    if (!e){
-        e = new Synthesis::Exporter(app);
-    }
+
+	if (!e)
+	{
+		e = new Synthesis::Exporter(app);
+	}
 
 	return true;
 }
@@ -25,7 +26,6 @@ extern "C" XI_EXPORT bool stop(const char* context)
 
 	return true;
 }
-
 
 #ifdef XI_WIN
 

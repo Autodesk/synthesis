@@ -1,12 +1,15 @@
 #pragma once
-#include "BXDA.h"
+
 #include <fstream>
 #include <bitset>
+#include "Data/BXDA.h"
 
 using namespace std;
 
-namespace BXDATA {
-	class BinaryWriter {
+namespace BXDATA
+{
+	class BinaryWriter
+	{
 	public:
 		BinaryWriter(string file);		//Open Operation
 		~BinaryWriter();				//For close operation
@@ -15,12 +18,5 @@ namespace BXDATA {
 
 	private:
 		ofstream ofs;
-	};
-
-	class BinaryReader {
-	public:
-
-	private:
-
 	};
 }

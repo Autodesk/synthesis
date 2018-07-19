@@ -1,11 +1,14 @@
 #pragma once
-#include "LVector3.h"
+
 #include <list>
+#include "LVector3.h"
 
 using namespace std;
 
-namespace BXDATA {
-	class Surface {
+namespace BXDATA
+{
+	class Surface
+	{
 	public:
 		Surface();
 
@@ -13,7 +16,6 @@ namespace BXDATA {
 
 		Surface(Surface*);
 		~Surface();			//For unloading the array JIC
-
 
 	private:
 		//0 = NO , 1 = YES

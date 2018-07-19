@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 // Create the macro so we don't repeat the code over and over again.
 #define BMBINARY_READ(reader,value) reader.read((char *)&value, sizeof(value))
 
@@ -16,11 +14,11 @@ enum BMBinaryIOMode
 class BMBinaryIO
 {
 	// the output file stream to write onto a file
-	ofstream writer;
+	std::ofstream writer;
 	// the input file stream to read from a file
-	ifstream reader;
+	std::ifstream reader;
 	// the filepath of the file we're working with
-	string filePath;
+	std::string filePath;
 	// the current active mode.
 	BMBinaryIOMode currentMode;
 
@@ -49,7 +47,7 @@ public:
 
 	// opens a file with either read or write mode. Returns whether
 	// the open operation was successful
-	bool open(string fileFullPath, BMBinaryIOMode mode)
+	bool open(std::string fileFullPath, BMBinaryIOMode mode)
 	{
 		filePath = fileFullPath;
 
@@ -63,7 +61,7 @@ public:
 			if (writer.is_open())
 				writer.close();
 
-			writer.open(filePath, ios::binary);
+			writer.open(filePath, std::ios::binary);
 			if (!writer.is_open())
 			{
 				//BMLogging::error(BMLoggingClass::BinaryIO, "Could not open file for write: " + filePath);
@@ -78,7 +76,7 @@ public:
 			if (reader.is_open())
 				reader.close();
 
-			reader.open(filePath, ios::binary);
+			reader.open(filePath, std::ios::binary);
 			if (!reader.is_open())
 			{
 				//BMLogging::error(BMLoggingClass::BinaryIO, "Could not open file for read: " + filePath);
@@ -125,7 +123,7 @@ public:
 	}
 
 	// Writes a string to the file
-	void writeString(string str)
+	void writeString(std::string str)
 	{
 		if (!checkWritabilityStatus())
 			return;
@@ -226,12 +224,12 @@ public:
 	}
 
 	// read a string value
-	string readString()
+	std::string readString()
 	{
 		if (checkReadabilityStatus())
 		{
 			char c;
-			string result = "";
+			std::string result = "";
 			while ((c = readChar()) != '\0')
 			{
 				result += c;
