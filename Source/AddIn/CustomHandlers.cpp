@@ -8,7 +8,8 @@ void ExportCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>
 	//_app->userInterface.messageBox("test");
 	//_UI->messageBox("Test Export");
 	Exporter * e = new Exporter(_APP);
-	//e->exportCommon();
+	e->loadMeshes();
+	delete e;
 	//e->~Exporter();
 }
 
@@ -18,6 +19,8 @@ void ExportWheelCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEvent
 	//_app->userInterface.messageBox("test");
 	//_UI->messageBox("Test Export");
 	Exporter * e = new Exporter(_APP);
+	e->loadMeshes();
+	delete e;
 	//e->exportWheel();
 }
 
