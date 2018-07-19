@@ -21,3 +21,11 @@ bool BinaryWriter::Write(const BXDA::Mesh & mesh)
 
 	return true;
 }
+
+template<typename T>
+void BinaryWriter::OutputBytes(T data, std::ostream& output)
+{
+	char* bytes = (char*)(&data);
+	for (int i = 0; i < sizeof(data); i++)
+		output << bytes[i];
+}

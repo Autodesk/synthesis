@@ -11,6 +11,8 @@ public:
 	~BinaryWriter();				//For close operation
 
 	bool Write(const BXDA::Mesh & mesh);	//Original write operation to be overriden
+	template<typename T>
+	void OutputBytes(T data, std::ostream& output);
 
 private:
 	std::ofstream outputFile;
