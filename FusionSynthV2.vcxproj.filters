@@ -30,9 +30,6 @@
     <ClInclude Include="Source\Exporter.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Physics.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Data\BXDA.h">
       <Filter>Headers\Data</Filter>
     </ClInclude>
@@ -46,6 +43,9 @@
       <Filter>Headers\Data</Filter>
     </ClInclude>
     <ClInclude Include="Source\Data\Vector3.h">
+      <Filter>Headers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics.h">
       <Filter>Headers\Data</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,9 +71,6 @@
     <ClCompile Include="Source\FusionSynthV2.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Physics.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Data\BXDA.cpp">
       <Filter>Source\Data</Filter>
     </ClCompile>
@@ -87,6 +84,9 @@
       <Filter>Source\Data</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\Vector3.cpp">
+      <Filter>Source\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Physics.cpp">
       <Filter>Source\Data</Filter>
     </ClCompile>
   </ItemGroup>

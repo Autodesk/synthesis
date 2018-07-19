@@ -2,7 +2,7 @@
 
 #include <string>
 #include "Submesh.h"
-#include "Data/Physics.h"
+#include "Physics.h"
 
 /*
 #ifdef WIN32
