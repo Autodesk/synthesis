@@ -38,7 +38,7 @@ public:
 
         m_robotDrive.ArcadeDrive(x/1000.0f, y/1000.0f);
 
-        //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
+        std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
 
         usleep(45000);
     }
