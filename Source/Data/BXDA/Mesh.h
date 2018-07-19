@@ -34,21 +34,25 @@ std::string newUUID()
 }
 */
 
-namespace BXDATA
+namespace BXDA
 {
-	class BXDA
+	class Mesh
 	{
 	public:
-		BXDA();
-		~BXDA();
+		Mesh();
+		~Mesh();
 
+		void addSubmesh(Submesh * submesh);
 
-		unsigned int Version;		//Version is just 2.0.0 i think;
-		string GUID;				//GUID
-		Physics* physics;			//physical properties
-		vector <Submesh*> meshes;			//visual mesh - contains surface
-		vector <Submesh*> colliders;			//collider mesh - contains surface
+		string getGUID();
+		int getVersion();
 
 	private:
+		const int CURRENT_VERSION = 0;
+
+		string guid;
+		Physics physics;
+		vector<Submesh*> submeshes;
+
 	};
 }

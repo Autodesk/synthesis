@@ -2,9 +2,7 @@
 
 #include <fstream>
 #include <bitset>
-#include "Data/BXDA.h"
-
-using namespace std;
+#include "Data/BXDA/Mesh.h"
 
 namespace BXDATA
 {
@@ -14,9 +12,9 @@ namespace BXDATA
 		BinaryWriter(string file);		//Open Operation
 		~BinaryWriter();				//For close operation
 
-		bool Write(BXDA * obj);			//Original write operation to be overriden
+		bool Write(BXDA::Mesh * mesh);			//Original write operation to be overriden
 
 	private:
-		ofstream ofs;
+		ofstream outputFile;
 	};
 }

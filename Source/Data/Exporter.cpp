@@ -17,7 +17,7 @@ void Exporter::loadMeshes()
 
 	string a = "";
 
-	BXDA * bxda = new BXDA();
+	BXDA::Mesh * mesh = new BXDA::Mesh();
 
 	//LVector3 * _verts = new LVector3();
 	//LVector3 * _norms = new LVector3();
@@ -37,41 +37,35 @@ void Exporter::loadMeshes()
 	//Vector3 * _temp = new Vector3();
 	//Vector3 * _temp2 = new Vector3();
 
-	Submesh * _tempS = new Submesh();
-
-	Ptr<TriangleMeshCalculator> calc;
-
 	for (Ptr<Component> comp : doc->design()->allComponents())
 	{
-		// 
-		_tempS->verts.clear();
-		_tempS->verts.shrink_to_fit();
-		_tempS->norms.clear();
-		_tempS->norms.shrink_to_fit();
+		BXDA::Submesh * tempSubmesh = new BXDA::Submesh();
 
 		for (Ptr<BRepBody> m_bod : comp->bRepBodies())
 		{
+			Ptr<TriangleMeshCalculator> meshCalculator = m_bod->meshManager()->createMeshCalculator();
+			meshCalculator->setQuality(LowQualityTriangleMesh);
 
-			calc = m_bod->meshManager()->createMeshCalculator();
-			calc->setQuality(LowQualityTriangleMesh);
-			Ptr<TriangleMesh> mesh = calc->calculate();
+			Ptr<TriangleMesh> mesh = meshCalculator->calculate();
 
+			/*
 			for (Ptr<Vector3D> ve : mesh->normalVectors())
 			{
-				_tempS->verts.push_back(ve->x());
-				_tempS->verts.push_back(ve->y());
-				_tempS->verts.push_back(ve->z());
+				tempSubmesh->verts.push_back(ve->x());
+				tempSubmesh->verts.push_back(ve->y());
+				tempSubmesh->verts.push_back(ve->z());
 			}
 
 			for (Ptr<Point3D> no : mesh->nodeCoordinates())
 			{
-				_tempS->norms.push_back(no->x());
-				_tempS->norms.push_back(no->y());
-				_tempS->norms.push_back(no->z());
+				tempSubmesh->norms.push_back(no->x());
+				tempSubmesh->norms.push_back(no->y());
+				tempSubmesh->norms.push_back(no->z());
 			}
 
-			bxda->meshes.push_back(new Submesh(_tempS));
-			bxda->colliders.push_back(new Submesh(_tempS));
+			mesh->submeshes.push_back(new Submesh(_tempS));
+			mesh->colliders.push_back(new Submesh(_tempS));
+			*/
 		}
 
 		for (Ptr<Joint> joint : comp->allJoints())
@@ -80,9 +74,13 @@ void Exporter::loadMeshes()
 
 			a += "\n";
 		}
+
+		delete tempSubmesh;
 	}
 
-	binary->Write(bxda);
+	binary->Write(mesh);
+
+	delete mesh;
 
 	_ui->messageBox(a);
 }

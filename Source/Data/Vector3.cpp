@@ -1,40 +1,33 @@
 #include "Vector3.h"
 
-using namespace BXDATA;
+Vector3::Vector3() : Vector3(0, 0, 0)
+{}
 
-//default constructor
-Vector3::Vector3()
+Vector3::Vector3(const Vector3 & vector)
 {
-	next = 0;
-	prev = 0;
-	x = 0;
-	y = 0;
-	z = 0;
+	x = vector.x;
+	y = vector.y;
+	z = vector.z;
 }
 
-//first item constructor JIC
-Vector3::Vector3(float _x, float _y, float _z) : x(_x), y(_y), z(_z)
+Vector3::Vector3(double x, double y, double z)
 {
-	next = 0;
-	prev = 0;
+	this->x = x;
+	this->y = y;
+	this->z = z;
 }
 
-//copy constructor just in case 
-Vector3::Vector3(Vector3* v)
+Vector3 Vector3::operator+(const Vector3 & other) const
 {
-	this->next = v->next;
-	this->prev = v->prev;
-	this->x = v->x;
-	this->y = v->y;
-	this->z = v->z;
+	return Vector3(x + other.x, y + other.y, x + other.z);
+}
 
-	if (v->prev)
-	{
-		v->prev->next = this;
-	}
+Vector3 Vector3::operator*(double scale) const
+{
+	return Vector3(x * scale, y * scale, z * scale);
+}
 
-	if (v->next)
-	{
-		v->next->prev = this;
-	}
+Vector3 Vector3::operator/(double scale) const
+{
+	return Vector3(x / scale, y / scale, z / scale);
 }
