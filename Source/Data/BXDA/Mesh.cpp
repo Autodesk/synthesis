@@ -38,7 +38,7 @@ void Mesh::addSubmesh(SubMesh * submesh)
 	subMeshes.push_back(new SubMesh(submesh));
 }
 
-string Mesh::getGUID()
+std::string Mesh::getGUID()
 {
 	return guid;
 }

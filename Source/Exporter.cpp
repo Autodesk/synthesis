@@ -15,7 +15,7 @@ void Exporter::loadMeshes()
 {
 	Ptr<FusionDocument> doc = _app->activeDocument();
 
-	string a = "";
+	std::string a = "";
 
 	BXDA::Mesh * mesh = new BXDA::Mesh();
 
@@ -30,7 +30,7 @@ void Exporter::loadMeshes()
 	// Format: 20:20:00
 	strftime(buffer, 32, "%H.%M.%S", ptm);
 
-	string filename = doc->name() + "_" + buffer + ".bxda";
+	std::string filename = doc->name() + "_" + buffer + ".bxda";
 
 	BinaryWriter * binary = new BinaryWriter(filename);
 

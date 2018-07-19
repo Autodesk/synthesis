@@ -8,7 +8,7 @@ Surface::Surface()
 	color = 0xFFFFFFFF;
 	transparency = 0;
 	translucency = 0;
-	specular = 0.2;
+	specular = 0.2f;
 }
 
 Surface::~Surface()
