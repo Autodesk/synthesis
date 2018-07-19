@@ -39,7 +39,7 @@ void Exporter::loadMeshes()
 
 	for (Ptr<Component> comp : doc->design()->allComponents())
 	{
-		BXDA::Submesh * tempSubmesh = new BXDA::Submesh();
+		BXDA::SubMesh * tempSubmesh = new BXDA::SubMesh();
 
 		for (Ptr<BRepBody> m_bod : comp->bRepBodies())
 		{
@@ -63,8 +63,8 @@ void Exporter::loadMeshes()
 				tempSubmesh->norms.push_back(no->z());
 			}
 
-			mesh->submeshes.push_back(new Submesh(_tempS));
-			mesh->colliders.push_back(new Submesh(_tempS));
+			mesh->subMeshes.push_back(new SubMesh(_tempS));
+			mesh->colliders.push_back(new SubMesh(_tempS));
 			*/
 		}
 

@@ -107,9 +107,9 @@
     <ClInclude Include="Source\Data\BXDA\Mesh.h" />
     <ClInclude Include="Source\Data\BXDA\Physics.h" />
     <ClInclude Include="Source\Data\BXDA\Surface.h" />
+    <ClInclude Include="Source\Data\BXDA\Vector3.h" />
     <ClInclude Include="Source\Data\BXDA\Vertex.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
-    <ClInclude Include="Source\Data\Vector3.h" />
     <ClInclude Include="Source\Exporter.h" />
   </ItemGroup>
   <ItemGroup>
@@ -123,9 +123,9 @@
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp" />
     <ClCompile Include="Source\Data\BXDA\Physics.cpp" />
     <ClCompile Include="Source\Data\BXDA\Surface.cpp" />
+    <ClCompile Include="Source\Data\BXDA\Vector3.cpp" />
     <ClCompile Include="Source\Data\BXDA\Vertex.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode.cpp" />
-    <ClCompile Include="Source\Data\Vector3.cpp" />
     <ClCompile Include="Source\Exporter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

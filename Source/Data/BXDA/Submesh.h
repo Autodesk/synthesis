@@ -8,15 +8,17 @@ using namespace std;
 
 namespace BXDA
 {
-	class Submesh
+	class SubMesh
 	{
 	public:
-		Submesh();
-		~Submesh();
+		SubMesh();
+		~SubMesh();
 
-		Submesh(Submesh*);
-		Submesh(vector<Vertex*> vertices);
-		Submesh(vector<Vertex*> vertices, vector<Surface*> surfaces);
+		SubMesh(SubMesh*);
+		SubMesh(vector<Vertex*> vertices);
+		SubMesh(vector<Vertex*> vertices, vector<Surface*> surfaces);
+
+		friend std::ostream& operator<<(std::ostream&, const SubMesh&);
 
 		void addSurface(Surface*);
 

@@ -3,8 +3,6 @@
 #include <vector>
 #include "Triangle.h"
 
-using namespace std;
-
 namespace BXDA
 {
 	class Surface

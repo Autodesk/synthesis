@@ -9,13 +9,23 @@ Mesh::Mesh()
 
 Mesh::~Mesh()
 {
-	for (Submesh * submesh : submeshes)
+	for (SubMesh * submesh : subMeshes)
 		delete submesh;
 }
 
-void Mesh::addSubmesh(Submesh * submesh)
+std::ostream& BXDA::operator<<(std::ostream& output, const Mesh& m)
 {
-	submeshes.push_back(new Submesh(submesh));
+	output << m.guid << m.CURRENT_VERSION;
+
+	for (SubMesh * submesh : m.subMeshes)
+		output << *submesh;
+
+	return output;
+}
+
+void Mesh::addSubmesh(SubMesh * submesh)
+{
+	subMeshes.push_back(new SubMesh(submesh));
 }
 
 string Mesh::getGUID()
