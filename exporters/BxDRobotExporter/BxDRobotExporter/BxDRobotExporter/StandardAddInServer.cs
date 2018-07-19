@@ -799,7 +799,7 @@ namespace BxDRobotExporter
         /// <param name="viewDistance">The distence from <paramref name="occurrence"/> that the camera will be</param>
         /// <param name="viewDirection">The direction of the camera</param>
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
-        public void ViewOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = true)
+        public void ViewOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = false)
         {
             if (occurrences.Count < 1)
                 return;
