@@ -39,7 +39,7 @@ void Exporter::loadMeshes()
 
 	for (Ptr<Component> comp : doc->design()->allComponents())
 	{
-		BXDA::SubMesh * subMesh = new BXDA::SubMesh();
+		BXDA::SubMesh subMesh = BXDA::SubMesh();
 
 		for (Ptr<BRepBody> m_bod : comp->bRepBodies())
 		{
@@ -56,11 +56,11 @@ void Exporter::loadMeshes()
 			for (int v = 0; v < coords.size(); v += 3)
 				vertices.push_back(BXDA::Vertex(BXDA::Vector3(coords[v], coords[v + 1], coords[v + 2]), BXDA::Vector3(norms[v], norms[v + 1], norms[v + 2])));
 
-			subMesh->addVertices(vertices);
+			subMesh.addVertices(vertices);
 
 			// Add faces to sub-mesh
 			std::vector<int> indices = fusionMesh->nodeIndices();
-			subMesh->addSurface(BXDA::Surface(indices));
+			subMesh.addSurface(BXDA::Surface(indices));
 		}
 
 		for (Ptr<Joint> joint : comp->allJoints())
@@ -70,9 +70,7 @@ void Exporter::loadMeshes()
 			a += "\n";
 		}
 
-		mesh->addSubMesh(*subMesh);
-
-		delete subMesh;
+		mesh->addSubMesh(subMesh);
 	}
 
 	binary->Write(mesh);
