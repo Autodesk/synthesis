@@ -4,9 +4,11 @@ using namespace BXDA;
 
 Surface::Surface()
 {
-	hasColor = 0;
+	hasColor = false;
 	color = 0xFFFFFFFF;
-	specular = 0;
+	transparency = 0;
+	translucency = 0;
+	specular = 0.2;
 }
 
 Surface::~Surface()
@@ -37,4 +39,26 @@ Surface::Surface(bool hasColor, unsigned int color, float transparency, float tr
 
 	for (int i = 0; i < indices.size(); i += 3)
 		triangles.push_back(new Triangle(indices[i], indices[i + 1], indices[i + 2]));
+}
+
+void Surface::addTriangles(const vector<Triangle>& triangles)
+{
+	for (Triangle * triangle : triangles)
+		this->triangles.push_back(triangle);
+}
+
+void BXDA::Surface::addTriangles(const Surface * surface)
+{
+	for (Triangle * triangle : surface->triangles)
+		triangles.push_back(triangle);
+}
+
+void Surface::offsetIndices(int offset)
+{
+	for (Triangle* tri : triangles)
+	{
+		tri->vertexIndices[0] += offset;
+		tri->vertexIndices[1] += offset;
+		tri->vertexIndices[2] += offset;
+	}
 }

@@ -20,7 +20,10 @@ namespace BXDA
 
 		friend std::ostream& operator<<(std::ostream&, const SubMesh&);
 
+		void addVertices(vector<Vertex*>);
 		void addSurface(Surface*);
+		void mergeMesh(const SubMesh*); // Merge another submesh's vertices and surfaces with this submesh
+		void getConvexCollider(SubMesh*) const; // Fills a submesh with a convex collider of this mesh. NOT FULLY IMPLEMENTED
 
 	private:
 		vector<Vertex*> vertices;
