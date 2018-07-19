@@ -6,93 +6,80 @@ using System.Collections.Generic;
 public partial class SurfaceExporter
 {
     /// <summary>
-    /// Should the exporter attempt to automatically ignore small parts.
+    /// The minimum percent a sub component's bounding box volume of the largest bounding box volume for an object
+    /// to be considered small. The lower the number the less that is dropped.
     /// </summary>
-    private bool adaptiveIgnoring = true;
-    /// <summary>
-    /// The minimum ratio between a sub component's bounding box volume and the average bounding box volume for an object
-    /// to be considered small.  The higher the number the less that is dropped, while if the value is one about half the objects
-    /// would be dropped.
-    /// </summary>
-    private double adaptiveDegredation = 7;
+    private const double MIN_VOLUME_PERCENT = 0.0002;
 
     /// <summary>
     /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
     /// </summary>
-    /// <param name="occ">The component to export</param>
-    /// <param name="bestResolution">Use the best possible resolution</param>
-    /// <param name="separateFaces">Export each face as a separate mesh</param>
-    /// <param name="ignorePhysics">Don't add the physical properties of this component to the exporter</param>
+    /// <param name="occ">Component occurence to analize.</param>
+    /// <param name="mesh">Mesh to store physics data in.</param>
+    /// <param name="ignorePhysics">True to ignore physics in component.</param>
     /// <returns>All the sufaces to export</returns>
-    private List<ExportPlan> GenerateExportList(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false, bool ignorePhysics = false)
+    private void GenerateExportList(ComponentOccurrence occ, List<SurfaceBody> plannedExports, PhysicalProperties physics, double minVolume = 0, bool ignorePhysics = false)
     {
-        List<ExportPlan> plannedExports = new List<ExportPlan>();
+        // Invisible objects don't need to be exported
+        if (!occ.Visible)
+            return;
 
         if (!ignorePhysics)
         {
             // Compute physics
             try
             {
-                outputMesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
-                Console.WriteLine(InventorManager.Instance.ActiveDocument.UnitsOfMeasure.MassUnits.ToString());
+                physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
             }
             catch
             {
+                Console.Write("Failed to get physics data for " + occ.Name);
             }
         }
 
-        if (!occ.Visible)
-            return plannedExports;
-
+        // Prepare exporting surfaces
         foreach (SurfaceBody surf in occ.SurfaceBodies)
-        {
-            Console.Write("Including: " + surf.Parent.Name);
-            plannedExports.Add(new ExportPlan(surf, bestResolution, separateFaces));
-        }
+            plannedExports.Add(surf);
 
-        double totalVolume = 0;
-        foreach (ComponentOccurrence occ2 in occ.SubOccurrences)
+        // Add sub-occurences
+        foreach (ComponentOccurrence subOcc in occ.SubOccurrences)
         {
-            totalVolume += Utilities.BoxVolume(occ2.RangeBox);
-        }
-        totalVolume /= occ.SubOccurrences.Count * adaptiveDegredation;
-
-        foreach (ComponentOccurrence item in occ.SubOccurrences)
-        {
-            if (!adaptiveIgnoring || Utilities.BoxVolume(item.RangeBox) >= totalVolume)
+            if (Utilities.BoxVolume(subOcc.RangeBox) >= minVolume)
             {
-                plannedExports.AddRange(GenerateExportList(item, bestResolution, separateFaces, true));
+                GenerateExportList(subOcc, plannedExports, physics, minVolume, true);
             }
         }
-        return plannedExports;
     }
 
     /// <summary>
     /// Adds the mesh for all the components and their subcomponenets in the custom rigid group.  <see cref="ExportAll(ComponentOccurrence,bool,bool,bool)"/>
     /// </summary>
-    /// <remarks>
-    /// This uses the best resolution and separate faces options stored inside the provided custom rigid group.
-    /// </remarks>
     /// <param name="group">The group to export from</param>
+    /// <param name="mesh">Mesh to store physics data in.</param>
     /// <returns>All the sufaces to export</returns>
-    private List<ExportPlan> GenerateExportList(CustomRigidGroup group)
+    private List<SurfaceBody> GenerateExportList(CustomRigidGroup group, PhysicalProperties physics)
     {
-        List<ExportPlan> plannedExports = new List<ExportPlan>();
+        List<SurfaceBody> plannedExports = new List<SurfaceBody>();
 
-        double totalVolume = 0;
+        // Calculate minimum volume to export a component
+        double maxVolume = 0;
         foreach (ComponentOccurrence occ in group.occurrences)
         {
-            totalVolume += Utilities.BoxVolume(occ.RangeBox);
+            double curVolume = Utilities.BoxVolume(occ.RangeBox);
+            if (curVolume > maxVolume)
+                maxVolume = curVolume;
         }
-        totalVolume /= group.occurrences.Count * adaptiveDegredation;
+        double minVolume = maxVolume * MIN_VOLUME_PERCENT;
 
+        // Analyze all component occurrences
         foreach (ComponentOccurrence occ in group.occurrences)
         {
-            if (!adaptiveIgnoring || Utilities.BoxVolume(occ.RangeBox) >= totalVolume)
+            if (Utilities.BoxVolume(occ.RangeBox) >= minVolume)
             {
-                plannedExports.AddRange(GenerateExportList(occ, group.hint.HighResolution, SynthesisGUI.PluginSettings.GeneralUseFancyColors)); // group.hint.MultiColor));
+                GenerateExportList(occ, plannedExports, physics, minVolume);
             }
         }
+
         return plannedExports;
     }
 }
