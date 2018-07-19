@@ -67,7 +67,7 @@ void SubMesh::addSurface(Surface * s)
 void BXDA::SubMesh::mergeMesh(const SubMesh* other)
 {
 	// Store offset that will be used to increment indices from other mesh
-	int offset = vertices.size();
+	int offset = (int)vertices.size();
 
 	// Add other mesh's vertices to this mesh
 	addVertices(other->vertices);
@@ -89,8 +89,8 @@ void BXDA::SubMesh::getConvexCollider(SubMesh* outputMesh) const
 
 	outputMesh->addVertices(vertices);
 
+	// Create one surface that contains all triangles
 	Surface * newSurface = new Surface();
-
 	for (Surface * surface : surfaces)
 		newSurface->addTriangles(surface);
 

@@ -84,7 +84,7 @@ bool EUI::CreateWorkspace()
 
 		return true;
 	}
-	catch (exception e)
+	catch (std::exception e)
 	{
 		//string * lastError;
 		//_UI->messageBox(*lastError);
