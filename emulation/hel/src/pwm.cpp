@@ -1,5 +1,5 @@
-#include "roborio.h"
-#include "util.h"
+#include "roborio.hpp"
+#include "util.hpp"
 
 #include "athena/DigitalInternal.h"
 
@@ -7,49 +7,49 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;    
 
 namespace hel{
-    tPWM::tConfig RoboRIO::PWMSystem::getConfig()const{
+    tPWM::tConfig PWMSystem::getConfig()const{
     	return config;
     }
 
-    void RoboRIO::PWMSystem::setConfig(tPWM::tConfig value){
+    void PWMSystem::setConfig(tPWM::tConfig value){
     	config = value;
     }
 
-    uint32_t RoboRIO::PWMSystem::getHdrPeriodScale(uint8_t index)const{
+    uint32_t PWMSystem::getHdrPeriodScale(uint8_t index)const{
     	return hdr[index].period_scale;
     }
 
-    void RoboRIO::PWMSystem::setHdrPeriodScale(uint8_t index, uint32_t value){
+    void PWMSystem::setHdrPeriodScale(uint8_t index, uint32_t value){
     	hdr[index].period_scale = value;
     }
 
-    uint32_t RoboRIO::PWMSystem::getMXPPeriodScale(uint8_t index)const{
+    uint32_t PWMSystem::getMXPPeriodScale(uint8_t index)const{
     	return mxp[index].period_scale;
     }
 
-    void RoboRIO::PWMSystem::setMXPPeriodScale(uint8_t index, uint32_t value){
+    void PWMSystem::setMXPPeriodScale(uint8_t index, uint32_t value){
     	mxp[index].period_scale = value;
     }
 
-    uint32_t RoboRIO::PWMSystem::getHdrDutyCycle(uint8_t index)const{
+    uint32_t PWMSystem::getHdrDutyCycle(uint8_t index)const{
     	return hdr[index].duty_cycle;
     }
 
-    void RoboRIO::PWMSystem::setHdrDutyCycle(uint8_t index, uint32_t value){
+    void PWMSystem::setHdrDutyCycle(uint8_t index, uint32_t value){
         hdr[index].duty_cycle = value;
     }
 
-    uint32_t RoboRIO::PWMSystem::getMXPDutyCycle(uint8_t index)const{
+    uint32_t PWMSystem::getMXPDutyCycle(uint8_t index)const{
     	return mxp[index].duty_cycle;
     }
 
-    void RoboRIO::PWMSystem::setMXPDutyCycle(uint8_t index, uint32_t value){
+    void PWMSystem::setMXPDutyCycle(uint8_t index, uint32_t value){
     	mxp[index].duty_cycle = value;
     }
 
-    RoboRIO::PWMSystem::PWM::PWM():period_scale(0), duty_cycle(0){}
+    PWMSystem::PWM::PWM():period_scale(0), duty_cycle(0){}
 
-    RoboRIO::PWMSystem::PWMSystem():hdr(),mxp(){}
+    PWMSystem::PWMSystem():hdr(),mxp(){}
 
     struct PWMManager: public tPWM{
         tSystemInterface* getSystemInterface(){
@@ -107,7 +107,7 @@ namespace hel{
         }
 
         uint16_t readLoopTiming(tRioStatusCode* /*status*/){
-            return RoboRIO::PWMSystem::EXPECTED_LOOP_TIMING;
+            return PWMSystem::EXPECTED_LOOP_TIMING;
         }
 
         void writePeriodScaleMXP(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){

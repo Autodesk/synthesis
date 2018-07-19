@@ -1,4 +1,4 @@
-#include "util.h"
+#include "util.hpp"
 
 bool hel::stob(std::string a){
     return (bool)std::stoi(a);

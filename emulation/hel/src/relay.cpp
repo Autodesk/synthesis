@@ -1,19 +1,19 @@
-#include "roborio.h"
+#include "roborio.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
 
-    tRelay::tValue RoboRIO::RelaySystem::getValue()const{
+    tRelay::tValue RelaySystem::getValue()const{
     	return value;
     }
 
-    void RoboRIO::RelaySystem::setValue(tRelay::tValue v){
+    void RelaySystem::setValue(tRelay::tValue v){
     	value = v;
     }
 
-    RoboRIO::RelaySystem::RelaySystem():value(){}
+    RelaySystem::RelaySystem():value(){}
 
     struct RelayManager: public tRelay{
     	tSystemInterface* getSystemInterface(){

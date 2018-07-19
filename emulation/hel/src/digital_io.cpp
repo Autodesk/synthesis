@@ -1,78 +1,100 @@
-#include "roborio.h"
-#include "util.h"
+#include "roborio.hpp"
+#include "util.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tDIO::tDO RoboRIO::DIOSystem::getOutputs()const{
+    tDIO::tDO DigitalSystem::getOutputs()const{
     	return outputs;
     }
     
-    void RoboRIO::DIOSystem::setOutputs(tDIO::tDO value){
+    void DigitalSystem::setOutputs(tDIO::tDO value){
     	outputs = value;
     }
 
-    tDIO::tOutputEnable RoboRIO::DIOSystem::getEnabledOutputs()const{
+    tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const{
     	return enabled_outputs;
     }
     
-    void RoboRIO::DIOSystem::setEnabledOutputs(tDIO::tOutputEnable value){
+    void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable value){
     	enabled_outputs = value;
     }
 
-    tDIO::tPulse RoboRIO::DIOSystem::getPulses()const{
+    tDIO::tPulse DigitalSystem::getPulses()const{
     	return pulses;
     }
     
-    void RoboRIO::DIOSystem::setPulses(tDIO::tPulse value){
+    void DigitalSystem::setPulses(tDIO::tPulse value){
     	pulses = value;
     }
 
-    tDIO::tDI RoboRIO::DIOSystem::getInputs()const{
+    tDIO::tDI DigitalSystem::getInputs()const{
     	return inputs;
     }
 
-    void RoboRIO::DIOSystem::setInputs(tDIO::tDI value){
+    void DigitalSystem::setInputs(tDIO::tDI value){
     	inputs = value;
     }
 
-    uint16_t RoboRIO::DIOSystem::getMXPSpecialFunctionsEnabled()const{
+    uint16_t DigitalSystem::getMXPSpecialFunctionsEnabled()const{
     		return mxp_special_functions_enabled;
     }
 
-    void RoboRIO::DIOSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
+    void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
     	mxp_special_functions_enabled = value;
     }
 
-    uint8_t RoboRIO::DIOSystem::getPulseLength()const{
+    uint8_t DigitalSystem::getPulseLength()const{
     	return pulse_length;
     }
 
-    void RoboRIO::DIOSystem::setPulseLength(uint8_t value){
+    void DigitalSystem::setPulseLength(uint8_t value){
     	pulse_length = value;
     }
 
-    uint8_t RoboRIO::DIOSystem::getPWMDutyCycle(uint8_t index)const{
+    uint8_t DigitalSystem::getPWMDutyCycle(uint8_t index)const{
     	return pwm[index];
     }
 
-    void RoboRIO::DIOSystem::setPWMDutyCycle(uint8_t index, uint8_t value){
+    void DigitalSystem::setPWMDutyCycle(uint8_t index, uint8_t value){
     	pwm[index] = value;
     }
 
-    RoboRIO::DIOSystem::DIOSystem():outputs(),enabled_outputs(),pulses(),inputs(),mxp_special_functions_enabled(),pulse_length(),pwm(){}
+    DigitalSystem::DigitalSystem():outputs(),enabled_outputs(),pulses(),inputs(),mxp_special_functions_enabled(),pulse_length(),pwm(){}
 
     struct DIOManager: public tDIO{
+        struct DIOConfigurationException: public std::exception{
+            enum class Config{DI,DO,MXP_SPECIAL_FUNCTION};
+        private:
+            Config configuration;
+            Config expected_configuration;
+            uint8_t port;
+
+            static std::string to_string(Config c){
+                switch(c){
+                case Config::DI:
+                    return "digital input";
+                case Config::DO:
+                    return "digital ouput";
+                case Config::MXP_SPECIAL_FUNCTION:
+                    return "mxp special function";
+                default:
+                    return ""; //TODO error handling
+                }
+            }
+
+        public:
+            const char* what()const throw(){
+                std::string s = "Digital IO failed: attempting " + to_string(configuration) + " when configured for " + to_string(expected_configuration) + " on digital port " + std::to_string(port);
+                return s.c_str();
+            }
+
+            DIOConfigurationException(Config config, Config expected, uint8_t p):configuration(config), expected_configuration(expected), port(p){}
+        };
+
         tSystemInterface* getSystemInterface() override{
             return nullptr;
-        }
-    
-        void writeDO(tDIO::tDO value, tRioStatusCode* status){
-            writeDO_Headers(value.Headers, status);
-            writeDO_SPIPort(value.SPIPort, status);
-            writeDO_Reserved(value.Reserved, status);
-            writeDO_MXP(value.MXP, status);
         }
 
     private:
@@ -80,62 +102,65 @@ namespace hel{
         bool allowOutput(T output,S enabled, bool requires_special_function){
             auto instance = hel::RoboRIOManager::getInstance();
             for(unsigned i = 1; i < findMostSignificantBit(output); i++){
-                if(checkBitHigh(output, i) && hel::checkBitHigh(enabled, i)){ //Attempt output if bit in value is high, allow write if enabled_outputs bit is also high 
-                    bool special_enabled = checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
+                if(checkBitHigh(output, i) && !hel::checkBitHigh(enabled, i)){ //If output is set but output is not enabled, don't allow output
                     instance.second.unlock();
-
-                    return requires_special_function ? special_enabled : !special_enabled; //If it's DO, special function should be disabled. Otherwise, it should be enabled
+                    throw new DIOConfigurationException(DIOConfigurationException::Config::DO, DIOConfigurationException::Config::DI, i);
+                    return false;
+                }
+                if(requires_special_function && !checkBitLow(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it reqiores MXP special function, and it's not, don't allow output
+                    instance.second.unlock();
+                    throw new DIOConfigurationException(DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DIOConfigurationException::Config::DO, i);
+                    return false;
                 }
             }
             instance.second.unlock();
-            return false;
+            return true;
         }
 
     public:
 
-        void writeDO_Headers(uint16_t value, tRioStatusCode* /*status*/){
+        void writeDO(tDIO::tDO value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
-            if(allowOutput(value, instance.first->digital_system.getEnabledOutputs().Headers, false)){
-                tDIO::tDO outputs = instance.first->digital_system.getOutputs();
-                outputs.Headers = value;
-                instance.first->digital_system.setOutputs(outputs);
+            try{
+                if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){
+                    instance.first->digital_system.setOutputs(value);
+                }
+            } catch(std::exception& e){
+                throw;
             }
-            instance.second.unlock();
-            //TODO error handling
+            instance.second.unlock(); //TODO placement in this function? Make thread safe
         }
-    
-        void writeDO_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
+
+        void writeDO_Headers(uint16_t value, tRioStatusCode* status){
             auto instance = hel::RoboRIOManager::getInstance();
-            if(allowOutput(value, instance.first->digital_system.getEnabledOutputs().SPIPort, false)){
-                auto instance = hel::RoboRIOManager::getInstance();
-                tDIO::tDO outputs = instance.first->digital_system.getOutputs();
-                outputs.SPIPort = value;
-                instance.first->digital_system.setOutputs(outputs);
-            }
-            instance.second.unlock();
-            //TODO error handling
+            tDIO::tDO outputs = instance.first->digital_system.getOutputs();
+            outputs.Headers = value;
+            writeDO(outputs, status);
+            instance.second.unlock(); //TODO unlock before or after writeDO() ?
         }
-    
-        void writeDO_Reserved(uint8_t value, tRioStatusCode* /*status*/){
+
+        void writeDO_SPIPort(uint8_t value, tRioStatusCode* status){
             auto instance = hel::RoboRIOManager::getInstance();
-            if(allowOutput(value, instance.first->digital_system.getEnabledOutputs().Reserved, false)){
-                tDIO::tDO outputs = instance.first->digital_system.getOutputs();
-                outputs.Reserved = value;
-                instance.first->digital_system.setOutputs(outputs);
-            }
+            tDIO::tDO outputs = instance.first->digital_system.getOutputs();
+            outputs.SPIPort = value;
+            writeDO(outputs, status);
             instance.second.unlock();
-            //TODO error handling
         }
-    
-        void writeDO_MXP(uint16_t value, tRioStatusCode* /*status*/){
+
+        void writeDO_Reserved(uint8_t value, tRioStatusCode* status){
             auto instance = hel::RoboRIOManager::getInstance();
-            if(allowOutput(value, instance.first->digital_system.getEnabledOutputs().MXP, false)){
-                tDIO::tDO outputs = instance.first->digital_system.getOutputs();
-                outputs.MXP = value;
-                instance.first->digital_system.setOutputs(outputs);
-            }
+            tDIO::tDO outputs = instance.first->digital_system.getOutputs();
+            outputs.Reserved = value;
+            writeDO(outputs, status);
             instance.second.unlock();
-            //TODO error handling
+        }
+
+        void writeDO_MXP(uint16_t value, tRioStatusCode* status){
+            auto instance = hel::RoboRIOManager::getInstance();
+            tDIO::tDO outputs = instance.first->digital_system.getOutputs();
+            outputs.MXP = value;
+            writeDO(outputs, status);
+            instance.second.unlock();
         }
 
         tDO readDO(tRioStatusCode* /*status*/){
@@ -161,7 +186,7 @@ namespace hel{
             instance.second.unlock();
             return instance.first->digital_system.getOutputs().Reserved;
         }
-    
+
         uint16_t readDO_MXP(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
@@ -212,7 +237,7 @@ namespace hel{
             instance.first->digital_system.setEnabledOutputs(enabled_outputs);
             instance.second.unlock();
         }
-    
+
         void writeOutputEnable_SPIPort(uint8_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             tDIO::tOutputEnable enabled_outputs = instance.first->digital_system.getEnabledOutputs();
@@ -220,7 +245,7 @@ namespace hel{
             instance.first->digital_system.setEnabledOutputs(enabled_outputs);
             instance.second.unlock();
         }
-    
+
         void writeOutputEnable_Reserved(uint8_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             tDIO::tOutputEnable enabled_outputs = instance.first->digital_system.getEnabledOutputs();
@@ -228,7 +253,7 @@ namespace hel{
             instance.first->digital_system.setEnabledOutputs(enabled_outputs);
             instance.second.unlock();
         }
-    
+
         void writeOutputEnable_MXP(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             tDIO::tOutputEnable enabled_outputs = instance.first->digital_system.getEnabledOutputs();
@@ -248,13 +273,13 @@ namespace hel{
             instance.second.unlock();
             return instance.first->digital_system.getEnabledOutputs().Headers;
         }
-    
+
         uint8_t readOutputEnable_SPIPort(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getEnabledOutputs().SPIPort;
         }
-    
+
         uint8_t readOutputEnable_Reserved(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
@@ -280,27 +305,59 @@ namespace hel{
             return 0;//unnecessary for emulation
         }
 
-        void writePulse(tDIO::tPulse value, tRioStatusCode* /*status*/){
+    private:
+        void pulse(tPulse value){
             auto instance = hel::RoboRIOManager::getInstance();
+
             instance.first->digital_system.setPulses(value);
-            //TODO this should only last for pulse_length seconds, and only one pulse should be active at a time? Also need to use allowOutput() too
+            uint8_t length = instance.first->digital_system.getPulseLength();
+
+            instance.second.unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(length * 1000));
+            instance.second.lock();
+
+            instance.first->digital_system.setPulses(*(new tPulse));
             instance.second.unlock();
         }
 
-        void writePulse_Headers(uint16_t /*value*/, tRioStatusCode* /*status*/){
-            //TODO
+    public:
+
+        void writePulse(tPulse value, tRioStatusCode* /*status*/){
+            auto instance = hel::RoboRIOManager::getInstance();
+            if(instance.first->digital_system.getPulses().value != (new tPulse)->value){
+                //TODO error handling multiple pulses active at once
+            }
+            if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){
+                instance.second.unlock();
+                std::thread(&DIOManager::pulse, this, value).detach();
+            } else {
+                instance.second.unlock();
+                //TODO error handling
+            }
         }
 
-        void writePulse_SPIPort(uint8_t /*value*/, tRioStatusCode* /*status*/){
-            //TODO
+        void writePulse_Headers(uint16_t value, tRioStatusCode* status){
+            tPulse pulse;
+            pulse.Headers = value;
+            writePulse(pulse, status);
         }
 
-        void writePulse_Reserved(uint8_t /*value*/, tRioStatusCode* /*status*/){
-            //TODO
+        void writePulse_SPIPort(uint8_t value, tRioStatusCode* status){
+            tPulse pulse;
+            pulse.SPIPort = value;
+            writePulse(pulse, status);
         }
 
-        void writePulse_MXP(uint16_t /*value*/, tRioStatusCode* /*status*/){
-            //TODO
+        void writePulse_Reserved(uint8_t value, tRioStatusCode* status){
+            tPulse pulse;
+            pulse.Reserved = value;
+            writePulse(pulse, status);
+        }
+
+        void writePulse_MXP(uint16_t value, tRioStatusCode* status){
+            tPulse pulse;
+            pulse.MXP = value;
+            writePulse(pulse, status);
         }
 
         tPulse readPulse(tRioStatusCode* /*status*/){

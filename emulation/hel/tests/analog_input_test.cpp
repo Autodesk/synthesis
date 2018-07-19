@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "roborio.h"
+#include "roborio.hpp"
 
 TEST(AnalogInputTest, ReadWriteConfig) {
     auto value = hal::tAI::tConfig{};

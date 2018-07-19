@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "receive_data.h"
+#include "receive_data.hpp"
 #include <iostream>
 
 TEST(ReceiveDataTest, Deserialize){

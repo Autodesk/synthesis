@@ -1,9 +1,9 @@
-#ifndef _BOUNDS_CHECKED_ARRAY_H_
-#define _BOUNDS_CHECKED_ARRAY_H_
+#ifndef _BOUNDS_CHECKED_ARRAY_HPP_
+#define _BOUNDS_CHECKED_ARRAY_HPP_
 
 #include <array>
 #include <functional>
-#include "util.h"
+#include "util.hpp"
 
 namespace hel{
     /**
