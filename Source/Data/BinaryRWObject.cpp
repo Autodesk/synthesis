@@ -10,7 +10,7 @@ BinaryWriter::~BinaryWriter()
 
 }
 
-bool BinaryWriter::Write(BXDA::Mesh * mesh)
+bool BinaryWriter::Write(const BXDA::Mesh & mesh)
 {
 	if (!outputFile.is_open())
 		return false;

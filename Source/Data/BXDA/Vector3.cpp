@@ -34,6 +34,11 @@ Vector3 Vector3::operator/(double scale) const
 	return Vector3(x / scale, y / scale, z / scale);
 }
 
+std::string BXDA::Vector3::toString()
+{
+	return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
+}
+
 std::ostream & BXDA::operator<<(std::ostream & output, const Vector3 & v)
 {
 	return output << v.x << v.y << v.z;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <string>
 
 namespace BXDA
 {
@@ -19,5 +20,6 @@ namespace BXDA
 		Vector3 operator*(double) const;
 		Vector3 operator/(double) const;
 		friend std::ostream& operator<<(std::ostream&, const Vector3&);
+		std::string toString();
 	};
 }
