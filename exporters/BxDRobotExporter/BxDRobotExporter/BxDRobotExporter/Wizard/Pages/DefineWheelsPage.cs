@@ -78,7 +78,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
                     this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
                     this.MainLayout.RowCount = 3;
-                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsGroup.Visible = false;
                     this.MiddleWheelsPanel.Visible = false;
 
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
@@ -89,7 +89,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
                     this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
                     this.MainLayout.RowCount = 3;
-                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsGroup.Visible = false;
                     this.MiddleWheelsPanel.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
                     break;
@@ -99,7 +99,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
                     this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
                     this.MainLayout.RowCount = 3;
-                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsGroup.Visible = false;
                     this.MiddleWheelsPanel.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.MECANUM;
                     break;
@@ -109,7 +109,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
                     this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
                     this.MainLayout.RowCount = 3;
-                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsGroup.Visible = false;
                     this.MiddleWheelsPanel.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.SWERVE;
                     break;
@@ -119,7 +119,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightWheelsGroup.Size = new System.Drawing.Size(224, 374);
                     this.RightWheelsPanel.Size = new System.Drawing.Size(218, 355);
                     this.MainLayout.RowCount = 4;
-                    this.MiddleWheelsGroupBox.Visible = true;
+                    this.MiddleWheelsGroup.Visible = true;
                     this.MiddleWheelsPanel.Visible = true;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
                     break;
@@ -129,7 +129,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
                     this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
                     this.MainLayout.RowCount = 3;
-                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsGroup.Visible = false;
                     this.MiddleWheelsPanel.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
                     break;
@@ -451,11 +451,16 @@ namespace BxDRobotExporter.Wizard
                 RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
 
             // Shrink items width if a scroll bar will appear
-            if (MiddleWheelsPanel.PreferredSize.Height < RightWheelsGroup.Height)
-                MiddleWheelsPanel.ColumnStyles[1].Width = 0;
-            else
-                MiddleWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
-
+            try
+            {
+                if (MiddleWheelsPanel.PreferredSize.Height < MiddleWheelsGroup.Height)
+                    MiddleWheelsPanel.ColumnStyles[1].Width = 0;
+                else
+                    MiddleWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
+            }catch(Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
             OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
 
             // Resume layout calculations
