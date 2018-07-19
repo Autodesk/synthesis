@@ -17,28 +17,42 @@ Surface::~Surface()
 		delete triangle;
 }
 
-Surface::Surface(const Surface * s) : triangles(s->triangles.size())
+Surface::Surface(const Surface & s) : triangles(s.triangles.size())
 {
-	this->color = s->color;
-	this->hasColor = s->hasColor;
-	this->translucency = s->translucency;
-	this->transparency = s->transparency;
-	this->specular = s->specular;
+	color = s.color;
+	hasColor = s.hasColor;
+	translucency = s.translucency;
+	transparency = s.transparency;
+	specular = s.specular;
 
-	for (Triangle * triangle : s->triangles)
-		triangles.push_back(new Triangle(triangle));
+	for (Triangle * triangle : s.triangles)
+		triangles.push_back(new Triangle(*triangle));
 }
 
-Surface::Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular, const std::vector<int> & indices) : triangles(indices.size() / 3)
+Surface::Surface(const std::vector<int> & indices) : Surface()
+{
+	triangles = std::vector<Triangle *>(indices.size() / 3);
+
+	for (int i = 0; i < indices.size(); i += 3)
+		triangles.push_back(new Triangle(indices[i], indices[i + 1], indices[i + 2]));
+}
+
+Surface::Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular)
 {
 	this->hasColor = hasColor;
 	this->color = color;
 	this->transparency = transparency;
 	this->translucency = translucency;
 	this->specular = specular;
+}
 
-	for (int i = 0; i < indices.size(); i += 3)
-		triangles.push_back(new Triangle(indices[i], indices[i + 1], indices[i + 2]));
+Surface::Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular, const std::vector<int> & indices) : Surface(indices)
+{
+	this->hasColor = hasColor;
+	this->color = color;
+	this->transparency = transparency;
+	this->translucency = translucency;
+	this->specular = specular;
 }
 
 std::ostream & BXDA::operator<<(std::ostream & output, const Surface & s)
@@ -61,16 +75,16 @@ std::ostream & BXDA::operator<<(std::ostream & output, const Surface & s)
 	return output;
 }
 
-void Surface::addTriangles(const std::vector<Triangle*>& triangles)
+void Surface::addTriangles(const std::vector<Triangle> & triangles)
 {
-	for (Triangle * triangle : triangles)
+	for (Triangle triangle : triangles)
 		this->triangles.push_back(new Triangle(triangle));
 }
 
-void BXDA::Surface::addTriangles(const Surface* surface)
+void BXDA::Surface::addTriangles(const Surface & surface)
 {
-	for (Triangle * triangle : surface->triangles)
-		triangles.push_back(new Triangle(triangle));
+	for (Triangle * triangle : surface.triangles)
+		triangles.push_back(new Triangle(*triangle));
 }
 
 void Surface::offsetIndices(int offset)

@@ -5,10 +5,10 @@ using namespace BXDA;
 Physics::Physics() : centerOfMass(), mass(0)
 {}
 
-Physics::Physics(Physics * physicsToCopy)
+Physics::Physics(const Physics & physicsToCopy)
 {
-	centerOfMass = physicsToCopy->centerOfMass;
-	mass = physicsToCopy->mass;
+	centerOfMass = physicsToCopy.centerOfMass;
+	mass = physicsToCopy.mass;
 }
 
 Physics::Physics(Vector3 centerOfMass, double mass)
@@ -20,7 +20,7 @@ Physics::Physics(Vector3 centerOfMass, double mass)
 Physics Physics::operator+=(const Physics & physicsToAverage)
 {
 	centerOfMass = (centerOfMass * mass + physicsToAverage.centerOfMass * physicsToAverage.mass) / (mass + physicsToAverage.mass);
-	return this;
+	return *this;
 }
 
 std::ostream & BXDA::operator<<(std::ostream & output, const Physics & p)

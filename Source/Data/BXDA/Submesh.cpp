@@ -13,23 +13,23 @@ SubMesh::~SubMesh()
 		delete surface;
 }
 
-SubMesh::SubMesh(SubMesh* s) : vertices(s->vertices.size()), surfaces(s->surfaces.size())
+SubMesh::SubMesh(const SubMesh & s) : vertices(s.vertices.size()), surfaces(s.surfaces.size())
 {
-	for (Vertex* vertex : s->vertices)
-		vertices.push_back(new Vertex(vertex));
-	for (Surface* surface : s->surfaces)
-		surfaces.push_back(new Surface(surface));
+	for (Vertex* vertex : s.vertices)
+		vertices.push_back(new Vertex(*vertex));
+	for (Surface* surface : s.surfaces)
+		surfaces.push_back(new Surface(*surface));
 }
 
-SubMesh::SubMesh(std::vector<Vertex*> vertices) : vertices(vertices.size())
+SubMesh::SubMesh(const std::vector<Vertex> & vertices) : vertices(vertices.size())
 {
-	for (Vertex* vertex : vertices)
+	for (Vertex vertex : vertices)
 		this->vertices.push_back(new Vertex(vertex));
 }
 
-SubMesh::SubMesh(std::vector<Vertex*> vertices, std::vector<Surface*> surfaces) : SubMesh(vertices)
+SubMesh::SubMesh(const std::vector<Vertex> & vertices, const std::vector<Surface> & surfaces) : SubMesh(vertices)
 {
-	for (Surface* surface : surfaces)
+	for (Surface surface : surfaces)
 		this->surfaces.push_back(new Surface(surface));
 }
 
@@ -53,48 +53,50 @@ std::ostream& BXDA::operator<<(std::ostream& output, const SubMesh& s)
 	return output;
 }
 
-void BXDA::SubMesh::addVertices(std::vector<Vertex*> vertices)
+void SubMesh::addVertices(std::vector<Vertex> vertices)
 {
-	for (Vertex* vertex : vertices)
+	for (Vertex vertex : vertices)
 		this->vertices.push_back(new Vertex(vertex));
 }
 
-void SubMesh::addSurface(Surface * s)
+void SubMesh::addSurface(const Surface & s)
 {
 	surfaces.push_back(new Surface(s));
 }
 
-void BXDA::SubMesh::mergeMesh(const SubMesh* other)
+void SubMesh::mergeMesh(const SubMesh & other)
 {
 	// Store offset that will be used to increment indices from other mesh
 	int offset = (int)vertices.size();
 
 	// Add other mesh's vertices to this mesh
-	addVertices(other->vertices);
+	for (Vertex * vertex : other.vertices)
+		this->vertices.push_back(new Vertex(*vertex));
 
 	// Add other mesh's triangles to this mesh
-	for (Surface * surface : other->surfaces)
+	for (Surface * surface : other.surfaces)
 	{
-		Surface * newSurface = new Surface(surface);
+		Surface * newSurface = new Surface(*surface);
 		newSurface->offsetIndices(offset);
-		addSurface(newSurface);
+		addSurface(*newSurface);
 	}
 }
 
-void BXDA::SubMesh::getConvexCollider(SubMesh* outputMesh) const
+void SubMesh::getConvexCollider(SubMesh & outputMesh) const
 {
-	(*outputMesh) = SubMesh();
+	outputMesh = SubMesh();
 
 	// TODO: Use convex hull to actually get a convex collider
 
-	outputMesh->addVertices(vertices);
+	for (Vertex * vertex : vertices)
+		outputMesh.vertices.push_back(new Vertex(*vertex));
 
 	// Create one surface that contains all triangles
 	Surface * newSurface = new Surface();
 	for (Surface * surface : surfaces)
-		newSurface->addTriangles(surface);
+		newSurface->addTriangles(*surface);
 
-	outputMesh->addSurface(newSurface); // Actual convex hull should have only one surface
+	outputMesh.addSurface(*newSurface); // Actual convex hull should have only one surface
 
 	delete newSurface;
 }

@@ -11,13 +11,15 @@ namespace BXDA
 		Surface();
 		~Surface();
 
-		Surface(const Surface * s);
+		Surface(const Surface & s);
+		Surface(const std::vector<int> & indices);
+		Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular);
 		Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular, const std::vector<int> & indices );
 		
 		friend std::ostream& operator<<(std::ostream&, const Surface&);
 
-		void addTriangles(const std::vector<Triangle*> &);
-		void addTriangles(const Surface *); // Adds the triangles from another surface
+		void addTriangles(const std::vector<Triangle> &);
+		void addTriangles(const Surface &); // Adds the triangles from another surface
 		void offsetIndices(int offset); // Adds an offset to all triangles' vertex indices
 
 	private:

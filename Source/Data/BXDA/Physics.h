@@ -9,7 +9,7 @@ namespace BXDA
 	public:
 		Physics();
 
-		Physics(Physics*);
+		Physics(const Physics &);
 		Physics(Vector3 centerOfMass, double mass);
 
 		Physics operator+=(const Physics &); // Averages the center of mass of a physics class with another
