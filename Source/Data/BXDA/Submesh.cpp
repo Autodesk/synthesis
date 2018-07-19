@@ -2,12 +2,10 @@
 
 using namespace BXDA;
 
-Submesh::Submesh()
-{
+SubMesh::SubMesh()
+{}
 
-}
-
-Submesh::~Submesh()
+SubMesh::~SubMesh()
 {
 	for (Vertex* vertex : vertices)
 		delete vertex;
@@ -15,7 +13,7 @@ Submesh::~Submesh()
 		delete surface;
 }
 
-Submesh::Submesh(Submesh* s) : vertices(s->vertices.size()), surfaces(s->surfaces.size())
+SubMesh::SubMesh(SubMesh* s) : vertices(s->vertices.size()), surfaces(s->surfaces.size())
 {
 	for (Vertex* vertex : s->vertices)
 		vertices.push_back(new Vertex(vertex));
@@ -23,19 +21,32 @@ Submesh::Submesh(Submesh* s) : vertices(s->vertices.size()), surfaces(s->surface
 		surfaces.push_back(new Surface(surface));
 }
 
-Submesh::Submesh(vector<Vertex*> vertices) : vertices(vertices.size())
+SubMesh::SubMesh(vector<Vertex*> vertices) : vertices(vertices.size())
 {
 	for (Vertex* vertex : vertices)
 		this->vertices.push_back(new Vertex(vertex));
 }
 
-Submesh::Submesh(vector<Vertex*> vertices, vector<Surface*> surfaces) : Submesh(vertices)
+SubMesh::SubMesh(vector<Vertex*> vertices, vector<Surface*> surfaces) : SubMesh(vertices)
 {
 	for (Surface* surface : surfaces)
 		this->surfaces.push_back(new Surface(surface));
 }
 
-void Submesh::addSurface(Surface* s)
+std::ostream& BXDA::operator<<(std::ostream& output, const SubMesh& s)
+{
+	output << (int)s.vertices.size() * 3;
+	for (Vertex* vertex : s.vertices)
+		output << vertex->location;
+
+	output << (int)s.vertices.size() * 3;
+	for (Vertex* vertex : s.vertices)
+		output << vertex->normal;
+
+	return output;
+}
+
+void SubMesh::addSurface(Surface* s)
 {
 	surfaces.push_back(new Surface(s));
 }

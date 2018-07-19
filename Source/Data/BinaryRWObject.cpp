@@ -21,7 +21,7 @@ bool BinaryWriter::Write(BXDA::Mesh * mesh)
 	/*
 	for (int i = 0; i < countS; i++)
 	{
-		Submesh * temp = bxda->submeshes[i];
+		SubMesh * temp = bxda->subMeshes[i];
 		countV = temp->verts.size() / 3;
 		countN = temp->norms.size() / 3;
 		countI = 0;
