@@ -13,46 +13,63 @@ namespace Synthesis.States
 {
     public class ConnectingState : State
     {
-        // TODO: Handle disconnecting, reconnecting, etc.
-
         private readonly string lobbyCode;
+        private readonly string playerTag;
         private readonly string networkAddress;
 
         private bool connected;
 
-        public ConnectingState(string lobbyCode, string networkAddress)
+        /// <summary>
+        /// Initializes a new <see cref="ConnectingState"/>.
+        /// </summary>
+        /// <param name="lobbyCode"></param>
+        /// <param name="playerTag"></param>
+        /// <param name="networkAddress"></param>
+        public ConnectingState(string lobbyCode, string playerTag, string networkAddress)
         {
             this.lobbyCode = lobbyCode;
+            this.playerTag = playerTag;
             this.networkAddress = networkAddress;
-
         }
 
+        /// <summary>
+        /// Starts the <see cref="ConnectingState"/>.
+        /// </summary>
         public override void Start()
         {
             connected = false;
 
             MultiplayerNetwork network = MultiplayerNetwork.Instance;
             network.networkAddress = networkAddress;
-            network.ConnectionStatusChanged += OnConnectionStatusChanged;
+            network.ClientConnectionChanged += OnConnectionStatusChanged;
             network.StartClient();
         }
 
+        /// <summary>
+        /// Ends the <see cref="ConnectingState"/>.
+        /// </summary>
         public override void End()
         {
             MultiplayerNetwork network = MultiplayerNetwork.Instance;
-            network.ConnectionStatusChanged -= OnConnectionStatusChanged;
+            network.ClientConnectionChanged -= OnConnectionStatusChanged;
 
             if (!connected)
                 network.StopClient();
         }
 
+        /// <summary>
+        /// Proceeds to a new <see cref="LobbyState"/> if the connection is successful,
+        /// otherwise returns to the previous <see cref="State"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="status"></param>
         private void OnConnectionStatusChanged(object sender, MultiplayerNetwork.ConnectionStatus status)
         {
             switch (status)
             {
                 case MultiplayerNetwork.ConnectionStatus.Connected:
                     connected = true;
-                    StateMachine.ChangeState(new LobbyState(false, lobbyCode), false);
+                    StateMachine.ChangeState(new LobbyState(false, lobbyCode, playerTag), false);
                     break;
                 case MultiplayerNetwork.ConnectionStatus.Disconnected:
                     UserMessageManager.Dispatch("Unable to connect to the lobby!", 5f);

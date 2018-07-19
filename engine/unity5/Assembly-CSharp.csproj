@@ -261,6 +261,9 @@
     <Compile Include="Assets\Scripts\Network\MultiplayerNetwork.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkElement.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkFileTransfer.cs" />
+    <Compile Include="Assets\Scripts\Network\PlayerEntry.cs" />
+    <Compile Include="Assets\Scripts\Network\PlayerIdentity.cs" />
+    <Compile Include="Assets\Scripts\Network\PlayerList.cs" />
     <Compile Include="Assets\Scripts\Network\ServerNetworkDiscovery.cs" />
     <Compile Include="Assets\Scripts\Network\ServerStatus.cs" />
     <Compile Include="Assets\Scripts\RN\RNCommon.cs" />

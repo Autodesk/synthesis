@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Networking.NetworkSystem;
 
 namespace Synthesis.Network
 {
@@ -25,14 +26,13 @@ namespace Synthesis.Network
 
         public bool Host { get; private set; }
 
-        public event EventHandler<ConnectionStatus> ConnectionStatusChanged;
+        public event EventHandler<ConnectionStatus> ClientConnectionChanged;
 
         //bool awaitingFieldLoad;
 
         private void Start()
         {
             Host = false;
-            //client = new NetworkClient();
             //awaitingFieldLoad = false;
         }
 
@@ -44,20 +44,29 @@ namespace Synthesis.Network
 
         public override void OnClientConnect(NetworkConnection conn)
         {
+            base.OnClientConnect(conn);
+
             ConnectionID = conn.connectionId;
-            ConnectionStatusChanged?.Invoke(this, ConnectionStatus.Connected);
+            ClientConnectionChanged?.Invoke(this, ConnectionStatus.Connected);
             //ClientScene.Ready(conn);
-            //ClientScene.AddPlayer(0);
+            ClientScene.AddPlayer(0);
         }
 
         public override void OnClientDisconnect(NetworkConnection conn)
         {
-            ConnectionStatusChanged?.Invoke(this, ConnectionStatus.Disconnected);
+            base.OnClientDisconnect(conn);
+
+            ClientConnectionChanged?.Invoke(this, ConnectionStatus.Disconnected);
+        }
+
+        public override void OnServerConnect(NetworkConnection conn)
+        {
+            base.OnServerConnect(conn);
         }
 
         public override void OnServerDisconnect(NetworkConnection conn)
         {
-            // TODO, called on the server when a client disconnects.
+            base.OnServerDisconnect(conn);
         }
 
         public override void OnStartClient(NetworkClient client)

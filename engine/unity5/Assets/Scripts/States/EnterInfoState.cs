@@ -17,6 +17,7 @@ namespace Synthesis.States
         public void OnJoinButtonPressed()
         {
             string lobbyCode = GameObject.Find("LobbyCodeText").GetComponent<Text>().text;
+            string playerTag = GameObject.Find("PlayerTagText").GetComponent<Text>().text;
             string networkAddress = IPCrypt.Decrypt(lobbyCode);
 
             if (networkAddress.Equals(string.Empty))
@@ -25,7 +26,7 @@ namespace Synthesis.States
                 return;
             }
 
-            StateMachine.PushState(new ConnectingState(lobbyCode, networkAddress));
+            StateMachine.PushState(new ConnectingState(lobbyCode, playerTag, networkAddress));
         }
     }
 }

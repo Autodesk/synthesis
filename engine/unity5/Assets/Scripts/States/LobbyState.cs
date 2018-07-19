@@ -1,14 +1,7 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Network;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace Synthesis.States
@@ -17,28 +10,44 @@ namespace Synthesis.States
     {
         private readonly bool host;
         private readonly string lobbyCode;
+        private readonly string playerTag;
 
-        public LobbyState(bool host, string lobbyCode)
+        /// <summary>
+        /// Initializes a new <see cref="LobbyState"/> instance.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="lobbyCode"></param>
+        /// <param name="playerTag"></param>
+        public LobbyState(bool host, string lobbyCode, string playerTag)
         {
             this.host = host;
             this.lobbyCode = lobbyCode;
+            this.playerTag = playerTag;
         }
 
+        /// <summary>
+        /// Starts the <see cref="LobbyState"/>.
+        /// </summary>
         public override void Start()
         {
+            PlayerIdentity.DefaultLocalPlayerTag = playerTag;
+
             GameObject.Find("LobbyCodeText").GetComponent<Text>().text = "Lobby Code: " + lobbyCode;
 
             if (!host)
             {
                 MultiplayerNetwork network = MultiplayerNetwork.Instance;
-                network.ConnectionStatusChanged += OnConnectionStatusChanged;
+                network.ClientConnectionChanged += OnClientConnectionChanged;
             }
         }
 
+        /// <summary>
+        /// Ends the <see cref="LobbyState"/>.
+        /// </summary>
         public override void End()
         {
             MultiplayerNetwork network = MultiplayerNetwork.Instance;
-            network.ConnectionStatusChanged -= OnConnectionStatusChanged;
+            network.ClientConnectionChanged -= OnClientConnectionChanged;
             
             if (network.Host)
                 network.StopHost();
@@ -46,7 +55,12 @@ namespace Synthesis.States
                 network.StopClient();
         }
 
-        private void OnConnectionStatusChanged(object sender, MultiplayerNetwork.ConnectionStatus e)
+        /// <summary>
+        /// Exits the <see cref="LobbyState"/> if the connection has been lost.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnClientConnectionChanged(object sender, MultiplayerNetwork.ConnectionStatus e)
         {
             if (e == MultiplayerNetwork.ConnectionStatus.Disconnected)
             {

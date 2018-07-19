@@ -13,6 +13,9 @@ namespace Synthesis.States
 {
     public class HostJoinState : State
     {
+        /// <summary>
+        /// Launches a new <see cref="LobbyState"/> as the host.
+        /// </summary>
         public void OnHostLobbyButtonPressed()
         {
             MultiplayerNetwork network = NetworkManager.singleton as MultiplayerNetwork;
@@ -21,14 +24,21 @@ namespace Synthesis.States
             network.networkAddress = ip;
             network.StartHost();
             
-            StateMachine.PushState(new LobbyState(true, IPCrypt.Encrypt(ip)));
+            StateMachine.PushState(new LobbyState(true, IPCrypt.Encrypt(ip), "Host"));
         }
 
+        /// <summary>
+        /// Launches a new <see cref="EnterInfoState"/>.
+        /// </summary>
         public void OnJoinLobbyButtonPressed()
         {
             StateMachine.PushState(new EnterInfoState());
         }
 
+        /// <summary>
+        /// Returns the local IP address of this machine.
+        /// </summary>
+        /// <returns></returns>
         private string GetLocalIP()
         {
             IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
