@@ -17,8 +17,19 @@ std::ostream& BXDA::operator<<(std::ostream& output, const Mesh& m)
 {
 	output << m.guid << m.CURRENT_VERSION;
 
+	// Output meshes
 	for (SubMesh * submesh : m.subMeshes)
 		output << *submesh;
+
+	// Output colliders
+	SubMesh * tempColliderMesh = new SubMesh;
+	for (SubMesh * submesh : m.subMeshes)
+	{
+		submesh->getConvexCollider(tempColliderMesh);
+		output << tempColliderMesh;
+	}
+
+	// Output 
 
 	return output;
 }
