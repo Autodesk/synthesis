@@ -1,4 +1,4 @@
-#include "roborio.h"
+#include "roborio.hpp"
 
 #include <algorithm>
 
@@ -7,26 +7,26 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
 
-    void RoboRIO::CANBus::enqueueMessage(RoboRIO::CANBus::Message m){
+    void CANBus::enqueueMessage(CANBus::Message m){
     	out_message_queue.push(m);
     }
 
-    RoboRIO::CANBus::Message RoboRIO::CANBus::getNextMessage()const{
+    CANBus::Message CANBus::getNextMessage()const{
     	return in_message_queue.front();
     }
 
-    void RoboRIO::CANBus::popNextMessage(){
+    void CANBus::popNextMessage(){
     	in_message_queue.pop();
     }
 
-    RoboRIO::CANBus::Message::Message():id(),data(),data_size(),time_stamp(){}
+    CANBus::Message::Message():id(),data(),data_size(),time_stamp(){}
 
-    RoboRIO::CANBus::CANBus():in_message_queue(),out_message_queue(){}
+    CANBus::CANBus():in_message_queue(),out_message_queue(){}
 }
 
 void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
     auto instance = hel::RoboRIOManager::getInstance();
-    hel::RoboRIO::CANBus::Message m;
+    hel::CANBus::Message m;
     m.id = messageID;
     m.data_size = dataSize;
     std::copy(data, data + dataSize, std::begin(m.data));
@@ -37,7 +37,7 @@ void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, cons
 
 void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t /*messageIDMask*/, uint8_t* data, uint8_t* dataSize, uint32_t* /*timeStamp*/, int32_t* /*status*/){
     auto instance = hel::RoboRIOManager::getInstance();
-    hel::RoboRIO::CANBus::Message m = instance.first->can_bus.getNextMessage();
+    hel::CANBus::Message m = instance.first->can_bus.getNextMessage();
     instance.first->can_bus.popNextMessage();
     *messageID = m.id; //TODO use message mask?
     *dataSize = m.data_size;

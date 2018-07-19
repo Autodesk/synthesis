@@ -1,19 +1,19 @@
-#include "roborio.h"
+#include "roborio.hpp"
 #include <chrono>
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    RoboRIO::Global::Global(){
+    Global::Global(){
     	fpga_start_time = getCurrentTime();//std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     }
 
-    uint64_t RoboRIO::Global::getCurrentTime(){
+    uint64_t Global::getCurrentTime(){
         return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     }
 
-    uint64_t RoboRIO::Global::getFPGAStartTime()const{
+    uint64_t Global::getFPGAStartTime()const{
         return fpga_start_time;
     }
 
@@ -49,9 +49,9 @@ namespace hel{
         uint32_t readLocalTimeUpper(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return (RoboRIO::Global::getCurrentTime() - instance.first->global.getFPGAStartTime()) >> 32;
+            return (Global::getCurrentTime() - instance.first->global.getFPGAStartTime()) >> 32;
         }
-        
+
         uint16_t readVersion(tRioStatusCode* /*status*/){
           return 2018; //WPILib assumes this is the competition year
         }
@@ -59,7 +59,7 @@ namespace hel{
         uint32_t readLocalTime(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return (uint32_t)(RoboRIO::Global::getCurrentTime() - instance.first->global.getFPGAStartTime());
+            return (uint32_t)(Global::getCurrentTime() - instance.first->global.getFPGAStartTime());
         }
 
         bool readUserButton(tRioStatusCode* /*status*/){
@@ -68,8 +68,8 @@ namespace hel{
             return instance.first->user_button;
         }
 
-        uint32_t readRevision(tRioStatusCode* /*status*/){
-            return 0; //TODO?
+        uint32_t readRevision(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
     };
 }

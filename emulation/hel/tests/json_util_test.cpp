@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "json_util.h"
+#include "json_util.hpp"
 #include <iostream>
 
 struct Joystick{

@@ -1,4 +1,4 @@
-#include "json_util.h"
+#include "json_util.hpp"
 
 std::string hel::quote(std::string s){
     return "\"" + s + "\"";
@@ -16,40 +16,40 @@ std::string hel::unquote(std::string s){
 }
 
 std::string hel::removeExtraneousSpaces(std::string input_str){
-	const std::string DOUBLE_SPACE = "  ";
-	while(input_str.find(DOUBLE_SPACE) != std::string::npos){
+    const std::string DOUBLE_SPACE = "  ";
+    while(input_str.find(DOUBLE_SPACE) != std::string::npos){
         input_str.replace(input_str.find(DOUBLE_SPACE), DOUBLE_SPACE.size()," ");
-	}
-	return input_str;
+    }
+    return input_str;
 }
 
 std::string hel::excludeFromString(std::string input_str,std::vector<char> excluded_chars){
-	std::string processed_str = "";
-	for(char c: input_str){
-		bool exclude = false;
-		for(char excluded_char : excluded_chars){
-			if(c == excluded_char){
-				exclude = true;
-				break;
-			}
-		}
-		if(exclude){
-			continue;
-		}
-		processed_str += c;
-	}
+    std::string processed_str = "";
+    for(char c: input_str){
+        bool exclude = false;
+        for(char excluded_char : excluded_chars){
+            if(c == excluded_char){
+                exclude = true;
+                break;
+            }
+        }
+        if(exclude){
+            continue;
+        }
+        processed_str += c;
+    }
 
-	return processed_str;
+    return processed_str;
 }
 
 std::string hel::trim(std::string input_str){
-	if(input_str.find_first_of(' ') != std::string::npos){
-		input_str.erase(0, input_str.find_first_not_of(' '));
-	}
-	if(input_str.find_last_not_of(' ') != std::string::npos){
-		input_str.erase(input_str.find_last_not_of(' ') + 1);
-	}
-	return input_str;
+    if(input_str.find_first_of(' ') != std::string::npos){
+        input_str.erase(0, input_str.find_first_not_of(' '));
+    }
+    if(input_str.find_last_not_of(' ') != std::string::npos){
+        input_str.erase(input_str.find_last_not_of(' ') + 1);
+    }
+    return input_str;
 }
 
 std::vector<std::string> hel::split(std::string input_str, const char DELIMITER){
@@ -78,9 +78,13 @@ std::string hel::clipList(std::string input){
 
 std::vector<std::string> hel::splitObject(std::string input){
     std::vector<std::string> v;
+    std::size_t previous_input_size = input.size();
     while(input.size() > 0){
         v.push_back(hel::pullObject(input));
-        //TODO could run forever
+        if(input.size() == previous_input_size){
+            //TODO error handling -- prevent from running forever
+        }
+        previous_input_size = input.size();
     }
     return v;
 }

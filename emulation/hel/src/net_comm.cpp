@@ -1,4 +1,4 @@
-#include "roborio.h"
+#include "roborio.hpp"
 #include <thread>
 #include <cstdio>
 #include <unistd.h>
@@ -6,7 +6,7 @@
 std::thread ds_spoofer;
 
 namespace hel{
-    RoboRIO::NetComm::NetComm():ref_num(),occurFunction(){}
+    NetComm::NetComm():ref_num(),occurFunction(){}
 }
 
 extern "C" {
@@ -19,6 +19,7 @@ extern "C" {
         };
         instance.first->net_comm.occurFunction = newData;
         ds_spoofer = std::thread([newData](){while(1){newData(42);}});
+        hel::hal_is_initialized.store(true);
         instance.second.unlock();
     }
 }
