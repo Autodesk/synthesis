@@ -737,17 +737,28 @@ namespace BxDRobotExporter.Wizard
         {
             if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton()) // Load the robot skeleton
             {
-                if (WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels)) //finds wheels
+                if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
                 {
-                    foreach (RigidNode_Base wheel in leftWheels)
-                        SetWheelSide(wheel, WheelSide.LEFT, false);
-
-                    foreach (RigidNode_Base wheel in rightWheels)
-                        SetWheelSide(wheel, WheelSide.RIGHT, false);
-
-                    if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
+                    if (WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels, out List<RigidNode_Base> middleWheels)) //finds wheels
                     {
-                        //TODO: Imliment HDRIVE
+                        foreach (RigidNode_Base wheel in leftWheels)
+                            SetWheelSide(wheel, WheelSide.LEFT, false);
+
+                        foreach (RigidNode_Base wheel in rightWheels)
+                            SetWheelSide(wheel, WheelSide.RIGHT, false);
+
+                        foreach (RigidNode_Base wheel in middleWheels)
+                            SetWheelSide(wheel, WheelSide.MIDDLE, false);
+                    }
+                } else
+                {
+                    if (WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels)) //finds wheels
+                    {
+                        foreach (RigidNode_Base wheel in leftWheels)
+                            SetWheelSide(wheel, WheelSide.LEFT, false);
+
+                        foreach (RigidNode_Base wheel in rightWheels)
+                            SetWheelSide(wheel, WheelSide.RIGHT, false);
                     }
                 }
             }

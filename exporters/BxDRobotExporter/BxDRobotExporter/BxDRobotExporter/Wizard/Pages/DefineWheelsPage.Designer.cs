@@ -352,40 +352,6 @@
             this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
             this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
             // 
-            // MiddleWheelsGroupBox
-            // 
-            this.MiddleWheelsGroup.AllowDrop = true;
-            this.MainLayout.SetColumnSpan(this.MiddleWheelsGroup, 2);
-            this.MiddleWheelsGroup.Controls.Add(this.MiddleWheelsPanel);
-            this.MiddleWheelsGroup.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MiddleWheelsGroup.Location = new System.Drawing.Point(4, 641);
-            this.MiddleWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
-            this.MiddleWheelsGroup.Name = "MiddleWheelsGroupBox";
-            this.MiddleWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
-            this.MiddleWheelsGroup.Size = new System.Drawing.Size(605, 159);
-            this.MiddleWheelsGroup.TabIndex = 7;
-            this.MiddleWheelsGroup.TabStop = false;
-            this.MiddleWheelsGroup.Text = "Middle Wheels (H-Drive only)";
-            this.MiddleWheelsGroup.DragDrop += new System.Windows.Forms.DragEventHandler(this.MiddleWheelsPanel_DragDrop);
-            this.MiddleWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
-            // 
-            // MiddleWheelsPanel
-            // 
-            this.MiddleWheelsPanel.AllowDrop = true;
-            this.MiddleWheelsPanel.AutoScroll = true;
-            this.MiddleWheelsPanel.ColumnCount = 2;
-            this.MiddleWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.MiddleWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
-            this.MiddleWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MiddleWheelsPanel.Location = new System.Drawing.Point(4, 19);
-            this.MiddleWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
-            this.MiddleWheelsPanel.Name = "MiddleWheelsPanel";
-            this.MiddleWheelsPanel.RowCount = 2;
-            this.MiddleWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
-            this.MiddleWheelsPanel.Size = new System.Drawing.Size(597, 136);
-            this.MiddleWheelsPanel.TabIndex = 1;
-            this.MiddleWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.MiddleWheelsPanel_DragDrop);
-            this.MiddleWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);            // 
             // MainLayout
             // 
             this.MainLayout.ColumnCount = 2;
@@ -407,6 +373,42 @@
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 27.27273F));
             this.MainLayout.Size = new System.Drawing.Size(613, 804);
             this.MainLayout.TabIndex = 7;
+            // 
+            // MiddleWheelsGroup
+            // 
+            this.MiddleWheelsGroup.AllowDrop = true;
+            this.MainLayout.SetColumnSpan(this.MiddleWheelsGroup, 2);
+            this.MiddleWheelsGroup.Controls.Add(this.MiddleWheelsPanel);
+            this.MiddleWheelsGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MiddleWheelsGroup.Location = new System.Drawing.Point(4, 641);
+            this.MiddleWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
+            this.MiddleWheelsGroup.Name = "MiddleWheelsGroup";
+            this.MiddleWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
+            this.MiddleWheelsGroup.Size = new System.Drawing.Size(605, 159);
+            this.MiddleWheelsGroup.TabIndex = 7;
+            this.MiddleWheelsGroup.TabStop = false;
+            this.MiddleWheelsGroup.Text = "Middle Wheels (H-Drive only)";
+            this.MiddleWheelsGroup.DragDrop += new System.Windows.Forms.DragEventHandler(this.MiddleWheelsPanel_DragDrop);
+            this.MiddleWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
+            // 
+            // MiddleWheelsPanel
+            // 
+            this.MiddleWheelsPanel.AllowDrop = true;
+            this.MiddleWheelsPanel.AutoScroll = true;
+            this.MiddleWheelsPanel.ColumnCount = 2;
+            this.MiddleWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.MiddleWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
+            this.MiddleWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MiddleWheelsPanel.Location = new System.Drawing.Point(4, 19);
+            this.MiddleWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
+            this.MiddleWheelsPanel.Name = "MiddleWheelsPanel";
+            this.MiddleWheelsPanel.RowCount = 2;
+            this.MiddleWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
+            this.MiddleWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.MiddleWheelsPanel.Size = new System.Drawing.Size(597, 136);
+            this.MiddleWheelsPanel.TabIndex = 1;
+            this.MiddleWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.MiddleWheelsPanel_DragDrop);
+            this.MiddleWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
             // 
             // DefineWheelsPage
             // 
