@@ -17,7 +17,8 @@ namespace BxDRobotExporter.Wizard
     {
         UNASSIGNED = 0,
         LEFT = 1,
-        RIGHT = 2
+        RIGHT = 2,
+        MIDDLE = 3
     }
 
     /// <summary>
@@ -34,6 +35,7 @@ namespace BxDRobotExporter.Wizard
         private Dictionary<string, WheelSetupPanel> setupPanels = new Dictionary<string, WheelSetupPanel>();
         private List<string> leftOrder = new List<string>();
         private List<string> rightOrder = new List<string>();
+        private List<string> middleOrder = new List<string>();
 
         public DefineWheelsPage()
         {
@@ -47,6 +49,9 @@ namespace BxDRobotExporter.Wizard
             RightWheelsPanel.AutoScroll = false;
             RightWheelsPanel.HorizontalScroll.Maximum = 0;
             RightWheelsPanel.AutoScroll = true;
+            MiddleWheelsPanel.AutoScroll = false;
+            MiddleWheelsPanel.HorizontalScroll.Maximum = 0;
+            MiddleWheelsPanel.AutoScroll = true;
 
             // Prepare drivetrain dropdown menu
             DriveTrainDropdown.SelectedIndex = 0;
@@ -68,21 +73,64 @@ namespace BxDRobotExporter.Wizard
             switch (DriveTrainDropdown.SelectedIndex)
             {
                 case 0: //Undefined
+                    this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.MainLayout.RowCount = 3;
+                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsPanel.Visible = false;
+
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
                     break;
                 case 1: //Tank
+                    this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.MainLayout.RowCount = 3;
+                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsPanel.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
                     break;
                 case 2: //Mecanum
+                    this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.MainLayout.RowCount = 3;
+                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsPanel.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.MECANUM;
                     break;
                 case 3: //Swerve
+                    this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.MainLayout.RowCount = 3;
+                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsPanel.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.SWERVE;
                     break;
                 case 4: //H-Drive
+                    this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 374);
+                    this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 355);
+                    this.RightWheelsGroup.Size = new System.Drawing.Size(224, 374);
+                    this.RightWheelsPanel.Size = new System.Drawing.Size(218, 355);
+                    this.MainLayout.RowCount = 4;
+                    this.MiddleWheelsGroupBox.Visible = true;
+                    this.MiddleWheelsPanel.Visible = true;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
                     break;
                 case 5: //Custom
+                    this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
+                    this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
+                    this.MainLayout.RowCount = 3;
+                    this.MiddleWheelsGroupBox.Visible = false;
+                    this.MiddleWheelsPanel.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
                     break;
             }
@@ -101,15 +149,6 @@ namespace BxDRobotExporter.Wizard
             }
 
             Initialize();
-        }
-
-        /// <summary>
-        /// Validates input
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Panel_WheelTypeChanged(object sender, WheelTypeChangedEventArgs e)
-        {
         }
 
         /// <summary>
@@ -147,10 +186,14 @@ namespace BxDRobotExporter.Wizard
             while (RightWheelsPanel.Controls.Count > 0)
                 RightWheelsPanel.Controls[0].Dispose();
 
+            while (MiddleWheelsPanel.Controls.Count > 0)
+                MiddleWheelsPanel.Controls[0].Dispose();
+
             Dictionary<string, RigidNode_Base> availableNodes = new Dictionary<string, RigidNode_Base>(); // TODO: Rename this to availableNodes after a different merge
             setupPanels = new Dictionary<string, WheelSetupPanel>();
             leftOrder = new List<string>();
             rightOrder = new List<string>();
+            middleOrder = new List<string>();
             
             // Find all nodes that can be wheels
             Dictionary<string, int> duplicatePartNames = new Dictionary<string, int>();
@@ -225,6 +268,7 @@ namespace BxDRobotExporter.Wizard
                     setupPanels.Clear();
                     leftOrder.Clear();
                     rightOrder.Clear();
+                    middleOrder.Clear();
                     UpdateUI();
                 }
 
@@ -264,6 +308,7 @@ namespace BxDRobotExporter.Wizard
             // Remove from current orders
             leftOrder.Remove(nodeName);
             rightOrder.Remove(nodeName);
+            middleOrder.Remove(nodeName);
 
             // Update side of wheel data
             setupPanels[nodeName].Side = side;
@@ -282,6 +327,13 @@ namespace BxDRobotExporter.Wizard
                     rightOrder.Add(nodeName);
                 else
                     rightOrder.Insert(rightOrder.IndexOf(insertBefore), nodeName);
+            }
+            else if (side == WheelSide.MIDDLE)
+            {
+                if (insertBefore == null || !middleOrder.Contains(insertBefore))
+                    middleOrder.Add(nodeName);
+                else
+                    middleOrder.Insert(middleOrder.IndexOf(insertBefore), nodeName);
             }
 
             // Update the interface
@@ -357,6 +409,9 @@ namespace BxDRobotExporter.Wizard
             RightWheelsPanel.Controls.Clear();
             RightWheelsPanel.RowCount = 0;
             RightWheelsPanel.RowStyles.Clear();
+            MiddleWheelsPanel.Controls.Clear();
+            MiddleWheelsPanel.RowCount = 0;
+            MiddleWheelsPanel.RowStyles.Clear();
 
             // Pause layout calculations to prevent siezures
             SuspendLayout();
@@ -368,6 +423,9 @@ namespace BxDRobotExporter.Wizard
             // Add right items to right side
             foreach (string name in rightOrder)
                 AddControlToNewTableRow(setupPanels[name], RightWheelsPanel);
+
+            foreach (string name in middleOrder)
+                AddControlToNewTableRow(setupPanels[name], MiddleWheelsPanel);
 
             // Add all remaining items to list box
             int unassignedNodes = 0;
@@ -391,6 +449,12 @@ namespace BxDRobotExporter.Wizard
                 RightWheelsPanel.ColumnStyles[1].Width = 0;
             else
                 RightWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
+
+            // Shrink items width if a scroll bar will appear
+            if (MiddleWheelsPanel.PreferredSize.Height < RightWheelsGroup.Height)
+                MiddleWheelsPanel.ColumnStyles[1].Width = 0;
+            else
+                MiddleWheelsPanel.ColumnStyles[1].Width = SystemInformation.VerticalScrollBarWidth + 2;
 
             OnSetEndEarly(unassignedNodes == 0); // Skip next page if no parts are left
 
@@ -423,6 +487,16 @@ namespace BxDRobotExporter.Wizard
                     n++;
             }
 
+            // Make sure all items in middle orders are middle wheels
+            n = 0;
+            while (n < middleOrder.Count)
+            {
+                if (setupPanels[middleOrder[n]].Side != WheelSide.RIGHT)
+                    middleOrder.RemoveAt(n);
+                else
+                    n++;
+            }
+
             foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
             {
                 // If it should exist in the left order, add it to the left order
@@ -434,6 +508,11 @@ namespace BxDRobotExporter.Wizard
                 if (panel.Value.Side == WheelSide.RIGHT)
                     if (!rightOrder.Contains(panel.Key))
                         rightOrder.Add(panel.Key);
+
+                // If it should exist in the right order, add it to the right order
+                if (panel.Value.Side == WheelSide.MIDDLE)
+                    if (!middleOrder.Contains(panel.Key))
+                        middleOrder.Add(panel.Key);
             }
         }
 
@@ -539,13 +618,39 @@ namespace BxDRobotExporter.Wizard
         }
 
         /// <summary>
+        /// Called when the user drops a dragged item into the right wheel panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MiddleWheelsPanel_DragDrop(object sender, DragEventArgs e)// called when the user "drops" a seleected value into the group
+        {
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                string nodeName = (string)e.Data.GetData(DataFormats.StringFormat, true);
+
+                WheelsPanel_DragDrop(nodeName, WheelSide.MIDDLE);
+            }
+        }
+
+        /// <summary>
         /// Called when a dragged part is placed in either wheel panel.
         /// </summary>
         /// <param name="nodeName">Name of the node being dragged.</param>
         /// <param name="side">Side that the node was placed in.</param>
         private void WheelsPanel_DragDrop(string nodeName, WheelSide side)// called when the user "drops" a seleected value into the group
         {
-            TableLayoutPanel wheelPanel = (side == WheelSide.LEFT) ? LeftWheelsPanel : RightWheelsPanel;
+            TableLayoutPanel wheelPanel = null;
+            if (side == WheelSide.LEFT)
+            {
+                wheelPanel = LeftWheelsPanel;
+            } else if (side == WheelSide.RIGHT)
+            {
+                wheelPanel = RightWheelsPanel;
+            }
+            else
+            {
+                wheelPanel = MiddleWheelsPanel;
+            }
 
             // Find the wheel control located below the mouse and insert before that node
             foreach (Control c in wheelPanel.Controls)
