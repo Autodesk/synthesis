@@ -10,7 +10,7 @@ using Synthesis.Utils;
 
 namespace Synthesis.DriverPractice
 {
-    public class DriverPracticeMode : StateBehaviour<MainState>
+    public class DriverPracticeMode : LinkedMonoBehaviour<MainState>
     {
 
         private DriverPracticeRobot dpmRobot;
@@ -80,6 +80,7 @@ namespace Synthesis.DriverPractice
         protected override void Awake()
         {
             base.Awake();
+
             InitializeTrajectories();
         }
 
@@ -612,8 +613,8 @@ namespace Synthesis.DriverPractice
             GameObject trajectory1 = new GameObject("DrawnTrajectory1");
             GameObject trajectory2 = new GameObject("DrawnTrajectory2");
 
-            StateMachine.Link<MainState>(trajectory1);
-            StateMachine.Link<MainState>(trajectory2);
+            StateMachine.SceneGlobal.Link<MainState>(trajectory1);
+            StateMachine.SceneGlobal.Link<MainState>(trajectory2);
 
             drawnTrajectory[0] = trajectory1.AddComponent<LineRenderer>();
             drawnTrajectory[1] = trajectory2.AddComponent<LineRenderer>();

@@ -14,7 +14,7 @@ namespace Synthesis.Sensors
     /// <summary>
     /// This class handles every sensor-related GUI elements in Unity
     /// </summary>
-    class SensorManagerGUI : StateBehaviour<MainState>
+    class SensorManagerGUI : LinkedMonoBehaviour<MainState>
     {
         Toolkit toolkit;
         GameObject canvas;

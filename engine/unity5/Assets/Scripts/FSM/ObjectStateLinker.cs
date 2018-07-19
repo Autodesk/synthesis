@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Assets.Scripts.FSM
+namespace Synthesis.FSM
 {
     public class ObjectStateLinker<T> where T : UnityEngine.Object
     {

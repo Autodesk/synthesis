@@ -15,7 +15,7 @@ namespace Synthesis.GUI
     /// <summary>
     /// Helps the user with various helper functions such as stopwatch, and ruler
     /// </summary>
-    public class Toolkit : StateBehaviour<MainState>
+    public class Toolkit : LinkedMonoBehaviour<MainState>
     {
         private bool ignoreClick = true;
 

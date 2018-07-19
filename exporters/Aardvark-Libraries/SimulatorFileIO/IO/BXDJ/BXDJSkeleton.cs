@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-
 /// <summary>
 /// Utility functions for reading/writing BXDJ files
 /// </summary>
+
 public static partial class BXDJSkeleton
 {
     /// <summary>
     /// Represents the current version of the BXDA file.
     /// </summary>
-    public const string BXDJ_CURRENT_VERSION = "2.0.0";
+    public const string BXDJ_CURRENT_VERSION = "3.0.0";
 
     /// <summary>
     /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name.
@@ -166,9 +166,13 @@ public static partial class BXDJSkeleton
 
         if (joint.hasLinearEndLimit)
             writer.WriteElementString("LinearEndLimit", joint.linearLimitEnd.ToString("F4"));
+        //writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+        //writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
 
-        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
-        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+        writer.WriteElementString("CurrentLinearPosition", joint.linearLimitStart.ToString("F4"));// writes the lowest point of the joint to the file as the positon so the joint starts at the bottom, hopefully prevents any weird issues with the joint limits being messed up do to being relative to the start of the joint
+
+        writer.WriteElementString("CurrentAngularPosition", joint.angularLimitLow.ToString("F4"));// writes the lowest point of the joint to the file as the positon so the joint starts at the bottom, hopefully prevents any weird issues with the joint limits being messed up do to being relative to the start of the joint
+
 
         writer.WriteEndElement();
     }
@@ -192,8 +196,9 @@ public static partial class BXDJSkeleton
 
         if (joint.hasUpperLimit)
             writer.WriteElementString("LinearUpperLimit", joint.linearLimitHigh.ToString("F4"));
-
-        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+               
+       // writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+        writer.WriteElementString("CurrentLinearPosition", joint.linearLimitLow.ToString("F4"));// writes the lowest point of the joint to the file as the positon so the joint starts at the bottom, hopefully prevents any weird issues with the joint limits being messed up do to being relative to the start of the joint
 
         writer.WriteEndElement();
     }
@@ -233,7 +238,9 @@ public static partial class BXDJSkeleton
             writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F4"));
         }
 
-        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+       // writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
+        writer.WriteElementString("CurrentAngularPosition", joint.angularLimitLow.ToString("F4"));// writes the lowest point of the joint to the file as the positon so the joint starts at the bottom, hopefully prevents any weird issues with the joint limits being messed up do to being relative to the start of the joint
+
 
         writer.WriteEndElement();
     }
@@ -268,6 +275,16 @@ public static partial class BXDJSkeleton
         writer.WriteElementString("DriveType", driver.GetDriveType().ToString());
         writer.WriteElementString("PortA", (driver.portA + 1).ToString()); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
         writer.WriteElementString("PortB", (driver.portB + 1).ToString()); // For backwards compatibility, ports will be stored one larger than their actual value.
+        if (driver.InputGear == 0)// prevents a gearing of 0 from being written to the bxdj
+        {
+            driver.InputGear = 1;
+        }
+        if (driver.OutputGear == 0)// prevents a gearing of 0 from being written to the bxdj
+        {
+            driver.OutputGear = 1;
+        }
+        writer.WriteElementString("InputGear", driver.InputGear.ToString());// writes the input gear's string to the XMLWriter
+        writer.WriteElementString("OutputGear", driver.OutputGear.ToString());// writes the output gear's string to the XMLWriter
         writer.WriteElementString("LowerLimit", driver.lowerLimit.ToString("F4"));
         writer.WriteElementString("UpperLimit", driver.upperLimit.ToString("F4"));
         writer.WriteElementString("SignalType", driver.isCan ? "CAN" : "PWM");
@@ -414,6 +431,8 @@ public static partial class BXDJSkeleton
 
             switch (version.Substring(0, version.LastIndexOf('.')))
             {
+                case "3.0":
+                    return ReadSkeleton_3_0(path);
                 case "2.0":
                     return ReadSkeleton_2_0(path);
                 default: // If version is unknown.
