@@ -101,7 +101,7 @@
   <ItemGroup>
     <ClInclude Include="Source\AddIn\CustomHandlers.h" />
     <ClInclude Include="Source\AddIn\EUI.h" />
-    <ClInclude Include="Source\BinaryRWObject.h" />
+    <ClInclude Include="Source\Data\BinaryRWObject.h" />
     <ClInclude Include="Source\Data\BXDA\Submesh.h" />
     <ClInclude Include="Source\Data\BXDA\Triangle.h" />
     <ClInclude Include="Source\Data\BXDA\Mesh.h" />
@@ -109,16 +109,16 @@
     <ClInclude Include="Source\Data\BXDA\Surface.h" />
     <ClInclude Include="Source\Data\BXDA\Vertex.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
-    <ClInclude Include="Source\Data\Exporter.h" />
     <ClInclude Include="Source\Data\Vector3.h" />
+    <ClInclude Include="Source\Exporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\AddIn\CustomHandlers.cpp" />
     <ClCompile Include="Source\AddIn\EUI.cpp" />
     <ClCompile Include="Source\AddIn\FusionSynth.cpp" />
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp" />
-    <ClCompile Include="Source\BinaryRWObject.cpp" />
     <ClCompile Include="Source\BM.cpp" />
+    <ClCompile Include="Source\Data\BinaryRWObject.cpp" />
     <ClCompile Include="Source\Data\BXDA\Submesh.cpp" />
     <ClCompile Include="Source\Data\BXDA\Triangle.cpp" />
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp" />
@@ -126,8 +126,8 @@
     <ClCompile Include="Source\Data\BXDA\Surface.cpp" />
     <ClCompile Include="Source\Data\BXDA\Vertex.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode.cpp" />
-    <ClCompile Include="Source\Data\Exporter.cpp" />
     <ClCompile Include="Source\Data\Vector3.cpp" />
+    <ClCompile Include="Source\Exporter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

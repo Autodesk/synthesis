@@ -48,17 +48,11 @@
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Data\Exporter.h">
-      <Filter>Headers\Data</Filter>
-    </ClInclude>
     <ClInclude Include="Source\AddIn\CustomHandlers.h">
       <Filter>Headers\AddIn</Filter>
     </ClInclude>
     <ClInclude Include="Source\AddIn\EUI.h">
       <Filter>Headers\AddIn</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\BinaryRWObject.h">
-      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Data\Vector3.h">
       <Filter>Headers\Data</Filter>
@@ -71,6 +65,12 @@
     </ClInclude>
     <ClInclude Include="Source\Data\BXDA\Submesh.h">
       <Filter>Headers\Data\BXDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BinaryRWObject.h">
+      <Filter>Headers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Exporter.h">
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -98,14 +98,8 @@
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp">
       <Filter>Source\AddIn</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BinaryRWObject.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BM.cpp">
       <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Data\Exporter.cpp">
-      <Filter>Source\Data</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\BXDA\Vertex.cpp">
       <Filter>Source\Data\BXDA</Filter>
@@ -118,6 +112,12 @@
     </ClCompile>
     <ClCompile Include="Source\Data\BXDA\Submesh.cpp">
       <Filter>Source\Data\BXDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BinaryRWObject.cpp">
+      <Filter>Source\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Exporter.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
