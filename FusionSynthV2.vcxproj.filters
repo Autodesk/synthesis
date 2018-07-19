@@ -92,9 +92,6 @@
     <ClCompile Include="Source\AddIn\EUI.cpp">
       <Filter>Source\AddIn</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AddIn\FusionSynth.cpp">
-      <Filter>Source\AddIn</Filter>
-    </ClCompile>
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp">
       <Filter>Source\AddIn</Filter>
     </ClCompile>

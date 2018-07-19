@@ -115,7 +115,6 @@
   <ItemGroup>
     <ClCompile Include="Source\AddIn\CustomHandlers.cpp" />
     <ClCompile Include="Source\AddIn\EUI.cpp" />
-    <ClCompile Include="Source\AddIn\FusionSynth.cpp" />
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp" />
     <ClCompile Include="Source\BM.cpp" />
     <ClCompile Include="Source\Data\BinaryRWObject.cpp" />
