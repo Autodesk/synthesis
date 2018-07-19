@@ -12,25 +12,19 @@ namespace Synthesis.FSM
     /// to a state run by <see cref="StateMachine.SceneGlobal"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class StateBehaviour<T> : MonoBehaviour where T : State
+    public abstract class LinkedMonoBehaviour<T> : MonoBehaviour where T : State
     {
-        /// <summary>
-        /// The <see cref="StateMachine"/> managing this instance.
-        /// </summary>
-        protected StateMachine StateMachine { get; private set; }
-
         /// <summary>
         /// The state associated with this StateBehaviour.
         /// </summary>
         protected T State { get; private set; }
 
         /// <summary>
-        /// Links this instance to the given State type.
+        /// Initializes a connection to 
         /// </summary>
         protected virtual void Awake()
         {
-            StateMachine = StateMachine.SceneGlobal;
-            StateMachine.Link<T>(this);
+            StateMachine.SceneGlobal.Link<T>(this);
         }
 
         /// <summary>
@@ -38,10 +32,7 @@ namespace Synthesis.FSM
         /// </summary>
         protected virtual void OnEnable()
         {
-            if ((State = StateMachine.CurrentState as T) == null)
-                Debug.LogError("Component \"" + name +
-                    "\" could not establish a conection to the state " +
-                    typeof(T).ToString() + ".");
+            State = StateMachine.SceneGlobal.CurrentState as T;
         }
     }
 }

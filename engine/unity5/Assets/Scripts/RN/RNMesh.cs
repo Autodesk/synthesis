@@ -71,7 +71,7 @@ namespace Synthesis.RN
 
             if (!this.HasDriverMeta<WheelDriverMeta>() || this.GetDriverMeta<WheelDriverMeta>().type == WheelType.NOT_A_WHEEL)
             {
-                BMultiHullShape hullShape = MainObject.AddComponent<BMultiHullShape>();
+                BMultiShape hullShape = MainObject.AddComponent<BMultiShape>();
 
                 foreach (Mesh collider in colliders)
                 {
@@ -82,7 +82,7 @@ namespace Synthesis.RN
 
                     ConvexHullShape hull = new ConvexHullShape(Array.ConvertAll(collider.vertices, x => x.ToBullet()), collider.vertices.Length);
                     hull.Margin = CollisionMargin;
-                    hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
+                    hullShape.AddShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
                 }
 
                 MainObject.AddComponent<MeshRenderer>();
@@ -100,7 +100,10 @@ namespace Synthesis.RN
                 foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
                     rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
 
-                MainObject.AddComponent<BMultiCallbacks>().AddCallback((StateMachine.SceneGlobal.CurrentState as MainState).CollisionTracker);
+                MainState mainState = StateMachine.SceneGlobal.FindState<MainState>();
+
+                if (mainState != null)
+                    MainObject.AddComponent<BMultiCallbacks>().AddCallback(mainState.CollisionTracker);
             }
 
             if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)

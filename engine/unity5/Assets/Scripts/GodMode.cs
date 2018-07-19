@@ -12,7 +12,7 @@ using Synthesis.States;
 /// <summary>
 /// This script is used for controlling objects in a scene by dragging them around with the mouse.
 /// </summary>
-public class GodMode : StateBehaviour<MainState>
+public class GodMode : LinkedMonoBehaviour<MainState>
 {
     BBallSocketConstraintEx constraint;
     ActivationState initialState;
