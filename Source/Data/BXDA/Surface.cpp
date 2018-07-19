@@ -41,6 +41,17 @@ Surface::Surface(bool hasColor, unsigned int color, float transparency, float tr
 		triangles.push_back(new Triangle(indices[i], indices[i + 1], indices[i + 2]));
 }
 
+std::ostream & BXDA::operator<<(std::ostream & output, const Surface & s)
+{
+	output << s.hasColor;
+	if (s.hasColor)
+		output << s.color;
+
+	output << s.transparency;
+	output << s.translucency;
+	output << s.specular;
+}
+
 void Surface::addTriangles(const vector<Triangle>& triangles)
 {
 	for (Triangle * triangle : triangles)

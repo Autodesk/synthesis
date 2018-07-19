@@ -29,9 +29,8 @@ std::ostream& BXDA::operator<<(std::ostream& output, const Mesh& m)
 		output << tempColliderMesh;
 	}
 
-	// Output 
-
-	return output;
+	// Output physics data
+	return output << m.physics;
 }
 
 void Mesh::addSubmesh(SubMesh * submesh)

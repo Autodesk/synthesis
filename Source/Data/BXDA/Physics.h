@@ -13,6 +13,7 @@ namespace BXDA
 		Physics(Vector3 centerOfMass, double mass);
 
 		Physics operator+=(const Physics &); // Averages the center of mass of a physics class with another
+		friend std::ostream& operator<<(std::ostream&, const Physics&);
 
 	private:
 		Vector3 centerOfMass;
