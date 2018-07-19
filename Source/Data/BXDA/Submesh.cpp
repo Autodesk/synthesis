@@ -15,22 +15,26 @@ SubMesh::~SubMesh()
 
 SubMesh::SubMesh(const SubMesh & s) : vertices(s.vertices.size()), surfaces(s.surfaces.size())
 {
-	for (Vertex* vertex : s.vertices)
-		vertices.push_back(new Vertex(*vertex));
-	for (Surface* surface : s.surfaces)
-		surfaces.push_back(new Surface(*surface));
+	for (int v = 0; v < s.vertices.size(); v++)
+		vertices[v] = new Vertex(*s.vertices[v]);
+
+	for (int i = 0; i < s.surfaces.size(); i++)
+		surfaces[i] = new Surface(*s.surfaces[i]);
 }
 
 SubMesh::SubMesh(const std::vector<Vertex> & vertices) : vertices(vertices.size())
 {
-	for (Vertex vertex : vertices)
-		this->vertices.push_back(new Vertex(vertex));
+	for (int v = 0; v < vertices.size(); v++)
+		this->vertices[v] = new Vertex(vertices[v]);
 }
 
-SubMesh::SubMesh(const std::vector<Vertex> & vertices, const std::vector<Surface> & surfaces) : SubMesh(vertices)
+SubMesh::SubMesh(const std::vector<Vertex> & vertices, const std::vector<Surface> & surfaces) : vertices(vertices.size()), surfaces(surfaces.size())
 {
-	for (Surface surface : surfaces)
-		this->surfaces.push_back(new Surface(surface));
+	for (int v = 0; v < vertices.size(); v++)
+		this->vertices[v] = new Vertex(vertices[v]);
+
+	for (int s = 0; s < surfaces.size(); s++)
+		this->surfaces[s] = new Surface(surfaces[s]);
 }
 
 std::ostream& BXDA::operator<<(std::ostream& output, const SubMesh& s)

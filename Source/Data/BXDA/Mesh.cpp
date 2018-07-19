@@ -33,6 +33,11 @@ std::ostream& BXDA::operator<<(std::ostream& output, const Mesh& m)
 	return output << m.physics;
 }
 
+std::string BXDA::Mesh::toString()
+{
+	return "BXDA::Mesh: " + guid + ", Sub-Meshes: " + std::to_string(subMeshes.size()) + ", Physics Properties: (" + physics.toString() + ")";
+}
+
 void Mesh::addSubMesh(const SubMesh & submesh)
 {
 	subMeshes.push_back(new SubMesh(submesh));

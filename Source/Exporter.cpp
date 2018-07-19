@@ -15,27 +15,7 @@ void Exporter::loadMeshes()
 {
 	Ptr<FusionDocument> doc = _app->activeDocument();
 
-	std::string a = "";
-
-	BXDA::Mesh * mesh = new BXDA::Mesh();
-
-	//LVector3 * _verts = new LVector3();
-	//LVector3 * _norms = new LVector3();
-
-
-	//Generates timestamp and attaches to file name
-	time_t now = time(NULL);
-	tm * ptm = localtime(&now);
-	char buffer[32];
-	// Format: 20:20:00
-	strftime(buffer, 32, "%H.%M.%S", ptm);
-
-	std::string filename = doc->name() + "_" + buffer + ".bxda";
-
-	BinaryWriter * binary = new BinaryWriter(filename);
-
-	//Vector3 * _temp = new Vector3();
-	//Vector3 * _temp2 = new Vector3();
+	BXDA::Mesh mesh = BXDA::Mesh();
 
 	for (Ptr<Component> comp : doc->design()->allComponents())
 	{
@@ -49,12 +29,12 @@ void Exporter::loadMeshes()
 			Ptr<TriangleMesh> fusionMesh = meshCalculator->calculate();
 
 			// Add vertices to sub-mesh
-			std::vector<BXDA::Vertex> vertices(fusionMesh->nodeCount() * 3);
+			std::vector<BXDA::Vertex> vertices(fusionMesh->nodeCount());
 			std::vector<double> coords = fusionMesh->nodeCoordinatesAsDouble();
 			std::vector<double> norms = fusionMesh->normalVectorsAsDouble();
 
 			for (int v = 0; v < coords.size(); v += 3)
-				vertices.push_back(BXDA::Vertex(BXDA::Vector3(coords[v], coords[v + 1], coords[v + 2]), BXDA::Vector3(norms[v], norms[v + 1], norms[v + 2])));
+				vertices[v/3] = BXDA::Vertex(BXDA::Vector3(coords[v], coords[v + 1], coords[v + 2]), BXDA::Vector3(norms[v], norms[v + 1], norms[v + 2]));
 
 			subMesh.addVertices(vertices);
 
@@ -63,19 +43,13 @@ void Exporter::loadMeshes()
 			subMesh.addSurface(BXDA::Surface(indices));
 		}
 
-		for (Ptr<Joint> joint : comp->allJoints())
-		{
-			a += "Parent of joint: " + joint->parentComponent()->name();
-
-			a += "\n";
-		}
-
-		mesh->addSubMesh(subMesh);
+		mesh.addSubMesh(subMesh);
 	}
 
-	binary->Write(mesh);
+	//Generates timestamp and attaches to file name
+	std::string filename = "node_1.bxda";
+	BinaryWriter binary(filename);
+	binary.Write(mesh);
 
-	delete mesh;
-
-	_ui->messageBox(a);
+	_ui->messageBox(mesh.toString());
 }

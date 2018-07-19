@@ -25,8 +25,8 @@ Surface::Surface(const Surface & s) : triangles(s.triangles.size())
 	transparency = s.transparency;
 	specular = s.specular;
 
-	for (Triangle * triangle : s.triangles)
-		triangles.push_back(new Triangle(*triangle));
+	for (int t = 0; t < s.triangles.size(); t++)
+		triangles[t] = new Triangle(*s.triangles[t]);
 }
 
 Surface::Surface(const std::vector<int> & indices) : Surface()
@@ -34,7 +34,7 @@ Surface::Surface(const std::vector<int> & indices) : Surface()
 	triangles = std::vector<Triangle *>(indices.size() / 3);
 
 	for (int i = 0; i < indices.size(); i += 3)
-		triangles.push_back(new Triangle(indices[i], indices[i + 1], indices[i + 2]));
+		triangles[i / 3] = new Triangle(indices[i], indices[i + 1], indices[i + 2]);
 }
 
 Surface::Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular)

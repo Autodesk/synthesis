@@ -13,6 +13,7 @@ namespace BXDA
 		~Mesh();
 
 		friend std::ostream& operator<<(std::ostream&, const Mesh&);
+		std::string toString();
 
 		void addSubMesh(const SubMesh &);
 
