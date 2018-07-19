@@ -25,7 +25,7 @@ std::ostream& BXDA::operator<<(std::ostream& output, const Mesh& m)
 	SubMesh * tempColliderMesh = new SubMesh;
 	for (SubMesh * submesh : m.subMeshes)
 	{
-		submesh->getConvexCollider(tempColliderMesh);
+		submesh->getConvexCollider(*tempColliderMesh);
 		output << tempColliderMesh;
 	}
 
@@ -33,17 +33,17 @@ std::ostream& BXDA::operator<<(std::ostream& output, const Mesh& m)
 	return output << m.physics;
 }
 
-void Mesh::addSubmesh(SubMesh * submesh)
+void Mesh::addSubMesh(const SubMesh & submesh)
 {
 	subMeshes.push_back(new SubMesh(submesh));
 }
 
-std::string Mesh::getGUID()
+std::string Mesh::getGUID() const
 {
 	return guid;
 }
 
-int Mesh::getVersion()
+int Mesh::getVersion() const
 {
 	return CURRENT_VERSION;
 }

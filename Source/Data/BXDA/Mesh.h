@@ -14,10 +14,10 @@ namespace BXDA
 
 		friend std::ostream& operator<<(std::ostream&, const Mesh&);
 
-		void addSubmesh(SubMesh * submesh);
+		void addSubMesh(const SubMesh &);
 
-		std::string getGUID();
-		int getVersion();
+		std::string getGUID() const;
+		int getVersion() const;
 
 	private:
 		const int CURRENT_VERSION = 0;

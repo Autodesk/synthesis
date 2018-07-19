@@ -39,33 +39,28 @@ void Exporter::loadMeshes()
 
 	for (Ptr<Component> comp : doc->design()->allComponents())
 	{
-		BXDA::SubMesh * tempSubmesh = new BXDA::SubMesh();
+		BXDA::SubMesh * subMesh = new BXDA::SubMesh();
 
 		for (Ptr<BRepBody> m_bod : comp->bRepBodies())
 		{
 			Ptr<TriangleMeshCalculator> meshCalculator = m_bod->meshManager()->createMeshCalculator();
 			meshCalculator->setQuality(LowQualityTriangleMesh);
 
-			Ptr<TriangleMesh> mesh = meshCalculator->calculate();
+			Ptr<TriangleMesh> fusionMesh = meshCalculator->calculate();
 
-			/*
-			for (Ptr<Vector3D> ve : mesh->normalVectors())
-			{
-				tempSubmesh->verts.push_back(ve->x());
-				tempSubmesh->verts.push_back(ve->y());
-				tempSubmesh->verts.push_back(ve->z());
-			}
+			// Add vertices to sub-mesh
+			std::vector<BXDA::Vertex> vertices(fusionMesh->nodeCount() * 3);
+			std::vector<double> coords = fusionMesh->nodeCoordinatesAsDouble();
+			std::vector<double> norms = fusionMesh->normalVectorsAsDouble();
 
-			for (Ptr<Point3D> no : mesh->nodeCoordinates())
-			{
-				tempSubmesh->norms.push_back(no->x());
-				tempSubmesh->norms.push_back(no->y());
-				tempSubmesh->norms.push_back(no->z());
-			}
+			for (int v = 0; v < coords.size(); v += 3)
+				vertices.push_back(BXDA::Vertex(BXDA::Vector3(coords[v], coords[v + 1], coords[v + 2]), BXDA::Vector3(norms[v], norms[v + 1], norms[v + 2])));
 
-			mesh->subMeshes.push_back(new SubMesh(_tempS));
-			mesh->colliders.push_back(new SubMesh(_tempS));
-			*/
+			subMesh->addVertices(vertices);
+
+			// Add faces to sub-mesh
+			std::vector<int> indices = fusionMesh->nodeIndices();
+			subMesh->addSurface(BXDA::Surface(indices));
 		}
 
 		for (Ptr<Joint> joint : comp->allJoints())
@@ -75,7 +70,9 @@ void Exporter::loadMeshes()
 			a += "\n";
 		}
 
-		delete tempSubmesh;
+		mesh->addSubMesh(*subMesh);
+
+		delete subMesh;
 	}
 
 	binary->Write(mesh);
