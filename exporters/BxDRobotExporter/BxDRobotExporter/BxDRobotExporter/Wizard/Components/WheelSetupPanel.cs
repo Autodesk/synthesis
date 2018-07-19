@@ -52,11 +52,20 @@ namespace BxDRobotExporter.Wizard
         /// <returns></returns>
         public WizardData.WheelSetupData GetWheelData()
         {
+            byte wantedPWM;
+            if(Side == WheelSide.RIGHT)
+            {
+                wantedPWM = (byte)0x00;
+            } else if( Side == WheelSide.LEFT){
+                wantedPWM = (byte)0x01;
+            } else{
+                wantedPWM = (byte)0x02;
+            }
             return new WizardData.WheelSetupData
             {
                 FrictionLevel = (WizardData.WizardFrictionLevel)this.FrictionComboBox.SelectedIndex,
                 WheelType = (WizardData.WizardWheelType)(this.WheelTypeComboBox.SelectedIndex + 1),
-                PWMPort = (Side == WheelSide.RIGHT) ? (byte)0x00 : (byte)0x01, // Engine uses port 1 for left and port 1 for right. We wanted to change this but it would impact a large amount of controller code
+                PWMPort = wantedPWM, // Engine uses port 1 for left and port 1 for right. We wanted to change this but it would impact a large amount of controller code
                 Node = this.Node
             };
         }
