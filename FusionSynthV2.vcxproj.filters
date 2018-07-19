@@ -16,78 +16,108 @@
     <Filter Include="Source\Data">
       <UniqueIdentifier>{bdc7c325-cdbf-496d-bbec-8b90c3b770f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Data\BXDA">
+      <UniqueIdentifier>{f8743e7b-6ae6-4c78-80ef-94104e89c96d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Data\BXDJ">
+      <UniqueIdentifier>{becddd2e-cc85-4cf1-b8f0-e60af207b052}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Data\BXDA">
+      <UniqueIdentifier>{769fda05-f316-415f-b69d-8793c2dab1ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Data\BXDJ">
+      <UniqueIdentifier>{058ca14c-ef4b-4379-87a0-ead026718026}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\AddIn">
+      <UniqueIdentifier>{1920f254-42e0-4b3a-83c3-13bde0bbe57a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\AddIn">
+      <UniqueIdentifier>{246bb7c0-e2a8-427f-85d0-0ba3867a5b82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Data\BXDA\Mesh.h">
+      <Filter>Headers\Data\BXDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDA\Physics.h">
+      <Filter>Headers\Data\BXDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDA\Surface.h">
+      <Filter>Headers\Data\BXDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\RigidNode.h">
+      <Filter>Headers\Data\BXDJ</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\Exporter.h">
+      <Filter>Headers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AddIn\CustomHandlers.h">
+      <Filter>Headers\AddIn</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AddIn\EUI.h">
+      <Filter>Headers\AddIn</Filter>
+    </ClInclude>
     <ClInclude Include="Source\BinaryRWObject.h">
       <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CustomHandlers.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\EUI.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Exporter.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Data\BXDA.h">
-      <Filter>Headers\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Data\LVector3.h">
-      <Filter>Headers\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Data\Submesh.h">
-      <Filter>Headers\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Data\Surface.h">
-      <Filter>Headers\Data</Filter>
     </ClInclude>
     <ClInclude Include="Source\Data\Vector3.h">
       <Filter>Headers\Data</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Physics.h">
-      <Filter>Headers\Data</Filter>
+    <ClInclude Include="Source\Data\BXDA\Vertex.h">
+      <Filter>Headers\Data\BXDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDA\Triangle.h">
+      <Filter>Headers\Data\BXDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDA\Submesh.h">
+      <Filter>Headers\Data\BXDA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
+      <Filter>Source\Data\BXDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDA\Physics.cpp">
+      <Filter>Source\Data\BXDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDA\Surface.cpp">
+      <Filter>Source\Data\BXDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\RigidNode.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AddIn\CustomHandlers.cpp">
+      <Filter>Source\AddIn</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AddIn\EUI.cpp">
+      <Filter>Source\AddIn</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AddIn\FusionSynth.cpp">
+      <Filter>Source\AddIn</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AddIn\FusionSynthV2.cpp">
+      <Filter>Source\AddIn</Filter>
+    </ClCompile>
     <ClCompile Include="Source\BinaryRWObject.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\BM.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CustomHandlers.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\EUI.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Exporter.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FusionSynth.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FusionSynthV2.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Data\BXDA.cpp">
+    <ClCompile Include="Source\Data\Exporter.cpp">
       <Filter>Source\Data</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Data\LVector3.cpp">
-      <Filter>Source\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Data\Submesh.cpp">
-      <Filter>Source\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Data\Surface.cpp">
-      <Filter>Source\Data</Filter>
+    <ClCompile Include="Source\Data\BXDA\Vertex.cpp">
+      <Filter>Source\Data\BXDA</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\Vector3.cpp">
       <Filter>Source\Data</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Physics.cpp">
-      <Filter>Source\Data</Filter>
+    <ClCompile Include="Source\Data\BXDA\Triangle.cpp">
+      <Filter>Source\Data\BXDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDA\Submesh.cpp">
+      <Filter>Source\Data\BXDA</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
