@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <bitset>
-#include "Data/BXDA/Mesh.h"
+#include "BXDA/Mesh.h"
 
 class BinaryWriter
 {
