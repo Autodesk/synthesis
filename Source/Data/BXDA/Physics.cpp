@@ -22,3 +22,8 @@ Physics Physics::operator+=(const Physics & physicsToAverage)
 	centerOfMass = (centerOfMass * mass + physicsToAverage.centerOfMass * physicsToAverage.mass) / (mass + physicsToAverage.mass);
 	return this;
 }
+
+std::ostream & BXDA::operator<<(std::ostream & output, const Physics & p)
+{
+	return output << p.centerOfMass << p.mass;
+}
