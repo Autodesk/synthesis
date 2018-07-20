@@ -47,7 +47,7 @@ void Exporter::loadMeshes()
 	}
 
 	//Generates timestamp and attaches to file name
-	std::string filename = "node_1.bxda";
+	std::string filename = "node_0.bxda";
 	BXDA::BinaryWriter binary(filename);
 	binary.write(mesh);
 

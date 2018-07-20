@@ -82,7 +82,7 @@ void Surface::write(BinaryWriter & output) const
 	// Output color
 	output.write(hasColor);
 	if (hasColor)
-		output.write((int)color);
+		output.write(color);
 
 	// Output other material information
 	output.write(transparency);
