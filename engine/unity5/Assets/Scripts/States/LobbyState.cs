@@ -12,6 +12,7 @@ namespace Synthesis.States
     public class LobbyState : State
     {
         private readonly string lobbyCode;
+        private readonly bool host;
 
         private GameObject connectingPanel;
         private Button fieldButton;
@@ -26,6 +27,7 @@ namespace Synthesis.States
         public LobbyState(string lobbyCode)
         {
             this.lobbyCode = lobbyCode;
+            host = string.IsNullOrEmpty(lobbyCode);
         }
 
         /// <summary>
@@ -43,7 +45,7 @@ namespace Synthesis.States
             MultiplayerNetwork network = MultiplayerNetwork.Instance;
             Text lobbyCodeText = GameObject.Find("LobbyCodeText").GetComponent<Text>();
 
-            if (string.IsNullOrEmpty(lobbyCode))
+            if (host)
             {
                 lobbyCodeText.text = "Lobby Code: " + IPCrypt.Encrypt(network.networkAddress = GetLocalIP());
 
@@ -53,10 +55,14 @@ namespace Synthesis.States
                     StateMachine.ChangeState(new HostJoinState());
                     return;
                 }
+
+                GameObject lobbySettingsObject = (GameObject)Object.Instantiate(Resources.Load("Prefabs/LobbySettings"));
+                NetworkServer.Spawn(lobbySettingsObject);
             }
             else
             {
                 lobbyCodeText.text = "Lobby Code: " + lobbyCode;
+                fieldButton.enabled = false;
                 connectingPanel.SetActive(true);
 
                 network.networkAddress = IPCrypt.Decrypt(lobbyCode);
@@ -70,13 +76,35 @@ namespace Synthesis.States
         /// </summary>
         public override void Resume()
         {
-            if (PlayerIdentity.LocalInstance == null)
-                return;
+            if (PlayerIdentity.LocalInstance != null)
+                PlayerIdentity.LocalInstance.RobotName = PlayerPrefs.GetString("simSelectedRobotName");
 
-            PlayerIdentity.LocalInstance.RobotName = PlayerPrefs.GetString("simSelectedRobotName");
+            if (host)
+            {
+                LobbySettings lobbySettings = Object.FindObjectOfType<LobbySettings>();
 
-            if (PlayerIdentity.LocalInstance.IsHost)
-                PlayerIdentity.LocalInstance.FieldName = PlayerPrefs.GetString("simSelectedFieldName");
+                if (lobbySettings != null)
+                    lobbySettings.fieldName = PlayerPrefs.GetString("simSelectedFieldName");
+            }
+        }
+
+        /// <summary>
+        /// Updates the UI elements of the lobby.
+        /// </summary>
+        public override void OnGUI()
+        {
+            LobbySettings lobbySettings = Object.FindObjectOfType<LobbySettings>();
+
+            if (lobbySettings != null)
+                fieldText.text = "Field: " + Object.FindObjectOfType<LobbySettings>().fieldName;
+        }
+
+        /// <summary>
+        /// Launches a new <see cref="LoadFieldState"/> when the field button is pressed.
+        /// </summary>
+        public void OnFieldButtonPressed()
+        {
+            StateMachine.PushState(new LoadFieldState());
         }
 
         /// <summary>
