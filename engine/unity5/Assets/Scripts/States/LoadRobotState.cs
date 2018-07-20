@@ -8,6 +8,11 @@ namespace Synthesis.States
 {
     public class LoadRobotState : State
     {
+        /// <summary>
+        /// If true, a robot selction was made.
+        /// </summary>
+        public bool RobotChosen { get; private set; }
+
         private string robotDirectory;
         private SelectScrollable robotList;
 
@@ -16,6 +21,8 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
+            RobotChosen = false;
+
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
             robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectScrollable>();
         }
@@ -51,6 +58,7 @@ namespace Synthesis.States
                 PlayerPrefs.SetString("simSelectedRobot", robotDirectory + "\\" + simSelectedRobotName + "\\");
                 PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
 
+                RobotChosen = true;
                 StateMachine.PopState();
             }
             else

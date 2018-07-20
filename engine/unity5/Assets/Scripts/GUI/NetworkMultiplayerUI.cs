@@ -15,8 +15,21 @@ namespace Synthesis.GUI
 {
     public class NetworkMultiplayerUI : MonoBehaviour
     {
+        /// <summary>
+        /// The global <see cref="NetworkMultiplayerUI"/> instance.
+        /// </summary>
+        public static NetworkMultiplayerUI Instance { get; private set; }
+
         private StateMachine uiStateMachine;
         private Canvas canvas;
+
+        /// <summary>
+        /// Initializes the global instance reference.
+        /// </summary>
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         /// <summary>
         /// Links the <see cref="NetworkMultiplayerUI"/>'s panels to the <see cref="StateMachine"/> and
@@ -43,6 +56,16 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
+        /// Registers a click callback from the given <see cref="Button"/> to the active
+        /// <see cref="State"/>.
+        /// </summary>
+        /// <param name="button"></param>
+        public void RegisterButtonCallback(Button button)
+        {
+            button.onClick.AddListener(() => InvokeCallback("On" + button.name + "Pressed"));
+        }
+
+        /// <summary>
         /// Pops the active UI <see cref="State"/>.
         /// </summary>
         public void OnBackButtonPressed()
@@ -65,6 +88,7 @@ namespace Synthesis.GUI
             LinkPanel<EnterInfoState>("EnterInfoPanel");
             LinkPanel<ConnectingState>("ConnectingPanel");
             LinkPanel<LobbyState>("LobbyPanel");
+            LinkPanel<LoadRobotState>("SimLoadRobot");
         }
 
         /// <summary>
@@ -88,7 +112,7 @@ namespace Synthesis.GUI
         {
             foreach (Button b in GetComponentsInChildren<Button>(true))
                 if (b.onClick.GetPersistentEventCount() == 0)
-                    b.onClick.AddListener(() => InvokeCallback("On" + b.name + "Pressed"));
+                    RegisterButtonCallback(b);
         }
 
         /// <summary>

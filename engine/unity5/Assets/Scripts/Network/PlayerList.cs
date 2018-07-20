@@ -32,8 +32,7 @@ namespace Synthesis.Network
         /// <param name="identity"></param>
         public void AddPlayerEntry(PlayerIdentity identity)
         {
-            GameObject newEntry = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerEntry"));
-            newEntry.transform.parent = gameObject.transform;
+            GameObject newEntry = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerEntry"), gameObject.transform);
 
             PlayerEntry entry = newEntry.GetComponent<PlayerEntry>();
             entry.PlayerIdentity = identity;
@@ -47,7 +46,9 @@ namespace Synthesis.Network
         /// <param name="identity"></param>
         public void RemovePlayerEntry(PlayerIdentity identity)
         {
-            Destroy(entries[identity].gameObject);
+            if (!entries[identity].Equals(null))
+                Destroy(entries[identity].gameObject);
+
             entries.Remove(identity);
         }
     }

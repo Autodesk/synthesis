@@ -12,6 +12,12 @@ namespace Synthesis.States
         private readonly string lobbyCode;
         private readonly string playerTag;
 
+        private readonly LoadRobotState loadRobotState;
+
+        private bool robotSelected;
+
+        private Text readyText;
+
         /// <summary>
         /// Initializes a new <see cref="LobbyState"/> instance.
         /// </summary>
@@ -23,6 +29,16 @@ namespace Synthesis.States
             this.host = host;
             this.lobbyCode = lobbyCode;
             this.playerTag = playerTag;
+
+            loadRobotState = new LoadRobotState();
+        }
+
+        /// <summary>
+        /// Initializes fields local to this state.
+        /// </summary>
+        public override void Awake()
+        {
+            robotSelected = false;
         }
 
         /// <summary>
@@ -30,6 +46,8 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
+            readyText = GameObject.Find("ReadyText").GetComponent<Text>();
+
             PlayerIdentity.DefaultLocalPlayerTag = playerTag;
 
             GameObject.Find("LobbyCodeText").GetComponent<Text>().text = "Lobby Code: " + lobbyCode;
@@ -38,6 +56,24 @@ namespace Synthesis.States
             {
                 MultiplayerNetwork network = MultiplayerNetwork.Instance;
                 network.ClientConnectionChanged += OnClientConnectionChanged;
+            }
+
+            StateMachine.PushState(loadRobotState);
+        }
+
+        /// <summary>
+        /// Updates the robot name when this state is resumed.
+        /// </summary>
+        public override void Resume()
+        {
+            if (loadRobotState.RobotChosen)
+            {
+                robotSelected = true;
+                PlayerIdentity.LocalInstance.RobotName = PlayerPrefs.GetString("simSelectedRobotName");
+            }
+            else if (!robotSelected)
+            {
+                StateMachine.PopState();
             }
         }
 
@@ -56,6 +92,23 @@ namespace Synthesis.States
         }
 
         /// <summary>
+        /// Launches the load robot state when the robot button is pressed.
+        /// </summary>
+        public void OnRobotButtonPressed()
+        {
+            StateMachine.PushState(loadRobotState);
+        }
+
+        /// <summary>
+        /// Sends a ready signal to the server.
+        /// </summary>
+        public void OnReadyButtonPressed()
+        {
+            readyText.text = (PlayerIdentity.LocalInstance.Ready = !PlayerIdentity.LocalInstance.Ready) ?
+                "UNREADY" : "READY!";
+        }
+
+        /// <summary>
         /// Exits the <see cref="LobbyState"/> if the connection has been lost.
         /// </summary>
         /// <param name="sender"></param>
@@ -66,7 +119,7 @@ namespace Synthesis.States
             {
                 UserMessageManager.Dispatch("Lost connection to the lobby!", 5f);
                 MultiplayerNetwork.Instance.StopClient();
-                StateMachine.PopState();
+                StateMachine.ChangeState(new HostJoinState());
             }
         }
     }
