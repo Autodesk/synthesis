@@ -101,7 +101,7 @@
   <ItemGroup>
     <ClInclude Include="Source\AddIn\CustomHandlers.h" />
     <ClInclude Include="Source\AddIn\EUI.h" />
-    <ClInclude Include="Source\Data\BinaryRWObject.h" />
+    <ClInclude Include="Source\Data\BXDA\BinaryWriter.h" />
     <ClInclude Include="Source\Data\BXDA\SubMesh.h" />
     <ClInclude Include="Source\Data\BXDA\Triangle.h" />
     <ClInclude Include="Source\Data\BXDA\Mesh.h" />
@@ -117,7 +117,7 @@
     <ClCompile Include="Source\AddIn\EUI.cpp" />
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp" />
     <ClCompile Include="Source\BM.cpp" />
-    <ClCompile Include="Source\Data\BinaryRWObject.cpp" />
+    <ClCompile Include="Source\Data\BXDA\BinaryWriter.cpp" />
     <ClCompile Include="Source\Data\BXDA\SubMesh.cpp" />
     <ClCompile Include="Source\Data\BXDA\Triangle.cpp" />
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp" />

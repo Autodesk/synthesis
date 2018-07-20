@@ -39,7 +39,9 @@ std::string BXDA::Vector3::toString()
 	return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
 }
 
-std::ostream & BXDA::operator<<(std::ostream & output, const Vector3 & v)
+void BXDA::Vector3::write(BinaryWriter & output) const
 {
-	return output << v.x << v.y << v.z;
+	output.write(x);
+	output.write(y);
+	output.write(z);
 }

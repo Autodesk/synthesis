@@ -1,11 +1,12 @@
 #pragma once
 
 #include <vector>
+#include "BinaryWriter.h"
 #include "Triangle.h"
 
 namespace BXDA
 {
-	class Surface
+	class Surface : public BinaryWritable
 	{
 	public:
 		Surface();
@@ -15,8 +16,6 @@ namespace BXDA
 		Surface(const std::vector<int> & indices);
 		Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular);
 		Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular, const std::vector<int> & indices );
-		
-		friend std::ostream& operator<<(std::ostream&, const Surface&);
 
 		void addTriangles(const std::vector<Triangle> &);
 		void addTriangles(const Surface &); // Adds the triangles from another surface
@@ -35,5 +34,8 @@ namespace BXDA
 
 		// Stores the indices used for each triangle
 		std::vector<Triangle*> triangles;
+
+		void write(BinaryWriter &) const;
+
 	};
 }

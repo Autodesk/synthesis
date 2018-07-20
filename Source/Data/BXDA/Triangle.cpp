@@ -18,7 +18,9 @@ Triangle::Triangle(unsigned int vertexIndex0, unsigned int vertexIndex1, unsigne
 	vertexIndices[2] = vertexIndex2;
 }
 
-std::ostream & BXDA::operator<<(std::ostream & output, const Triangle & t)
+void BXDA::Triangle::write(BinaryWriter & output) const
 {
-	return output << t.vertexIndices[0] << t.vertexIndices[1] << t.vertexIndices[2];
+	output.write((int)vertexIndices[0]);
+	output.write((int)vertexIndices[1]);
+	output.write((int)vertexIndices[2]);
 }

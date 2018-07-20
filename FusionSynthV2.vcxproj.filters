@@ -60,9 +60,6 @@
     <ClInclude Include="Source\Data\BXDA\Triangle.h">
       <Filter>Headers\Data\BXDA</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Data\BinaryRWObject.h">
-      <Filter>Headers\Data</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Exporter.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -70,6 +67,9 @@
       <Filter>Headers\Data\BXDA</Filter>
     </ClInclude>
     <ClInclude Include="Source\Data\BXDA\SubMesh.h">
+      <Filter>Headers\Data\BXDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDA\BinaryWriter.h">
       <Filter>Headers\Data\BXDA</Filter>
     </ClInclude>
   </ItemGroup>
@@ -104,9 +104,6 @@
     <ClCompile Include="Source\Data\BXDA\Triangle.cpp">
       <Filter>Source\Data\BXDA</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Data\BinaryRWObject.cpp">
-      <Filter>Source\Data</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Exporter.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -114,6 +111,9 @@
       <Filter>Source\Data\BXDA</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\BXDA\SubMesh.cpp">
+      <Filter>Source\Data\BXDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDA\BinaryWriter.cpp">
       <Filter>Source\Data\BXDA</Filter>
     </ClCompile>
   </ItemGroup>
