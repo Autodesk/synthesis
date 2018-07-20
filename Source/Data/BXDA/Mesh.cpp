@@ -4,7 +4,7 @@ using namespace BXDA;
 
 Mesh::Mesh()
 {
-	guid = "aaaaaaaaaaa";
+	guid = "0ba8e1ce-1004-4523-b844-9bfa69efada9";
 }
 
 Mesh::~Mesh()

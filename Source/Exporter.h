@@ -31,7 +31,8 @@ namespace Synthesis
 		Exporter(Ptr<Application>);
 		~Exporter();
 
-		void loadMeshes();
+		void exportMeshes();
+		void exportExample();
 
 	private:
 		Ptr<Application> _app;
