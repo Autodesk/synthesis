@@ -7,12 +7,12 @@ namespace BXDA
 	class Vertex
 	{
 	public:
-		Vector3 location;
+		Vector3<> location;
 
-		Vector3 normal;
+		Vector3<> normal;
 
 		Vertex();
 		Vertex(const Vertex &);
-		Vertex(Vector3 location, Vector3 normal);
+		Vertex(Vector3<> location, Vector3<> normal);
 	};
 }

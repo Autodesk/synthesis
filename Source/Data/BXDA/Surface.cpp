@@ -88,7 +88,7 @@ void Surface::write(BinaryWriter & output) const
 	output.write(transparency);
 	output.write(translucency);
 	output.write(specular);
-
+	
 	// Output triangles
 	output.write((int)triangles.size() * 3);
 	for (Triangle * triangle : triangles)

@@ -12,6 +12,7 @@ namespace BXDA
 		BinaryWriter(std::string file);
 		~BinaryWriter();
 
+		inline void write(const bool & x) { writeInternal(x); }
 		inline void write(const char & x) { writeInternal(x); }
 		inline void write(const int & x) { writeInternal(x); }
 		inline void write(const unsigned int & x) { writeInternal(x); }

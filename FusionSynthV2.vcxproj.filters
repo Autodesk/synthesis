@@ -107,9 +107,6 @@
     <ClCompile Include="Source\Exporter.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Data\BXDA\Vector3.cpp">
-      <Filter>Source\Data\BXDA</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Data\BXDA\SubMesh.cpp">
       <Filter>Source\Data\BXDA</Filter>
     </ClCompile>

@@ -11,7 +11,7 @@ Physics::Physics(const Physics & physicsToCopy)
 	mass = physicsToCopy.mass;
 }
 
-Physics::Physics(Vector3 centerOfMass, double mass)
+Physics::Physics(Vector3<float> centerOfMass, float mass)
 {
 	this->centerOfMass = centerOfMass;
 	this->mass = mass;
