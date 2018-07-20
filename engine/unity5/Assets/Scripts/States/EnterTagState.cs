@@ -1,9 +1,11 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Network;
+using Synthesis.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -12,15 +14,15 @@ using UnityEngine.UI;
 
 namespace Synthesis.States
 {
-    public class EnterInfoState : State
+    public class EnterTagState : State
     {
         /// <summary>
         /// Joins the lobby with the given code and player tag when the join button
         /// is pressed.
         /// </summary>
-        public void OnJoinButtonPressed()
+        public void OnCreateButtonPressed()
         {
-            string playerTag = GameObject.Find("PlayerTagText").GetComponent<Text>().text;
+            string playerTag = GameObject.Find("HostTagText").GetComponent<Text>().text;
 
             if (playerTag.Length == 0)
             {
@@ -30,8 +32,7 @@ namespace Synthesis.States
 
             PlayerIdentity.DefaultLocalPlayerTag = playerTag;
 
-            StateMachine.PushState(new LoadRobotState(
-                new LobbyState(GameObject.Find("LobbyCodeText").GetComponent<Text>().text)));
+            StateMachine.PushState(new LoadFieldState(new LoadRobotState(new LobbyState(null))));
         }
 
         /// <summary>

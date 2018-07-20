@@ -289,9 +289,9 @@
     <Compile Include="Assets\Scripts\States\BrowseFieldState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
-    <Compile Include="Assets\Scripts\States\ConnectingState.cs" />
     <Compile Include="Assets\Scripts\States\DefaultSimulatorState.cs" />
     <Compile Include="Assets\Scripts\States\EnterInfoState.cs" />
+    <Compile Include="Assets\Scripts\States\EnterTagState.cs" />
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
     <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
     <Compile Include="Assets\Scripts\States\HostJoinState.cs" />

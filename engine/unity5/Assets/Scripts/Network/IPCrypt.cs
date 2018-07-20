@@ -52,7 +52,7 @@ namespace Synthesis.Network
             for (int i = 0; i < 4; i++)
                 code += state[i] * Pow(256, (uint)(3 - i));
 
-            return code.ToString("X");
+            return code.ToString("X8");
         }
 
         /// <summary>
