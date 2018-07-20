@@ -36,14 +36,16 @@ std::string Mesh::toString()
 void Mesh::write(BinaryWriter & output) const
 {
 	// Output general information
-	output.write(guid);
 	output.write(CURRENT_VERSION);
+	output.write(guid);
 
 	// Output meshes
+	output.write((int)subMeshes.size());
 	for (SubMesh * submesh : subMeshes)
 		output.write(*submesh);
 
 	// Output colliders
+	output.write((int)subMeshes.size());
 	SubMesh tempColliderMesh = SubMesh();
 	for (SubMesh * submesh : subMeshes)
 	{

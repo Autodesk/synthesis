@@ -87,6 +87,8 @@ void SubMesh::getConvexCollider(SubMesh & outputMesh) const
 
 void SubMesh::write(BinaryWriter & output) const
 {
+	output.write((char)1); // Mesh flag for normals
+
 	// Output vertices' locations
 	output.write((int)vertices.size() * 3);
 	for (Vertex * vertex : vertices)
