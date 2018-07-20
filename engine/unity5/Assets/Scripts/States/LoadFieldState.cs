@@ -10,10 +10,21 @@ namespace Synthesis.States
 {
     public class LoadFieldState : State
     {
+        private readonly State nextState;
+
         private string fieldDirectory;
         private GameObject mixAndMatchModeScript;
         private GameObject splashScreen;
         private SelectScrollable fieldList;
+
+        /// <summary>
+        /// Initializes a new <see cref="LoadFieldState"/> instance.
+        /// </summary>
+        /// <param name="nextState"></param>
+        public LoadFieldState(State nextState = null)
+        {
+            this.nextState = nextState;
+        }
 
         /// <summary>
         /// Initializes required <see cref="GameObject"/> references.
@@ -60,14 +71,18 @@ namespace Synthesis.States
                     PlayerPrefs.SetString("simSelectedField", simSelectedField);
                     PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
                     fieldList.SetActive(false);
-                    splashScreen.SetActive(true);
+                    splashScreen?.SetActive(true);
                     mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartMaMSim();
                 }
                 else
                 {
                     PlayerPrefs.SetString("simSelectedField", simSelectedField);
                     PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
-                    StateMachine.PopState();
+
+                    if (nextState == null)
+                        StateMachine.PopState();
+                    else
+                        StateMachine.PushState(nextState);
                 }
             }
             else

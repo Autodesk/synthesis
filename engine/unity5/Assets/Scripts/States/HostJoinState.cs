@@ -1,6 +1,7 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Network;
+using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +21,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnHostLobbyButtonPressed()
         {
-            MultiplayerNetwork network = NetworkManager.singleton as MultiplayerNetwork;
-            string ip = GetLocalIP();
-
-            network.networkAddress = ip;
-
-            if (network.StartHost() == null)
-                UserMessageManager.Dispatch("Could not host a lobby on this network!", 5f);
-            else
-                StateMachine.PushState(new LobbyState(true, IPCrypt.Encrypt(ip), "Host"));
+            StateMachine.PushState(new EnterTagState());
         }
 
         /// <summary>
@@ -40,18 +33,14 @@ namespace Synthesis.States
         }
 
         /// <summary>
-        /// Returns the local IP address of this machine.
+        /// Returns to the main menu when the back button is pressed.
         /// </summary>
-        /// <returns></returns>
-        private string GetLocalIP()
+        public void OnBackButtonPressed()
         {
-            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            Auxiliary.FindGameObject("ExitingPanel").SetActive(true);
+            SceneManager.LoadScene("MainMenu");
 
-            foreach (IPAddress ip in host.AddressList)
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                    return ip.ToString();
-
-            return string.Empty;
+            StateMachine.PopState();
         }
     }
 }

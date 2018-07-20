@@ -59,12 +59,11 @@ namespace Synthesis.Network
 
             playerTagText.color = PlayerIdentity.isLocalPlayer ? Color.green : Color.white;
             playerTagText.text = PlayerIdentity.PlayerTag;
-            
+
             if (PlayerIdentity.isLocalPlayer)
                 playerTagText.text += " (You)";
-
-            robotText.text = string.IsNullOrEmpty(PlayerIdentity.RobotName) ?
-                "(Choosing...)" : PlayerIdentity.RobotName;
+            
+            robotText.text = PlayerIdentity.RobotName;
 
             if (PlayerIdentity.Ready)
             {

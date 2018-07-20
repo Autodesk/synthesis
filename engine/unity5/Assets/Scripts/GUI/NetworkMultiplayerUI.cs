@@ -85,9 +85,10 @@ namespace Synthesis.GUI
         private void LinkPanels()
         {
             LinkPanel<HostJoinState>("HostJoinPanel");
+            LinkPanel<EnterTagState>("EnterTagPanel");
             LinkPanel<EnterInfoState>("EnterInfoPanel");
-            LinkPanel<ConnectingState>("ConnectingPanel");
             LinkPanel<LobbyState>("LobbyPanel");
+            LinkPanel<LoadFieldState>("SimLoadField");
             LinkPanel<LoadRobotState>("SimLoadRobot");
         }
 

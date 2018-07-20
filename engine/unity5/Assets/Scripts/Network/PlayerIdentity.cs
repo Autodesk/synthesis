@@ -16,7 +16,19 @@ namespace Synthesis.Network
         /// <summary>
         /// The local <see cref="PlayerIdentity"/> instance.
         /// </summary>
-        public static PlayerIdentity LocalInstance { get; private set; }        
+        public static PlayerIdentity LocalInstance { get; private set; }
+
+        /// <summary>
+        /// Finds and returns the host <see cref="PlayerIdentity"/>.
+        /// </summary>
+        public static PlayerIdentity HostInstance
+        {
+            get
+            {
+                IEnumerable<PlayerIdentity> players = FindObjectsOfType<PlayerIdentity>().Where(p => p.IsHost);
+                return players.Any() ? players.First() : null;
+            }
+        }
 
         /// <summary>
         /// The player tag associated with new local <see cref="PlayerIdentity"/> instances.
@@ -54,6 +66,27 @@ namespace Synthesis.Network
         }
 
         /// <summary>
+        /// The field selection associated with this <see cref="PlayerIdentity"/>.
+        /// </summary>
+        public string FieldName
+        {
+            get
+            {
+                return fieldName;
+            }
+            set
+            {
+                if (!isLocalPlayer || !isServer)
+                {
+                    Debug.LogError("Only the host instance may make a field selection!");
+                    return;
+                }
+
+                fieldName = value;
+            }
+        }
+
+        /// <summary>
         /// Determines if this <see cref="PlayerIdentity"/> is ready to start the match.
         /// </summary>
         public bool Ready
@@ -68,6 +101,21 @@ namespace Synthesis.Network
             }
         }
 
+        /// <summary>
+        /// Determines if this <see cref="PlayerIdentity"/> instance is the host.
+        /// </summary>
+        public bool IsHost
+        {
+            get
+            {
+                return isHost;
+            }
+            private set
+            {
+                CmdSetIsHost(value);
+            }
+        }
+
         [SyncVar]
         private string playerTag;
 
@@ -75,10 +123,17 @@ namespace Synthesis.Network
         private string robotName;
 
         [SyncVar]
+        private string fieldName;
+
+        [SyncVar]
         private bool ready;
 
+        [SyncVar]
+        private bool isHost;
+
         /// <summary>
-        /// Initializes the player tag and adds itself to the player list.
+        /// Initializes the properties of this <see cref="PlayerIdentity"/> and adds
+        /// itself to the player list.
         /// </summary>
         private void Start()
         {
@@ -86,7 +141,10 @@ namespace Synthesis.Network
             {
                 LocalInstance = this;
                 PlayerTag = DefaultLocalPlayerTag;
-                RobotName = string.Empty;
+                RobotName = PlayerPrefs.GetString("simSelectedRobotName");
+
+                if (IsHost = isServer)
+                    FieldName = PlayerPrefs.GetString("simSelectedFieldName");
             }
 
             PlayerList.Instance.AddPlayerEntry(this);
@@ -121,6 +179,16 @@ namespace Synthesis.Network
         }
 
         /// <summary>
+        /// Sets the field name of this instance accross all clients.
+        /// </summary>
+        /// <param name="name"></param>
+        [Command]
+        private void CmdSetFieldName(string name)
+        {
+            fieldName = name;
+        }
+
+        /// <summary>
         /// Sets the ready status of this instance accross all clients.
         /// </summary>
         /// <param name="playerReady"></param>
@@ -128,6 +196,16 @@ namespace Synthesis.Network
         private void CmdSetReady(bool playerReady)
         {
             ready = playerReady;
+        }
+
+        /// <summary>
+        /// Sets the ready status of this instance accross all clients.
+        /// </summary>
+        /// <param name="playerReady"></param>
+        [Command]
+        private void CmdSetIsHost(bool host)
+        {
+            isHost = host;
         }
     }
 }

@@ -8,21 +8,25 @@ namespace Synthesis.States
 {
     public class LoadRobotState : State
     {
-        /// <summary>
-        /// If true, a robot selction was made.
-        /// </summary>
-        public bool RobotChosen { get; private set; }
+        private readonly State nextState;
 
         private string robotDirectory;
         private SelectScrollable robotList;
+
+        /// <summary>
+        /// Initializes a new <see cref="LoadRobotState"/> instance.
+        /// </summary>
+        /// <param name="nextState"></param>
+        public LoadRobotState(State nextState = null)
+        {
+            this.nextState = nextState;
+        }
 
         /// <summary>
         /// Initializes the <see cref="LoadRobotState"/>.
         /// </summary>
         public override void Start()
         {
-            RobotChosen = false;
-
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
             robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectScrollable>();
         }
@@ -58,8 +62,10 @@ namespace Synthesis.States
                 PlayerPrefs.SetString("simSelectedRobot", robotDirectory + "\\" + simSelectedRobotName + "\\");
                 PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
 
-                RobotChosen = true;
-                StateMachine.PopState();
+                if (nextState == null)
+                    StateMachine.PopState();
+                else
+                    StateMachine.PushState(nextState);
             }
             else
             {
