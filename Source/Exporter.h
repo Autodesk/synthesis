@@ -15,7 +15,7 @@
 #include <Core/UserInterface/CommandEventArgs.h>
 #include "AddIn/EUI.h"
 #include "Data/BXDA/Mesh.h"
-#include "Data/BinaryRWObject.h"
+#include "Data/BXDA/BinaryWriter.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;

@@ -1,11 +1,12 @@
 #pragma once
 
 #include <string>
+#include "BinaryWriter.h"
 #include "Vector3.h"
 
 namespace BXDA
 {
-	class Physics
+	class Physics : public BinaryWritable
 	{
 	public:
 		Physics();
@@ -14,11 +15,14 @@ namespace BXDA
 		Physics(Vector3 centerOfMass, double mass);
 
 		Physics operator+=(const Physics &); // Averages the center of mass of a physics class with another
-		friend std::ostream& operator<<(std::ostream&, const Physics&);
+
 		std::string toString();
 
 	private:
 		Vector3 centerOfMass;
 		double mass;
+
+		void write(BinaryWriter &) const;
+
 	};
 }

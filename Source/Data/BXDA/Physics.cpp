@@ -23,12 +23,13 @@ Physics Physics::operator+=(const Physics & physicsToAverage)
 	return *this;
 }
 
-std::string BXDA::Physics::toString()
+std::string Physics::toString()
 {
 	return "Center of Mass: " + centerOfMass.toString() + ", Mass: " + std::to_string(mass);
 }
 
-std::ostream & BXDA::operator<<(std::ostream & output, const Physics & p)
+void Physics::write(BinaryWriter & output) const
 {
-	return output << p.centerOfMass << p.mass;
+	output.write(centerOfMass);
+	output.write(mass);
 }

@@ -1,24 +1,24 @@
 #pragma once
 
 #include <string>
+#include "BinaryWriter.h"
 #include "Submesh.h"
 #include "Physics.h"
 
 namespace BXDA
 {
-	class Mesh
+	class Mesh : public BinaryWritable
 	{
 	public:
 		Mesh();
 		~Mesh();
-
-		friend std::ostream& operator<<(std::ostream&, const Mesh&);
-		std::string toString();
-
+		
 		void addSubMesh(const SubMesh &);
 
 		std::string getGUID() const;
 		int getVersion() const;
+
+		std::string toString();
 
 	private:
 		const int CURRENT_VERSION = 0;
@@ -26,6 +26,8 @@ namespace BXDA
 		std::string guid;
 		Physics physics;
 		std::vector<SubMesh*> subMeshes;
+
+		void write(BinaryWriter &) const;
 
 	};
 }

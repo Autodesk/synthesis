@@ -37,26 +37,6 @@ SubMesh::SubMesh(const std::vector<Vertex> & vertices, const std::vector<Surface
 		this->surfaces[s] = new Surface(surfaces[s]);
 }
 
-std::ostream& BXDA::operator<<(std::ostream& output, const SubMesh& s)
-{
-	// Output vertices' locations
-	output << (int)s.vertices.size() * 3;
-	for (Vertex * vertex : s.vertices)
-		output << vertex->location;
-
-	// Output vertices' normals
-	output << (int)s.vertices.size() * 3;
-	for (Vertex * vertex : s.vertices)
-		output << vertex->normal;
-
-	// Output surfaces
-	output << (int)s.surfaces.size();
-	for (Surface * surface : s.surfaces)
-		output << *surface;
-
-	return output;
-}
-
 void SubMesh::addVertices(std::vector<Vertex> vertices)
 {
 	for (Vertex vertex : vertices)
@@ -103,4 +83,22 @@ void SubMesh::getConvexCollider(SubMesh & outputMesh) const
 	outputMesh.addSurface(*newSurface); // Actual convex hull should have only one surface
 
 	delete newSurface;
+}
+
+void SubMesh::write(BinaryWriter & output) const
+{
+	// Output vertices' locations
+	output.write((int)vertices.size() * 3);
+	for (Vertex * vertex : vertices)
+		output.write(vertex->location);
+
+	// Output vertices' normals
+	output.write((int)vertices.size() * 3);
+	for (Vertex * vertex : vertices)
+		output.write(vertex->normal);
+
+	// Output surfaces
+	output.write((int)surfaces.size());
+	for (Surface * surface : surfaces)
+		output.write(*surface);
 }

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <fstream>
 #include <string>
+#include "BinaryWriter.h"
 
 namespace BXDA
 {
-	class Vector3
+	class Vector3 : public BinaryWritable
 	{
 	public:
 		double x;
@@ -19,7 +19,11 @@ namespace BXDA
 		Vector3 operator+(const Vector3 &) const;
 		Vector3 operator*(double) const;
 		Vector3 operator/(double) const;
-		friend std::ostream& operator<<(std::ostream&, const Vector3&);
+
 		std::string toString();
+
+	protected:
+		void write(BinaryWriter &) const;
+
 	};
 }

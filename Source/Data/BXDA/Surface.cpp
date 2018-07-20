@@ -55,26 +55,6 @@ Surface::Surface(bool hasColor, unsigned int color, float transparency, float tr
 	this->specular = specular;
 }
 
-std::ostream & BXDA::operator<<(std::ostream & output, const Surface & s)
-{
-	// Output color
-	output << s.hasColor;
-	if (s.hasColor)
-		output << s.color;
-
-	// Output other material information
-	output << s.transparency;
-	output << s.translucency;
-	output << s.specular;
-
-	// Output triangles
-	output << (int)s.triangles.size() * 3;
-	for (Triangle * triangle : s.triangles)
-		output << *triangle;
-
-	return output;
-}
-
 void Surface::addTriangles(const std::vector<Triangle> & triangles)
 {
 	for (Triangle triangle : triangles)
@@ -95,4 +75,22 @@ void Surface::offsetIndices(int offset)
 		tri->vertexIndices[1] += offset;
 		tri->vertexIndices[2] += offset;
 	}
+}
+
+void Surface::write(BinaryWriter & output) const
+{
+	// Output color
+	output.write(hasColor);
+	if (hasColor)
+		output.write((int)color);
+
+	// Output other material information
+	output.write(transparency);
+	output.write(translucency);
+	output.write(specular);
+
+	// Output triangles
+	output.write((int)triangles.size() * 3);
+	for (Triangle * triangle : triangles)
+		output.write(*triangle);
 }
