@@ -15,6 +15,10 @@ namespace EditorsLibrary
     {
         //UnitsOfMeasure measure;
         SkeletalJoint_Base joint;
+
+        bool canClose = true;
+        double currentPosition = 0, startLimit = 0, endLimit = 0;
+        bool writeCurrentPosition = false, writeStartLimit = false, writeEndLimit = false;
         public EditLimits(SkeletalJoint_Base joint)
         {
             this.joint = joint;// read in the joint base so we can access the correspodinig Inventor Joint to see/ edit the limits
@@ -66,15 +70,18 @@ namespace EditorsLibrary
             base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
         }
 
-        private void btnOkay_Click(object sender, EventArgs e)
+        private void checkInputs()
         {
-            bool canClose = true;
+            canClose = true;
+            currentPosition = 0;
+            startLimit = 0;
+            endLimit = 0;
+            writeCurrentPosition = false;
+            writeStartLimit = false;
+            writeEndLimit = false;
             if (!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
-                    ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
+                   ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
             {
-                ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = this.Angular_End.Checked && this.Angular_Start.Checked;
-                double currentPosition = 0, startLimit = 0, endLimit = 0;
-                bool writeCurrentPosition = false, writeStartLimit = false, writeEndLimit = false;
                 try
                 {
                     currentPosition = Convert.ToDouble(Angular_Current_textbox.Text) * (Math.PI / 180);
@@ -92,7 +99,8 @@ namespace EditorsLibrary
                         MessageBox.Show("Error, please make sure that the Current text box has a position");
                     }
                 }
-                if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits) {
+                if (this.Angular_End.Checked && this.Angular_Start.Checked)
+                {
                     try
                     {
                         startLimit = Convert.ToDouble(Angular_Start_textbox.Text) * (Math.PI / 180);
@@ -128,7 +136,77 @@ namespace EditorsLibrary
                         }
                     }
                 }
-                if (writeCurrentPosition && writeStartLimit && writeEndLimit)
+            }
+            else
+            {
+                try
+                {
+                    currentPosition = Convert.ToDouble(Linear_Current_textbox.Text) * 2.54;
+                    writeCurrentPosition = true;
+                }
+                catch (Exception)
+                {
+                    canClose = false;
+                    if (Linear_Current_textbox.Text.Equals(""))
+                    {
+                        MessageBox.Show("Error, please make sure that the Current text box has a position");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error, please make sure that the Current text box has a position");
+                    }
+                }
+                try
+                {
+                    if (this.Linear_Start.Checked)
+                    {
+                        startLimit = Convert.ToDouble(Linear_Start_textbox.Text) * 2.54;
+                        writeStartLimit = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    canClose = false;
+                    if (Linear_Start_textbox.Text.Equals(""))
+                    {
+                        MessageBox.Show("Error, please make sure that the Start text box has a limit");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error, please make sure that the Start text box has only numbers in it");
+                    }
+                }
+                try
+                {
+                    if (this.Linear_End.Checked)
+                    {
+                        endLimit = Convert.ToDouble(Linear_End_textbox.Text) * 2.54;
+                        writeEndLimit = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    canClose = false;
+                    if (Linear_End_textbox.Text.Equals(""))
+                    {
+                        MessageBox.Show("Error, please make sure that the End text box has a limit");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error, please make sure that the End text box has only numbers in it");
+                    }
+                }
+            }
+        }
+
+        private void btnOkay_Click(object sender, EventArgs e)
+        {
+            checkInputs();
+            if (!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                    ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
+            {
+                ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = this.Angular_End.Checked && this.Angular_Start.Checked;
+                if (writeCurrentPosition && writeStartLimit && writeEndLimit && ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits)
                 {
                     if (!(endLimit > currentPosition && startLimit > currentPosition) &&
                         !(endLimit < currentPosition && startLimit < currentPosition))
@@ -138,6 +216,8 @@ namespace EditorsLibrary
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = currentPosition;
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = startLimit;
                             ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = endLimit;
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = currentPosition + " rad";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
                         }
                         else
                         {
@@ -162,67 +242,8 @@ namespace EditorsLibrary
                 
                 ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit = this.Linear_Start.Checked;
                 ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit = this.Linear_End.Checked;
-                double currentPosition = 0, startLimit = 0, endLimit = 0;
-                bool writeCurrentPosition = false, writeStartLimit = false, writeEndLimit = false;
-                try
-                {
-                    currentPosition = Convert.ToDouble(Linear_Current_textbox.Text) * 2.54;
-                    writeCurrentPosition = true;
-                }
-                catch (Exception)
-                {
-                    canClose = false;
-                    if (Linear_Current_textbox.Text.Equals(""))
-                    {
-                        MessageBox.Show("Error, please make sure that the Current text box has a position");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error, please make sure that the Current text box has a position");
-                    }
-                }
-                try
-                {
-                    if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit)
-                    {
-                        startLimit = Convert.ToDouble(Linear_Start_textbox.Text) * 2.54;
-                        writeStartLimit = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                    canClose = false;
-                    if (Linear_Start_textbox.Text.Equals(""))
-                    {
-                        MessageBox.Show("Error, please make sure that the Start text box has a limit");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error, please make sure that the Start text box has only numbers in it");
-                    }
-                }
-                try
-                {
-                    if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit)
-                    {
-                        endLimit = Convert.ToDouble(Linear_End_textbox.Text) * 2.54;
-                        writeEndLimit = true;
-                    }
-                }
-                catch (Exception)
-                {
-                    canClose = false;
-                    if (Linear_End_textbox.Text.Equals(""))
-                    {
-                        MessageBox.Show("Error, please make sure that the End text box has a limit");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error, please make sure that the End text box has only numbers in it");
-                    }
-                }
-                if (writeCurrentPosition && writeStartLimit && writeEndLimit)
+                if (writeCurrentPosition && writeStartLimit && writeEndLimit && ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit &&
+                   ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit)
                 {
                     if (!(endLimit > currentPosition && startLimit > currentPosition) &&
                         !(endLimit < currentPosition && startLimit < currentPosition))
@@ -230,23 +251,31 @@ namespace EditorsLibrary
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = currentPosition;
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = startLimit;
                         ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = endLimit;
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = currentPosition + " cm";
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
                     } else
                     {
                         canClose = false;
                         MessageBox.Show("Please make sure the current position is between the start and end limits");
                     }
 
-                } else if(writeCurrentPosition && writeStartLimit)
+                } else if(writeCurrentPosition && writeStartLimit && ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit)
                 {
                     ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = currentPosition;
                     ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = startLimit;
-                } else if (writeCurrentPosition && writeEndLimit)
+                    ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = currentPosition + " cm";
+                    ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                } else if (writeCurrentPosition && writeEndLimit && ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit)
                 {
                     ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = currentPosition;
                     ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = endLimit;
+                    ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = currentPosition + " cm";
+                    ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
                 } else if (writeCurrentPosition)
                 {
                     ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = currentPosition;
+                    ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = currentPosition + " cm";
+                    ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
                 }
             }
             if (canClose)
@@ -385,6 +414,215 @@ namespace EditorsLibrary
             {
                 this.Linear_End_textbox.Enabled = false;
             }
+        }
+
+        private void AnimateJointButton_Click(object sender, EventArgs e)
+        {
+            this.Enabled = false;
+            checkInputs();
+            double oldStartLimit = 0;
+            double oldEndLimit = 0;
+            double oldPos = 0;
+            bool oldHasLimits = true;
+            bool oldHasStartLimits = true;
+            bool oldHasEndLimits = true;
+            try {
+                if (!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                     ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
+                {
+                    if (writeStartLimit && writeEndLimit && this.Angular_Start.Checked && this.Angular_End.Checked)
+                    {
+                        if ((Math.Abs(startLimit - endLimit) <= 2 * Math.PI))
+                        {
+                            oldHasLimits = ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits;
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = true;
+                            if (oldHasLimits)
+                            {
+                                oldStartLimit = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue;
+                                oldEndLimit = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue;
+                            }
+                            oldPos = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).ModelValue;
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue;
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = startLimit;
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = endLimit;
+                            if (startLimit <= endLimit)
+                            {
+                                ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = startLimit + " rad";
+                                ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = endLimit + " rad";
+                            } else
+                            {
+                                ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = endLimit + " rad";
+                                ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = startLimit + " rad";
+                            }
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.SetIncrement(IncrementTypeEnum.kNumberOfStepsIncrement, Convert.ToString(Math.Abs((startLimit - endLimit) * 12)));
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.PlayForward();
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.PlayReverse();
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = oldPos;
+                            if (oldHasLimits)
+                            {
+                                ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = oldStartLimit;
+                                ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = oldEndLimit;
+                            }
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = oldPos + " rad";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = oldHasLimits;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please make sure the start and end limits aren't over 360 degrees apart");
+                        }
+                    } else if(! (this.Angular_Start.Checked && this.Angular_End.Checked))
+                    {
+                        MessageBox.Show("Please make sure you have entered both start and end limits");
+                    }
+                }
+                else
+                {
+                    if (writeStartLimit && writeEndLimit && Linear_Start.Checked && Linear_End.Checked)
+                    {
+                        oldHasStartLimits = ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit;
+                        oldHasEndLimits = ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit;
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit = true;
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit = true;
+                        if (oldHasStartLimits)
+                        {
+                            oldStartLimit = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue;
+                        }
+                        if (oldHasEndLimits)
+                        {
+                            oldEndLimit = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue;
+                        }
+                        oldPos = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).ModelValue;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = startLimit;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = endLimit;
+                        if (startLimit <= endLimit)
+                        {
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = startLimit + " cm";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = endLimit + " cm";
+                        }
+                        else
+                        {
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = endLimit + " cm";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = startLimit + " cm";
+                        }
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.SetIncrement(IncrementTypeEnum.kNumberOfStepsIncrement, Convert.ToString(Math.Abs((startLimit - endLimit)*.25)));
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.PlayForward();
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.PlayReverse();
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = oldPos;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = oldStartLimit;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = oldEndLimit;
+                        if(oldHasStartLimits)
+                        {
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = oldStartLimit;
+                        }
+                        if (oldHasEndLimits)
+                        {
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = oldEndLimit;
+                        }
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = oldPos + " cm";
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit = oldHasStartLimits;
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit = oldHasEndLimits;
+                    }
+                    else if (!(this.Angular_Start.Checked && this.Angular_End.Checked))
+                    {
+                        MessageBox.Show("Please make sure you have entered both start and end limits");
+                    }
+                }
+            }
+            catch (Exception)//sometimes Inventor gets mad at weird limits, throwing an excpetion, telling it again somehow makes Inventor chill, hence the try/ catch
+            {
+                if (!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                 ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
+                {
+                    if (writeStartLimit && writeEndLimit && this.Angular_Start.Checked && this.Angular_End.Checked)
+                    {
+                        if ((Math.Abs(startLimit - endLimit) <= 2 * Math.PI))
+                        {
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue;
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = startLimit;
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = endLimit;
+                            if (startLimit <= endLimit)
+                            {
+                                ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = startLimit + " rad";
+                                ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = endLimit + " rad";
+                            }
+                            else
+                            {
+                                ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = endLimit + " rad";
+                                ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = startLimit + " rad";
+                            }
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.SetIncrement(IncrementTypeEnum.kNumberOfStepsIncrement, Convert.ToString(Math.Abs((startLimit - endLimit) * 12)));
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.PlayForward();
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.PlayReverse();
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).Value = oldPos;
+                            if (oldHasLimits)
+                            {
+                                ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).Value = oldStartLimit;
+                                ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).Value = oldEndLimit;
+                            }
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = oldPos + " rad";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasAngularPositionLimits = oldHasLimits;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please make sure the start and end limits aren't over 360 degrees apart");
+                        }
+                    }
+                    else if (!(this.Angular_Start.Checked && this.Angular_End.Checked))
+                    {
+                        MessageBox.Show("Please make sure you have entered both start and end limits");
+                    }
+                }
+                else
+                {
+                    if (writeStartLimit && writeEndLimit)
+                    {
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = startLimit;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = endLimit;
+                        if (startLimit <= endLimit)
+                        {
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = startLimit + " cm";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = endLimit + " cm";
+                        }
+                        else
+                        {
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = endLimit + " cm";
+                            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = startLimit + " cm";
+                        }
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.SetIncrement(IncrementTypeEnum.kNumberOfStepsIncrement, Convert.ToString(Math.Abs((startLimit - endLimit) * .25)));
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.PlayForward();
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.PlayReverse();
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).Value = oldPos;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = oldStartLimit;
+                        ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = oldEndLimit;
+                        if (oldHasStartLimits)
+                        {
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).Value = oldStartLimit;
+                        }
+                        if (oldHasEndLimits)
+                        {
+                            ((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).Value = oldEndLimit;
+                        }
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = oldPos + " cm";
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit = oldHasStartLimits;
+                        ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit = oldHasEndLimits;
+                    }
+                    else if (!(this.Linear_Start.Checked && this.Linear_End.Checked))
+                    {
+                        MessageBox.Show("Please make sure you have entered both start and end limits");
+                    }
+                }
+            }
+            this.Enabled = true;
         }
     }
 }
