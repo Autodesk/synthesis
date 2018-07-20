@@ -14,6 +14,11 @@ namespace Synthesis.Network
     public class PlayerIdentity : NetworkBehaviour
     {
         /// <summary>
+        /// The local <see cref="PlayerIdentity"/> instance.
+        /// </summary>
+        public static PlayerIdentity LocalInstance { get; private set; }        
+
+        /// <summary>
         /// The player tag associated with new local <see cref="PlayerIdentity"/> instances.
         /// </summary>
         public static string DefaultLocalPlayerTag { get; set; }
@@ -33,8 +38,44 @@ namespace Synthesis.Network
             }
         }
 
+        /// <summary>
+        /// The robot name associatd with this <see cref="PlayerIdentity"/>.
+        /// </summary>
+        public string RobotName
+        {
+            get
+            {
+                return robotName;
+            }
+            set
+            {
+                CmdSetRobotName(value);
+            }
+        }
+
+        /// <summary>
+        /// Determines if this <see cref="PlayerIdentity"/> is ready to start the match.
+        /// </summary>
+        public bool Ready
+        {
+            get
+            {
+                return ready;
+            }
+            set
+            {
+                CmdSetReady(value);
+            }
+        }
+
         [SyncVar]
         private string playerTag;
+
+        [SyncVar]
+        private string robotName;
+
+        [SyncVar]
+        private bool ready;
 
         /// <summary>
         /// Initializes the player tag and adds itself to the player list.
@@ -42,7 +83,11 @@ namespace Synthesis.Network
         private void Start()
         {
             if (isLocalPlayer)
+            {
+                LocalInstance = this;
                 PlayerTag = DefaultLocalPlayerTag;
+                RobotName = string.Empty;
+            }
 
             PlayerList.Instance.AddPlayerEntry(this);
         }
@@ -63,6 +108,26 @@ namespace Synthesis.Network
         private void CmdSetPlayerTag(string tag)
         {
             playerTag = tag;
+        }
+
+        /// <summary>
+        /// Sets the robot name of this instance accross all clients.
+        /// </summary>
+        /// <param name="name"></param>
+        [Command]
+        private void CmdSetRobotName(string name)
+        {
+            robotName = name;
+        }
+
+        /// <summary>
+        /// Sets the ready status of this instance accross all clients.
+        /// </summary>
+        /// <param name="playerReady"></param>
+        [Command]
+        private void CmdSetReady(bool playerReady)
+        {
+            ready = playerReady;
         }
     }
 }

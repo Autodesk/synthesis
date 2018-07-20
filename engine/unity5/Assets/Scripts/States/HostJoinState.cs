@@ -1,4 +1,5 @@
 ﻿using Synthesis.FSM;
+using Synthesis.GUI;
 using Synthesis.Network;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
@@ -22,9 +24,11 @@ namespace Synthesis.States
             string ip = GetLocalIP();
 
             network.networkAddress = ip;
-            network.StartHost();
-            
-            StateMachine.PushState(new LobbyState(true, IPCrypt.Encrypt(ip), "Host"));
+
+            if (network.StartHost() == null)
+                UserMessageManager.Dispatch("Could not host a lobby on this network!", 5f);
+            else
+                StateMachine.PushState(new LobbyState(true, IPCrypt.Encrypt(ip), "Host"));
         }
 
         /// <summary>

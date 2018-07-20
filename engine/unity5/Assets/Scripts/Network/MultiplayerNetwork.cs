@@ -1,12 +1,6 @@
 ﻿using Synthesis.States;
-using Synthesis.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Networking.NetworkSystem;
 
 namespace Synthesis.Network
 {
@@ -48,7 +42,7 @@ namespace Synthesis.Network
 
             ConnectionID = conn.connectionId;
             ClientConnectionChanged?.Invoke(this, ConnectionStatus.Connected);
-            //ClientScene.Ready(conn);
+
             ClientScene.AddPlayer(0);
         }
 
@@ -66,7 +60,7 @@ namespace Synthesis.Network
 
         public override void OnServerDisconnect(NetworkConnection conn)
         {
-            base.OnServerDisconnect(conn);
+            NetworkServer.DestroyPlayersForConnection(conn);
         }
 
         public override void OnStartClient(NetworkClient client)
