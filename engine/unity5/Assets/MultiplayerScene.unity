@@ -369,8 +369,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 1}
+    m_HighlightedColor: {r: 0, g: 1, b: 0, a: 1}
+    m_PressedColor: {r: 0, g: 0.49803922, b: 0, a: 1}
     m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -1033,7 +1033,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 179280887}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 0.7176502, y: 0.71765, z: 0.71765}
   m_Children:
   - {fileID: 938808052}
@@ -1042,8 +1042,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -180, y: 63}
-  m_SizeDelta: {x: 345.6, y: 84}
+  m_AnchoredPosition: {x: -120, y: 63}
+  m_SizeDelta: {x: 176, y: 84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &179280889
 MonoBehaviour:
@@ -1536,8 +1536,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -156, y: 63}
-  m_SizeDelta: {x: 270, y: 84}
+  m_AnchoredPosition: {x: -119, y: 63}
+  m_SizeDelta: {x: 176, y: 84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &385781468
 MonoBehaviour:
@@ -3154,7 +3154,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: CREATE LOBBY
+  m_Text: NEXT
 --- !u!222 &938808054
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3722,6 +3722,7 @@ MonoBehaviour:
   m_SpawnPrefabs:
   - {fileID: 1390732989618420, guid: 0185c46c27b66e7458a6dfcff401b791, type: 2}
   - {fileID: 1211715964684018, guid: 8d7fbfd56942d3d44a50e56870c1ac10, type: 2}
+  - {fileID: 1894779651427686, guid: 10ac0d50b8505a14abc352828bcd8e50, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -6633,7 +6634,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: JOIN LOBBY
+  m_Text: NEXT
 --- !u!222 &2061195189
 CanvasRenderer:
   m_ObjectHideFlags: 0

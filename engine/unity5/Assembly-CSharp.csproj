@@ -258,6 +258,7 @@
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
     <Compile Include="Assets\Scripts\Network\IPCrypt.cs" />
+    <Compile Include="Assets\Scripts\Network\LobbySettings.cs" />
     <Compile Include="Assets\Scripts\Network\MultiplayerNetwork.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkElement.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkFileTransfer.cs" />
