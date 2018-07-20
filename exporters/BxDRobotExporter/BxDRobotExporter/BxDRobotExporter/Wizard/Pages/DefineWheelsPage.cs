@@ -34,13 +34,15 @@ namespace BxDRobotExporter.Wizard
         private Dictionary<string, WheelSetupPanel> setupPanels = new Dictionary<string, WheelSetupPanel>();
         private List<string> leftOrder = new List<string>();
         private List<string> rightOrder = new List<string>();
+        private List<string> leftBackOrder = new List<string>();
+        private List<string> rightBackOrder = new List<string>();
 
         public DefineWheelsPage()
         {
             InitializeComponent();
             AutoFillToolTip.SetToolTip(AutoFillButton, "Attempt to detect left and right wheels automatically. Remember to double check your configuration after using this tool.");
 
-            // Hide horizontal scroll bars
+            // Hide `rizontal scroll bars
             LeftWheelsPanel.AutoScroll = false;
             LeftWheelsPanel.HorizontalScroll.Maximum = 0;
             LeftWheelsPanel.AutoScroll = true;
@@ -255,6 +257,7 @@ namespace BxDRobotExporter.Wizard
         public event InvalidatePageEventHandler InvalidatePage;
         public void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
         #endregion
+
 
         /// <summary>
         /// Sets the side that a wheel is on. This will update the wizard UI to show the changes.
