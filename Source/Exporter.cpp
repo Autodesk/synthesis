@@ -11,7 +11,7 @@ Exporter::Exporter(Ptr<Application> app) : _app(app)
 Exporter::~Exporter()
 {}
 
-void Exporter::loadMeshes()
+void Exporter::exportMeshes()
 {
 	Ptr<FusionDocument> doc = _app->activeDocument();
 
@@ -52,4 +52,35 @@ void Exporter::loadMeshes()
 	binary.write(mesh);
 
 	_ui->messageBox(mesh.toString());
+}
+
+void exportExample()
+{
+	BXDA::Mesh mesh = BXDA::Mesh();
+	BXDA::SubMesh subMesh = BXDA::SubMesh();
+
+	// Face
+	std::vector<BXDA::Vertex> vertices;
+	vertices.push_back(BXDA::Vertex(BXDA::Vector3(0, 0, 0), BXDA::Vector3(1, 0, 0)));
+	vertices.push_back(BXDA::Vertex(BXDA::Vector3(0, 1, 0), BXDA::Vector3(1, 0, 0)));
+	vertices.push_back(BXDA::Vertex(BXDA::Vector3(0, 1, 1), BXDA::Vector3(1, 0, 0)));
+	vertices.push_back(BXDA::Vertex(BXDA::Vector3(0, 0, 1), BXDA::Vector3(1, 0, 0)));
+	
+	subMesh.addVertices(vertices);
+
+	// Surface
+	BXDA::Surface surface;
+	std::vector<BXDA::Triangle> triangles;
+	triangles.push_back(BXDA::Triangle(0, 1, 2));
+	triangles.push_back(BXDA::Triangle(0, 2, 3));
+	surface.addTriangles(triangles);
+
+	subMesh.addSurface(surface);
+
+	mesh.addSubMesh(subMesh);
+
+	//Generates timestamp and attaches to file name
+	std::string filename = "node_0.bxda";
+	BXDA::BinaryWriter binary(filename);
+	binary.write(mesh);
 }

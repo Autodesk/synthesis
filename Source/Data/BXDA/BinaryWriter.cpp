@@ -15,7 +15,7 @@ BinaryWriter::~BinaryWriter()
 
 void BinaryWriter::write(const std::string & str)
 {
-	write((int)str.length());
+	write((char)str.length());
 
 	for (int c = 0; c < str.length(); c++)
 		write((char)str[c]);
