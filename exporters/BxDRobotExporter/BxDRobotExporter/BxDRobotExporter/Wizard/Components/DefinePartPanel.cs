@@ -33,6 +33,7 @@ namespace BxDRobotExporter.Wizard
 
         public DefinePartPanel(RigidNode_Base node)
         {
+            MessageBox.Show("" + node.GetSkeletalJoint().GetJointType().ToAssemblyJointType().ToString());
             InitializeComponent();
             BackColor = Color.White;
             Dock = DockStyle.Top;
@@ -79,7 +80,8 @@ namespace BxDRobotExporter.Wizard
                 case 1: //Motor
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = false;
-                    PortsGroupBox.Text = "Port";
+                    PortsGroupBox.Text = "PWM Port";
+                    PortOneLabel.Text = "PWM Port:";
                     PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
@@ -88,7 +90,8 @@ namespace BxDRobotExporter.Wizard
                 case 2: //Servo
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
-                    PortsGroupBox.Text = "Port";
+                    PortsGroupBox.Text = "PWM Port";
+                    PortOneLabel.Text = "PWM Port:";
                     PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
@@ -97,8 +100,10 @@ namespace BxDRobotExporter.Wizard
                 case 3: //Bumper Pneumatics
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
-                    if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortsGroupBox.Text = "Ports";
+                    PortOneLabel.Text = "Solenoid Port 1:";
+                    PortTwoLabel.Text = "Solenoid Port 2:";
+                    if (!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
+                    PortsGroupBox.Text = "Solenoid Ports";
                     PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
@@ -107,8 +112,9 @@ namespace BxDRobotExporter.Wizard
                 case 4: //Relay Pneumatics
                     this.PortsGroupBox.Visible = true;
                     MetaTabControl.Visible = true;
-                    if(!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
-                    PortsGroupBox.Text = "Port";
+                    PortOneLabel.Text = "Relay Port:";
+                    if (!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
+                    PortsGroupBox.Text = "Relay Port";
                     PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
@@ -117,7 +123,9 @@ namespace BxDRobotExporter.Wizard
                 case 5: //Dual Motor
                     this.PortsGroupBox.Visible = true;
                     this.MetaTabControl.Visible = false;
-                    PortsGroupBox.Text = "Ports";
+                    PortsGroupBox.Text = "PWM Ports";
+                    PortOneLabel.Text = "PWM Port 1:";
+                    PortTwoLabel.Text = "PWM Port 2:";
                     PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
