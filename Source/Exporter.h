@@ -15,6 +15,7 @@
 #include <Core/UserInterface/CommandEventArgs.h>
 #include "AddIn/EUI.h"
 #include "Data/BXDA/Mesh.h"
+#include "Data/BXDJ/RigidNode.h"
 #include "Data/BXDA/BinaryWriter.h"
 
 using namespace adsk::core;

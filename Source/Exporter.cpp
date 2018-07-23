@@ -86,34 +86,51 @@ void Exporter::buildNodeTree()
 
 	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
-	Ptr<Components> components = document->design()->allComponents();
+	Ptr<OccurrenceList> rootOccurences = document->design()->rootComponent()->occurrences()->asList();
 	
-	std::vector<Ptr<Occurrence>> groundedOccurences;
+	BXDJ::RigidNode rootNode;
 
-	for (Ptr<Component> component : components)
-	{
-		for (Ptr<Occurrence> occurence : component->occurrences())
-		{
-			if (occurence->isGrounded())
-				groundedOccurences.push_back(occurence);
-		}
-	}
+	output += "Analyzed Components: ";
+	for (Ptr<Occurrence> occurence : rootOccurences)
+		if (occurence->isGrounded())
+			rootNode.AddOccurence(occurence);
 
-	output += "Grounded Occurences: ";
+	/*std::vector<Ptr<Occurrence>> allTreeRootOccurences;
+
+	output += "\nGrounded Occurences: ";
 	for (Ptr<Occurrence> occurence : groundedOccurences)
 	{
 		output += occurence->name() + "\n";
 
-		Ptr<RigidGroupList> rigidGroups = occurence->rigidGroups();
+		allTreeRootOccurences.push_back(occurence);
 
 		output += "Rigid Groups: ";
-		for (Ptr<RigidGroup> rigidGroup : rigidGroups)
+		for (Ptr<RigidGroup> rigidGroup : occurence->rigidGroups())
 		{
 			output += rigidGroup->name() + "\n";
+
+			for (Ptr<Occurrence> rigidGroupOccurence : rigidGroup->occurrences())
+				allTreeRootOccurences.push_back(rigidGroupOccurence);
+		}
+
+		output += "Rigid Joints: ";
+		for (Ptr<Joint> joint : occurence->joints())
+		{
+			if (joint->jointMotion()->jointType() == JointTypes::RigidJointType)
+			{
+				allTreeRootOccurences.push_back(joint->occurrenceOne());
+				allTreeRootOccurences.push_back(joint->occurrenceTwo());
+			}
 		}
 
 		output += "\n";
 	}
+
+	output += "\nAll Root Occurences: ";
+	for (Ptr<Occurrence> occurence : allTreeRootOccurences)
+	{
+		output += occurence->name() + "\n";
+	}*/
 
 	userInterface->messageBox(output);
 }
