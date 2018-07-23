@@ -12,11 +12,6 @@ namespace Synthesis.Network
 {
     public class FileTransferer : NetworkBehaviour
     {
-        // TODO: Implement client-to-server file transfer.
-        // UPDATE: It should work to use the same transfer data and transfer IDs.
-        // You would be able to distinguish on the receiving end if it was a send or receive by the transfer ID.
-        // Just use some sort of mapping system on the server side.
-
         private const int BufferSize = 1024;
 
         /// <summary>
