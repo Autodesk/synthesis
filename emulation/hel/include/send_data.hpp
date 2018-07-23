@@ -1,16 +1,17 @@
 #ifndef _SEND_DATA_HPP_
 #define _SEND_DATA_HPP_
 
-
-#include "hal/HAL.h"
-#include "mxp_data.hpp"
-#include "athena/PortsInternal.h"
-#include "hal/ChipObject.h"
 #include <array>
 #include <string>
 #include <memory>
 #include <mutex>
+
 #include <condition_variable>
+#include "mxp_data.hpp"
+
+#include "analog_outputs.hpp"
+#include "digital_system.hpp"
+#include "relay_system.hpp"
 
 namespace hel{
     struct SendData{
@@ -19,13 +20,13 @@ namespace hel{
     private:
         std::array<double, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> pwm_hdrs;
 
-        std::array<RelayState, hal::kNumRelayHeaders> relays;
+        std::array<RelayState, RelaySystem::NUM_RELAY_HEADERS> relays;
 
-        std::array<double, hal::kNumAnalogOutputs> analog_outputs;
+        std::array<double, AnalogOutputs::NUM_ANALOG_OUTPUTS> analog_outputs;
 
-        std::array<hel::MXPData, hal::kNumDigitalMXPChannels> digital_mxp;
+        std::array<hel::MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
 
-        std::array<bool, hal::kNumDigitalHeaders> digital_hdrs;
+        std::array<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
     public:
         void update();
 

@@ -1,10 +1,8 @@
 #include "roborio.hpp"
 #include "util.hpp"
 
-#include "athena/DigitalInternal.h"
-
 using namespace nFPGA;
-using namespace nRoboRIO_FPGANamespace;    
+using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
     tPWM::tConfig PWMSystem::getConfig()const{
