@@ -2,10 +2,10 @@
 #define _SEND_DATA_HPP_
 
 
-#include "HAL/HAL.h"
+#include "hal/HAL.h"
 #include "mxp_data.hpp"
 #include "athena/PortsInternal.h"
-#include "HAL/ChipObject.h"
+#include "hal/ChipObject.h"
 #include <array>
 #include <string>
 #include <memory>

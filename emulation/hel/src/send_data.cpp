@@ -1,5 +1,5 @@
 #include "roborio.hpp"
-#include "HAL/HAL.h"
+#include "hal/HAL.h"
 #include "util.hpp"
 #include "json_util.hpp"
 
