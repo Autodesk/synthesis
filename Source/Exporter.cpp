@@ -34,7 +34,7 @@ void Exporter::exportMeshes()
 			std::vector<double> norms = fusionMesh->normalVectorsAsDouble();
 
 			for (int v = 0; v < coords.size(); v += 3)
-				vertices[v/3] = BXDA::Vertex(BXDA::Vector3<>(coords[v], coords[v + 1], coords[v + 2]), BXDA::Vector3<>(norms[v], norms[v + 1], norms[v + 2]));
+				vertices[v/3] = BXDA::Vertex(Vector3<>(coords[v], coords[v + 1], coords[v + 2]), Vector3<>(norms[v], norms[v + 1], norms[v + 2]));
 
 			subMesh.addVertices(vertices);
 
@@ -61,9 +61,9 @@ void Exporter::exportExample()
 
 	// Face
 	std::vector<BXDA::Vertex> vertices;
-	vertices.push_back(BXDA::Vertex(BXDA::Vector3<>(1, 2, 3), BXDA::Vector3<>(1, 0, 0)));
-	vertices.push_back(BXDA::Vertex(BXDA::Vector3<>(4, 5, 6), BXDA::Vector3<>(1, 0, 0)));
-	vertices.push_back(BXDA::Vertex(BXDA::Vector3<>(7, 8, 9), BXDA::Vector3<>(1, 0, 0)));
+	vertices.push_back(BXDA::Vertex(Vector3<>(1, 2, 3), Vector3<>(1, 0, 0)));
+	vertices.push_back(BXDA::Vertex(Vector3<>(4, 5, 6), Vector3<>(1, 0, 0)));
+	vertices.push_back(BXDA::Vertex(Vector3<>(7, 8, 9), Vector3<>(1, 0, 0)));
 	
 	subMesh.addVertices(vertices);
 
