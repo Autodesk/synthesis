@@ -99,8 +99,8 @@ add_custom_target ( asio ALL
 ExternalProject_Add(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
-  CONFIGURE_COMMAND cd ${WPILIB_DIRECTORY} && ./gradlew :wpilibc:build
-  BUILD_COMMAND ""
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND cd ${WPILIB_DIRECTORY} && ./gradlew :wpilibc:build
   INSTALL_COMMAND ""
   )
 add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/error.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp)

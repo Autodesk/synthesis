@@ -1,19 +1,19 @@
 #!/bin/bash
-FILE_URL="https://dl.dropboxusercontent.com/s/339v2vep4yf99x0/synthesis_image.tar.gz?dl=0"
+FILE_URL="https://dl.dropboxusercontent.com/s/svvxunbh7akmw3y/vm-package.tar.gz?dl=0"
 
-if [ ! -f synthesis_image.tar.gz ] ; then
+if [ ! -f vm-package.tar.gz ] ; then
 	printf "Begun downloading VM image\n"
-	wget -O synthesis_image.tar.gz $FILE_URL
+	wget -O vm-package.tar.gz $FILE_URL
 	printf "Image successfully download.\nPlease wait while the image is extracted.\n"
 fi
-mkdir synthesis_image -p;
+mkdir vm-package -p;
 
-if [ ! -d ./synthesis_image ] || [ ! -f synthesis_image/zImage ] || [ ! -f synthesis_image/rootfs.cpio.gz ] || [ ! -f synthesis_image/rootfs.ext4 ] || [ ! -f synthesis_image/vexpress-v2p-ca9.dtb ]; then
+if [ ! -d ./vm-package ] || [ ! -f vm-package/zImage ] [ ! -f vm-package/rootfs.ext4 ] || [ ! -f vm-package/zynq-zed.dtb ]; then
 
-	tar -xvzf synthesis_image.tar.gz --directory synthesis_image;
-	cd synthesis_image;
+	tar -xvzf vm-package.tar.gz --directory vm-package;
+	cd vm-package;
 
-	mv new_root_files/* . && rm -rf new_root_files;
+	mv vm-package/* . && rm -rf vm-package;
 	cd ../;
 
 	printf "Successfully downloaded and extract image.\n"
