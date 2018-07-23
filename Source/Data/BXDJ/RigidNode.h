@@ -1,7 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <Fusion/FusionAll.h>
 #include "../BXDA/Mesh.h"
+
+using namespace adsk;
 
 namespace BXDJ
 {
@@ -13,16 +16,17 @@ namespace BXDJ
 	public:
 		RigidNode();
 		~RigidNode();
-		RigidNode(const BXDA::Mesh &);
+		RigidNode(core::Ptr<fusion::Occurrence>);
 		
+		bool AddOccurence(core::Ptr<fusion::Occurrence>);
 		template<typename JointVariant>
 		void AddJoint(const JointVariant &);
-		void AddMesh(const BXDA::Mesh &);
 
 	private:
+		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurences;
 		std::vector<Joint *> childrenJoints;
 
-		BXDA::Mesh * mesh;
+		bool getMesh(BXDA::Mesh &);
 
 	};
 
