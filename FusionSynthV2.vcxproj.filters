@@ -81,6 +81,9 @@
     <ClInclude Include="Source\Data\Vector3.h">
       <Filter>Headers\Data</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Joints\AngularJoint.h">
+      <Filter>Headers\Data\BXDJ\Joints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
