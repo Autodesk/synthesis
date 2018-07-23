@@ -22,7 +22,7 @@ namespace BXDJ
 
 		bool getMesh(BXDA::Mesh &);
 		
-		bool addOccurence(core::Ptr<fusion::Occurrence>, core::Ptr<fusion::Occurrence> parent = nullptr);
+		bool addOccurence(core::Ptr<fusion::Occurrence>);
 		template<typename JointVariant>
 		void addJoint(const JointVariant &);
 
