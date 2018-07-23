@@ -91,7 +91,7 @@ void hel::SendData::update(){
             digital_mxp[i].value = 0; //TODO
             break;
         default:
-            ; //TODO error handling
+            throw UnhandledEnumConstantException("hel::MXPData::Config");
         }
         status = 0; //reset status between HAL calls
     }
@@ -122,7 +122,7 @@ std::string hel::to_string(hel::SendData::RelayState r){
     case hel::SendData::RelayState::ERROR:
         return "ERROR";
     default:
-        return ""; //TODO error handling
+        throw UnhandledEnumConstantException("hel::SendData::RelayState");
     }
 }
 

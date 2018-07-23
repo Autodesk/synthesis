@@ -25,6 +25,17 @@ std::string hel::to_string(hel::DSError::Type t){
     case hel::DSError::Type::ERROR:
         return "ERROR";
     default:
-        return "";//TODO error handling
+        throw UnhandledEnumConstantException("hel::DSError::Type");
     }
+}
+
+hel::UnhandledEnumConstantException::UnhandledEnumConstantException(std::string s):enum_type(s){}
+
+const char* hel::UnhandledEnumConstantException::what()const throw(){
+    std::string s = "Exception: unhandled enum constant for " + enum_type;
+    return s.c_str();
+}
+
+const char* hel::UnhandledCase::what()const throw(){
+    return "Exception: unhandled case";
 }

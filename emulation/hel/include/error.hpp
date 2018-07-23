@@ -80,6 +80,20 @@ namespace hel{
     };
 
     std::string to_string(DSError::Type);
+
+    struct UnhandledEnumConstantException: public std::exception{
+    private:
+        std::string enum_type;
+
+    public:
+        UnhandledEnumConstantException(std::string);
+
+        const char* what()const throw();
+    };
+
+    struct UnhandledCase: public std::exception{
+        const char* what()const throw();
+    };
 }
 
 #endif

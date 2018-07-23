@@ -159,14 +159,18 @@ namespace hel{
                 reg_index += 4;
                 return reg_index;
             }();
-            if(
-               checkBitHigh(instance.first->digital_system.getEnabledOutputs().MXP, DO_index) && //Allow MXP output if pin is output-enabled
-               checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index) //Allow MXP outout if DO is using special function
-                ){
-                instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
+            if(checkBitHigh(instance.first->digital_system.getEnabledOutputs().MXP, DO_index)){//Allow MXP output if pin is output-enabled
+                if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index)){ //Allow MXP outout if DO is using special function
+                    instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
+                    instance.second.unlock();
+                } else {
+                    instance.second.unlock();
+                    throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DO_index);
+                }
+            } else {
+                instance.second.unlock();
+                throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DI, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DO_index);
             }
-            instance.second.unlock();
-            //TODO error handling
         }
 
         uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
