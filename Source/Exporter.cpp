@@ -89,8 +89,7 @@ void Exporter::buildNodeTree()
 	BXDJ::RigidNode rootNode;
 
 	for (Ptr<Occurrence> occurence : rootOccurences)
-		if (occurence->isGrounded())
-			rootNode.addOccurence(occurence);
+		rootNode.addOccurence(occurence);
 
 	/*std::vector<Ptr<Occurrence>> allTreeRootOccurences;
 

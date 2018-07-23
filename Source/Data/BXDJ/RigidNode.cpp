@@ -45,9 +45,13 @@ bool RigidNode::getMesh(BXDA::Mesh & mesh)
 			subMesh.addSurface(BXDA::Surface(indices));
 		}
 
-		core::Ptr<fusion::PhysicalProperties> physics = occurence->getPhysicalProperties(fusion::CalculationAccuracy::MediumCalculationAccuracy);
-		Vector3<float> centerOfMass(physics->centerOfMass()->x(), physics->centerOfMass()->y(), physics->centerOfMass()->z());
-		mesh.addPhysics(BXDA::Physics(centerOfMass, occurence->physicalProperties()->mass()));
+		// Add physics properties to mesh
+		core::Ptr<fusion::PhysicalProperties> physics = occurence->physicalProperties();
+		if (physics->mass > 0)
+		{
+			Vector3<float> centerOfMass(physics->centerOfMass()->x(), physics->centerOfMass()->y(), physics->centerOfMass()->z());
+			mesh.addPhysics(BXDA::Physics(centerOfMass, occurence->physicalProperties()->mass()));
+		}
 
 		mesh.addSubMesh(subMesh);
 	}
@@ -55,7 +59,7 @@ bool RigidNode::getMesh(BXDA::Mesh & mesh)
 	return true;
 }
 
-bool RigidNode::addOccurence(core::Ptr<fusion::Occurrence> occurence, core::Ptr<fusion::Occurrence> parent)
+bool RigidNode::addOccurence(core::Ptr<fusion::Occurrence> occurence)
 {
 	evilGlobalVariableForPrinting += "Occurence \"" + occurence->fullPathName();
 
@@ -74,8 +78,11 @@ bool RigidNode::addOccurence(core::Ptr<fusion::Occurrence> occurence, core::Ptr<
 	// Add it to the list of occurences
 	fusionOccurences.push_back(occurence);
 
+	for (core::Ptr<fusion::Occurrence> subOccurence : occurence->childOccurrences())
+		addOccurence(subOccurence);
+
 	// Add any occurences attached by rigid joints, and connect any occurences connected by other joints
-	if (occurence->joints() != nullptr)
+	/*if (occurence->joints() != nullptr)
 	{
 		for (core::Ptr<fusion::Joint> joint : occurence->joints())
 		{
@@ -97,10 +104,10 @@ bool RigidNode::addOccurence(core::Ptr<fusion::Occurrence> occurence, core::Ptr<
 				/*if (joint->occurrenceOne() != nullptr && joint->occurrenceOne()->name() != occurence->name())
 				childrenJoints.push_back(new Joint(RigidNode(joint->occurrenceOne())));
 				else if (joint->occurrenceTwo() != nullptr)
-				childrenJoints.push_back(new Joint(RigidNode(joint->occurrenceTwo())));*/
+				childrenJoints.push_back(new Joint(RigidNode(joint->occurrenceTwo())));*//*
 			}
 		}
-	}
+	}*/
 
 	return true;
 }
