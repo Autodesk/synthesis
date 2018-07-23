@@ -39,7 +39,7 @@ else()
 endif()
 
 add_custom_target ( generate_libwpi
-	COMMAND bash -c "g++ ${CMAKE_BINARY_DIR}/src/generate_libwpi.cpp -o build/generate_libwpi"
+	COMMAND bash -c "g++ ${CMAKE_BINARY_DIR}/src/generate_libwpi.cpp -o build/generate_libwpi && ./build/generate_libwpi"
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	COMMENT "Generate libwpi.so object file"
 	VERBATIM )
@@ -132,7 +132,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
 
   if(NOT NO_UNIT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_UNIT MATCHES "[Oo][Nn]")
     if(ARCH MATCHES "[Aa][Rr][Mm]")
-      message(WARNING "Unit tests not currently available in ARM configuratino")
+      message(WARNING "Unit tests not currently available in ARM configuration")
       return()
     endif()
     ExternalProject_Add(GoogleTest
