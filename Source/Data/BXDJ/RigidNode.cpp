@@ -6,14 +6,17 @@ RigidNode::RigidNode()
 {}
 
 RigidNode::~RigidNode()
-{}
+{
+	for (Joint * joint : childrenJoints)
+		delete joint;
+}
 
 RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occurence)
 {
-	AddOccurence(occurence);
+	addOccurence(occurence);
 }
 
-bool RigidNode::AddOccurence(core::Ptr<fusion::Occurrence> occurence)
+bool RigidNode::addOccurence(core::Ptr<fusion::Occurrence> occurence)
 {
 	// Check if the occurence already exists
 	for (core::Ptr<fusion::Occurrence> existingOccurence : fusionOccurences)
@@ -26,14 +29,14 @@ bool RigidNode::AddOccurence(core::Ptr<fusion::Occurrence> occurence)
 	// Add any attached occurences to the list (Rigid Group or Rigid Joints)
 	for (core::Ptr<fusion::RigidGroup> rigidGroup : occurence->rigidGroups())
 		for (core::Ptr<fusion::Occurrence> subOccurence : rigidGroup->occurrences())
-			AddOccurence(subOccurence);
+			addOccurence(subOccurence);
 
 	for (core::Ptr<fusion::Joint> joint : occurence->joints())
 	{
 		if (joint->jointMotion()->jointType() == fusion::JointTypes::RigidJointType)
 		{
-			if (!AddOccurence(joint->occurrenceOne())) // If the first one succeeds, we know the second one will fail (it is this occurence)
-				AddOccurence(joint->occurrenceTwo());
+			if (!addOccurence(joint->occurrenceOne())) // If the first one succeeds, we know the second one will fail (it is this occurence)
+				addOccurence(joint->occurrenceTwo());
 		}
 		else if (joint->jointMotion()->jointType() == fusion::JointTypes::RevoluteJointType) // Add any other joints as children
 		{

@@ -93,7 +93,7 @@ void Exporter::buildNodeTree()
 	output += "Analyzed Components: ";
 	for (Ptr<Occurrence> occurence : rootOccurences)
 		if (occurence->isGrounded())
-			rootNode.AddOccurence(occurence);
+			rootNode.addOccurence(occurence);
 
 	/*std::vector<Ptr<Occurrence>> allTreeRootOccurences;
 

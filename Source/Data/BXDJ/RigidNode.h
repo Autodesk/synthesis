@@ -18,9 +18,9 @@ namespace BXDJ
 		~RigidNode();
 		RigidNode(core::Ptr<fusion::Occurrence>);
 		
-		bool AddOccurence(core::Ptr<fusion::Occurrence>);
+		bool addOccurence(core::Ptr<fusion::Occurrence>);
 		template<typename JointVariant>
-		void AddJoint(const JointVariant &);
+		void addJoint(const JointVariant &);
 
 	private:
 		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurences;
@@ -31,7 +31,7 @@ namespace BXDJ
 	};
 
 	template<typename JointVariant>
-	void RigidNode::AddJoint(const JointVariant & joint)
+	void RigidNode::addJoint(const JointVariant & joint)
 	{
 		childrenJoints.push_back(new JointVariant(joint));
 	}
