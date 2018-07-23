@@ -79,10 +79,8 @@ bool RigidNode::getMesh(BXDA::Mesh & mesh)
 			subMesh.addSurface(BXDA::Surface(indices));
 		}
 
-		Vector3<float> centerOfMass(occurence->physicalProperties()->centerOfMass()->x(),
-									occurence->physicalProperties()->centerOfMass()->y(),
-									occurence->physicalProperties()->centerOfMass()->z());
-
+		core::Ptr<fusion::PhysicalProperties> physics = occurence->getPhysicalProperties(fusion::CalculationAccuracy::MediumCalculationAccuracy);
+		Vector3<float> centerOfMass(physics->centerOfMass()->x(), physics->centerOfMass()->y(), physics->centerOfMass()->z());
 		mesh.addPhysics(BXDA::Physics(centerOfMass, occurence->physicalProperties()->mass()));
 
 		mesh.addSubMesh(subMesh);
