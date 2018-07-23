@@ -47,7 +47,7 @@ bool RigidNode::getMesh(BXDA::Mesh & mesh)
 
 		// Add physics properties to mesh
 		core::Ptr<fusion::PhysicalProperties> physics = occurence->physicalProperties();
-		if (physics->mass > 0)
+		if (physics->mass() > 0)
 		{
 			Vector3<float> centerOfMass(physics->centerOfMass()->x(), physics->centerOfMass()->y(), physics->centerOfMass()->z());
 			mesh.addPhysics(BXDA::Physics(centerOfMass, occurence->physicalProperties()->mass()));
