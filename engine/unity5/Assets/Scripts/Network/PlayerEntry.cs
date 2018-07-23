@@ -58,14 +58,14 @@ namespace Synthesis.Network
                 return;
 
             playerTagText.color = PlayerIdentity.isLocalPlayer ? Color.green : Color.white;
-            playerTagText.text = PlayerIdentity.PlayerTag;
+            playerTagText.text = PlayerIdentity.playerTag;
 
             if (PlayerIdentity.isLocalPlayer)
                 playerTagText.text += " (You)";
             
-            robotText.text = PlayerIdentity.RobotName;
+            robotText.text = PlayerIdentity.robotName;
 
-            if (PlayerIdentity.Ready)
+            if (PlayerIdentity.ready)
             {
                 readyText.text = "READY";
                 readyText.color = Color.green;

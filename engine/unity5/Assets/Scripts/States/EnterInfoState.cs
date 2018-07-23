@@ -30,8 +30,13 @@ namespace Synthesis.States
 
             PlayerIdentity.DefaultLocalPlayerTag = playerTag;
 
-            StateMachine.PushState(new LoadRobotState(
-                new LobbyState(GameObject.Find("LobbyCodeText").GetComponent<Text>().text)));
+            string lobbyCode = GameObject.Find("LobbyCodeText").GetComponent<Text>().text;
+
+            if (IPCrypt.Decrypt(lobbyCode).Equals(string.Empty))
+                UserMessageManager.Dispatch("Invalid lobby code!", 5f);
+            else
+                StateMachine.PushState(new LoadRobotState(
+                    new LobbyState(lobbyCode)));
         }
 
         /// <summary>
