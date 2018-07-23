@@ -2,22 +2,20 @@
 
 using namespace Synthesis;
 
-Exporter::Exporter(Ptr<Application> app) : _app(app)
-{
-	_ui = _app->userInterface();
-	//outFile = spdlog::stdout_color_mt("console");
-}
+Exporter::Exporter(Ptr<Application> app) : fusionApplication(app)
+{}
 
 Exporter::~Exporter()
 {}
 
 void Exporter::exportMeshes()
 {
-	Ptr<FusionDocument> doc = _app->activeDocument();
+	Ptr<FusionDocument> document = fusionApplication->activeDocument();
+	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
 
 	BXDA::Mesh mesh = BXDA::Mesh();
 
-	for (Ptr<Component> comp : doc->design()->allComponents())
+	for (Ptr<Component> comp : document->design()->allComponents())
 	{
 		BXDA::SubMesh subMesh = BXDA::SubMesh();
 
@@ -51,7 +49,7 @@ void Exporter::exportMeshes()
 	BXDA::BinaryWriter binary(filename);
 	binary.write(mesh);
 
-	_ui->messageBox(mesh.toString());
+	userInterface->messageBox(mesh.toString());
 }
 
 void Exporter::exportExample()
@@ -80,4 +78,42 @@ void Exporter::exportExample()
 	std::string filename = "C:\\Users\\t_walkn\\Desktop\\exampleFusion.bxda";
 	BXDA::BinaryWriter binary(filename);
 	binary.write(mesh);
+}
+
+void Exporter::buildNodeTree()
+{
+	std::string output;
+
+	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
+	Ptr<FusionDocument> document = fusionApplication->activeDocument();
+	Ptr<Components> components = document->design()->allComponents();
+	
+	std::vector<Ptr<Occurrence>> groundedOccurences;
+
+	for (Ptr<Component> component : components)
+	{
+		for (Ptr<Occurrence> occurence : component->occurrences())
+		{
+			if (occurence->isGrounded())
+				groundedOccurences.push_back(occurence);
+		}
+	}
+
+	output += "Grounded Occurences: ";
+	for (Ptr<Occurrence> occurence : groundedOccurences)
+	{
+		output += occurence->name() + "\n";
+
+		Ptr<RigidGroupList> rigidGroups = occurence->rigidGroups();
+
+		output += "Rigid Groups: ";
+		for (Ptr<RigidGroup> rigidGroup : rigidGroups)
+		{
+			output += rigidGroup->name() + "\n";
+		}
+
+		output += "\n";
+	}
+
+	userInterface->messageBox(output);
 }

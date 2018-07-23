@@ -33,10 +33,10 @@ namespace Synthesis
 
 		void exportMeshes();
 		void exportExample();
+		void buildNodeTree();
 
 	private:
-		Ptr<Application> _app;
-		Ptr<UserInterface> _ui;
+		Ptr<Application> fusionApplication;
 
 	};
 }
