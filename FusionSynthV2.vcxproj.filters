@@ -34,6 +34,12 @@
     <Filter Include="Headers\AddIn">
       <UniqueIdentifier>{246bb7c0-e2a8-427f-85d0-0ba3867a5b82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Data\BXDJ\Joints">
+      <UniqueIdentifier>{50e1655b-afa2-4d85-8bb8-9f53954bcbc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Data\BXDJ\Joints">
+      <UniqueIdentifier>{7bc50eaa-92be-424f-9ba2-e9924f09ae2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Data\BXDA\Mesh.h">
@@ -63,14 +69,17 @@
     <ClInclude Include="Source\Exporter.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Data\BXDA\Vector3.h">
-      <Filter>Headers\Data\BXDA</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Data\BXDA\SubMesh.h">
       <Filter>Headers\Data\BXDA</Filter>
     </ClInclude>
     <ClInclude Include="Source\Data\BXDA\BinaryWriter.h">
       <Filter>Headers\Data\BXDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Joints\RotationalJoint.h">
+      <Filter>Headers\Data\BXDJ\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\Vector3.h">
+      <Filter>Headers\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +121,12 @@
     </ClCompile>
     <ClCompile Include="Source\Data\BXDA\BinaryWriter.cpp">
       <Filter>Source\Data\BXDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Joint.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Joints\RotationalJoint.cpp">
+      <Filter>Source\Data\BXDJ\Joints</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
