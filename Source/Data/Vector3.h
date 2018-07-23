@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include "BinaryWriter.h"
+#include "BXDA/BinaryWriter.h"
 
 template<typename T = double>
-class Vector3 : public BinaryWritable
+class Vector3 : public BXDA::BinaryWritable
 {
 public:
 	T x;
@@ -22,7 +22,7 @@ public:
 	std::string toString();
 
 protected:
-	void write(BinaryWriter &) const;
+	void write(BXDA::BinaryWriter &) const;
 
 };
 
@@ -64,7 +64,7 @@ std::string Vector3<T>::toString()
 }
 
 template<typename T>
-void Vector3<T>::write(BinaryWriter & output) const
+void Vector3<T>::write(BXDA::BinaryWriter & output) const
 {
 	output.write(x);
 	output.write(y);
