@@ -264,20 +264,20 @@ namespace hel{
         if(axes_deserialized.size() == joy.axes.size()){
             std::copy(axes_deserialized.begin(), axes_deserialized.end(), joy.axes.begin());
         } else {
-            //TODO error handling
+            throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(axes_deserialized.size()) + " axes, expected " + std::to_string(joy.axes.size()));
         }
         joy.axis_count = std::stoi(hel::pullValue("\"axis_count\"", s));
         std::vector<uint8_t> axis_types_deserialized = hel::deserializeList(hel::pullValue("\"axis_types\"",s), std::function<uint8_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
         if(axis_types_deserialized.size() == joy.axis_types.size()){
             std::copy(axis_types_deserialized.begin(), axis_types_deserialized.end(), joy.axis_types.begin());
         } else {
-            //TODO error handling
+            throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(axis_types_deserialized.size()) + " axis types, expected " + std::to_string(joy.axis_types.size()));
         }
         std::vector<int16_t> povs_deserialized = hel::deserializeList(hel::pullValue("\"povs\"",s), std::function<int16_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
         if(povs_deserialized.size() == joy.povs.size()){
             std::copy(povs_deserialized.begin(), povs_deserialized.end(), joy.povs.begin());
         } else {
-            //TODO error handling
+            throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(povs_deserialized.size()) + " povs, expected " + std::to_string(joy.povs.size()));
         }
         joy.pov_count = std::stoi(hel::pullValue("\"pov_count\"", s));
         joy.outputs = std::stoi(hel::pullValue("\"outputs\"", s));
@@ -380,7 +380,7 @@ extern "C" {
     int FRC_NetworkCommunication_getJoystickAxes(uint8_t joystickNum, struct JoystickAxes_t* axes, uint8_t /*maxAxes*/){
         auto instance = hel::RoboRIOManager::getInstance();
         if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
-            //TODO error handling
+            throw std::out_of_range("Exception: unexpected number of joysticks (expected " + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
         std::array<int8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axes = instance.first->joysticks[joystickNum].getAxes();
@@ -393,7 +393,7 @@ extern "C" {
     int FRC_NetworkCommunication_getJoystickButtons(uint8_t joystickNum, uint32_t* buttons, uint8_t* count){
         auto instance = hel::RoboRIOManager::getInstance();
         if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
-            //TODO error handling
+            throw std::out_of_range("Exception: unexpected number of joysticks (expected " + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
         if (buttons != nullptr)
@@ -408,7 +408,7 @@ extern "C" {
     int FRC_NetworkCommunication_getJoystickPOVs(uint8_t joystickNum, struct JoystickPOV_t* povs, uint8_t /*maxPOVs*/){
         auto instance = hel::RoboRIOManager::getInstance();
         if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
-            //TODO error handling
+            throw std::out_of_range("Exception: unexpected number of joysticks (expected " + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
         std::array<int16_t, hel::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
@@ -421,7 +421,7 @@ extern "C" {
     int FRC_NetworkCommunication_setJoystickOutputs(uint8_t joystickNum, uint32_t hidOutputs, uint16_t leftRumble, uint16_t rightRumble){
         auto instance = hel::RoboRIOManager::getInstance();
         if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
-            //TODO error handling
+            throw std::out_of_range("Exception: unexpected number of joysticks (expected " + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
         instance.first->joysticks[joystickNum].setOutputs(hidOutputs);
@@ -436,7 +436,7 @@ extern "C" {
         auto instance = hel::RoboRIOManager::getInstance();
 
         if(joystickNum <= hel::Joystick::MAX_JOYSTICK_COUNT){
-            //TODO error handling
+            throw std::out_of_range("Exception: unexpected number of joysticks (expected " + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
         if(name != nullptr){

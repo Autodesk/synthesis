@@ -1,6 +1,7 @@
 #include "mxp_data.hpp"
 #include "util.hpp"
 #include "json_util.hpp"
+#include "error.hpp"
 
 std::string hel::to_string(hel::MXPData::Config config){
     switch(config){
@@ -15,7 +16,7 @@ std::string hel::to_string(hel::MXPData::Config config){
     case hel::MXPData::Config::I2C:
         return "I2C";
     default:
-        return ""; //TODO error handling
+        throw UnhandledEnumConstantException("hel::MXPData::Config");
     }
 }
 
@@ -32,7 +33,7 @@ hel::MXPData::Config hel::s_to_mxp_config(std::string s){
     case hasher("I2C"):
         return hel::MXPData::Config::I2C;
     default:
-        ; //TODO error handling
+        throw UnhandledCase();
     }
 }
 

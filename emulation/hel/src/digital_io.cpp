@@ -1,5 +1,6 @@
 #include "roborio.hpp"
 #include "util.hpp"
+#include "error.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
@@ -8,7 +9,7 @@ namespace hel{
     tDIO::tDO DigitalSystem::getOutputs()const{
     	return outputs;
     }
-    
+
     void DigitalSystem::setOutputs(tDIO::tDO value){
     	outputs = value;
     }
@@ -16,7 +17,7 @@ namespace hel{
     tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const{
     	return enabled_outputs;
     }
-    
+
     void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable value){
     	enabled_outputs = value;
     }
@@ -24,7 +25,7 @@ namespace hel{
     tDIO::tPulse DigitalSystem::getPulses()const{
     	return pulses;
     }
-    
+
     void DigitalSystem::setPulses(tDIO::tPulse value){
     	pulses = value;
     }
@@ -63,36 +64,27 @@ namespace hel{
 
     DigitalSystem::DigitalSystem():outputs(),enabled_outputs(),pulses(),inputs(),mxp_special_functions_enabled(),pulse_length(),pwm(){}
 
+    std::string to_string(DigitalSystem::DIOConfigurationException::Config c){
+        switch(c){
+        case DigitalSystem::DIOConfigurationException::Config::DI:
+            return "digital input";
+        case DigitalSystem::DIOConfigurationException::Config::DO:
+            return "digital ouput";
+        case DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION:
+            return "mxp special function";
+        default:
+            throw UnhandledEnumConstantException("hel::DIOManager::DIOConfigurationException::Config");
+        }
+    }
+
+    const char* DigitalSystem::DIOConfigurationException::what()const throw(){
+        std::string s = "Exception: digital IO failed attempting " + to_string(configuration) + " when configured for " + to_string(expected_configuration) + " on digital port " + std::to_string(port);
+        return s.c_str();
+    }
+
+    DigitalSystem::DIOConfigurationException::DIOConfigurationException(Config config, Config expected, uint8_t p):configuration(config), expected_configuration(expected), port(p){}
+
     struct DIOManager: public tDIO{
-        struct DIOConfigurationException: public std::exception{
-            enum class Config{DI,DO,MXP_SPECIAL_FUNCTION};
-        private:
-            Config configuration;
-            Config expected_configuration;
-            uint8_t port;
-
-            static std::string to_string(Config c){
-                switch(c){
-                case Config::DI:
-                    return "digital input";
-                case Config::DO:
-                    return "digital ouput";
-                case Config::MXP_SPECIAL_FUNCTION:
-                    return "mxp special function";
-                default:
-                    return ""; //TODO error handling
-                }
-            }
-
-        public:
-            const char* what()const throw(){
-                std::string s = "Digital IO failed: attempting " + to_string(configuration) + " when configured for " + to_string(expected_configuration) + " on digital port " + std::to_string(port);
-                return s.c_str();
-            }
-
-            DIOConfigurationException(Config config, Config expected, uint8_t p):configuration(config), expected_configuration(expected), port(p){}
-        };
-
         tSystemInterface* getSystemInterface() override{
             return nullptr;
         }
@@ -104,12 +96,12 @@ namespace hel{
             for(unsigned i = 1; i < findMostSignificantBit(output); i++){
                 if(checkBitHigh(output, i) && !hel::checkBitHigh(enabled, i)){ //If output is set but output is not enabled, don't allow output
                     instance.second.unlock();
-                    throw new DIOConfigurationException(DIOConfigurationException::Config::DO, DIOConfigurationException::Config::DI, i);
+                    throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::DI, i);
                     return false;
                 }
                 if(requires_special_function && !checkBitLow(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it reqiores MXP special function, and it's not, don't allow output
                     instance.second.unlock();
-                    throw new DIOConfigurationException(DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DIOConfigurationException::Config::DO, i);
+                    throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DigitalSystem::DIOConfigurationException::Config::DO, i);
                     return false;
                 }
             }
@@ -125,10 +117,11 @@ namespace hel{
                 if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){
                     instance.first->digital_system.setOutputs(value);
                 }
+                instance.second.unlock();
             } catch(std::exception& e){
+                instance.second.unlock();
                 throw;
             }
-            instance.second.unlock(); //TODO placement in this function? Make thread safe
         }
 
         void writeDO_Headers(uint16_t value, tRioStatusCode* status){
@@ -136,7 +129,7 @@ namespace hel{
             tDIO::tDO outputs = instance.first->digital_system.getOutputs();
             outputs.Headers = value;
             writeDO(outputs, status);
-            instance.second.unlock(); //TODO unlock before or after writeDO() ?
+            instance.second.unlock();
         }
 
         void writeDO_SPIPort(uint8_t value, tRioStatusCode* status){
@@ -195,12 +188,15 @@ namespace hel{
 
         void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
-            if(allowOutput(instance.first->digital_system.getEnabledOutputs().MXP, bitfield_index, true)){
-                instance.first->digital_system.setPWMDutyCycle(bitfield_index, value);
-            } else {
-                //TODO error handling
+            try{
+                if(allowOutput(instance.first->digital_system.getEnabledOutputs().MXP, bitfield_index, true)){
+                    instance.first->digital_system.setPWMDutyCycle(bitfield_index, value);
+                }
+                instance.second.unlock();
+            } catch(std::exception& e){
+                instance.second.unlock();
+                throw;
             }
-            instance.second.unlock();
         }
 
         uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* /*status*/){
@@ -327,12 +323,15 @@ namespace hel{
             if(instance.first->digital_system.getPulses().value != (new tPulse)->value){
                 //TODO error handling multiple pulses active at once
             }
-            if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){
+            try{
+                if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){
+                    instance.second.unlock();
+                    std::thread(&DIOManager::pulse, this, value).detach();
+                }
                 instance.second.unlock();
-                std::thread(&DIOManager::pulse, this, value).detach();
-            } else {
+            } catch(std::exception& e){
                 instance.second.unlock();
-                //TODO error handling
+                throw;
             }
         }
 

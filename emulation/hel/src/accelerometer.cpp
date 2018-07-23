@@ -3,6 +3,8 @@
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccel.h"
 
+#include "error.hpp"
+
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
@@ -141,13 +143,13 @@ namespace hel{
                             return;
                         default:
                             instance.second.unlock();
-                            return; //TODO error handling 
+                            throw UnhandledEnumConstantException("hel::Accelerometer::Register");
                     }
                     instance.second.unlock();
                     return;
                 default:
                     instance.second.unlock();
-                    return; //TODO error handling
+                    throw UnhandledEnumConstantException("hel::Accelerometer::ControlMode");
             }
         }
 
@@ -213,9 +215,10 @@ namespace hel{
                 case Accelerometer::Register::kReg_OutZLSB:
                     instance.second.unlock();
                     return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).second;
+            default:
+                instance.second.unlock();
+                throw UnhandledEnumConstantException("hel::Accelerometer::Register");
             }
-            instance.second.unlock();
-            return 0; //TODO error handling
         }
 
         void strobeGO(tRioStatusCode* /*status*/){} //unnecessary for emulation
