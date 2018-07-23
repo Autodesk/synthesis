@@ -356,6 +356,8 @@ public partial class SynthesisGUI : Form
                         if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit)// see cylindrical joint above
                         {
                             ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);// see cylindrical joint above
+                            ((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPosition).Value = ((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue;
+                            
                         }
                         ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;// see cylindrical joint above
                         if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit)// see cylindrical joint above
@@ -378,6 +380,10 @@ public partial class SynthesisGUI : Form
                 }
             }
         }
+        foreach (ComponentOccurrence component in InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList())
+        {
+            Exporter.BringJointsToStart(component);
+        }
     }
     /// <summary>
     /// Saves the robot to the directory it was loaded from or the default directory
@@ -387,6 +393,7 @@ public partial class SynthesisGUI : Form
     {
         try
         {
+            writeLimits(SkeletonBase);// write the limits from Inventor to the skeleton
             // If robot has not been named, prompt user for information
             if (RMeta.ActiveRobotName == null)
                 if (!PromptExportSettings())
@@ -397,7 +404,6 @@ public partial class SynthesisGUI : Form
 
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
-            writeLimits(SkeletonBase);// write the limits from Inventor to the skeleton
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
 
