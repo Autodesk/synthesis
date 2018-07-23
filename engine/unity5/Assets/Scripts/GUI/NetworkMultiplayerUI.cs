@@ -90,6 +90,9 @@ namespace Synthesis.GUI
             LinkPanel<LobbyState>("LobbyPanel");
             LinkPanel<LoadFieldState>("SimLoadField");
             LinkPanel<LoadRobotState>("SimLoadRobot");
+            LinkPanel<FetchingMetadataState>("FetchingMetadataPanel");
+            LinkPanel<AnalyzingResourcesState>("AnalyzingResourcesPanel");
+            LinkPanel<FileTransferState>("FileTransferPanel");
         }
 
         /// <summary>

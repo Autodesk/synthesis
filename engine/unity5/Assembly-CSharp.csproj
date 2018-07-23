@@ -8,7 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -257,8 +258,9 @@
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
+    <Compile Include="Assets\Scripts\Network\FileTransferer.cs" />
     <Compile Include="Assets\Scripts\Network\IPCrypt.cs" />
-    <Compile Include="Assets\Scripts\Network\LobbySettings.cs" />
+    <Compile Include="Assets\Scripts\Network\MatchManager.cs" />
     <Compile Include="Assets\Scripts\Network\MultiplayerNetwork.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkElement.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkFileTransfer.cs" />
@@ -287,6 +289,7 @@
     <Compile Include="Assets\Scripts\SimStart.cs" />
     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
+    <Compile Include="Assets\Scripts\States\AnalyzingResourcesState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFieldState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
@@ -294,6 +297,8 @@
     <Compile Include="Assets\Scripts\States\EnterInfoState.cs" />
     <Compile Include="Assets\Scripts\States\EnterTagState.cs" />
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
+    <Compile Include="Assets\Scripts\States\FetchingMetadataState.cs" />
+    <Compile Include="Assets\Scripts\States\FileTransferState.cs" />
     <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
     <Compile Include="Assets\Scripts\States\HostJoinState.cs" />
     <Compile Include="Assets\Scripts\States\LoadFieldState.cs" />
@@ -308,6 +313,7 @@
     <Compile Include="Assets\Scripts\States\SaveReplayState.cs" />
     <Compile Include="Assets\Scripts\States\SelectionState.cs" />
     <Compile Include="Assets\Scripts\States\SimTabState.cs" />
+    <Compile Include="Assets\Scripts\States\SyncState.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
     <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
     <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />

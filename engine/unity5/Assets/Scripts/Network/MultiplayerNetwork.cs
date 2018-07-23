@@ -6,6 +6,8 @@ namespace Synthesis.Network
 {
     public class MultiplayerNetwork : NetworkManager
     {
+        public const int ReliableSequencedChannel = 0;
+
         public enum ConnectionStatus
         {
             Connected,

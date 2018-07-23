@@ -2,6 +2,7 @@
 using Synthesis.GUI;
 using Synthesis.Network;
 using Synthesis.Utils;
+using System.Linq;
 using System.Net;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -15,6 +16,7 @@ namespace Synthesis.States
         private readonly bool host;
 
         private GameObject connectingPanel;
+        private GameObject startButton;
         private Button fieldButton;
         private Text fieldText;
         private Text readyText;
@@ -36,6 +38,7 @@ namespace Synthesis.States
         public override void Start()
         {
             connectingPanel = Auxiliary.FindGameObject("ConnectingPanel");
+            startButton = Auxiliary.FindGameObject("StartButton");
             fieldButton = GameObject.Find("FieldButton").GetComponent<Button>();
             fieldText = GameObject.Find("FieldButton").GetComponent<Text>();
             readyText = GameObject.Find("ReadyText").GetComponent<Text>();
@@ -56,8 +59,8 @@ namespace Synthesis.States
                     return;
                 }
 
-                GameObject lobbySettingsObject = (GameObject)Object.Instantiate(Resources.Load("Prefabs/LobbySettings"));
-                NetworkServer.Spawn(lobbySettingsObject);
+                GameObject matchManager = (GameObject)Object.Instantiate(Resources.Load("Prefabs/MatchManager"));
+                NetworkServer.Spawn(matchManager);
             }
             else
             {
@@ -77,15 +80,10 @@ namespace Synthesis.States
         public override void Resume()
         {
             if (PlayerIdentity.LocalInstance != null)
-                PlayerIdentity.LocalInstance.RobotName = PlayerPrefs.GetString("simSelectedRobotName");
+                PlayerIdentity.LocalInstance.CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
 
-            if (host)
-            {
-                LobbySettings lobbySettings = Object.FindObjectOfType<LobbySettings>();
-
-                if (lobbySettings != null)
-                    lobbySettings.fieldName = PlayerPrefs.GetString("simSelectedFieldName");
-            }
+            if (host && MatchManager.Instance != null)
+                MatchManager.Instance.fieldName = PlayerPrefs.GetString("simSelectedFieldName");
         }
 
         /// <summary>
@@ -93,10 +91,11 @@ namespace Synthesis.States
         /// </summary>
         public override void OnGUI()
         {
-            LobbySettings lobbySettings = Object.FindObjectOfType<LobbySettings>();
+            if (MatchManager.Instance != null)
+                fieldText.text = "Field: " + MatchManager.Instance.fieldName;
 
-            if (lobbySettings != null)
-                fieldText.text = "Field: " + Object.FindObjectOfType<LobbySettings>().fieldName;
+            if (host)
+                startButton.SetActive(Object.FindObjectsOfType<PlayerIdentity>().All(p => p.ready));
         }
 
         /// <summary>
@@ -126,8 +125,19 @@ namespace Synthesis.States
             if (connectingPanel.activeSelf)
                 return;
 
-            readyText.text = (PlayerIdentity.LocalInstance.Ready = !PlayerIdentity.LocalInstance.Ready) ?
+            PlayerIdentity.LocalInstance.CmdSetReady(!PlayerIdentity.LocalInstance.ready);
+
+            readyText.text = PlayerIdentity.LocalInstance.ready ?
                 "UNREADY" : "READY!";
+        }
+
+        /// <summary>
+        /// Launches a new <see cref="FileTransferState"/> on each client instance.
+        /// </summary>
+        public void OnStartButtonPressed()
+        {
+            MatchManager.Instance.syncing = true;
+            MatchManager.Instance.PushState<FetchingMetadataState>();
         }
 
         /// <summary>

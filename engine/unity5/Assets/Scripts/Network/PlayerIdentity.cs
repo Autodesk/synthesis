@@ -23,59 +23,17 @@ namespace Synthesis.Network
         /// </summary>
         public static string DefaultLocalPlayerTag { get; set; }
 
-        /// <summary>
-        /// The player tag associated with this <see cref="PlayerIdentity"/>.
-        /// </summary>
-        public string PlayerTag
-        {
-            get
-            {
-                return playerTag;
-            }
-            set
-            {
-                CmdSetPlayerTag(value);
-            }
-        }
-
-        /// <summary>
-        /// The robot name associatd with this <see cref="PlayerIdentity"/>.
-        /// </summary>
-        public string RobotName
-        {
-            get
-            {
-                return robotName;
-            }
-            set
-            {
-                CmdSetRobotName(value);
-            }
-        }
-
-        /// <summary>
-        /// Determines if this <see cref="PlayerIdentity"/> is ready to start the match.
-        /// </summary>
-        public bool Ready
-        {
-            get
-            {
-                return ready;
-            }
-            set
-            {
-                CmdSetReady(value);
-            }
-        }
+        [SyncVar]
+        public string playerTag;
 
         [SyncVar]
-        private string playerTag;
+        public string robotName;
 
         [SyncVar]
-        private string robotName;
+        public string robotGuid;
 
         [SyncVar]
-        private bool ready;
+        public bool ready;
 
         /// <summary>
         /// Initializes the properties of this <see cref="PlayerIdentity"/> and adds
@@ -86,8 +44,8 @@ namespace Synthesis.Network
             if (isLocalPlayer)
             {
                 LocalInstance = this;
-                PlayerTag = DefaultLocalPlayerTag;
-                RobotName = PlayerPrefs.GetString("simSelectedRobotName");
+                CmdSetPlayerTag(DefaultLocalPlayerTag);
+                CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
             }
 
             PlayerList.Instance.AddPlayerEntry(this);
@@ -102,11 +60,24 @@ namespace Synthesis.Network
         }
 
         /// <summary>
+        /// Checks if the resources held by the other identity need to be transferred to
+        /// this instance.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="otherIdentity"></param>
+        [TargetRpc]
+        public void TargetCheckDependency(NetworkConnection target, NetworkInstanceId otherInstanceId)
+        {
+            // TODO: Add logic to check if the dependency needs to be added.
+            MatchManager.Instance.CmdAddDependency(otherInstanceId, netId);
+        }
+
+        /// <summary>
         /// Sets the player tag of this instance accross all clients.
         /// </summary>
         /// <param name="tag"></param>
         [Command]
-        private void CmdSetPlayerTag(string tag)
+        public void CmdSetPlayerTag(string tag)
         {
             playerTag = tag;
         }
@@ -116,9 +87,20 @@ namespace Synthesis.Network
         /// </summary>
         /// <param name="name"></param>
         [Command]
-        private void CmdSetRobotName(string name)
+        public void CmdSetRobotName(string name)
         {
             robotName = name;
+            CmdSetRobotGuid(string.Empty);
+        }
+
+        /// <summary>
+        /// Sets the robot guid of this instance accross all clients.
+        /// </summary>
+        /// <param name="guid"></param>
+        [Command]
+        public void CmdSetRobotGuid(string guid)
+        {
+            robotGuid = guid;
         }
 
         /// <summary>
@@ -126,7 +108,7 @@ namespace Synthesis.Network
         /// </summary>
         /// <param name="playerReady"></param>
         [Command]
-        private void CmdSetReady(bool playerReady)
+        public void CmdSetReady(bool playerReady)
         {
             ready = playerReady;
         }
