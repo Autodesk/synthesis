@@ -20,6 +20,7 @@ Physics::Physics(Vector3<float> centerOfMass, float mass)
 Physics Physics::operator+=(const Physics & physicsToAverage)
 {
 	centerOfMass = (centerOfMass * mass + physicsToAverage.centerOfMass * physicsToAverage.mass) / (mass + physicsToAverage.mass);
+	mass += physicsToAverage.mass;
 	return *this;
 }
 
