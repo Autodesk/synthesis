@@ -19,12 +19,14 @@ namespace BXDJ
 		RigidNode();
 		~RigidNode();
 		RigidNode(core::Ptr<fusion::Occurrence>);
+
+		bool getMesh(BXDA::Mesh &);
 		
-		bool addOccurence(core::Ptr<fusion::Occurrence>);
+		bool addOccurence(core::Ptr<fusion::Occurrence>, core::Ptr<fusion::Occurrence> parent = nullptr);
 		template<typename JointVariant>
 		void addJoint(const JointVariant &);
 
-		bool getMesh(BXDA::Mesh &);
+		std::string evilGlobalVariableForPrinting = "";
 
 	private:
 		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurences;
@@ -49,4 +51,4 @@ namespace BXDJ
 		RigidNode * child;
 
 	};
-}
+};

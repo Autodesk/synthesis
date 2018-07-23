@@ -82,15 +82,12 @@ void Exporter::exportExample()
 
 void Exporter::buildNodeTree()
 {
-	std::string output;
-
 	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 	Ptr<OccurrenceList> rootOccurences = document->design()->rootComponent()->occurrences()->asList();
 	
 	BXDJ::RigidNode rootNode;
 
-	output += "Analyzed Components: ";
 	for (Ptr<Occurrence> occurence : rootOccurences)
 		if (occurence->isGrounded())
 			rootNode.addOccurence(occurence);
@@ -132,11 +129,11 @@ void Exporter::buildNodeTree()
 		output += occurence->name() + "\n";
 	}*/
 
-	std::string filename = "C:\\Users\\t_walkn\\Desktop\\exampleFusion.bxda";
+	std::string filename = "C:\\Users\\t_walkn\\Desktop\\node_0.bxda";
 	BXDA::BinaryWriter binary(filename);
 	BXDA::Mesh mesh;
 	rootNode.getMesh(mesh);
 	binary.write(mesh);
 
-	userInterface->messageBox(output);
+	userInterface->messageBox(rootNode.evilGlobalVariableForPrinting);
 }
