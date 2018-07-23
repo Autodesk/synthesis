@@ -1,6 +1,6 @@
 #include "receive_data.hpp"
 
-#include "HAL/HAL.h"
+#include "hal/HAL.h"
 #include "util.hpp"
 #include "json_util.hpp"
 
