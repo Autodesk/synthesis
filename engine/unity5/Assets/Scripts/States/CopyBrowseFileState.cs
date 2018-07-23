@@ -1,4 +1,4 @@
-﻿using Crosstales.FB.Demo;
+﻿using Crosstales.FB;
 using Synthesis.FSM;
 using Synthesis.GUI;
 using System.IO;
@@ -31,8 +31,8 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            navPanel = GameObject.Find("NavigationPanel");
-            navPanel.SetActive(false);
+            //navPanel = GameObject.Find("NavigationPanel");
+            //navPanel.SetActive(false);
         }
 
         /// <summary>
@@ -41,7 +41,8 @@ namespace Synthesis.States
         /// </summary>
         public override void End()
         {
-            navPanel.SetActive(true);
+            //navPanel.SetActive(true);
+            //StateMachine.ChangeState(new LoadFieldState());
         }
 
         /// <summary>
@@ -51,15 +52,13 @@ namespace Synthesis.States
         {
             if (fileBrowser == null)
             {
-                string robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
                 fileBrowser.OpenSingleFolder();
+                ///string robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
                 //fileBrowser.OnComplete += OnBrowserComplete;
             }
 
-            //fileBrowser.Render();
-
             //if (!fileBrowser.Active)
-                //StateMachine.PopState();
+            //    StateMachine.PopState();
         }
 
         /// <summary>
