@@ -2,7 +2,7 @@
 
 #include <string>
 #include "BinaryWriter.h"
-#include "Vector3.h"
+#include "../Vector3.h"
 
 namespace BXDA
 {
