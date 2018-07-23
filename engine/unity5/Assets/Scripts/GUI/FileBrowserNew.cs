@@ -6,52 +6,89 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using Crosstales.FB;
+using System.IO;
+using Synthesis.GUI;
 
-namespace Crosstales.FB.Demo
+namespace Crosstales.FB
 {
     public class FileBrowserNew : MonoBehaviour
     {
+        /// <summary>
+        /// The title of the window.
+        /// </summary>
+        private string title;
+
+        private bool _active;
+
+        private bool _allowEsc;
+
+        public event Action<object> OnComplete;
+
+        private List<string> targetFolderList = new List<string>();
+
+        private bool directorySearched;
+
+        /// <summary>
+        /// If this file browser is currently visible.
+        /// </summary>
+        public bool Active
+        {
+            get
+            {
+                return _active;
+            }
+            set
+            {
+                _active = value;
+            }
+        }
 
         GameObject ScrollView;
         GameObject TextPrefab;
 
+        /// <summary>
+        /// Default Directory Path
+        /// </summary>
+        private string directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+        private DirectoryInfo tempSelection;
+
+        public FileBrowserNew(string windowTitle, bool allowEsc = true)
+        {
+            Init(windowTitle, Directory.GetParent(Application.dataPath).FullName, allowEsc);
+        }
+
+        public FileBrowserNew(string windowTitle, string defaultDirectory, bool allowEsc = true)
+        {
+            if (Directory.Exists(defaultDirectory)) directoryPath = defaultDirectory;
+            Init(windowTitle, defaultDirectory, allowEsc);
+        }
+
+        void Init(string windowTitle, string defaultDirectory, bool allowEsc = true)
+        {
+            title = windowTitle;
+            _allowEsc = allowEsc;
+        }
+
+        /// <summary>
+        /// Renders the window if it is active.
+        /// </summary>
+        public void Render()
+        {
+            FileBrowserWindow();
+        }
+
+        // return the file string from OpenSingleFolder()
         public void OpenSingleFolder()
         {
             //Debug.Log("OpenSingleFolder");
 
-            string path = FB.FileBrowserNew.OpenSingleFolder("Open Folder", Environment.SpecialFolder.ApplicationData + "//synthesis//Fields");
+            directoryPath = FileBrowser.OpenSingleFolder("Open Folder");
 
             //Debug.Log("Selected folder: " + path);
 
-            RebuildList(path);
+            RebuildList(directoryPath);
         }
-
-        public void OpenFiles()
-        {
-            //Debug.Log("OpenFiles");
-
-            /*
-            var extensions = new[] {
-                new ExtensionFilter("Image Files", "png", "jpg", "jpeg" ),
-                new ExtensionFilter("Sound Files", "mp3", "wav" ),
-                new ExtensionFilter("All Files", "*" ),
-            };
-            */
-
-            string extensions = "";
-
-            string[] paths = FileBrowserNew.OpenFiles("Open Files", "", .bxdf, true);
-
-            /*
-            foreach (string path in paths)
-            {
-                Debug.Log("Selected file: " + path);
-            }
-            */
-
-            RebuildList(paths);
-        }
-
 
         private void RebuildList(params string[] e)
         {
@@ -76,6 +113,79 @@ namespace Crosstales.FB.Demo
                 go.transform.localPosition = new Vector3(10, -80 * ii, 0);
                 go.GetComponent<Text>().text = e[ii].ToString();
             }
+        }
+
+
+        /// <summary>
+        /// Renders the browser window.
+        /// </summary>
+        /// <param name="idx">Window index</param>
+        private void FileBrowserWindow()
+        {
+            DirectoryInfo directoryInfo;
+            DirectoryInfo directorySelection;
+
+            // Get the directory info of the current location
+            FileInfo fileSelection = new FileInfo(directoryPath);
+            if ((fileSelection.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                directoryInfo = new DirectoryInfo(directoryPath);
+                //If there is no directory in the current location go back to its parent folder
+                if (directoryInfo.GetDirectories().Length == 0 && title.Equals("Load Robot"))
+                {
+                    directoryInfo = directoryInfo.Parent;
+                }
+            }
+            else
+            {
+                directoryInfo = fileSelection.Directory;
+            }
+
+            //if (directoryPath != null)
+            //{
+            //    try
+            //    {
+            //        // If directory contains field or robot files, display error message to user prompting them to select directory
+            //        // instead of the actual field
+            //        if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
+            //                                                          || directorySelection.GetFiles("*.bxdj").Length != 0)
+            //        {
+            //            UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
+            //        }
+            //        else
+            //        {
+            //            // If a directory without robot/field files was double clicked, jump there
+            //            directoryLocation = directorySelection.FullName;
+
+            //            targetFolderList.Clear();
+            //            directorySearched = false;
+            //        }
+            //        tempSelection = null;
+            //        else
+            //        {
+            //            // If directory contains field or robot files, display error message to user prompting them to select directory
+            //            // instead of the actual field
+            //            if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
+            //                                                                  || directorySelection.GetFiles("*.bxdj").Length != 0)
+            //            {
+            //                UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
+            //            }
+            //            else
+            //            {
+            //                // If directory was clicked once, select it as a current path and highlight it
+            //                selectedDirectoryLocation = directorySelection.FullName;
+            //            }
+            //        }
+            //    }
+            //    catch (UnauthorizedAccessException e)
+            //    {
+            //        UserMessageManager.Dispatch("You don't have the authorization to access this folder", 3f);
+            //    }
+            //}
+            //else
+            //{
+            //    Active = false;
+            //}
         }
     }
 }

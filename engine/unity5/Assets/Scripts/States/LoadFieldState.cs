@@ -1,4 +1,5 @@
-﻿using Synthesis.FSM;
+﻿using Crosstales.FB;
+using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;
 using Synthesis.MixAndMatch;
@@ -20,6 +21,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
+            //fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields"));
             fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields"));
             mixAndMatchModeScript = Auxiliary.FindGameObject("MixAndMatchModeScript");
             splashScreen = Auxiliary.FindGameObject("LoadSplash");
@@ -91,7 +93,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnChangeFieldButtonPressed()
         {
-            StateMachine.PushState(new BrowseFieldState());
+            StateMachine.PushState(new CopyBrowseFieldState());
         }
     }
 }
