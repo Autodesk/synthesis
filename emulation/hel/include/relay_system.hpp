@@ -12,7 +12,9 @@ namespace hel{
      */
 
     struct RelaySystem{
-    private:
+		static constexpr int32_t NUM_RELAY_HEADERS = 4; //hal::kNumRelayHeaders
+
+	private:
 
         /**
          * \var nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value

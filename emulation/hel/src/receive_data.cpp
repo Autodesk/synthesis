@@ -1,6 +1,7 @@
 #include "receive_data.hpp"
 
 #include "hal/HAL.h"
+#include "roborio.hpp"
 #include "util.hpp"
 #include "json_util.hpp"
 

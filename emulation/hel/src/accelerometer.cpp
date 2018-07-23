@@ -1,5 +1,8 @@
 #include "roborio.hpp"
 
+#include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccel.h"
+
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 

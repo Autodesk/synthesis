@@ -14,6 +14,8 @@ namespace hel{
      * Holds all internal data needed to model analog outputs on the RoboRIO.
      */
     struct AnalogOutputs{
+		static constexpr int32_t NUM_ANALOG_OUTPUTS = 4; //hal::kNumAnalogOutputs
+
     private:
         /**
          * \var std::array<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs

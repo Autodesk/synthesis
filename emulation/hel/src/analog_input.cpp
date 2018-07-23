@@ -2,8 +2,6 @@
 #include <mutex>
 #include <cmath>
 
-#include <athena/DigitalInternal.h>
-
 #include "roborio.hpp"
 
 using namespace nFPGA;

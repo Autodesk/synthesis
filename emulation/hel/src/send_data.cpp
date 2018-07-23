@@ -22,7 +22,9 @@ void hel::SendData::update(){
     for(unsigned i = 0; i < relays.size(); i++){
         relays[i] = [&](){
             bool forward = HAL_GetRelay(i, &status);
-            bool reverse = HAL_GetRelay(i + hal::kNumRelayHeaders, &status);
+			status = 0; //reset status between HAL calls
+            bool reverse = HAL_GetRelay(i + RelaySystem::NUM_RELAY_HEADERS, &status);
+			status = 0; //reset status between HAL calls
 
             if(forward){
                 if(reverse){
@@ -35,7 +37,6 @@ void hel::SendData::update(){
             }
             return RelayState::OFF;
         }();
-        status = 0; //reset status between HAL calls
     }
 
     for(unsigned i = 0; i < analog_outputs.size(); i++){
@@ -74,10 +75,10 @@ void hel::SendData::update(){
 
         switch(digital_mxp[i].config){
         case hel::MXPData::Config::DO:
-            digital_mxp[i].value = HAL_GetDIO(i + hal::kNumDigitalHeaders, &status);
+            digital_mxp[i].value = HAL_GetDIO(i + DigitalSystem::NUM_DIGITAL_HEADERS, &status);
             if(!digital_mxp[i].value){
                 status = 0;
-                digital_mxp[i].value = HAL_IsPulsing(i + hal::kNumDigitalHeaders, &status);
+                digital_mxp[i].value = HAL_IsPulsing(i + DigitalSystem::NUM_DIGITAL_HEADERS, &status);
             }
             break;
         case hel::MXPData::Config::PWM:
