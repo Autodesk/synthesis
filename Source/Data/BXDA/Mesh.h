@@ -14,6 +14,7 @@ namespace BXDA
 		~Mesh();
 		
 		void addSubMesh(const SubMesh &);
+		void addPhysics(const Physics &);
 
 		std::string getGUID() const;
 		int getVersion() const;

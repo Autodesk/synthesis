@@ -132,5 +132,11 @@ void Exporter::buildNodeTree()
 		output += occurence->name() + "\n";
 	}*/
 
+	std::string filename = "C:\\Users\\t_walkn\\Desktop\\exampleFusion.bxda";
+	BXDA::BinaryWriter binary(filename);
+	BXDA::Mesh mesh;
+	rootNode.getMesh(mesh);
+	binary.write(mesh);
+
 	userInterface->messageBox(output);
 }
