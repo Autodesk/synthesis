@@ -2,7 +2,9 @@
 
 #include <vector>
 #include <Fusion/FusionAll.h>
+#include <Core/Geometry/Point3D.h>
 #include "../BXDA/Mesh.h"
+#include "../BXDA/Physics.h"
 
 using namespace adsk;
 
@@ -22,11 +24,11 @@ namespace BXDJ
 		template<typename JointVariant>
 		void addJoint(const JointVariant &);
 
+		bool getMesh(BXDA::Mesh &);
+
 	private:
 		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurences;
 		std::vector<Joint *> childrenJoints;
-
-		bool getMesh(BXDA::Mesh &);
 
 	};
 

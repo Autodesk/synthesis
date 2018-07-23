@@ -18,6 +18,11 @@ void Mesh::addSubMesh(const SubMesh & submesh)
 	subMeshes.push_back(new SubMesh(submesh));
 }
 
+void BXDA::Mesh::addPhysics(const Physics & physics)
+{
+	this->physics += physics;
+}
+
 std::string Mesh::getGUID() const
 {
 	return guid;
