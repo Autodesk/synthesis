@@ -11,12 +11,6 @@ Surface::Surface()
 	specular = 0.2f;
 }
 
-Surface::~Surface()
-{
-	for (Triangle * triangle : triangles)
-		delete triangle;
-}
-
 Surface::Surface(const Surface & s) : triangles(s.triangles.size())
 {
 	color = s.color;
@@ -26,15 +20,15 @@ Surface::Surface(const Surface & s) : triangles(s.triangles.size())
 	specular = s.specular;
 
 	for (int t = 0; t < s.triangles.size(); t++)
-		triangles[t] = new Triangle(*s.triangles[t]);
+		triangles[t] = s.triangles[t];
 }
 
 Surface::Surface(const std::vector<int> & indices) : Surface()
 {
-	triangles = std::vector<Triangle *>(indices.size() / 3);
+	triangles = std::vector<Triangle>(indices.size() / 3);
 
 	for (int i = 0; i < indices.size(); i += 3)
-		triangles[i / 3] = new Triangle(indices[i], indices[i + 1], indices[i + 2]);
+		triangles[i / 3] = Triangle(indices[i], indices[i + 1], indices[i + 2]);
 }
 
 Surface::Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular)
@@ -58,22 +52,22 @@ Surface::Surface(bool hasColor, unsigned int color, float transparency, float tr
 void Surface::addTriangles(const std::vector<Triangle> & triangles)
 {
 	for (Triangle triangle : triangles)
-		this->triangles.push_back(new Triangle(triangle));
+		this->triangles.push_back(triangle);
 }
 
 void BXDA::Surface::addTriangles(const Surface & surface)
 {
-	for (Triangle * triangle : surface.triangles)
-		triangles.push_back(new Triangle(*triangle));
+	for (Triangle triangle : surface.triangles)
+		triangles.push_back(triangle);
 }
 
 void Surface::offsetIndices(int offset)
 {
-	for (Triangle * tri : triangles)
+	for (Triangle tri : triangles)
 	{
-		tri->vertexIndices[0] += offset;
-		tri->vertexIndices[1] += offset;
-		tri->vertexIndices[2] += offset;
+		tri.vertexIndices[0] += offset;
+		tri.vertexIndices[1] += offset;
+		tri.vertexIndices[2] += offset;
 	}
 }
 
@@ -91,6 +85,6 @@ void Surface::write(BinaryWriter & output) const
 	
 	// Output triangles
 	output.write((int)triangles.size() * 3);
-	for (Triangle * triangle : triangles)
-		output.write(*triangle);
+	for (Triangle triangle : triangles)
+		output.write(triangle);
 }
