@@ -19,7 +19,6 @@ namespace BXDJ
 	{
 	public:
 		RigidNode();
-		~RigidNode();
 		RigidNode(const RigidNode &);
 		RigidNode(core::Ptr<fusion::Component>);
 

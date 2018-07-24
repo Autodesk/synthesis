@@ -11,7 +11,6 @@ namespace BXDA
 	{
 	public:
 		Mesh();
-		~Mesh();
 		
 		void addSubMesh(const SubMesh &);
 		void addPhysics(const Physics &);
@@ -26,7 +25,7 @@ namespace BXDA
 
 		std::string guid;
 		Physics physics;
-		std::vector<SubMesh*> subMeshes;
+		std::vector<std::shared_ptr<SubMesh>> subMeshes;
 
 		void write(BinaryWriter &) const;
 
