@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include "bounds_checked_array.hpp"
 
 namespace hel{
     template<typename T, size_t LEN>
@@ -17,6 +18,11 @@ namespace hel{
         }
         s += "]";
         return s;
+    }
+
+    template<typename T, size_t LEN>
+    std::string serializeList(std::string label, BoundsCheckedArray<T, LEN> arr, std::function<std::string(T)> to_s){
+        serializeList(label, arr, to_s);
     }
 
     std::string removeExtraneousSpaces(std::string);

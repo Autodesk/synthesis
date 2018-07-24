@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <WPILib.h>
+#include <frc/WPILib.h>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -15,7 +15,7 @@
  * Runs the motors with arcade steering.
  */
 class Robot : public frc::IterativeRobot {
-    frc::Spark m_leftMotor{0};
+    frc::Spark m_leftMotor{16};
     frc::Spark m_rightMotor{1};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
     frc::Joystick m_stick{0};
@@ -41,7 +41,7 @@ public:
 
         //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
         dio.Set(current_state);
-        std::cout << "Current State: " << current_state << "\n\n\n\n\n";
+        std::cout << "Current State: " << current_state << "\n";
         r.Set(frc::Relay::Value::kForward);
         current_state = !current_state;
         usleep(45000);

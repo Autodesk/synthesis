@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <string>
-#include <array>
+#include "bounds_checked_array.hpp"
 
 namespace hel{
 
@@ -74,12 +74,12 @@ namespace hel{
         uint8_t button_count;
 
         /**
-         * \var std::array<int8_t> MAX_AXIS_COUNT> axes
+         * \var BoundsCheckedArray<int8_t> MAX_AXIS_COUNT> axes
          * \brief Array containing joystick axis states
          * The states of each axis stored as a byte representing percent offset from rest in either diretion
          */
 
-        std::array<int8_t, MAX_AXIS_COUNT> axes;
+        BoundsCheckedArray<int8_t, MAX_AXIS_COUNT> axes;
 
         /**
          * \var uint8_t axis count
@@ -89,19 +89,19 @@ namespace hel{
         uint8_t axis_count;
 
         /**
-         * \var std::array<uint8_t, MAX_AXIS_COUNT> axis_types
+         * \var BoundsCheckedArray<uint8_t, MAX_AXIS_COUNT> axis_types
          * \brief Array containing joystick axis types
          */
 
-        std::array<uint8_t, MAX_AXIS_COUNT> axis_types; //TODO It is unclear how to interpret the bytes representing axis type
+        BoundsCheckedArray<uint8_t, MAX_AXIS_COUNT> axis_types; //TODO It is unclear how to interpret the bytes representing axis type
 
         /**
-         * \var std::array<int16_t, MAX_POV_COUNT> povs
+         * \var BoundsCheckedArray<int16_t, MAX_POV_COUNT> povs
          * \brief Array containing joystick POV states
          * The states of each POV stored as 16-bit integers representing the angle in degrees that is pressed, -1 if none are pressed
          */
 
-        std::array<int16_t, MAX_POV_COUNT> povs;
+        BoundsCheckedArray<int16_t, MAX_POV_COUNT> povs;
 
         /**
          * \var uint8_t pov_count
@@ -152,21 +152,21 @@ namespace hel{
 
         void setButtonCount(uint8_t);
 
-        std::array<int8_t, MAX_AXIS_COUNT> getAxes()const;
+        BoundsCheckedArray<int8_t, MAX_AXIS_COUNT> getAxes()const;
 
-        void setAxes(std::array<int8_t, MAX_AXIS_COUNT>);
+        void setAxes(BoundsCheckedArray<int8_t, MAX_AXIS_COUNT>);
 
         uint8_t getAxisCount()const;
 
         void setAxisCount(uint8_t);
 
-        std::array<uint8_t, MAX_AXIS_COUNT> getAxisTypes()const;
+        BoundsCheckedArray<uint8_t, MAX_AXIS_COUNT> getAxisTypes()const;
 
-        void setAxisTypes(std::array<uint8_t, MAX_AXIS_COUNT>);
+        void setAxisTypes(BoundsCheckedArray<uint8_t, MAX_AXIS_COUNT>);
 
-        std::array<int16_t, MAX_POV_COUNT> getPOVs()const;
+        BoundsCheckedArray<int16_t, MAX_POV_COUNT> getPOVs()const;
 
-        void setPOVs(std::array<int16_t, MAX_POV_COUNT>);
+        void setPOVs(BoundsCheckedArray<int16_t, MAX_POV_COUNT>);
 
         uint8_t getPOVCount()const;
 

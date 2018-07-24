@@ -3,7 +3,7 @@
 
 #include <queue>
 #include <cstdint>
-#include <array>
+#include "bounds_checked_array.hpp"
 
 namespace hel{
 
@@ -31,12 +31,12 @@ namespace hel{
             uint32_t id;
 
             /**
-             * \var std::array<uint8_t, 8> data
+             * \var BoundsCheckedArray<uint8_t, 8> data
              * \brief the data transmitted with the message in byte array form
              * The data can array can vary from 0-8 bytes in size.
              */
 
-            std::array<uint8_t, 8> data;
+            BoundsCheckedArray<uint8_t, 8> data;
 
             /**
              * \var uint8_t data_size

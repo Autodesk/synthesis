@@ -6,6 +6,7 @@
 
 #include <string>
 #include <exception>
+#include "bounds_checked_array.hpp"
 
 namespace hel{
     struct DigitalSystem{
@@ -43,7 +44,6 @@ namespace hel{
         /**
          * \var uint16_t mxp_special_functions_enabled
          * \brief Bit mask for MXP pins representing if their non-DIO option should be active
-         * Note: the bitmask is default high for DIO, low for MXP special function
          */
 
         uint16_t mxp_special_functions_enabled;//enabled low, double check that
@@ -54,7 +54,7 @@ namespace hel{
 
         uint8_t pulse_length;
 
-        std::array<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
+        BoundsCheckedArray<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
 
     public:
         struct DIOConfigurationException: public std::exception{
