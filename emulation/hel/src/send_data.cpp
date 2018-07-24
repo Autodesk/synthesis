@@ -11,12 +11,13 @@ void hel::SendData::update(){
         return;
     }
 
-    RoboRIO roborio(RoboRIOManager::getCopy());
+    //RoboRIO roborio(RoboRIOManager::getCopy());
+    auto instance = RoboRIOManager::getInstance();
 
     int32_t status = 0;
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
-        pwm_hdrs[i] = HAL_GetPWMSpeed(i, &status);
-        printf("%f\n", pwm_hdrs[i]);
+        pwm_hdrs[i] = getSpeed(instance.first->pwm_system.getHdrDutyCycle(i));
+        //printf("%d: %f\n", instance.first->pwm_system.getHdrDutyCycle(i), pwm_hdrs[i]);
         status = 0; //reset status between HAL calls
     }
 
@@ -47,7 +48,7 @@ void hel::SendData::update(){
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){
         digital_mxp[i].config = [&](){
-            if(checkBitHigh(roborio.digital_system.getMXPSpecialFunctionsEnabled(), i)){
+            if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){
                 if(
                     i == 0  || i == 1  ||
                     i == 2  || i == 3  ||
@@ -67,7 +68,7 @@ void hel::SendData::update(){
                     return hel::MXPData::Config::I2C;
                 }
             }
-            tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();
+            tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
             if(checkBitHigh(output_mode.MXP,i)){
                 return hel::MXPData::Config::DO;
             }
@@ -83,7 +84,12 @@ void hel::SendData::update(){
             }
             break;
         case hel::MXPData::Config::PWM:
-            digital_mxp[i].value = HAL_GetPWMSpeed(i + tPWM::kNumHdrRegisters, &status);
+            {
+                int j = i;
+                if (j >= 4)
+                    j -=4;
+                digital_mxp[j].value = getSpeed(instance.first->pwm_system.getMXPDutyCycle(j));
+            }
             break;
         case hel::MXPData::Config::SPI:
             digital_mxp[i].value = 0; //TODO
@@ -97,7 +103,7 @@ void hel::SendData::update(){
         status = 0; //reset status between HAL calls
     }
     {
-        tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();
+        tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
         for(unsigned i = 0; i < digital_hdrs.size(); i++){
             if(checkBitHigh(output_mode.MXP,i)){
                 digital_hdrs[i] = HAL_GetDIO(i, &status);
@@ -110,6 +116,7 @@ void hel::SendData::update(){
         }
     }
     gen_serialization = true;
+    instance.second.unlock();
 }
 
 std::string hel::to_string(hel::SendData::RelayState r){
