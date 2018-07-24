@@ -39,7 +39,7 @@ void hel::SendData::update(){
     }
 
     for(unsigned i = 0; i < analog_outputs.size(); i++){
-        analog_outputs[i] = HAL_GetAnalogOutput(i, &status);
+        analog_outputs[i] = (instance.first->analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
         status = 0; //reset status between HAL calls
     }
 

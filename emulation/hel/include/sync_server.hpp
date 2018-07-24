@@ -7,12 +7,12 @@
 namespace hel {
     class SyncServer {
     public:
-        SyncServer(asio::io_service& io_service) : socket(io_service) {}
-        void startSync();
+        SyncServer(asio::io_service& io);
+        void startSync(asio::io_service& io);
 
     private:
-        asio::ip::udp::socket socket;
-
+        asio::ip::tcp::endpoint endpoint;
+        int packet_number = 0;
     };
 }
 

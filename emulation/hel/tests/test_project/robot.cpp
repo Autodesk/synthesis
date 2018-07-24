@@ -21,6 +21,7 @@ class Robot : public frc::IterativeRobot {
     frc::Joystick m_stick{0};
     frc::DigitalOutput dio{11};
     frc::Relay r{0};
+    frc::AnalogOutput ao{1};
 
     bool current_state = false;
 
@@ -41,8 +42,9 @@ public:
 
         //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
         dio.Set(current_state);
-        std::cout << "Current State: " << current_state << "\n\n\n\n\n";
         r.Set(frc::Relay::Value::kForward);
+        auto d = ((double)(std::rand()%5001/1000.0f));
+        ao.SetVoltage(d);
         current_state = !current_state;
         usleep(45000);
     }
