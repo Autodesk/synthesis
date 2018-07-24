@@ -2,12 +2,12 @@
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
- 
+
 namespace hel{
     tAccumulator::tOutput Accumulator::getOutput()const{
         return output;
     }
-    
+
     void Accumulator::setOutput(tAccumulator::tOutput out){
         output = out;
     }
