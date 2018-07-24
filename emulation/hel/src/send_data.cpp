@@ -91,7 +91,7 @@ void hel::SendData::update(){
             digital_mxp[i].value = 0; //TODO
             break;
         default:
-            throw UnhandledEnumConstantException("hel::MXPData::Config");
+            break; //do nothing
         }
         status = 0; //reset status between HAL calls
     }

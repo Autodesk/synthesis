@@ -120,7 +120,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                throw;
+                //throw;//TODO
             }
         }
 
@@ -195,7 +195,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                throw;
+                //throw;//TODO
             }
         }
 
@@ -331,7 +331,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                throw;
+                //throw;//TODO
             }
         }
 
