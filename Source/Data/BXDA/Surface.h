@@ -12,7 +12,7 @@ namespace BXDA
 		Surface();
 
 		Surface(const Surface & s);
-		Surface(const std::vector<int> & indices);
+		Surface(const std::vector<int> & indices, int offset = 0);
 		Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular);
 		Surface(bool hasColor, unsigned int color, float transparency, float translucency, float specular, const std::vector<int> & indices );
 

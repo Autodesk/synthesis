@@ -20,9 +20,21 @@ void SubMesh::addVertices(std::vector<Vertex> vertices)
 		this->vertices.push_back(vertex);
 }
 
+void SubMesh::addVertices(std::vector<double> coords, std::vector<double> norms)
+{
+	for (int v = 0; v < coords.size(); v += 3)
+		this->vertices.push_back(Vertex(Vector3<>(coords[v], coords[v+1], coords[v+2]),
+										Vector3<>(norms[v], norms[v+1], norms[v+2])));
+}
+
 void SubMesh::addSurface(const Surface & s)
 {
 	surfaces.push_back(std::make_shared<Surface>(s));
+}
+
+void SubMesh::addSurface(std::shared_ptr<Surface> s)
+{
+	surfaces.push_back(s);
 }
 
 void SubMesh::mergeMesh(const SubMesh & other)
@@ -41,6 +53,11 @@ void SubMesh::mergeMesh(const SubMesh & other)
 		newSurface->offsetIndices(offset);
 		surfaces.push_back(newSurface);
 	}
+}
+
+int BXDA::SubMesh::getVertCount()
+{
+	return vertices.size();
 }
 
 void SubMesh::getConvexCollider(SubMesh & outputMesh) const

@@ -31,8 +31,9 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 	// Each occurrence is a submesh
 	for (core::Ptr<fusion::Occurrence> occurrence : fusionOccurrences)
 	{
-		BXDA::SubMesh subMesh = BXDA::SubMesh();
+		std::shared_ptr<BXDA::SubMesh> subMesh = std::make_shared<BXDA::SubMesh>();
 
+		// Each body of the mesh is a sub-mesh
 		for (core::Ptr<fusion::BRepBody> body : occurrence->bRepBodies())
 		{
 			core::Ptr<fusion::TriangleMeshCalculator> meshCalculator = body->meshManager()->createMeshCalculator();
@@ -40,19 +41,14 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 
 			core::Ptr<fusion::TriangleMesh> fusionMesh = meshCalculator->calculate();
 
-			// Add vertices to sub-mesh
-			std::vector<BXDA::Vertex> vertices(fusionMesh->nodeCount());
-			std::vector<double> coords = fusionMesh->nodeCoordinatesAsDouble();
-			std::vector<double> norms = fusionMesh->normalVectorsAsDouble();
-
-			for (int v = 0; v < coords.size(); v += 3)
-				vertices[v / 3] = BXDA::Vertex(Vector3<>(coords[v], coords[v + 1], coords[v + 2]), Vector3<>(norms[v], norms[v + 1], norms[v + 2]));
-
-			subMesh.addVertices(vertices);
-
 			// Add faces to sub-mesh
 			std::vector<int> indices = fusionMesh->nodeIndices();
-			subMesh.addSurface(BXDA::Surface(indices));
+			subMesh->addSurface(std::make_shared<BXDA::Surface>(indices, subMesh->getVertCount()));
+
+			// Add vertices to sub-mesh
+			std::vector<double> coords = fusionMesh->nodeCoordinatesAsDouble();
+			std::vector<double> norms = fusionMesh->normalVectorsAsDouble();
+			subMesh->addVertices(coords, norms);
 		}
 
 		// Add physics properties to mesh
