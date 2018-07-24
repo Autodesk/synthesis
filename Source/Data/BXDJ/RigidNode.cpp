@@ -13,12 +13,10 @@ RigidNode::~RigidNode()
 
 RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent)
 {
-	buildTree(rootComponent);
-}
-
-RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occurrence) : RigidNode(occurrence->component())
-{
-	fusionOccurrences.push_back(occurrence);
+	JointSummary jointSummary = getJointSummary(rootComponent);
+	
+	for (core::Ptr<fusion::Occurrence> occurence : rootComponent->occurrences()->asList())
+		buildTree(occurence, jointSummary);
 }
 
 void RigidNode::getMesh(BXDA::Mesh & mesh) const
@@ -62,10 +60,9 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 	}
 }
 
-void RigidNode::buildTree(core::Ptr<fusion::Component> rootComponent)
+RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> rootComponent)
 {
-	std::vector<core::Ptr<fusion::Occurrence>> jointedOccurrencesChildren;
-	std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Occurrence>>> jointedOccurrencesParents;
+	JointSummary jointSummary;
 
 	// Find all jointed occurrences in the structure
 	for (core::Ptr<fusion::Joint> joint : rootComponent->allJoints())
@@ -83,30 +80,51 @@ void RigidNode::buildTree(core::Ptr<fusion::Component> rootComponent)
 			lowerOccurrence = joint->occurrenceTwo();
 		}
 
-		jointedOccurrencesChildren.push_back(lowerOccurrence);
-		jointedOccurrencesParents[upperOccurrence].push_back(lowerOccurrence);
+		jointSummary.children.push_back(lowerOccurrence);
+		jointSummary.parents[upperOccurrence].push_back(lowerOccurrence);
+	}
+
+	return jointSummary;
+}
+
+void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence, JointSummary & jointSummary)
+{
+	// Add the occurence to this node
+	fusionOccurrences.push_back(rootOccurrence);
+
+	// Create a joint from this occurence if it is the parent of a joint
+	if (jointSummary.parents.find(rootOccurrence) != jointSummary.parents.end())
+	{
+		for (core::Ptr<fusion::Occurrence> subOccurrence : jointSummary.parents[rootOccurrence])
+		{
+			log += "Jointing occurence \"" + subOccurrence->fullPathName() + "\"\n";
+			RigidNode subNode(subOccurrence, jointSummary);
+			addJoint(Joint(subNode));
+		}
 	}
 
 	// Add all occurrences without joints or that are only parents in joints to the root node
-	for (core::Ptr<fusion::Occurrence> occurrence : rootComponent->occurrences()->asList())
+	for (core::Ptr<fusion::Occurrence> occurrence : rootOccurrence->childOccurrences())
 	{
-		if (std::find(jointedOccurrencesChildren.begin(), jointedOccurrencesChildren.end(), occurrence) == jointedOccurrencesChildren.end())
+		// Add the occurence to this node if it is not the child of a joint
+		if (std::find(jointSummary.children.begin(), jointSummary.children.end(), occurrence) == jointSummary.children.end())
 		{
-			fusionOccurrences.push_back(occurrence);
-			buildTree(occurrence->component());
-		}
-		else if (jointedOccurrencesParents.find(occurrence) != jointedOccurrencesParents.end())
-		{
-			for (core::Ptr<fusion::Occurrence> subOccurrence : jointedOccurrencesParents[occurrence])
-			{
-				RigidNode subNode(subOccurrence);
-				addJoint(Joint(subNode));
-			}
+			log += "Adding occurence \"" + occurrence->fullPathName() + "\"\n";
+			buildTree(occurrence, jointSummary);
 		}
 	}
+
+	log += "\n";
 }
 
 int RigidNode::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
 {
-	return std::count(occurrence->fullPathName().begin(), occurrence->fullPathName().end(), '+');
+	std::string pathName = occurrence->fullPathName();
+
+	int count = 0;
+	for (char c : pathName)
+		if (c == '+')
+			count++;
+
+	return count;
 }
