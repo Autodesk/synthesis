@@ -4,15 +4,13 @@ using namespace BXDJ;
 
 Joint::Joint(const Joint & jointToCopy)
 {
-	child = new RigidNode(*jointToCopy.child);
+	child = jointToCopy.child;
 }
 
 Joint::Joint(const RigidNode & child)
 {
-	this->child = new RigidNode(child);
+	this->child = std::make_shared<RigidNode>(child);
 }
 
 Joint::~Joint()
-{
-	delete child;
-}
+{}

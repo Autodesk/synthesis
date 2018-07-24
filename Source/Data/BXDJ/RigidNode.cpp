@@ -8,18 +8,15 @@ RigidNode::RigidNode()
 {}
 
 RigidNode::~RigidNode()
-{
-	for (Joint * joint : childrenJoints)
-		delete joint;
-}
+{}
 
 RigidNode::RigidNode(const RigidNode & nodeToCopy)
 {
 	for (core::Ptr<fusion::Occurrence> occurence : nodeToCopy.fusionOccurrences)
 		fusionOccurrences.push_back(occurence);
 
-	for (Joint * joint : nodeToCopy.childrenJoints)
-		childrenJoints.push_back(new Joint(*joint));
+	for (std::shared_ptr<Joint> joint : nodeToCopy.childrenJoints)
+		childrenJoints.push_back(joint);
 
 	log = nodeToCopy.log;
 }
@@ -71,6 +68,11 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 
 		mesh.addSubMesh(subMesh);
 	}
+}
+
+void RigidNode::addJoint(std::shared_ptr<Joint> joint)
+{
+	childrenJoints.push_back(joint);
 }
 
 RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> rootComponent)
@@ -142,7 +144,7 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 	switch (joint->jointMotion()->jointType())
 	{
 	case fusion::JointTypes::RevoluteJointType:
-		addJoint(RotationalJoint(RigidNode(child), joint->jointMotion()));
+		addJoint(std::make_shared<RotationalJoint>(RigidNode(child, jointSummary), joint->jointMotion()));
 		break;
 
 	default:
