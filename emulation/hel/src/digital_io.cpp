@@ -109,14 +109,17 @@ namespace hel{
         bool allowOutput(T output,S enabled, bool requires_special_function){
             auto instance = hel::RoboRIOManager::getInstance();
             for(unsigned i = 1; i < findMostSignificantBit(output); i++){
-                if(checkBitHigh(output, i) && !hel::checkBitHigh(enabled, i)){ //If output is set but output is not enabled, don't allow output
-                    instance.second.unlock();
-                    throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::DI, i);
-                    return false;
+                if(!checkBitHigh(output, i)){
+                    continue;
                 }
                 if(requires_special_function && !checkBitLow(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it reqiores MXP special function, and it's not, don't allow output
                     instance.second.unlock();
                     throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DigitalSystem::DIOConfigurationException::Config::DO, i);
+                    return false;
+                }
+                if(!requires_special_function && !hel::checkBitHigh(enabled, i)){ //If output is set but output is not enabled, don't allow output (don't check if special function is enabled)
+                    instance.second.unlock();
+                    throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::DI, i);
                     return false;
                 }
             }

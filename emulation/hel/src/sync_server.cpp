@@ -10,9 +10,9 @@ namespace hel {
     void SyncServer::startSync() {
 
         auto instance = hel::SendDataManager::getInstance();
-        //auto data =  instance.first->serialize();
+        auto data =  instance.first->serialize();
 
-        //printf("%s\n", data.c_str());
+        printf("%s\n", data.c_str());
 
         //asio::ip::udp::endpoint dest(asio::ip::address::from_string("127.0.0.1"), 11000);
 

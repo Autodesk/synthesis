@@ -21,7 +21,9 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO outputs;
 
         /**
-         * \var
+         * \var nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable enabled_outputs
+         * \brief Bit mask representing if the digital port is configured for output
+         * If the digital port is enabled for its special function, output enable is not checked
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable enabled_outputs;

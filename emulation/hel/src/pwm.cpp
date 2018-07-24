@@ -181,17 +181,12 @@ namespace hel{
                 return;
             }
 
-            if(checkBitHigh(instance.first->digital_system.getEnabledOutputs().MXP, DO_index)){//Allow MXP output if pin is output-enabled
-                if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index)){ //Allow MXP outout if DO is using special function
-                    instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
-                    instance.second.unlock();
-                } else {
-                    instance.second.unlock();
-                    throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DO_index);
-                }
+            if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index)){ //Allow MXP outout if DO is using special function
+                instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
+                instance.second.unlock();
             } else {
                 instance.second.unlock();
-                throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DI, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DO_index);
+                throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DO_index);
             }
         }
 
@@ -216,9 +211,9 @@ namespace hel{
         } else if (pulse_width < min) {
             return -1.0;
         } else if (pulse_width > 1000) {
-            return static_cast<double>(pulse_width - 1000) / static_cast<double>(500);
+            return static_cast<double>((int32_t) pulse_width - 1000) / static_cast<double>(500);
         } else if (pulse_width < 999) {
-            return static_cast<double>(pulse_width - 999) / static_cast<double>(500);
+            return static_cast<double>((int32_t) pulse_width - 999) / static_cast<double>(500);
         } else {
             return 0.0;
         }

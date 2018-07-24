@@ -19,8 +19,8 @@
  * Runs the motors with arcade steering.
  */
 class Robot : public frc::IterativeRobot {
-    frc::Spark m_leftMotor{0};
-    frc::Spark m_rightMotor{1};
+    frc::Spark m_leftMotor{10};
+    frc::Spark m_rightMotor{11};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
     frc::Joystick m_stick{0};
 
@@ -38,7 +38,7 @@ public:
 
         m_robotDrive.ArcadeDrive(x/1000.0f, y/1000.0f);
 
-        std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
+        //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
 
         usleep(45000);
     }
