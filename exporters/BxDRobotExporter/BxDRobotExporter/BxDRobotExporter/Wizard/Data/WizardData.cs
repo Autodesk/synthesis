@@ -36,16 +36,13 @@ namespace BxDRobotExporter.Wizard
         public enum WizardDriveTrain
         {
             TANK = 1,
-            MECANUM,
-            SWERVE,
             H_DRIVE,
             CUSTOM
         }
         public enum WizardWheelType
         {
             NORMAL = 1,
-            OMNI = 2,
-            MECANUM = 3
+            OMNI = 2
         }
         public enum WizardFrictionLevel
         {
