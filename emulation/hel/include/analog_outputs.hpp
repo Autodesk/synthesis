@@ -3,6 +3,7 @@
 
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAO.h"
+#include "bounds_checked_array.hpp"
 
 #include <array>
 
@@ -18,11 +19,11 @@ namespace hel{
 
     private:
         /**
-         * \var std::array<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs
+         * \var BoundsCheckedArray<uint16_t, NUM_ANALOG_OUTPUTS> mxp_outputs;
          * \brief Analog output data
          *
          */
-        std::array<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs;
+        BoundsCheckedArray<uint16_t, NUM_ANALOG_OUTPUTS> mxp_outputs;
 
     public:
         /**
