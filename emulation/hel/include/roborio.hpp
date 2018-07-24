@@ -26,6 +26,7 @@
 
 #include "accelerometer.hpp"
 #include "accumulator.hpp"
+#include "alarm.hpp"
 #include "analog_inputs.hpp"
 #include "analog_outputs.hpp"
 #include "can_bus.hpp"
@@ -40,6 +41,7 @@
 #include "power.hpp"
 #include "pwm_system.hpp"
 #include "relay_system.hpp"
+#include "receive_data.hpp"
 #include "robot_mode.hpp"
 #include "send_data.hpp"
 #include "spi_system.hpp"
@@ -67,6 +69,7 @@ namespace hel{
 
         Accelerometer accelerometer;
         std::array<Accumulator, AnalogInputs::NUM_ANALOG_INPUTS> accumulators;
+        Alarm alarm;
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
         CANBus can_bus;
