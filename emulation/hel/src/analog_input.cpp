@@ -62,7 +62,7 @@ namespace hel {
         tSystemInterface* getSystemInterface(){
             return nullptr;
         }
-        
+
         int32_t readOutput(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             hel::AnalogInputs analog_inputs = instance.first->analog_inputs;

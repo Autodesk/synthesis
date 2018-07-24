@@ -5,7 +5,7 @@
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAI.h"
 
 #include <vector>
-#include <array>
+#include "bounds_checked_array.hpp"
 
 namespace hel{
     /**
@@ -163,12 +163,12 @@ namespace hel{
     private:
 
         /**
-         * \var std::array<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs
+         * \var BoundsCheckedArray<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs
          * \brief Array of all analog inputs.
          * A holder array for all analog input objects.
          */
 
-        std::array<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs;
+        BoundsCheckedArray<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs;
 
         /**
          * \var tConfig config;

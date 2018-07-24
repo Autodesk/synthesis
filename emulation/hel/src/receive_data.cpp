@@ -59,7 +59,7 @@ std::string hel::ReceiveData::toString()const{
     return s;
 }
 
-void hel::ReceiveData::deserialize(std::string input){
+void hel::ReceiveData::deserializeAndUpdate(std::string input){
     if(input == last_received_data){
         return;
     }
