@@ -33,7 +33,7 @@ namespace BxDRobotExporter.Wizard
 
         public DefinePartPanel(RigidNode_Base node)
         {
-            MessageBox.Show("" + node.GetSkeletalJoint().GetJointType().ToAssemblyJointType().ToString());
+         //   MessageBox.Show("" + node.GetSkeletalJoint().GetJointType().ToAssemblyJointType().ToString());
             InitializeComponent();
             BackColor = Color.White;
             Dock = DockStyle.Top;
@@ -75,13 +75,17 @@ namespace BxDRobotExporter.Wizard
             {
                 case 0: // No Driver
                     this.PortsGroupBox.Visible = false;
-                    this.MetaTabControl.Visible = false;
+                    this.tabsMeta.Visible = false;
                     break;
                 case 1: //Motor
                     this.PortsGroupBox.Visible = true;
-                    MetaTabControl.Visible = false;
+                    tabsMeta.Visible = true;
                     PortsGroupBox.Text = "PWM Port";
                     PortOneLabel.Text = "PWM Port:";
+                    if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
+                    if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                    if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
+                    if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                     PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
                     PortTwoUpDown.Visible = false;
@@ -89,7 +93,7 @@ namespace BxDRobotExporter.Wizard
                     break;
                 case 2: //Servo
                     this.PortsGroupBox.Visible = true;
-                    this.MetaTabControl.Visible = false;
+                    this.tabsMeta.Visible = false;
                     PortsGroupBox.Text = "PWM Port";
                     PortOneLabel.Text = "PWM Port:";
                     PortOneLabel.Visible = false;
@@ -99,10 +103,13 @@ namespace BxDRobotExporter.Wizard
                     break;
                 case 3: //Bumper Pneumatics
                     this.PortsGroupBox.Visible = true;
-                    MetaTabControl.Visible = true;
+                    tabsMeta.Visible = true;
                     PortOneLabel.Text = "Solenoid Port 1:";
                     PortTwoLabel.Text = "Solenoid Port 2:";
-                    if (!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
+                    if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
+                    if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                    if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
+                    if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                     PortsGroupBox.Text = "Solenoid Ports";
                     PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
@@ -111,9 +118,12 @@ namespace BxDRobotExporter.Wizard
                     break;
                 case 4: //Relay Pneumatics
                     this.PortsGroupBox.Visible = true;
-                    MetaTabControl.Visible = true;
+                    tabsMeta.Visible = true;
                     PortOneLabel.Text = "Relay Port:";
-                    if (!MetaTabControl.TabPages.Contains(PneumaticTab)) MetaTabControl.TabPages.Add(PneumaticTab);
+                    if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
+                    if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                    if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
+                    if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                     PortsGroupBox.Text = "Relay Port";
                     PortOneLabel.Visible = false;
                     PortTwoLabel.Visible = false;
@@ -122,10 +132,14 @@ namespace BxDRobotExporter.Wizard
                     break;
                 case 5: //Dual Motor
                     this.PortsGroupBox.Visible = true;
-                    this.MetaTabControl.Visible = false;
+                    this.tabsMeta.Visible = true;
                     PortsGroupBox.Text = "PWM Ports";
                     PortOneLabel.Text = "PWM Port 1:";
                     PortTwoLabel.Text = "PWM Port 2:";
+                    if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
+                    if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                    if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
+                    if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                     PortOneLabel.Visible = true;
                     PortTwoLabel.Visible = true;
                     PortTwoUpDown.Visible = true;
@@ -175,10 +189,22 @@ namespace BxDRobotExporter.Wizard
                     return driver;
                 case 3: //Bumper Pneumatic
                     driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
+                    PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
+                    {
+                        pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
+                        widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                    }; //The info about the wheel attached to the joint.
+                    driver.AddInfo(pneumaticDriver);
                     driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
                     return driver;
                 case 4: //Relay Pneumatic
                     driver = new JointDriver(JointDriverType.RELAY_PNEUMATIC);
+                    PneumaticDriverMeta pneumaticDriver2 = new PneumaticDriverMeta()
+                    {
+                        pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
+                        widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                    }; //The info about the wheel attached to the joint.
+                    driver.AddInfo(pneumaticDriver2);
                     driver.SetPort((int)PortOneUpDown.Value, 1);
                     return driver;
                 case 5: //Dual Motor
