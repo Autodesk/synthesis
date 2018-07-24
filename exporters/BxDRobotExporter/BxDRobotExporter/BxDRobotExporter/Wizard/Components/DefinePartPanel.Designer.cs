@@ -39,8 +39,6 @@
             this.lblDiameter = new System.Windows.Forms.Label();
             this.metaGearing = new System.Windows.Forms.TabPage();
             this.GearLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.OutputGeartxt = new System.Windows.Forms.TextBox();
-            this.InputGeartxt = new System.Windows.Forms.TextBox();
             this.lblOutputGear = new System.Windows.Forms.Label();
             this.lblInputGear = new System.Windows.Forms.Label();
             this.metaElevatorBrake = new System.Windows.Forms.TabPage();
@@ -56,12 +54,14 @@
             this.DriverComboBox = new System.Windows.Forms.ComboBox();
             this.PortsGroupBox = new System.Windows.Forms.GroupBox();
             this.PortLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.rbCAN = new System.Windows.Forms.RadioButton();
+            this.rbPWM = new System.Windows.Forms.RadioButton();
             this.PortOneLabel = new System.Windows.Forms.Label();
             this.PortTwoLabel = new System.Windows.Forms.Label();
             this.PortTwoUpDown = new System.Windows.Forms.NumericUpDown();
             this.PortOneUpDown = new System.Windows.Forms.NumericUpDown();
-            this.rbPWM = new System.Windows.Forms.RadioButton();
-            this.rbCAN = new System.Windows.Forms.RadioButton();
+            this.OutputGeartxt = new System.Windows.Forms.NumericUpDown();
+            this.InputGeartxt = new System.Windows.Forms.NumericUpDown();
             this.NodeGroupBox.SuspendLayout();
             this.MainTableLayout.SuspendLayout();
             this.tabsMeta.SuspendLayout();
@@ -79,6 +79,8 @@
             this.PortLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).BeginInit();
             this.SuspendLayout();
             // 
             // NodeGroupBox
@@ -234,8 +236,8 @@
             this.GearLayout.ColumnCount = 2;
             this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.GearLayout.Controls.Add(this.OutputGeartxt, 1, 1);
             this.GearLayout.Controls.Add(this.InputGeartxt, 0, 1);
+            this.GearLayout.Controls.Add(this.OutputGeartxt, 0, 1);
             this.GearLayout.Controls.Add(this.lblOutputGear, 1, 0);
             this.GearLayout.Controls.Add(this.lblInputGear, 0, 0);
             this.GearLayout.Dock = System.Windows.Forms.DockStyle.Top;
@@ -245,28 +247,8 @@
             this.GearLayout.RowCount = 2;
             this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.GearLayout.Size = new System.Drawing.Size(514, 54);
+            this.GearLayout.Size = new System.Drawing.Size(514, 56);
             this.GearLayout.TabIndex = 13;
-            // 
-            // OutputGeartxt
-            // 
-            this.OutputGeartxt.Dock = System.Windows.Forms.DockStyle.Top;
-            this.OutputGeartxt.Location = new System.Drawing.Point(260, 30);
-            this.OutputGeartxt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.OutputGeartxt.Name = "OutputGeartxt";
-            this.OutputGeartxt.Size = new System.Drawing.Size(251, 22);
-            this.OutputGeartxt.TabIndex = 13;
-            this.OutputGeartxt.Text = "1";
-            // 
-            // InputGeartxt
-            // 
-            this.InputGeartxt.Dock = System.Windows.Forms.DockStyle.Top;
-            this.InputGeartxt.Location = new System.Drawing.Point(3, 30);
-            this.InputGeartxt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.InputGeartxt.Name = "InputGeartxt";
-            this.InputGeartxt.Size = new System.Drawing.Size(251, 22);
-            this.InputGeartxt.TabIndex = 12;
-            this.InputGeartxt.Text = "1";
             // 
             // lblOutputGear
             // 
@@ -479,6 +461,34 @@
             this.PortLayout.Size = new System.Drawing.Size(509, 60);
             this.PortLayout.TabIndex = 4;
             // 
+            // rbCAN
+            // 
+            this.rbCAN.AutoSize = true;
+            this.rbCAN.Location = new System.Drawing.Point(71, 32);
+            this.rbCAN.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.rbCAN.Name = "rbCAN";
+            this.rbCAN.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.rbCAN.Size = new System.Drawing.Size(60, 21);
+            this.rbCAN.TabIndex = 9;
+            this.rbCAN.TabStop = true;
+            this.rbCAN.Text = "CAN";
+            this.rbCAN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.rbCAN.UseVisualStyleBackColor = true;
+            // 
+            // rbPWM
+            // 
+            this.rbPWM.AutoSize = true;
+            this.rbPWM.Dock = System.Windows.Forms.DockStyle.Right;
+            this.rbPWM.Location = new System.Drawing.Point(3, 32);
+            this.rbPWM.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.rbPWM.Name = "rbPWM";
+            this.rbPWM.Size = new System.Drawing.Size(62, 26);
+            this.rbPWM.TabIndex = 8;
+            this.rbPWM.TabStop = true;
+            this.rbPWM.Text = "PWM";
+            this.rbPWM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.rbPWM.UseVisualStyleBackColor = true;
+            // 
             // PortOneLabel
             // 
             this.PortOneLabel.AutoSize = true;
@@ -541,33 +551,51 @@
             0,
             0});
             // 
-            // rbPWM
+            // OutputGeartxt
             // 
-            this.rbPWM.AutoSize = true;
-            this.rbPWM.Dock = System.Windows.Forms.DockStyle.Right;
-            this.rbPWM.Location = new System.Drawing.Point(3, 32);
-            this.rbPWM.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.rbPWM.Name = "rbPWM";
-            this.rbPWM.Size = new System.Drawing.Size(62, 26);
-            this.rbPWM.TabIndex = 8;
-            this.rbPWM.TabStop = true;
-            this.rbPWM.Text = "PWM";
-            this.rbPWM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.rbPWM.UseVisualStyleBackColor = true;
+            this.OutputGeartxt.DecimalPlaces = 5;
+            this.OutputGeartxt.Location = new System.Drawing.Point(260, 31);
+            this.OutputGeartxt.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.OutputGeartxt.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
+            this.OutputGeartxt.Name = "OutputGeartxt";
+            this.OutputGeartxt.Size = new System.Drawing.Size(251, 22);
+            this.OutputGeartxt.TabIndex = 16;
+            this.OutputGeartxt.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
-            // rbCAN
+            // InputGeartxt
             // 
-            this.rbCAN.AutoSize = true;
-            this.rbCAN.Location = new System.Drawing.Point(71, 32);
-            this.rbCAN.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.rbCAN.Name = "rbCAN";
-            this.rbCAN.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.rbCAN.Size = new System.Drawing.Size(60, 21);
-            this.rbCAN.TabIndex = 9;
-            this.rbCAN.TabStop = true;
-            this.rbCAN.Text = "CAN";
-            this.rbCAN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.rbCAN.UseVisualStyleBackColor = true;
+            this.InputGeartxt.DecimalPlaces = 5;
+            this.InputGeartxt.Location = new System.Drawing.Point(3, 31);
+            this.InputGeartxt.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.InputGeartxt.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
+            this.InputGeartxt.Name = "InputGeartxt";
+            this.InputGeartxt.Size = new System.Drawing.Size(251, 22);
+            this.InputGeartxt.TabIndex = 17;
+            this.InputGeartxt.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // DefinePartPanel
             // 
@@ -608,6 +636,8 @@
             this.PortLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -635,8 +665,6 @@
         private System.Windows.Forms.Label lblDiameter;
         private System.Windows.Forms.TabPage metaGearing;
         private System.Windows.Forms.TableLayoutPanel GearLayout;
-        private System.Windows.Forms.TextBox OutputGeartxt;
-        private System.Windows.Forms.TextBox InputGeartxt;
         private System.Windows.Forms.Label lblOutputGear;
         private System.Windows.Forms.Label lblInputGear;
         private System.Windows.Forms.TabPage metaElevatorBrake;
@@ -649,5 +677,7 @@
         private System.Windows.Forms.ComboBox cmbStages;
         private System.Windows.Forms.RadioButton rbPWM;
         private System.Windows.Forms.RadioButton rbCAN;
+        private System.Windows.Forms.NumericUpDown OutputGeartxt;
+        private System.Windows.Forms.NumericUpDown InputGeartxt;
     }
 }
