@@ -1,10 +1,11 @@
 #include "roborio.hpp"
-#include "hal/HAL.h"
 #include "util.hpp"
 #include "json_util.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
+
+hel::SendData::SendData():serialized_data(""),gen_serialization(true){}
 
 void hel::SendData::update(){
     if(!hel::hal_is_initialized){
@@ -14,11 +15,8 @@ void hel::SendData::update(){
     //RoboRIO roborio(RoboRIOManager::getCopy());
     auto instance = RoboRIOManager::getInstance();
 
-    int32_t status = 0;
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
         pwm_hdrs[i] = getSpeed(instance.first->pwm_system.getHdrDutyCycle(i));
-        //printf("%d: %f\n", instance.first->pwm_system.getHdrDutyCycle(i), pwm_hdrs[i]);
-        status = 0; //reset status between HAL calls
     }
 
     for(unsigned i = 0; i < relays.size(); i++){
@@ -40,7 +38,6 @@ void hel::SendData::update(){
 
     for(unsigned i = 0; i < analog_outputs.size(); i++){
         analog_outputs[i] = (instance.first->analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
-        status = 0; //reset status between HAL calls
     }
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){
@@ -93,7 +90,6 @@ void hel::SendData::update(){
         default:
             break; //do nothing
         }
-        status = 0; //reset status between HAL calls
     }
     {
         tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();

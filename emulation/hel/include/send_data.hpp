@@ -6,7 +6,6 @@
 #include <memory>
 #include <mutex>
 
-#include <condition_variable>
 #include "mxp_data.hpp"
 
 #include "analog_outputs.hpp"
@@ -31,6 +30,8 @@ namespace hel{
 
         std::array<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
     public:
+        SendData();
+
         void update();
 
         std::string toString()const;
@@ -48,15 +49,12 @@ namespace hel{
             }
             return std::make_pair(instance, std::move(lock));
         }
-        static std::condition_variable cv;
 
     private:
         static std::shared_ptr<SendData> instance;
         static std::recursive_mutex m;
 
     };
-
-
 }
 
 #endif

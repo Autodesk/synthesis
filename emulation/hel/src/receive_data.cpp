@@ -1,6 +1,5 @@
 #include "receive_data.hpp"
 
-#include "hal/HAL.h"
 #include "roborio.hpp"
 #include "util.hpp"
 #include "json_util.hpp"
@@ -61,29 +60,37 @@ std::string hel::ReceiveData::toString()const{
 }
 
 void hel::ReceiveData::deserialize(std::string input){
+    if(input == last_received_data){
+        return;
+    }
+    std::string input_copy = input;
+
     try{
-    digital_hdrs = hel::deserializeList(
-        hel::pullValue("\"digital_hdrs\"", input),
-        std::function<bool(std::string)>(hel::stob),
-        true);
+        digital_hdrs = hel::deserializeList(
+            hel::pullValue("\"digital_hdrs\"", input),
+            std::function<bool(std::string)>(hel::stob),
+            true);
     } catch(const std::exception& ex){
         //TODO error handling
     }
     try{
-    joysticks = hel::deserializeList(
-        hel::pullValue("\"joysticks\"", input),
-        std::function<Joystick(std::string)>(Joystick::deserialize),
-        true);
+        joysticks = hel::deserializeList(
+            hel::pullValue("\"joysticks\"", input),
+            std::function<Joystick(std::string)>(Joystick::deserialize),
+            true);
     } catch(const std::exception& ex){
         //TODO error handling
     }
     try{
         digital_mxp = hel::deserializeList(
-        hel::pullValue("\"digital_mxp\"", input),
-        std::function<MXPData(std::string)>(MXPData::deserialize),
-        true);
+            hel::pullValue("\"digital_mxp\"", input),
+            std::function<MXPData(std::string)>(MXPData::deserialize),
+            true);
     } catch(const std::exception& ex){
         //TODO error handling
     }
     //TODO finish
+
+    update();
+    last_received_data = input_copy;
 }

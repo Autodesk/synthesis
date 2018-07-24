@@ -6,19 +6,19 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
     RobotMode::Mode RobotMode::getMode()const{
-    	return mode;
+        return mode;
     }
 
     void RobotMode::setMode(RobotMode::Mode m){
-    	mode = m;
+        mode = m;
     }
 
     bool RobotMode::getEnabled()const{
-    	return enabled;
+        return enabled;
     }
 
     void RobotMode::setEnabled(bool e){
-    	enabled = e;
+        enabled = e;
     }
 
     bool RobotMode::getEmergencyStopped()const{
@@ -57,165 +57,165 @@ namespace hel{
     }
 
     std::string MatchInfo::getEventName()const{
-    	return event_name;
+        return event_name;
     }
 
     void MatchInfo::setEventName(std::string name){
-    	event_name = name;
+        event_name = name;
     }
 
     std::string MatchInfo::getGameSpecificMessage()const{
-    	return game_specific_message;
+        return game_specific_message;
     }
 
     void MatchInfo::setGameSpecificMessage(std::string message){
-    	game_specific_message = message;
+        game_specific_message = message;
     }
 
     MatchType_t MatchInfo::getMatchType()const{
-    	return match_type;
+        return match_type;
     }
 
     void MatchInfo::setMatchType(MatchType_t type){
-    	match_type = type;
+        match_type = type;
     }
 
     uint16_t MatchInfo::getMatchNumber()const{
-    	return match_number;
+        return match_number;
     }
 
     void MatchInfo::setMatchNumber(uint16_t number){
-    	match_number = number;
+        match_number = number;
     }
 
     uint8_t MatchInfo::getReplayNumber()const{
-    	return replay_number;
+        return replay_number;
     }
 
     void MatchInfo::setReplayNumber(uint8_t number){
-    	replay_number = number;
+        replay_number = number;
     }
 
     AllianceStationID_t MatchInfo::getAllianceStationID()const{
-    	return alliance_station_id;
+        return alliance_station_id;
     }
 
     void MatchInfo::setAllianceStationID(AllianceStationID_t id){
-    	alliance_station_id = id;
+        alliance_station_id = id;
     }
 
     double MatchInfo::getMatchTime()const{
-    	return match_time;
+        return match_time;
     }
 
     void MatchInfo::setMatchTime(double time){
-    	match_time = time;
+        match_time = time;
     }
 
     bool Joystick::getIsXBox()const{
-         return is_xbox;
+        return is_xbox;
     }
 
     void Joystick::setIsXBox(bool xbox){
-         is_xbox = xbox;
+        is_xbox = xbox;
     }
 
     uint8_t Joystick::getType()const{
-         return type;
+        return type;
     }
 
     void Joystick::setType(uint8_t t){
-         type = t;
+        type = t;
     }
 
     std::string Joystick::getName()const{
-         return name;
+        return name;
     }
 
     void Joystick::setName(std::string n){
-         name = n;
+        name = n;
     }
 
     uint32_t Joystick::getButtons()const{
-         return buttons;
+        return buttons;
     }
 
     void Joystick::setButtons(uint32_t b){
-         buttons = b;
+        buttons = b;
     }
 
     uint8_t Joystick::getButtonCount()const{
-         return button_count;
+        return button_count;
     }
 
     void Joystick::setButtonCount(uint8_t count){
-         button_count = count;
+        button_count = count;
     }
 
     std::array<int8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxes()const{
-         return axes;
+        return axes;
     }
 
     void Joystick::setAxes(std::array<int8_t, Joystick::MAX_AXIS_COUNT> a){
-         axes = a;
+        axes = a;
     }
 
     uint8_t Joystick::getAxisCount()const{
-         return axis_count;
+        return axis_count;
     }
 
     void Joystick::setAxisCount(uint8_t count){
-         axis_count = count;
+        axis_count = count;
     }
 
     std::array<uint8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxisTypes()const{
-         return axis_types;
+        return axis_types;
     }
 
     void Joystick::setAxisTypes(std::array<uint8_t, Joystick::MAX_AXIS_COUNT> types){
-         axis_types = types;
+        axis_types = types;
     }
 
     std::array<int16_t, Joystick::MAX_POV_COUNT> Joystick::getPOVs()const{
-         return povs;
+        return povs;
     }
 
     void Joystick::setPOVs(std::array<int16_t, Joystick::MAX_POV_COUNT> p){
-         povs = p;
+        povs = p;
     }
 
     uint8_t Joystick::getPOVCount()const{
-         return pov_count;
+        return pov_count;
     }
 
     void Joystick::setPOVCount(uint8_t count){
-         pov_count = count;
+        pov_count = count;
     }
 
     uint32_t Joystick::getOutputs()const{
-         return outputs;
+        return outputs;
     }
 
     void Joystick::setOutputs(uint32_t outs){
-         outputs = outs;
-         auto instance = SendDataManager::getInstance();
-         instance.first->update();
-         instance.second.unlock();
+        outputs = outs;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     uint16_t Joystick::getLeftRumble()const{
-         return left_rumble;
+        return left_rumble;
     }
 
     void Joystick::setLeftRumble(uint16_t rumble){
-         left_rumble = rumble;
-         auto instance = SendDataManager::getInstance();
-         instance.first->update();
-         instance.second.unlock();
+        left_rumble = rumble;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     uint16_t Joystick::getRightRumble()const{
-         return right_rumble;
+        return right_rumble;
     }
 
     void Joystick::setRightRumble(uint16_t rumble){
