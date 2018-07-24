@@ -20,6 +20,7 @@ namespace BXDJ
 	public:
 		RigidNode();
 		~RigidNode();
+		RigidNode(const RigidNode &);
 		RigidNode(core::Ptr<fusion::Component>);
 
 		void getMesh(BXDA::Mesh &) const;
@@ -62,6 +63,7 @@ namespace BXDJ
 	class Joint
 	{
 	public:
+		Joint(const Joint &);
 		Joint(const RigidNode &);
 		~Joint();
 
