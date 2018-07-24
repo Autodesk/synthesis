@@ -9,6 +9,9 @@ namespace hel{
 
     void CANBus::enqueueMessage(CANBus::Message m){
     	out_message_queue.push(m);
+      auto instance = SendDataManager::getInstance();
+      instance.first->update();
+      instance.second.unlock();
     }
 
     CANBus::Message CANBus::getNextMessage()const{
@@ -17,6 +20,9 @@ namespace hel{
 
     void CANBus::popNextMessage(){
     	in_message_queue.pop();
+      auto instance = SendDataManager::getInstance();
+      instance.first->update();
+      instance.second.unlock();
     }
 
     CANBus::Message::Message():id(),data(),data_size(),time_stamp(){}

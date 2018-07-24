@@ -88,8 +88,8 @@ namespace hel{
         explicit RoboRIO() = default;
 
         friend class RoboRIOManager;
-    private:
         RoboRIO(RoboRIO const&) = default;
+    private:
         RoboRIO& operator=(const RoboRIO& r) = default;
     };
     /**
@@ -104,21 +104,6 @@ namespace hel{
         // All other instance getters should be private, accessible through friend classes
 
         static std::pair<std::shared_ptr<RoboRIO>, std::unique_lock<std::recursive_mutex>> getInstance() {
-            static int counter = 0;
-            std::unique_lock<std::recursive_mutex> lock(m);
-            if (instance == nullptr) {
-                instance = std::make_shared<RoboRIO>();
-            }
-            if (counter > 2000) {
-                auto send_instance = SendDataManager::getInstance();
-                //send_instance.first->update();
-                send_instance.second.unlock();
-            }
-            counter++;
-            return std::make_pair(instance, std::move(lock));
-        }
-
-        static std::pair<std::shared_ptr<RoboRIO>, std::unique_lock<std::recursive_mutex>> getInstance(void*) {
             std::unique_lock<std::recursive_mutex> lock(m);
             if (instance == nullptr) {
                 instance = std::make_shared<RoboRIO>();
@@ -127,15 +112,11 @@ namespace hel{
         }
 
         static RoboRIO getCopy() {
-            return RoboRIO(*(RoboRIOManager::getInstance().first));
+            auto instance = RoboRIOManager::getInstance();
+            auto roborio_copy = RoboRIO(*instance.first);
+            instance.second.unlock();
+            return roborio_copy;
         }
-
-        enum class Buffer {
-            Recieve,
-            Execute,
-            Send,
-        };
-
 
     private:
         RoboRIOManager() {}

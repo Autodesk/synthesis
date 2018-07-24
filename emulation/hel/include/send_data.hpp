@@ -18,6 +18,9 @@ namespace hel{
         enum class RelayState{OFF, REVERSE, FORWARD, ERROR};
 
     private:
+        std::string serialized_data;
+        bool gen_serialization;
+
         std::array<double, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> pwm_hdrs;
 
         std::array<RelayState, RelaySystem::NUM_RELAY_HEADERS> relays;
@@ -32,7 +35,7 @@ namespace hel{
 
         std::string toString()const;
 
-        std::string serialize()const;
+        std::string serialize();
     };
     std::string to_string(SendData::RelayState);
 

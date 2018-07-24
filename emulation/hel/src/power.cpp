@@ -26,6 +26,9 @@ namespace hel{
 
     void Power::setDisabled(tPower::tDisable d){
         disabled = d;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     Power::Power():status(),fault_counts(),disabled(){}
