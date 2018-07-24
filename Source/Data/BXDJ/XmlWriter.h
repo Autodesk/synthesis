@@ -39,6 +39,8 @@ namespace BXDJ
 		bool lightWeight;
 		std::stack<XmlElement *> elementStack;
 
+		std::string indent(size_t indentation);
+
 	};
 
 	// Classes that inherit from XmlWritable can be fed into a XmlWriter
