@@ -44,6 +44,7 @@ namespace Synthesis.States
             readyText = GameObject.Find("ReadyText").GetComponent<Text>();
 
             connectingPanel.SetActive(false);
+            startButton.SetActive(false);
 
             MultiplayerNetwork network = MultiplayerNetwork.Instance;
             Text lobbyCodeText = GameObject.Find("LobbyCodeText").GetComponent<Text>();
@@ -83,7 +84,7 @@ namespace Synthesis.States
                 PlayerIdentity.LocalInstance.CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
 
             if (host && MatchManager.Instance != null)
-                MatchManager.Instance.fieldName = PlayerPrefs.GetString("simSelectedFieldName");
+                MatchManager.Instance.FieldName = PlayerPrefs.GetString("simSelectedFieldName");
         }
 
         /// <summary>
@@ -92,7 +93,7 @@ namespace Synthesis.States
         public override void OnGUI()
         {
             if (MatchManager.Instance != null)
-                fieldText.text = "Field: " + MatchManager.Instance.fieldName;
+                fieldText.text = "Field: " + MatchManager.Instance.FieldName;
 
             if (host)
                 startButton.SetActive(Object.FindObjectsOfType<PlayerIdentity>().All(p => p.ready));
@@ -132,12 +133,12 @@ namespace Synthesis.States
         }
 
         /// <summary>
-        /// Launches a new <see cref="FileTransferState"/> on each client instance.
+        /// Launches a new <see cref="GatheringResourcesState"/> on each client instance.
         /// </summary>
         public void OnStartButtonPressed()
         {
             MatchManager.Instance.syncing = true;
-            MatchManager.Instance.PushState<FetchingMetadataState>();
+            MatchManager.Instance.AwaitPushState<FetchingMetadataState>();
         }
 
         /// <summary>

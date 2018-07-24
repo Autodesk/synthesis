@@ -17,7 +17,7 @@ namespace Synthesis.Network
         /// <summary>
         /// Represents a fragment of data from a file.
         /// </summary>
-        private struct DataFragment
+        private class DataFragment
         {
             public int dataIndex;
             public byte[] data;

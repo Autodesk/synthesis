@@ -1,9 +1,12 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -21,8 +24,26 @@ namespace Synthesis.Network
         /// <summary>
         /// The name of the selected field.
         /// </summary>
-        [SyncVar]
-        public string fieldName;
+        public string FieldName
+        {
+            get
+            {
+                return fieldName;
+            }
+            set
+            {
+                if (!isServer)
+                    return;
+
+                fieldName = value;
+                fieldGuid = string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Teh GUID of the selected field.
+        /// </summary>
+        public string FieldGuid => fieldGuid;
 
         /// <summary>
         /// True if synchronization is occurring.
@@ -30,11 +51,26 @@ namespace Synthesis.Network
         [SyncVar]
         public bool syncing;
 
+        [SyncVar]
+        private string fieldName;
+
+        [SyncVar]
+        private string fieldGuid;
+
         /// <summary>
-        /// Contains each <see cref="PlayerIdentity"/> and their corresponding <see cref="PlayerIdentity"/>
-        /// instances with resources that need to be transferred.
+        /// Contains each <see cref="PlayerIdentity"/> id and their corresponding <see cref="PlayerIdentity"/>
+        /// ids with resources that need to be transferred.
         /// </summary>
-        public Dictionary<PlayerIdentity, List<PlayerIdentity>> DependencyMap { get; private set; }
+        public Dictionary<int, List<int>> DependencyMap { get; private set; }
+
+        /// <summary>
+        /// Contains each <see cref="PlayerIdentity"/> id and their corresponding file transfer ids.
+        /// </summary>
+        public Dictionary<int, List<int>> TransferMap { get; private set; }
+
+        private Dictionary<int, bool> resolvedDependencies;
+
+        private Action generationComplete;
 
         private StateMachine uiStateMachine;
 
@@ -44,23 +80,80 @@ namespace Synthesis.Network
         private void Awake()
         {
             Instance = this;
+            DependencyMap = new Dictionary<int, List<int>>();
+            TransferMap = new Dictionary<int, List<int>>();
+            resolvedDependencies = new Dictionary<int, bool>();
             uiStateMachine = GameObject.Find("UserInterface").GetComponent<StateMachine>();
-            DependencyMap = new Dictionary<PlayerIdentity, List<PlayerIdentity>>();
+        }
+
+        /// <summary>
+        /// Loads the selected field file and reads its GUID.
+        /// </summary>
+        [Server]
+        public void UpdateFieldGuid()
+        {
+            if (fieldGuid.Length > 0)
+                return;
+
+            string fieldFile = PlayerPrefs.GetString("simSelectedField") + "\\definition.bxdf";
+
+            if (!File.Exists(fieldFile))
+            {
+                CancelSync();
+                return;
+            }
+
+            Task<FieldDefinition> loadingTask = new Task<FieldDefinition>(() => BXDFProperties.ReadProperties(fieldFile));
+
+            loadingTask.ContinueWith(t =>
+            {
+                if (t.Result == null)
+                {
+                    CancelSync();
+                    return;
+                }
+
+                fieldGuid = t.Result.GUID.ToString();
+            });
+
+            loadingTask.Start();
         }
 
         /// <summary>
         /// Generates a dependency map from all <see cref="PlayerIdentity"/> instances.
         /// </summary>
         [Server]
-        public void GenerateDependencyMap()
+        public void GenerateDependencyMap(Action onGenerationComplete)
         {
+            generationComplete = onGenerationComplete;
+
             DependencyMap.Clear();
+            resolvedDependencies.Clear();
 
-            List<PlayerIdentity> playerIdentities = FindObjectsOfType<PlayerIdentity>().ToList();
+            foreach (PlayerIdentity p in FindObjectsOfType<PlayerIdentity>())
+                resolvedDependencies.Add(p.id, false);
 
-            foreach (PlayerIdentity currentIdentity in playerIdentities)
-                foreach (PlayerIdentity otherIdentity in playerIdentities.Where(p => !p.Equals(currentIdentity)))
-                    currentIdentity.TargetCheckDependency(currentIdentity.connectionToClient, otherIdentity.netId);
+            RpcCheckDependencies();
+        }
+
+        [Server]
+        public void TransferFiles()
+        {
+            // TODO: Attach the file transferer script to the player identity GameObject.
+            // That way, we don't have issues with client/server priority and the transfer ids
+            // can overlap since they influence different objects anyway.
+        }
+
+        /// <summary>
+        /// Checks if the resources held by the other identity need to be transferred to
+        /// this instance.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="otherIdentity"></param>
+        [ClientRpc]
+        private void RpcCheckDependencies()
+        {
+            PlayerIdentity.LocalInstance.CheckDependencies();
         }
 
         /// <summary>
@@ -68,37 +161,45 @@ namespace Synthesis.Network
         /// </summary>
         /// <param name="ownerId"></param>
         /// <param name="dependantId"></param>
-        [Command]
-        public void CmdAddDependency(NetworkInstanceId ownerId, NetworkInstanceId dependantId)
+        public void AddDependencies(int dependantId, int[] ownerIds)
         {
-            PlayerIdentity owner = NetworkServer.FindLocalObject(ownerId).GetComponent<PlayerIdentity>();
-            PlayerIdentity dependant = NetworkServer.FindLocalObject(dependantId).GetComponent<PlayerIdentity>();
+            resolvedDependencies[dependantId] = true;
 
-            if (!DependencyMap.ContainsKey(owner))
-                DependencyMap[owner] = new List<PlayerIdentity>();
+            foreach (int ownerId in ownerIds)
+            {
+                if (!DependencyMap.ContainsKey(ownerId))
+                    DependencyMap[ownerId] = new List<int>();
 
-            DependencyMap[owner].Add(dependant);
+                DependencyMap[ownerId].Add(dependantId);
+            }
+
+            if (!resolvedDependencies.ContainsValue(false))
+                generationComplete();
         }
 
         /// <summary>
-        /// Pushes the given state for all clients.
+        /// Pushes the given state for all clients when all
+        /// <see cref="PlayerIdentity"/> instances are ready.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         [Server]
-        public void PushState<T>() where T : new()
+        public void AwaitPushState<T>() where T : new()
         {
-            RpcPushState(typeof(T).ToString());
+            StopAllCoroutines();
+            StartCoroutine(StartWhenReady(() => RpcPushState(typeof(T).ToString())));
         }
 
         /// <summary>
-        /// Changes to the given state for all clients.
+        /// Changes to the given state for all clients when all
+        /// <see cref="PlayerIdentity"/> instances are ready.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="hardReset"></param>
         [Server]
-        public void ChangeState<T>(bool hardReset = true)
+        public void AwaitChangeState<T>(bool hardReset = true) where T : new()
         {
-            RpcChangeState(typeof(T).ToString(), hardReset);
+            StopAllCoroutines();
+            StartCoroutine(StartWhenReady(() => RpcChangeState(typeof(T).ToString(), hardReset)));
         }
 
         /// <summary>
@@ -108,14 +209,27 @@ namespace Synthesis.Network
         [Server]
         public void PopState()
         {
+            StopAllCoroutines();
             RpcPopState();
+        }
+
+        /// <summary>
+        /// Waits for all <see cref="PlayerIdentity"/> instances to indicate
+        /// readiness before executing the provided <see cref="Action"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Server]
+        private IEnumerator StartWhenReady(Action whenReady)
+        {
+            yield return new WaitUntil(() => FindObjectsOfType<PlayerIdentity>().All(p => p.ready));
+            whenReady();
         }
 
         /// <summary>
         /// Cancels the synchronization process.
         /// </summary>
-        [Command]
-        public void CmdCancelSync()
+        public void CancelSync()
         {
             if (!syncing)
                 return;
@@ -144,7 +258,10 @@ namespace Synthesis.Network
             State state = StringToState(stateType);
 
             if (state != null)
+            {
+                PlayerIdentity.LocalInstance.CmdSetReady(false);
                 uiStateMachine.PushState(state);
+            }
         }
 
         /// <summary>
@@ -158,7 +275,10 @@ namespace Synthesis.Network
             State state = StringToState(stateType);
 
             if (state != null)
+            {
+                PlayerIdentity.LocalInstance.CmdSetReady(false);
                 uiStateMachine.ChangeState(state, hardReset);
+            }
         }
 
         /// <summary>
@@ -167,6 +287,7 @@ namespace Synthesis.Network
         [ClientRpc]
         private void RpcPopState()
         {
+            PlayerIdentity.LocalInstance.CmdSetReady(false);
             uiStateMachine.PopState();
         }
 

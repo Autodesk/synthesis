@@ -88,10 +88,22 @@ namespace Synthesis.FSM
         /// <param name="state"></param>
         public void PushState(State state)
         {
-            if (CurrentState != null)
-                CurrentState.Pause();
+            PushState(state, true);
+        }
 
-            DisableAllObjects(false);
+        /// <summary>
+        /// Adds a new state to the StateMachine and pauses the current one
+        /// if specified.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="pausePrevious"></param>
+        public void PushState(State state, bool pausePrevious)
+        {
+            if (pausePrevious && CurrentState != null)
+            {
+                CurrentState.Pause();
+                DisableAllObjects(false);
+            }
 
             if (!activeStates.Contains(state))
                 activeStates.Push(state);
@@ -111,6 +123,17 @@ namespace Synthesis.FSM
         /// </summary>
         public bool PopState()
         {
+            return PopState(true);
+        }
+
+        /// <summary>
+        /// Removes the current state from the StateMachine and
+        /// resumes execution of the previous one if specified.
+        /// </summary>
+        /// <param name="resumePrevious"></param>
+        /// <returns></returns>
+        private bool PopState(bool resumePrevious)
+        {
             if (CurrentState == null)
                 return false;
 
@@ -122,7 +145,7 @@ namespace Synthesis.FSM
 
             activeStates.Pop();
 
-            if (activeStates.Count > 0)
+            if (resumePrevious && activeStates.Count > 0)
             {
                 CurrentState = activeStates.First();
 
@@ -145,8 +168,16 @@ namespace Synthesis.FSM
         /// <param name="hardReset">If true, any existing states on the stack will be popped.</param>
         public void ChangeState(State state, bool hardReset = true)
         {
-            while (PopState() && hardReset) ;
-            PushState(state);
+            if (hardReset)
+            {
+                while (PopState()) ;
+                PushState(state);
+            }
+            else
+            {
+                PopState(false);
+                PushState(state, false);
+            }
         }
 
         /// <summary>
@@ -166,9 +197,6 @@ namespace Synthesis.FSM
         /// <param name="force"></param>
         private void DisableAllObjects(bool force)
         {
-            if (CurrentState == null)
-                return;
-
             Type stateType = CurrentState.GetType();
 
             stateBehaviours.DisableObjects(stateType, force);

@@ -92,7 +92,7 @@ namespace Synthesis.GUI
             LinkPanel<LoadRobotState>("SimLoadRobot");
             LinkPanel<FetchingMetadataState>("FetchingMetadataPanel");
             LinkPanel<AnalyzingResourcesState>("AnalyzingResourcesPanel");
-            LinkPanel<FileTransferState>("FileTransferPanel");
+            LinkPanel<GatheringResourcesState>("GatheringResourcesPanel");
         }
 
         /// <summary>

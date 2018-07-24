@@ -14,10 +14,10 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            if (!Host)
-                return;
+            if (Host)
+                MatchManager.Instance.GenerateDependencyMap(() => MatchManager.Instance.AwaitChangeState<GatheringResourcesState>(false));
 
-            MatchManager.Instance.GenerateDependencyMap();            
+            SendReadySignal();
         }
     }
 }

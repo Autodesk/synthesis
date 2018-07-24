@@ -700,7 +700,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &110988168
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2308,12 +2308,12 @@ GameObject:
   - component: {fileID: 535359011}
   - component: {fileID: 535359010}
   m_Layer: 5
-  m_Name: FileTransferPanel
+  m_Name: GatheringResourcesPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &535359009
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2331,7 +2331,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.000122070305, y: 0}
-  m_SizeDelta: {x: 781.2, y: 160.06}
+  m_SizeDelta: {x: 1272.8, y: 160.06}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &535359010
 MonoBehaviour:
@@ -3273,7 +3273,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.00012864167, y: 0}
-  m_SizeDelta: {x: 751.57, y: 149.9}
+  m_SizeDelta: {x: 1125.7, y: 149.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &807315947
 MonoBehaviour:
@@ -3308,7 +3308,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SYNCING FILES...
+  m_Text: GATHERING RESOURCES...
 --- !u!222 &807315948
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5859,7 +5859,7 @@ MonoBehaviour:
     i14: 0
     i15: 0
   m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
+  m_LocalPlayerAuthority: 1
 --- !u!4 &1649948372
 Transform:
   m_ObjectHideFlags: 0
