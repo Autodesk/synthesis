@@ -108,6 +108,7 @@
     <ClInclude Include="Source\Data\BXDA\Physics.h" />
     <ClInclude Include="Source\Data\BXDA\Surface.h" />
     <ClInclude Include="Source\Data\BXDA\Vertex.h" />
+    <ClInclude Include="Source\Data\BXDJ\Joint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\AngularJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\RotationalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />

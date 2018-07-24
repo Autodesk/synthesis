@@ -1,4 +1,6 @@
 #include "RigidNode.h"
+#include "Joint.h"
+#include "Joints/RotationalJoint.h"
 
 using namespace BXDJ;
 
@@ -94,7 +96,7 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 		}
 
 		jointSummary.children.push_back(lowerOccurrence);
-		jointSummary.parents[upperOccurrence].push_back(lowerOccurrence);
+		jointSummary.parents[upperOccurrence].push_back(joint);
 	}
 
 	return jointSummary;
@@ -108,24 +110,14 @@ void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence, JointSum
 
 	// Create a joint from this occurence if it is the parent of a joint
 	if (jointSummary.parents.find(rootOccurrence) != jointSummary.parents.end())
-	{
-		for (core::Ptr<fusion::Occurrence> subOccurrence : jointSummary.parents[rootOccurrence])
-		{
-			log += "Jointing occurence \"" + subOccurrence->fullPathName() + "\"\n";
-			RigidNode subNode(subOccurrence, jointSummary);
-			addJoint(Joint(subNode));
-		}
-	}
+		for (core::Ptr<fusion::Joint> joint : jointSummary.parents[rootOccurrence])
+			addJoint(joint, rootOccurrence, jointSummary);
 
 	// Add all occurrences without joints or that are only parents in joints to the root node
 	for (core::Ptr<fusion::Occurrence> occurrence : rootOccurrence->childOccurrences())
-	{
 		// Add the occurence to this node if it is not the child of a joint
 		if (std::find(jointSummary.children.begin(), jointSummary.children.end(), occurrence) == jointSummary.children.end())
-		{
 			buildTree(occurrence, jointSummary);
-		}
-	}
 
 	log += "\n";
 }
@@ -140,4 +132,20 @@ int RigidNode::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
 			count++;
 
 	return count;
+}
+
+void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent, JointSummary & jointSummary)
+{
+	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
+	log += "Jointing occurence \"" + child->fullPathName() + "\"\n";
+
+	switch (joint->jointMotion()->jointType())
+	{
+	case fusion::JointTypes::RevoluteJointType:
+		addJoint(RotationalJoint(RigidNode(child)));
+		break;
+
+	default:
+		buildTree(child, jointSummary);
+	}
 }
