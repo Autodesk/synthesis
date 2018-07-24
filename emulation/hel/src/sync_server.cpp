@@ -18,7 +18,7 @@ namespace hel {
 
         //socket.send_to(asio::buffer(data.c_str(), data.length()),
         //                     dest);
-        //usleep(50000);
+        usleep(30000);
         instance.second.unlock();
     }
 }

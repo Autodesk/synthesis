@@ -5,24 +5,24 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <Drive/DifferentialDrive.h>
-#include <IterativeRobot.h>
-#include <Joystick.h>
-#include <Spark.h>
+#include <WPILib.h>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <Timer.h>
 #include <unistd.h>
 /**
  * This is a demo program showing the use of the DifferentialDrive class.
  * Runs the motors with arcade steering.
  */
 class Robot : public frc::IterativeRobot {
-    frc::Spark m_leftMotor{10};
-    frc::Spark m_rightMotor{11};
+    frc::Spark m_leftMotor{0};
+    frc::Spark m_rightMotor{1};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
     frc::Joystick m_stick{0};
+    frc::DigitalOutput dio{11};
+    frc::Relay r{0};
+
+    bool current_state = false;
 
     float newPWMR = 0.0;
     float newPWML = 0.0;
@@ -38,8 +38,12 @@ public:
 
         m_robotDrive.ArcadeDrive(x/1000.0f, y/1000.0f);
 
-        //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
 
+        //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
+        dio.Set(current_state);
+        std::cout << "Current State: " << current_state << "\n\n\n\n\n";
+        r.Set(frc::Relay::Value::kForward);
+        current_state = !current_state;
         usleep(45000);
     }
 };
