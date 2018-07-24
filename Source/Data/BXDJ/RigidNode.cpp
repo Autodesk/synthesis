@@ -16,14 +16,19 @@ RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent)
 	buildTree(rootComponent);
 }
 
-bool RigidNode::getMesh(BXDA::Mesh & mesh)
+RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occurrence) : RigidNode(occurrence->component())
 {
-	// Each occurence is a submesh
-	for (core::Ptr<fusion::Occurrence> occurence : fusionOccurences)
+	fusionOccurrences.push_back(occurrence);
+}
+
+void RigidNode::getMesh(BXDA::Mesh & mesh) const
+{
+	// Each occurrence is a submesh
+	for (core::Ptr<fusion::Occurrence> occurrence : fusionOccurrences)
 	{
 		BXDA::SubMesh subMesh = BXDA::SubMesh();
 
-		for (core::Ptr<fusion::BRepBody> body : occurence->bRepBodies())
+		for (core::Ptr<fusion::BRepBody> body : occurrence->bRepBodies())
 		{
 			core::Ptr<fusion::TriangleMeshCalculator> meshCalculator = body->meshManager()->createMeshCalculator();
 			meshCalculator->setQuality(fusion::LowQualityTriangleMesh);
@@ -46,39 +51,62 @@ bool RigidNode::getMesh(BXDA::Mesh & mesh)
 		}
 
 		// Add physics properties to mesh
-		core::Ptr<fusion::PhysicalProperties> physics = occurence->physicalProperties();
+		core::Ptr<fusion::PhysicalProperties> physics = occurrence->physicalProperties();
 		if (physics->mass() > 0)
 		{
 			Vector3<float> centerOfMass(physics->centerOfMass()->x(), physics->centerOfMass()->y(), physics->centerOfMass()->z());
-			mesh.addPhysics(BXDA::Physics(centerOfMass, occurence->physicalProperties()->mass()));
+			mesh.addPhysics(BXDA::Physics(centerOfMass, occurrence->physicalProperties()->mass()));
 		}
 
 		mesh.addSubMesh(subMesh);
 	}
-
-	return true;
 }
 
 void RigidNode::buildTree(core::Ptr<fusion::Component> rootComponent)
 {
-	std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> jointedOccurences;
+	std::vector<core::Ptr<fusion::Occurrence>> jointedOccurrencesChildren;
+	std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Occurrence>>> jointedOccurrencesParents;
 
-	// Find all joints in the structure
+	// Find all jointed occurrences in the structure
 	for (core::Ptr<fusion::Joint> joint : rootComponent->allJoints())
 	{
-		if (jointedOccurences.find(joint->occurrenceOne()) == jointedOccurences.end)
-			jointedOccurences[joint->occurrenceOne()] = std::vector<core::Ptr<fusion::Joint>>();
-		jointedOccurences[joint->occurrenceOne()].push_back(joint);
+		core::Ptr<fusion::Joint> lowerOccurrence;
+		core::Ptr<fusion::Joint> upperOccurrence;
+		if (levelOfOccurrence(joint->occurrenceOne()) > levelOfOccurrence(joint->occurrenceTwo()))
+		{
+			lowerOccurrence = joint->occurrenceOne();
+			upperOccurrence = joint->occurrenceTwo();
+		}
+		else
+		{
+			upperOccurrence = joint->occurrenceOne();
+			lowerOccurrence = joint->occurrenceTwo();
+		}
 
-		if (jointedOccurences.find(joint->occurrenceTwo()) == jointedOccurences.end)
-			jointedOccurences[joint->occurrenceTwo()] = std::vector<core::Ptr<fusion::Joint>>();
-		jointedOccurences[joint->occurrenceTwo()].push_back(joint);
+		jointedOccurrencesChildren.push_back(lowerOccurrence);
+		jointedOccurrencesParents[upperOccurrence].push_back(lowerOccurrence);
 	}
 
-	// Add all unjointed occurences in the first level of the component to the root node
-	for (core::Ptr<fusion::Occurrence> occurence : rootComponent->occurrences())
+	// Add all occurrences without joints or that are only parents in joints to the root node
+	for (core::Ptr<fusion::Occurrence> occurrence : rootComponent->occurrences()->asList())
 	{
-		if (jointedOccurences.find[occurence] == jointedOccurences.end)
-			fusionOccurences.push_back(occurence);
+		if (std::find(jointedOccurrencesChildren.begin(), jointedOccurrencesChildren.end(), occurrence) == jointedOccurrencesChildren.end())
+		{
+			fusionOccurrences.push_back(occurrence);
+			buildTree(occurrence->component());
+		}
+		else if (jointedOccurrencesParents.find(occurrence) != jointedOccurrencesParents.end())
+		{
+			for (core::Ptr<fusion::Occurrence> subOccurrence : jointedOccurrencesParents[occurrence])
+			{
+				RigidNode subNode(subOccurrence);
+				addJoint(Joint(subNode));
+			}
+		}
 	}
+}
+
+int RigidNode::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
+{
+	return std::count(occurrence->fullPathName().begin(), occurrence->fullPathName().end(), '+');
 }

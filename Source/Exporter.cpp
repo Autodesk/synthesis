@@ -87,48 +87,9 @@ void Exporter::buildNodeTree()
 	
 	BXDJ::RigidNode rootNode(document->design()->rootComponent());
 
-	/*std::vector<Ptr<Occurrence>> allTreeRootOccurences;
-
-	output += "\nGrounded Occurences: ";
-	for (Ptr<Occurrence> occurence : groundedOccurences)
-	{
-		output += occurence->name() + "\n";
-
-		allTreeRootOccurences.push_back(occurence);
-
-		output += "Rigid Groups: ";
-		for (Ptr<RigidGroup> rigidGroup : occurence->rigidGroups())
-		{
-			output += rigidGroup->name() + "\n";
-
-			for (Ptr<Occurrence> rigidGroupOccurence : rigidGroup->occurrences())
-				allTreeRootOccurences.push_back(rigidGroupOccurence);
-		}
-
-		output += "Rigid Joints: ";
-		for (Ptr<Joint> joint : occurence->joints())
-		{
-			if (joint->jointMotion()->jointType() == JointTypes::RigidJointType)
-			{
-				allTreeRootOccurences.push_back(joint->occurrenceOne());
-				allTreeRootOccurences.push_back(joint->occurrenceTwo());
-			}
-		}
-
-		output += "\n";
-	}
-
-	output += "\nAll Root Occurences: ";
-	for (Ptr<Occurrence> occurence : allTreeRootOccurences)
-	{
-		output += occurence->name() + "\n";
-	}*/
-
 	std::string filename = "C:\\Users\\t_walkn\\Desktop\\node_0.bxda";
 	BXDA::BinaryWriter binary(filename);
 	BXDA::Mesh mesh;
 	rootNode.getMesh(mesh);
 	binary.write(mesh);
-
-	userInterface->messageBox(rootNode.evilGlobalVariableForPrinting);
 }
