@@ -10,7 +10,6 @@ namespace BXDA
 	{
 	public:
 		Surface();
-		~Surface();
 
 		Surface(const Surface & s);
 		Surface(const std::vector<int> & indices);
@@ -33,7 +32,7 @@ namespace BXDA
 		float specular;
 
 		// Stores the indices used for each triangle
-		std::vector<Triangle*> triangles;
+		std::vector<Triangle> triangles;
 
 		void write(BinaryWriter &) const;
 
