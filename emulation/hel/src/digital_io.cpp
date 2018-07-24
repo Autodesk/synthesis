@@ -418,24 +418,24 @@ namespace hel{
             instance.second.unlock();
             return instance.first->digital_system.getInputs().Headers;
         }
-    
+
         uint8_t readDI_SPIPort(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getInputs().SPIPort;
         }
-    
+
         uint8_t readDI_Reserved(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getInputs().Reserved;
         }
-    
+
         uint16_t readDI_MXP(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getInputs().MXP;
-        }    	
+        }
 
         void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
