@@ -47,8 +47,6 @@ void Exporter::exportExampleXml()
 	xml.writeElement("ParentID", "-1");
 	xml.writeElement("ModelFileName", "node_0.bxda");
 	xml.writeElement("ModelID", "Part2:1");
-	xml.endElement();
-	xml.endElement();
 }
 
 void Exporter::exportMeshes()
