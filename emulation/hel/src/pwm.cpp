@@ -159,6 +159,13 @@ namespace hel{
                 reg_index += 4;
                 return reg_index;
             }();
+
+            if(value == 0){ //allow disabling PWM even when output isn't configured for PWM
+                instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
+                instance.second.unlock();
+                return;
+            }
+
             if(checkBitHigh(instance.first->digital_system.getEnabledOutputs().MXP, DO_index)){//Allow MXP output if pin is output-enabled
                 if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index)){ //Allow MXP outout if DO is using special function
                     instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
