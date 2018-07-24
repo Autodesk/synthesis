@@ -11,3 +11,8 @@ Joint::Joint(const RigidNode & child)
 {
 	this->child = std::make_shared<RigidNode>(child);
 }
+
+void Joint::write(XmlWriter & output) const
+{
+	output.write(*child);
+}
