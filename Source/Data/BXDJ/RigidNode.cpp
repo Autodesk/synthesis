@@ -7,9 +7,6 @@ using namespace BXDJ;
 RigidNode::RigidNode()
 {}
 
-RigidNode::~RigidNode()
-{}
-
 RigidNode::RigidNode(const RigidNode & nodeToCopy)
 {
 	for (core::Ptr<fusion::Occurrence> occurence : nodeToCopy.fusionOccurrences)

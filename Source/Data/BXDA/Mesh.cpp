@@ -7,15 +7,9 @@ Mesh::Mesh()
 	guid = "0ba8e1ce-1004-4523-b844-9bfa69efada9";
 }
 
-Mesh::~Mesh()
-{
-	for (SubMesh * submesh : subMeshes)
-		delete submesh;
-}
-
 void Mesh::addSubMesh(const SubMesh & submesh)
 {
-	subMeshes.push_back(new SubMesh(submesh));
+	subMeshes.push_back(std::make_shared<SubMesh>(submesh));
 }
 
 void BXDA::Mesh::addPhysics(const Physics & physics)
@@ -46,13 +40,13 @@ void Mesh::write(BinaryWriter & output) const
 
 	// Output meshes
 	output.write((int)subMeshes.size());
-	for (SubMesh * submesh : subMeshes)
+	for (std::shared_ptr<SubMesh> submesh : subMeshes)
 		output.write(*submesh);
 
 	// Output colliders
 	output.write((int)subMeshes.size());
 	SubMesh tempColliderMesh = SubMesh();
-	for (SubMesh * submesh : subMeshes)
+	for (std::shared_ptr<SubMesh> submesh : subMeshes)
 	{
 		submesh->getConvexCollider(tempColliderMesh);
 		output.write(tempColliderMesh);

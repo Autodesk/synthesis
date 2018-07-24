@@ -11,6 +11,3 @@ Joint::Joint(const RigidNode & child)
 {
 	this->child = std::make_shared<RigidNode>(child);
 }
-
-Joint::~Joint()
-{}
