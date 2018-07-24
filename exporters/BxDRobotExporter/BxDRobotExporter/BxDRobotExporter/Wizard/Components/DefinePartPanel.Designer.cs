@@ -60,6 +60,8 @@
             this.PortTwoLabel = new System.Windows.Forms.Label();
             this.PortTwoUpDown = new System.Windows.Forms.NumericUpDown();
             this.PortOneUpDown = new System.Windows.Forms.NumericUpDown();
+            this.rbPWM = new System.Windows.Forms.RadioButton();
+            this.rbCAN = new System.Windows.Forms.RadioButton();
             this.NodeGroupBox.SuspendLayout();
             this.MainTableLayout.SuspendLayout();
             this.tabsMeta.SuspendLayout();
@@ -89,7 +91,7 @@
             this.NodeGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.NodeGroupBox.Name = "NodeGroupBox";
             this.NodeGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.NodeGroupBox.Size = new System.Drawing.Size(533, 212);
+            this.NodeGroupBox.Size = new System.Drawing.Size(533, 242);
             this.NodeGroupBox.TabIndex = 0;
             this.NodeGroupBox.TabStop = false;
             this.NodeGroupBox.Text = "Empty";
@@ -112,7 +114,7 @@
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainTableLayout.Size = new System.Drawing.Size(525, 189);
+            this.MainTableLayout.Size = new System.Drawing.Size(525, 219);
             this.MainTableLayout.TabIndex = 14;
             // 
             // tabsMeta
@@ -122,7 +124,7 @@
             this.tabsMeta.Controls.Add(this.metaGearing);
             this.tabsMeta.Controls.Add(this.metaElevatorBrake);
             this.tabsMeta.Controls.Add(this.metaElevatorStages);
-            this.tabsMeta.Location = new System.Drawing.Point(3, 95);
+            this.tabsMeta.Location = new System.Drawing.Point(3, 125);
             this.tabsMeta.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);
             this.tabsMeta.Name = "tabsMeta";
             this.tabsMeta.SelectedIndex = 0;
@@ -447,7 +449,7 @@
             this.PortsGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.PortsGroupBox.Name = "PortsGroupBox";
             this.PortsGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.PortsGroupBox.Size = new System.Drawing.Size(517, 53);
+            this.PortsGroupBox.Size = new System.Drawing.Size(517, 83);
             this.PortsGroupBox.TabIndex = 6;
             this.PortsGroupBox.TabStop = false;
             this.PortsGroupBox.Text = "Ports";
@@ -461,7 +463,8 @@
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.PortLayout.Controls.Add(this.rbCAN, 1, 1);
+            this.PortLayout.Controls.Add(this.rbPWM, 0, 1);
             this.PortLayout.Controls.Add(this.PortOneLabel, 0, 0);
             this.PortLayout.Controls.Add(this.PortTwoLabel, 2, 0);
             this.PortLayout.Controls.Add(this.PortTwoUpDown, 3, 0);
@@ -470,9 +473,10 @@
             this.PortLayout.Location = new System.Drawing.Point(4, 19);
             this.PortLayout.Margin = new System.Windows.Forms.Padding(4);
             this.PortLayout.Name = "PortLayout";
-            this.PortLayout.RowCount = 1;
-            this.PortLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.PortLayout.Size = new System.Drawing.Size(509, 30);
+            this.PortLayout.RowCount = 2;
+            this.PortLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PortLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PortLayout.Size = new System.Drawing.Size(509, 60);
             this.PortLayout.TabIndex = 4;
             // 
             // PortOneLabel
@@ -482,7 +486,7 @@
             this.PortOneLabel.Location = new System.Drawing.Point(4, 4);
             this.PortOneLabel.Margin = new System.Windows.Forms.Padding(4);
             this.PortOneLabel.Name = "PortOneLabel";
-            this.PortOneLabel.Size = new System.Drawing.Size(46, 22);
+            this.PortOneLabel.Size = new System.Drawing.Size(60, 22);
             this.PortOneLabel.TabIndex = 1;
             this.PortOneLabel.Text = "Port 1";
             this.PortOneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -491,7 +495,7 @@
             // 
             this.PortTwoLabel.AutoSize = true;
             this.PortTwoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PortTwoLabel.Location = new System.Drawing.Point(258, 4);
+            this.PortTwoLabel.Location = new System.Drawing.Point(265, 4);
             this.PortTwoLabel.Margin = new System.Windows.Forms.Padding(4);
             this.PortTwoLabel.Name = "PortTwoLabel";
             this.PortTwoLabel.Size = new System.Drawing.Size(46, 22);
@@ -502,7 +506,7 @@
             // PortTwoUpDown
             // 
             this.PortTwoUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortTwoUpDown.Location = new System.Drawing.Point(312, 4);
+            this.PortTwoUpDown.Location = new System.Drawing.Point(319, 4);
             this.PortTwoUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.PortTwoUpDown.Maximum = new decimal(new int[] {
             8,
@@ -510,7 +514,7 @@
             0,
             0});
             this.PortTwoUpDown.Name = "PortTwoUpDown";
-            this.PortTwoUpDown.Size = new System.Drawing.Size(193, 22);
+            this.PortTwoUpDown.Size = new System.Drawing.Size(186, 22);
             this.PortTwoUpDown.TabIndex = 3;
             this.PortTwoUpDown.Value = new decimal(new int[] {
             3,
@@ -521,7 +525,7 @@
             // PortOneUpDown
             // 
             this.PortOneUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortOneUpDown.Location = new System.Drawing.Point(58, 4);
+            this.PortOneUpDown.Location = new System.Drawing.Point(72, 4);
             this.PortOneUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.PortOneUpDown.Maximum = new decimal(new int[] {
             8,
@@ -529,13 +533,41 @@
             0,
             0});
             this.PortOneUpDown.Name = "PortOneUpDown";
-            this.PortOneUpDown.Size = new System.Drawing.Size(192, 22);
+            this.PortOneUpDown.Size = new System.Drawing.Size(185, 22);
             this.PortOneUpDown.TabIndex = 0;
             this.PortOneUpDown.Value = new decimal(new int[] {
             2,
             0,
             0,
             0});
+            // 
+            // rbPWM
+            // 
+            this.rbPWM.AutoSize = true;
+            this.rbPWM.Dock = System.Windows.Forms.DockStyle.Right;
+            this.rbPWM.Location = new System.Drawing.Point(3, 32);
+            this.rbPWM.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.rbPWM.Name = "rbPWM";
+            this.rbPWM.Size = new System.Drawing.Size(62, 26);
+            this.rbPWM.TabIndex = 8;
+            this.rbPWM.TabStop = true;
+            this.rbPWM.Text = "PWM";
+            this.rbPWM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.rbPWM.UseVisualStyleBackColor = true;
+            // 
+            // rbCAN
+            // 
+            this.rbCAN.AutoSize = true;
+            this.rbCAN.Location = new System.Drawing.Point(71, 32);
+            this.rbCAN.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.rbCAN.Name = "rbCAN";
+            this.rbCAN.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.rbCAN.Size = new System.Drawing.Size(60, 21);
+            this.rbCAN.TabIndex = 9;
+            this.rbCAN.TabStop = true;
+            this.rbCAN.Text = "CAN";
+            this.rbCAN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.rbCAN.UseVisualStyleBackColor = true;
             // 
             // DefinePartPanel
             // 
@@ -547,7 +579,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(533, 0);
             this.Name = "DefinePartPanel";
-            this.Size = new System.Drawing.Size(533, 212);
+            this.Size = new System.Drawing.Size(533, 242);
             this.NodeGroupBox.ResumeLayout(false);
             this.NodeGroupBox.PerformLayout();
             this.MainTableLayout.ResumeLayout(false);
@@ -615,5 +647,7 @@
         private System.Windows.Forms.CheckBox chkBoxHasBrake;
         private System.Windows.Forms.TabPage metaElevatorStages;
         private System.Windows.Forms.ComboBox cmbStages;
+        private System.Windows.Forms.RadioButton rbPWM;
+        private System.Windows.Forms.RadioButton rbCAN;
     }
 }
