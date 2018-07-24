@@ -84,8 +84,8 @@ public partial class DriveChooser : Form
             {
                 joint.cDriver.InputGear = 1;
             }
-            OutputGeartxt.Text = Convert.ToString(joint.cDriver.OutputGear);// reads the existing gearing and writes it to the input field so the user sees their existing value
-            InputGeartxt.Text = Convert.ToString(joint.cDriver.InputGear);// reads the existing gearing and writes it to the input field so the user sees their existing value
+            OutputGeartxt.Value = (decimal) joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+            InputGeartxt.Value = (decimal) joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
 
             #region Meta info recovery
             {
@@ -144,8 +144,8 @@ public partial class DriveChooser : Form
             txtPortB.Value = txtPortB.Minimum;
             txtLowLimit.Value = txtLowLimit.Minimum;
             txtHighLimit.Value = txtHighLimit.Minimum;
-            InputGeartxt.Text = "1";
-            OutputGeartxt.Text = "1";
+            InputGeartxt.Value = (decimal) 1.0;
+            OutputGeartxt.Value = (decimal) 1.0;
 
             cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
             cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
@@ -168,15 +168,9 @@ public partial class DriveChooser : Form
 
         double inputGear = 1, outputGear = 1;
         
-        try
-        {
-            inputGear = Convert.ToDouble(InputGeartxt.Text);
-            outputGear = Convert.ToDouble(OutputGeartxt.Text);// reads from the text file to determine whether or not we should save
-        }
-        catch (Exception)
-        { // catches any non-numeric values, we tell the user that theres an issue later in the program, this is just a saving program, so it doesn't need to worry too much about the exception
-        }
-
+        inputGear = (double) InputGeartxt.Value;
+        outputGear = (double)OutputGeartxt.Value;
+                
         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
         WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
@@ -305,35 +299,9 @@ public partial class DriveChooser : Form
 
             double inputGear = 1, outputGear = 1;
 
-            try
-            {
-                inputGear = Convert.ToDouble(InputGeartxt.Text);// tries to parse the double from the input gear
-            }
-            catch (FormatException fe)// catches the user putting non-nummerical characters into the input
-            {
-                canClose = false;// prevent the user from saving until the issue is fixed
-                MessageBox.Show("Error: please make sure that the gear field has only numbers [ input gear ], please fix before saving");
-            }
-            catch (OverflowException oe)// catches other issues
-            {
-                canClose = false;// prevent the user from saving until the issue is fixed
-                MessageBox.Show("Error: the number provided is not supported as a possible gear ratio [ input gear ], please fix before saving");
-            }
+            inputGear = (double)InputGeartxt.Value;
 
-            try
-            {
-                outputGear = Convert.ToDouble(OutputGeartxt.Text);// tries to parse the double from the output gear
-            }
-            catch (FormatException fe)// catches the user putting non-nummerical characters into the input
-            {
-                canClose = false;// prevent the user from saving until the issue is fixed
-                MessageBox.Show("Error: please make sure that the gear field has only numbers [ output gear ], please fix before saving");
-            }
-            catch (OverflowException oe)// catches other issues
-            {
-                canClose = false;// prevent the user from saving until the issue is fixed
-                MessageBox.Show("Error: the number provided is not supported as a possible gear ratio [ output gear ], please fix before saving");
-            }
+           outputGear = (double)OutputGeartxt.Value;// tries to parse the double from the output gear
 
             joint.cDriver = new JointDriver(cType)
             {
