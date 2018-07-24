@@ -107,13 +107,13 @@ namespace BxDRobotExporter.Wizard
                         tabsMeta.Visible = true;
                         this.PortLayout.RowStyles[1].SizeType = SizeType.Percent;
                         this.PortLayout.RowStyles[1].Height = 50F;
-                        PortsGroupBox.Text = "PWM Port";
-                        PortOneLabel.Text = "PWM Port:";
+                        PortsGroupBox.Text = "Port";
+                        PortOneLabel.Text = "Port:";
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
                         if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
-                        PortOneLabel.Visible = false;
+                        PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;
                         unit = "°";
@@ -122,12 +122,10 @@ namespace BxDRobotExporter.Wizard
                         this.PortsGroupBox.Visible = true;
                         this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
                         this.PortLayout.RowStyles[1].Height = 0;
-                        this.rbCAN.Visible = false;
-                        this.rbPWM.Visible = false;
                         this.tabsMeta.Visible = false;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
-                        PortOneLabel.Visible = false;
+                        PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;
                         unit = "°";
@@ -135,6 +133,8 @@ namespace BxDRobotExporter.Wizard
                     case 3: //Bumper Pneumatics
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                        this.PortLayout.RowStyles[1].Height = 0;
                         PortOneLabel.Text = "Solenoid Port 1:";
                         PortTwoLabel.Text = "Solenoid Port 2:";
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
@@ -150,23 +150,27 @@ namespace BxDRobotExporter.Wizard
                     case 4: //Relay Pneumatics
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                        this.PortLayout.RowStyles[1].Height = 0;
                         PortOneLabel.Text = "Relay Port:";
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
                         if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                         PortsGroupBox.Text = "Relay Port";
-                        PortOneLabel.Visible = false;
+                        PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;
-                        unit = "cm";
+                        unit = "cm"; 
                         break;
                     case 5: //Worm Screw
                         this.PortsGroupBox.Visible = true;
                         this.tabsMeta.Visible = false;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                        this.PortLayout.RowStyles[1].Height = 0;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
-                        PortOneLabel.Visible = false;
+                        PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;
                         unit = "°";
@@ -174,9 +178,11 @@ namespace BxDRobotExporter.Wizard
                     case 6: //Dual Motor
                         this.PortsGroupBox.Visible = true;
                         this.tabsMeta.Visible = true;
-                        PortsGroupBox.Text = "PWM Ports";
-                        PortOneLabel.Text = "PWM Port 1:";
-                        PortTwoLabel.Text = "PWM Port 2:";
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Percent;
+                        this.PortLayout.RowStyles[1].Height = 50F;
+                        PortsGroupBox.Text = "Ports";
+                        PortOneLabel.Text = "Port 1:";
+                        PortTwoLabel.Text = "Port 2:";
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
@@ -198,13 +204,15 @@ namespace BxDRobotExporter.Wizard
                     case 1: //Elevator
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                        this.PortLayout.RowStyles[1].Height = 0;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
                         if (!tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Add(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
                         if (!tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Add(metaElevatorStages);
-                        PortOneLabel.Visible = false;
+                        PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;
                         unit = "°";
@@ -212,6 +220,8 @@ namespace BxDRobotExporter.Wizard
                     case 2: //Bumper Pneumatics
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                        this.PortLayout.RowStyles[1].Height = 0;
                         PortOneLabel.Text = "Solenoid Port 1:";
                         PortTwoLabel.Text = "Solenoid Port 2:";
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
@@ -227,13 +237,15 @@ namespace BxDRobotExporter.Wizard
                     case 3: //Relay Pneumatics
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                        this.PortLayout.RowStyles[1].Height = 0;
                         PortOneLabel.Text = "Relay Port:";
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
                         if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                         PortsGroupBox.Text = "Relay Port";
-                        PortOneLabel.Visible = false;
+                        PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;
                         unit = "cm";
@@ -241,9 +253,11 @@ namespace BxDRobotExporter.Wizard
                     case 4: //Worm Screw
                         this.PortsGroupBox.Visible = true;
                         this.tabsMeta.Visible = false;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                        this.PortLayout.RowStyles[1].Height = 0;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
-                        PortOneLabel.Visible = false;
+                        PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;
                         unit = "°";
