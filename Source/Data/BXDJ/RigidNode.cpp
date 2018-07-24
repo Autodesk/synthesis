@@ -142,7 +142,7 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 	switch (joint->jointMotion()->jointType())
 	{
 	case fusion::JointTypes::RevoluteJointType:
-		addJoint(RotationalJoint(RigidNode(child)));
+		addJoint(RotationalJoint(RigidNode(child), joint->jointMotion()));
 		break;
 
 	default:

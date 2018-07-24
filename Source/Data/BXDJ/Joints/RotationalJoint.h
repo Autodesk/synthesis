@@ -8,10 +8,16 @@ namespace BXDJ
 	class RotationalJoint : public AngularJoint
 	{
 	public:
-		//RotationalJoint(const RigidNode & child, const adsk::fusion::RevoluteJointMotion &);
+		RotationalJoint(const RigidNode & child, core::Ptr<fusion::RevoluteJointMotion>);
+		RotationalJoint(const RotationalJoint &);
+
+		Vector3<float> getAxisOfRotation();
+		float getCurrentAngle();
+		float getUpperLimit();
+		float getLowerLimit();
 
 	private:
-		adsk::fusion::RevoluteJointMotion * fusionJoint;
+		core::Ptr<fusion::RevoluteJointMotion> fusionJoint;
 
 	};
 }
