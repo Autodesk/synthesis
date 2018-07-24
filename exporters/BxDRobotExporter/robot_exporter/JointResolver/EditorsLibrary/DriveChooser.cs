@@ -334,7 +334,16 @@ public partial class DriveChooser : Form
                 canClose = false;// prevent the user from saving until the issue is fixed
                 MessageBox.Show("Error: the number provided is not supported as a possible gear ratio [ output gear ], please fix before saving");
             }
-
+            if (outputGear > 1000)
+            {
+                MessageBox.Show("Error, output gear cannot be larger than 1000");
+                canClose = false;
+            }
+            if (inputGear > 1000)
+            {
+                MessageBox.Show("Error, input gear cannot be larger than 1000");
+                canClose = false;
+            }
             joint.cDriver = new JointDriver(cType)
             {
                 portA = (int)txtPortA.Value,
