@@ -11,11 +11,8 @@ namespace BXDA
 	{
 	public:
 		SubMesh();
-		~SubMesh();
 
 		SubMesh(const SubMesh &);
-		SubMesh(const std::vector<Vertex> &);
-		SubMesh(const std::vector<Vertex> &, const std::vector<Surface> &);
 
 		void addVertices(std::vector<Vertex>);
 		void addSurface(const Surface &);
@@ -23,8 +20,8 @@ namespace BXDA
 		void getConvexCollider(SubMesh &) const; // Fills a submesh with a convex collider of this mesh. NOT FULLY IMPLEMENTED
 
 	private:
-		std::vector<Vertex*> vertices;
-		std::vector<Surface*> surfaces;
+		std::vector<Vertex> vertices;
+		std::vector<std::shared_ptr<Surface>> surfaces;
 
 		void write(BinaryWriter &) const;
 
