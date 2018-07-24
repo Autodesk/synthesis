@@ -8,7 +8,7 @@ XmlWriter::XmlWriter(std::string file, bool lightWeight)
 	this->lightWeight = lightWeight;
 
 	if (outputFile.is_open())
-		outputFile << "<?xml version = \"1.0\" encoding = \"utf-8\"?>";
+		outputFile << "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 }
 
 XmlWriter::~XmlWriter()
