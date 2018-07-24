@@ -177,7 +177,7 @@ namespace BxDRobotExporter.Wizard
             {
                 NodeListBox.Enabled = true;
                 AutoFillButton.Enabled = true;
-                DefineWheelsInstruction.Text = "Drag wheel parts from the list to the left into the appropriate column below.";
+                DefineWheelsInstruction.Text = "Drag wheel parts from the list into the appropriate column below.";
             }
             else
             {
