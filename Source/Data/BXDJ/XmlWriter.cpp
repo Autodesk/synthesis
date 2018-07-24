@@ -42,7 +42,7 @@ void XmlWriter::writeElement(std::string name, std::string innerXml)
 	// Write opening, content, and closing on same line
 	currentElement->innerXml += indent(elementStack.size()) + "<" + name + ">";
 	currentElement->innerXml += innerXml;
-	currentElement->innerXml += indent(elementStack.size()) + "</" + name + ">" + (lightWeight ? "" : "\n");
+	currentElement->innerXml += "</" + name + ">" + (lightWeight ? "" : "\n");
 
 	if (elementStack.empty())
 	{
