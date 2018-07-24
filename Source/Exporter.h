@@ -32,9 +32,8 @@ namespace Synthesis
 		Exporter(Ptr<Application>);
 		~Exporter();
 
-		void exportMeshes();
 		void exportExample();
-		void buildNodeTree();
+		void exportMeshes();
 
 	private:
 		Ptr<Application> fusionApplication;

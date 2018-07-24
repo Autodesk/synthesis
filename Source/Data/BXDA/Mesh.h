@@ -13,6 +13,7 @@ namespace BXDA
 		Mesh();
 		
 		void addSubMesh(const SubMesh &);
+		void addSubMesh(std::shared_ptr<SubMesh>);
 		void addPhysics(const Physics &);
 
 		std::string getGUID() const;

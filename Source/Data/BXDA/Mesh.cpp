@@ -12,6 +12,11 @@ void Mesh::addSubMesh(const SubMesh & submesh)
 	subMeshes.push_back(std::make_shared<SubMesh>(submesh));
 }
 
+void Mesh::addSubMesh(std::shared_ptr<SubMesh> submesh)
+{
+	subMeshes.push_back(submesh);
+}
+
 void BXDA::Mesh::addPhysics(const Physics & physics)
 {
 	this->physics += physics;
