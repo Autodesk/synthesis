@@ -560,7 +560,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public void CancelNodeSelection()
         {
-            changeSensorNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+            //changeSensorNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
             cancelNodeSelectionButton.SetActive(false);
             deleteSensorButton.SetActive(true);
             hideSensorButton.SetActive(true);
@@ -709,9 +709,9 @@ namespace Synthesis.Sensors
             lockAngleButton.SetActive(false);
             lockRangeButton.SetActive(false);
 
-            showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
-            showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
-            sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+            //showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
+            //showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
+            //sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
 
             sensorAnglePanel.SetActive(false);
             sensorRangePanel.SetActive(false);
