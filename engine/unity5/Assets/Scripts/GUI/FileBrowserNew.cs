@@ -19,39 +19,12 @@ namespace Crosstales.FB.Demo
         {
             //Debug.Log("OpenSingleFolder");
 
-            string path = FB.FileBrowserNew.OpenSingleFolder("Open Folder", Environment.SpecialFolder.ApplicationData + "//synthesis//Fields");
+            string path = FB.FileBrowser.OpenSingleFolder("Open Folder", Environment.SpecialFolder.ApplicationData + "//synthesis//Fields");
 
             //Debug.Log("Selected folder: " + path);
 
             RebuildList(path);
         }
-
-        public void OpenFiles()
-        {
-            //Debug.Log("OpenFiles");
-
-            /*
-            var extensions = new[] {
-                new ExtensionFilter("Image Files", "png", "jpg", "jpeg" ),
-                new ExtensionFilter("Sound Files", "mp3", "wav" ),
-                new ExtensionFilter("All Files", "*" ),
-            };
-            */
-
-            string extensions = "";
-
-            string[] paths = FileBrowserNew.OpenFiles("Open Files", "", .bxdf, true);
-
-            /*
-            foreach (string path in paths)
-            {
-                Debug.Log("Selected file: " + path);
-            }
-            */
-
-            RebuildList(paths);
-        }
-
 
         private void RebuildList(params string[] e)
         {
