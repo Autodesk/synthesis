@@ -1,4 +1,4 @@
-#include "RigidNode.h"
+#include "Joint.h"
 
 using namespace BXDJ;
 

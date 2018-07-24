@@ -24,7 +24,7 @@ namespace BXDJ
 		RigidNode(core::Ptr<fusion::Component>);
 
 		void getMesh(BXDA::Mesh &) const;
-		
+
 		template<typename JointVariant>
 		void addJoint(const JointVariant &);
 		
@@ -35,7 +35,7 @@ namespace BXDJ
 		struct JointSummary
 		{
 			std::vector<core::Ptr<fusion::Occurrence>> children;
-			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Occurrence>>> parents;
+			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> parents;
 		};
 
 		// Stores all component occurences that are grouped into this node
@@ -47,6 +47,7 @@ namespace BXDJ
 
 		JointSummary getJointSummary(core::Ptr<fusion::Component>);
 		void buildTree(core::Ptr<fusion::Occurrence>, JointSummary &);
+		void addJoint(core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>, JointSummary &);
 
 		// Gets the level of a component occurence in the heirarchy
 		static int levelOfOccurrence(core::Ptr<fusion::Occurrence>);
@@ -58,17 +59,4 @@ namespace BXDJ
 	{
 		childrenJoints.push_back(new JointVariant(joint));
 	}
-
-	// Links RigidNodes together
-	class Joint
-	{
-	public:
-		Joint(const Joint &);
-		Joint(const RigidNode &);
-		~Joint();
-
-	private:
-		RigidNode * child;
-
-	};
 };

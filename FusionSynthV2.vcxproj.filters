@@ -51,9 +51,6 @@
     <ClInclude Include="Source\Data\BXDA\Surface.h">
       <Filter>Headers\Data\BXDA</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Data\BXDJ\RigidNode.h">
-      <Filter>Headers\Data\BXDJ</Filter>
-    </ClInclude>
     <ClInclude Include="Source\AddIn\CustomHandlers.h">
       <Filter>Headers\AddIn</Filter>
     </ClInclude>
@@ -83,6 +80,12 @@
     </ClInclude>
     <ClInclude Include="Source\Data\BXDJ\Joints\AngularJoint.h">
       <Filter>Headers\Data\BXDJ\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Joint.h">
+      <Filter>Headers\Data\BXDJ</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\RigidNode.h">
+      <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
