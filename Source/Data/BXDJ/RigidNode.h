@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <algorithm>
 #include <Fusion/FusionAll.h>
 #include <Core/Geometry/Point3D.h>
 #include "../BXDA/Mesh.h"
@@ -20,17 +21,20 @@ namespace BXDJ
 		RigidNode();
 		~RigidNode();
 		RigidNode(core::Ptr<fusion::Component>);
+		RigidNode(core::Ptr<fusion::Occurrence>);
 
-		bool getMesh(BXDA::Mesh &);
+		void getMesh(BXDA::Mesh &) const;
 		
 		template<typename JointVariant>
 		void addJoint(const JointVariant &);
 
 	private:
-		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurences;
+		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurrences;
 		std::vector<Joint *> childrenJoints;
 
 		void buildTree(core::Ptr<fusion::Component>);
+
+		static int levelOfOccurrence(core::Ptr<fusion::Occurrence>);
 
 	};
 
