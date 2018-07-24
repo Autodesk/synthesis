@@ -17,6 +17,7 @@
 #include "Data/BXDA/Mesh.h"
 #include "Data/BXDJ/RigidNode.h"
 #include "Data/BXDA/BinaryWriter.h"
+#include "Data/BXDJ/XmlWriter.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;
@@ -33,6 +34,7 @@ namespace Synthesis
 		~Exporter();
 
 		void exportExample();
+		void exportExampleXml();
 		void exportMeshes();
 
 	private:

@@ -36,6 +36,17 @@ void Exporter::exportExample()
 	binary.write(mesh);
 }
 
+void Exporter::exportExampleXml()
+{
+	std::string filename = "C:\\Users\\t_walkn\\Desktop\\exampleFusionXml.bxdj";
+	BXDJ::XmlWriter xml(filename, false);
+	xml.writeElement("test", "value");
+	xml.startElement("document");
+	xml.writeElement("inner", "value");
+	xml.writeAttribute("attr", "attrVal");
+	xml.endElement();
+}
+
 void Exporter::exportMeshes()
 {
 	Ptr<UserInterface> userInterface = fusionApplication->userInterface();

@@ -12,7 +12,7 @@ namespace BXDJ
 	class XmlWriter
 	{
 	public:
-		XmlWriter(std::string file, bool lightWeight = false);
+		XmlWriter(std::string file, bool lightWeight = true);
 		~XmlWriter();
 
 		void startElement(std::string);
