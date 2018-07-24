@@ -10,6 +10,9 @@ namespace hel{
 
     void SPISystem::setAutoTriggerConfig(tSPI::tAutoTriggerConfig config){
         auto_trigger_config = config;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     tSPI::tAutoByteCount SPISystem::getAutoByteCount()const{
@@ -18,6 +21,9 @@ namespace hel{
 
     void SPISystem::setAutoByteCount(tSPI::tAutoByteCount count){
         auto_byte_count = count;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     tSPI::tChipSelectActiveHigh SPISystem::getChipSelectActiveHigh()const{
@@ -26,6 +32,9 @@ namespace hel{
 
     void SPISystem::setChipSelectActiveHigh(tSPI::tChipSelectActiveHigh select){
         chip_select_active_high = select;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     uint8_t SPISystem::getAutoChipSelect()const{
@@ -34,6 +43,9 @@ namespace hel{
 
     void SPISystem::setAutoChipSelect(uint8_t select){
         auto_chip_select = select;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     bool SPISystem::getAutoSPI1Select()const{
@@ -42,6 +54,9 @@ namespace hel{
 
     void SPISystem::setAutoSPI1Select(bool select){
         auto_spi_1_select = select;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     uint32_t SPISystem::getAutoRate()const{
@@ -50,6 +65,9 @@ namespace hel{
 
     void SPISystem::setAutoRate(uint32_t rate){
         auto_rate = rate;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     uint8_t SPISystem::getEnabledDIO()const{
@@ -58,6 +76,9 @@ namespace hel{
 
     void SPISystem::setEnabledDIO(uint8_t enabled){
         enabled_dio = enabled;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     SPISystem::SPISystem():auto_trigger_config(),auto_byte_count(),chip_select_active_high(),auto_chip_select(),auto_spi_1_select(),auto_rate(),enabled_dio(){}

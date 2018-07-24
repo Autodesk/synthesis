@@ -11,7 +11,8 @@ void hel::SendData::update(){
         return;
     }
 
-    auto instance = RoboRIOManager::getInstance(nullptr);
+    RoboRIO roborio(RoboRIOManager::getCopy());
+
     int32_t status = 0;
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
         pwm_hdrs[i] = HAL_GetPWMSpeed(i, &status);
@@ -46,7 +47,7 @@ void hel::SendData::update(){
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){
         digital_mxp[i].config = [&](){
-            if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){
+            if(checkBitHigh(roborio.digital_system.getMXPSpecialFunctionsEnabled(), i)){
                 if(
                     i == 0  || i == 1  ||
                     i == 2  || i == 3  ||
@@ -66,7 +67,7 @@ void hel::SendData::update(){
                     return hel::MXPData::Config::I2C;
                 }
             }
-            tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+            tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();
             if(checkBitHigh(output_mode.MXP,i)){
                 return hel::MXPData::Config::DO;
             }
@@ -96,7 +97,7 @@ void hel::SendData::update(){
         status = 0; //reset status between HAL calls
     }
     {
-        tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+        tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();
         for(unsigned i = 0; i < digital_hdrs.size(); i++){
             if(checkBitHigh(output_mode.MXP,i)){
                 digital_hdrs[i] = HAL_GetDIO(i, &status);
@@ -108,7 +109,7 @@ void hel::SendData::update(){
             status = 0; //reset status between HAL calls
         }
     }
-    instance.second.unlock();
+    gen_serialization = true;
 }
 
 std::string hel::to_string(hel::SendData::RelayState r){
@@ -137,30 +138,34 @@ std::string hel::SendData::toString()const{
     return s;
 }
 
-std::string hel::SendData::serialize()const{
-    std::string s = "{\"roborio\":{";
+std::string hel::SendData::serialize(){
+    if(!gen_serialization){
+        return serialized_data;
+    }
 
-    s += serializeList("\"pwm_hdrs\"", pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
-    s += ",";
-    s += serializeList(
+    serialized_data = "{\"roborio\":{";
+
+    serialized_data += serializeList("\"pwm_hdrs\"", pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
+    serialized_data += ",";
+    serialized_data += serializeList(
         "\"relays\"",
         relays,
         std::function<std::string(RelayState)>([&](RelayState r){
             return hel::quote(hel::to_string(r));
         })
     );
-    s += ",";
-    s += serializeList("\"analog_outputs\"", analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
-    s += ",";
-    s += serializeList(
+    serialized_data += ",";
+    serialized_data += serializeList("\"analog_outputs\"", analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
+    serialized_data += ",";
+    serialized_data += serializeList(
         "\"digital_mxp\"",
         digital_mxp,
         std::function<std::string(hel::MXPData)>([&](MXPData data){
             return "{\"config\":" + hel::quote(hel::to_string(data.config)) + ",\"value\":" + std::to_string(data.value) + "}";
         })
     );
-    s += ",";
-    s += serializeList(
+    serialized_data += ",";
+    serialized_data += serializeList(
         "\"digital_hdrs\"", 
         digital_hdrs,
         std::function<std::string(bool)>([&](bool b){
@@ -169,6 +174,7 @@ std::string hel::SendData::serialize()const{
     );
     //TODO finish
 
-    s += "}}";
-    return s;
+    serialized_data += "}}";
+    gen_serialization = false;
+    return serialized_data;
 }
