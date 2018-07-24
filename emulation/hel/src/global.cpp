@@ -1,6 +1,8 @@
 #include "roborio.hpp"
 #include <chrono>
 
+#include "sync_server.hpp"
+
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tGlobal.h"
 
@@ -78,13 +80,15 @@ namespace hel{
 }
 
 std::thread sync_thread;
+std::thread sync_thread2;
 
 namespace nFPGA{
     namespace nRoboRIO_FPGANamespace{
     	tGlobal* tGlobal::create(tRioStatusCode* /*status*/){
-          asio::io_service service;
-          hel::SyncServer serv(service);
-          sync_thread = std::thread([&serv](){while(1){serv.startSync();}});
+          sync_thread = std::thread([](){
+                                        asio::io_service service;
+                                        hel::SyncServer serv(service);
+                                    });
           return new hel::GlobalManager();
     	}
     }
