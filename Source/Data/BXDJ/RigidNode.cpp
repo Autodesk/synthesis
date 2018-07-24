@@ -5,9 +5,12 @@
 using namespace BXDJ;
 
 RigidNode::RigidNode()
-{}
+{
+	guid = "0ba8e1ce-1004-4523-b844-9bfa69efada9";
+	parentID = "-1";
+}
 
-RigidNode::RigidNode(const RigidNode & nodeToCopy)
+RigidNode::RigidNode(const RigidNode & nodeToCopy) : RigidNode()
 {
 	for (core::Ptr<fusion::Occurrence> occurence : nodeToCopy.fusionOccurrences)
 		fusionOccurrences.push_back(occurence);
@@ -15,10 +18,12 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy)
 	for (std::shared_ptr<Joint> joint : nodeToCopy.childrenJoints)
 		childrenJoints.push_back(joint);
 
+	parentID = nodeToCopy.parentID;
+
 	log = nodeToCopy.log;
 }
 
-RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent)
+RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent) : RigidNode()
 {
 	JointSummary jointSummary = getJointSummary(rootComponent);
 	
@@ -117,6 +122,39 @@ void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence, JointSum
 	log += "\n";
 }
 
+void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent, JointSummary & jointSummary)
+{
+	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
+	log += "Jointing occurence \"" + child->fullPathName() + "\"\n";
+
+	switch (joint->jointMotion()->jointType())
+	{
+	case fusion::JointTypes::RevoluteJointType:
+		addJoint(std::make_shared<RotationalJoint>(RigidNode(child, guid, jointSummary), joint->jointMotion()));
+		break;
+
+	default:
+		buildTree(child, jointSummary);
+	}
+}
+
+void RigidNode::write(XmlWriter & output) const
+{
+	output.startElement("Node");
+	output.writeAttribute("GUID", guid);
+
+	output.writeElement("ParentID", parentID);
+	output.writeElement("ModelFileName", guid + ".bxda");
+	output.writeElement("ModelID", "modelID");
+
+	output.endElement();
+
+	for (std::shared_ptr<Joint> joint : childrenJoints)
+	{
+		output.write(*joint);
+	}
+}
+
 int RigidNode::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
 {
 	std::string pathName = occurrence->fullPathName();
@@ -127,20 +165,4 @@ int RigidNode::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
 			count++;
 
 	return count;
-}
-
-void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent, JointSummary & jointSummary)
-{
-	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
-	log += "Jointing occurence \"" + child->fullPathName() + "\"\n";
-
-	switch (joint->jointMotion()->jointType())
-	{
-	case fusion::JointTypes::RevoluteJointType:
-		addJoint(std::make_shared<RotationalJoint>(RigidNode(child, jointSummary), joint->jointMotion()));
-		break;
-
-	default:
-		buildTree(child, jointSummary);
-	}
 }
