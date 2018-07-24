@@ -11,9 +11,9 @@ RigidNode::~RigidNode()
 		delete joint;
 }
 
-RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occurence)
+RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent)
 {
-	addOccurence(occurence);
+	buildTree(rootComponent);
 }
 
 bool RigidNode::getMesh(BXDA::Mesh & mesh)
@@ -59,55 +59,26 @@ bool RigidNode::getMesh(BXDA::Mesh & mesh)
 	return true;
 }
 
-bool RigidNode::addOccurence(core::Ptr<fusion::Occurrence> occurence)
+void RigidNode::buildTree(core::Ptr<fusion::Component> rootComponent)
 {
-	evilGlobalVariableForPrinting += "Occurence \"" + occurence->fullPathName();
+	std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> jointedOccurences;
 
-	// Check if the occurence already exists
-	/*for (core::Ptr<fusion::Occurrence> existingOccurence : fusionOccurences)
+	// Find all joints in the structure
+	for (core::Ptr<fusion::Joint> joint : rootComponent->allJoints())
 	{
-		if (existingOccurence == occurence)
-		{
-			evilGlobalVariableForPrinting += " skipped\n";
-			return false;
-		}
-	}*/
+		if (jointedOccurences.find(joint->occurrenceOne()) == jointedOccurences.end)
+			jointedOccurences[joint->occurrenceOne()] = std::vector<core::Ptr<fusion::Joint>>();
+		jointedOccurences[joint->occurrenceOne()].push_back(joint);
 
-	evilGlobalVariableForPrinting += " added\n";
+		if (jointedOccurences.find(joint->occurrenceTwo()) == jointedOccurences.end)
+			jointedOccurences[joint->occurrenceTwo()] = std::vector<core::Ptr<fusion::Joint>>();
+		jointedOccurences[joint->occurrenceTwo()].push_back(joint);
+	}
 
-	// Add it to the list of occurences
-	fusionOccurences.push_back(occurence);
-
-	for (core::Ptr<fusion::Occurrence> subOccurence : occurence->childOccurrences())
-		addOccurence(subOccurence);
-
-	// Add any occurences attached by rigid joints, and connect any occurences connected by other joints
-	/*if (occurence->joints() != nullptr)
+	// Add all unjointed occurences in the first level of the component to the root node
+	for (core::Ptr<fusion::Occurrence> occurence : rootComponent->occurrences())
 	{
-		for (core::Ptr<fusion::Joint> joint : occurence->joints())
-		{
-			if (joint->jointMotion()->jointType() == fusion::JointTypes::RigidJointType)
-			{
-				if (joint->occurrenceOne()->fullPathName() != occurence->fullPathName())
-				{
-					if (parent == nullptr || joint->occurrenceOne()->fullPathName() != parent->fullPathName())
-						addOccurence(joint->occurrenceOne(), occurence);
-				}
-				else
-				{
-					if (parent == nullptr || joint->occurrenceTwo()->fullPathName() != parent->fullPathName())
-						addOccurence(joint->occurrenceTwo(), occurence);
-				}
-			}
-			else if (joint->jointMotion()->jointType() == fusion::JointTypes::RevoluteJointType)
-			{
-				/*if (joint->occurrenceOne() != nullptr && joint->occurrenceOne()->name() != occurence->name())
-				childrenJoints.push_back(new Joint(RigidNode(joint->occurrenceOne())));
-				else if (joint->occurrenceTwo() != nullptr)
-				childrenJoints.push_back(new Joint(RigidNode(joint->occurrenceTwo())));*//*
-			}
-		}
-	}*/
-
-	return true;
+		if (jointedOccurences.find[occurence] == jointedOccurences.end)
+			fusionOccurences.push_back(occurence);
+	}
 }
