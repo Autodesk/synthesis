@@ -584,6 +584,7 @@ namespace Synthesis.States
         {
             SelectedBody = null;
             //(PlayerPrefs.GetInt("analytics") == 1.ToString());
+            //(SimUI.changeAnalytics.ToString());
             if (PlayerPrefs.GetInt("analytics") == 1)
             {
                 Analytics.CustomEvent("Replay Mode", new Dictionary<string, object>

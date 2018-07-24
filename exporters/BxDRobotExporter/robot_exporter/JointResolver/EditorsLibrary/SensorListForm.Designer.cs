@@ -112,11 +112,9 @@
             this.Controls.Add(this.addSensorButton);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.sensorListView);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(416, 251);
             this.Name = "SensorListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
