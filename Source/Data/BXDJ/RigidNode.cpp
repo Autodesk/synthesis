@@ -11,6 +11,15 @@ RigidNode::~RigidNode()
 		delete joint;
 }
 
+RigidNode::RigidNode(const RigidNode & nodeToCopy)
+{
+	for (core::Ptr<fusion::Occurrence> occurence : nodeToCopy.fusionOccurrences)
+		fusionOccurrences.push_back(occurence);
+
+	for (Joint * joint : nodeToCopy.childrenJoints)
+		childrenJoints.push_back(new Joint(*joint));
+}
+
 RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent)
 {
 	JointSummary jointSummary = getJointSummary(rootComponent);
@@ -67,8 +76,10 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 	// Find all jointed occurrences in the structure
 	for (core::Ptr<fusion::Joint> joint : rootComponent->allJoints())
 	{
-		core::Ptr<fusion::Joint> lowerOccurrence;
-		core::Ptr<fusion::Joint> upperOccurrence;
+		core::Ptr<fusion::Occurrence> lowerOccurrence;
+		core::Ptr<fusion::Occurrence> upperOccurrence;
+
+		// Find which occurence is higher in the heirarchy
 		if (levelOfOccurrence(joint->occurrenceOne()) > levelOfOccurrence(joint->occurrenceTwo()))
 		{
 			lowerOccurrence = joint->occurrenceOne();
