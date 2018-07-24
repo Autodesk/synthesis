@@ -7,35 +7,44 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
     tDIO::tDO DigitalSystem::getOutputs()const{
-    	return outputs;
+        return outputs;
     }
 
     void DigitalSystem::setOutputs(tDIO::tDO value){
-    	outputs = value;
+        outputs = value;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const{
-    	return enabled_outputs;
+        return enabled_outputs;
     }
 
     void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable value){
-    	enabled_outputs = value;
+        enabled_outputs = value;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     tDIO::tPulse DigitalSystem::getPulses()const{
-    	return pulses;
+        return pulses;
     }
 
     void DigitalSystem::setPulses(tDIO::tPulse value){
-    	pulses = value;
+        pulses = value;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     tDIO::tDI DigitalSystem::getInputs()const{
-    	return inputs;
+        return inputs;
     }
 
     void DigitalSystem::setInputs(tDIO::tDI value){
-    	inputs = value;
+        inputs = value;
     }
 
     uint16_t DigitalSystem::getMXPSpecialFunctionsEnabled()const{
@@ -43,23 +52,29 @@ namespace hel{
     }
 
     void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
-    	mxp_special_functions_enabled = value;
+        mxp_special_functions_enabled = value;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     uint8_t DigitalSystem::getPulseLength()const{
-    	return pulse_length;
+        return pulse_length;
     }
 
     void DigitalSystem::setPulseLength(uint8_t value){
-    	pulse_length = value;
+        pulse_length = value;
     }
 
     uint8_t DigitalSystem::getPWMDutyCycle(uint8_t index)const{
-    	return pwm[index];
+        return pwm[index];
     }
 
     void DigitalSystem::setPWMDutyCycle(uint8_t index, uint8_t value){
-    	pwm[index] = value;
+        pwm[index] = value;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     DigitalSystem::DigitalSystem():outputs(),enabled_outputs(),pulses(),inputs(),mxp_special_functions_enabled(),pulse_length(),pwm(){}
@@ -476,9 +491,9 @@ namespace hel{
 
 namespace nFPGA{
     namespace nRoboRIO_FPGANamespace{
-    	tDIO* tDIO::create(tRioStatusCode* /*status*/){
-    		return new hel::DIOManager();
-    	}
+        tDIO* tDIO::create(tRioStatusCode* /*status*/){
+            return new hel::DIOManager();
+        }
     }
 }
 

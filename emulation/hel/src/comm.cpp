@@ -198,6 +198,9 @@ namespace hel{
 
     void Joystick::setOutputs(uint32_t outs){
          outputs = outs;
+         auto instance = SendDataManager::getInstance();
+         instance.first->update();
+         instance.second.unlock();
     }
 
     uint16_t Joystick::getLeftRumble()const{
@@ -206,6 +209,9 @@ namespace hel{
 
     void Joystick::setLeftRumble(uint16_t rumble){
          left_rumble = rumble;
+         auto instance = SendDataManager::getInstance();
+         instance.first->update();
+         instance.second.unlock();
     }
 
     uint16_t Joystick::getRightRumble()const{
@@ -214,6 +220,9 @@ namespace hel{
 
     void Joystick::setRightRumble(uint16_t rumble){
         right_rumble = rumble;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     std::string Joystick::toString()const{

@@ -11,6 +11,9 @@ namespace hel{
 
     void PWMSystem::setConfig(tPWM::tConfig value){
     	config = value;
+      auto instance = SendDataManager::getInstance();
+      instance.first->update();
+      instance.second.unlock();
     }
 
     uint32_t PWMSystem::getHdrPeriodScale(uint8_t index)const{
@@ -19,6 +22,9 @@ namespace hel{
 
     void PWMSystem::setHdrPeriodScale(uint8_t index, uint32_t value){
     	hdr[index].period_scale = value;
+      auto instance = SendDataManager::getInstance();
+      instance.first->update();
+      instance.second.unlock();
     }
 
     uint32_t PWMSystem::getMXPPeriodScale(uint8_t index)const{
@@ -27,6 +33,9 @@ namespace hel{
 
     void PWMSystem::setMXPPeriodScale(uint8_t index, uint32_t value){
     	mxp[index].period_scale = value;
+      auto instance = SendDataManager::getInstance();
+      instance.first->update();
+      instance.second.unlock();
     }
 
     uint32_t PWMSystem::getHdrDutyCycle(uint8_t index)const{
@@ -35,6 +44,9 @@ namespace hel{
 
     void PWMSystem::setHdrDutyCycle(uint8_t index, uint32_t value){
         hdr[index].duty_cycle = value;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     uint32_t PWMSystem::getMXPDutyCycle(uint8_t index)const{
@@ -43,6 +55,9 @@ namespace hel{
 
     void PWMSystem::setMXPDutyCycle(uint8_t index, uint32_t value){
     	mxp[index].duty_cycle = value;
+      auto instance = SendDataManager::getInstance();
+      instance.first->update();
+      instance.second.unlock();
     }
 
     PWMSystem::PWM::PWM():period_scale(0), duty_cycle(0){}
