@@ -84,12 +84,8 @@ void Exporter::buildNodeTree()
 {
 	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
-	Ptr<OccurrenceList> rootOccurences = document->design()->rootComponent()->occurrences()->asList();
 	
-	BXDJ::RigidNode rootNode;
-
-	for (Ptr<Occurrence> occurence : rootOccurences)
-		rootNode.addOccurence(occurence);
+	BXDJ::RigidNode rootNode(document->design()->rootComponent());
 
 	/*std::vector<Ptr<Occurrence>> allTreeRootOccurences;
 

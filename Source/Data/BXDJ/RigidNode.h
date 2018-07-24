@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <Fusion/FusionAll.h>
 #include <Core/Geometry/Point3D.h>
 #include "../BXDA/Mesh.h"
@@ -18,19 +19,18 @@ namespace BXDJ
 	public:
 		RigidNode();
 		~RigidNode();
-		RigidNode(core::Ptr<fusion::Occurrence>);
+		RigidNode(core::Ptr<fusion::Component>);
 
 		bool getMesh(BXDA::Mesh &);
 		
-		bool addOccurence(core::Ptr<fusion::Occurrence>);
 		template<typename JointVariant>
 		void addJoint(const JointVariant &);
-
-		std::string evilGlobalVariableForPrinting = "";
 
 	private:
 		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurences;
 		std::vector<Joint *> childrenJoints;
+
+		void buildTree(core::Ptr<fusion::Component>);
 
 	};
 
