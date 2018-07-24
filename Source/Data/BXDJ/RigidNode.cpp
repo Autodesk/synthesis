@@ -18,6 +18,8 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy)
 
 	for (Joint * joint : nodeToCopy.childrenJoints)
 		childrenJoints.push_back(new Joint(*joint));
+
+	log = nodeToCopy.log;
 }
 
 RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent)
@@ -101,6 +103,7 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence, JointSummary & jointSummary)
 {
 	// Add the occurence to this node
+	log += "Adding occurence \"" + rootOccurrence->fullPathName() + "\"\n";
 	fusionOccurrences.push_back(rootOccurrence);
 
 	// Create a joint from this occurence if it is the parent of a joint
@@ -120,7 +123,6 @@ void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence, JointSum
 		// Add the occurence to this node if it is not the child of a joint
 		if (std::find(jointSummary.children.begin(), jointSummary.children.end(), occurrence) == jointSummary.children.end())
 		{
-			log += "Adding occurence \"" + occurrence->fullPathName() + "\"\n";
 			buildTree(occurrence, jointSummary);
 		}
 	}
