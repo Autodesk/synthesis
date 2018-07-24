@@ -23,11 +23,8 @@ void hel::SendData::update(){
 
     for(unsigned i = 0; i < relays.size(); i++){
         relays[i] = [&](){
-            bool forward = HAL_GetRelay(i, &status);
-			status = 0; //reset status between HAL calls
-            bool reverse = HAL_GetRelay(i + RelaySystem::NUM_RELAY_HEADERS, &status);
-			status = 0; //reset status between HAL calls
-
+            bool forward = checkBitHigh(instance.first->relay_system.getValue().Forward, i);
+            bool reverse  = checkBitHigh(instance.first->relay_system.getValue().Reverse, i);
             if(forward){
                 if(reverse){
                     return RelayState::ERROR;
@@ -77,11 +74,7 @@ void hel::SendData::update(){
 
         switch(digital_mxp[i].config){
         case hel::MXPData::Config::DO:
-            digital_mxp[i].value = HAL_GetDIO(i + DigitalSystem::NUM_DIGITAL_HEADERS, &status);
-            if(!digital_mxp[i].value){
-                status = 0;
-                digital_mxp[i].value = HAL_IsPulsing(i + DigitalSystem::NUM_DIGITAL_HEADERS, &status);
-            }
+            digital_mxp[i].value = (checkBitHigh(instance.first->digital_system.getOutputs().MXP, i) | checkBitHigh(instance.first->digital_system.getPulses().MXP, i));
             break;
         case hel::MXPData::Config::PWM:
             {
@@ -104,15 +97,12 @@ void hel::SendData::update(){
     }
     {
         tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+        auto values = instance.first->digital_system.getOutputs().Headers;
+        auto pulses = instance.first->digital_system.getPulses().Headers;
         for(unsigned i = 0; i < digital_hdrs.size(); i++){
-            if(checkBitHigh(output_mode.MXP,i)){
-                digital_hdrs[i] = HAL_GetDIO(i, &status);
-                if(!digital_hdrs[i]){
-                    status = 0;
-                    digital_hdrs[i] = HAL_IsPulsing(i, &status);
-                }
+            if(checkBitHigh(output_mode.Headers, i)){
+                digital_hdrs[i] = (checkBitHigh(values, i) | checkBitHigh(pulses, i));
             }
-            status = 0; //reset status between HAL calls
         }
     }
     gen_serialization = true;
