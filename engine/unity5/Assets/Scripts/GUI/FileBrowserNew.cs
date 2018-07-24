@@ -53,6 +53,8 @@ namespace Crosstales.FB
 
         private DirectoryInfo tempSelection;
 
+        string path = FB.FileBrowser.OpenSingleFolder("Open Folder", Environment.SpecialFolder.ApplicationData + "//synthesis//Fields");
+
         public FileBrowserNew(string windowTitle, bool allowEsc = true)
         {
             Init(windowTitle, Directory.GetParent(Application.dataPath).FullName, allowEsc);
