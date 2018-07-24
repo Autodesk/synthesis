@@ -8,33 +8,50 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
-    void AnalogInputs::setConfig(tAI::tConfig value) {config = value;}
-    tAI::tConfig AnalogInputs::getConfig() {return config;}
+    void AnalogInputs::setConfig(tAI::tConfig value){
+        config = value;
+    }
 
-    void AnalogInputs::setReadSelect(tAI::tReadSelect value) {read_select = value;}
-    tAI::tReadSelect AnalogInputs::getReadSelect() {return read_select;}
+    tAI::tConfig AnalogInputs::getConfig(){
+        return config;
+    }
 
-    void AnalogInputs::setOversampleBits(uint8_t channel, uint8_t value) {
+    void AnalogInputs::setReadSelect(tAI::tReadSelect value){
+        read_select = value;
+    }
+
+    tAI::tReadSelect AnalogInputs::getReadSelect(){
+        return read_select;
+    }
+
+    void AnalogInputs::setOversampleBits(uint8_t channel, uint8_t value){
         analog_inputs[channel].oversample_bits = value;
     }
-    uint8_t AnalogInputs::getOversampleBits(uint8_t channel) {
+
+    uint8_t AnalogInputs::getOversampleBits(uint8_t channel){
         return analog_inputs[channel].oversample_bits;
     }
-    void AnalogInputs::setAverageBits(uint8_t channel, uint8_t value) {
-            analog_inputs[channel].average_bits = value;
+
+    void AnalogInputs::setAverageBits(uint8_t channel, uint8_t value){
+        analog_inputs[channel].average_bits = value;
     }
-    uint8_t AnalogInputs::getAverageBits(uint8_t channel) {
+
+    uint8_t AnalogInputs::getAverageBits(uint8_t channel){
         return analog_inputs[channel].average_bits;
     }
-    void AnalogInputs::setScanList(uint8_t channel, uint8_t value) {
+
+    void AnalogInputs::setScanList(uint8_t channel, uint8_t value){
         analog_inputs[channel].scan_list = value;
     }
-    uint8_t AnalogInputs::getScanList(uint8_t channel) {
+
+    uint8_t AnalogInputs::getScanList(uint8_t channel){
         return analog_inputs[channel].scan_list;
     }
+
     std::vector<int32_t> AnalogInputs::getValues(uint8_t channel){
         return analog_inputs[channel].values;
     }
+
     void AnalogInputs::setValues(uint8_t channel, std::vector<int32_t> values){
         analog_inputs[channel].values = values;
     }
