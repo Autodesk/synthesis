@@ -173,6 +173,10 @@ namespace hel{
         PWMSystem();
     };
 
-}
 
+    /**
+     *
+     */
+    double getSpeed(uint32_t pulse_width);
+}
 #endif

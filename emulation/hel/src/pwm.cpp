@@ -186,6 +186,30 @@ namespace hel{
             return instance.first->pwm_system.getMXPDutyCycle(reg_index);
         }
     };
+    double getSpeed(uint32_t pulse_width) {
+        // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
+        const int32_t max = 1499;
+        const int32_t deadband_max = 1000;
+        const int32_t center = 999;
+        const int32_t deadband_min = 998;
+        const int32_t  min = 499;
+
+        if (pulse_width == 0) {
+            return 0.0;
+        } else if (pulse_width > max) {
+            return 1.0;
+        } else if (pulse_width < min) {
+            return -1.0;
+        } else if (pulse_width > 1000) {
+            return static_cast<double>(pulse_width - 1000) / static_cast<double>(500);
+        } else if (pulse_width < 999) {
+            return static_cast<double>(pulse_width - 999) / static_cast<double>(500);
+        } else {
+            return 0.0;
+        }
+
+ 
+    }
 }
 
 namespace nFPGA{
