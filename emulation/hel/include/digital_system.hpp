@@ -4,6 +4,9 @@
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tDIO.h"
 
+#include <string>
+#include <exception>
+
 namespace hel{
     struct DigitalSystem{
 		static constexpr int32_t NUM_DIGITAL_HEADERS = 10; //hal::kNumDigitalHeaders
@@ -52,7 +55,18 @@ namespace hel{
         std::array<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
 
     public:
+        struct DIOConfigurationException: public std::exception{
+            enum class Config{DI,DO,MXP_SPECIAL_FUNCTION};
+        private:
+            Config configuration;
+            Config expected_configuration;
+            uint8_t port;
 
+        public:
+            const char* what()const throw();
+
+            DIOConfigurationException(Config, Config, uint8_t);
+        };
         /**
          * \fn
          */
@@ -139,6 +153,8 @@ namespace hel{
 
         DigitalSystem();
     };
+
+    std::string to_string(DigitalSystem::DIOConfigurationException::Config);
 }
 
 #endif

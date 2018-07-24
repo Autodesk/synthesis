@@ -3,6 +3,8 @@
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccel.h"
 
+#include "error.hpp"
+
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
@@ -141,13 +143,13 @@ namespace hel{
                             return;
                         default:
                             instance.second.unlock();
-                            return; //TODO error handling 
+                            return; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::Register");
                     }
                     instance.second.unlock();
                     return;
                 default:
                     instance.second.unlock();
-                    return; //TODO error handling
+                    return; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::ControlMode");
             }
         }
 
@@ -186,36 +188,37 @@ namespace hel{
         uint8_t readDATI(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             switch(instance.first->accelerometer.getCommTargetReg()){
-                case Accelerometer::Register::kReg_WhoAmI:
-                    instance.second.unlock();
-                    return ID;
-                case Accelerometer::Register::kReg_CtrlReg1:
-                    instance.second.unlock();
-                    return instance.first->accelerometer.getActive();
-                case Accelerometer::Register::kReg_XYZDataCfg:
-                    instance.second.unlock();
-                    return instance.first->accelerometer.getRange();
-                case Accelerometer::Register::kReg_OutXMSB:
-                    instance.second.unlock();
-                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getXAccel()).first;
-                case Accelerometer::Register::kReg_OutXLSB:
-                    instance.second.unlock();
-                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getXAccel()).second;
-                case Accelerometer::Register::kReg_OutYMSB:
-                    instance.second.unlock();
-                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).first;
-                case Accelerometer::Register::kReg_OutYLSB:
-                    instance.second.unlock();
-                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).second;
-                case Accelerometer::Register::kReg_OutZMSB:
-                    instance.second.unlock();
-                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).first;
-                case Accelerometer::Register::kReg_OutZLSB:
-                    instance.second.unlock();
-                    return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).second;
+            case Accelerometer::Register::kReg_WhoAmI:
+                instance.second.unlock();
+                return ID;
+            case Accelerometer::Register::kReg_CtrlReg1:
+                instance.second.unlock();
+                return instance.first->accelerometer.getActive();
+            case Accelerometer::Register::kReg_XYZDataCfg:
+                instance.second.unlock();
+                return instance.first->accelerometer.getRange();
+            case Accelerometer::Register::kReg_OutXMSB:
+                instance.second.unlock();
+                return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getXAccel()).first;
+            case Accelerometer::Register::kReg_OutXLSB:
+                instance.second.unlock();
+                return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getXAccel()).second;
+            case Accelerometer::Register::kReg_OutYMSB:
+                instance.second.unlock();
+                return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).first;
+            case Accelerometer::Register::kReg_OutYLSB:
+                instance.second.unlock();
+                return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getYAccel()).second;
+            case Accelerometer::Register::kReg_OutZMSB:
+                instance.second.unlock();
+                return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).first;
+            case Accelerometer::Register::kReg_OutZLSB:
+                instance.second.unlock();
+                return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).second;
+            default:
+                instance.second.unlock();
+                return 0; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::Register");
             }
-            instance.second.unlock();
-            return 0; //TODO error handling
         }
 
         void strobeGO(tRioStatusCode* /*status*/){} //unnecessary for emulation
