@@ -37,7 +37,7 @@ void hel::SendData::update(){
     }
 
     for(unsigned i = 0; i < analog_outputs.size(); i++){
-        analog_outputs[i] = 0; //TODO
+        analog_outputs[i] = (instance.first->analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
     }
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){

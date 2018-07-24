@@ -3,6 +3,7 @@
 
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAO.h"
+#include "bounds_checked_array.hpp"
 
 #include "bounds_checked_array.hpp"
 
@@ -14,15 +15,15 @@ namespace hel{
      * Holds all internal data needed to model analog outputs on the RoboRIO.
      */
     struct AnalogOutputs{
-		static constexpr int32_t NUM_ANALOG_OUTPUTS = 4; //hal::kNumAnalogOutputs
+		static constexpr int32_t NUM_ANALOG_OUTPUTS = 2; //nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters>
 
     private:
         /**
-         * \var BoundsCheckedArray<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs
+         * \var BoundsCheckedArray<uint16_t, NUM_ANALOG_OUTPUTS> mxp_outputs
          * \brief Analog output data
          *
          */
-        BoundsCheckedArray<uint16_t, nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters> mxp_outputs;
+        BoundsCheckedArray<uint16_t, NUM_ANALOG_OUTPUTS> mxp_outputs;
 
     public:
         /**

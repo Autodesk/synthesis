@@ -2,23 +2,33 @@
 #include "send_data.hpp"
 
 #include <unistd.h>
+
+using asio::ip::tcp;
+
 namespace hel {
 
     void handle(const asio::error_code&, std::size_t){}
 
+    SyncServer::SyncServer(asio::io_service& io)   {
+        endpoint = asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 11001);
+        startSync(io);
+    }
 
-    void SyncServer::startSync() {
+    void SyncServer::startSync(asio::io_service& io) {
+        asio::ip::tcp::socket socket(io);
+        asio::ip::tcp::acceptor acceptor(io, endpoint);
+        acceptor.accept(socket);
+        while(1) {
 
-        auto instance = hel::SendDataManager::getInstance();
-        auto data =  instance.first->serialize();
+            auto instance = hel::SendDataManager::getInstance();
+            auto data =  instance.first->serialize();
 
-        printf("%s\n", data.c_str());
+            asio::write(socket, asio::buffer(data), asio::transfer_all());
 
-        //asio::ip::udp::endpoint dest(asio::ip::address::from_string("127.0.0.1"), 11000);
-
-        //socket.send_to(asio::buffer(data.c_str(), data.length()),
-        //                     dest);
-        instance.second.unlock();
-        usleep(30000);
+            packet_number++;
+            printf("%d\n", packet_number);
+            instance.second.unlock();
+            usleep(30000);
+        }
     }
 }
