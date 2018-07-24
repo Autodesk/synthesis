@@ -14,7 +14,7 @@ namespace BXDJ
 		~Joint();
 
 	private:
-		RigidNode * child;
+		std::shared_ptr<RigidNode> child;
 
 	};
 };
