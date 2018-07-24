@@ -843,10 +843,20 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ShowSensorOutput()
         {
-            sensorOutputPanel.SetActive(true);
-            isHidingOutput = false;
-            showSensorButton.SetActive(false);
-            sensorOutputPanel.transform.position = showSensorButton.transform.position;
+            if (sensorOutputPanel.activeSelf)
+            {
+                sensorOutputPanel.SetActive(false);
+                //isHidingOutput = true;
+                //showSensorButton.SetActive(true);
+                //showSensorButton.transform.position = sensorOutputPanel.transform.position;
+            }
+            else
+            {
+                sensorOutputPanel.SetActive(true);
+                //isHidingOutput = false;
+                //showSensorButton.SetActive(false);
+                //sensorOutputPanel.transform.position = showSensorButton.transform.position;
+            }
         }
 
         /// <summary>
@@ -855,9 +865,9 @@ namespace Synthesis.Sensors
         public void HideSensorOutput()
         {
             sensorOutputPanel.SetActive(false);
-            isHidingOutput = true;
-            showSensorButton.SetActive(true);
-            showSensorButton.transform.position = sensorOutputPanel.transform.position;
+            //isHidingOutput = true;
+            //showSensorButton.SetActive(true);
+            //showSensorButton.transform.position = sensorOutputPanel.transform.position;
         }
         #endregion
 
