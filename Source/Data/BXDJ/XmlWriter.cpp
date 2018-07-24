@@ -6,6 +6,9 @@ XmlWriter::XmlWriter(std::string file, bool lightWeight)
 {
 	outputFile.open(file);
 	this->lightWeight = lightWeight;
+
+	if (outputFile.is_open())
+		outputFile << "<?xml version = \"1.0\" encoding = \"utf-8\"?>";
 }
 
 XmlWriter::~XmlWriter()
@@ -40,9 +43,9 @@ void XmlWriter::writeElement(std::string name, std::string innerXml)
 		currentElement = new XmlElement();
 
 	// Write opening, content, and closing on same line
-	currentElement->innerXml += indent(elementStack.size()) + "<" + name + ">";
+	currentElement->innerXml += (lightWeight ? "" : "\n") + indent(elementStack.size()) + "<" + name + ">";
 	currentElement->innerXml += innerXml;
-	currentElement->innerXml += "</" + name + ">" + (lightWeight ? "" : "\n");
+	currentElement->innerXml += "</" + name + ">";
 
 	if (elementStack.empty())
 	{
@@ -65,20 +68,19 @@ void XmlWriter::endElement()
 		currentElement = new XmlElement();
 
 	// Print out opening bracket
-	currentElement->innerXml += indent(elementStack.size()) + "<" + endingElement->name;
+	currentElement->innerXml += (lightWeight ? "" : "\n") + indent(elementStack.size()) + "<" + endingElement->name;
 
 	if (endingElement->attributes.size() > 0)
 		for (Attribute attr : endingElement->attributes)
 			currentElement->innerXml += " " + attr.name + "=\"" + attr.value + "\"";
 
 	currentElement->innerXml += ">";
-	currentElement->innerXml += (lightWeight ? "" : "\n");
 
 	// Print out inner XML
 	currentElement->innerXml += endingElement->innerXml;
 
 	// Print out closing bracket
-	currentElement->innerXml += indent(elementStack.size()) + "</" + endingElement->name + ">" + (lightWeight ? "" : "\n");
+	currentElement->innerXml += (lightWeight ? "" : "\n") + indent(elementStack.size()) + "</" + endingElement->name + ">";
 
 	// If the closed item was the last in the stack, print to file
 	if (elementStack.empty())

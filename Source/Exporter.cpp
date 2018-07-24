@@ -40,10 +40,14 @@ void Exporter::exportExampleXml()
 {
 	std::string filename = "C:\\Users\\t_walkn\\Desktop\\exampleFusionXml.bxdj";
 	BXDJ::XmlWriter xml(filename, false);
-	xml.writeElement("test", "value");
-	xml.startElement("document");
-	xml.writeElement("inner", "value");
-	xml.writeAttribute("attr", "attrVal");
+	xml.startElement("BXDJ");
+	xml.writeAttribute("Version", "3.0.0");
+	xml.startElement("Node");
+	xml.writeAttribute("GUID", "0ba8e1ce-1004-4523-b844-9bfa69efada9");
+	xml.writeElement("ParentID", "-1");
+	xml.writeElement("ModelFileName", "node_0.bxda");
+	xml.writeElement("ModelID", "Part2:1");
+	xml.endElement();
 	xml.endElement();
 }
 
