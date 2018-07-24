@@ -34,5 +34,14 @@ namespace Synthesis.States
             else
                 UserMessageManager.Dispatch("Only the host can cancel synchronization!", 8f);
         }
+
+        /// <summary>
+        /// Indicates to the server that this state is ready for any awaiting
+        /// state changes.
+        /// </summary>
+        public void SendReadySignal()
+        {
+            PlayerIdentity.LocalInstance.CmdSetReady(true);
+        }
     }
 }

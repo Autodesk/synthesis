@@ -17,23 +17,12 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            string robotFile = PlayerPrefs.GetString("simSelectedRobot") + "\\skeleton.bxdj";
+            if (Host)
+                MatchManager.Instance.UpdateFieldGuid();
 
-            if (!File.Exists(robotFile))
-            {
-                MatchManager.Instance.CmdCancelSync();
-                return;
-            }
+            PlayerIdentity.LocalInstance.UpdateRobotGuid();
 
-            RigidNode_Base root = BXDJSkeleton.ReadSkeleton(robotFile);
-
-            if (root == null)
-            {
-                MatchManager.Instance.CmdCancelSync();
-                return;
-            }
-
-            PlayerIdentity.LocalInstance.CmdSetRobotGuid(root.GUID.ToString());
+            MatchManager.Instance.AwaitChangeState<AnalyzingResourcesState>(false);
         }
 
         /// <summary>
@@ -41,11 +30,10 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
-            if (!Host)
-                return;
-
-            if (UnityEngine.Object.FindObjectsOfType<PlayerIdentity>().All(p => p.robotGuid.Length > 0))
-                MatchManager.Instance.ChangeState<AnalyzingResourcesState>(false);
+            if (!PlayerIdentity.LocalInstance.ready &&
+                MatchManager.Instance.FieldGuid.Length > 0 &&
+                UnityEngine.Object.FindObjectsOfType<PlayerIdentity>().All(p => p.robotGuid.Length > 0))
+                SendReadySignal();
         }
     }
 }
