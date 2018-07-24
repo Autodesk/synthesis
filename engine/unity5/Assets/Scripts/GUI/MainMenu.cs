@@ -6,6 +6,7 @@ using Synthesis.FSM;
 using System.Reflection;
 using Synthesis.States;
 using Synthesis.Utils;
+using Assets.Scripts.GUI;
 
 namespace Synthesis.GUI
 {
@@ -51,14 +52,6 @@ namespace Synthesis.GUI
             StateMachine.SceneGlobal.ChangeState(new SimTabState());
         }
 
-        /// <summary>
-        /// Switches to the options tab and its respective UI elements.
-        /// </summary>
-        public void SwitchTabOptions()
-        {
-            StateMachine.SceneGlobal.ChangeState(new OptionsTabState());
-        }
-
         //Exits the program
         public void Exit()
         {
@@ -71,10 +64,11 @@ namespace Synthesis.GUI
         /// </summary>
         void Start()
         {
-            LinkTabs();
             FindAllGameObjects();
-            RegisterButtonCallbacks();
             splashScreen.SetActive(true); //Turns on the loading screen while initializing
+            LinkTabs();
+            ButtonCallbackManager.RegisterButtonCallbacks(StateMachine.SceneGlobal, gameObject);
+            ButtonCallbackManager.RegisterDropdownCallbacks(StateMachine.SceneGlobal, gameObject);
 
             //Creates the replay directory
             FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\");
@@ -131,43 +125,12 @@ namespace Synthesis.GUI
             LinkTab<LoadFieldState>("SimLoadField");
         }
 
-        /// <summary>
-        /// Links a tab to the provided <see cref="State"/> type from the tab's name.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="tabName"></param>
         private void LinkTab<T>(string tabName, bool strict = true) where T : State
         {
             GameObject tab = Auxiliary.FindGameObject(tabName);
 
             if (tab != null)
                 StateMachine.SceneGlobal.Link<T>(tab, true, strict);
-        }
-
-        /// <summary>
-        /// Finds each Button component in the main menu that doesn't already have a
-        /// listener and registers it with a callback.
-        /// </summary>
-        private void RegisterButtonCallbacks()
-        {
-            foreach (Button b in GetComponentsInChildren<Button>(true))
-                if (b.onClick.GetPersistentEventCount() == 0)
-                    b.onClick.AddListener(() => InvokeCallback("On" + b.name + "Pressed"));
-        }
-
-        /// <summary>
-        /// Invokes a method in the active <see cref="State"/> by the given method name.
-        /// </summary>
-        /// <param name="methodName"></param>
-        private void InvokeCallback(string methodName)
-        {
-            State currentState = StateMachine.SceneGlobal.CurrentState;
-            MethodInfo info = currentState.GetType().GetMethod(methodName);
-
-            if (info == null)
-                Debug.LogWarning("Method " + methodName + " does not have a listener in " + currentState.GetType().ToString());
-            else
-                info.Invoke(currentState, null);
         }
 
         /// <summary>

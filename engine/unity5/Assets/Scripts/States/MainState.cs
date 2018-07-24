@@ -21,7 +21,6 @@ using Synthesis.Sensors;
 using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
-
 namespace Synthesis.States
 {
     /// <summary>
@@ -41,6 +40,7 @@ namespace Synthesis.States
 
         private UnityPacket unityPacket;
 
+        // TODO: Create more robot classes that suit the needs of MainState.
         public SimulatorRobot ActiveRobot { get; private set; }
 
         private DynamicCamera dynamicCamera;
@@ -60,11 +60,11 @@ namespace Synthesis.States
         private string robotPath;
 
         public List<SimulatorRobot> SpawnedRobots { get; private set; }
-        private const int MaxRobots = 6;
+        private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
 
-        public static List<List<GameObject>> spawnedGamepieces = new List<List<GameObject>>() {new List<GameObject>(), new List<GameObject>()};
+        public static List<List<GameObject>> spawnedGamepieces = new List<List<GameObject>>() { new List<GameObject>(), new List<GameObject>() };
         /// <summary>
         /// Called when the script instance is being initialized.
         /// Initializes the bullet physics environment
@@ -169,6 +169,7 @@ namespace Synthesis.States
             {
                 if (UnityEngine.Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
+
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
@@ -178,6 +179,7 @@ namespace Synthesis.States
 
             // Switches to replay mode
             if (!ActiveRobot.IsResetting && UnityEngine.Input.GetKeyDown(KeyCode.Tab))
+            //if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -245,12 +247,16 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobot(string directory, bool isMixAndMatch)
         {
-            if (SpawnedRobots.Count < MaxRobots)
+            if (SpawnedRobots.Count < MAX_ROBOTS)
             {
                 if (isMixAndMatch)
+                {
                     robotPath = RobotTypeManager.RobotPath;
+                }
                 else
+                {
                     robotPath = directory;
+                }
 
                 GameObject robotObject = new GameObject("Robot");
                 SimulatorRobot robot;
@@ -296,6 +302,7 @@ namespace Synthesis.States
             sensorManagerGUI.EndProcesses();
 
             RemoveRobot(SpawnedRobots.IndexOf(ActiveRobot));
+            //ActiveRobot = null;
 
             if (LoadRobot(directory, isMixAndMatch))
             {
@@ -305,6 +312,18 @@ namespace Synthesis.States
             }
 
             return false;
+
+            // Old code below. Not exactly possible with new robot structure.
+
+            //if (ActiveRobot.RobotHasManipulator)
+            //{
+            //    ActiveRobot.DeleteManipulatorNodes();
+            //    ActiveRobot.RobotHasManipulator = false;
+            //}
+
+            //ActiveRobot.RobotIsMixAndMatch = isMixAndMatch;
+
+            //return ActiveRobot.InitializeRobot(directory);
         }
 
         /// <summary>
@@ -370,6 +389,8 @@ namespace Synthesis.States
             {
                 robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
                 sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
+
+                // TODO: The camera is a bit weird when changing robots. Fix that. Then test other aspects of the simulator and fix anything else that needs fixing.
 
                 MaMRobot mamRobot = SpawnedRobots[index] as MaMRobot;
 
@@ -500,7 +521,7 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
         {
-            if (SpawnedRobots.Count >= MaxRobots)
+            if (SpawnedRobots.Count >= MAX_ROBOTS)
                 return false;
 
             robotPath = baseDirectory;
@@ -531,8 +552,7 @@ namespace Synthesis.States
             lastFrameCount = physicsWorld.frameCount;
             Tracking = true;
 
-            if (!awaitingReplay)
-                CollisionTracker.Reset();
+            CollisionTracker.Reset();
         }
 
         /// <summary>

@@ -17,6 +17,7 @@ using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.Utils;
 using Synthesis.Robot;
+using Assets.Scripts.GUI;
 
 namespace Synthesis.GUI
 {
@@ -40,49 +41,43 @@ namespace Synthesis.GUI
         GameObject canvas;
 
         GameObject freeroamCameraWindow;
-        GameObject spawnPointPanel;
+        GameObject spawnpointPanel;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
         GameObject changeFieldPanel;
-        GameObject multiplayerPanel;
 
+        GameObject mixAndMatchPanel;
+        GameObject changePanel;
+        GameObject addPanel;
+        GameObject driverStationSettingsPanel;
         GameObject driverStationPanel;
 
         GameObject inputManagerPanel;
         GameObject bindedKeyPanel;
         GameObject checkSavePanel;
         GameObject unitConversionSwitch;
+
         GameObject hotKeyButton;
         GameObject hotKeyPanel;
-
         GameObject analyticsPanel;
-
-        GameObject mixAndMatchPanel;
-        GameObject changePanel;
-        GameObject addPanel;
-        GameObject toolkitPanel;
-        GameObject driverStationSettingsPanel;
 
         GameObject toolbar;
 
         GameObject exitPanel;
+        GameObject loadingPanel;
 
         GameObject orientWindow;
-        bool isOrienting = false;
         GameObject resetDropdown;
-
-        GameObject loadingPanel;
 
         HashSet<GameObject> panels = new HashSet<GameObject>();
 
         private bool freeroamWindowClosed = false;
-
         private bool oppositeSide = false;
-
         public static bool inputPanelOn = false;
+        public static bool changeAnalytics = true;
 
-        SettingsMode settingsMode;
+        private StateMachine tabStateMachine;
 
         private void Update()
         {
@@ -158,8 +153,8 @@ namespace Synthesis.GUI
             canvas = GameObject.Find("Canvas");
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
-            spawnPointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
-            multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
+            spawnpointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
+            //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
@@ -185,29 +180,18 @@ namespace Synthesis.GUI
             toolbar = Auxiliary.FindObject(canvas, "Toolbar");
             changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
             addPanel = Auxiliary.FindObject(canvas, "AddPanel");
-            toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
+            //toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
             driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
-            //Fix this - temporary workaround
-            panels.Add(freeroamCameraWindow);
-            panels.Add(spawnPointPanel);
-            panels.Add(multiplayerPanel);
-            panels.Add(driverStationPanel);
-            panels.Add(changeRobotPanel);
-            panels.Add(changeFieldPanel);
-            panels.Add(inputManagerPanel);
-            panels.Add(checkSavePanel);
-            panels.Add(hotKeyPanel);
-            panels.Add(orientWindow);
-            panels.Add(analyticsPanel);
-            panels.Add(mixAndMatchPanel);
-            panels.Add(changePanel);
-            panels.Add(addPanel);
-            panels.Add(toolkitPanel);
-            panels.Add(driverStationSettingsPanel);
-            //Fix this - temporary workaround
+            tabStateMachine = Auxiliary.FindGameObject("Tabs").GetComponent<StateMachine>();
 
             CheckControlPanel();
+
+            LinkToolbars();
+            tabStateMachine.ChangeState(new MainToolbarState());
+
+            ButtonCallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
+            ButtonCallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
         }
 
         private void UpdateWindows()
@@ -218,6 +202,27 @@ namespace Synthesis.GUI
             UpdateDriverStationPanel();
         }
 
+        #region tab buttons
+        public void OnMainTab(string option)
+        {
+            tabStateMachine.ChangeState(new MainToolbarState());
+        }
+
+        public void OnDPMTab(string option)
+        {
+            tabStateMachine.ChangeState(new DPMToolbarState());
+        }
+
+        public void OnScoringTab(string option)
+        {
+            tabStateMachine.ChangeState(new ScoringToolbarState());
+        }
+
+        public void OnSensorTab(string option)
+        {
+            tabStateMachine.ChangeState(new SensorToolbarState());
+        }
+        #endregion
         #region change robot/field functions
         public void ChangeRobot()
         {
@@ -329,8 +334,44 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
             }
-
         }
+        public void TogglePanel(GameObject panel)
+        {
+            if (panel.activeSelf == true)
+            {
+                panel.SetActive(false);
+            }
+            else
+            {
+                panel.SetActive(true);
+            }
+        }
+
+        public void ToggleAddRobotPanel()
+        {
+            if (addPanel.activeSelf == true)
+            {
+                addPanel.SetActive(false);
+            }
+            else
+            {
+                addPanel.SetActive(true);
+                changePanel.SetActive(false);
+            }
+        }
+
+        //public void ToggleChangePanel()
+        //{
+        //    if (changePanel.activeSelf == true)
+        //    {
+        //        changePanel.SetActive(false);
+        //    }
+        //    else
+        //    {
+        //        changePanel.SetActive(true);
+        //        addPanel.SetActive(false);
+        //    }
+        //}
 
         #endregion
         #region camera button functions
@@ -456,7 +497,7 @@ namespace Synthesis.GUI
         }
 
         #endregion
-        #region control panel functions
+        #region control panel and analytics functions
         /// <summary>
         /// Toggle the control panel ON/OFF based on the boolean passed.
         /// </summary>
@@ -533,6 +574,25 @@ namespace Synthesis.GUI
             }
         }
 
+        public void CheckForSavedControls(string option)
+        {
+            checkSavePanel.SetActive(false);
+
+            switch (option)
+            {
+                case "yes":
+                    Controls.Save();
+                    break;
+                case "no":
+                    Controls.Load();
+                    inputManagerPanel.SetActive(false);
+                    break;
+                case "cancel":
+                    inputManagerPanel.SetActive(true);
+                    break;
+            }
+        }
+
         /// <summary>
         /// Open tutorial link
         /// </summary>
@@ -560,6 +620,21 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 analyticsPanel.SetActive(true);
                 inputManagerPanel.SetActive(true);
+            }
+        }
+
+        /// <summary>
+        /// Toggle for analytics
+        /// </summary>
+        public void ToggleAnalytics(bool tAnalytics)
+        {
+            if (PlayerPrefs.GetInt("analytics") == 0)
+            {
+                PlayerPrefs.SetInt("analytics", 1);
+            }
+            else
+            {
+                PlayerPrefs.SetInt("analytics", 0);
             }
         }
 
@@ -611,12 +686,12 @@ namespace Synthesis.GUI
         {
             if (State.ActiveRobot.IsResetting)
             {
-                spawnPointPanel.SetActive(true);
+                spawnpointPanel.SetActive(true);
                 orientWindow.SetActive(true);
             }
             else
             {
-                spawnPointPanel.SetActive(false);
+                spawnpointPanel.SetActive(false);
                 orientWindow.SetActive(false);
             }
         }
@@ -680,26 +755,6 @@ namespace Synthesis.GUI
             }
         }
 
-        public void CheckForSavedControls(string option)
-        {
-            checkSavePanel.SetActive(false);
-
-            switch (option)
-            {
-                case "yes":
-                    Controls.Save();
-                    break;
-                case "no":
-                    Controls.Load();
-                    inputManagerPanel.SetActive(false);
-                    break;
-                case "cancel":
-                    inputManagerPanel.SetActive(true);
-                    break;
-            }
-        }
-
-
         /// <summary>
         /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
         /// </summary>
@@ -723,20 +778,6 @@ namespace Synthesis.GUI
             sensorManagerGUI.EndProcesses();
             robotCameraGUI.EndProcesses();
         }
-        /// <summary>
-        /// Toggle for analytics
-        /// </summary>
-        public void ToggleAnalytics(bool tAnalytics)
-        {
-            if (PlayerPrefs.GetInt("analytics") == 0)
-            {
-                PlayerPrefs.SetInt("analytics", 1);
-            }
-            else
-            {
-                PlayerPrefs.SetInt("analytics", 0);
-            }
-        }
 
         /// <summary>
         /// Enters replay mode
@@ -746,42 +787,30 @@ namespace Synthesis.GUI
             State.EnterReplayState();
         }
 
-        public void TogglePanel(GameObject panel)
+
+        /// <summary>
+        /// Links the specific toolbars to their specified states
+        /// </summary>
+        private void LinkToolbars()
         {
-            if (panel.activeSelf == true)
-            {
-                panel.SetActive(false);
-            }
-            else
-            {
-                panel.SetActive(true);
-            }
+            LinkToolbar<MainToolbarState>("MainToolbar");
+            LinkToolbar<DPMToolbarState>("DPMToolbar");
+            LinkToolbar<ScoringToolbarState>("ScoringToolbar");
+            LinkToolbar<SensorToolbarState>("SensorToolbar");
         }
 
-        public void ToggleAddRobotPanel()
+        /// <summary>
+        /// Links each gameobject "tab" to the specified state
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tabName"></param>
+        /// <param name="strict"></param>
+        private void LinkToolbar<T>(string tabName, bool strict = true) where T : State
         {
-            if (addPanel.activeSelf == true)
-            {
-                addPanel.SetActive(false);
-            }
-            else
-            {
-                addPanel.SetActive(true);
-                changePanel.SetActive(false);
-            }
-        }
+            GameObject tab = Auxiliary.FindGameObject(tabName);
 
-        public void ToggleChangePanel()
-        {
-            if (changePanel.activeSelf == true)
-            {
-                changePanel.SetActive(false);
-            }
-            else
-            {
-                changePanel.SetActive(true);
-                addPanel.SetActive(false);
-            }
+            if (tab != null)
+                tabStateMachine.Link<T>(tab, strict);
         }
     }
 }

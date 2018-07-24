@@ -7,6 +7,7 @@ using Synthesis.GUI;
 using Synthesis.Input;
 using Synthesis.States;
 using Synthesis.Utils;
+using Assets.Scripts.GUI;
 
 namespace Synthesis.DriverPractice
 {
@@ -15,6 +16,7 @@ namespace Synthesis.DriverPractice
 
         private DriverPracticeRobot dpmRobot;
         private SimUI simUI;
+        private MainToolbarState mainToolbarState;
 
         GameObject canvas;
 
@@ -25,6 +27,8 @@ namespace Synthesis.DriverPractice
         GameObject setSpawnWindow;
         GameObject defineGamepieceWindow;
 
+        Wizard dpmSetupWizard;
+
         GameObject releaseVelocityPanel;
 
         GameObject xOffsetEntry;
@@ -33,8 +37,6 @@ namespace Synthesis.DriverPractice
         GameObject releaseSpeedEntry;
         GameObject releaseVerticalEntry;
         GameObject releaseHorizontalEntry;
-
-        Text enableDPMText;
 
         Text primaryGamepieceText;
         Text secondaryGamepieceText;
@@ -73,7 +75,7 @@ namespace Synthesis.DriverPractice
         private float deltaReleaseVertical;
 
         private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
-        
+
 
         bool isEditing = false;
 
@@ -135,13 +137,20 @@ namespace Synthesis.DriverPractice
             defineGamepieceWindow = Auxiliary.FindObject(canvas, "DefineGamepiecePanel");
             setSpawnWindow = Auxiliary.FindObject(canvas, "SetGamepieceSpawnPanel");
 
+            dpmSetupWizard = new Wizard(Auxiliary.FindObject(canvas, "DpmWizardPanel"),
+                Auxiliary.FindObject(canvas, "DpmWizardBack"), Auxiliary.FindObject(canvas, "DpmWizardNext"),
+                new GameObject[3] {
+                    Auxiliary.FindObject(canvas, "IntakeMechanismPanel1"),
+                    Auxiliary.FindObject(canvas, "ReleaseMechanismPanel1"),
+                    Auxiliary.FindObject(canvas, "SetSpawnPanel")});
+
             intakeControlText = Auxiliary.FindObject(canvas, "IntakeInputButton").GetComponentInChildren<Text>();
             releaseControlText = Auxiliary.FindObject(canvas, "ReleaseInputButton").GetComponentInChildren<Text>();
             spawnControlText = Auxiliary.FindObject(canvas, "SpawnInputButton").GetComponentInChildren<Text>();
 
             primaryCountText = Auxiliary.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
             secondaryCountText = Auxiliary.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
-            
+
 
         }
 
@@ -161,11 +170,11 @@ namespace Synthesis.DriverPractice
 
             if (configuring)
             {
-                if (dpmRobot.gamepieceNames[configuringIndex] == null) configuringText.text = "Gamepiece not defined yet!";
-                else configuringText.text = "Configuring:  " + dpmRobot.gamepieceNames[configuringIndex];
+                //if (dpmRobot.gamepieceNames[configuringIndex] == null) configuringText.text = "Gamepiece not defined yet!";
+                //else configuringText.text = "Configuring:  " + dpmRobot.gamepieceNames[configuringIndex];
 
-                releaseMechanismText.text = "Current Part:  " + dpmRobot.releaseNode[configuringIndex].name;
-                intakeMechanismText.text = "Current Part:  " + dpmRobot.intakeNode[configuringIndex].name;
+                //releaseMechanismText.text = "Current Part:  " + dpmRobot.releaseNode[configuringIndex].name;
+                //intakeMechanismText.text = "Current Part:  " + dpmRobot.intakeNode[configuringIndex].name;
 
                 if (configuringIndex == 0)
                 {
@@ -268,13 +277,13 @@ namespace Synthesis.DriverPractice
                 }
                 else
                 {
-                    dpmWindowOn = true;
+                    //dpmWindowOn = true;
                     defineGamepieceWindow.SetActive(false);
                     setSpawnWindow.SetActive(false);
                     defineIntakeWindow.SetActive(false);
                     defineReleaseWindow.SetActive(false);
-                    dpmWindow.SetActive(true);
-                    configWindow.SetActive(true);
+                    //dpmWindow.SetActive(true);
+                    //configWindow.SetActive(true);
                 }
             }
         }
@@ -375,6 +384,34 @@ namespace Synthesis.DriverPractice
         public void SpawnGamepieceSecondary()
         {
             dpmRobot.SpawnGamepiece(1);
+        }
+
+        public void ToggleIntakeWindow()
+        {
+            dpmSetupWizard.ToggleOpen(0);
+            configuring = true;
+        }
+
+        public void ToggleReleaseWindow()
+        {
+            dpmSetupWizard.ToggleOpen(1);
+            configuring = true;
+        }
+
+        public void DpmWizardNext()
+        {
+            dpmSetupWizard.Next();
+        }
+
+        public void DpmWizardBack()
+        {
+            dpmSetupWizard.Back();
+        }
+
+        public void DpmWizardClose()
+        {
+            dpmSetupWizard.Close();
+            configuring = false;
         }
 
         #region dpm configuration button functions

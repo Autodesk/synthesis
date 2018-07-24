@@ -35,7 +35,7 @@ public partial class DriveChooser : Form
             foreach (RigidNode_Base node in nodes)
             {
                 JointDriver driver = node.GetSkeletalJoint().cDriver;
-                if (driver == null || driver.CompareTo(baseJoint.cDriver) != 0) 
+                if (driver == null || driver.CompareTo(baseJoint.cDriver) != 0)
                     same = false;
             }
 
@@ -156,7 +156,7 @@ public partial class DriveChooser : Form
 
             cmbStages.SelectedIndex = (int)ElevatorType.NOT_MULTI;
         }
-        
+
         PrepLayout();
         base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
         this.ShowDialog(owner);
@@ -167,7 +167,7 @@ public partial class DriveChooser : Form
         if (joint.cDriver == null) return true;
 
         double inputGear = 1, outputGear = 1;
-        
+
         try
         {
             inputGear = Convert.ToDouble(InputGeartxt.Text);
@@ -184,12 +184,12 @@ public partial class DriveChooser : Form
         if (cmbJointDriver.SelectedIndex != typeOptions.ToList().IndexOf(joint.cDriver.GetDriveType()) + 1 ||
             txtPortA.Value != joint.cDriver.portA ||
             txtPortB.Value != joint.cDriver.portB ||
-            txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
-            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
+            txtLowLimit.Value != (decimal)joint.cDriver.lowerLimit ||
+            txtHighLimit.Value != (decimal)joint.cDriver.upperLimit ||
             inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear)
             return true;
 
-        if (pneumatic != null && 
+        if (pneumatic != null &&
             (cmbPneumaticDiameter.SelectedIndex != (int)pneumatic.widthEnum ||
             cmbPneumaticPressure.SelectedIndex != (int)pneumatic.pressureEnum))
             return true;
@@ -263,7 +263,7 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Add(metaElevatorStages);
                 tabsMeta.TabPages.Add(metaGearing);
 
-                if(cmbStages.SelectedIndex == -1)
+                if (cmbStages.SelectedIndex == -1)
                     cmbStages.SelectedIndex = 0;
             }
             else
@@ -334,7 +334,16 @@ public partial class DriveChooser : Form
                 canClose = false;// prevent the user from saving until the issue is fixed
                 MessageBox.Show("Error: the number provided is not supported as a possible gear ratio [ output gear ], please fix before saving");
             }
-
+            if (outputGear > 1000)
+            {
+                MessageBox.Show("Error, output gear cannot be larger than 1000");
+                canClose = false;
+            }
+            if (inputGear > 1000)
+            {
+                MessageBox.Show("Error, input gear cannot be larger than 1000");
+                canClose = false;
+            }
             joint.cDriver = new JointDriver(cType)
             {
                 portA = (int)txtPortA.Value,

@@ -11,14 +11,17 @@ using Synthesis.DriverPractice;
 using Synthesis.GUI.Scrollables;
 using Synthesis.States;
 using Synthesis.Utils;
+using Assets.Scripts.GUI;
 
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer
 /// </summary>
-public class LocalMultiplayer : LinkedMonoBehaviour<MainState> {
+public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
+{
 
     private GameObject canvas;
     private SimUI simUI;
+    MainToolbarState mainToolbarState;
 
     private GameObject multiplayerWindow;
     private GameObject addRobotWindow;
@@ -32,7 +35,8 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState> {
     /// <summary>
     /// FInds all the gameobjects and stores them in variables for efficiency
     /// </summary>
-    private void Start () {
+    private void Start()
+    {
         canvas = GameObject.Find("Canvas");
         multiplayerWindow = Auxiliary.FindObject(canvas, "MultiplayerPanel");
         addRobotWindow = Auxiliary.FindObject(canvas, "AddRobotPanel");
@@ -46,7 +50,7 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState> {
         highlight = Auxiliary.FindObject(canvas, "HighlightActiveRobot");
         mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
     }
-    
+
     /// <summary>
     /// Toggles the multiplayer window
     /// </summary>
@@ -108,12 +112,6 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState> {
         PlayerPrefs.SetInt("hasManipulator", 0); //0 for false, 1 for true
     }
 
-    public void ToggleChangeRobotPanel()
-    {
-        simUI.ToggleChangeRobotPanel();
-        multiplayerWindow.SetActive(true);
-    }
-
     /// <summary>
     /// Adds a new robot to the field based on user selection in the popup robot list window
     /// </summary>
@@ -157,7 +155,7 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState> {
     /// <summary>
     /// Updates the multiplayer window to reflect changes in indexes, controls, etc.
     /// </summary>
-    private void UpdateUI()
+    public void UpdateUI()
     {
         for (int i = 0; i < 6; i++)
         {
@@ -190,7 +188,7 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState> {
     {
         GameObject.Find("MultiplayerTooltip").SetActive(false);
     }
-    
+
     /// <summary>
     /// Changes the control index of the active robot
     /// </summary>
@@ -202,6 +200,6 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState> {
 
     public void EndProcesses()
     {
-        if (multiplayerWindow.activeSelf) ToggleMultiplayerWindow();
+        if (multiplayerWindow.activeSelf) mainToolbarState.OnMultiplayerButtonPressed();
     }
 }
