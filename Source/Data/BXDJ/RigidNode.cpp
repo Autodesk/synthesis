@@ -4,17 +4,9 @@
 
 using namespace BXDJ;
 
-RigidNode::RigidNode(bool isRoot)
+RigidNode::RigidNode()
 {
 	parent = NULL;
-
-	// Store id for generating guid
-	static unsigned int nextId = 0;
-
-	if (isRoot)
-		nextId = 0;
-
-	Guid guid = Guid(nextId++);
 }
 
 RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
@@ -30,7 +22,7 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 	log = nodeToCopy.log;
 }
 
-RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent) : RigidNode(true)
+RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent) : RigidNode()
 {
 	JointSummary jointSummary = getJointSummary(rootComponent);
 	
