@@ -10,7 +10,7 @@ Exporter::~Exporter()
 
 void Exporter::exportExample()
 {
-	BXDA::Mesh mesh = BXDA::Mesh();
+	BXDA::Mesh mesh = BXDA::Mesh(Guid());
 	BXDA::SubMesh subMesh = BXDA::SubMesh();
 
 	// Face
