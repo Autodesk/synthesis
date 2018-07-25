@@ -12,7 +12,10 @@ namespace Synthesis.Network
 {
     public abstract class FileTransferer : NetworkBehaviour
     {
+        // TODO: Come up with a system where there is a maximum number of files being sent at once (Unity defined max is 16).
+
         private const int BufferSize = 1024;
+        private const int MaxBufferCount = 16;
 
         /// <summary>
         /// Represents a fragment of data from a file.
@@ -49,7 +52,7 @@ namespace Synthesis.Network
         /// </summary>
         public event Action<string, byte[]> OnReceivingComplete;
 
-        private List<string> transferIds;
+        private HashSet<string> transferIds;
         private Dictionary<string, DataFragment> transferData;
 
         /// <summary>
@@ -57,17 +60,17 @@ namespace Synthesis.Network
         /// </summary>
         private void Awake()
         {
-            Reset();
+            ResetTransferData();
         }
 
         /// <summary>
         /// Stops all coroutines and resets this instance.
         /// </summary>
-        public virtual void Reset()
+        public virtual void ResetTransferData()
         {
             StopAllCoroutines();
 
-            transferIds = new List<string>();
+            transferIds = new HashSet<string>();
             transferData = new Dictionary<string, DataFragment>();
         }
 
@@ -93,6 +96,8 @@ namespace Synthesis.Network
         /// <returns></returns>
         protected IEnumerator SendBytes(string transferId, byte[] data)
         {
+            yield return new WaitUntil(() => transferIds.Count < MaxBufferCount); // TODO: TEST THIS
+
             OnPrepareToReceiveBytes(transferId, data.Length);
             yield return null;
 

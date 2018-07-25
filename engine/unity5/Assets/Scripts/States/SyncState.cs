@@ -30,7 +30,7 @@ namespace Synthesis.States
         public void OnBackButtonPressed()
         {
             if (Host)
-                MatchManager.Instance.PopState();
+                MatchManager.Instance.CancelSync();
             else
                 UserMessageManager.Dispatch("Only the host can cancel synchronization!", 8f);
         }

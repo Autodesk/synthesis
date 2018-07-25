@@ -24,10 +24,6 @@ namespace Synthesis.Network
         /// </summary>
         public static string DefaultLocalPlayerTag { get; set; }
 
-        /// <summary>
-        /// The <see cref="ClientToServerFileTransferer"/> associated with this instance.
-        /// </summary>
-        public ClientToServerFileTransferer FileTransferer { get; private set; }
 
         [SyncVar]
         public int id;
@@ -46,7 +42,16 @@ namespace Synthesis.Network
 
         private static int nextId = 0;
 
-        private Dictionary<string, List<byte>> fileData;
+        /// <summary>
+        /// Robot file data received on the server from the client.
+        /// </summary>
+        public Dictionary<string, List<byte>> FileData { get; private set; }
+
+        /// <summary>
+        /// The <see cref="ClientToServerFileTransferer"/> associated with this instance.
+        /// </summary>
+        public ClientToServerFileTransferer FileTransferer { get; private set; }
+
         private HashSet<string> receivedFiles;
         private int numFilesToReceive;
 
@@ -83,7 +88,7 @@ namespace Synthesis.Network
                 CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
             }
 
-            fileData = new Dictionary<string, List<byte>>();
+            FileData = new Dictionary<string, List<byte>>();
             receivedFiles = new HashSet<string>();
             numFilesToReceive = -1;
 
@@ -204,7 +209,7 @@ namespace Synthesis.Network
         [Server]
         public void TransferResources()
         {
-            fileData.Clear();
+            FileData.Clear();
             receivedFiles.Clear();
             numFilesToReceive = -1;
 
@@ -217,7 +222,7 @@ namespace Synthesis.Network
         [TargetRpc]
         private void TargetTransferResources(NetworkConnection target)
         {
-            FileTransferer.Reset();
+            FileTransferer.ResetTransferData();
 
             string[] fileList = Directory.GetFiles(PlayerPrefs.GetString("simSelectedRobot"));
 
@@ -250,10 +255,10 @@ namespace Synthesis.Network
         [Server]
         private void DataFragmentReceived(string transferId, byte[] data)
         {
-            if (!fileData.ContainsKey(transferId))
-                fileData[transferId] = new List<byte>();
+            if (!FileData.ContainsKey(transferId))
+                FileData[transferId] = new List<byte>();
 
-            fileData[transferId].AddRange(data);
+            FileData[transferId].AddRange(data);
         }
 
         /// <summary>

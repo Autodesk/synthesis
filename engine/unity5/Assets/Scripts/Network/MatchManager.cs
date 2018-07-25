@@ -41,7 +41,7 @@ namespace Synthesis.Network
         }
 
         /// <summary>
-        /// Teh GUID of the selected field.
+        /// The GUID of the selected field.
         /// </summary>
         public string FieldGuid => fieldGuid;
 
@@ -57,15 +57,26 @@ namespace Synthesis.Network
         [SyncVar]
         private string fieldGuid;
 
+        /// <summary>
+        /// Describes which resources are required to be transferred by which clients.
+        /// </summary>
         private Dictionary<int, List<int>> dependencyMap;
 
-        private Dictionary<int, List<int>> transferMap;
-
+        /// <summary>
+        /// Indicates which dependencies have been resolved without transferring.
+        /// </summary>
         private Dictionary<int, bool> resolvedDependencies;
+
+        /// <summary>
+        /// The <see cref="ServerToClientFileTransferer"/> associated with this instance.
+        /// </summary>
+        public ServerToClientFileTransferer FileTransferer { get; private set; }
 
         private Action generationComplete;
 
         private StateMachine uiStateMachine;
+
+        private Dictionary<string, List<byte>> fileData;
 
         /// <summary>
         /// Initializes this instance.
@@ -74,9 +85,17 @@ namespace Synthesis.Network
         {
             Instance = this;
             dependencyMap = new Dictionary<int, List<int>>();
-            transferMap = new Dictionary<int, List<int>>();
             resolvedDependencies = new Dictionary<int, bool>();
             uiStateMachine = GameObject.Find("UserInterface").GetComponent<StateMachine>();
+            fileData = new Dictionary<string, List<byte>>();
+
+            FileTransferer = GetComponent<ServerToClientFileTransferer>();
+
+            if (!isServer)
+            {
+                FileTransferer.OnDataFragmentReceived += DataFragmentReceived;
+                FileTransferer.OnReceivingComplete += ReceivingComplete;
+            }
         }
 
         /// <summary>
@@ -149,6 +168,51 @@ namespace Synthesis.Network
         }
 
         /// <summary>
+        /// Distributes resources to the required <see cref="PlayerIdentity"/> instances.
+        /// </summary>
+        [Server]
+        public void DistributeResources()
+        {
+            foreach (KeyValuePair<int, List<int>> entry in dependencyMap.Where(e => e.Key >= 0))
+            {
+                PlayerIdentity identity = PlayerIdentity.FindById(entry.Key);
+                string transferPrefix = string.Join(",", entry.Value) + ".";
+
+                foreach (KeyValuePair<string, List<byte>> file in identity.FileData)
+                {
+                    FileTransferer.SendFile(transferPrefix + file.Key, file.Value.ToArray());
+                    Debug.Log("Send it!");
+                }
+                //foreach (int id in entry.Value)
+                //{
+                //    NetworkConnection clientConnection = PlayerIdentity.FindById(id).connectionToClient;
+
+                //    foreach (KeyValuePair<string, List<byte>> file in identity.FileData)
+                //        fileTransferer.SendFile(file.Key, file.Value.ToArray());
+                //}
+            }
+        }
+
+        /// <summary>
+        /// Called when a fragment of data is received from the server.
+        /// </summary>
+        /// <param name="transferId"></param>
+        /// <param name="data"></param>
+        private void DataFragmentReceived(string transferId, byte[] data)
+        {
+        }
+
+        /// <summary>
+        /// Called when a file has been received completely by the server.
+        /// </summary>
+        /// <param name="transferId"></param>
+        /// <param name="data"></param>
+        private void ReceivingComplete(string transferId, byte[] data)
+        {
+            Debug.Log("Fraggy boi!");
+        }
+
+        /// <summary>
         /// Checks if the resources held by the other identity need to be transferred to
         /// this instance.
         /// </summary>
@@ -211,10 +275,10 @@ namespace Synthesis.Network
         /// </summary>
         /// <typeparam name="T"></typeparam>
         [Server]
-        public void PopState()
+        private void PopState(string msg = "")
         {
             StopAllCoroutines();
-            RpcPopState();
+            RpcPopState(msg);
         }
 
         /// <summary>
@@ -233,23 +297,14 @@ namespace Synthesis.Network
         /// <summary>
         /// Cancels the synchronization process.
         /// </summary>
+        [Server]
         public void CancelSync()
         {
             if (!syncing)
                 return;
 
             syncing = false;
-            PopState();
-            RpcCancelSync();
-        }
-
-        /// <summary>
-        /// Displays an error message on all clients.
-        /// </summary>
-        [ClientRpc]
-        public void RpcCancelSync()
-        {
-            UserMessageManager.Dispatch("Synchronization failed!", 8f);
+            PopState("Synchronization cancelled!");
         }
 
         /// <summary>
@@ -289,10 +344,17 @@ namespace Synthesis.Network
         /// Pops the current state on all clients.
         /// </summary>
         [ClientRpc]
-        private void RpcPopState()
+        private void RpcPopState(string msg)
         {
+            FileTransferer.ResetTransferData();
+            PlayerIdentity.LocalInstance.FileTransferer.ResetTransferData();
+
             PlayerIdentity.LocalInstance.CmdSetReady(false);
+
             uiStateMachine.PopState();
+
+            if (!msg.Equals(string.Empty))
+                UserMessageManager.Dispatch(msg, 8f);
         }
 
         /// <summary>

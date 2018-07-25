@@ -17,6 +17,7 @@ namespace Synthesis.Network
         private void Awake()
         {
             targetConnections = new Dictionary<string, NetworkConnection>();
+            ResetTransferData();
         }
 
         /// <summary>
@@ -34,9 +35,9 @@ namespace Synthesis.Network
         /// <summary>
         /// Resets this instance.
         /// </summary>
-        public override void Reset()
+        public override void ResetTransferData()
         {
-            base.Reset();
+            base.ResetTransferData();
 
             targetConnections.Clear();
         }
@@ -61,7 +62,10 @@ namespace Synthesis.Network
         /// <param name="buffer"></param>
         protected override void OnReceiveBytes(string transferId, byte[] buffer)
         {
-            RpcReceiveBytes(transferId, buffer);
+            if (targetConnections.ContainsKey(transferId))
+                TargetReceiveBytes(targetConnections[transferId], transferId, buffer);
+            else
+                RpcReceiveBytes(transferId, buffer);
         }
 
         /// <summary>
