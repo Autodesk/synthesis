@@ -24,10 +24,20 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 
 RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent) : RigidNode()
 {
-	JointSummary jointSummary = getJointSummary(rootComponent);
-	
+	jointSummary = std::make_shared<JointSummary>(getJointSummary(rootComponent));
+
 	for (core::Ptr<fusion::Occurrence> occurence : rootComponent->occurrences()->asList())
-		buildTree(occurence, jointSummary);
+		buildTree(occurence);
+}
+
+RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occ, Joint * parent)
+{
+	if (parent == NULL)
+		throw "Parent node cannot be NULL!";
+
+	this->parent = parent;
+	jointSummary = parent->getParent()->jointSummary;
+	buildTree(occ);
 }
 
 std::string RigidNode::getModelId() const
@@ -80,11 +90,6 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 	}
 }
 
-void RigidNode::connectToJoint(Joint * parent)
-{
-	this->parent = parent;
-}
-
 void RigidNode::addJoint(std::shared_ptr<Joint> joint)
 {
 	childrenJoints.push_back(joint);
@@ -119,27 +124,27 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 	return jointSummary;
 }
 
-void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence, JointSummary & jointSummary)
+void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
 {
 	// Add the occurence to this node
 	log += "Adding occurence \"" + rootOccurrence->fullPathName() + "\"\n";
 	fusionOccurrences.push_back(rootOccurrence);
 
 	// Create a joint from this occurence if it is the parent of a joint
-	if (jointSummary.parents.find(rootOccurrence) != jointSummary.parents.end())
-		for (core::Ptr<fusion::Joint> joint : jointSummary.parents[rootOccurrence])
-			addJoint(joint, rootOccurrence, jointSummary);
+	if (jointSummary->parents.find(rootOccurrence) != jointSummary->parents.end())
+		for (core::Ptr<fusion::Joint> joint : jointSummary->parents[rootOccurrence])
+			addJoint(joint, rootOccurrence);
 
 	// Add all occurrences without joints or that are only parents in joints to the root node
 	for (core::Ptr<fusion::Occurrence> occurrence : rootOccurrence->childOccurrences())
 		// Add the occurence to this node if it is not the child of a joint
-		if (std::find(jointSummary.children.begin(), jointSummary.children.end(), occurrence) == jointSummary.children.end())
-			buildTree(occurrence, jointSummary);
+		if (std::find(jointSummary->children.begin(), jointSummary->children.end(), occurrence) == jointSummary->children.end())
+			buildTree(occurrence);
 
 	log += "\n";
 }
 
-void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent, JointSummary & jointSummary)
+void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent)
 {
 	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
 	log += "Jointing occurence \"" + child->fullPathName() + "\"\n";
@@ -147,11 +152,11 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 	switch (joint->jointMotion()->jointType())
 	{
 	case fusion::JointTypes::RevoluteJointType:
-		addJoint(std::make_shared<RotationalJoint>(RigidNode(child, jointSummary), this, joint->jointMotion()));
+		addJoint(std::make_shared<RotationalJoint>(this, joint, parent));
 		break;
 
 	default:
-		buildTree(child, jointSummary);
+		buildTree(child);
 	}
 }
 

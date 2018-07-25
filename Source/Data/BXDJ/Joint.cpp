@@ -4,15 +4,23 @@ using namespace BXDJ;
 
 Joint::Joint(const Joint & jointToCopy)
 {
+	parentIsOccOne = jointToCopy.parentIsOccOne;
+	fusionJoint = jointToCopy.fusionJoint;
+	parent = jointToCopy.parent;
 	child = jointToCopy.child;
 }
 
-Joint::Joint(const RigidNode & child, RigidNode * parent)
+Joint::Joint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence)
 {
-	this->child = std::make_shared<RigidNode>(child);
-	this->child->connectToJoint(this);
+	parentIsOccOne = (fusionJoint->occurrenceOne() == parentOccurrence);
+
+	this->fusionJoint = fusionJoint;
+
+	if (parent == NULL)
+		throw "Parent node cannot be NULL!";
+
 	this->parent = parent;
-	assert(this->parent != NULL); // Don't allow joints without parents
+	this->child = std::make_shared<RigidNode>((parentIsOccOne ? fusionJoint->occurrenceTwo() : fusionJoint->occurrenceOne()), this);
 }
 
 RigidNode * BXDJ::Joint::getParent()
@@ -23,6 +31,12 @@ RigidNode * BXDJ::Joint::getParent()
 std::shared_ptr<RigidNode> BXDJ::Joint::getChild()
 {
 	return child;
+}
+
+Vector3<float> BXDJ::Joint::getParentBasePoint() const
+{
+	core::Ptr<fusion::JointGeometry> geometry = (parentIsOccOne ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
+	return Vector3<float>(geometry->origin()->x, geometry->origin()->y, geometry->origin()->z);
 }
 
 void Joint::write(XmlWriter & output) const
