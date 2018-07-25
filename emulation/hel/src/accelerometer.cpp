@@ -45,7 +45,7 @@ namespace hel{
         return x_accel;
     }
 
-    void Accelerometer::setXAccel(bool accel){
+    void Accelerometer::setXAccel(float accel){
         x_accel = accel;
     }
 
@@ -53,7 +53,7 @@ namespace hel{
         return y_accel;
     }
 
-    void Accelerometer::setYAccel(bool accel){
+    void Accelerometer::setYAccel(float accel){
         y_accel = accel;
     }
 
@@ -61,7 +61,7 @@ namespace hel{
         return z_accel;
     }
 
-    void Accelerometer::setZAccel(bool accel){
+    void Accelerometer::setZAccel(float accel){
        z_accel = accel; 
     }
 
@@ -143,13 +143,13 @@ namespace hel{
                             return;
                         default:
                             instance.second.unlock();
-                            return; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::Register");
+                            throw UnhandledEnumConstantException("hel::Accelerometer::Register");
                     }
                     instance.second.unlock();
                     return;
                 default:
                     instance.second.unlock();
-                    return; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::ControlMode");
+                    throw UnhandledEnumConstantException("hel::Accelerometer::ControlMode");
             }
         }
 
@@ -217,7 +217,7 @@ namespace hel{
                 return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).second;
             default:
                 instance.second.unlock();
-                return 0; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::Register");
+                throw UnhandledEnumConstantException("hel::Accelerometer::Register");
             }
         }
 

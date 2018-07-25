@@ -5,15 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <WPILib.h>
+#include <frc/WPILib.h>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <unistd.h>
-/**
- * This is a demo program showing the use of the DifferentialDrive class.
- * Runs the motors with arcade steering.
- */
+
 class Robot : public frc::IterativeRobot {
     frc::Spark m_leftMotor{0};
     frc::Spark m_rightMotor{1};
@@ -25,27 +22,26 @@ class Robot : public frc::IterativeRobot {
 
     bool current_state = false;
 
-    float newPWMR = 0.0;
-    float newPWML = 0.0;
-
 public:
     void TeleopInit() {
         std::srand(std::time(nullptr));
     }
+
     void TeleopPeriodic() {
-        // drive with arcade style
-        auto x = std::rand() % 2000 + (-1000);
-        auto y = std::rand()% 2000 + (-1000);
+        double left = (std::rand() % 2000 - 1000) / 1000.0;
+        double right = (std::rand()% 2000 - 1000) / 1000.0;
 
-        m_robotDrive.ArcadeDrive(x/1000.0f, y/1000.0f);
+        m_robotDrive.SetRightSideInverted(false);
+        m_robotDrive.TankDrive(left, right, false);
 
+        std::cout<<"Setting left to "<<left<<" - Set to "<< m_leftMotor.GetSpeed()<<"\nSetting right to "<<right<<" - Set to "<<m_rightMotor.GetSpeed()<<"\n\n";
 
-        //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
         dio.Set(current_state);
         r.Set(frc::Relay::Value::kForward);
-        auto d = ((double)(std::rand()%5001/1000.0f));
+        double d = (std::rand() % 5001) / 1000.0;
         ao.SetVoltage(d);
         current_state = !current_state;
+
         usleep(45000);
     }
 };

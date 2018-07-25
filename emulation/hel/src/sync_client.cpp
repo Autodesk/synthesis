@@ -33,7 +33,21 @@ namespace hel {
                 std::string received_data = rest;
                 received_data += hel::to_string(data, (std::function<std::string(char)>)[](char a){return std::string(1,a);}, "", false);
                 rest = "";
-                for (int i = 0; i < received_data.length(); i++) {
+                const std::string PREAMBLE = "{\"roborio";
+                if(received_data.substr(0, PREAMBLE.length()) != PREAMBLE) {
+                    unsigned i = 0; // EXPLAIN LATER
+                    
+                    while(received_data[i] != '\x1B') {
+                        i++;
+                        if (i >= received_data.length()) {
+                            break;
+                        }
+                    }
+                    received_data = ((i+1) >= received_data.length())? "" : received_data.substr(i+1);
+                    rest = received_data;
+                    continue;
+                }
+                for (unsigned i = 0; i < received_data.length(); i++) {
                     if (received_data[i] == '\x1B') {
                         json_string = received_data.substr(0,i);
                         rest = received_data.substr(i+1);
@@ -41,13 +55,11 @@ namespace hel {
                     }
                 }
             }
-            end:
-                 instance.first->deserialize(json_string);
-                 instance.first->update();
-                 std::cout << instance.first->toString() << "\n";
+        end:
+            instance.first->deserializeAndUpdate(json_string);
 
-                 usleep(30000);
-                 instance.second.unlock();
+            instance.second.unlock();
+            usleep(100000);
         }
     }
 }

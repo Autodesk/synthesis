@@ -81,8 +81,18 @@ namespace hel{
 
     std::string to_string(DSError::Type);
 
+    /**
+     * \struct UnhandledEnumConstantException: public std::exception
+     * \brief An exception for enum constant comparisons which are not handled
+     */
+
     struct UnhandledEnumConstantException: public std::exception{
     private:
+        /**
+         * \var std::string enum_type
+         * \brief The type of enum represented in string form
+         */
+
         std::string enum_type;
 
     public:
@@ -90,6 +100,11 @@ namespace hel{
 
         const char* what()const throw();
     };
+
+    /**
+     * \struct UnhandledCase: public std::exception
+     * \brief A generic exception for unhandled cases when all should be handled
+     */
 
     struct UnhandledCase: public std::exception{
         const char* what()const throw();

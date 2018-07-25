@@ -10,7 +10,6 @@ namespace hel{
 }
 
 extern "C" {
-    // TODO Fix
     void NetCommRPCProxy_SetOccurFuncPointer(void (*Occur)(uint32_t)){
         auto instance = hel::RoboRIOManager::getInstance();
         auto newData = [Occur](uint32_t x) {

@@ -6,16 +6,20 @@
 
 #include <string>
 #include <exception>
+#include "bounds_checked_array.hpp"
 
 namespace hel{
     struct DigitalSystem{
 		static constexpr int32_t NUM_DIGITAL_HEADERS = 10; //hal::kNumDigitalHeaders
 		static constexpr int32_t NUM_DIGITAL_MXP_CHANNELS = 16; //hal::kNumDigitalMXPChannels
 		static constexpr int32_t NUM_DIGITAL_PWM_OUTPUTS = 6; //hal::kNumDigitalPWMOutputs
+    static constexpr uint16_t MAX_PULSE_LENGTH = 1600; //microseconds //TODO since Ni FPGA manages this as a byte, the pulse length must be a lot shorter than this
+
     private:
 
         /**
-         * \var
+         * \var nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO outputs
+         * \brief The set digital outputs
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO outputs;
@@ -29,13 +33,15 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable enabled_outputs;
 
         /**
-         * \var
+         * \var nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse pulses
+         * \brief The active digital pulses
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse pulses;
 
         /**
-         * \var
+         * \var nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI inputs
+         * \brief The digital inputs
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI inputs;
@@ -43,112 +49,173 @@ namespace hel{
         /**
          * \var uint16_t mxp_special_functions_enabled
          * \brief Bit mask for MXP pins representing if their non-DIO option should be active
-         * Note: the bitmask is default high for DIO, low for MXP special function
          */
 
         uint16_t mxp_special_functions_enabled;//enabled low, double check that
 
         /**
-         * \var
+         * \var uint8_t pulse_length
+         * \brief The time to pulse for in microseconds
          */
 
         uint8_t pulse_length;
 
-        std::array<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
+        /**
+         * \var BoundsCheckedArray<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm
+         */
+
+        BoundsCheckedArray<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm; //TODO unclear whether these are mxp pins or elsewhere (there are only six here whereas there are ten on the mxp)
 
     public:
+        /**
+         * \struct DIOConfigurationException: public std::exception
+         * \brief An exception for mismatch of digital function and port configuration
+         */
+
         struct DIOConfigurationException: public std::exception{
+            /**
+             * \enum class Config
+             * \brief Represents the different possible digital port configurations
+             */
+
             enum class Config{DI,DO,MXP_SPECIAL_FUNCTION};
         private:
+            /**
+             * \var Config configuration
+             * \brief The set configuration of the digital port
+             */
+
             Config configuration;
+
+            /**
+             * \var Config expected_configuration
+             * \brief The expected configuration for the digital port to use the digital functionity
+             */
+
             Config expected_configuration;
+
+            /**
+             * \var uint8_t port
+             * \brief The digital port with the configuration error
+             */
+
             uint8_t port;
 
         public:
+            /**
+             * \fn const char* what()const throw
+             * \brief Returns the exception messaage
+             */
+
             const char* what()const throw();
 
             DIOConfigurationException(Config, Config, uint8_t);
         };
+
         /**
-         * \fn
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO getOutputs()const
+         * \brief Get the active digital outputs
+         * \return The active digital outputs
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO getOutputs()const;
 
         /**
-         * \fn
+         * \fn void setOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO outputs)
+         * \brief Set the active digital outputs
+         * \param outputs the outputs to set to
          */
 
         void setOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO);
 
         /**
-         * \fn
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable getEnabledOutputs()const
+         * \brief Get the digital ports with output enabled
+         * \return a bit mask representing digital ports in output mode
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable getEnabledOutputs()const;
 
         /**
-         * \fn
+         * \fn void setEnabledOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable);
+         * \brief Set the digital ports to output mode
+         * \param enabled_outputs a bit mask of digital ports to set to output
          */
 
         void setEnabledOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable);
 
         /**
-         * \fn
+         * \fn uint16_t getMXPSpecialFunctionsEnabled()const
+         * \brief Fetch the bit mask for enabled mxp special functions
+         * \return the bit mask for enabled mxp special functions
          */
 
         uint16_t getMXPSpecialFunctionsEnabled()const;
 
         /**
-         * \fn
+         * \fn void setMXPSpecialFunctionsEnabled(uint16_t mxp_special_functions_enabled)
+         * \brief Set the bit mask to enable mxp special functions
+         * \param mxp_special_functions_enabled the bit mask to use
          */
 
         void setMXPSpecialFunctionsEnabled(uint16_t);
 
         /**
-         * \fn
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse getPulses()const
+         * \brief Get the active digital pulses
+         * \return a bit mask representing the active digital pulses
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse getPulses()const;
 
         /**
-         * \fn
+         * \fn void setPulses(nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse pulses)
+         * \brief Set the active pulses
+         * \param pulses the active pulses
          */
 
         void setPulses(nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse);
 
         /**
-         * \fn
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI getInputs()const
+         * \brief Fetch the digital inputs
+         * \return a bit mask representing the digital input states
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI getInputs()const;
 
         /**
-         * \fn
+         * \fn void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI inputs)
+         * \brief Set the digital input states
+         * \param inputs a bit mask representing the digital input states to set to
          */
 
         void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI);
 
         /**
-         * \fn
+         * \fn uint8_t getPulseLength()const
+         * \brief Get the set pulse length
+         * \return the length to pulse for
          */
 
         uint8_t getPulseLength()const;
 
         /**
-         * \fn
+         * \fn void setPulseLength(uint8_t pulse_length)
+         * \brief Set the pulse length in microseconds
+         * \param pulse_length the length to pulse for
          */
 
         void setPulseLength(uint8_t);
 
         /**
-         * \fn
+         * \fn uint8_t getPWMDutyCycle(uint8_t index)const
          */
 
         uint8_t getPWMDutyCycle(uint8_t)const;
 
         /**
-         * \fn
+         * \fn void setPWMDutyCycle(uint8_t index, uint8_t duty_cycle)
          */
 
         void setPWMDutyCycle(uint8_t, uint8_t);

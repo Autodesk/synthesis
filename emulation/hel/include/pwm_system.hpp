@@ -4,7 +4,7 @@
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tPWM.h"
 
-#include <array>
+#include "bounds_checked_array.hpp"
 
 namespace hel{
     /**
@@ -52,20 +52,20 @@ namespace hel{
         };
 
         /**
-         * \var std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> hdr;
+         * \var BoundsCheckedArray<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> hdr;
          * \brief Array of all PWM Headers on the base RoboRIO board.
          * Array of all PWM headers on the base board of the RoboRIO (not MXP). Numbered 0-10 on the board.
          */
 
-        std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> hdr;
+        BoundsCheckedArray<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> hdr;
 
         /**
-         * \var std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters> mxp;
+         * \var BoundsCheckedArray<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters> mxp;
          * \brief Array of all PWM Headers on the MXP.
          * Array of all PWM headers on the MXP.
          */
 
-        std::array<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters> mxp;
+        BoundsCheckedArray<PWM, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters> mxp;
 
     public:
 
