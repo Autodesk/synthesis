@@ -20,7 +20,12 @@ RigidNode * BXDJ::Joint::getParent()
 	return parent;
 }
 
+std::shared_ptr<RigidNode> BXDJ::Joint::getChild()
+{
+	return child;
+}
+
 void Joint::write(XmlWriter & output) const
 {
-	output.write(*child);
+	// Write driver information
 }

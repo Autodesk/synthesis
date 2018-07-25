@@ -2,9 +2,10 @@
 
 #include <string>
 #include "BXDA/BinaryWriter.h"
+#include "BXDJ/XmlWriter.h"
 
 template<typename T = double>
-class Vector3 : public BXDA::BinaryWritable
+class Vector3 : public BXDA::BinaryWritable, public BXDJ::XmlWritable
 {
 public:
 	T x;
@@ -23,6 +24,7 @@ public:
 
 protected:
 	void write(BXDA::BinaryWriter &) const;
+	void write(BXDJ::XmlWriter &) const;
 
 };
 
@@ -69,4 +71,12 @@ void Vector3<T>::write(BXDA::BinaryWriter & output) const
 	output.write(x);
 	output.write(y);
 	output.write(z);
+}
+
+template<typename T>
+void Vector3<T>::write(BXDJ::XmlWriter & output) const
+{
+	output.writeElement("X", std::to_string(x));
+	output.writeElement("Y", std::to_string(y));
+	output.writeElement("Z", std::to_string(z));
 }

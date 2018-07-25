@@ -10,9 +10,9 @@ namespace BXDJ
 	public:
 		AngularJoint(const RigidNode & child, RigidNode * parent) : Joint(child, parent) {}
 
-		virtual Vector3<float> getAxisOfRotation() = 0;
-		virtual float getCurrentAngle() = 0;
-		virtual float getUpperLimit() = 0;
-		virtual float getLowerLimit() = 0;
+		virtual Vector3<float> getAxisOfRotation() const = 0;
+		virtual float getCurrentAngle() const = 0;
+		virtual float getUpperLimit() const = 0;
+		virtual float getLowerLimit() const = 0;
 	};
 }

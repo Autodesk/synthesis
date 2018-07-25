@@ -42,6 +42,9 @@ namespace BXDJ
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> parents;
 		};
 
+		// Contructor used for building node tree
+		RigidNode(core::Ptr<fusion::Occurrence> occ, JointSummary & jSum) : RigidNode() { buildTree(occ, jSum); }
+
 		// Globally Unique Identifier
 		Guid guid;
 		// Stores the joints that lead to this node's children
@@ -50,9 +53,6 @@ namespace BXDJ
 		Joint * parent;
 		// Stores all component occurences that are grouped into this node
 		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurrences;
-
-		// Contructor used for building node tree
-		RigidNode(core::Ptr<fusion::Occurrence> occ, JointSummary & jSum) : RigidNode() { buildTree(occ, jSum); }
 
 		JointSummary getJointSummary(core::Ptr<fusion::Component>);
 		void buildTree(core::Ptr<fusion::Occurrence>, JointSummary &);
