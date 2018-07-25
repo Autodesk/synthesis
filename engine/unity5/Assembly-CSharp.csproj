@@ -215,6 +215,7 @@
     <Compile Include="Assets\Scripts\GUI\FileBrowserNew.cs" />
     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\GUI\NativeFile.cs" />
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
@@ -276,8 +277,6 @@
     <Compile Include="Assets\Scripts\States\BrowseFieldState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
-    <Compile Include="Assets\Scripts\States\CopyBrowseFieldState.cs" />
-    <Compile Include="Assets\Scripts\States\CopyBrowseFileState.cs" />
     <Compile Include="Assets\Scripts\States\DefaultSimulatorState.cs" />
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
     <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
