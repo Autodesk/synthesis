@@ -113,6 +113,7 @@
     <ClInclude Include="Source\Data\BXDJ\Joints\RotationalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
     <ClInclude Include="Source\Data\BXDJ\XmlWriter.h" />
+    <ClInclude Include="Source\Data\Guid.h" />
     <ClInclude Include="Source\Data\Vector3.h" />
     <ClInclude Include="Source\Exporter.h" />
   </ItemGroup>
@@ -132,6 +133,7 @@
     <ClCompile Include="Source\Data\BXDJ\Joints\RotationalJoint.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode.cpp" />
     <ClCompile Include="Source\Data\BXDJ\XmlWriter.cpp" />
+    <ClCompile Include="Source\Data\Guid.cpp" />
     <ClCompile Include="Source\Exporter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

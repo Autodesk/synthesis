@@ -90,6 +90,9 @@
     <ClInclude Include="Source\Data\BXDJ\XmlWriter.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\Guid.h">
+      <Filter>Headers\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -139,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="Source\Data\BXDJ\XmlWriter.cpp">
       <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\Guid.cpp">
+      <Filter>Source\Data</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

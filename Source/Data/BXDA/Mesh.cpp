@@ -2,10 +2,8 @@
 
 using namespace BXDA;
 
-Mesh::Mesh()
-{
-	guid = "0ba8e1ce-1004-4523-b844-9bfa69efada9";
-}
+Mesh::Mesh(Guid guid) : guid(guid)
+{}
 
 void Mesh::addSubMesh(const SubMesh & submesh)
 {
@@ -22,7 +20,7 @@ void BXDA::Mesh::addPhysics(const Physics & physics)
 	this->physics += physics;
 }
 
-std::string Mesh::getGUID() const
+Guid Mesh::getGUID() const
 {
 	return guid;
 }
@@ -34,14 +32,14 @@ int Mesh::getVersion() const
 
 std::string Mesh::toString()
 {
-	return "BXDA::Mesh: " + guid + ", Sub-Meshes: " + std::to_string(subMeshes.size()) + ", Physics Properties: (" + physics.toString() + ")";
+	return "BXDA::Mesh: " + guid.toString() + ", Sub-Meshes: " + std::to_string(subMeshes.size()) + ", Physics Properties: (" + physics.toString() + ")";
 }
 
 void Mesh::write(BinaryWriter & output) const
 {
 	// Output general information
 	output.write(CURRENT_VERSION);
-	output.write(guid);
+	output.write(guid.toString());
 
 	// Output meshes
 	output.write((int)subMeshes.size());
