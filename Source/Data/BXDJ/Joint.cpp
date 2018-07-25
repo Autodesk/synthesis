@@ -51,14 +51,14 @@ Vector3<float> Joint::getChildBasePoint() const
 						  (float)geometry->origin()->z());
 }
 
-void BXDJ::Joint::setDriver(const Driver & driver)
+void Joint::setDriver(Driver driver)
 {
 	this->driver = std::make_unique<Driver>(driver);
 }
 
-std::shared_ptr<Driver> BXDJ::Joint::getDriver()
+Driver Joint::getDriver()
 {
-	return driver;
+	return *driver;
 }
 
 void Joint::write(XmlWriter & output) const
