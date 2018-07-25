@@ -41,6 +41,9 @@ namespace Synthesis.States
         private UnityPacket unityPacket;
 
         // TODO: Create more robot classes that suit the needs of MainState.
+        /// <summary>
+        /// The active robot in this state.
+        /// </summary>
         public SimulatorRobot ActiveRobot { get; private set; }
 
         private DynamicCamera dynamicCamera;
