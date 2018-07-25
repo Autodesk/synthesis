@@ -75,7 +75,8 @@ public partial class DriveChooser : Form
 
             txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
-
+            
+            rbCAN.Checked = joint.cDriver.isCan;
             if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
             {
                 joint.cDriver.OutputGear = 1;
@@ -237,7 +238,6 @@ public partial class DriveChooser : Form
                 chkBoxDriveWheel.Show();
                 rbCAN.Show();
                 rbPWM.Show();
-                rbPWM.Checked = true;
             }
             else if (cType.IsPneumatic())
             {
@@ -253,7 +253,7 @@ public partial class DriveChooser : Form
                 brakePortB.Enabled = false;
                 tabsMeta.TabPages.Clear();
                 chkBoxHasBrake.Show();
-                tabsMeta.TabPages.Add(metaElevatorBrake);
+                //tabsMeta.TabPages.Add(metaElevatorBrake);
                 tabsMeta.TabPages.Add(metaElevatorStages);
                 tabsMeta.TabPages.Add(metaGearing);
 
@@ -301,7 +301,7 @@ public partial class DriveChooser : Form
 
             inputGear = (double)InputGeartxt.Value;
 
-           outputGear = (double)OutputGeartxt.Value;// tries to parse the double from the output gear
+            outputGear = (double)OutputGeartxt.Value;// tries to parse the double from the output gear
 
             joint.cDriver = new JointDriver(cType)
             {
