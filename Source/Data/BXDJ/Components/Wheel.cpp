@@ -2,8 +2,15 @@
 
 using namespace BXDJ;
 
-Wheel::Wheel(Driver * driver, Type type) : Component(driver)
+Wheel::Wheel(const Wheel & wheelToCopy)
 {
+	node = wheelToCopy.node;
+	type = wheelToCopy.type;
+}
+
+Wheel::Wheel(std::shared_ptr<RigidNode> node, Type type)
+{
+	this->node = node;
 	this->type = type;
 }
 

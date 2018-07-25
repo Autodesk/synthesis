@@ -22,6 +22,7 @@ Joint::Joint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr
 
 	this->parent = parent;
 	this->child = std::make_shared<RigidNode>((parentOcc == ONE ? fusionJoint->occurrenceTwo() : fusionJoint->occurrenceOne()), this);
+	driver = nullptr;
 }
 
 RigidNode * Joint::getParent()
@@ -48,6 +49,16 @@ Vector3<float> Joint::getChildBasePoint() const
 	return Vector3<float>((float)geometry->origin()->x(),
 						  (float)geometry->origin()->y(),
 						  (float)geometry->origin()->z());
+}
+
+void BXDJ::Joint::setDriver(const Driver & driver)
+{
+	this->driver = std::make_unique<Driver>(driver);
+}
+
+std::shared_ptr<Driver> BXDJ::Joint::getDriver()
+{
+	return driver;
 }
 
 void Joint::write(XmlWriter & output) const

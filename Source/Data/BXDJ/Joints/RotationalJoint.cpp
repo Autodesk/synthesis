@@ -13,10 +13,10 @@ RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> jo
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 
-	driver = std::make_shared<Driver>(this, Driver::MOTOR);
-	driver->portA = 0;
+	setDriver(Driver(this, Driver::MOTOR));
+	getDriver()->portA = 0;
 
-	driver->component = std::make_shared<Wheel>();
+	getDriver()->setComponent(Wheel(getChild(), Wheel::NORMAL));
 }
 
 Vector3<float> RotationalJoint::getAxisOfRotation() const

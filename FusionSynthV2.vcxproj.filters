@@ -108,9 +108,6 @@
     <ClInclude Include="Source\Data\BXDJ\Components\Wheel.h">
       <Filter>Headers\Data\BXDJ\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Data\BXDJ\Component.h">
-      <Filter>Headers\Data\BXDJ</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -172,9 +169,6 @@
     </ClCompile>
     <ClCompile Include="Source\Data\BXDJ\Components\Wheel.cpp">
       <Filter>Source\Data\BXDJ\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Data\BXDJ\Component.cpp">
-      <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

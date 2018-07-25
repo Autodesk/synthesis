@@ -12,8 +12,6 @@ namespace BXDJ
 	class Joint : public XmlWritable
 	{
 	public:
-		std::shared_ptr<Driver> driver; // Should be private
-
 		Joint(const Joint &);
 		Joint(RigidNode * parent, core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
 
@@ -21,6 +19,9 @@ namespace BXDJ
 		std::shared_ptr<RigidNode> getChild();
 		Vector3<float> getParentBasePoint() const;
 		Vector3<float> getChildBasePoint() const;
+
+		void setDriver(const Driver &);
+		std::shared_ptr<Driver> getDriver();
 
 		virtual void write(XmlWriter &) const;
 
@@ -35,6 +36,7 @@ namespace BXDJ
 		core::Ptr<fusion::Joint> fusionJoint;
 		RigidNode * parent;
 		std::shared_ptr<RigidNode> child;
+		std::shared_ptr<Driver> driver;
 
 	};
 };
