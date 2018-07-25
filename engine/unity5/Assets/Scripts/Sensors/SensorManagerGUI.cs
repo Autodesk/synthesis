@@ -12,7 +12,7 @@ using Synthesis.Configuration;
 namespace Synthesis.Sensors
 {
     /// <summary>
-    /// This class handles every sensor-related GUI elements in Unity
+    /// This class handles every sensor-related GUI element in Unity
     /// </summary>
     class SensorManagerGUI : LinkedMonoBehaviour<MainState>
     {
@@ -512,7 +512,7 @@ namespace Synthesis.Sensors
             SyncHideSensorButton();
             currentSensor.IsChangingPosition = true;
             configureSensorPanel.SetActive(true);
-            sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
+            //sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
             currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(true);
         }
@@ -766,11 +766,11 @@ namespace Synthesis.Sensors
         {
             if (currentSensor.IsVisible)
             {
-                hideSensorButton.GetComponentInChildren<Text>().text = "Hide Sensor";
+                //hideSensorButton.GetComponentInChildren<Text>().text = "Hide Sensor";
             }
             else
             {
-                hideSensorButton.GetComponentInChildren<Text>().text = "Show Sensor";
+                //hideSensorButton.GetComponentInChildren<Text>().text = "Show Sensor";
             }
         }
         #endregion
