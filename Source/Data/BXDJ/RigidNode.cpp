@@ -176,6 +176,11 @@ void RigidNode::write(XmlWriter & output) const
 	output.writeElement("ModelFileName", filename);
 	output.writeElement("ModelID", getModelId());
 
+	if (parent != NULL)
+	{
+		output.write(*parent);
+	}
+
 	output.endElement();
 
 	// Write mesh to binary file (use pointers to dispose of mesh before recursing
@@ -187,7 +192,7 @@ void RigidNode::write(XmlWriter & output) const
 
 	for (std::shared_ptr<Joint> joint : childrenJoints)
 	{
-		output.write(*joint);
+		output.write(*joint->getChild());
 	}
 }
 

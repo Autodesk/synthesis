@@ -13,8 +13,9 @@ namespace BXDJ
 		Joint(const RigidNode &, RigidNode *);
 
 		RigidNode * getParent();
+		std::shared_ptr<RigidNode> getChild();
 
-		void write(XmlWriter &) const;
+		virtual void write(XmlWriter &) const;
 
 	private:
 		std::shared_ptr<RigidNode> child;

@@ -12,22 +12,40 @@ RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : AngularJ
 	fusionJoint = jointToCopy.fusionJoint;
 }
 
-Vector3<float> RotationalJoint::getAxisOfRotation()
+Vector3<float> RotationalJoint::getAxisOfRotation() const
 {
 	return Vector3<float>(0, 0, 0);
 }
 
-float RotationalJoint::getCurrentAngle()
+float RotationalJoint::getCurrentAngle() const
 {
 	return 0.0f;
 }
 
-float BXDJ::RotationalJoint::getUpperLimit()
+float RotationalJoint::getUpperLimit() const
 {
 	return 0.0f;
 }
 
-float BXDJ::RotationalJoint::getLowerLimit()
+float RotationalJoint::getLowerLimit() const
 {
 	return 0.0f;
+}
+
+void RotationalJoint::write(XmlWriter & output) const
+{
+	// Write joint information
+	output.startElement("RotationalJoint");
+
+	output.startElement("BXDVector3");
+	output.writeAttribute("VectorID", "Axis");
+	output.write(getAxisOfRotation());
+	output.endElement();
+
+	output.writeElement("CurrentAngularPosition", std::to_string(getCurrentAngle()));
+
+	output.endElement();
+
+	// Write driver information
+	AngularJoint::Joint::write(output);
 }
