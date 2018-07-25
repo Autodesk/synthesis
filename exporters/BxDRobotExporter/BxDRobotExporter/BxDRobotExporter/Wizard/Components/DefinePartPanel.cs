@@ -208,10 +208,10 @@ namespace BxDRobotExporter.Wizard
                         this.PortLayout.RowStyles[1].Height = 0;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
+                        if (!tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Add(metaElevatorStages);
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
                         //if (!tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Add(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
-                        if (!tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Add(metaElevatorStages);
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;

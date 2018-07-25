@@ -131,9 +131,12 @@ public partial class DriveChooser : Form
             }
             {
                 ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-                if (elevatorMeta != null)
+                if (elevatorMeta != null && (int)elevatorMeta.type < 7)
                 {
                     cmbStages.SelectedIndex = (int)elevatorMeta.type;
+                } else
+                {
+                    cmbStages.SelectedIndex = 0;
                 }
             }
             #endregion
