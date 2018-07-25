@@ -17,12 +17,17 @@ Driver::Driver(const Driver & driverToCopy)
 Driver::Driver(Joint * joint, Type type)
 {
 	this->joint = joint;
-	type = UNKNOWN;
+	this->type = type;
 	portSignal = PWM;
 	portA = -1;
 	portB = -1;
 	inputGear = 1;
 	outputGear = 1;
+}
+
+void BXDJ::Driver::addComponent(std::shared_ptr<Component> component)
+{
+	components.push_back(component);
 }
 
 void BXDJ::Driver::write(XmlWriter & output) const
@@ -44,7 +49,9 @@ void BXDJ::Driver::write(XmlWriter & output) const
 	
 	output.writeElement("SignalType", toString(portSignal));
 
-	// Write driver meta
+	// Component Information
+	for (std::shared_ptr<Component> component : components)
+		output.write(*component);
 
 	output.endElement();
 }

@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "XmlWriter.h"
+#include "Component.h"
 
 namespace BXDJ
 {
@@ -40,13 +42,17 @@ namespace BXDJ
 		Driver(const Driver &);
 		Driver(Joint *, Type type = UNKNOWN);
 
+		void addComponent(std::shared_ptr<Component>);
+
 		void write(XmlWriter &) const;
 
 	private:
 		Joint * joint;
+		// Information for things like wheels
+		std::vector<std::shared_ptr<Component>> components;
 
-		static std::string toString(Type type);
-		static std::string toString(Signal type);
+		static std::string toString(Type);
+		static std::string toString(Signal);
 
 	};
 }
