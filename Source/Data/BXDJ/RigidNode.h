@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <Fusion/FusionAll.h>
 #include <Core/Geometry/Point3D.h>
+#include "../BXDA/BinaryWriter.h"
 #include "XmlWriter.h"
 #include "../BXDA/Mesh.h"
 #include "../BXDA/Physics.h"

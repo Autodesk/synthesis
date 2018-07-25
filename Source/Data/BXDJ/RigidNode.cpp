@@ -150,6 +150,7 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 
 void RigidNode::write(XmlWriter & output) const
 {
+	// Write node information to XML file
 	output.startElement("Node");
 	output.writeAttribute("GUID", guid);
 
@@ -158,6 +159,13 @@ void RigidNode::write(XmlWriter & output) const
 	output.writeElement("ModelID", "modelID");
 
 	output.endElement();
+
+	// Write mesh to binary file (use pointers to dispose of mesh before recursing
+	BXDA::BinaryWriter * binary = new BXDA::BinaryWriter("C:\\Users\\t_walkn\\Desktop\\" + guid + ".bxda");
+	BXDA::Mesh * mesh;
+	getMesh(*mesh);
+	binary->write(*mesh);
+	delete mesh; delete binary;
 
 	for (std::shared_ptr<Joint> joint : childrenJoints)
 	{
