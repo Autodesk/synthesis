@@ -4,9 +4,17 @@
 
 using namespace BXDJ;
 
-RigidNode::RigidNode()
+RigidNode::RigidNode(bool isRoot = false)
 {
 	parent = NULL;
+
+	// Store id for generating guid
+	static unsigned int nextId = 0;
+
+	if (isRoot)
+		nextId = 0;
+
+	Guid guid = Guid(nextId++);
 }
 
 RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
@@ -22,7 +30,7 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 	log = nodeToCopy.log;
 }
 
-RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent) : RigidNode()
+RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent) : RigidNode(true)
 {
 	JointSummary jointSummary = getJointSummary(rootComponent);
 	
@@ -125,10 +133,6 @@ void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence, JointSum
 	log += "Adding occurence \"" + rootOccurrence->fullPathName() + "\"\n";
 	fusionOccurrences.push_back(rootOccurrence);
 
-	// Generate the GUID based on the pointer to the first occurence added to this node
-	if (!guid.isInitialized())
-		guid.regenerate((unsigned int)rootOccurrence);
-
 	// Create a joint from this occurence if it is the parent of a joint
 	if (jointSummary.parents.find(rootOccurrence) != jointSummary.parents.end())
 		for (core::Ptr<fusion::Joint> joint : jointSummary.parents[rootOccurrence])
@@ -161,18 +165,21 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 
 void RigidNode::write(XmlWriter & output) const
 {
+	// Generate filename
+	std::string filename = "node_" + std::to_string(guid.getSeed());
+
 	// Write node information to XML file
 	output.startElement("Node");
 	output.writeAttribute("GUID", guid.toString());
 
-	output.writeElement("ParentGUID", (parent == NULL) ? "-1" : parent->getParent()->guid.toString());
-	output.writeElement("ModelFileName", getModelId() + ".bxda");
+	output.writeElement("ParentID", (parent == NULL) ? "-1" : std::to_string(parent->getParent()->guid.getSeed()));
+	output.writeElement("ModelFileName", filename);
 	output.writeElement("ModelID", getModelId());
 
 	output.endElement();
 
 	// Write mesh to binary file (use pointers to dispose of mesh before recursing
-	BXDA::BinaryWriter * binary = new BXDA::BinaryWriter("C:\\Users\\t_walkn\\Desktop\\" + guid.toString() + ".bxda");
+	BXDA::BinaryWriter * binary = new BXDA::BinaryWriter("C:\\Users\\t_walkn\\Desktop\\" + filename);
 	BXDA::Mesh * mesh = new BXDA::Mesh(guid);
 	getMesh(*mesh);
 	binary->write(*mesh);
