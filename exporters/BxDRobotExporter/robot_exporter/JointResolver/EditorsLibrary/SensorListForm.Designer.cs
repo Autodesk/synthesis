@@ -64,12 +64,12 @@
             this.sensorListView.FullRowSelect = true;
             this.sensorListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.sensorListView.HoverSelection = true;
-            this.sensorListView.Location = new System.Drawing.Point(9, 10);
-            this.sensorListView.Margin = new System.Windows.Forms.Padding(2);
+            this.sensorListView.Location = new System.Drawing.Point(12, 12);
+            this.sensorListView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.sensorListView.MultiSelect = false;
             this.sensorListView.Name = "sensorListView";
             this.sensorListView.ShowGroups = false;
-            this.sensorListView.Size = new System.Drawing.Size(388, 160);
+            this.sensorListView.Size = new System.Drawing.Size(516, 196);
             this.sensorListView.TabIndex = 0;
             this.sensorListView.UseCompatibleStateImageBehavior = false;
             this.sensorListView.View = System.Windows.Forms.View.Details;
@@ -83,10 +83,10 @@
             // deleteButton
             // 
             this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.deleteButton.Location = new System.Drawing.Point(9, 181);
-            this.deleteButton.Margin = new System.Windows.Forms.Padding(2);
+            this.deleteButton.Location = new System.Drawing.Point(12, 223);
+            this.deleteButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.deleteButton.Name = "deleteButton";
-            this.deleteButton.Size = new System.Drawing.Size(97, 29);
+            this.deleteButton.Size = new System.Drawing.Size(129, 36);
             this.deleteButton.TabIndex = 1;
             this.deleteButton.Text = "Delete";
             this.deleteButton.UseVisualStyleBackColor = true;
@@ -95,10 +95,10 @@
             // addSensorButton
             // 
             this.addSensorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.addSensorButton.Location = new System.Drawing.Point(311, 181);
-            this.addSensorButton.Margin = new System.Windows.Forms.Padding(2);
+            this.addSensorButton.Location = new System.Drawing.Point(415, 223);
+            this.addSensorButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.addSensorButton.Name = "addSensorButton";
-            this.addSensorButton.Size = new System.Drawing.Size(86, 29);
+            this.addSensorButton.Size = new System.Drawing.Size(115, 36);
             this.addSensorButton.TabIndex = 2;
             this.addSensorButton.Text = "Add Sensor";
             this.addSensorButton.UseVisualStyleBackColor = true;
@@ -106,16 +106,18 @@
             // 
             // SensorListForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(406, 221);
+            this.ClientSize = new System.Drawing.Size(541, 272);
             this.Controls.Add(this.addSensorButton);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.sensorListView);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2);
-            this.MinimumSize = new System.Drawing.Size(416, 251);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(549, 298);
             this.Name = "SensorListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Sensor List";
