@@ -162,7 +162,7 @@ void RigidNode::write(XmlWriter & output) const
 
 	// Write mesh to binary file (use pointers to dispose of mesh before recursing
 	BXDA::BinaryWriter * binary = new BXDA::BinaryWriter("C:\\Users\\t_walkn\\Desktop\\" + guid + ".bxda");
-	BXDA::Mesh * mesh;
+	BXDA::Mesh * mesh = new BXDA::Mesh;
 	getMesh(*mesh);
 	binary->write(*mesh);
 	delete mesh; delete binary;
