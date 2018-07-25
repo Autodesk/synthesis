@@ -1,0 +1,65 @@
+#include "Guid.h"
+
+const char HEX_CHARS[] = { '0', '1', '2', '3', '4', '5', '6', '7',
+						   '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
+Guid::Guid()
+{
+	for (int i = 0; i < BYTE_COUNT; i++)
+	{
+		bytes[i] = 0;
+	}
+
+	init = false;
+}
+
+Guid::Guid(const Guid & guidToCopy)
+{
+	for (int i = 0; i < BYTE_COUNT; i++)
+	{
+		bytes[i] = guidToCopy.bytes[i];
+	}
+
+	init = true;
+}
+
+Guid::Guid(unsigned int seed)
+{
+	regenerate(seed);
+}
+
+void Guid::regenerate(unsigned int seed)
+{
+	srand(seed);
+
+	for (int i = 0; i < BYTE_COUNT; i++)
+	{
+		bytes[i] = rand() % 0x100;
+	}
+
+	init = true;
+}
+
+std::string Guid::toString() const
+{
+	char str[BYTE_COUNT * 2];
+
+	for (int i = 0; i < BYTE_COUNT; i++)
+	{
+		str[i * 2]     = HEX_CHARS[bytes[i] / 0x10];
+		str[i * 2 + 1] = HEX_CHARS[bytes[i] % 0x10];
+	}
+
+	std::string fullString(str);
+
+	return fullString.substr(0, 8) + '-' +
+		   fullString.substr(8, 4) + '-' +
+		   fullString.substr(12, 4) + '-' +
+		   fullString.substr(16, 4) + '-' +
+		   fullString.substr(20);
+}
+
+bool Guid::isInitialized() const
+{
+	return init;
+}

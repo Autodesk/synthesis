@@ -4,19 +4,20 @@
 #include "BinaryWriter.h"
 #include "Submesh.h"
 #include "Physics.h"
+#include "../Guid.h"
 
 namespace BXDA
 {
 	class Mesh : public BinaryWritable
 	{
 	public:
-		Mesh();
+		Mesh(Guid guid);
 		
 		void addSubMesh(const SubMesh &);
 		void addSubMesh(std::shared_ptr<SubMesh>);
 		void addPhysics(const Physics &);
 
-		std::string getGUID() const;
+		Guid getGUID() const;
 		int getVersion() const;
 
 		std::string toString();
@@ -24,7 +25,7 @@ namespace BXDA
 	private:
 		const int CURRENT_VERSION = 0;
 
-		std::string guid;
+		Guid guid;
 		Physics physics;
 		std::vector<std::shared_ptr<SubMesh>> subMeshes;
 
