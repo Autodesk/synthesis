@@ -93,6 +93,9 @@
     <ClInclude Include="Source\Data\Guid.h">
       <Filter>Headers\Data</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\Filesystem.h">
+      <Filter>Headers\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -144,6 +147,9 @@
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\Guid.cpp">
+      <Filter>Source\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\Filesystem.cpp">
       <Filter>Source\Data</Filter>
     </ClCompile>
   </ItemGroup>

@@ -31,7 +31,7 @@ void Exporter::exportExample()
 	mesh.addSubMesh(subMesh);
 
 	//Generates timestamp and attaches to file name
-	std::string filename = "C:\\Users\\t_walkn\\Desktop\\exampleFusion.bxda";
+	std::string filename = Filesystem::getCurrentRobotDirectory() + "exampleFusion.bxda";
 	BXDA::BinaryWriter binary(filename);
 	binary.write(mesh);
 }
