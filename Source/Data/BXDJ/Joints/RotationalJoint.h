@@ -11,10 +11,12 @@ namespace BXDJ
 		RotationalJoint(const RigidNode &, RigidNode *, core::Ptr<fusion::RevoluteJointMotion>);
 		RotationalJoint(const RotationalJoint &);
 
+		Vector3<float> getBasePoint() const;
 		Vector3<float> getAxisOfRotation() const;
 		float getCurrentAngle() const;
-		float getUpperLimit() const;
-		float getLowerLimit() const;
+		bool getHasLimits() const;
+		float getMaxAngle() const;
+		float getMinAngle() const;
 		
 		void write(XmlWriter &) const;
 
