@@ -197,13 +197,18 @@ namespace hel{
             return instance.first->pwm_system.getMXPDutyCycle(reg_index);
         }
     };
+
     double getSpeed(uint32_t pulse_width) {
         // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
         const int32_t max = 1499;
-        const int32_t deadband_max = 1000;
         const int32_t center = 999;
-        const int32_t deadband_min = 998;
-        const int32_t  min = 499;
+        const int32_t min = 499;
+
+        const int32_t deadband_max = center + 1;
+        const int32_t deadband_min = center - 1;
+
+        const int32_t positive_scale_factor = max - deadband_max;
+        const int32_t negative_scale_factor = deadband_min - min;
 
         if (pulse_width == 0) {
             return 0.0;
@@ -211,10 +216,10 @@ namespace hel{
             return 1.0;
         } else if (pulse_width < min) {
             return -1.0;
-        } else if (pulse_width > 1000) {
-            return static_cast<double>((int32_t) pulse_width - 1000) / static_cast<double>(500);
-        } else if (pulse_width < 999) {
-            return static_cast<double>((int32_t) pulse_width - 999) / static_cast<double>(500);
+        } else if (pulse_width > deadband_max) {
+            return static_cast<double>((int32_t) pulse_width - deadband_max) / static_cast<double>(positive_scale_factor);
+        } else if (pulse_width < deadband_min) {
+            return static_cast<double>((int32_t) pulse_width - deadband_min) / static_cast<double>(negative_scale_factor);
         } else {
             return 0.0;
         }
