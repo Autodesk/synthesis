@@ -10,13 +10,17 @@ public:
 	Guid();
 	Guid(const Guid &);
 	Guid(unsigned int seed);
+	
 	void regenerate(unsigned int seed);
+	
 	std::string toString() const;
 	bool isInitialized() const;
+	unsigned int getSeed() const;
 
 private:
 	static const int BYTE_COUNT = 16;
 	unsigned char bytes[BYTE_COUNT];
 	bool init;
+	unsigned int seed;
 
 };

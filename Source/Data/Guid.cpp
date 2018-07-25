@@ -5,6 +5,8 @@ const char HEX_CHARS[] = { '0', '1', '2', '3', '4', '5', '6', '7',
 
 Guid::Guid()
 {
+	seed = 0;
+
 	for (int i = 0; i < BYTE_COUNT; i++)
 	{
 		bytes[i] = 0;
@@ -15,6 +17,8 @@ Guid::Guid()
 
 Guid::Guid(const Guid & guidToCopy)
 {
+	seed = guidToCopy.seed;
+
 	for (int i = 0; i < BYTE_COUNT; i++)
 	{
 		bytes[i] = guidToCopy.bytes[i];
@@ -31,6 +35,8 @@ Guid::Guid(unsigned int seed)
 void Guid::regenerate(unsigned int seed)
 {
 	srand(seed);
+
+	this->seed = seed;
 
 	for (int i = 0; i < BYTE_COUNT; i++)
 	{
@@ -63,4 +69,9 @@ std::string Guid::toString() const
 bool Guid::isInitialized() const
 {
 	return init;
+}
+
+unsigned int Guid::getSeed() const
+{
+	return seed;
 }
