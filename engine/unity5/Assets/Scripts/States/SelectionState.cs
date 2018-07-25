@@ -1,4 +1,5 @@
 ﻿using Synthesis.FSM;
+using UnityEngine.SceneManagement;
 
 namespace Synthesis.States
 {
@@ -18,6 +19,14 @@ namespace Synthesis.States
         public void OnMixAndMatchButtonPressed()
         {
             StateMachine.PushState(new MixAndMatchState());
+        }
+
+        /// <summary>
+        /// Launches the multiplayer scene when the network multiplayer button is pressed.
+        /// </summary>
+        public void OnMultiplayerButtonPressed()
+        {
+            SceneManager.LoadScene("MultiplayerScene");
         }
     }
 }
