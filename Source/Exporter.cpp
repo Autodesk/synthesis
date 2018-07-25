@@ -56,9 +56,7 @@ void Exporter::exportMeshes()
 	
 	BXDJ::RigidNode rootNode(document->design()->rootComponent());
 
-	std::string filename = "C:\\Users\\t_walkn\\Desktop\\node_0.bxda";
-	BXDA::BinaryWriter binary(filename);
-	BXDA::Mesh mesh;
-	rootNode.getMesh(mesh);
-	binary.write(mesh);
+	std::string filename = "C:\\Users\\t_walkn\\Desktop\\skeleton.bxdj";
+	BXDJ::XmlWriter xml(filename);
+	xml.write(rootNode);
 }
