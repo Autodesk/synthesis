@@ -14,7 +14,7 @@ namespace hel{
     private:
         /**
          * \var uint64_t fpga_start_time
-         * \brief The time in milliseconds at which the emulated FPGA started
+         * \brief The time in microseconds at which the emulated FPGA started
          */
 
         uint64_t fpga_start_time;
@@ -23,14 +23,14 @@ namespace hel{
 
         /**
          * \fn uint64_t getFPGAStartTime()const
-         * \brief Get the time in milliseconds at which the emulated FPGA started
+         * \brief Get the time in microseconds at which the emulated FPGA started
          */
 
         uint64_t getFPGAStartTime()const;
 
         /**
          * \fn static uint64_t getCurrentTime()
-         * \brief Get the time in milliseconds for which the emulated FPGA has been running
+         * \brief Get the time in microseconds for which the emulated FPGA has been running
          */
 
         static uint64_t getCurrentTime();
