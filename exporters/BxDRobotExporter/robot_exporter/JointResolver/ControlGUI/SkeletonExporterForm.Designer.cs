@@ -44,31 +44,33 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.ProgressLabel, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.ProgressBar, 0, 1);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 4);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(251, 48);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(335, 61);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // ProgressLabel
             // 
             this.ProgressLabel.AutoSize = true;
             this.ProgressLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ProgressLabel.Location = new System.Drawing.Point(3, 3);
-            this.ProgressLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.ProgressLabel.Location = new System.Drawing.Point(4, 4);
+            this.ProgressLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.ProgressLabel.Name = "ProgressLabel";
-            this.ProgressLabel.Size = new System.Drawing.Size(245, 13);
+            this.ProgressLabel.Size = new System.Drawing.Size(327, 17);
             this.ProgressLabel.TabIndex = 0;
             this.ProgressLabel.Text = "Building nodes...";
             this.ProgressLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ProgressBar
             // 
-            this.ProgressBar.Location = new System.Drawing.Point(3, 22);
+            this.ProgressBar.Location = new System.Drawing.Point(4, 29);
+            this.ProgressBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.ProgressBar.Name = "ProgressBar";
-            this.ProgressBar.Size = new System.Drawing.Size(245, 23);
+            this.ProgressBar.Size = new System.Drawing.Size(327, 28);
             this.ProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.ProgressBar.TabIndex = 1;
             // 
@@ -79,15 +81,16 @@
             // 
             // SkeletonExporterForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(259, 59);
+            this.ClientSize = new System.Drawing.Size(345, 73);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SkeletonExporterForm";

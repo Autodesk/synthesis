@@ -252,6 +252,10 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\SynButton32.bmp" />
+    <None Include="Resources\SynButton16.bmp" />
+    <None Include="Resources\Logo32.bmp" />
+    <None Include="Resources\Logo16.bmp" />
     <None Include="Images\Weight32.png" />
     <None Include="Images\Weight16.png" />
     <None Include="Images\Wand32.png" />
