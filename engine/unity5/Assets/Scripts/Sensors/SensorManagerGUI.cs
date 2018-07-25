@@ -181,7 +181,7 @@ namespace Synthesis.Sensors
             sensorOptionPanel.SetActive(isChoosingOption);
             if (isChoosingOption)
             {
-                preConfigState = dynamicCamera.cameraState;
+                preConfigState = dynamicCamera.ActiveState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera));
                 ShowAllSensors();
             }
