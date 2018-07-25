@@ -57,16 +57,9 @@ namespace Synthesis.Network
         [SyncVar]
         private string fieldGuid;
 
-        /// <summary>
-        /// Contains each <see cref="PlayerIdentity"/> id and their corresponding <see cref="PlayerIdentity"/>
-        /// ids with resources that need to be transferred.
-        /// </summary>
-        public Dictionary<int, List<int>> DependencyMap { get; private set; }
+        private Dictionary<int, List<int>> dependencyMap;
 
-        /// <summary>
-        /// Contains each <see cref="PlayerIdentity"/> id and their corresponding file transfer ids.
-        /// </summary>
-        public Dictionary<int, List<int>> TransferMap { get; private set; }
+        private Dictionary<int, List<int>> transferMap;
 
         private Dictionary<int, bool> resolvedDependencies;
 
@@ -80,8 +73,8 @@ namespace Synthesis.Network
         private void Awake()
         {
             Instance = this;
-            DependencyMap = new Dictionary<int, List<int>>();
-            TransferMap = new Dictionary<int, List<int>>();
+            dependencyMap = new Dictionary<int, List<int>>();
+            transferMap = new Dictionary<int, List<int>>();
             resolvedDependencies = new Dictionary<int, bool>();
             uiStateMachine = GameObject.Find("UserInterface").GetComponent<StateMachine>();
         }
@@ -127,7 +120,7 @@ namespace Synthesis.Network
         {
             generationComplete = onGenerationComplete;
 
-            DependencyMap.Clear();
+            dependencyMap.Clear();
             resolvedDependencies.Clear();
 
             foreach (PlayerIdentity p in FindObjectsOfType<PlayerIdentity>())
@@ -136,12 +129,23 @@ namespace Synthesis.Network
             RpcCheckDependencies();
         }
 
+        /// <summary>
+        /// Gathers resources from all <see cref="PlayerIdentity"/> instances.
+        /// </summary>
         [Server]
-        public void TransferFiles()
+        public void GatherResources()
         {
-            // TODO: Attach the file transferer script to the player identity GameObject.
-            // That way, we don't have issues with client/server priority and the transfer ids
-            // can overlap since they influence different objects anyway.
+            HashSet<PlayerIdentity> remainingIdentities = new HashSet<PlayerIdentity>(FindObjectsOfType<PlayerIdentity>());
+
+            foreach (KeyValuePair<int, List<int>> entry in dependencyMap.Where(e => e.Key >= 0))
+            {
+                PlayerIdentity identity = PlayerIdentity.FindById(entry.Key);
+                remainingIdentities.Remove(identity);
+                identity.TransferResources();
+            }
+
+            foreach (PlayerIdentity identity in remainingIdentities)
+                identity.ready = true;
         }
 
         /// <summary>
@@ -167,10 +171,10 @@ namespace Synthesis.Network
 
             foreach (int ownerId in ownerIds)
             {
-                if (!DependencyMap.ContainsKey(ownerId))
-                    DependencyMap[ownerId] = new List<int>();
+                if (!dependencyMap.ContainsKey(ownerId))
+                    dependencyMap[ownerId] = new List<int>();
 
-                DependencyMap[ownerId].Add(dependantId);
+                dependencyMap[ownerId].Add(dependantId);
             }
 
             if (!resolvedDependencies.ContainsValue(false))

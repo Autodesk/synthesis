@@ -18,11 +18,12 @@ namespace Synthesis.States
         public override void Start()
         {
             if (Host)
+            {
+                MatchManager.Instance.AwaitChangeState<AnalyzingResourcesState>(false);
                 MatchManager.Instance.UpdateFieldGuid();
+            }
 
             PlayerIdentity.LocalInstance.UpdateRobotGuid();
-
-            MatchManager.Instance.AwaitChangeState<AnalyzingResourcesState>(false);
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ using UnityEngine.Networking;
 
 namespace Synthesis.Network
 {
-    public class FileTransferer : NetworkBehaviour
+    public abstract class FileTransferer : NetworkBehaviour
     {
         private const int BufferSize = 1024;
 
@@ -30,64 +30,45 @@ namespace Synthesis.Network
         }
 
         /// <summary>
-        /// The global <see cref="FileTransferer"/> instance.
-        /// </summary>
-        public static FileTransferer Instance { get; private set; }
-
-        /// <summary>
         /// Called when the transfer is complete on the sender's end.
         /// </summary>
-        public event Action<int, byte[]> OnSendingComplete;
+        public event Action<string, byte[]> OnSendingComplete;
         
         /// <summary>
         /// Called when a data fragment is sent on the senders' end.
         /// </summary>
-        public event Action<int, byte[]> OnDataFragmentSent;
+        public event Action<string, byte[]> OnDataFragmentSent;
 
         /// <summary>
         /// Called when a data fragment is received on the receiver's end.
         /// </summary>
-        public event Action<int, byte[]> OnDataFragmentReceived;
+        public event Action<string, byte[]> OnDataFragmentReceived;
         
         /// <summary>
         /// Called when the transfer is complete on the receiver's end.
         /// </summary>
-        public event Action<int, byte[]> OnReceivingComplete;
+        public event Action<string, byte[]> OnReceivingComplete;
 
-        private List<int> transferIds;
-        private Dictionary<int, DataFragment> transferData;
+        private List<string> transferIds;
+        private Dictionary<string, DataFragment> transferData;
 
         /// <summary>
         /// Initializes this instance.
         /// </summary>
         private void Awake()
         {
-            Instance = this;
             Reset();
         }
 
         /// <summary>
         /// Stops all coroutines and resets this instance.
         /// </summary>
-        public void Reset()
+        public virtual void Reset()
         {
             StopAllCoroutines();
 
-            transferIds = new List<int>();
-            transferData = new Dictionary<int, DataFragment>();
-        }
-
-        /// <summary>
-        /// Sends the given file with the given transfer ID to the client with the provided
-        /// <see cref="NetworkConnection"/>.
-        /// </summary>
-        /// <param name="transferId"></param>
-        /// <param name="data"></param>
-        [Server]
-        public void SendFileToClient(NetworkConnection target, int transferId, byte[] data)
-        {
-            Debug.Assert(!transferIds.Contains(transferId));
-            StartCoroutine(SendBytesToClientRoutine(target, transferId, data));
+            transferIds = new List<string>();
+            transferData = new Dictionary<string, DataFragment>();
         }
 
         /// <summary>
@@ -95,38 +76,10 @@ namespace Synthesis.Network
         /// </summary>
         /// <param name="transferId"></param>
         /// <param name="data"></param>
-        [Client]
-        public void SendFileToServer(int transferId, byte[] data)
+        public void SendFile(string transferId, byte[] data)
         {
             Debug.Assert(!transferIds.Contains(transferId));
-            StartCoroutine(SendBytesToServerRoutine(transferId, data));
-        }
-
-        /// <summary>
-        /// The routine that sends the given data to the provided target with the specified transfer ID.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="transferId"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        [Server]
-        private IEnumerator SendBytesToClientRoutine(NetworkConnection target, int transferId, byte[] data)
-        {
-            return SendBytes(transferId, data, (id, size) => TargetPrepareToReceiveBytes(target, id, size),
-                (id, buffer) => TargetReceiveBytes(target, id, buffer));
-        }
-
-        /// <summary>
-        /// The routine that sends the given data to the server from the current client instance.
-        /// </summary>
-        /// <param name="transferId"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        [Client]
-        private IEnumerator SendBytesToServerRoutine(int transferId, byte[] data)
-        {
-            return SendBytes(transferId, data, (id, size) => CmdPrepareToReceiveBytes(id, size),
-                (id, buffer) => CmdReceiveBytes(id, buffer));
+            StartCoroutine(SendBytes(transferId, data));
         }
 
         /// <summary>
@@ -138,9 +91,9 @@ namespace Synthesis.Network
         /// <param name="prepare"></param>
         /// <param name="receive"></param>
         /// <returns></returns>
-        private IEnumerator SendBytes(int transferId, byte[] data, Action<int, int> prepare, Action<int, byte[]> receive)
+        protected IEnumerator SendBytes(string transferId, byte[] data)
         {
-            prepare(transferId, data.Length);
+            OnPrepareToReceiveBytes(transferId, data.Length);
             yield return null;
 
             transferIds.Add(transferId);
@@ -157,7 +110,7 @@ namespace Synthesis.Network
                 byte[] buffer = new byte[bufferSize];
                 Array.Copy(dataToTransfer.data, dataToTransfer.dataIndex, buffer, 0, bufferSize);
 
-                receive(transferId, buffer);
+                OnReceiveBytes(transferId, buffer);
                 dataToTransfer.dataIndex += bufferSize;
 
                 yield return null;
@@ -171,34 +124,11 @@ namespace Synthesis.Network
         }
 
         /// <summary>
-        /// Initializes the given target in preparation for receiving data from the server.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="transferId"></param>
-        /// <param name="expectedSize"></param>
-        [TargetRpc(channel = MultiplayerNetwork.ReliableSequencedChannel)]
-        private void TargetPrepareToReceiveBytes(NetworkConnection target, int transferId, int expectedSize)
-        {
-            PrepareToReceiveBytes(transferId, expectedSize);
-        }
-
-        /// <summary>
-        /// Initializes the server in preparation for receiving data from a client.
-        /// </summary>
-        /// <param name="transferId"></param>
-        /// <param name="expectedSize"></param>
-        [Command(channel = MultiplayerNetwork.ReliableSequencedChannel)]
-        private void CmdPrepareToReceiveBytes(int transferId, int expectedSize)
-        {
-            PrepareToReceiveBytes(transferId, expectedSize);
-        }
-
-        /// <summary>
         /// Prepares the client or server to receive data.
         /// </summary>
         /// <param name="transferId"></param>
         /// <param name="expectedSize"></param>
-        private void PrepareToReceiveBytes(int transferId, int expectedSize)
+        protected void PrepareToReceiveBytes(string transferId, int expectedSize)
         {
             if (transferData.ContainsKey(transferId))
                 return;
@@ -208,34 +138,11 @@ namespace Synthesis.Network
         }
 
         /// <summary>
-        /// Reads bytes from the given buffer on the target specified.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="transferId"></param>
-        /// <param name="buffer"></param>
-        [TargetRpc(channel = MultiplayerNetwork.ReliableSequencedChannel)]
-        private void TargetReceiveBytes(NetworkConnection target, int transferId, byte[] buffer)
-        {
-            ReceiveBytes(transferId, buffer);
-        }
-
-        /// <summary>
-        /// Reads bytes from the given buffer on the server.
-        /// </summary>
-        /// <param name="transferId"></param>
-        /// <param name="buffer"></param>
-        [Command(channel = MultiplayerNetwork.ReliableSequencedChannel)]
-        private void CmdReceiveBytes(int transferId, byte[] buffer)
-        {
-            ReceiveBytes(transferId, buffer);
-        }
-
-        /// <summary>
         /// Reads bytes from the given buffer.
         /// </summary>
         /// <param name="transferId"></param>
         /// <param name="buffer"></param>
-        private void ReceiveBytes(int transferId, byte[] buffer)
+        protected void ReceiveBytes(string transferId, byte[] buffer)
         {
             if (!transferData.ContainsKey(transferId))
                 return;
@@ -254,5 +161,19 @@ namespace Synthesis.Network
 
             OnReceivingComplete?.Invoke(transferId, buffer);
         }
+
+        /// <summary>
+        /// Called when a stream of bytes are about to be received.
+        /// </summary>
+        /// <param name="transferId"></param>
+        /// <param name="expectedSize"></param>
+        protected abstract void OnPrepareToReceiveBytes(string transferId, int expectedSize);
+
+        /// <summary>
+        /// Called when bytes are about to be received.
+        /// </summary>
+        /// <param name="transferId"></param>
+        /// <param name="buffer"></param>
+        protected abstract void OnReceiveBytes(string transferId, byte[] buffer);
     }
 }

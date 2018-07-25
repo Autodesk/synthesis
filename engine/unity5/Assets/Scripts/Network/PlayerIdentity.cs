@@ -24,6 +24,11 @@ namespace Synthesis.Network
         /// </summary>
         public static string DefaultLocalPlayerTag { get; set; }
 
+        /// <summary>
+        /// The <see cref="ClientToServerFileTransferer"/> associated with this instance.
+        /// </summary>
+        public ClientToServerFileTransferer FileTransferer { get; private set; }
+
         [SyncVar]
         public int id;
 
@@ -39,9 +44,11 @@ namespace Synthesis.Network
         [SyncVar]
         public bool ready;
 
-        public SyncListString robotFiles;
-
         private static int nextId = 0;
+
+        private Dictionary<string, List<byte>> fileData;
+        private HashSet<string> receivedFiles;
+        private int numFilesToReceive;
 
         /// <summary>
         /// Returns the <see cref="PlayerIdentity"/> with the given ID.
@@ -60,8 +67,14 @@ namespace Synthesis.Network
         /// </summary>
         private void Start()
         {
+            FileTransferer = GetComponent<ClientToServerFileTransferer>();
+
             if (isServer)
+            {
                 id = nextId++;
+                FileTransferer.OnDataFragmentReceived += DataFragmentReceived;
+                FileTransferer.OnReceivingComplete += ReceivingComplete;
+            }
 
             if (isLocalPlayer)
             {
@@ -69,6 +82,10 @@ namespace Synthesis.Network
                 CmdSetPlayerTag(DefaultLocalPlayerTag);
                 CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
             }
+
+            fileData = new Dictionary<string, List<byte>>();
+            receivedFiles = new HashSet<string>();
+            numFilesToReceive = -1;
 
             PlayerList.Instance.AddPlayerEntry(this);
         }
@@ -108,7 +125,7 @@ namespace Synthesis.Network
                 }
 
                 CmdSetRobotGuid(t.Result.GUID.ToString());
-            });
+            }, TaskScheduler.FromCurrentSynchronizationContext());
 
             loadingTask.Start();
         }
@@ -182,19 +199,77 @@ namespace Synthesis.Network
         }
 
         /// <summary>
+        /// Transfers the resources owned by the client instance to the server (this instance)
+        /// </summary>
+        [Server]
+        public void TransferResources()
+        {
+            fileData.Clear();
+            receivedFiles.Clear();
+            numFilesToReceive = -1;
+
+            TargetTransferResources(connectionToClient);
+        }
+
+        /// <summary>
         /// Transfers the resources owned by this instance to the server.
         /// </summary>
         [TargetRpc]
-        public void TargetTransferDependencies(NetworkConnection target)
+        private void TargetTransferResources(NetworkConnection target)
         {
-            string[] files = Directory.GetFiles(PlayerPrefs.GetString("simSelectedRobot"));
-            CmdUpdateRobotFiles(files);
+            FileTransferer.Reset();
 
-            for (int i = 0; i < files.Length; i++)
+            string[] fileList = Directory.GetFiles(PlayerPrefs.GetString("simSelectedRobot"));
+
+            CmdSetNumFilesToReceive(fileList.Length);
+
+            var task = new Task<List<Tuple<string, byte[]>>>(() =>
             {
-                byte[] bytes = File.ReadAllBytes(files[i]);
-                FileTransferer.Instance.SendFileToServer(i, bytes);
-            }
+                List<Tuple<string, byte[]>> files = new List<Tuple<string, byte[]>>();
+
+                foreach (string file in fileList)
+                    files.Add(new Tuple<string, byte[]>(new FileInfo(file).Name, File.ReadAllBytes(file)));
+
+                return files;
+            });
+
+            task.ContinueWith(t =>
+            {
+                foreach (Tuple<string, byte[]> file in t.Result)
+                    FileTransferer.SendFile(file.Item1, file.Item2);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+
+            task.Start();
+        }
+
+        /// <summary>
+        /// Called when a data fragment is received.
+        /// </summary>
+        /// <param name="transferId"></param>
+        /// <param name="data"></param>
+        [Server]
+        private void DataFragmentReceived(string transferId, byte[] data)
+        {
+            if (!fileData.ContainsKey(transferId))
+                fileData[transferId] = new List<byte>();
+
+            fileData[transferId].AddRange(data);
+        }
+
+        /// <summary>
+        /// Called when receiving file data has completed.
+        /// </summary>
+        /// <param name="transferId"></param>
+        /// <param name="data"></param>
+        [Server]
+        private void ReceivingComplete(string transferId, byte[] data)
+        {
+            receivedFiles.Add(transferId);
+
+            //Debug.Log(transferId + " from " + robotName);
+
+            if (receivedFiles.Count == numFilesToReceive)
+                ready = true;
         }
 
         /// <summary>
@@ -208,11 +283,28 @@ namespace Synthesis.Network
         }
 
         /// <summary>
+        /// Sets the robot name on this instance accross all clients.
+        /// </summary>
+        /// <param name="name"></param>
+        public void SetRobotName(string name)
+        {
+            if (isServer)
+            {
+                robotName = name;
+                robotGuid = string.Empty;
+            }
+            else
+            {
+                CmdSetRobotName(name);
+            }
+        }
+
+        /// <summary>
         /// Sets the robot name of this instance accross all clients.
         /// </summary>
         /// <param name="name"></param>
         [Command]
-        public void CmdSetRobotName(string name)
+        private void CmdSetRobotName(string name)
         {
             robotName = name;
             CmdSetRobotGuid(string.Empty);
@@ -239,16 +331,13 @@ namespace Synthesis.Network
         }
 
         /// <summary>
-        /// Updates the list of robot files.
+        /// Tells the server how many files to expect during the transfer.
         /// </summary>
-        /// <param name="files"></param>
+        /// <param name="numFiles"></param>
         [Command]
-        public void CmdUpdateRobotFiles(string[] files)
+        private void CmdSetNumFilesToReceive(int numFiles)
         {
-            robotFiles.Clear();
-
-            foreach (string file in files)
-                robotFiles.Add(file);
+            numFilesToReceive = numFiles;
         }
     }
 }

@@ -93,6 +93,7 @@ namespace Synthesis.GUI
             LinkPanel<FetchingMetadataState>("FetchingMetadataPanel");
             LinkPanel<AnalyzingResourcesState>("AnalyzingResourcesPanel");
             LinkPanel<GatheringResourcesState>("GatheringResourcesPanel");
+            LinkPanel<DistributingResourcesState>("DistributingResourcesPanel");
         }
 
         /// <summary>

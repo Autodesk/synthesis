@@ -81,7 +81,7 @@ namespace Synthesis.States
         public override void Resume()
         {
             if (PlayerIdentity.LocalInstance != null)
-                PlayerIdentity.LocalInstance.CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
+                PlayerIdentity.LocalInstance.SetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
 
             if (host && MatchManager.Instance != null)
                 MatchManager.Instance.FieldName = PlayerPrefs.GetString("simSelectedFieldName");
@@ -97,6 +97,10 @@ namespace Synthesis.States
 
             if (host)
                 startButton.SetActive(Object.FindObjectsOfType<PlayerIdentity>().All(p => p.ready));
+
+            if (PlayerIdentity.LocalInstance != null)
+                readyText.text = PlayerIdentity.LocalInstance.ready ?
+                    "UNREADY" : "READY!";
         }
 
         /// <summary>
@@ -127,9 +131,6 @@ namespace Synthesis.States
                 return;
 
             PlayerIdentity.LocalInstance.CmdSetReady(!PlayerIdentity.LocalInstance.ready);
-
-            readyText.text = PlayerIdentity.LocalInstance.ready ?
-                "UNREADY" : "READY!";
         }
 
         /// <summary>
