@@ -167,7 +167,7 @@ std::string hel::SendData::serialize(){
     );
     //TODO finish
 
-    serialized_data += "}}";
+    serialized_data += "}}\x1B";
     gen_serialization = false;
     return serialized_data;
 }
