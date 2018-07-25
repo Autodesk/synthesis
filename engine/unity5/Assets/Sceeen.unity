@@ -11150,7 +11150,7 @@ GameObject:
   - component: {fileID: 224045770}
   - component: {fileID: 224045769}
   m_Layer: 5
-  m_Name: PositionButton
+  m_Name: RangeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17983,7 +17983,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Position
+  m_Text: Range
 --- !u!222 &364970203
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -48800,7 +48800,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Range
+  m_Text: Position
 --- !u!222 &933761612
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52528,7 +52528,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Range
+  m_Text: Position
 --- !u!222 &1027058728
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -60574,7 +60574,7 @@ GameObject:
   - component: {fileID: 1208685983}
   - component: {fileID: 1208685982}
   m_Layer: 5
-  m_Name: RangeButton
+  m_Name: PositionButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64556,7 +64556,7 @@ GameObject:
   - component: {fileID: 1284107346}
   - component: {fileID: 1284107345}
   m_Layer: 5
-  m_Name: PositionButton
+  m_Name: FOVButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93581,7 +93581,7 @@ GameObject:
   - component: {fileID: 1890541068}
   - component: {fileID: 1890541067}
   m_Layer: 5
-  m_Name: RangeButton
+  m_Name: PositionButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101323,7 +101323,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Position
+  m_Text: Field of View
 --- !u!222 &2067872326
 CanvasRenderer:
   m_ObjectHideFlags: 0
