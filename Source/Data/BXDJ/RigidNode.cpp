@@ -4,7 +4,7 @@
 
 using namespace BXDJ;
 
-RigidNode::RigidNode(bool isRoot = false)
+RigidNode::RigidNode(bool isRoot)
 {
 	parent = NULL;
 
@@ -80,8 +80,8 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 		core::Ptr<fusion::PhysicalProperties> physics = occurrence->physicalProperties();
 		if (physics->mass() > 0)
 		{
-			Vector3<float> centerOfMass(physics->centerOfMass()->x(), physics->centerOfMass()->y(), physics->centerOfMass()->z());
-			mesh.addPhysics(BXDA::Physics(centerOfMass, occurrence->physicalProperties()->mass()));
+			Vector3<float> centerOfMass((float)physics->centerOfMass()->x(), (float)physics->centerOfMass()->y(), (float)physics->centerOfMass()->z());
+			mesh.addPhysics(BXDA::Physics(centerOfMass, (float)occurrence->physicalProperties()->mass()));
 		}
 
 		mesh.addSubMesh(subMesh);
