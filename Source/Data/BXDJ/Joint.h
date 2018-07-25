@@ -12,6 +12,8 @@ namespace BXDJ
 	class Joint : public XmlWritable
 	{
 	public:
+		std::shared_ptr<Driver> driver; // Should be private
+
 		Joint(const Joint &);
 		Joint(RigidNode * parent, core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
 
@@ -25,8 +27,6 @@ namespace BXDJ
 	protected:
 		enum OneTwo : bool { ONE = true, TWO = false };
 
-		std::unique_ptr<Driver> driver;
-
 		core::Ptr<fusion::Joint> getFusionJoint() { return fusionJoint; }
 		OneTwo getParentOccNum() { return parentOcc; }
 
@@ -35,7 +35,6 @@ namespace BXDJ
 		core::Ptr<fusion::Joint> fusionJoint;
 		RigidNode * parent;
 		std::shared_ptr<RigidNode> child;
-
 
 	};
 };

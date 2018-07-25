@@ -7,12 +7,16 @@ RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : AngularJ
 	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
+#include "../Components/Wheel.h"
+
 RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : AngularJoint(parent, joint, parentOccurrence)
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 
-	driver = std::make_unique<Driver>(this, Driver::MOTOR);
+	driver = std::make_shared<Driver>(this, Driver::MOTOR);
 	driver->portA = 0;
+
+	driver->component = std::make_shared<Wheel>();
 }
 
 Vector3<float> RotationalJoint::getAxisOfRotation() const
