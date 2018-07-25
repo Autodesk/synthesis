@@ -131,15 +131,20 @@ namespace hel{
     };
 
     template<typename T, size_t LEN>
-    std::string to_string(std::array<T, LEN> a, std::function<std::string(T)> to_s){
-        std::string s = "[";
+    std::string to_string(std::array<T, LEN> a, std::function<std::string(T)> to_s, std::string delimiter = ",", bool include_brackets = true){
+        std::string s = "";
+        if(include_brackets){
+            "[";
+        }
         for(unsigned i = 0; i < a.size(); i++){
             s += to_s(a[i]);
             if((i + 1) < a.size()){
-                s += ",";
+                s += delimiter;
             }
         }
-        s += "]";
+        if(include_brackets){
+            s += "]";
+        }
         return s;
     }
 

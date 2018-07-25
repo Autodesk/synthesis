@@ -16,7 +16,8 @@ set (hel_VERSION_MAJOR 1)
 set (hel_VERSION_MINOR 0)
 
 set (WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
-set (ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio/")
+set (ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
+set (CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
 
 set (VM_BUILD_COMMAND "./run_vm.sh")
 set (CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
@@ -58,7 +59,7 @@ if(ARCH MATCHES "[Aa][Rr][Mm]")
     DEPENDS generate_libwpi
     VERBATIM)
 
-  link_directories ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/ ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/)
+  link_directories ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/ ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/ ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/ ${CTRE_DIRECTORY}/libraries/driver/lib/)
 elseif(ARCH MATCHES "([Xx]86([-_]64)?)")
 
   set (CMAKE_C_COMPILER gcc)
@@ -103,7 +104,16 @@ ExternalProject_Add(wpilib
   BUILD_COMMAND cd ${WPILIB_DIRECTORY} && ./gradlew :wpilibc:build
   INSTALL_COMMAND ""
   )
-add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/error.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp src/alarm.cpp src/system.cpp)
+
+ExternalProject_Add(ctre
+  PREFIX lib/ctre
+  GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew  && ./gradlew buildneeded
+  INSTALL_COMMAND ""
+  )
+
+add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/error.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp src/alarm.cpp src/system.cpp src/sync_client.cpp)
 add_dependencies(hel asio wpilib generate_libwpi)
 
 target_include_directories( hel SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
@@ -116,16 +126,18 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
     if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
       add_executable(FRCUserProgram tests/test_project/robot.cpp)
-      add_dependencies(FRCUserProgram wpilib generate_libwpi)
+      add_dependencies(FRCUserProgram wpilib generate_libwpi ctre)
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/cscore/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/ntcore/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include")
+      target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/cpp/include/")
       set_target_properties(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user_code")
       target_compile_options(FRCUserProgram PUBLIC -pthread)
       target_link_libraries(FRCUserProgram wpi)
+      target_link_libraries(FRCUserProgram libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
     else()
       message(WARNING "Robot code generation not supported on x86_64.")
     endif()

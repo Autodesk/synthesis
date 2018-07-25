@@ -27,7 +27,7 @@ namespace hel {
 
             packet_number++;
             printf("%d\n", packet_number);
-            usleep(30000);
+            usleep(100000);
             instance.second.unlock();
         }
     }
