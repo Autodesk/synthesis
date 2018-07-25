@@ -403,6 +403,26 @@ namespace BxDRobotExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap SynthesisLogo16 {
+            get {
+                object obj = ResourceManager.GetObject("SynthesisLogo16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SynthesisLogo32 {
+            get {
+                object obj = ResourceManager.GetObject("SynthesisLogo32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap TTDriverDropdown {
             get {
                 object obj = ResourceManager.GetObject("TTDriverDropdown", resourceCulture);
