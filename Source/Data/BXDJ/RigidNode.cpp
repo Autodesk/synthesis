@@ -166,7 +166,7 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 void RigidNode::write(XmlWriter & output) const
 {
 	// Generate filename
-	std::string filename = "node_" + std::to_string(guid.getSeed());
+	std::string filename = "node_" + std::to_string(guid.getSeed()) + ".bxda";
 
 	// Write node information to XML file
 	output.startElement("Node");
