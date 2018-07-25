@@ -30,14 +30,12 @@ public:
         std::srand(std::time(nullptr));
     }
     void TeleopPeriodic() {
-        // drive with arcade style
         auto x = std::rand() % 2000 + (-1000);
         auto y = std::rand()% 2000 + (-1000);
 
         m_robotDrive.ArcadeDrive(x/1000.0f, y/1000.0f);
 
-
-        //std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
+        std::cout << "Left Speed: " << m_leftMotor.GetSpeed() << "\nRight Speed: " << m_rightMotor.GetSpeed() << "\n";
         dio.Set(current_state);
         r.Set(frc::Relay::Value::kForward);
         auto d = ((double)(std::rand()%5001/1000.0f));

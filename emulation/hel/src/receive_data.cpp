@@ -71,7 +71,7 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             std::function<bool(std::string)>(hel::stob),
             true);
     } catch(const std::exception& ex){
-        //TODO error handling
+        throw JSONParsingException();
     }
     try{
         joysticks = hel::deserializeList(
@@ -79,7 +79,7 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             std::function<Joystick(std::string)>(Joystick::deserialize),
             true);
     } catch(const std::exception& ex){
-        //TODO error handling
+        throw JSONParsingException();
     }
     try{
         digital_mxp = hel::deserializeList(
@@ -87,9 +87,8 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             std::function<MXPData(std::string)>(MXPData::deserialize),
             true);
     } catch(const std::exception& ex){
-        //TODO error handling
+        throw JSONParsingException();
     }
-    //TODO finish
 
     update();
     last_received_data = input_copy;

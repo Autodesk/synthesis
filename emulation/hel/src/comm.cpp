@@ -386,19 +386,24 @@ extern "C" {
         return 0; //HAL does not expect error status if parameters are nullptr
     }
 
-    int FRC_NetworkCommunication_getJoystickAxes(uint8_t joystickNum, struct JoystickAxes_t* axes, uint8_t /*maxAxes*/){
+    int FRC_NetworkCommunication_getJoystickAxes(uint8_t joystickNum, struct JoystickAxes_t* axes, uint8_t maxAxes){
         auto instance = hel::RoboRIOManager::getInstance();
 
         if(joystickNum >= hel::Joystick::MAX_JOYSTICK_COUNT){
             throw std::out_of_range("Exception: unexpected joysticks index (expected 0-" + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
-        hel::BoundsCheckedArray<int8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axes = instance.first->joysticks[joystickNum].getAxes();
-
-        std::copy(std::begin(hel_axes), std::end(hel_axes), axes->axes); //TODO bounds checking
+        if(axes != nullptr){
+            if(maxAxes != hel::Joystick::MAX_AXIS_COUNT){
+                throw std::out_of_range("Exception: mismatch maximum axis count on joystick index " + std::to_string(joystickNum) + "(Expected " + std::to_string(hel::Joystick::MAX_AXIS_COUNT) + " got " + std::to_string(maxAxes) + "))");
+            }
+            hel::BoundsCheckedArray<int8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axes = instance.first->joysticks[joystickNum].getAxes();
+            std::copy(std::begin(hel_axes), std::end(hel_axes), axes->axes);
+            axes->count = instance.first->joysticks[joystickNum].getAxisCount();
+        }
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
     int FRC_NetworkCommunication_getJoystickButtons(uint8_t joystickNum, uint32_t* buttons, uint8_t* count){
@@ -414,22 +419,27 @@ extern "C" {
             *count = instance.first->joysticks[joystickNum].getButtonCount();
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
-    int FRC_NetworkCommunication_getJoystickPOVs(uint8_t joystickNum, struct JoystickPOV_t* povs, uint8_t /*maxPOVs*/){
+    int FRC_NetworkCommunication_getJoystickPOVs(uint8_t joystickNum, struct JoystickPOV_t* povs, uint8_t maxPOVs){
         auto instance = hel::RoboRIOManager::getInstance();
 
         if(joystickNum >= hel::Joystick::MAX_JOYSTICK_COUNT){
             throw std::out_of_range("Exception: unexpected joysticks index (expected 0-" + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
-        hel::BoundsCheckedArray<int16_t, hel::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
+        if(povs != nullptr){
+            if(maxPOVs != hel::Joystick::MAX_POV_COUNT){
+                throw std::out_of_range("Exception: mismatch maximum pov count on joystick index " + std::to_string(joystickNum) + "(Expected " + std::to_string(hel::Joystick::MAX_POV_COUNT) + " got " + std::to_string(maxPOVs) + "))");
+            }
+            hel::BoundsCheckedArray<int16_t, hel::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
 
-        std::copy(std::begin(hel_povs), std::end(hel_povs), povs->povs); //TODO bounds checking
-
+            std::copy(std::begin(hel_povs), std::end(hel_povs), povs->povs);
+            povs->count = instance.first->joysticks[joystickNum].getPOVCount();
+        }
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
     int FRC_NetworkCommunication_setJoystickOutputs(uint8_t joystickNum, uint32_t hidOutputs, uint16_t leftRumble, uint16_t rightRumble){
@@ -444,7 +454,7 @@ extern "C" {
         instance.first->joysticks[joystickNum].setRightRumble(rightRumble);
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
     int FRC_NetworkCommunication_getJoystickDesc(uint8_t joystickNum, uint8_t* isXBox, uint8_t* type, char* name, uint8_t* axisCount, uint8_t* axisTypes, uint8_t* buttonCount, uint8_t* povCount){

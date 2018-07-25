@@ -146,7 +146,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                //throw;//TODO
+                throw;
             }
         }
 
@@ -221,7 +221,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                //throw;//TODO
+                throw;
             }
         }
 
@@ -357,7 +357,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                //throw;//TODO
+                throw;
             }
         }
 
@@ -465,6 +465,9 @@ namespace hel{
         }
 
         void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
+            if(value > static_cast<uint8_t>(1.0e9 * DigitalSystem::MAX_PULSE_LENGTH / (PWMSystem::EXPECTED_LOOP_TIMING * 25))){
+                //TODO handle pulse request longer than max pulse length
+            }
             auto instance = hel::RoboRIOManager::getInstance();
             instance.first->digital_system.setPulseLength(value);
             instance.second.unlock();
