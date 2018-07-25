@@ -98,7 +98,7 @@ void XmlWriter::endElement()
 std::string XmlWriter::indent(size_t indentation)
 {
 	if (!lightWeight)
-		return std::string(indentation * 4, ' ');
+		return std::string(indentation * 2, ' ');
 	else
 		return "";
 }
