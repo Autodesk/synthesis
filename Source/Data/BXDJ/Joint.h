@@ -1,6 +1,8 @@
 #pragma once
 
+#include <Fusion/Components/JointLimits.h>
 #include <vector>
+#include <limits>
 #include "RigidNode.h"
 
 namespace BXDJ

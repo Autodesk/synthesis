@@ -1,7 +1,10 @@
 #pragma once
 
 #include <Fusion/Components/RevoluteJointMotion.h>
+#include <Core/Geometry/Vector3D.h>
 #include "AngularJoint.h"
+
+using namespace adsk;
 
 namespace BXDJ
 {
@@ -14,9 +17,9 @@ namespace BXDJ
 		Vector3<float> getBasePoint() const;
 		Vector3<float> getAxisOfRotation() const;
 		float getCurrentAngle() const;
-		bool getHasLimits() const;
-		float getMaxAngle() const;
+		bool hasLimits() const;
 		float getMinAngle() const;
+		float getMaxAngle() const;
 		
 		void write(XmlWriter &) const;
 

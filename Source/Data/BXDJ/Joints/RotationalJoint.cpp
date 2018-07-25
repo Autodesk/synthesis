@@ -19,27 +19,34 @@ Vector3<float> BXDJ::RotationalJoint::getBasePoint() const
 
 Vector3<float> RotationalJoint::getAxisOfRotation() const
 {
-	return Vector3<float>(0, 0, 0);
+	core::Ptr<core::Vector3D> axis = fusionJoint->rotationAxisVector();
+	return Vector3<float>(axis->x(), axis->y(), axis->z());
 }
 
 float RotationalJoint::getCurrentAngle() const
 {
-	return 0.0f;
+	return fusionJoint->rotationValue();
 }
 
 bool BXDJ::RotationalJoint::hasLimits() const
 {
-	return false;
-}
-
-float RotationalJoint::getMaxAngle() const
-{
-	return 0.0f;
+	return fusionJoint->rotationLimits()->isMinimumValueEnabled() || fusionJoint->rotationLimits()->isMaximumValueEnabled();
 }
 
 float RotationalJoint::getMinAngle() const
 {
-	return 0.0f;
+	if (fusionJoint->rotationLimits()->isMinimumValueEnabled())
+		return fusionJoint->rotationLimits()->minimumValue();
+	else
+		return std::numeric_limits<float>::min();
+}
+
+float RotationalJoint::getMaxAngle() const
+{
+	if (fusionJoint->rotationLimits()->isMaximumValueEnabled())
+		return fusionJoint->rotationLimits()->maximumValue();
+	else
+		return std::numeric_limits<float>::max();
 }
 
 void RotationalJoint::write(XmlWriter & output) const
