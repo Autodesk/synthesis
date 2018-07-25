@@ -3,9 +3,20 @@
 
 using namespace BXDJ;
 
-Driver::Driver(Joint * joint, Type type)
+Driver::Driver(const Driver & driverToCopy)
 {
-	this->joint = joint;
+	type = driverToCopy.type;
+	portSignal = driverToCopy.portSignal;
+	portA = driverToCopy.portA;
+	portB = driverToCopy.portB;
+	inputGear = driverToCopy.inputGear;
+	outputGear = driverToCopy.outputGear;
+
+	setComponent(*driverToCopy.wheel);
+}
+
+Driver::Driver(Type type)
+{
 	this->type = type;
 	portSignal = PWM;
 	portA = -1;
@@ -13,10 +24,10 @@ Driver::Driver(Joint * joint, Type type)
 	inputGear = 1;
 	outputGear = 1;
 
-	component = nullptr;
+	wheel = nullptr;
 }
 
-void BXDJ::Driver::write(XmlWriter & output) const
+void Driver::write(XmlWriter & output) const
 {
 	output.startElement("JointDriver");
 
@@ -36,13 +47,31 @@ void BXDJ::Driver::write(XmlWriter & output) const
 	output.writeElement("SignalType", toString(portSignal));
 
 	// Component Information
-	if (component != nullptr)
-		output.write(*component);
+	if (wheel != nullptr)
+		output.write(*wheel);
+	//else if (wheel != nullptr)
+	//	output.write(*wheel); // Future component types
 
 	output.endElement();
 }
 
-std::string BXDJ::Driver::toString(Type type)
+// Component Functions
+void Driver::setComponent(Wheel wheel)
+{
+	// Delete all other components
+	// Only component is a wheel
+
+	// Add wheel
+	this->wheel = std::make_unique<Wheel>(wheel);
+}
+
+Wheel Driver::getWheel()
+{
+	return *wheel;
+}
+
+// Static Functions
+std::string Driver::toString(Type type)
 {
 	switch (type)
 	{

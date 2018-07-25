@@ -108,7 +108,6 @@
     <ClInclude Include="Source\Data\BXDA\Physics.h" />
     <ClInclude Include="Source\Data\BXDA\Surface.h" />
     <ClInclude Include="Source\Data\BXDA\Vertex.h" />
-    <ClInclude Include="Source\Data\BXDJ\Component.h" />
     <ClInclude Include="Source\Data\BXDJ\Components\Wheel.h" />
     <ClInclude Include="Source\Data\BXDJ\Driver.h" />
     <ClInclude Include="Source\Data\BXDJ\Joint.h" />
@@ -133,7 +132,6 @@
     <ClCompile Include="Source\Data\BXDA\Physics.cpp" />
     <ClCompile Include="Source\Data\BXDA\Surface.cpp" />
     <ClCompile Include="Source\Data\BXDA\Vertex.cpp" />
-    <ClCompile Include="Source\Data\BXDJ\Component.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Components\Wheel.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Driver.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joint.cpp" />

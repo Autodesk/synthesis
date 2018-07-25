@@ -1,11 +1,13 @@
 #pragma once
 
-#include "../Component.h"
+#include "../RigidNode.h"
 #include "../../Vector3.h"
+
+using namespace adsk;
 
 namespace BXDJ
 {
-	class Wheel : public Component
+	class Wheel : public XmlWritable
 	{
 	public:
 		enum Type
@@ -16,7 +18,8 @@ namespace BXDJ
 		};
 		Type type;
 
-		Wheel(Driver *, Type = NORMAL);
+		Wheel(const Wheel &);
+		Wheel(std::shared_ptr<RigidNode>, Type = NORMAL);
 
 		float getRadius() const;
 		float getWidth() const;
@@ -25,6 +28,8 @@ namespace BXDJ
 		void write(XmlWriter &) const;
 
 	private:
+		std::shared_ptr<RigidNode> node;
+
 		static std::string toString(Type type);
 
 	};

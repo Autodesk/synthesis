@@ -55,7 +55,7 @@ void SubMesh::mergeMesh(const SubMesh & other)
 	}
 }
 
-int BXDA::SubMesh::getVertCount()
+int SubMesh::getVertCount()
 {
 	return (int)vertices.size();
 }

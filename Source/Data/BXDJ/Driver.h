@@ -3,7 +3,8 @@
 #include <string>
 #include <vector>
 #include "XmlWriter.h"
-#include "Component.h"
+// Components
+#include "Components/Wheel.h"
 
 namespace BXDJ
 {
@@ -37,15 +38,18 @@ namespace BXDJ
 		int portB;
 		float inputGear;
 		float outputGear;
-
-		std::shared_ptr<Component> component; // Should be private
-
-		Driver(Joint *, Type type = UNKNOWN);
+		
+		Driver(const Driver &);
+		Driver(Type type = UNKNOWN);
 
 		void write(XmlWriter &) const;
 
+		// Component Functions
+		void setComponent(Wheel);
+		Wheel getWheel();
+
 	private:
-		Joint * joint;
+		std::unique_ptr<Wheel> wheel;
 
 		static std::string toString(Type);
 		static std::string toString(Signal);
