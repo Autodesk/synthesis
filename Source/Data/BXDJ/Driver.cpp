@@ -3,19 +3,6 @@
 
 using namespace BXDJ;
 
-Driver::Driver(const Driver & driverToCopy)
-{
-	joint = driverToCopy.joint;
-	type = driverToCopy.type;
-	portSignal = driverToCopy.portSignal;
-	portA = driverToCopy.portA;
-	portB = driverToCopy.portB;
-	inputGear = driverToCopy.inputGear;
-	outputGear = driverToCopy.outputGear;
-
-	component = driverToCopy.component;
-}
-
 Driver::Driver(Joint * joint, Type type)
 {
 	this->joint = joint;

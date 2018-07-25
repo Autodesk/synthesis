@@ -16,7 +16,7 @@ namespace BXDJ
 		};
 		Type type;
 
-		Wheel(Driver *);
+		Wheel(Driver *, Type = NORMAL);
 
 		float getRadius() const;
 		float getWidth() const;

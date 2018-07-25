@@ -40,7 +40,6 @@ namespace BXDJ
 
 		std::shared_ptr<Component> component;
 
-		Driver(const Driver &);
 		Driver(Joint *, Type type = UNKNOWN);
 
 		void write(XmlWriter &) const;
