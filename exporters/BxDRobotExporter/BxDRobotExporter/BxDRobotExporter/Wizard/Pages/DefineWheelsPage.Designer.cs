@@ -247,8 +247,6 @@
             this.DriveTrainDropdown.Items.AddRange(new object[] {
             "Select drive train...",
             "Tank",
-            "Mecanum",
-            "Swerve",
             "H-Drive",
             "Other/Custom"});
             this.DriveTrainDropdown.Location = new System.Drawing.Point(90, 4);
