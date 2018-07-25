@@ -13,15 +13,36 @@ namespace hel{
     template<typename T, std::size_t LEN>
     struct BoundsCheckedArray{
     private:
+
+        /**
+         * \var std::array<T, LEN> internal
+         * \brief The internal data array for this wrapper
+         */
+
         std::array<T, LEN> internal;
 
     public:
+
+        /**
+         * \fn constexpr const T& at(std::size_t pos)const
+         * \brief Returns a reference to the element at pos with bounds checking
+         * \param The position of the element to return
+         * \return A reference to the requested element
+         */
+
         constexpr const T& at(std::size_t pos)const{
             if(pos < 0 || pos >= LEN){
                 throw std::out_of_range("Exception: array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN));
             }
             return internal[pos];
         }
+
+        /**
+         * \fn constexpr T& at(std::size_t pos)
+         * \brief Returns a reference to the element at pos with bounds checking
+         * \param The position of the element to return
+         * \return A reference to the requested element
+         */
 
         constexpr T& at(std::size_t pos){
             if(pos < 0 || pos >= LEN){
@@ -30,12 +51,26 @@ namespace hel{
             return internal[pos];
         }
 
+        /**
+         * \fn constexpr const T& operator[](std::size_t pos)const
+         * \brief Returns a reference to the element at pos with bounds checking
+         * \param The position of the element to return
+         * \return A reference to the requested element
+         */
+
         constexpr const T& operator[](std::size_t pos)const{
             if(pos < 0 || pos >= LEN){
                 throw std::out_of_range("Exception: array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN));
             }
             return internal[pos];
         }
+
+        /**
+         * \fn constexpr T& operator[](std::size_t pos)
+         * \brief Returns a reference to the element at pos with bounds checking
+         * \param The position of the element to return
+         * \return A reference to the requested element
+         */
 
         constexpr T& operator[](std::size_t pos){
             if(pos < 0 || pos >= LEN){
@@ -44,12 +79,24 @@ namespace hel{
             return internal[pos];
         }
 
+        /**
+         * \fn constexpr const T& front()const
+         * \brief Returns a reference to the first element
+         * \return A reference to the first element
+         */
+
         constexpr const T& front()const{
             if(LEN == 0){
                 throw std::out_of_range("Exception: array index out of bounds: cannot refernece front of array of size " + std::to_string(LEN));
             }
             return internal.front();
         }
+
+        /**
+         * \fn constexpr T& front()
+         * \brief Returns a reference to the first element
+         * \return A reference to the first element
+         */
 
         constexpr T& front(){
             if(LEN == 0){
@@ -58,12 +105,24 @@ namespace hel{
             return internal.front();
         }
 
+        /**
+         * \fn constexpr const T& back()const
+         * \brief Returns a reference to the last element
+         * \return A reference to the last element
+         */
+
         constexpr const T& back()const{
             if(LEN == 0){
                 throw std::out_of_range("Exception: array index out of bounds: cannot refernece back of array of size " + std::to_string(LEN));
             }
             return internal.back();
         }
+
+        /**
+         * \fn constexpr T& back()
+         * \brief Returns a reference to the last element
+         * \return A reference to the last element
+         */
 
         constexpr T& back(){
             if(LEN == 0){
@@ -72,13 +131,31 @@ namespace hel{
             return internal.back();
         }
 
+        /**
+         * \fn constexpr const std::array<T, LEN>& toArray()const
+         * \brief Fetches the internal std::array of the BoundsCheckedArray
+         * \return The internal std::array of this BoundsCheckedArray
+         */
+
         constexpr const std::array<T, LEN>& toArray()const{
             return internal;
         }
 
+        /**
+         * \fn constexpr std::array<T, LEN>& toArray()
+         * \brief Fetches the internal std::array of the BoundsCheckedArray
+         * \return The internal std::array of this BoundsCheckedArray
+         */
+
         constexpr std::array<T, LEN>*& toArray(){
             return internal;
         }
+
+        /**
+         * \fn constexpr const T* data()
+         * \brief Fetches the underlying basic array
+         * \return A pointer to the underlying basic array
+         */
 
         constexpr const T* data()const{
             if(LEN == 0){
@@ -87,6 +164,12 @@ namespace hel{
             return internal.data();
         }
 
+        /**
+         * \fn constexpr const T* data()
+         * \brief Fetches the underlying basic array
+         * \return A pointer to the underlying basic array
+         */
+
         constexpr T* data(){
             if(LEN == 0){
                 return nullptr;
@@ -94,29 +177,71 @@ namespace hel{
             return internal.data();
         }
 
+        /**
+         * \fn constexpr std::size_t size()const
+         * \brief Fetches the number of elements in the array
+         * \return The number of elements in the array
+         */
+
         constexpr std::size_t size()const{
             return internal.size();
         }
+
+        /**
+         * \fn constexpr bool empty()const
+         * \brief Checks if the container has no elements
+         * \return true if the array is empty, false otherwise
+         */
 
         constexpr bool empty()const{
             return internal.empty();
         }
 
+        /**
+         * \fn constexpr std::size_t max_size()const
+         * \brief Returns the maximum number of elements the array can hold
+         * \return Maximum number of elements
+         */
+
         constexpr std::size_t max_size()const{
             return internal.max_size();
         }
+
+        /**
+         * \fn constexpr typename std::array<T, LEN>::iterator begin()
+         * \brief Returns an iterator to the first element in the container
+         * \return Iterator to the first element
+         */
 
         constexpr typename std::array<T, LEN>::iterator begin(){
             return internal.begin();
         }
 
+        /**
+         * \fn constexpr const typename std::array<T, LEN>::iterator begin()const
+         * \brief Returns an iterator to the first element in the container
+         * \return Iterator to the first element
+         */
+
         constexpr const typename std::array<T, LEN>::iterator begin()const{
             return internal.begin();
         }
 
+        /**
+         * \fn constexpr typename std::array<T, LEN>::iterator end()
+         * \brief Returns an iterator to the last element in the container
+         * \return Iterator to the last element
+         */
+
         constexpr typename std::array<T, LEN>::iterator end(){
             return internal.end();
         }
+
+        /**
+         * \fn constexpr const typename std::array<T, LEN>::iterator end()const
+         * \brief Returns an iterator to the last element in the container
+         * \return Iterator to the last element
+         */
 
         constexpr const typename std::array<T, LEN>::iterator end()const{
             return internal.end();

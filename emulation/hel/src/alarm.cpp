@@ -20,7 +20,7 @@ namespace hel{
         trigger_time = time;
     }
 
-    struct AlarmManager: public tAlarm{
+    struct AlarmManager: public tAlarm{ //TODO implement full logic
         tSystemInterface* getSystemInterface(){
             return nullptr;
         }

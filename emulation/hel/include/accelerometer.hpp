@@ -6,7 +6,18 @@
 
 namespace hel{
 
+    /**
+     * \struct Accelerometer
+     * \brief Data model for on-board RoboRIO accelerometer
+     */
+
     struct Accelerometer{
+
+        /**
+         * \enum Register: uint8_t
+         * \brief Copy of HAL emuneration specifying target for Accelerometer function call
+         */
+
         enum Register: uint8_t {
             kReg_Status = 0x00,
             kReg_OutXMSB = 0x01,
@@ -51,6 +62,11 @@ namespace hel{
             kReg_OffY = 0x30,
             kReg_OffZ = 0x31
         };
+
+        /**
+         * \enum class ControlMode
+         * \brief Represents which data the accelerometer model will modify
+         */
 
         enum class ControlMode{SET_COMM_TARGET,SET_DATA};
     private:
@@ -106,22 +122,135 @@ namespace hel{
         float z_accel;
 
     public:
+
+        /**
+         * \fn ControlMode getControlMode()const
+         * \brief Fetches the active control mode
+         * \return The active control mode specifying the data for modification
+         */
+
         ControlMode getControlMode()const;
+
+        /**
+         * \fn void setControlMode(ControlMode control_mode)
+         * \brief Sets the active control mode
+         * \param control_mode the data to specify for modification
+         */
+
         void setControlMode(ControlMode);
+
+        /**
+         * \fn uint8_t getCommTargetReg()const
+         * \brief Get the current data target for communication
+         * \return The data target for communication
+         */
+
         uint8_t getCommTargetReg()const;
+
+        /**
+         * \fn void setCommTargetReg(uint8_t comm_target_reg)
+         * \brief Set the current data target for communication
+         * \param comm_target_reg the data target for communication
+         */
+
         void setCommTargetReg(uint8_t);
+
+        /**
+         * \fn bool getActive()const
+         * \brief Get if the accelerometer is active
+         * \return true if the accelerometer is set to active
+         */
+
         bool getActive()const;
+
+        /**
+         * \fn void setActive(bool active)
+         * \brief Enable the accelerometer
+         * \param active true to enable the accelerometer
+         */
+
         void setActive(bool);
+
+        /**
+         * \fn uint8_t getRange()const
+         * \brief Get the operating range of the accelerometer
+         * \return a byte representing the operating range of the accelerometer
+         */
+
         uint8_t getRange()const;
+
+        /**
+         * \fn void setRange(uint_t range)
+         * \brief Set the operating range for accelerometer
+         * \param range the operating range of the accelerometer
+         */
+
         void setRange(uint8_t);
+
+        /**
+         * \fn float getXAccel()const
+         * \brief Get the acceleration in the x direction
+         * \return a float representing the acceleration in the x direction
+         */
+
         float getXAccel()const;
-        void setXAccel(bool);
+
+        /**
+         * \fn void setXAccel(float x_accel)
+         * \brief Set the acceleration in the x direction
+         * \param x_accel a float to set the acceleration in the x direction
+         */
+
+        void setXAccel(float);
+
+        /**
+         * \fn float getYAccel()const
+         * \brief Get the acceleration in the y direction
+         * \return a float representing the acceleration in the y direction
+         */
+
         float getYAccel()const;
-        void setYAccel(bool);
+
+        /**
+         * \fn void setYAccel(float y_accel)
+         * \brief Set the acceleration in the y direction
+         * \param y_accel a float to set the acceleration in the y direction
+         */
+
+        void setYAccel(float);
+
+        /**
+         * \fn float getZAccel()const
+         * \brief Get the acceleration in the z direction
+         * \return a float representing the acceleration in the z direction
+         */
+
         float getZAccel()const;
-        void setZAccel(bool);
+
+        /**
+         * \fn void setZAccel(float z_accel)
+         * \brief Set the acceleration in the z direction
+         * \param z_accel a float to set the acceleration in the z direction
+         */
+
+        void setZAccel(float);
+
+        /**
+         * \fn
+         * \brief
+         * \
+         */
+
         float convertAccel(std::pair<uint8_t,uint8_t>);
+
+        /**
+         * \fn
+         * \brief
+         * \
+         */
+
         std::pair<uint8_t, uint8_t> convertAccel(float);
+
         Accelerometer();
     };
 
