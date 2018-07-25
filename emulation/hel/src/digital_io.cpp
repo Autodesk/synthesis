@@ -465,7 +465,7 @@ namespace hel{
         }
 
         void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
-            if(value > static_cast<uint8_t>(1.0e9 * DigitalSystem::MAX_PULSE_LENGTH / (PWMSystem::EXPECTED_LOOP_TIMING * 25))){
+            if(value > static_cast<uint8_t>(DigitalSystem::MAX_PULSE_LENGTH)){
                 //TODO handle pulse request longer than max pulse length
             }
             auto instance = hel::RoboRIOManager::getInstance();

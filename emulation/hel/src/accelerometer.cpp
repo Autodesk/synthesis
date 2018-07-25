@@ -45,7 +45,7 @@ namespace hel{
         return x_accel;
     }
 
-    void Accelerometer::setXAccel(bool accel){
+    void Accelerometer::setXAccel(float accel){
         x_accel = accel;
     }
 
@@ -53,7 +53,7 @@ namespace hel{
         return y_accel;
     }
 
-    void Accelerometer::setYAccel(bool accel){
+    void Accelerometer::setYAccel(float accel){
         y_accel = accel;
     }
 
@@ -61,7 +61,7 @@ namespace hel{
         return z_accel;
     }
 
-    void Accelerometer::setZAccel(bool accel){
+    void Accelerometer::setZAccel(float accel){
        z_accel = accel; 
     }
 

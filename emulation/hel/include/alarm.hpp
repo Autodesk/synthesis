@@ -5,9 +5,22 @@
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAlarm.h"
 
 namespace hel{
+
+    /**
+     * \struct Alarm
+     * \brief Data model for a time-based trigger/alarm
+     */
+
     struct Alarm{
     private:
         bool enabled;
+
+        /**
+         * \var uint32_t trigger_time
+         * \brief
+         * Represents the time in microseconds
+         */
+
         uint32_t trigger_time;
 
     public:
