@@ -509,7 +509,7 @@ namespace Synthesis.DriverPractice
                     StateMachine.SceneGlobal.Link<MainState>(moveArrows);
 
                     DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-                    lastCameraState = dynamicCamera.ActiveState;
+                    lastCameraState = dynamicCamera.cameraState;
 
                     dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, spawnIndicator));
 

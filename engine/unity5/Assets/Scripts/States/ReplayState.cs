@@ -494,7 +494,7 @@ namespace Synthesis.States
             }
 
             if (Input.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
-                dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
+                dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             if (firstFrame)
             {

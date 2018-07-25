@@ -6,8 +6,8 @@ using BulletUnity;
 using BulletSharp;
 using Synthesis.FEA;
 using Synthesis.Utils;
+using Synthesis.NetworkMultiplayer;
 using UnityEngine.Networking;
-using Synthesis.Network;
 
 public class UnityFieldDefinition : FieldDefinition
 {
