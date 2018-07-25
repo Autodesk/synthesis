@@ -2,49 +2,44 @@
 
 using namespace BXDJ;
 
-RotationalJoint::RotationalJoint(const RigidNode & child, RigidNode * parent, core::Ptr<fusion::RevoluteJointMotion> fusionJoint) : AngularJoint(child, parent)
-{
-	this->fusionJoint = fusionJoint;
-}
-
 RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : AngularJoint(jointToCopy)
 {
-	fusionJoint = jointToCopy.fusionJoint;
+	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
-Vector3<float> BXDJ::RotationalJoint::getBasePoint() const
+RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : AngularJoint(parent, joint, parentOccurrence)
 {
-	return Vector3<float>(0, 0, 0);
+	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 }
 
 Vector3<float> RotationalJoint::getAxisOfRotation() const
 {
-	core::Ptr<core::Vector3D> axis = fusionJoint->rotationAxisVector();
+	core::Ptr<core::Vector3D> axis = fusionJointMotion->rotationAxisVector();
 	return Vector3<float>((float)axis->x(), (float)axis->y(), (float)axis->z());
 }
 
 float RotationalJoint::getCurrentAngle() const
 {
-	return (float)fusionJoint->rotationValue();
+	return (float)fusionJointMotion->rotationValue();
 }
 
 bool BXDJ::RotationalJoint::hasLimits() const
 {
-	return fusionJoint->rotationLimits()->isMinimumValueEnabled() || fusionJoint->rotationLimits()->isMaximumValueEnabled();
+	return fusionJointMotion->rotationLimits()->isMinimumValueEnabled() || fusionJointMotion->rotationLimits()->isMaximumValueEnabled();
 }
 
 float RotationalJoint::getMinAngle() const
 {
-	if (fusionJoint->rotationLimits()->isMinimumValueEnabled())
-		return (float)fusionJoint->rotationLimits()->minimumValue();
+	if (fusionJointMotion->rotationLimits()->isMinimumValueEnabled())
+		return (float)fusionJointMotion->rotationLimits()->minimumValue();
 	else
 		return std::numeric_limits<float>::min();
 }
 
 float RotationalJoint::getMaxAngle() const
 {
-	if (fusionJoint->rotationLimits()->isMaximumValueEnabled())
-		return (float)fusionJoint->rotationLimits()->maximumValue();
+	if (fusionJointMotion->rotationLimits()->isMaximumValueEnabled())
+		return (float)fusionJointMotion->rotationLimits()->maximumValue();
 	else
 		return std::numeric_limits<float>::max();
 }
