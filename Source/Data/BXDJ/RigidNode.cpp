@@ -153,7 +153,7 @@ void RigidNode::write(XmlWriter & output) const
 	output.startElement("Node");
 	output.writeAttribute("GUID", guid);
 
-	output.writeElement("ParentID", parent->getParent()->guid);
+	output.writeElement("ParentID", (parent == NULL) ? "-1" : parent->getParent()->guid);
 	output.writeElement("ModelFileName", guid + ".bxda");
 	output.writeElement("ModelID", "modelID");
 
