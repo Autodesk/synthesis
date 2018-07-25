@@ -35,21 +35,18 @@ namespace BXDJ
 		Signal portSignal;
 		int portA;
 		int portB;
-
 		float inputGear;
 		float outputGear;
 
+		std::shared_ptr<Component> component;
+
 		Driver(const Driver &);
 		Driver(Joint *, Type type = UNKNOWN);
-
-		void addComponent(std::shared_ptr<Component>);
 
 		void write(XmlWriter &) const;
 
 	private:
 		Joint * joint;
-		// Information for things like wheels
-		std::vector<std::shared_ptr<Component>> components;
 
 		static std::string toString(Type);
 		static std::string toString(Signal);

@@ -12,6 +12,8 @@ Driver::Driver(const Driver & driverToCopy)
 	portB = driverToCopy.portB;
 	inputGear = driverToCopy.inputGear;
 	outputGear = driverToCopy.outputGear;
+
+	component = driverToCopy.component;
 }
 
 Driver::Driver(Joint * joint, Type type)
@@ -23,11 +25,8 @@ Driver::Driver(Joint * joint, Type type)
 	portB = -1;
 	inputGear = 1;
 	outputGear = 1;
-}
 
-void BXDJ::Driver::addComponent(std::shared_ptr<Component> component)
-{
-	components.push_back(component);
+	component = nullptr;
 }
 
 void BXDJ::Driver::write(XmlWriter & output) const
@@ -50,7 +49,7 @@ void BXDJ::Driver::write(XmlWriter & output) const
 	output.writeElement("SignalType", toString(portSignal));
 
 	// Component Information
-	for (std::shared_ptr<Component> component : components)
+	if (component != nullptr)
 		output.write(*component);
 
 	output.endElement();
