@@ -58,13 +58,20 @@ namespace BxDRobotExporter.Wizard
         {
             public WizardWheelType WheelType;
             public WizardFrictionLevel FrictionLevel;
-            public byte PWMPort;
+            public int PWMPort;
+            public int PWMPort2;
             public RigidNode_Base Node;
 
             public void ApplyToNode()
             {
                 Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR);
-                Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
+                //if (WheelType != WizardWheelType.MECANUM)
+                //{
+                    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
+                //} else
+                //{
+                //    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort, 1);
+                //}
                 WheelDriverMeta wheelDriver = new WheelDriverMeta();
                 switch (FrictionLevel)
                 {

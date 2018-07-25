@@ -50,18 +50,22 @@
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.MiddleWheelsGroup = new System.Windows.Forms.GroupBox();
             this.MiddleWheelsPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.RightBackWheelsGroup = new System.Windows.Forms.GroupBox();
+            this.RightBackWheelsPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.LeftBackWheelsGroup = new System.Windows.Forms.GroupBox();
+            this.LeftBackWheelsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.AutoFillToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.WheelNodeGroupBox.SuspendLayout();
             this.WheelJointsLayout.SuspendLayout();
-            this.LeftWheelsGroup.SuspendLayout();
             this.RobotInfoGroupBox.SuspendLayout();
             this.RobotInfoLayout.SuspendLayout();
             this.DriveTrainLayout.SuspendLayout();
             this.WeightLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
-            this.RightWheelsGroup.SuspendLayout();
             this.MainLayout.SuspendLayout();
             this.MiddleWheelsGroup.SuspendLayout();
+            this.RightBackWheelsGroup.SuspendLayout();
+            this.LeftBackWheelsGroup.SuspendLayout();
             this.SuspendLayout();
             // 
             // DefineWheelsInstruction
@@ -150,7 +154,7 @@
             this.LeftWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.LeftWheelsGroup.Name = "LeftWheelsGroup";
             this.LeftWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
-            this.LeftWheelsGroup.Size = new System.Drawing.Size(298, 436);
+            this.LeftWheelsGroup.Size = new System.Drawing.Size(298, 421);
             this.LeftWheelsGroup.TabIndex = 1;
             this.LeftWheelsGroup.TabStop = false;
             this.LeftWheelsGroup.Text = "Left Wheels";
@@ -161,17 +165,22 @@
             // 
             this.LeftWheelsPanel.AllowDrop = true;
             this.LeftWheelsPanel.AutoScroll = true;
-            this.LeftWheelsPanel.ColumnCount = 2;
+            this.LeftWheelsPanel.ColumnCount = 1;
+            this.LeftWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.LeftWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.LeftWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.LeftWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.LeftWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftWheelsPanel.Location = new System.Drawing.Point(4, 19);
-            this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.LeftWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
             this.LeftWheelsPanel.Name = "LeftWheelsPanel";
-            this.LeftWheelsPanel.RowCount = 1;
+            this.LeftWheelsPanel.RowCount = 2;
             this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
-            this.LeftWheelsPanel.Size = new System.Drawing.Size(290, 413);
-            this.LeftWheelsPanel.TabIndex = 0;
+            this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
+            this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.LeftWheelsPanel.Size = new System.Drawing.Size(290, 124);
+            this.LeftWheelsPanel.TabIndex = 1;
+            this.LeftWheelsPanel.Visible = true;
             this.LeftWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
             this.LeftWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
             // 
@@ -325,7 +334,7 @@
             this.RightWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.RightWheelsGroup.Name = "RightWheelsGroup";
             this.RightWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
-            this.RightWheelsGroup.Size = new System.Drawing.Size(299, 436);
+            this.RightWheelsGroup.Size = new System.Drawing.Size(299, 421);
             this.RightWheelsGroup.TabIndex = 2;
             this.RightWheelsGroup.TabStop = false;
             this.RightWheelsGroup.Text = "Right Wheels";
@@ -336,17 +345,22 @@
             // 
             this.RightWheelsPanel.AllowDrop = true;
             this.RightWheelsPanel.AutoScroll = true;
-            this.RightWheelsPanel.ColumnCount = 2;
+            this.RightWheelsPanel.ColumnCount = 1;
+            this.RightWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.RightWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.RightWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.RightWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.RightWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RightWheelsPanel.Location = new System.Drawing.Point(4, 19);
-            this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.RightWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
             this.RightWheelsPanel.Name = "RightWheelsPanel";
-            this.RightWheelsPanel.RowCount = 1;
+            this.RightWheelsPanel.RowCount = 2;
             this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
-            this.RightWheelsPanel.Size = new System.Drawing.Size(291, 413);
+            this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
+            this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.RightWheelsPanel.Size = new System.Drawing.Size(290, 0);
             this.RightWheelsPanel.TabIndex = 1;
+            this.RightWheelsPanel.Visible = true;
             this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
             this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
             // 
@@ -356,10 +370,12 @@
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.MainLayout.Controls.Add(this.RobotInfoGroupBox, 0, 0);
-            this.MainLayout.Controls.Add(this.RightWheelsGroup, 1, 2);
             this.MainLayout.Controls.Add(this.WheelNodeGroupBox, 0, 1);
-            this.MainLayout.Controls.Add(this.LeftWheelsGroup, 0, 2);
             this.MainLayout.Controls.Add(this.MiddleWheelsGroup, 0, 3);
+            this.MainLayout.Controls.Add(this.RightBackWheelsGroup, 1, 3);
+            this.MainLayout.Controls.Add(this.LeftBackWheelsGroup, 0, 3);
+            this.MainLayout.Controls.Add(this.LeftWheelsGroup, 0, 2);
+            this.MainLayout.Controls.Add(this.RightWheelsGroup, 1, 2);
             this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainLayout.Location = new System.Drawing.Point(0, 0);
             this.MainLayout.Margin = new System.Windows.Forms.Padding(0);
@@ -369,6 +385,8 @@
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 72.72727F));
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 27.27273F));
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.MainLayout.Size = new System.Drawing.Size(613, 804);
             this.MainLayout.TabIndex = 7;
             // 
@@ -378,11 +396,11 @@
             this.MainLayout.SetColumnSpan(this.MiddleWheelsGroup, 2);
             this.MiddleWheelsGroup.Controls.Add(this.MiddleWheelsPanel);
             this.MiddleWheelsGroup.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MiddleWheelsGroup.Location = new System.Drawing.Point(4, 641);
+            this.MiddleWheelsGroup.Location = new System.Drawing.Point(4, 626);
             this.MiddleWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
             this.MiddleWheelsGroup.Name = "MiddleWheelsGroup";
             this.MiddleWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
-            this.MiddleWheelsGroup.Size = new System.Drawing.Size(605, 159);
+            this.MiddleWheelsGroup.Size = new System.Drawing.Size(605, 153);
             this.MiddleWheelsGroup.TabIndex = 7;
             this.MiddleWheelsGroup.TabStop = false;
             this.MiddleWheelsGroup.Text = "Middle Wheels (H-Drive only)";
@@ -403,10 +421,86 @@
             this.MiddleWheelsPanel.RowCount = 2;
             this.MiddleWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
             this.MiddleWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.MiddleWheelsPanel.Size = new System.Drawing.Size(597, 136);
+            this.MiddleWheelsPanel.Size = new System.Drawing.Size(597, 130);
             this.MiddleWheelsPanel.TabIndex = 1;
             this.MiddleWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.MiddleWheelsPanel_DragDrop);
             this.MiddleWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
+            // 
+            // RightBackWheelsGroup
+            // 
+            this.RightBackWheelsGroup.AllowDrop = true;
+            this.RightBackWheelsGroup.Controls.Add(this.RightBackWheelsPanel);
+            this.RightBackWheelsGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RightBackWheelsGroup.Location = new System.Drawing.Point(310, 787);
+            this.RightBackWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
+            this.RightBackWheelsGroup.Name = "RightBackWheelsGroup";
+            this.RightBackWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
+            this.RightBackWheelsGroup.Size = new System.Drawing.Size(299, 13);
+            this.RightBackWheelsGroup.TabIndex = 7;
+            this.RightBackWheelsGroup.TabStop = false;
+            this.RightBackWheelsGroup.Text = "Right Back Wheels (Mecanum only)";
+            this.RightBackWheelsGroup.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightBackWheelsPanel_DragDrop);
+            this.RightBackWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
+            // 
+            // RightBackWheelsPanel
+            // 
+            this.RightBackWheelsPanel.AllowDrop = true;
+            this.RightBackWheelsPanel.AutoScroll = true;
+            this.RightBackWheelsPanel.ColumnCount = 1;
+            this.RightBackWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.RightBackWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
+            this.RightBackWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.RightBackWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
+            this.RightBackWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RightBackWheelsPanel.Location = new System.Drawing.Point(4, 19);
+            this.RightBackWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
+            this.RightBackWheelsPanel.Name = "RightBackWheelsPanel";
+            this.RightBackWheelsPanel.RowCount = 2;
+            this.RightBackWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
+            this.RightBackWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
+            this.RightBackWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.RightBackWheelsPanel.Size = new System.Drawing.Size(291, 0);
+            this.RightBackWheelsPanel.TabIndex = 1;
+            this.RightBackWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightBackWheelsPanel_DragDrop);
+            this.RightBackWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
+            // 
+            // LeftBackWheelsGroup
+            // 
+            this.LeftBackWheelsGroup.AllowDrop = true;
+            this.LeftBackWheelsGroup.Controls.Add(this.LeftBackWheelsPanel);
+            this.LeftBackWheelsGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LeftBackWheelsGroup.Location = new System.Drawing.Point(4, 787);
+            this.LeftBackWheelsGroup.Margin = new System.Windows.Forms.Padding(4);
+            this.LeftBackWheelsGroup.Name = "LeftBackWheelsGroup";
+            this.LeftBackWheelsGroup.Padding = new System.Windows.Forms.Padding(4);
+            this.LeftBackWheelsGroup.Size = new System.Drawing.Size(298, 13);
+            this.LeftBackWheelsGroup.TabIndex = 7;
+            this.LeftBackWheelsGroup.TabStop = false;
+            this.LeftBackWheelsGroup.Text = "Left Back Wheels (Mecanum only)";
+            this.LeftBackWheelsGroup.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftBackWheelsPanel_DragDrop);
+            this.LeftBackWheelsGroup.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
+            // 
+            // LeftBackWheelsPanel
+            // 
+            this.LeftBackWheelsPanel.AllowDrop = true;
+            this.LeftBackWheelsPanel.AutoScroll = true;
+            this.LeftBackWheelsPanel.ColumnCount = 1;
+            this.LeftBackWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.LeftBackWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
+            this.LeftBackWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.LeftBackWheelsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
+            this.LeftBackWheelsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LeftBackWheelsPanel.Location = new System.Drawing.Point(4, 19);
+            this.LeftBackWheelsPanel.Margin = new System.Windows.Forms.Padding(4);
+            this.LeftBackWheelsPanel.Name = "LeftBackWheelsPanel";
+            this.LeftBackWheelsPanel.RowCount = 2;
+            this.LeftBackWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
+            this.LeftBackWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
+            this.LeftBackWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.LeftBackWheelsPanel.Size = new System.Drawing.Size(290, 0);
+            this.LeftBackWheelsPanel.TabIndex = 1;
+            this.LeftBackWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftBackWheelsPanel_DragDrop);
+            this.LeftBackWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
             // 
             // DefineWheelsPage
             // 
@@ -420,7 +514,6 @@
             this.WheelNodeGroupBox.PerformLayout();
             this.WheelJointsLayout.ResumeLayout(false);
             this.WheelJointsLayout.PerformLayout();
-            this.LeftWheelsGroup.ResumeLayout(false);
             this.RobotInfoGroupBox.ResumeLayout(false);
             this.RobotInfoGroupBox.PerformLayout();
             this.RobotInfoLayout.ResumeLayout(false);
@@ -430,10 +523,11 @@
             this.WeightLayout.ResumeLayout(false);
             this.WeightLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).EndInit();
-            this.RightWheelsGroup.ResumeLayout(false);
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             this.MiddleWheelsGroup.ResumeLayout(false);
+            this.RightBackWheelsGroup.ResumeLayout(false);
+            this.LeftBackWheelsGroup.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -444,7 +538,7 @@
         private System.Windows.Forms.GroupBox RobotInfoGroupBox;
         private System.Windows.Forms.ComboBox DriveTrainDropdown;
         private System.Windows.Forms.Label DriveTrainLabel;
-        private System.Windows.Forms.Button AutoFillButton; 
+        private System.Windows.Forms.Button AutoFillButton;
         private System.Windows.Forms.ListBox NodeListBox;
         private System.Windows.Forms.NumericUpDown WeightBox;
         private System.Windows.Forms.Label label3;
@@ -461,5 +555,9 @@
         private System.Windows.Forms.ToolTip AutoFillToolTip;
         private System.Windows.Forms.GroupBox MiddleWheelsGroup;
         private System.Windows.Forms.TableLayoutPanel MiddleWheelsPanel;
+        private System.Windows.Forms.GroupBox LeftBackWheelsGroup;
+        private System.Windows.Forms.TableLayoutPanel LeftBackWheelsPanel;
+        private System.Windows.Forms.GroupBox RightBackWheelsGroup;
+        private System.Windows.Forms.TableLayoutPanel RightBackWheelsPanel;
     }
 }
