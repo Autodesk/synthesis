@@ -58,5 +58,8 @@ void Exporter::exportMeshes()
 
 	std::string filename = "C:\\Users\\t_walkn\\Desktop\\skeleton.bxdj";
 	BXDJ::XmlWriter xml(filename);
+	xml.startElement("BXDJ");
+	xml.writeAttribute("Version", "3.0.0");
 	xml.write(rootNode);
+	xml.endElement();
 }
