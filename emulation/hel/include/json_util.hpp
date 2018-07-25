@@ -7,6 +7,10 @@
 #include "bounds_checked_array.hpp"
 
 namespace hel{
+    struct JSONParsingException: std::exception{
+        const char* what()const throw();
+    };
+
     template<typename T, size_t LEN>
     std::string serializeList(std::string label, std::array<T, LEN> arr, std::function<std::string(T)> to_s){
         std::string s = label + ":[";

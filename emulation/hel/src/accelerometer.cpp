@@ -143,13 +143,13 @@ namespace hel{
                             return;
                         default:
                             instance.second.unlock();
-                            return; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::Register");
+                            throw UnhandledEnumConstantException("hel::Accelerometer::Register");
                     }
                     instance.second.unlock();
                     return;
                 default:
                     instance.second.unlock();
-                    return; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::ControlMode");
+                    throw UnhandledEnumConstantException("hel::Accelerometer::ControlMode");
             }
         }
 
@@ -217,7 +217,7 @@ namespace hel{
                 return instance.first->accelerometer.convertAccel(instance.first->accelerometer.getZAccel()).second;
             default:
                 instance.second.unlock();
-                return 0; //TODO throw UnhandledEnumConstantException("hel::Accelerometer::Register");
+                throw UnhandledEnumConstantException("hel::Accelerometer::Register");
             }
         }
 
