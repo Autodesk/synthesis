@@ -20,8 +20,8 @@ namespace BXDJ
 		Vector3<float> getParentBasePoint() const;
 		Vector3<float> getChildBasePoint() const;
 
-		void setDriver(const Driver &);
-		std::shared_ptr<Driver> getDriver();
+		void setDriver(Driver);
+		Driver getDriver();
 
 		virtual void write(XmlWriter &) const;
 
@@ -36,7 +36,7 @@ namespace BXDJ
 		core::Ptr<fusion::Joint> fusionJoint;
 		RigidNode * parent;
 		std::shared_ptr<RigidNode> child;
-		std::shared_ptr<Driver> driver;
+		std::unique_ptr<Driver> driver;
 
 	};
 };
