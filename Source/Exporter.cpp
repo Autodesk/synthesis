@@ -38,7 +38,7 @@ void Exporter::exportExample()
 
 void Exporter::exportExampleXml()
 {
-	std::string filename = Filesystem::getCurrentRobotDirectory() + exampleFusionXml.bxdj";
+	std::string filename = Filesystem::getCurrentRobotDirectory() + "exampleFusionXml.bxdj";
 	BXDJ::XmlWriter xml(filename, false);
 	xml.startElement("BXDJ");
 	xml.writeAttribute("Version", "3.0.0");
@@ -57,7 +57,7 @@ void Exporter::exportMeshes()
 	Guid::resetAutomaticSeed();
 	BXDJ::RigidNode rootNode(document->design()->rootComponent());
 
-	std::string filename = Filesystem::getCurrentRobotDirectory() + skeleton.bxdj";
+	std::string filename = Filesystem::getCurrentRobotDirectory() + "skeleton.bxdj";
 	BXDJ::XmlWriter xml(filename, false);
 	xml.startElement("BXDJ");
 	xml.writeAttribute("Version", "3.0.0");
