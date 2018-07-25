@@ -10,10 +10,7 @@
 #include <ctime>
 #include <iostream>
 #include <unistd.h>
-/**
- * This is a demo program showing the use of the DifferentialDrive class.
- * Runs the motors with arcade steering.
- */
+
 class Robot : public frc::IterativeRobot {
     frc::Spark m_leftMotor{16};
     frc::Spark m_rightMotor{1};
