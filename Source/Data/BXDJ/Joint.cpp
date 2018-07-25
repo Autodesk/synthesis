@@ -36,13 +36,17 @@ std::shared_ptr<RigidNode> Joint::getChild()
 Vector3<float> Joint::getParentBasePoint() const
 {
 	core::Ptr<fusion::JointGeometry> geometry = (parentIsOccOne ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
-	return Vector3<float>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
+	return Vector3<float>((float)geometry->origin()->x(),
+						  (float)geometry->origin()->y(),
+						  (float)geometry->origin()->z());
 }
 
 Vector3<float> Joint::getChildBasePoint() const
 {
 	core::Ptr<fusion::JointGeometry> geometry = (parentIsOccOne ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
-	return Vector3<float>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
+	return Vector3<float>((float)geometry->origin()->x(),
+						  (float)geometry->origin()->y(),
+						  (float)geometry->origin()->z());
 }
 
 void Joint::write(XmlWriter & output) const
