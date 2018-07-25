@@ -23,19 +23,25 @@ Joint::Joint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr
 	this->child = std::make_shared<RigidNode>((parentIsOccOne ? fusionJoint->occurrenceTwo() : fusionJoint->occurrenceOne()), this);
 }
 
-RigidNode * BXDJ::Joint::getParent()
+RigidNode * Joint::getParent()
 {
 	return parent;
 }
 
-std::shared_ptr<RigidNode> BXDJ::Joint::getChild()
+std::shared_ptr<RigidNode> Joint::getChild()
 {
 	return child;
 }
 
-Vector3<float> BXDJ::Joint::getParentBasePoint() const
+Vector3<float> Joint::getParentBasePoint() const
 {
 	core::Ptr<fusion::JointGeometry> geometry = (parentIsOccOne ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
+	return Vector3<float>(geometry->origin()->x, geometry->origin()->y, geometry->origin()->z);
+}
+
+Vector3<float> Joint::getChildBasePoint() const
+{
+	core::Ptr<fusion::JointGeometry> geometry = (parentIsOccOne ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
 	return Vector3<float>(geometry->origin()->x, geometry->origin()->y, geometry->origin()->z);
 }
 
