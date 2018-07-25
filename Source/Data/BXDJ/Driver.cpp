@@ -30,12 +30,18 @@ void BXDJ::Driver::write(XmlWriter & output) const
 	output.startElement("JointDriver");
 
 	output.writeElement("DriveType", toString(type));
-	output.writeElement("PortA", std::to_string(portA));
-	output.writeElement("PortB", std::to_string(portB));
-	output.writeElement("InputGear", std::to_string(inputGear));
-	output.writeElement("OutputGear", std::to_string(outputGear));
+
+	output.writeElement("PortA", std::to_string(portA + 1)); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
+	output.writeElement("PortB", std::to_string(portB + 1)); // For backwards compatibility, ports will be stored one larger than their actual value.
+
+	if (inputGear > 0)
+		output.writeElement("InputGear", std::to_string(inputGear));
+	if (outputGear > 0)
+		output.writeElement("OutputGear", std::to_string(outputGear));
+
 	output.writeElement("LowerLimit", "0.0000"); // These values appear to be deprecated, but they exist in
 	output.writeElement("UpperLimit", "0.0000"); // the Inventor exporter, so they will be included for safety.
+	
 	output.writeElement("SignalType", toString(portSignal));
 
 	// Write driver meta

@@ -42,7 +42,6 @@ namespace BXDJ
 
 		void write(XmlWriter &) const;
 
-
 	private:
 		Joint * joint;
 
