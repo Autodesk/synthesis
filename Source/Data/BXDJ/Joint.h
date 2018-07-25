@@ -10,12 +10,15 @@ namespace BXDJ
 	{
 	public:
 		Joint(const Joint &);
-		Joint(const RigidNode &);
+		Joint(const RigidNode &, RigidNode *);
+
+		RigidNode * getParent();
 
 		void write(XmlWriter &) const;
 
 	private:
 		std::shared_ptr<RigidNode> child;
+		RigidNode * parent;
 
 	};
 };

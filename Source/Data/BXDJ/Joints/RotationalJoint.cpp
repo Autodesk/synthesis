@@ -2,7 +2,7 @@
 
 using namespace BXDJ;
 
-RotationalJoint::RotationalJoint(const RigidNode & child, core::Ptr<fusion::RevoluteJointMotion> fusionJoint) : AngularJoint(child)
+RotationalJoint::RotationalJoint(const RigidNode & child, RigidNode * parent, core::Ptr<fusion::RevoluteJointMotion> fusionJoint) : AngularJoint(child, parent)
 {
 	this->fusionJoint = fusionJoint;
 }
