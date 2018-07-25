@@ -10,6 +10,7 @@ namespace Synthesis.States
         private readonly string prefsKey;
         private readonly string directory;
 
+        private FileBrowserNew fileBrowserNew;
         private FileBrowser fileBrowser;
         private GameObject navPanel;
 
@@ -50,9 +51,10 @@ namespace Synthesis.States
         {
             if (fileBrowser == null)
             {
-                string robotDirectory = Crosstales.FB.FileBrowser.OpenSingleFolder("Open Folder");
-                robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
-                fileBrowser = new FileBrowser("Choose Robot Directory", directory, true) { Active = true };
+                string path = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+                //robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
+                //string robotDirectory = PlayerPrefs.GetString(prefsKey, path);
+                fileBrowser = new GUI.FileBrowser("Choose Robot Directory", path, true) { Active = true };
                 fileBrowser.OnComplete += OnBrowserComplete;
             }
 

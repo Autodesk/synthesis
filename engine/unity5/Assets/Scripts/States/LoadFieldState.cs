@@ -1,4 +1,5 @@
 ﻿using Crosstales.FB;
+using Crosstales.FB.Demo;
 using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;
@@ -15,6 +16,8 @@ namespace Synthesis.States
         private GameObject mixAndMatchModeScript;
         private GameObject splashScreen;
         private SelectScrollable fieldList;
+
+        NativeFile fileManager;
 
         /// <summary>
         /// Initializes required <see cref="GameObject"/> references.
@@ -93,7 +96,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnChangeFieldButtonPressed()
         {
-            StateMachine.PushState(new CopyBrowseFieldState());
+            StateMachine.PushState(new BrowseFieldState());
         }
     }
 }
