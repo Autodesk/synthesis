@@ -7,9 +7,10 @@
 class Guid
 {
 public:
-	Guid();
+	Guid(unsigned int seed = INT_MAX);
 	Guid(const Guid &);
-	Guid(unsigned int seed);
+	
+	static void resetAutomaticSeed();
 	
 	void regenerate(unsigned int seed);
 	
@@ -19,6 +20,9 @@ public:
 
 private:
 	static const int BYTE_COUNT = 16;
+
+	static int nextSeed;
+
 	unsigned char bytes[BYTE_COUNT];
 	bool init;
 	unsigned int seed;

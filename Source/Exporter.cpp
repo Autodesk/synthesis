@@ -54,6 +54,7 @@ void Exporter::exportMeshes()
 	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 	
+	Guid::resetAutomaticSeed();
 	BXDJ::RigidNode rootNode(document->design()->rootComponent());
 
 	std::string filename = "C:\\Users\\t_walkn\\Desktop\\skeleton.bxdj";

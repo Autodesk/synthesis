@@ -21,7 +21,7 @@ namespace BXDJ
 	class RigidNode : public XmlWritable
 	{
 	public:
-		RigidNode(bool isRoot = false);
+		RigidNode();
 		RigidNode(const RigidNode &);
 		RigidNode(core::Ptr<fusion::Component>);
 

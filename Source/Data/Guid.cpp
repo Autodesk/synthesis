@@ -3,16 +3,14 @@
 const char HEX_CHARS[] = { '0', '1', '2', '3', '4', '5', '6', '7',
 						   '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-Guid::Guid()
+int Guid::nextSeed = 0;
+
+Guid::Guid(unsigned int seed)
 {
-	seed = 0;
+	if (seed == INT_MAX)
+		seed = nextSeed++;
 
-	for (int i = 0; i < BYTE_COUNT; i++)
-	{
-		bytes[i] = 0;
-	}
-
-	init = false;
+	regenerate(seed);
 }
 
 Guid::Guid(const Guid & guidToCopy)
@@ -27,9 +25,9 @@ Guid::Guid(const Guid & guidToCopy)
 	init = true;
 }
 
-Guid::Guid(unsigned int seed)
+void Guid::resetAutomaticSeed()
 {
-	regenerate(seed);
+	nextSeed = 0;
 }
 
 void Guid::regenerate(unsigned int seed)
