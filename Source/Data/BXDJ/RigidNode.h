@@ -23,9 +23,11 @@ namespace BXDJ
 		RigidNode(const RigidNode &);
 		RigidNode(core::Ptr<fusion::Component>);
 
+		Joint * getParent();
 		void getMesh(BXDA::Mesh &) const;
 
-		void RigidNode::addJoint(std::shared_ptr<Joint> joint);
+		void connectToJoint(Joint *);
+		void addJoint(std::shared_ptr<Joint> joint);
 		
 		std::string log = "";
 
@@ -38,14 +40,15 @@ namespace BXDJ
 		};
 
 		std::string guid;
-		// Stores all component occurences that are grouped into this node
-		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurrences;
 		// Stores the joints that lead to this node's children
 		std::vector<std::shared_ptr<Joint>> childrenJoints;
-		// Stores the name of the parent
-		std::string parentID;
+		// Stores a reference to the node's parent
+		Joint * parent;
+		// Stores all component occurences that are grouped into this node
+		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurrences;
 
-		RigidNode(core::Ptr<fusion::Occurrence> occ, std::string parentID, JointSummary & jSum) { this->parentID = parentID; buildTree(occ, jSum); }
+		// Contructor used for building node tree
+		RigidNode(core::Ptr<fusion::Occurrence> occ, JointSummary & jSum) : RigidNode() { buildTree(occ, jSum); }
 
 		JointSummary getJointSummary(core::Ptr<fusion::Component>);
 		void buildTree(core::Ptr<fusion::Occurrence>, JointSummary &);

@@ -7,7 +7,7 @@ using namespace BXDJ;
 RigidNode::RigidNode()
 {
 	guid = "0ba8e1ce-1004-4523-b844-9bfa69efada9";
-	parentID = "-1";
+	parent = NULL;
 }
 
 RigidNode::RigidNode(const RigidNode & nodeToCopy) : RigidNode()
@@ -18,7 +18,7 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy) : RigidNode()
 	for (std::shared_ptr<Joint> joint : nodeToCopy.childrenJoints)
 		childrenJoints.push_back(joint);
 
-	parentID = nodeToCopy.parentID;
+	parent = nodeToCopy.parent;
 
 	log = nodeToCopy.log;
 }
@@ -29,6 +29,11 @@ RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent) : RigidNode()
 	
 	for (core::Ptr<fusion::Occurrence> occurence : rootComponent->occurrences()->asList())
 		buildTree(occurence, jointSummary);
+}
+
+Joint * RigidNode::getParent()
+{
+	return parent;
 }
 
 void RigidNode::getMesh(BXDA::Mesh & mesh) const
@@ -66,6 +71,11 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 
 		mesh.addSubMesh(subMesh);
 	}
+}
+
+void RigidNode::connectToJoint(Joint * parent)
+{
+	this->parent = parent;
 }
 
 void RigidNode::addJoint(std::shared_ptr<Joint> joint)
@@ -130,7 +140,7 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 	switch (joint->jointMotion()->jointType())
 	{
 	case fusion::JointTypes::RevoluteJointType:
-		addJoint(std::make_shared<RotationalJoint>(RigidNode(child, guid, jointSummary), joint->jointMotion()));
+		addJoint(std::make_shared<RotationalJoint>(RigidNode(child, jointSummary), this, joint->jointMotion()));
 		break;
 
 	default:
@@ -143,7 +153,7 @@ void RigidNode::write(XmlWriter & output) const
 	output.startElement("Node");
 	output.writeAttribute("GUID", guid);
 
-	output.writeElement("ParentID", parentID);
+	output.writeElement("ParentID", parent->getParent()->guid);
 	output.writeElement("ModelFileName", guid + ".bxda");
 	output.writeElement("ModelID", "modelID");
 
