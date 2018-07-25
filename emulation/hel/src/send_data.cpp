@@ -75,10 +75,11 @@ void hel::SendData::update(){
             break;
         case hel::MXPData::Config::PWM:
             {
-                int j = i;
-                if (j >= 4)
-                    j -=4;
-                digital_mxp[j].value = getSpeed(instance.first->pwm_system.getMXPDutyCycle(j));
+                int remapped_i = i;
+                if(remapped_i >= 4){ //digital ports 0-3 line up with mxp pwm ports 0-3, the rest are offset by 4
+                    remapped_i -= 4;
+                }
+                digital_mxp[i].value = getSpeed(instance.first->pwm_system.getMXPDutyCycle(remapped_i));
             }
             break;
         case hel::MXPData::Config::SPI:
@@ -165,7 +166,6 @@ std::string hel::SendData::serialize(){
             return b ? "1" : "0";
         })
     );
-    //TODO finish
 
     serialized_data += "}}\x1B";
     gen_serialization = false;

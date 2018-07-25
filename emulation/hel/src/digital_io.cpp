@@ -77,7 +77,15 @@ namespace hel{
         instance.second.unlock();
     }
 
-    DigitalSystem::DigitalSystem():outputs(),enabled_outputs(),pulses(),inputs(),mxp_special_functions_enabled(),pulse_length(),pwm(){}
+    DigitalSystem::DigitalSystem():
+        outputs(),
+        enabled_outputs(),
+        pulses(),
+        inputs(),
+        mxp_special_functions_enabled(),
+        pulse_length(),
+        pwm()
+    {}
 
     std::string to_string(DigitalSystem::DIOConfigurationException::Config c){
         switch(c){
@@ -93,7 +101,7 @@ namespace hel{
     }
 
     const char* DigitalSystem::DIOConfigurationException::what()const throw(){
-        std::string s = "Exception: digital IO failed attempting " + to_string(configuration) + " when configured for " + to_string(expected_configuration) + " on digital port " + std::to_string(port);
+        std::string s = "Exception: digital IO failed attempting " + to_string(expected_configuration) + " but configured for " + to_string(configuration) + " on digital port " + std::to_string(port);
         return s.c_str();
     }
 
@@ -112,14 +120,14 @@ namespace hel{
                 if(!checkBitHigh(output, i)){
                     continue;
                 }
-                if(requires_special_function && !checkBitLow(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it reqiores MXP special function, and it's not, don't allow output
+                if(requires_special_function && !checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it reqiores MXP special function, and it's not, don't allow output
                     instance.second.unlock();
-                    throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, DigitalSystem::DIOConfigurationException::Config::DO, i);
+                    throw DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, i);
                     return false;
                 }
                 if(!requires_special_function && !hel::checkBitHigh(enabled, i)){ //If output is set but output is not enabled, don't allow output (don't check if special function is enabled)
                     instance.second.unlock();
-                    throw new DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::DI, i);
+                    throw DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DI, DigitalSystem::DIOConfigurationException::Config::DO, i);
                     return false;
                 }
             }
@@ -138,7 +146,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                //throw;//TODO
+                throw;
             }
         }
 
@@ -213,7 +221,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                //throw;//TODO
+                throw;
             }
         }
 
@@ -349,7 +357,7 @@ namespace hel{
                 instance.second.unlock();
             } catch(std::exception& e){
                 instance.second.unlock();
-                //throw;//TODO
+                throw;
             }
         }
 
@@ -457,6 +465,9 @@ namespace hel{
         }
 
         void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
+            if(value > static_cast<uint8_t>(DigitalSystem::MAX_PULSE_LENGTH)){
+                //TODO handle pulse request longer than max pulse length
+            }
             auto instance = hel::RoboRIOManager::getInstance();
             instance.first->digital_system.setPulseLength(value);
             instance.second.unlock();

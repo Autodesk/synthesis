@@ -125,7 +125,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
 
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
     if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
-      add_executable(FRCUserProgram tests/test_project/robot.cpp)
+      add_executable(FRCUserProgram tests/test_projects/robot_teleop.cpp)
       add_dependencies(FRCUserProgram wpilib generate_libwpi ctre)
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include")

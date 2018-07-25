@@ -12,11 +12,11 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
     Global::Global(){
-    	fpga_start_time = getCurrentTime();//std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        fpga_start_time = getCurrentTime();
     }
 
     uint64_t Global::getCurrentTime(){
-        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count(); //TODO system time runs fast
     }
 
     uint64_t Global::getFPGAStartTime()const{

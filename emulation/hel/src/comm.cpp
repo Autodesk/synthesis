@@ -152,11 +152,11 @@ namespace hel{
         button_count = count;
     }
 
-    std::array<int8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxes()const{
+    BoundsCheckedArray<int8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxes()const{
         return axes;
     }
 
-    void Joystick::setAxes(std::array<int8_t, Joystick::MAX_AXIS_COUNT> a){
+    void Joystick::setAxes(BoundsCheckedArray<int8_t, Joystick::MAX_AXIS_COUNT> a){
         axes = a;
     }
 
@@ -168,19 +168,19 @@ namespace hel{
         axis_count = count;
     }
 
-    std::array<uint8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxisTypes()const{
+    BoundsCheckedArray<uint8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxisTypes()const{
         return axis_types;
     }
 
-    void Joystick::setAxisTypes(std::array<uint8_t, Joystick::MAX_AXIS_COUNT> types){
+    void Joystick::setAxisTypes(BoundsCheckedArray<uint8_t, Joystick::MAX_AXIS_COUNT> types){
         axis_types = types;
     }
 
-    std::array<int16_t, Joystick::MAX_POV_COUNT> Joystick::getPOVs()const{
+    BoundsCheckedArray<int16_t, Joystick::MAX_POV_COUNT> Joystick::getPOVs()const{
         return povs;
     }
 
-    void Joystick::setPOVs(std::array<int16_t, Joystick::MAX_POV_COUNT> p){
+    void Joystick::setPOVs(BoundsCheckedArray<int16_t, Joystick::MAX_POV_COUNT> p){
         povs = p;
     }
 
@@ -296,7 +296,7 @@ namespace hel{
         return joy;
     }
 
-    Joystick::Joystick():is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes({}), axis_count(0), axis_types({}), povs({}), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
+    Joystick::Joystick():is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes(), axis_count(0), axis_types(), povs(), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
 
     RobotMode::RobotMode():mode(RobotMode::Mode::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){}
 
@@ -386,19 +386,24 @@ extern "C" {
         return 0; //HAL does not expect error status if parameters are nullptr
     }
 
-    int FRC_NetworkCommunication_getJoystickAxes(uint8_t joystickNum, struct JoystickAxes_t* axes, uint8_t /*maxAxes*/){
+    int FRC_NetworkCommunication_getJoystickAxes(uint8_t joystickNum, struct JoystickAxes_t* axes, uint8_t maxAxes){
         auto instance = hel::RoboRIOManager::getInstance();
 
         if(joystickNum >= hel::Joystick::MAX_JOYSTICK_COUNT){
             throw std::out_of_range("Exception: unexpected joysticks index (expected 0-" + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
-        std::array<int8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axes = instance.first->joysticks[joystickNum].getAxes();
-
-        std::copy(std::begin(hel_axes), std::end(hel_axes), axes->axes); //TODO bounds checking
+        if(axes != nullptr){
+            if(maxAxes != hel::Joystick::MAX_AXIS_COUNT){
+                throw std::out_of_range("Exception: mismatch maximum axis count on joystick index " + std::to_string(joystickNum) + "(Expected " + std::to_string(hel::Joystick::MAX_AXIS_COUNT) + " got " + std::to_string(maxAxes) + "))");
+            }
+            hel::BoundsCheckedArray<int8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axes = instance.first->joysticks[joystickNum].getAxes();
+            std::copy(std::begin(hel_axes), std::end(hel_axes), axes->axes);
+            axes->count = instance.first->joysticks[joystickNum].getAxisCount();
+        }
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
     int FRC_NetworkCommunication_getJoystickButtons(uint8_t joystickNum, uint32_t* buttons, uint8_t* count){
@@ -414,22 +419,27 @@ extern "C" {
             *count = instance.first->joysticks[joystickNum].getButtonCount();
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
-    int FRC_NetworkCommunication_getJoystickPOVs(uint8_t joystickNum, struct JoystickPOV_t* povs, uint8_t /*maxPOVs*/){
+    int FRC_NetworkCommunication_getJoystickPOVs(uint8_t joystickNum, struct JoystickPOV_t* povs, uint8_t maxPOVs){
         auto instance = hel::RoboRIOManager::getInstance();
 
         if(joystickNum >= hel::Joystick::MAX_JOYSTICK_COUNT){
             throw std::out_of_range("Exception: unexpected joysticks index (expected 0-" + std::to_string(hel::Joystick::MAX_JOYSTICK_COUNT) + " got " + std::to_string(joystickNum) + ")");
         }
 
-        std::array<int16_t, hel::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
+        if(povs != nullptr){
+            if(maxPOVs != hel::Joystick::MAX_POV_COUNT){
+                throw std::out_of_range("Exception: mismatch maximum pov count on joystick index " + std::to_string(joystickNum) + "(Expected " + std::to_string(hel::Joystick::MAX_POV_COUNT) + " got " + std::to_string(maxPOVs) + "))");
+            }
+            hel::BoundsCheckedArray<int16_t, hel::Joystick::MAX_POV_COUNT> hel_povs = instance.first->joysticks[joystickNum].getPOVs();
 
-        std::copy(std::begin(hel_povs), std::end(hel_povs), povs->povs); //TODO bounds checking
-
+            std::copy(std::begin(hel_povs), std::end(hel_povs), povs->povs);
+            povs->count = instance.first->joysticks[joystickNum].getPOVCount();
+        }
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
     int FRC_NetworkCommunication_setJoystickOutputs(uint8_t joystickNum, uint32_t hidOutputs, uint16_t leftRumble, uint16_t rightRumble){
@@ -444,7 +454,7 @@ extern "C" {
         instance.first->joysticks[joystickNum].setRightRumble(rightRumble);
 
         instance.second.unlock();
-        return 0; //TODO returns a status
+        return 0;
     }
 
     int FRC_NetworkCommunication_getJoystickDesc(uint8_t joystickNum, uint8_t* isXBox, uint8_t* type, char* name, uint8_t* axisCount, uint8_t* axisTypes, uint8_t* buttonCount, uint8_t* povCount){
@@ -466,7 +476,7 @@ extern "C" {
             *axisCount = instance.first->joysticks[joystickNum].getAxisCount();
 
         if(axisTypes != nullptr){
-            std::array<uint8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axis_types = instance.first->joysticks[joystickNum].getAxisTypes();
+            hel::BoundsCheckedArray<uint8_t, hel::Joystick::MAX_AXIS_COUNT> hel_axis_types = instance.first->joysticks[joystickNum].getAxisTypes();
             std::copy(std::begin(hel_axis_types), std::end(hel_axis_types), axisTypes);
         }
 
