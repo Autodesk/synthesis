@@ -111,37 +111,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightBackWheelsGroup.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
                     break;
-                case 2: //Mecanum
-                    this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
-                    this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
-                    this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
-                    this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
-                    this.MainLayout.RowCount = 4;
-                    this.MainLayout.RowStyles[2] = new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F);
-                    this.MainLayout.RowStyles[3] = new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F);
-                    this.MiddleWheelsGroup.Visible = false;
-                    this.MiddleWheelsPanel.Visible = false;
-                    this.LeftBackWheelsPanel.Visible = true;
-                    this.LeftBackWheelsGroup.Visible = true;
-                    this.RightBackWheelsPanel.Visible = true;
-                    this.RightBackWheelsGroup.Visible = true;
-                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.MECANUM;
-                    break;
-                case 3: //Swerve
-                    this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
-                    this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
-                    this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
-                    this.RightWheelsPanel.Size = new System.Drawing.Size(218, 461);
-                    this.MainLayout.RowCount = 3;
-                    this.MiddleWheelsGroup.Visible = false;
-                    this.MiddleWheelsPanel.Visible = false;
-                    this.LeftBackWheelsPanel.Visible = false;
-                    this.LeftBackWheelsGroup.Visible = false;
-                    this.RightBackWheelsPanel.Visible = false;
-                    this.RightBackWheelsGroup.Visible = false;
-                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.SWERVE;
-                    break;
-                case 4: //H-Drive
+                case 2: //H-Drive
                     this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 374);
                     this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 355);
                     this.RightWheelsGroup.Size = new System.Drawing.Size(224, 374);
@@ -157,7 +127,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightBackWheelsGroup.Visible = false;
                     WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
                     break;
-                case 5: //Custom
+                case 3: //Custom
                     this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
                     this.LeftWheelsPanel.Size = new System.Drawing.Size(218, 461);
                     this.RightWheelsGroup.Size = new System.Drawing.Size(224, 480);
@@ -256,8 +226,7 @@ namespace BxDRobotExporter.Wizard
 
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                if ((node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL) ||
-                    (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.SWERVE && node.GetParent() != null && node.GetParent().GetParent() != null))
+                if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
                 {
                     string readableName = node.ModelFileName.Replace('_', ' ').Replace(".bxda", "");
                     readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
@@ -290,9 +259,7 @@ namespace BxDRobotExporter.Wizard
 
                 // Get default wheel type based on drive train
                 WizardData.WizardWheelType type;
-                if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.MECANUM)
-                    type = WizardData.WizardWheelType.MECANUM;
-                else if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
+                if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
                     type = WizardData.WizardWheelType.OMNI;
                 else
                     type = WizardData.WizardWheelType.NORMAL;
