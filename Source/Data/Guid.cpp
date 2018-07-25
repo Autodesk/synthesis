@@ -42,7 +42,8 @@ void Guid::regenerate(unsigned int seed)
 
 std::string Guid::toString() const
 {
-	char str[BYTE_COUNT * 2];
+	char str[BYTE_COUNT * 2 + 1];
+	str[BYTE_COUNT * 2] = 0; // Null terminated c-string
 
 	for (int i = 0; i < BYTE_COUNT; i++)
 	{
