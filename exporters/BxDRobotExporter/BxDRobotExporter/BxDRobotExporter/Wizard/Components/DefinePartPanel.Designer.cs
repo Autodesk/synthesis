@@ -124,7 +124,7 @@
             this.MainTableLayout.SetColumnSpan(this.tabsMeta, 2);
             this.tabsMeta.Controls.Add(this.metaPneumatic);
             this.tabsMeta.Controls.Add(this.metaGearing);
-            this.tabsMeta.Controls.Add(this.metaElevatorBrake);
+            //this.tabsMeta.Controls.Add(this.metaElevatorBrake);
             this.tabsMeta.Controls.Add(this.metaElevatorStages);
             this.tabsMeta.Location = new System.Drawing.Point(3, 125);
             this.tabsMeta.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);

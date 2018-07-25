@@ -46,8 +46,6 @@ namespace BxDRobotExporter.Wizard
             readableName = readableName.Substring(0, 1).ToUpperInvariant() + readableName.Substring(1); // Capitalize first character
             NodeGroupBox.Text = readableName;
 
-            DriverComboBox.SelectedIndex = 0;
-            DriverComboBox_SelectedIndexChanged(null, null);
 
             int nextPort = WizardData.Instance.NextFreePort;
             if (nextPort < PortOneUpDown.Maximum - 1)
@@ -60,7 +58,7 @@ namespace BxDRobotExporter.Wizard
                 PortOneUpDown.Value = PortOneUpDown.Maximum - 1;
                 PortTwoUpDown.Value = PortOneUpDown.Maximum;
             }
-
+            this.rbPWM.Checked = true;
             // Add a highlight component action to all children. This is simpler than manually adding the hover event to each control.
             AddHighlightAction(this);
             if (!(node.GetSkeletalJoint().GetJointType().ToAssemblyJointType() == AssemblyJointTypeEnum.kCylindricalJointType ||// if the joint is a rotational then enable the rotation stuff and disable the linear
@@ -85,6 +83,8 @@ namespace BxDRobotExporter.Wizard
                     "Relay Pneumatic",
                     "Worm Screw"});
             }
+            DriverComboBox.SelectedIndex = 0;
+            DriverComboBox_SelectedIndexChanged(null, null);
         }
         /// <summary>
         /// Handles all of the different kinds of data that should be displayed when the SelectedIndex of the <see cref="ComboBox"/> is changed.
@@ -209,7 +209,7 @@ namespace BxDRobotExporter.Wizard
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
-                        if (!tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Add(metaElevatorBrake);
+                        //if (!tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Add(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
                         if (!tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Add(metaElevatorStages);
                         PortOneLabel.Visible = true;
@@ -293,44 +293,99 @@ namespace BxDRobotExporter.Wizard
         {
             if (Merged)
                 return null;
-            switch(DriverComboBox.SelectedIndex)
+            if (!(node.GetSkeletalJoint().GetJointType().ToAssemblyJointType() == AssemblyJointTypeEnum.kCylindricalJointType ||// if the joint is a rotational then enable the rotation stuff and disable the linear
+                    node.GetSkeletalJoint().GetJointType().ToAssemblyJointType() == AssemblyJointTypeEnum.kSlideJointType))
             {
-                case 1: //Motor
-                    JointDriver driver = new JointDriver(JointDriverType.MOTOR);
-                    ((RotationalJoint_Base)node.GetSkeletalJoint()).hasAngularLimit = true;
-                    driver.SetPort((int)PortOneUpDown.Value, 1);
-                    return driver;
-                case 2: //Servo
-                    driver = new JointDriver(JointDriverType.SERVO);
-                    driver.SetPort((int)PortOneUpDown.Value, 1);
-                    return driver;
-                case 3: //Bumper Pneumatic
-                    driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
-                    PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
-                    {
-                        pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
-                        widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
-                    }; //The info about the wheel attached to the joint.
-                    driver.AddInfo(pneumaticDriver);
-                    driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
-                    return driver;
-                case 4: //Relay Pneumatic
-                    driver = new JointDriver(JointDriverType.RELAY_PNEUMATIC);
-                    PneumaticDriverMeta pneumaticDriver2 = new PneumaticDriverMeta()
-                    {
-                        pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
-                        widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
-                    }; //The info about the wheel attached to the joint.
-                    driver.AddInfo(pneumaticDriver2);
-                    driver.SetPort((int)PortOneUpDown.Value, 1);
-                    return driver;
-                case 5: //Dual Motor
-                    driver = new JointDriver(JointDriverType.DUAL_MOTOR);
-                    ((RotationalJoint_Base)node.GetSkeletalJoint()).hasAngularLimit = true;
-                    driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
-                    return driver;
+                switch (DriverComboBox.SelectedIndex)
+                {
+                    case 1: //Motor
+                        JointDriver driver = new JointDriver(JointDriverType.MOTOR);
+                        driver.InputGear = (double)InputGeartxt.Value;
+                        driver.OutputGear = (double)OutputGeartxt.Value;
+                        driver.SetPort((int)PortOneUpDown.Value, 1);
+                        driver.isCan = true;
+                        return driver;
+                    case 2: //Servo
+                        driver = new JointDriver(JointDriverType.SERVO);
+                        driver.SetPort((int)PortOneUpDown.Value, 1);
+                        return driver;
+                    case 3: //Bumper Pneumatic
+                        driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
+                        PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
+                        {
+                            pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
+                            widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                        }; //The info about the wheel attached to the joint.
+                        driver.AddInfo(pneumaticDriver);
+                        driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
+                        return driver;
+                    case 4: //Relay Pneumatic
+                        driver = new JointDriver(JointDriverType.RELAY_PNEUMATIC);
+                        PneumaticDriverMeta pneumaticDriver2 = new PneumaticDriverMeta()
+                        {
+                            pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
+                            widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                        }; //The info about the wheel attached to the joint.
+                        driver.AddInfo(pneumaticDriver2);
+                        driver.SetPort((int)PortOneUpDown.Value, 1);
+                        return driver;
+                    case 5: //Worm Screw
+                        driver = new JointDriver(JointDriverType.WORM_SCREW);
+                        driver.SetPort((int)PortOneUpDown.Value);
+                        return driver;
+                    case 6: //Dual Motor
+                        driver = new JointDriver(JointDriverType.DUAL_MOTOR);
+                        driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
+                        driver.isCan = this.rbCAN.Checked;
+                        return driver;
+                }
+                return null;
             }
-            return null;
+            else
+            {
+
+                switch (DriverComboBox.SelectedIndex)
+                {
+                    case 1: //Elevator
+                        JointDriver driver = new JointDriver(JointDriverType.ELEVATOR);
+                        driver.InputGear = (double)InputGeartxt.Value;
+                        driver.OutputGear = (double)OutputGeartxt.Value;
+                        ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta()
+                        {
+                            type = (ElevatorType)cmbStages.SelectedIndex
+                        }; //The info about the wheel attached to the joint.
+                        driver.AddInfo(elevatorDriver);
+                        driver.SetPort((int)PortOneUpDown.Value, 1);
+                        driver.isCan = true;
+                        return driver;
+                    case 2: //Bumper Pneumatic
+                        driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
+                        PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
+                        {
+                            pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
+                            widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                        }; //The info about the wheel attached to the joint.
+                        driver.AddInfo(pneumaticDriver);
+                        driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
+                        return driver;
+                    case 3: //Relay Pneumatic
+                        driver = new JointDriver(JointDriverType.RELAY_PNEUMATIC);
+                        PneumaticDriverMeta pneumaticDriver2 = new PneumaticDriverMeta()
+                        {
+                            pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
+                            widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                        }; //The info about the wheel attached to the joint.
+                        driver.AddInfo(pneumaticDriver2);
+                        driver.SetPort((int)PortOneUpDown.Value, 1);
+                        return driver;
+                    case 4: //Worm Screw
+                        driver = new JointDriver(JointDriverType.WORM_SCREW);
+                        driver.SetPort((int)PortOneUpDown.Value);
+                        return driver;
+                }
+                return null;
+
+            }
         }
     }
 }
