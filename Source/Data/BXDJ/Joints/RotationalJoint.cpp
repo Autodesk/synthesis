@@ -20,12 +20,12 @@ Vector3<float> BXDJ::RotationalJoint::getBasePoint() const
 Vector3<float> RotationalJoint::getAxisOfRotation() const
 {
 	core::Ptr<core::Vector3D> axis = fusionJoint->rotationAxisVector();
-	return Vector3<float>(axis->x(), axis->y(), axis->z());
+	return Vector3<float>((float)axis->x(), (float)axis->y(), (float)axis->z());
 }
 
 float RotationalJoint::getCurrentAngle() const
 {
-	return fusionJoint->rotationValue();
+	return (float)fusionJoint->rotationValue();
 }
 
 bool BXDJ::RotationalJoint::hasLimits() const
@@ -36,7 +36,7 @@ bool BXDJ::RotationalJoint::hasLimits() const
 float RotationalJoint::getMinAngle() const
 {
 	if (fusionJoint->rotationLimits()->isMinimumValueEnabled())
-		return fusionJoint->rotationLimits()->minimumValue();
+		return (float)fusionJoint->rotationLimits()->minimumValue();
 	else
 		return std::numeric_limits<float>::min();
 }
@@ -44,7 +44,7 @@ float RotationalJoint::getMinAngle() const
 float RotationalJoint::getMaxAngle() const
 {
 	if (fusionJoint->rotationLimits()->isMaximumValueEnabled())
-		return fusionJoint->rotationLimits()->maximumValue();
+		return (float)fusionJoint->rotationLimits()->maximumValue();
 	else
 		return std::numeric_limits<float>::max();
 }

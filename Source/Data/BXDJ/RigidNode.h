@@ -7,6 +7,7 @@
 #include <Core/Geometry/Point3D.h>
 #include "XmlWriter.h"
 #include "../Guid.h"
+#include "../Filesystem.h"
 #include "../BXDA/BinaryWriter.h"
 #include "../BXDA/Mesh.h"
 #include "../BXDA/Physics.h"
