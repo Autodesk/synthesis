@@ -3,7 +3,6 @@ using BulletSharp;
 using BulletUnity;
 using Synthesis.BUExtensions;
 using Synthesis.FSM;
-using Synthesis.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ using UnityEngine.Networking;
 // Also the collisions are kind of inconsistent, so the client should take ownership of collision
 // scanning when it has ownership of the game element's position.
 
-namespace Synthesis.Network
+namespace Synthesis.NetworkMultiplayer
 {
     [NetworkSettings(channel = 1, sendInterval = 0f)]
     public class NetworkElement : NetworkBehaviour, ICollisionCallback

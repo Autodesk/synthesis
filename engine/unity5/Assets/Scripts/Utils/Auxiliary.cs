@@ -176,8 +176,7 @@ namespace Synthesis.Utils
 
         public static GameObject FindGameObject(string name)
         {
-            IEnumerable<GameObject> gameObjects = Resources.FindObjectsOfTypeAll<GameObject>().Where(o => o.name.Equals(name));
-            return gameObjects.Any() ? gameObjects.First() : null;
+            return Resources.FindObjectsOfTypeAll<GameObject>().First(o => o.name.Equals(name));
         }
 
         /// <summary>
