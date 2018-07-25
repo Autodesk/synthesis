@@ -4,6 +4,7 @@
 #include <vector>
 #include <limits>
 #include "RigidNode.h"
+#include "Driver.h"
 
 namespace BXDJ
 {	
@@ -22,14 +23,18 @@ namespace BXDJ
 		virtual void write(XmlWriter &) const;
 
 	protected:
+		enum OneTwo : bool { ONE = true, TWO = false };
+
 		core::Ptr<fusion::Joint> getFusionJoint() { return fusionJoint; }
-		bool isParentOccOne() { return parentIsOccOne; }
+		OneTwo getParentOccNum() { return parentOcc; }
 
 	private:
 		core::Ptr<fusion::Joint> fusionJoint;
-		bool parentIsOccOne; // True if fusionJoint->occurrenceOne() is the parent
+		OneTwo parentOcc;
 		RigidNode * parent;
 		std::shared_ptr<RigidNode> child;
+
+		std::unique_ptr<Driver> driver;
 
 	};
 };
