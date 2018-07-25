@@ -52,7 +52,7 @@ void RotationalJoint::write(XmlWriter & output) const
 	// Base point
 	output.startElement("BXDVector3");
 	output.writeAttribute("VectorID", "BasePoint");
-	output.write(getBasePoint());
+	output.write(getChildBasePoint());
 	output.endElement();
 
 	// Axis
