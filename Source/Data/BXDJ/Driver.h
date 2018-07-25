@@ -38,7 +38,7 @@ namespace BXDJ
 		float inputGear;
 		float outputGear;
 
-		std::shared_ptr<Component> component;
+		std::shared_ptr<Component> component; // Should be private
 
 		Driver(Joint *, Type type = UNKNOWN);
 
