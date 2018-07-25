@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdlib.h>
 #include <string>
 
 class Filesystem
@@ -9,7 +10,7 @@ public:
 	static std::string getCurrentRobotDirectory();
 
 private:
-	static const std::string ROBOT_DIRECTORY;
+	static const std::string ROBOT_APPDATA_DIRECTORY;
 	static std::string robotName;
 
 };
