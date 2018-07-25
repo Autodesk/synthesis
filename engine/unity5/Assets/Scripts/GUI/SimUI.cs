@@ -407,13 +407,13 @@ namespace Synthesis.GUI
         /// </summary>
         public void CameraToolTips()
         {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
+            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
                 camera.GetComponent<Text>().text = "Driver Station";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
                 camera.GetComponent<Text>().text = "Freeroam";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
                 camera.GetComponent<Text>().text = "Orbit Robot";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
                 camera.GetComponent<Text>().text = "Overview";
         }
 
@@ -422,7 +422,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateFreeroamWindow()
         {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
+            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
             {
                 if (!freeroamWindowClosed)
                 {
@@ -430,7 +430,7 @@ namespace Synthesis.GUI
                 }
 
             }
-            else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
             {
                 freeroamCameraWindow.SetActive(false);
             }
@@ -451,7 +451,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateDriverStationPanel()
         {
-            driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+            driverStationPanel.SetActive(camera.ActiveState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
         }
 
         /// <summary>
