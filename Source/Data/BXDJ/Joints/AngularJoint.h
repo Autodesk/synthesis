@@ -12,7 +12,8 @@ namespace BXDJ
 
 		virtual Vector3<float> getAxisOfRotation() const = 0;
 		virtual float getCurrentAngle() const = 0;
-		virtual float getUpperLimit() const = 0;
-		virtual float getLowerLimit() const = 0;
+		virtual bool getHasLimits() const = 0;
+		virtual float getMaxAngle() const = 0;
+		virtual float getMinAngle() const = 0;
 	};
 }

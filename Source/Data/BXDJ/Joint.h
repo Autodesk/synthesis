@@ -14,6 +14,7 @@ namespace BXDJ
 
 		RigidNode * getParent();
 		std::shared_ptr<RigidNode> getChild();
+		virtual Vector3<float> getBasePoint() const = 0;
 
 		virtual void write(XmlWriter &) const;
 
