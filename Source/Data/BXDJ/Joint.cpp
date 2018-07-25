@@ -8,6 +8,7 @@ Joint::Joint(const Joint & jointToCopy)
 	fusionJoint = jointToCopy.fusionJoint;
 	parent = jointToCopy.parent;
 	child = jointToCopy.child;
+	driver = std::make_unique<Driver>(*jointToCopy.driver);
 }
 
 Joint::Joint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence)

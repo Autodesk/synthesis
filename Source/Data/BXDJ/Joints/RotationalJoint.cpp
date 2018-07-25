@@ -10,6 +10,9 @@ RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : AngularJ
 RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : AngularJoint(parent, joint, parentOccurrence)
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
+
+	driver = std::make_unique<Driver>(this, Driver::MOTOR);
+	driver->portA = 0;
 }
 
 Vector3<float> RotationalJoint::getAxisOfRotation() const

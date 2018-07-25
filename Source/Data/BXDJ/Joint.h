@@ -25,16 +25,17 @@ namespace BXDJ
 	protected:
 		enum OneTwo : bool { ONE = true, TWO = false };
 
+		std::unique_ptr<Driver> driver;
+
 		core::Ptr<fusion::Joint> getFusionJoint() { return fusionJoint; }
 		OneTwo getParentOccNum() { return parentOcc; }
 
 	private:
-		core::Ptr<fusion::Joint> fusionJoint;
 		OneTwo parentOcc;
+		core::Ptr<fusion::Joint> fusionJoint;
 		RigidNode * parent;
 		std::shared_ptr<RigidNode> child;
 
-		std::unique_ptr<Driver> driver;
 
 	};
 };
