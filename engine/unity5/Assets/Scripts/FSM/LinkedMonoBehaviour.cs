@@ -20,7 +20,7 @@ namespace Synthesis.FSM
         protected T State { get; private set; }
 
         /// <summary>
-        /// Initializes a connection to 
+        /// Links this instance to the global <see cref="StateMachine"/>.
         /// </summary>
         protected virtual void Awake()
         {

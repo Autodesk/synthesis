@@ -14,73 +14,17 @@ namespace Synthesis.States
 {
     public class GatheringResourcesState : SyncState
     {
-        private Dictionary<int, List<int>> transferMap;
-
-        public override void Awake()
-        {
-            transferMap = new Dictionary<int, List<int>>();
-        }
-
+        /// <summary>
+        /// Starts gathering resources from any necessary clients, and continues to the next state when
+        /// the process is complete.
+        /// </summary>
         public override void Start()
         {
-            if (Host)
-            {
-                FileTransferer.Instance.OnDataFragmentReceived += DataFragmentReceived;
-                FileTransferer.Instance.OnReceivingComplete += ReceivingComplete;
+            if (!Host)
+                return;
 
-                MatchManager.Instance.TransferFiles();
-
-                //foreach (KeyValuePair<int, List<int>> entry in MatchManager.Instance.DependencyMap.Where(e => e.Key >= 0))
-                //{
-                //    PlayerIdentity identity = PlayerIdentity.FindById(entry.Key);
-                //    //FileTransferer.Instance.GetComponent<NetworkIdentity>().AssignClientAuthority(identity.connectionToClient);
-                //    identity.TargetTransferDependencies(identity.connectionToClient);
-                //}
-            }
-            else
-            {
-                SendReadySignal();
-            }
-
-            // FOR TESTING:
-            //if (Host)
-            //{
-            //    foreach (KeyValuePair<int, List<int>> entry in MatchManager.Instance.DependencyMap)
-            //    {
-            //        Debug.Log("Player " + entry.Key + " has assets needed by:");
-
-            //        foreach (int id in entry.Value)
-            //            Debug.Log("Player " + id);
-            //    }
-            //}
-
-            //if (Host)
-            //{
-            //    byte[] bytes = File.ReadAllBytes(PlayerPrefs.GetString("simSelectedField") + "\\definition.bxdf");
-            //    FileTransferer.Instance.SendFileToClient(PlayerIdentity.LocalInstance.connectionToClient, 0, bytes);
-            //}
-        }
-
-        public override void End()
-        {
-            FileTransferer.Instance.Reset();
-            FileTransferer.Instance.OnDataFragmentReceived -= DataFragmentReceived;
-            FileTransferer.Instance.OnReceivingComplete -= ReceivingComplete;
-        }
-
-        private void SendingComplete(int transferId, byte[] data)
-        {
-            //Debug.Log("Complete!");
-        }
-
-        private void DataFragmentReceived(int transferId, byte[] data)
-        {
-            //Debug.Log("Fragment from " + transferId);
-        }
-
-        private void ReceivingComplete(int transferId, byte[] data)
-        {
-            Debug.Log(transferId + " complete!");
+            MatchManager.Instance.AwaitChangeState<DistributingResourcesState>(false);
+            MatchManager.Instance.GatherResources();
         }
     }
 }
