@@ -2,9 +2,9 @@
 
 using namespace BXDJ;
 
-Wheel::Wheel(Driver * driver) : Component(driver)
+Wheel::Wheel(Driver * driver, Type type) : Component(driver)
 {
-	type = NORMAL;
+	this->type = type;
 }
 
 float Wheel::getRadius() const
