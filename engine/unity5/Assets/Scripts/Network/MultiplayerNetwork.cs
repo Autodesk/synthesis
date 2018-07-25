@@ -63,6 +63,7 @@ namespace Synthesis.Network
         public override void OnServerDisconnect(NetworkConnection conn)
         {
             NetworkServer.DestroyPlayersForConnection(conn);
+            MatchManager.Instance.CancelSync();
         }
 
         public override void OnStartClient(NetworkClient client)

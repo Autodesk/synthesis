@@ -1,4 +1,5 @@
 ﻿using Synthesis.FSM;
+using Synthesis.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace Synthesis.States
 {
     public class DistributingResourcesState : SyncState
     {
-        // TODO
-
         public override void Start()
         {
+            if (Host)
+                MatchManager.Instance.DistributeResources();
         }
     }
 }
