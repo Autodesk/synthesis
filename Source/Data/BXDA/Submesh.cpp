@@ -57,7 +57,7 @@ void SubMesh::mergeMesh(const SubMesh & other)
 
 int BXDA::SubMesh::getVertCount()
 {
-	return vertices.size();
+	return (int)vertices.size();
 }
 
 void SubMesh::getConvexCollider(SubMesh & outputMesh) const

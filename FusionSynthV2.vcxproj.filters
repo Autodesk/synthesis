@@ -96,6 +96,9 @@
     <ClInclude Include="Source\Data\Filesystem.h">
       <Filter>Headers\Data</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Driver.h">
+      <Filter>Headers\Data\BXDJ</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -151,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="Source\Data\Filesystem.cpp">
       <Filter>Source\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Driver.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
