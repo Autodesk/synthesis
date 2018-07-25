@@ -40,6 +40,12 @@
     <Filter Include="Headers\Data\BXDJ\Joints">
       <UniqueIdentifier>{7bc50eaa-92be-424f-9ba2-e9924f09ae2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headers\Data\BXDJ\Components">
+      <UniqueIdentifier>{5e56d0c6-3746-413c-b838-c00ba620cd30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Data\BXDJ\Components">
+      <UniqueIdentifier>{49a37e76-2887-44d3-bcbc-e39d1da352c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Data\BXDA\Mesh.h">
@@ -99,6 +105,12 @@
     <ClInclude Include="Source\Data\BXDJ\Driver.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Components\Wheel.h">
+      <Filter>Headers\Data\BXDJ\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Component.h">
+      <Filter>Headers\Data\BXDJ</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -156,6 +168,12 @@
       <Filter>Source\Data</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\BXDJ\Driver.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Components\Wheel.cpp">
+      <Filter>Source\Data\BXDJ\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Component.cpp">
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
   </ItemGroup>
