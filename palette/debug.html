@@ -32,13 +32,14 @@
             var nameLength = "";
             while (jointData[c] != ' ')
                 nameLength += jointData[c++];
+            c++;
 
             var name = "";
             for (var i = 0; i < parseInt(nameLength); i++)
                 name += jointData[c++];
 
             var id = "";
-            for (var i = 0; i < parseInt(pointerSize); i++)
+            while (jointData[c] != ' ')
                 id += jointData[c++];
 
             joints.push({ "name": name, "id": parseInt(id) });
