@@ -40,6 +40,10 @@ bool EUI::createWorkspace()
 		toolbar = workSpace->toolbarPanels()->add("SynthesisExport", "Export");
 		toolbarControls = toolbar->controls();
 
+		// Create palettes
+		if (!defineExportPalette())
+			throw "Failed to create toolbar buttons.";
+
 		// Create buttons
 		if (!defineExportButton())
 			throw "Failed to create toolbar buttons.";
@@ -59,6 +63,49 @@ bool EUI::createWorkspace()
 	}
 }
 
+bool EUI::defineExportPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	exportPalette = palettes->itemById("exporterForm");
+
+	if (!exportPalette)
+	{
+		// Create palette
+		exportPalette = palettes->add("exporterForm", "Robot Exporter Form", "Palette/palette.html", false, true, true, 300, 200);
+		if (!exportPalette)
+			return false;
+
+		// Dock the palette to the right side of Fusion window.
+		exportPalette->dockingState(PaletteDockStateRight);
+
+		// Add handler to HTMLEvent of the palette
+		Ptr<HTMLEvent> htmlEvent = exportPalette->incomingFromHTML();
+		if (!htmlEvent)
+			return false;
+
+		ReceiveFormDataHandler * onHTMLEvent = new ReceiveFormDataHandler;
+		onHTMLEvent->app = app;
+
+		htmlEvent->add(onHTMLEvent);
+
+		// Add handler to CloseEvent of the palette
+		Ptr<UserInterfaceGeneralEvent> closeEvent = exportPalette->closed();
+		if (!closeEvent)
+			return false;
+
+		CloseFormEventHandler * onClose = new CloseFormEventHandler;
+		onClose->app = app;
+
+		closeEvent->add(onClose);
+	}
+
+	return true;
+}
+
 bool EUI::defineExportButton()
 {
 	// Create button command definition
@@ -70,7 +117,7 @@ bool EUI::defineExportButton()
 		return false;
 	
 	ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler;
-	commandCreatedEventHandler->app = app;
+	commandCreatedEventHandler->palette = exportPalette;
 	
 	return commandCreatedEvent->add(commandCreatedEventHandler);
 }
