@@ -42,7 +42,7 @@ public:
         ao.SetVoltage(d);
         current_state = !current_state;
 
-        //std::cout<<"AnalogInput:"<<ai.GetVoltage()<<"\n";
+        std::cout<<"AnalogInput:"<<ai.GetVoltage()<<"\n";
 
         usleep(45000);
     }

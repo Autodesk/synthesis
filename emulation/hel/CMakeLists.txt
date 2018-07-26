@@ -81,7 +81,7 @@ ExternalProject_Add(wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
   GIT_TAG v2018.4.1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/libwpilibc.so  ./gradlew :wpilibc:build WPILib
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/libwpilibc.so ./gradlew :wpilibc:build WPILib
   INSTALL_COMMAND ""
   )
 
@@ -91,7 +91,7 @@ ExternalProject_Add(ctre
   GIT_TAG Phoenix_v5.6.0.0
   UPDATE_COMMAND find ${CTRE_DIRECTORY} -name "*.h" -o -name "*.cpp" "|"xargs sed -i s/llvm::/wpi::/g
   CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
-  BUILD_COMMAND cd ${CTRE_DIRECTORY} && ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
   INSTALL_COMMAND ""
   )
 add_dependencies(ctre wpilib)

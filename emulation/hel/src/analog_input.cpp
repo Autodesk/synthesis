@@ -68,6 +68,10 @@ namespace hel {
             hel::AnalogInputs analog_inputs = instance.first->analog_inputs;
             uint8_t channel = analog_inputs.getReadSelect().Channel;
 
+            if(analog_inputs.getValues(channel).size() == 0){
+                return 0;
+            }
+
             if(analog_inputs.getReadSelect().Averaged){
                 float average = 0;
                 int8_t start_index = std::max(
@@ -77,13 +81,13 @@ namespace hel {
                     ),
                     0
                 );
-                
+
                 for(unsigned i = start_index; i < analog_inputs.getValues(channel).size(); i++){
                     average += analog_inputs.getValues(channel)[i];
                 }
 
                 average /= (analog_inputs.getValues(channel).size() - start_index);
-                
+
                 return (int32_t)average;
             }
             instance.second.unlock();
@@ -214,7 +218,7 @@ namespace hel {
 namespace nFPGA{
     namespace nRoboRIO_FPGANamespace{
     	tAI* tAI::create(tRioStatusCode* /*status*/){
-    		return new hel::AnalogInputManager();
+          return new hel::AnalogInputManager();
     	}
     }
 }
