@@ -65,31 +65,36 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
     }
     std::string input_copy = input;
 
-    try{
-        digital_hdrs = hel::deserializeList(
-            hel::pullValue("\"digital_hdrs\"", input),
-            std::function<bool(std::string)>(hel::stob),
-            true);
-    } catch(const std::exception& ex){
-        throw JSONParsingException();
+    if(input.find(quote("digital_hdrs")) != std::string::npos){
+        try{
+            digital_hdrs = hel::deserializeList(
+                hel::pullValue("\"digital_hdrs\"", input),
+                std::function<bool(std::string)>(hel::stob),
+                true);
+        } catch(const std::exception& ex){
+            throw JSONParsingException();
+        }
     }
-    try{
-        joysticks = hel::deserializeList(
-            hel::pullValue("\"joysticks\"", input),
-            std::function<Joystick(std::string)>(Joystick::deserialize),
-            true);
-    } catch(const std::exception& ex){
-        throw JSONParsingException();
+    if(input.find(quote("joysticks")) != std::string::npos){
+        try{
+            joysticks = hel::deserializeList(
+                hel::pullValue("\"joysticks\"", input),
+                std::function<Joystick(std::string)>(Joystick::deserialize),
+                true);
+        } catch(const std::exception& ex){
+            throw JSONParsingException();
+        }
     }
-    try{
-        digital_mxp = hel::deserializeList(
-            hel::pullValue("\"digital_mxp\"", input),
-            std::function<MXPData(std::string)>(MXPData::deserialize),
-            true);
-    } catch(const std::exception& ex){
-        throw JSONParsingException();
+    if(input.find(quote("digital_mxp")) != std::string::npos){
+        try{
+            digital_mxp = hel::deserializeList(
+                hel::pullValue("\"digital_mxp\"", input),
+                std::function<MXPData(std::string)>(MXPData::deserialize),
+                true);
+        } catch(const std::exception& ex){
+            throw JSONParsingException();
+        }
     }
-
     update();
     last_received_data = input_copy;
 }

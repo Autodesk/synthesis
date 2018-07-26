@@ -100,7 +100,6 @@ namespace hel{
      */
 
     class RoboRIOManager {
-
     public:
 
         // This is the only method exposed to the outside.
@@ -126,13 +125,12 @@ namespace hel{
         static std::shared_ptr<RoboRIO> instance;
 
         static std::recursive_mutex m;
-    public:
 
+    public:
         RoboRIOManager(RoboRIOManager const&) = delete;
         void operator=(RoboRIOManager const&) = delete;
 
         friend class SyncServer;
     };
-
 }
 #endif
