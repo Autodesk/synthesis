@@ -8,7 +8,11 @@ Joint::Joint(const Joint & jointToCopy)
 	fusionJoint = jointToCopy.fusionJoint;
 	parent = jointToCopy.parent;
 	child = jointToCopy.child;
-	driver = std::make_unique<Driver>(*jointToCopy.driver);
+
+	if (jointToCopy.driver != nullptr)
+		setDriver(*jointToCopy.driver);
+	else
+		driver = nullptr;
 }
 
 Joint::Joint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence)
@@ -56,8 +60,16 @@ void Joint::setDriver(Driver driver)
 	this->driver = std::make_unique<Driver>(driver);
 }
 
-Driver Joint::getDriver()
+void Joint::removeDriver()
 {
+	this->driver = nullptr;
+}
+
+Driver Joint::getDriver() const
+{
+	if (this->driver == nullptr)
+		return Driver();
+	
 	return *driver;
 }
 

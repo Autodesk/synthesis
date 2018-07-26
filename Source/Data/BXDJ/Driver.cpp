@@ -12,7 +12,11 @@ Driver::Driver(const Driver & driverToCopy)
 	inputGear = driverToCopy.inputGear;
 	outputGear = driverToCopy.outputGear;
 
-	setComponent(*driverToCopy.wheel);
+	// Components
+	if (driverToCopy.wheel != nullptr)
+		setComponent(*driverToCopy.wheel);
+	else
+		wheel = nullptr;
 }
 
 Driver::Driver(Type type)
