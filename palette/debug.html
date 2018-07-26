@@ -16,11 +16,12 @@
 
     function sendInfoToFusion()
     {
-        var args = {
-            arg1: "Sample argument 1",
-            arg2: "Sample argument 2"
-        };
-        adsk.fusionSendData('send', JSON.stringify(args));
+        var args = '';
+
+        for (var i = 0; i < joints.length; i++)
+            args += (i < joints.length / 2) ? 'L' : 'R';
+
+        adsk.fusionSendData('send', args);
     }
 
     function processJointDataString(jointData)
