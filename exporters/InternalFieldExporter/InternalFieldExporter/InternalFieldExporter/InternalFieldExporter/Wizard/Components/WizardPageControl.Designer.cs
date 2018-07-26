@@ -1,4 +1,4 @@
-﻿namespace BxDRobotExporter.Wizard
+﻿namespace InternalFieldExporter.Wizard
 {
     partial class WizardPageControl
     {
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.WizardNavigator = new BxDRobotExporter.Wizard.WizardNavigator();
+            this.WizardNavigator = new InternalFieldExporter.Wizard.WizardNavigator();
             this.MainLayout.SuspendLayout();
             this.SuspendLayout();
             // 

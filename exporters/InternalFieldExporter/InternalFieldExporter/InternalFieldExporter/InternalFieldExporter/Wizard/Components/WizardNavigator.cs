@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.Wizard
+namespace InternalFieldExporter.Wizard
 {
     /// <summary>
     /// Panel at the bottom of the <see cref="WizardForm"/> used for navigating through the pages.

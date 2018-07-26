@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
-namespace BxDRobotExporter.Wizard
+namespace InternalFieldExporter.Wizard
 {
     /// <summary>
     /// Used in the <see cref="DefineMovingPartsPage"/> to set joint driver information.

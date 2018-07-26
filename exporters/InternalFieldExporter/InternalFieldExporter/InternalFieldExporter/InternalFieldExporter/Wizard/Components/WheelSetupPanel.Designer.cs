@@ -1,4 +1,4 @@
-﻿namespace BxDRobotExporter.Wizard
+﻿namespace InternalFieldExporter.Wizard
 {
     partial class WheelSetupPanel
     {
