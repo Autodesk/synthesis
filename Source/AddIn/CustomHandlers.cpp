@@ -25,7 +25,8 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
 	Exporter exporter(app);
-	palette->sendInfoToHTML("send", exporter.collectJoints());
+	std::vector<Ptr<Joint>> allJoints;
+	palette->sendInfoToHTML("send", exporter.collectJoints(allJoints));
 	palette->isVisible(true);
 }
 

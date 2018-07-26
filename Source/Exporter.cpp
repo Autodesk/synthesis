@@ -8,16 +8,18 @@ Exporter::Exporter(Ptr<Application> app) : fusionApplication(app)
 Exporter::~Exporter()
 {}
 
-std::string Synthesis::Exporter::collectJoints()
+std::string Synthesis::Exporter::collectJoints(std::vector<Ptr<Joint>> & allJoints)
 {
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 
 	std::string stringifiedJoints;
 
-	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
+	allJoints = document->design()->rootComponent()->allJoints();
 
-	for (Ptr<Joint> joint : allJoints)
+	for (int j = 0; j < allJoints.size(); j++)
 	{
+		Ptr<Joint> joint = allJoints[j];
+
 		std::string pointerStr = "";
 
 		Ptr<Occurrence> occurence = joint->occurrenceOne();
@@ -25,7 +27,7 @@ std::string Synthesis::Exporter::collectJoints()
 		for (int b = 0; b < sizeof(Ptr<Occurrence>); b++)
 			pointerStr += ((char*)(& occurence))[b];
 
-		stringifiedJoints += joint->occurrenceOne()->name() + " " + std::to_string(sizeof(Ptr<Occurrence>)) + " " + pointerStr;
+		stringifiedJoints += std::to_string(joint->name().length) + " " + joint->name() + std::to_string(j) + " ";
 	}
 
 	return stringifiedJoints;

@@ -19,7 +19,7 @@ namespace Synthesis
 		Exporter(Ptr<Application>);
 		~Exporter();
 
-		std::string collectJoints();
+		std::string collectJoints(std::vector<Ptr<Joint>> &);
 
 		void exportExample();
 		void exportExampleXml();
