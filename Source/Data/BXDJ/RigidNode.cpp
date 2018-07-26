@@ -11,6 +11,9 @@ RigidNode::RigidNode()
 
 RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 {
+	configData = nodeToCopy.configData;
+	jointSummary = nodeToCopy.jointSummary;
+
 	for (core::Ptr<fusion::Occurrence> occurence : nodeToCopy.fusionOccurrences)
 		fusionOccurrences.push_back(occurence);
 
@@ -22,8 +25,9 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 	log = nodeToCopy.log;
 }
 
-RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent) : RigidNode()
+RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config) : RigidNode()
 {
+	configData = std::make_shared<ConfigData>(config);
 	jointSummary = std::make_shared<JointSummary>(getJointSummary(rootComponent));
 
 	for (core::Ptr<fusion::Occurrence> occurence : rootComponent->occurrences()->asList())
@@ -36,6 +40,7 @@ RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occ, Joint * parent)
 		throw "Parent node cannot be NULL!";
 
 	this->parent = parent;
+	configData = parent->getParent()->configData;
 	jointSummary = parent->getParent()->jointSummary;
 	buildTree(occ);
 }
@@ -51,6 +56,11 @@ std::string RigidNode::getModelId() const
 		return fusionOccurrences[0]->fullPathName();
 	else
 		return "empty";
+}
+
+ConfigData BXDJ::RigidNode::getConfigData() const
+{
+	return *configData;
 }
 
 Joint * RigidNode::getParent() const

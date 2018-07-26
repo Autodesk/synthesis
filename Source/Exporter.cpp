@@ -55,7 +55,7 @@ void Exporter::exportMeshes()
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 	
 	Guid::resetAutomaticSeed();
-	BXDJ::RigidNode rootNode(document->design()->rootComponent());
+	BXDJ::RigidNode rootNode(document->design()->rootComponent(), BXDJ::ConfigData());
 
 	std::string filename = Filesystem::getCurrentRobotDirectory() + "skeleton.bxdj";
 	BXDJ::XmlWriter xml(filename, false);

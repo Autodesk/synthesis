@@ -6,6 +6,7 @@
 #include <Fusion/FusionAll.h>
 #include <Core/Geometry/Point3D.h>
 #include "XmlWriter.h"
+#include "ConfigData.h"
 #include "../Guid.h"
 #include "../Filesystem.h"
 #include "../BXDA/BinaryWriter.h"
@@ -24,11 +25,12 @@ namespace BXDJ
 	public:
 		RigidNode();
 		RigidNode(const RigidNode &);
-		RigidNode(core::Ptr<fusion::Component>);
-		RigidNode(core::Ptr<fusion::Occurrence> occ, Joint * parent);
+		RigidNode(core::Ptr<fusion::Component>, ConfigData config);
+		RigidNode(core::Ptr<fusion::Occurrence>, Joint * parent);
 
 		Guid getGUID() const;
 		std::string getModelId() const;
+		ConfigData getConfigData() const;
 		Joint * getParent() const;
 		void getMesh(BXDA::Mesh &) const;
 
@@ -46,6 +48,8 @@ namespace BXDJ
 
 		// Globally Unique Identifier
 		Guid guid;
+		// Stores information about which occurences are parents or children in joints
+		std::shared_ptr<ConfigData> configData;
 		// Stores information about which occurences are parents or children in joints
 		std::shared_ptr<JointSummary> jointSummary;
 		// Stores the joints that lead to this node's children
