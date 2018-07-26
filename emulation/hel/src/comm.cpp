@@ -278,13 +278,13 @@ namespace hel{
         joy.axis_count = std::stoi(hel::pullValue("\"axis_count\"", s));
         std::vector<uint8_t> axis_types_deserialized = hel::deserializeList(hel::pullValue("\"axis_types\"",s), std::function<uint8_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
         if(axis_types_deserialized.size() == joy.axis_types.size()){
-            std::copy(axis_types_deserialized.begin(), axis_types_deserialized.end(), joy.axis_types.begin());
+            joy.axis_types = axis_types_deserialized;
         } else {
             throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(axis_types_deserialized.size()) + " axis types, expected " + std::to_string(joy.axis_types.size()));
         }
         std::vector<int16_t> povs_deserialized = hel::deserializeList(hel::pullValue("\"povs\"",s), std::function<int16_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
         if(povs_deserialized.size() == joy.povs.size()){
-            std::copy(povs_deserialized.begin(), povs_deserialized.end(), joy.povs.begin());
+            joy.povs = povs_deserialized;
         } else {
             throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(povs_deserialized.size()) + " povs, expected " + std::to_string(joy.povs.size()));
         }
@@ -354,9 +354,8 @@ extern "C" {
 
     int FRC_NetworkCommunication_getMatchInfo(char* eventName, MatchType_t* matchType, uint16_t* matchNumber, uint8_t* replayNumber, uint8_t* gameSpecificMessage, uint16_t* gameSpecificMessageSize){
         auto instance = hel::RoboRIOManager::getInstance();
-        if (eventName != nullptr){
-            std::string name = instance.first->match_info.getEventName();
-            std::copy(std::begin(name), std::end(name), eventName);
+        if (eventName != nullptr){ //HAL requires this to be silently handled
+            hel::copystr(instance.first->match_info.getEventName(), eventName);
         }
         if (matchType != nullptr)
             *matchType = instance.first->match_info.getMatchType();
@@ -366,8 +365,7 @@ extern "C" {
             *replayNumber = instance.first->match_info.getReplayNumber();
 
         if (gameSpecificMessage != nullptr){
-            std::string hel_message = instance.first->match_info.getGameSpecificMessage();
-            std::copy(std::begin(hel_message), std::end(hel_message), gameSpecificMessage);
+            hel::copystr(instance.first->match_info.getGameSpecificMessage(), reinterpret_cast<char*>(gameSpecificMessage));
         }
 
         if (gameSpecificMessageSize != nullptr)
@@ -465,8 +463,7 @@ extern "C" {
         }
 
         if(name != nullptr){
-            std::string hel_name = instance.first->joysticks[joystickNum].getName();
-            std::copy(std::begin(hel_name), std::end(hel_name), name);
+            hel::copystr(instance.first->joysticks[joystickNum].getName(), name);
         }
         if(isXBox != nullptr)
             *isXBox = instance.first->joysticks[joystickNum].getIsXBox();

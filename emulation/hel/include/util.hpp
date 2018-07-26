@@ -154,6 +154,8 @@ namespace hel{
     constexpr std::size_t hasher(const char* input){
         return *input ? static_cast<unsigned>(*input) + 33 * hasher(input + 1) : 5381;
     }
+
+    void copystr(const std::string&, char*);
 }
 
 #endif
