@@ -15,6 +15,12 @@ namespace BxDRobotExporter.Wizard
         public ExportOrAdvancedForm()
         {
             InitializeComponent();
+            this.FormClosing += ExportOrAdvancedForm_FormClosing;
+        }
+
+        private void ExportOrAdvancedForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.ShowExportOrAdvancedForm = !this.showAgainCheckBox.Checked;
         }
 
         private void AdvancedExportButton_Click(object sender, EventArgs e)
