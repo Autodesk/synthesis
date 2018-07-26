@@ -11,7 +11,7 @@ Wheel::Wheel(const Wheel & wheelToCopy)
 	type = wheelToCopy.type;
 }
 
-Wheel::Wheel(Type)
+Wheel::Wheel(Type type)
 {
 	radius = 0;
 	width = 0;
