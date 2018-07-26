@@ -18,7 +18,8 @@ namespace BXDJ
 		Type type;
 
 		Wheel(const Wheel &);
-		Wheel(const RotationalJoint &, Type = NORMAL);
+		Wheel(Type = NORMAL);
+		Wheel(const Wheel &, const RotationalJoint &);
 
 		double getRadius() const;
 		double getWidth() const;

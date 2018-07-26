@@ -11,10 +11,13 @@ Wheel::Wheel(const Wheel & wheelToCopy)
 	center = wheelToCopy.center;
 }
 
-Wheel::Wheel(const RotationalJoint & joint, Type type)
+Wheel::Wheel(Type)
 {
 	this->type = type;
+}
 
+Wheel::Wheel(const Wheel & wheel, const RotationalJoint & joint) : Wheel(wheel)
+{
 	center = joint.getChildBasePoint();
 
 	// Calculate radius and width

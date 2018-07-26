@@ -44,6 +44,19 @@ float RotationalJoint::getMaxAngle() const
 		return std::numeric_limits<float>::max();
 }
 
+void BXDJ::RotationalJoint::applyConfig(ConfigData config)
+{
+	AngularJoint::Joint::applyConfig(config);
+
+	// Update wheels with actual mesh information
+	std::unique_ptr<Driver> driver = getDriver();
+	if (driver != nullptr && driver->getWheel() != nullptr)
+	{
+		driver->setComponent(Wheel(*driver->getWheel(), *this));
+		setDriver(*driver);
+	}
+}
+
 void RotationalJoint::write(XmlWriter & output) const
 {
 	// Write joint information
