@@ -17,8 +17,18 @@ namespace BXDJ
 		};
 		Type type;
 
+		enum FrictionLevel
+		{
+			LOW = 1,
+			MEDIUM = 2,
+			HIGH = 3
+		};
+		FrictionLevel frictionLevel;
+
+		bool isDriveWheel;
+
 		Wheel(const Wheel &);
-		Wheel(Type = NORMAL);
+		Wheel(Type = NORMAL, FrictionLevel = MEDIUM);
 		Wheel(const Wheel &, const RotationalJoint &);
 
 		double getRadius() const;
