@@ -14,7 +14,7 @@ namespace BXDJ
 		RotationalJoint(const RotationalJoint &);
 		RotationalJoint(RigidNode *, core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
 
-		Vector3<float> getAxisOfRotation() const;
+		Vector3<> getAxisOfRotation() const;
 		float getCurrentAngle() const;
 		bool hasLimits() const;
 		float getMinAngle() const;

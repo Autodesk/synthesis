@@ -30,6 +30,25 @@ int Mesh::getVersion() const
 	return CURRENT_VERSION;
 }
 
+void Mesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & maxRadius, double & maxWidth) const
+{
+	maxRadius = 0.0f;
+	maxWidth = 0.0f;
+
+	for (std::shared_ptr<SubMesh> subMesh : subMeshes)
+	{
+		double radius;
+		double width;
+		
+		subMesh->calculateWheelShape(axis, origin, radius, width);
+
+		if (radius > maxRadius)
+			maxRadius = radius;
+		if (width > maxWidth)
+			maxWidth = width;
+	}
+}
+
 std::string Mesh::toString()
 {
 	return "BXDA::Mesh: " + guid.toString() + ", Sub-Meshes: " + std::to_string(subMeshes.size()) + ", Physics Properties: (" + physics.toString() + ")";

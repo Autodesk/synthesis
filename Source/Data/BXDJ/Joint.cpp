@@ -29,30 +29,26 @@ Joint::Joint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr
 	driver = nullptr;
 }
 
-RigidNode * Joint::getParent()
+RigidNode * Joint::getParent() const
 {
 	return parent;
 }
 
-std::shared_ptr<RigidNode> Joint::getChild()
+std::shared_ptr<RigidNode> Joint::getChild() const
 {
 	return child;
 }
 
-Vector3<float> Joint::getParentBasePoint() const
+Vector3<> Joint::getParentBasePoint() const
 {
 	core::Ptr<fusion::JointGeometry> geometry = (parentOcc ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
-	return Vector3<float>((float)geometry->origin()->x(),
-						  (float)geometry->origin()->y(),
-						  (float)geometry->origin()->z());
+	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 }
 
-Vector3<float> Joint::getChildBasePoint() const
+Vector3<> Joint::getChildBasePoint() const
 {
 	core::Ptr<fusion::JointGeometry> geometry = (parentOcc ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
-	return Vector3<float>((float)geometry->origin()->x(),
-						  (float)geometry->origin()->y(),
-						  (float)geometry->origin()->z());
+	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 }
 
 void Joint::setDriver(Driver driver)

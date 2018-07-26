@@ -15,10 +15,10 @@ namespace BXDJ
 		Joint(const Joint &);
 		Joint(RigidNode * parent, core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
 
-		RigidNode * getParent();
-		std::shared_ptr<RigidNode> getChild();
-		Vector3<float> getParentBasePoint() const;
-		Vector3<float> getChildBasePoint() const;
+		RigidNode * getParent() const;
+		std::shared_ptr<RigidNode> getChild() const;
+		Vector3<> getParentBasePoint() const;
+		Vector3<> getChildBasePoint() const;
 
 		void setDriver(Driver);
 		void removeDriver();

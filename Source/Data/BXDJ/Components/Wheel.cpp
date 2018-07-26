@@ -4,24 +4,29 @@ using namespace BXDJ;
 
 Wheel::Wheel(const Wheel & wheelToCopy)
 {
-	node = wheelToCopy.node;
+	radius = wheelToCopy.radius;
+	width = wheelToCopy.width;
 	type = wheelToCopy.type;
 }
 
-Wheel::Wheel(std::shared_ptr<RigidNode> node, Type type)
+Wheel::Wheel(const RotationalJoint & joint, Type type)
 {
-	this->node = node;
 	this->type = type;
+
+	// Calculate radius and width
+	BXDA::Mesh mesh(joint.getChild()->getGUID());
+	joint.getChild()->getMesh(mesh);
+	mesh.calculateWheelShape(joint.getAxisOfRotation(), joint.getChildBasePoint(), radius, width);
 }
 
-float Wheel::getRadius() const
+double Wheel::getRadius() const
 {
-	return 0.0f;
+	return radius;
 }
 
-float Wheel::getWidth() const
+double Wheel::getWidth() const
 {
-	return 0.0f;
+	return width;
 }
 
 Vector3<float> Wheel::getCenter() const
