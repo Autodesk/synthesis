@@ -10,12 +10,10 @@ using UnityEngine.Networking;
 
 namespace Synthesis.Network
 {
+    [NetworkSettings(channel = 0, sendInterval = 0.5f)]
     public abstract class FileTransferer : NetworkBehaviour
     {
-        // TODO: Come up with a system where there is a maximum number of files being sent at once (Unity defined max is 16).
-
-        private const int BufferSize = 1024;
-        private const int MaxBufferCount = 16;
+        private const int BufferSize = 2048;
 
         /// <summary>
         /// Represents a fragment of data from a file.
@@ -36,7 +34,7 @@ namespace Synthesis.Network
         /// Called when the transfer is complete on the sender's end.
         /// </summary>
         public event Action<string, byte[]> OnSendingComplete;
-        
+
         /// <summary>
         /// Called when a data fragment is sent on the senders' end.
         /// </summary>
@@ -46,13 +44,13 @@ namespace Synthesis.Network
         /// Called when a data fragment is received on the receiver's end.
         /// </summary>
         public event Action<string, byte[]> OnDataFragmentReceived;
-        
+
         /// <summary>
         /// Called when the transfer is complete on the receiver's end.
         /// </summary>
         public event Action<string, byte[]> OnReceivingComplete;
 
-        private HashSet<string> transferIds;
+        private List<string> transferIds;
         private Dictionary<string, DataFragment> transferData;
 
         /// <summary>
@@ -66,11 +64,11 @@ namespace Synthesis.Network
         /// <summary>
         /// Stops all coroutines and resets this instance.
         /// </summary>
-        public virtual void ResetTransferData()
+        public void ResetTransferData()
         {
             StopAllCoroutines();
 
-            transferIds = new HashSet<string>();
+            transferIds = new List<string>();
             transferData = new Dictionary<string, DataFragment>();
         }
 
@@ -96,12 +94,12 @@ namespace Synthesis.Network
         /// <returns></returns>
         protected IEnumerator SendBytes(string transferId, byte[] data)
         {
-            yield return new WaitUntil(() => transferIds.Count < MaxBufferCount); // TODO: TEST THIS
-
             OnPrepareToReceiveBytes(transferId, data.Length);
-            yield return null;
 
             transferIds.Add(transferId);
+
+            yield return new WaitUntil(() => transferIds[0].Equals(transferId));
+
             DataFragment dataToTransfer = new DataFragment(data);
             int bufferSize = BufferSize;
 
