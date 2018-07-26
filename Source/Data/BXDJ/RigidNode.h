@@ -30,7 +30,6 @@ namespace BXDJ
 
 		Guid getGUID() const;
 		std::string getModelId() const;
-		ConfigData getConfigData() const;
 		Joint * getParent() const;
 		void getMesh(BXDA::Mesh &) const;
 

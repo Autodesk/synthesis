@@ -15,8 +15,8 @@ namespace BXDJ
 
 		ConfigData(const ConfigData & other);
 
+		std::unique_ptr<Driver> getDriver(adsk::core::Ptr<adsk::fusion::Joint>) const;
 		void setDriver(adsk::core::Ptr<adsk::fusion::Joint>, Driver);
-		std::unique_ptr<Driver> getDriver(adsk::core::Ptr<adsk::fusion::Joint>);
 
 	private:
 		std::map<adsk::core::Ptr<adsk::fusion::Joint>, std::unique_ptr<Driver>> joints;
