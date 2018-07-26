@@ -45,6 +45,7 @@ namespace BXDJ
 		void write(XmlWriter &) const;
 
 		// Component Functions
+		void removeComponents();
 		void setComponent(Wheel);
 		std::unique_ptr<Wheel> getWheel();
 

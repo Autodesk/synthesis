@@ -60,18 +60,23 @@ void Driver::write(XmlWriter & output) const
 }
 
 // Component Functions
+void Driver::removeComponents()
+{
+	this->wheel = nullptr;
+}
+
 void Driver::setComponent(Wheel wheel)
 {
-	// Delete all other components
-	// Only component is a wheel
-
-	// Add wheel
+	removeComponents();
 	this->wheel = std::make_unique<Wheel>(wheel);
 }
 
-Wheel Driver::getWheel()
+std::unique_ptr<Wheel> Driver::getWheel()
 {
-	return *wheel;
+	if (wheel != nullptr)
+		return std::make_unique<Wheel>(*wheel);
+	else
+		return nullptr;
 }
 
 // Static Functions

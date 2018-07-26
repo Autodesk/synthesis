@@ -65,12 +65,12 @@ void Joint::removeDriver()
 	this->driver = nullptr;
 }
 
-Driver Joint::getDriver() const
+std::unique_ptr<Driver> Joint::getDriver() const
 {
-	if (this->driver == nullptr)
-		return Driver();
-	
-	return *driver;
+	if (this->driver != nullptr)
+		return std::make_unique<Driver>(*driver);
+	else
+		return nullptr;
 }
 
 void Joint::write(XmlWriter & output) const
