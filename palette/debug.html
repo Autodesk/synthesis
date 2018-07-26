@@ -47,14 +47,14 @@
         return joints;
     }
 
-    function displayJointOptions()
+    function displayJointOptions(joints)
     {
         var str = "";
 
         for (var i = 0; i < joints.length; i++)
             str += joints[i].name + " ";
 
-        document.getElementById('receivedData').innerHTML = str;
+        document.getElementById('exportSettings').innerHTML = str;
     }
 
     window.fusionJavaScriptHandler =
@@ -66,7 +66,7 @@
                     if (action == 'send')
                     {
                         jointOptions = processJointDataString(data);
-                        displayJointOptions();
+                        displayJointOptions(jointOptions);
                     }
                     else if (action == 'debugger')
                     {

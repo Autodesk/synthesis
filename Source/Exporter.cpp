@@ -23,7 +23,7 @@ std::string Synthesis::Exporter::collectJoints()
 		Ptr<Occurrence> occurence = joint->occurrenceOne();
 
 		for (int b = 0; b < sizeof(Ptr<Occurrence>); b++)
-			pointerStr = ((char*)(& occurence))[b];
+			pointerStr += ((char*)(& occurence))[b];
 
 		stringifiedJoints += joint->occurrenceOne()->name() + " " + std::to_string(sizeof(Ptr<Occurrence>)) + " " + pointerStr;
 	}
