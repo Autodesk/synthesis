@@ -18,7 +18,7 @@ public:
 
 	template<typename U> Vector3<T> operator+(const Vector3<U> &) const;
 	template<typename U> Vector3<T> operator-(const Vector3<U> &) const;
-	template<typename U> Vector3<T> operator*(const Vector3<U> &) const; // Dot product
+	template<typename U> T operator*(const Vector3<U> &) const; // Dot product
 	template<typename S> Vector3<T> operator*(S) const;
 	template<typename S> Vector3<T> operator/(S) const;
 	T magnitude() const;
@@ -62,7 +62,7 @@ Vector3<T> Vector3<T>::operator-(const Vector3<U> & other) const { return Vector
 
 template<typename T>
 template<typename U>
-Vector3<T> Vector3<T>::operator*(const Vector3<U>& other) const { return Vector3<T>(x * other.x + y * other.y + z*other.z); }
+T Vector3<T>::operator*(const Vector3<U>& other) const { return x * other.x + y * other.y + z*other.z; }
 
 template<typename T>
 template<typename S>

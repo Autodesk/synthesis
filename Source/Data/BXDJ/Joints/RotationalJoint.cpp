@@ -15,7 +15,8 @@ RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> jo
 	
 	Driver driver(Driver::MOTOR);
 	driver.portA = 0;
-	driver.setComponent(Wheel(*this, Wheel::NORMAL));
+	Wheel wheel(*this, Wheel::NORMAL);
+	driver.setComponent(wheel);
 	setDriver(driver);
 }
 

@@ -11,7 +11,7 @@ namespace BXDJ
 		AngularJoint(const AngularJoint & j) : Joint(j) {}
 		AngularJoint(RigidNode * p, core::Ptr<fusion::Joint> j, core::Ptr<fusion::Occurrence> o) : Joint(p, j, o) {}
 
-		virtual Vector3<float> getAxisOfRotation() const = 0;
+		virtual Vector3<> getAxisOfRotation() const = 0;
 		virtual float getCurrentAngle() const = 0;
 		virtual bool hasLimits() const = 0;
 		virtual float getMinAngle() const = 0;
