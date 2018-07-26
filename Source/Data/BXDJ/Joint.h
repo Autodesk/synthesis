@@ -20,6 +20,7 @@ namespace BXDJ
 		Vector3<> getParentBasePoint() const;
 		Vector3<> getChildBasePoint() const;
 
+		bool applyConfig(ConfigData);
 		void setDriver(Driver);
 		void removeDriver();
 		std::unique_ptr<Driver> getDriver() const;

@@ -27,6 +27,8 @@ Joint::Joint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr
 	this->parent = parent;
 	this->child = std::make_shared<RigidNode>((parentOcc == ONE ? fusionJoint->occurrenceTwo() : fusionJoint->occurrenceOne()), this);
 	driver = nullptr;
+
+	applyConfig(parent->getConfigData());
 }
 
 RigidNode * Joint::getParent() const
@@ -49,6 +51,20 @@ Vector3<> Joint::getChildBasePoint() const
 {
 	core::Ptr<fusion::JointGeometry> geometry = (parentOcc ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
 	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
+}
+
+bool Joint::applyConfig(ConfigData config)
+{
+	/*if (config.joints.find(fusionJoint) == config.joints.end())
+		return false;
+
+	if (config.joints[fusionJoint] == nullptr)
+		removeDriver();
+	else
+		setDriver(*config.joints[fusionJoint]);
+
+	return true;*/
+	return true;
 }
 
 void Joint::setDriver(Driver driver)

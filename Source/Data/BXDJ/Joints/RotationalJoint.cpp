@@ -7,19 +7,9 @@ RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : AngularJ
 	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
-#include "../Components/Wheel.h"
-
 RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : AngularJoint(parent, joint, parentOccurrence)
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
-	
-	Driver driver(Driver::MOTOR);
-	if (getChildBasePoint().x > 0)
-		driver.portA = 0;
-	else
-		driver.portA = 1;
-	driver.setComponent(Wheel(*this, Wheel::NORMAL));
-	setDriver(driver);
 }
 
 Vector3<> RotationalJoint::getAxisOfRotation() const
