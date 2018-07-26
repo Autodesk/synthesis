@@ -16,7 +16,7 @@ void hel::SendData::update(){
     auto instance = RoboRIOManager::getInstance();
 
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
-        pwm_hdrs[i] = getSpeed(instance.first->pwm_system.getHdrDutyCycle(i));
+        pwm_hdrs[i] = PWMSystem::getSpeed(instance.first->pwm_system.getHdrPulseWidth(i));
     }
 
     for(unsigned i = 0; i < relays.size(); i++){
@@ -79,7 +79,7 @@ void hel::SendData::update(){
                 if(remapped_i >= 4){ //digital ports 0-3 line up with mxp pwm ports 0-3, the rest are offset by 4
                     remapped_i -= 4;
                 }
-                digital_mxp[i].value = getSpeed(instance.first->pwm_system.getMXPDutyCycle(remapped_i));
+                digital_mxp[i].value = PWMSystem::getSpeed(instance.first->pwm_system.getMXPPulseWidth(remapped_i));
             }
             break;
         case hel::MXPData::Config::SPI:
@@ -167,7 +167,8 @@ std::string hel::SendData::serialize(){
         })
     );
 
-    serialized_data += "}}\x1B";
+    serialized_data += "}}";
+    serialized_data += JSON_PACKET_SUFFIX;
     gen_serialization = false;
     return serialized_data;
 }

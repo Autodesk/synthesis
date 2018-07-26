@@ -271,7 +271,7 @@ namespace hel{
         joy.button_count = std::stoi(hel::pullValue("\"button_count\"", s));
         std::vector<int8_t> axes_deserialized = hel::deserializeList(hel::pullValue("\"axes\"",s), std::function<int8_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
         if(axes_deserialized.size() == joy.axes.size()){
-            std::copy(axes_deserialized.begin(), axes_deserialized.end(), joy.axes.begin());
+            joy.axes = axes_deserialized;
         } else {
             throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(axes_deserialized.size()) + " axes, expected " + std::to_string(joy.axes.size()));
         }

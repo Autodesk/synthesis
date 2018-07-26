@@ -38,29 +38,56 @@ namespace hel{
         instance.second.unlock();
     }
 
-    uint32_t PWMSystem::getHdrDutyCycle(uint8_t index)const{
-        return hdr[index].duty_cycle;
+    uint32_t PWMSystem::getHdrPulseWidth(uint8_t index)const{
+        return hdr[index].pulse_width;
     }
 
-    void PWMSystem::setHdrDutyCycle(uint8_t index, uint32_t value){
-        hdr[index].duty_cycle = value;
+    void PWMSystem::setHdrPulseWidth(uint8_t index, uint32_t value){
+        hdr[index].pulse_width = value;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    uint32_t PWMSystem::getMXPDutyCycle(uint8_t index)const{
-        return mxp[index].duty_cycle;
+    uint32_t PWMSystem::getMXPPulseWidth(uint8_t index)const{
+        return mxp[index].pulse_width;
     }
 
-    void PWMSystem::setMXPDutyCycle(uint8_t index, uint32_t value){
-        mxp[index].duty_cycle = value;
+    void PWMSystem::setMXPPulseWidth(uint8_t index, uint32_t value){
+        mxp[index].pulse_width = value;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    PWMSystem::PWM::PWM():period_scale(0), duty_cycle(0){}
+    double PWMSystem::getSpeed(uint32_t pulse_width) {
+        // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
+        const int32_t max = 1499;
+        const int32_t center = 999;
+        const int32_t min = 499;
+
+        const int32_t deadband_max = center + 1;
+        const int32_t deadband_min = center - 1;
+
+        const int32_t positive_scale_factor = max - deadband_max;
+        const int32_t negative_scale_factor = deadband_min - min;
+
+        if (pulse_width == 0) {
+            return 0.0;
+        } else if (pulse_width > max) {
+            return 1.0;
+        } else if (pulse_width < min) {
+            return -1.0;
+        } else if (pulse_width > deadband_max) {
+            return static_cast<double>((int32_t) pulse_width - deadband_max) / static_cast<double>(positive_scale_factor);
+        } else if (pulse_width < deadband_min) {
+            return static_cast<double>((int32_t) pulse_width - deadband_min) / static_cast<double>(negative_scale_factor);
+        } else {
+            return 0.0;
+        }
+    }
+
+    PWMSystem::PWM::PWM():period_scale(0), pulse_width(0){}
 
     PWMSystem::PWMSystem():hdr(),mxp(){}
 
@@ -155,21 +182,21 @@ namespace hel{
 
         void writeHdr(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
-            instance.first->pwm_system.setHdrDutyCycle(reg_index, value);
+            instance.first->pwm_system.setHdrPulseWidth(reg_index, value);
             instance.second.unlock();
         }
 
         uint16_t readHdr(uint8_t reg_index, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->pwm_system.getHdrDutyCycle(reg_index);
+            return instance.first->pwm_system.getHdrPulseWidth(reg_index);
         }
 
         void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
 
             if(value == 0){ //allow disabling PWM even when output isn't configured for PWM
-                instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
+                instance.first->pwm_system.setMXPPulseWidth(reg_index, value);
                 instance.second.unlock();
                 return;
             }
@@ -183,7 +210,7 @@ namespace hel{
                                }();
 
             if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index)){ //Allow MXP outout if DO is using special function
-                instance.first->pwm_system.setMXPDutyCycle(reg_index, value);
+                instance.first->pwm_system.setMXPPulseWidth(reg_index, value);
                 instance.second.unlock();
             } else {
                 instance.second.unlock();
@@ -194,36 +221,9 @@ namespace hel{
         uint16_t readMXP(uint8_t reg_index, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->pwm_system.getMXPDutyCycle(reg_index);
+            return instance.first->pwm_system.getMXPPulseWidth(reg_index);
         }
     };
-
-    double getSpeed(uint32_t pulse_width) {
-        // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
-        const int32_t max = 1499;
-        const int32_t center = 999;
-        const int32_t min = 499;
-
-        const int32_t deadband_max = center + 1;
-        const int32_t deadband_min = center - 1;
-
-        const int32_t positive_scale_factor = max - deadband_max;
-        const int32_t negative_scale_factor = deadband_min - min;
-
-        if (pulse_width == 0) {
-            return 0.0;
-        } else if (pulse_width > max) {
-            return 1.0;
-        } else if (pulse_width < min) {
-            return -1.0;
-        } else if (pulse_width > deadband_max) {
-            return static_cast<double>((int32_t) pulse_width - deadband_max) / static_cast<double>(positive_scale_factor);
-        } else if (pulse_width < deadband_min) {
-            return static_cast<double>((int32_t) pulse_width - deadband_min) / static_cast<double>(negative_scale_factor);
-        } else {
-            return 0.0;
-        }
-    }
 }
 
 namespace nFPGA{

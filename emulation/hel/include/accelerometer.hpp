@@ -1,5 +1,5 @@
 #ifndef _ACCELEROMETER_HPP_
-#define _ACCELEROMOTER_HPP_
+#define _ACCELEROMETER_HPP_
 
 #include <cstdint>
 #include <utility>
