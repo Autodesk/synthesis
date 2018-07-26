@@ -24,7 +24,7 @@ namespace BXDA
 		void addTriangles(const Surface &); // Adds the triangles from another surface
 		void offsetIndices(int offset); // Adds an offset to all triangles' vertex indices
 
-		void setColor(char r, char g, char b);
+		void setColor(unsigned char r, unsigned char g, unsigned char b);
 		void setColor(core::Ptr<core::ColorProperty>);
 
 	private:
