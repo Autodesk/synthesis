@@ -159,4 +159,10 @@ public abstract class SkeletalJoint_Base
     {
         throw new NotImplementedException("Don't read a joint directly!");
     }
+
+    public void ClearConfiguration()
+    {
+        cDriver = null;
+        attachedSensors = new List<RobotSensor>();
+    }
 }
