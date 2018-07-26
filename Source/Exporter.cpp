@@ -8,13 +8,13 @@ Exporter::Exporter(Ptr<Application> app) : fusionApplication(app)
 Exporter::~Exporter()
 {}
 
-std::string Synthesis::Exporter::collectJoints(std::vector<Ptr<Joint>> & allJoints)
+std::string Synthesis::Exporter::collectJoints(std::vector<Ptr<Joint>> & joints)
 {
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 
 	std::string stringifiedJoints;
 
-	allJoints = document->design()->rootComponent()->allJoints();
+	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
 
 	for (int j = 0; j < allJoints.size(); j++)
 	{
@@ -30,6 +30,7 @@ std::string Synthesis::Exporter::collectJoints(std::vector<Ptr<Joint>> & allJoin
 				pointerStr += ((char*)(&occurence))[b];
 
 			stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + std::to_string(j) + " ";
+			joints.push_back(joint);
 		}
 	}
 
