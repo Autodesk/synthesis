@@ -32,8 +32,8 @@ bool EUI::createWorkspace()
 	try
 	{
 		// Create workspace
-		workSpace = UI->workspaces()->add(app->activeProduct()->productType(), "10001", "Synthesis Exporter", "Resources/Sample");
-		workSpace->tooltip("Export robot models to the Synthesis engine");
+		workSpace = UI->workspaces()->add(app->activeProduct()->productType(), "SynthesisExporterAddIn", "Synthesis", "Resources/Sample");
+		workSpace->tooltip("Export robot models to the Synthesis simulator");
 		
 		// Create toolbar
 		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
@@ -62,7 +62,7 @@ bool EUI::createWorkspace()
 bool EUI::defineExportButton()
 {
 	// Create button command definition
-	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition("CustomPanelExport", "Setup your robot for exporting to Synthesis.", "Resources/Sample");
+	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition("ExportRobotButton", "Export", "Setup your robot for exporting to Synthesis.", "Resources/Sample");
 
 	// Add create and click events to button
 	Ptr<CommandCreatedEvent> commandCreatedEvent = exportButtonCommand->commandCreated();
