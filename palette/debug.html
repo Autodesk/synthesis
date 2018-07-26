@@ -18,8 +18,8 @@
     {
         var args = '';
 
-        for (var i = 0; i < joints.length; i++)
-            args += (i < joints.length / 2) ? 'L' : 'R';
+        for (var i = 0; i < jointOptions.length; i++)
+            args += (i < jointOptions.length / 2) ? 'L' : 'R';
 
         adsk.fusionSendData('send', args);
     }
@@ -30,20 +30,16 @@
 
         for (var c = 0; c < jointData.length; c++)
         {
-            var nameLength = "";
+            var nameLength = '';
             while (jointData[c] != ' ')
                 nameLength += jointData[c++];
             c++;
 
-            var name = "";
+            var nameStr = '';
             for (var i = 0; i < parseInt(nameLength); i++)
-                name += jointData[c++];
+                nameStr += jointData[c++];
 
-            var id = "";
-            while (jointData[c] != ' ')
-                id += jointData[c++];
-
-            joints.push({ "name": name, "id": parseInt(id) });
+            joints.push({ name: nameStr, side: 'X' });
         }
 
         return joints;
@@ -54,7 +50,7 @@
         var str = "";
 
         for (var i = 0; i < joints.length; i++)
-            str += joints[i].name + " ";
+            str += joints[i].name + ' ' + joints[i].side + '\n';
 
         document.getElementById('exportSettings').innerHTML = str;
     }
