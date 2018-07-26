@@ -8,6 +8,20 @@ Exporter::Exporter(Ptr<Application> app) : fusionApplication(app)
 Exporter::~Exporter()
 {}
 
+std::string Synthesis::Exporter::collectJoints()
+{
+	Ptr<FusionDocument> document = fusionApplication->activeDocument();
+
+	std::string stringifiedJoints;
+
+	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
+
+	for (Ptr<Joint> joint : allJoints)
+		stringifiedJoints += joint->name() + " ";
+
+	return stringifiedJoints;
+}
+
 void Exporter::exportExample()
 {
 	BXDA::Mesh mesh = BXDA::Mesh(Guid());

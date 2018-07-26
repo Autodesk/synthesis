@@ -19,6 +19,8 @@ namespace Synthesis
 		Exporter(Ptr<Application>);
 		~Exporter();
 
+		std::string collectJoints();
+
 		void exportExample();
 		void exportExampleXml();
 		void exportMeshes();

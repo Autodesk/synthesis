@@ -13,6 +13,7 @@ namespace Synthesis
 	{
 	public:
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+		Ptr<Application> app;
 		Ptr<Palette> palette;
 	};
 
@@ -20,6 +21,7 @@ namespace Synthesis
 	{
 	public:
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
+		Ptr<Application> app;
 		Ptr<Palette> palette;
 	};
 
