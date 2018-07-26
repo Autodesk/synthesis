@@ -16,6 +16,9 @@ namespace hel{
     struct AnalogInputs {
         static constexpr const int32_t NUM_ANALOG_INPUTS = 8; //hal::kNumAnalogInputs
 
+        static constexpr uint32_t LSB_WEIGHT = 1E9;
+        static constexpr int32_t OFFSET = 0;
+
         /**
          * \struct AnalogInput
          * \brief Data model for individual analog input
