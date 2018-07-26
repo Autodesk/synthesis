@@ -177,5 +177,17 @@ namespace hel{
 
         PWMSystem();
     };
+
+    namespace pwm_pulse_width{
+        constexpr int32_t MAX = 1499;
+        constexpr int32_t CENTER = 999;
+        constexpr int32_t MIN = 499;
+
+        constexpr int32_t DEADBAND_MAX = CENTER + 1;
+        constexpr int32_t DEADBAND_MIN = CENTER - 1;
+
+        constexpr int32_t POSITIVE_SCALE_FACTOR = MAX - DEADBAND_MAX;
+        constexpr int32_t NEGATIVE_SCALE_FACTOR = DEADBAND_MIN - MIN;
+    }
 }
 #endif

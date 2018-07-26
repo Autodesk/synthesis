@@ -62,26 +62,16 @@ namespace hel{
 
     double PWMSystem::getSpeed(uint32_t pulse_width) {
         // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
-        const int32_t max = 1499;
-        const int32_t center = 999;
-        const int32_t min = 499;
-
-        const int32_t deadband_max = center + 1;
-        const int32_t deadband_min = center - 1;
-
-        const int32_t positive_scale_factor = max - deadband_max;
-        const int32_t negative_scale_factor = deadband_min - min;
-
         if (pulse_width == 0) {
             return 0.0;
-        } else if (pulse_width > max) {
+        } else if (pulse_width > pwm_pulse_width::MAX) {
             return 1.0;
-        } else if (pulse_width < min) {
+        } else if (pulse_width < pwm_pulse_width::MIN) {
             return -1.0;
-        } else if (pulse_width > deadband_max) {
-            return static_cast<double>((int32_t) pulse_width - deadband_max) / static_cast<double>(positive_scale_factor);
-        } else if (pulse_width < deadband_min) {
-            return static_cast<double>((int32_t) pulse_width - deadband_min) / static_cast<double>(negative_scale_factor);
+        } else if (pulse_width > pwm_pulse_width::DEADBAND_MAX) {
+            return static_cast<double>((int32_t) pulse_width - pwm_pulse_width::DEADBAND_MAX) / static_cast<double>(pwm_pulse_width::POSITIVE_SCALE_FACTOR);
+        } else if (pulse_width < pwm_pulse_width::DEADBAND_MIN) {
+            return static_cast<double>((int32_t) pulse_width - pwm_pulse_width::DEADBAND_MIN) / static_cast<double>(pwm_pulse_width::NEGATIVE_SCALE_FACTOR);
         } else {
             return 0.0;
         }
