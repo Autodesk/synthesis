@@ -1,8 +1,12 @@
 #pragma once
 
 #include <vector>
+#include <Core/Materials/ColorProperty.h>
+#include <Core/Application/Color.h>
 #include "BinaryWriter.h"
 #include "Triangle.h"
+
+using namespace adsk;
 
 namespace BXDA
 {
@@ -19,6 +23,9 @@ namespace BXDA
 		void addTriangles(const std::vector<Triangle> &);
 		void addTriangles(const Surface &); // Adds the triangles from another surface
 		void offsetIndices(int offset); // Adds an offset to all triangles' vertex indices
+
+		void setColor(char r, char g, char b);
+		void setColor(core::Ptr<core::ColorProperty>);
 
 	private:
 		bool hasColor;
