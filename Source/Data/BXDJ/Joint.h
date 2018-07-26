@@ -22,7 +22,7 @@ namespace BXDJ
 
 		void setDriver(Driver);
 		void removeDriver();
-		Driver getDriver() const;
+		std::unique_ptr<Driver> getDriver() const;
 
 		virtual void write(XmlWriter &) const;
 
