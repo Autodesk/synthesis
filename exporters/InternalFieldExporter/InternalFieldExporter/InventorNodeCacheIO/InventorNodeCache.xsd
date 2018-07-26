@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="InventorNodeCache"
+    elementFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:element name="InventorPart">
+    <xs:complexType>
+      <xs:attribute name="NodeGUID" type="xs:string"/>
+      <xs:attribute name="PartName" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
