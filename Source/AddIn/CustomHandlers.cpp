@@ -38,13 +38,17 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 	// Create config
 	BXDJ::ConfigData config;
-	BXDJ::Driver driverLeft(BXDJ::Driver::MOTOR);
-	driverLeft.portA = 0;
-	BXDJ::Driver driverRight(BXDJ::Driver::MOTOR);
-	driverRight.portA = 1;
 
-	config.setDriver((*joints)[0], driverLeft);
-	config.setDriver((*joints)[1], driverRight);
+	if (joints->size() > 1)
+	{
+		BXDJ::Driver driverLeft(BXDJ::Driver::MOTOR);
+		driverLeft.portA = 0;
+		BXDJ::Driver driverRight(BXDJ::Driver::MOTOR);
+		driverRight.portA = 1;
+
+		config.setDriver((*joints)[0], driverLeft);
+		config.setDriver((*joints)[1], driverRight);
+	}
 
 	exporter.exportMeshes(config);
 	palette->isVisible(false);
