@@ -1,10 +1,10 @@
 #pragma once
 
+#include <Core/CoreAll.h>
 #include "../Exporter.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;
-using namespace adsk::cam;
 
 namespace Synthesis
 {
@@ -24,7 +24,6 @@ namespace Synthesis
 	};
 
 	// Palette Events
-
 	class SendInfoCommandExecuteHandler : public adsk::core::CommandEventHandler
 	{
 	public:
@@ -45,5 +44,4 @@ namespace Synthesis
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 		Ptr<Application> app;
 	};
-	
 }
