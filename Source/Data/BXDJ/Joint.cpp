@@ -55,16 +55,7 @@ Vector3<> Joint::getChildBasePoint() const
 
 bool Joint::applyConfig(ConfigData config)
 {
-	/*if (config.joints.find(fusionJoint) == config.joints.end())
-		return false;
-
-	if (config.joints[fusionJoint] == nullptr)
-		removeDriver();
-	else
-		setDriver(*config.joints[fusionJoint]);
-
-	return true;*/
-	return true;
+	driver = config.getDriver(fusionJoint);
 }
 
 void Joint::setDriver(Driver driver)

@@ -173,5 +173,8 @@
     <ClCompile Include="Source\Data\BXDJ\Components\Wheel.cpp">
       <Filter>Source\Data\BXDJ\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\ConfigData.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
