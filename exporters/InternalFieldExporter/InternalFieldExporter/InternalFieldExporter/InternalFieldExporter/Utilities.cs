@@ -9,7 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Diagnostics;
 
-namespace BxDRobotExporter
+namespace InternalFieldExporter
 {
     internal static class Utilities
     {

@@ -8,7 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BxDRobotExporter {
+namespace InternalFieldExporter
+{
     using System;
     
     

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BxDRobotExporter.Wizard
+namespace InternalFieldExporter.Wizard
 {
     public delegate void InvalidatePageEventHandler(Type PageType);
 

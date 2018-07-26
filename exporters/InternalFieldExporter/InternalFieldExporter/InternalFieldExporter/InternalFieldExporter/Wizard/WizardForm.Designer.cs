@@ -1,4 +1,4 @@
-﻿namespace BxDRobotExporter.Wizard
+﻿namespace InternalFieldExporter.Wizard
 {
     partial class WizardForm
     {
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WizardForm));
-            this.WizardPages = new BxDRobotExporter.Wizard.WizardPageControl();
+            this.WizardPages = new InternalFieldExporter.Wizard.WizardPageControl();
             this.SuspendLayout();
             // 
             // WizardPages
