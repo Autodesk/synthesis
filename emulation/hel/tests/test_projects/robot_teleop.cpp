@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <frc/WPILib.h>
+#include <WPILib.h>
 #include <iostream>
 
 class Robot: public frc::IterativeRobot{
