@@ -1,13 +1,14 @@
 #pragma once
 
 #include "../RigidNode.h"
-#include "../Joints/RotationalJoint.h"
 #include "../../Vector3.h"
 
 using namespace adsk;
 
 namespace BXDJ
 {
+	class RotationalJoint;
+
 	class Wheel : public XmlWritable
 	{
 	public:
@@ -20,7 +21,7 @@ namespace BXDJ
 		Type type;
 
 		Wheel(const Wheel &);
-		Wheel(const RotationalJoint & joint, Type = NORMAL);
+		Wheel(const RotationalJoint &, Type = NORMAL);
 
 		double getRadius() const;
 		double getWidth() const;

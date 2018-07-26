@@ -1,4 +1,5 @@
 #include "Wheel.h"
+#include "../Joints/RotationalJoint.h"
 
 using namespace BXDJ;
 
