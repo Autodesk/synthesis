@@ -37,10 +37,15 @@ CMakeDoxygenDefaults.cmake
 docs/html
 docs/latex
 
-# Developer dependancies
-GoogleTest-prefix/
+# Specific files to include
+!lib/libwpi.so
+!lib/libwpi-x86.so
 
-# Virtualization
-synthesis_image.tar.gz
-synthesis_image.md5
-synthesis_image/*
+# Editor files
+GTAGS
+GPATH
+GRTAGS
+
+# VM Files
+vm-package.tar.gz
+vm-package/*

@@ -4,9 +4,6 @@ success=true
 libhel_source=lib/libhel.so
 user_program_source=user_code/FRCUserProgram
 
-printf "Copying scripts/run_user_program.sh\n"
-sshpass -p "adskbxd" scp -r -P 10022 scripts/run_user_program.sh synthesis@localhost:/home/synthesis
-
 if [ -f lib/libhel.so ]; then
     printf "Copying $libhel_source\n"
     sshpass -p "adskbxd" scp -r -P 10022 $libhel_source synthesis@localhost:/home/synthesis
