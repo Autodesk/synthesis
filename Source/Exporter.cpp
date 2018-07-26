@@ -55,6 +55,7 @@ void Exporter::exportExample()
 	std::vector<BXDA::Triangle> triangles;
 	triangles.push_back(BXDA::Triangle(0, 1, 2));
 	surface.addTriangles(triangles);
+	surface.setColor(255, 16, 0);
 
 	subMesh.addSurface(surface);
 	mesh.addSubMesh(subMesh);

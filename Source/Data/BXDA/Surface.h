@@ -26,6 +26,7 @@ namespace BXDA
 
 		void setColor(unsigned char r, unsigned char g, unsigned char b);
 		void setColor(core::Ptr<core::ColorProperty>);
+		void removeColor();
 
 	private:
 		bool hasColor;
