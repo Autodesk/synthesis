@@ -14,6 +14,7 @@ std::string Synthesis::Exporter::collectJoints(std::vector<Ptr<Joint>> & joints)
 
 	std::string stringifiedJoints;
 
+	joints.clear();
 	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
 
 	for (int j = 0; j < allJoints.size(); j++)

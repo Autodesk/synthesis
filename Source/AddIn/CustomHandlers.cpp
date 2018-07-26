@@ -45,6 +45,8 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 		driver.portA = (eventArgs->data()[i] == 'L') ? 0 : 1;
 
+		driver.setComponent(BXDJ::Wheel());
+
 		config.setDriver((*joints)[i], driver);
 	}
 
