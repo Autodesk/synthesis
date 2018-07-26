@@ -20,14 +20,17 @@ std::string Synthesis::Exporter::collectJoints(std::vector<Ptr<Joint>> & allJoin
 	{
 		Ptr<Joint> joint = allJoints[j];
 
-		std::string pointerStr = "";
+		if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType)
+		{
+			std::string pointerStr = "";
 
-		Ptr<Occurrence> occurence = joint->occurrenceOne();
+			Ptr<Occurrence> occurence = joint->occurrenceOne();
 
-		for (int b = 0; b < sizeof(Ptr<Occurrence>); b++)
-			pointerStr += ((char*)(& occurence))[b];
+			for (int b = 0; b < sizeof(Ptr<Occurrence>); b++)
+				pointerStr += ((char*)(&occurence))[b];
 
-		stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + std::to_string(j) + " ";
+			stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + std::to_string(j) + " ";
+		}
 	}
 
 	return stringifiedJoints;
