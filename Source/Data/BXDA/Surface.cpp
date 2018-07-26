@@ -71,6 +71,19 @@ void Surface::offsetIndices(int offset)
 	}
 }
 
+void BXDA::Surface::setColor(char r, char g, char b)
+{
+	color = r * 0x10000 + g * 0x100 + b;
+}
+
+void Surface::setColor(adsk::core::Ptr<adsk::core::ColorProperty> color)
+{
+	if (color != nullptr && color->value() != nullptr)
+		setColor(color->value()->red(), color->value()->green(), color->value()->blue());
+	else
+		setColor(255, 255, 255);
+}
+
 void Surface::write(BinaryWriter & output) const
 {
 	// Output color

@@ -4,7 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <Fusion/FusionAll.h>
-#include <Core/Geometry/Point3D.h>
+#include <Core/CoreAll.h>
 #include "XmlWriter.h"
 #include "ConfigData.h"
 #include "../Guid.h"

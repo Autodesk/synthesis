@@ -84,8 +84,10 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 			core::Ptr<fusion::TriangleMesh> fusionMesh = meshCalculator->calculate();
 
 			// Add faces to sub-mesh
-			std::vector<int> indices = fusionMesh->nodeIndices();
-			subMesh->addSurface(std::make_shared<BXDA::Surface>(indices, subMesh->getVertCount()));
+			std::shared_ptr<BXDA::Surface> surface = std::make_shared<BXDA::Surface>(fusionMesh->nodeIndices(), subMesh->getVertCount());
+
+			surface->setColor(body->appearance()->appearanceProperties()->itemByName("Color"));
+			subMesh->addSurface(surface);
 
 			// Add vertices to sub-mesh
 			std::vector<double> coords = fusionMesh->nodeCoordinatesAsDouble();
