@@ -67,7 +67,7 @@ bool EUI::defineExportButton()
 	// Add create and click events to button
 	Ptr<CommandCreatedEvent> commandCreatedEvent = exportButtonCommand->commandCreated();
 	if (!commandCreatedEvent)
-		return;
+		return false;
 	
 	ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler;
 	commandCreatedEventHandler->app = app;

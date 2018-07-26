@@ -137,9 +137,6 @@
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp">
       <Filter>Source\AddIn</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BM.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Data\BXDA\Vertex.cpp">
       <Filter>Source\Data\BXDA</Filter>
     </ClCompile>
