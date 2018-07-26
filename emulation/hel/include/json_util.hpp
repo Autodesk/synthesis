@@ -7,6 +7,8 @@
 #include "bounds_checked_array.hpp"
 
 namespace hel{
+    constexpr char JSON_PACKET_SUFFIX = '\x1B';
+
     /**
      * \struct JSONParsingException: std::exception
      * \brief An expcetion representing when parsing failed due to unexpected data format

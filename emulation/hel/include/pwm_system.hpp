@@ -35,18 +35,17 @@ namespace hel{
             /**
              * \var uint32_t period_scale
              * \brief 2 bit PWM signal mask.
-             * 2-bit mask for signal masking frequency, effectively scaling the PWM value (0 = 1x 1, = 2x, 3 = 4x)
+             * 2-bit mask for signal masking frequency, effectively scaling the pulse width (0 = 1x 1, = 2x, 3 = 4x)
              */
 
             uint32_t period_scale;
 
             /**
-             * \var uint16_t duty_cycle
-             * \brief PWM Duty cycle
-             * The percentage (0-65535)
+             * \var uint16_t pulse_width
+             * \brief PWM pulse width in microseconds
              */
 
-            uint16_t duty_cycle;
+            uint16_t pulse_width;
 
             PWM();
         };
@@ -131,52 +130,52 @@ namespace hel{
         void setMXPPeriodScale(uint8_t, uint32_t);
 
         /**
-         * \fn uint32_t getHdrDutyCycle(uint8_t index)
-         * \brief Get current PWM duty cycle.
-         * Get current PWM duty cycle for header PWMs.
+         * \fn uint32_t getHdrPulseWidth(uint8_t index)
+         * \brief Get current PWM pulse width.
+         * Get current PWM pulse width for header PWMs.
          * \param index the index of the PWM.
-         * \return Unsigned 32-bit integer representing the PWM duty cycle.
+         * \return Unsigned 32-bit integer representing the PWM pulse width.
          */
 
 
-        uint32_t getHdrDutyCycle(uint8_t)const;
+        uint32_t getHdrPulseWidth(uint8_t)const;
 
         /**
-         * \fn void setHdrDutyCycle(uint8_t index, uint32_t value)
-         * \brief Sets PWM Duty cycle for PWMs on the base board.
-         * Sets PWM Duty cycle for PWMs on the base board.
+         * \fn void setHdrPulseWidth(uint8_t index, uint32_t value)
+         * \brief Sets PWM pulse width for PWMs on the base board.
+         * Sets PWM pulse width for PWMs on the base board.
          * \param index the index of the PWM.
-         * \param value the new duty cycle to write to the PWM.
+         * \param value the new pulse width to write to the PWM.
          */
 
-        void setHdrDutyCycle(uint8_t, uint32_t);
+        void setHdrPulseWidth(uint8_t, uint32_t);
 
         /**
-         * \fn uint32_t getMXPDutyCycle(uint8_t index)
-         * \brief Get current PWM duty cycle.
-         * Get current PWM duty cycle for MXP PWMs.
+         * \fn uint32_t getMXPPulseWidth(uint8_t index)
+         * \brief Get current PWM pulse width.
+         * Get current PWM pulse width for MXP PWMs.
          * \param index the index of the PWM.
-         * \return Unsigned 32-bit integer representing the PWM duty cycle.
+         * \return Unsigned 32-bit integer representing the PWM pulse width.
          */
 
-        uint32_t getMXPDutyCycle(uint8_t)const;
+        uint32_t getMXPPulseWidth(uint8_t)const;
 
         /**
-         * \fn void setMXPDutyCycle(uint8_t index, uint32_t value)
-         * \brief Sets PWM Duty cycle for PWMs on the MXP.
-         * Sets PWM Duty cycle for PWMs on the MXP.
+         * \fn void setMXPPulseWidth(uint8_t index, uint32_t value)
+         * \brief Sets PWM pulse width for PWMs on the MXP.
+         * Sets PWM pulse width for PWMs on the MXP.
          * \param index the index of the PWM.
-         * \param value the new duty cycle to write to the PWM.
+         * \param value the new pulse width to write to the PWM.
          */
-        void setMXPDutyCycle(uint8_t, uint32_t);
+        void setMXPPulseWidth(uint8_t, uint32_t);
+
+        /**
+         *
+         */
+
+        static double getSpeed(uint32_t);
 
         PWMSystem();
     };
-
-
-    /**
-     *
-     */
-    double getSpeed(uint32_t pulse_width);
 }
 #endif
