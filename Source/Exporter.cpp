@@ -17,7 +17,16 @@ std::string Synthesis::Exporter::collectJoints()
 	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
 
 	for (Ptr<Joint> joint : allJoints)
-		stringifiedJoints += joint->name() + " ";
+	{
+		std::string pointerStr = "";
+
+		Ptr<Occurrence> occurence = joint->occurrenceOne();
+
+		for (int b = 0; b < sizeof(Ptr<Occurrence>); b++)
+			pointerStr = ((char*)(& occurence))[b];
+
+		stringifiedJoints += joint->occurrenceOne()->name() + " " + std::to_string(sizeof(Ptr<Occurrence>)) + " " + pointerStr;
+	}
 
 	return stringifiedJoints;
 }

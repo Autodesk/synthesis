@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+
+    <p id='exportSettings'>
+    </p>
+
+    <button type='button' onclick='sendInfoToFusion()'>Click to send info to Fusion</button>
+
+</body>
+
+<script>
+    var jointOptions = [];
+
+    function sendInfoToFusion()
+    {
+        var args = {
+            arg1: "Sample argument 1",
+            arg2: "Sample argument 2"
+        };
+        adsk.fusionSendData('send', JSON.stringify(args));
+    }
+
+    function processJointDataString(jointData)
+    {
+        var joints = [];
+
+        for (var c = 0; c < jointData.length; c++)
+        {
+            var name = "";
+            while (jointData[c] != ' ')
+                name += jointData[c++];
+
+            var pointerSize = "";
+            while (jointData[c] != ' ')
+                pointerSize += jointData[c++];
+
+            var pointer = "";
+            for (var i = 0; i < parseInt(pointerSize); i++)
+                pointer += jointData[c++];
+
+            joints.push({ "name": name, "pointer": pointer });
+        }
+
+        return joints;
+    }
+
+    function displayJointOptions()
+    {
+        var str = "";
+
+        for (var i = 0; i < joints.length; i++)
+            str += joints[i].name + " ";
+
+        document.getElementById('receivedData').innerHTML = str;
+    }
+
+    window.fusionJavaScriptHandler =
+        {
+            handle: function (action, data)
+            {
+                try
+                {
+                    if (action == 'send')
+                    {
+                        jointOptions = processJointDataString(data);
+                        displayJointOptions();
+                    }
+                    else if (action == 'debugger')
+                    {
+                        debugger;
+                    }
+                    else
+                    {
+                        return 'Unexpected command type: ' + action;
+                    }
+                } catch (e)
+                {
+                    console.log(e);
+                    console.log('exception caught with command: ' + action + ', data: ' + data);
+                }
+                return 'OK';
+            }
+        };
+</script>
+</html>
