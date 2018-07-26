@@ -44,7 +44,7 @@ namespace BxDRobotExporter.Wizard
                 if (Properties.Settings.Default.ShowExportOrAdvancedForm)
                 {
                     Form finishDialog = new ExportOrAdvancedForm();
-                    finishDialog.Show();
+                    finishDialog.ShowDialog();
                 }
             };
         }
