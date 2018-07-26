@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <frc/WPILib.h>
+#include <WPILib.h>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -19,6 +19,7 @@ class Robot : public frc::IterativeRobot {
     frc::DigitalOutput dio{11};
     frc::Relay r{0};
     frc::AnalogOutput ao{1};
+    frc::AnalogInput ai{0};
 
     bool current_state = false;
 
@@ -31,7 +32,6 @@ public:
         double left = (std::rand() % 2000 - 1000) / 1000.0;
         double right = (std::rand()% 2000 - 1000) / 1000.0;
 
-        m_robotDrive.SetRightSideInverted(false);
         m_robotDrive.TankDrive(left, right, false);
 
         std::cout<<"Setting left to "<<left<<" - Set to "<< m_leftMotor.GetSpeed()<<"\nSetting right to "<<right<<" - Set to "<<m_rightMotor.GetSpeed()<<"\n\n";
@@ -41,6 +41,8 @@ public:
         double d = (std::rand() % 5001) / 1000.0;
         ao.SetVoltage(d);
         current_state = !current_state;
+
+        std::cout<<"AnalogInput:"<<ai.GetVoltage()<<"\n";
 
         usleep(45000);
     }
