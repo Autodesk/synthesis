@@ -5,16 +5,20 @@
 
 namespace BXDJ
 {
-	struct ConfigData
+	class Driver;
+
+	class ConfigData
 	{
-		ConfigData() {}
+	public:
+		ConfigData();
 
-		ConfigData(const ConfigData & other)
-		{
-			for (auto i = other.joints.begin(); i != other.joints.end(); i++)
-				joints[i->first] = std::make_unique<int>(*i->second);
-		}
+		ConfigData(const ConfigData & other);
 
-		std::map<adsk::core::Ptr<adsk::fusion::Joint>, std::unique_ptr<int>> joints;
+		void setDriver(adsk::core::Ptr<adsk::fusion::Joint>, Driver);
+		std::unique_ptr<Driver> getDriver(adsk::core::Ptr<adsk::fusion::Joint>);
+
+	private:
+		std::map<adsk::core::Ptr<adsk::fusion::Joint>, std::unique_ptr<Driver>> joints;
+
 	};
 }

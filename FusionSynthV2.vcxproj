@@ -134,6 +134,7 @@
     <ClCompile Include="Source\Data\BXDA\Surface.cpp" />
     <ClCompile Include="Source\Data\BXDA\Vertex.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Components\Wheel.cpp" />
+    <ClCompile Include="Source\Data\BXDJ\ConfigData.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Driver.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joint.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joints\RotationalJoint.cpp" />
