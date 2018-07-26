@@ -13,24 +13,17 @@ namespace Synthesis
 	{
 	public:
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
-		Ptr<Application> app;
+		Ptr<Palette> palette;
 	};
 
 	class ShowPaletteCommandExecuteHandler : public adsk::core::CommandEventHandler
 	{
 	public:
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
-		Ptr<Application> app;
+		Ptr<Palette> palette;
 	};
 
 	// Palette Events
-	class SendInfoCommandExecuteHandler : public adsk::core::CommandEventHandler
-	{
-	public:
-		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
-		Ptr<Application> app;
-	};
-
 	class CloseFormEventHandler : public adsk::core::UserInterfaceGeneralEventHandler
 	{
 	public:

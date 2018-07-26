@@ -32,8 +32,12 @@ namespace Synthesis
 		Ptr<ToolbarControls> toolbarControls;
 
 		Ptr<CommandDefinition> exportButtonCommand;
+		Ptr<Palette> exportPalette;
 
 		bool createWorkspace();
+
+		bool defineExportPalette();
+
 		bool defineExportButton();
 
 	};
