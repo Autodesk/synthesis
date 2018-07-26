@@ -40,6 +40,11 @@ RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occ, Joint * parent)
 	buildTree(occ);
 }
 
+Guid BXDJ::RigidNode::getGUID() const
+{
+	return guid;
+}
+
 std::string RigidNode::getModelId() const
 {
 	if (fusionOccurrences.size() > 0)
@@ -174,9 +179,7 @@ void RigidNode::write(XmlWriter & output) const
 	output.writeElement("ModelID", getModelId());
 
 	if (parent != NULL)
-	{
 		output.write(*parent);
-	}
 
 	output.endElement();
 

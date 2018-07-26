@@ -20,6 +20,8 @@ namespace BXDA
 		Guid getGUID() const;
 		int getVersion() const;
 
+		void calculateWheelShape(Vector3<> axis, Vector3<> origin, double & maxRadius, double & maxWidth) const;
+
 		std::string toString();
 
 	private:

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../RigidNode.h"
+#include "../Joints/RotationalJoint.h"
 #include "../../Vector3.h"
 
 using namespace adsk;
@@ -19,16 +20,17 @@ namespace BXDJ
 		Type type;
 
 		Wheel(const Wheel &);
-		Wheel(std::shared_ptr<RigidNode>, Type = NORMAL);
+		Wheel(const RotationalJoint & joint, Type = NORMAL);
 
-		float getRadius() const;
-		float getWidth() const;
+		double getRadius() const;
+		double getWidth() const;
 		Vector3<float> getCenter() const;
 
 		void write(XmlWriter &) const;
 
 	private:
-		std::shared_ptr<RigidNode> node;
+		double radius;
+		double width;
 
 		static std::string toString(Type type);
 

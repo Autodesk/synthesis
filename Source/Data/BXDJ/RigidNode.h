@@ -27,6 +27,7 @@ namespace BXDJ
 		RigidNode(core::Ptr<fusion::Component>);
 		RigidNode(core::Ptr<fusion::Occurrence> occ, Joint * parent);
 
+		Guid getGUID() const;
 		std::string getModelId() const;
 		Joint * getParent() const;
 		void getMesh(BXDA::Mesh &) const;

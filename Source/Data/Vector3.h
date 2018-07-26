@@ -16,9 +16,13 @@ public:
 	Vector3(const Vector3<T> &);
 	Vector3(T x, T y, T z);
 
-	Vector3<T> operator+(const Vector3 &) const;
+	template<typename U> Vector3<T> operator+(const Vector3<U> &) const;
+	template<typename U> Vector3<T> operator-(const Vector3<U> &) const;
+	template<typename U> Vector3<T> operator*(const Vector3<U> &) const; // Dot product
 	template<typename S> Vector3<T> operator*(S) const;
 	template<typename S> Vector3<T> operator/(S) const;
+	T magnitude() const;
+	template<typename U> void getRadialCoordinates(Vector3<U>, Vector3<U>, T &, T &) const;
 
 	std::string toString();
 
@@ -49,7 +53,16 @@ Vector3<T>::Vector3(T x, T y, T z)
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator+(const Vector3<T> & other) const { return Vector3<T>(x + other.x, y + other.y, x + other.z); }
+template<typename U>
+Vector3<T> Vector3<T>::operator+(const Vector3<U> & other) const { return Vector3<T>(x + other.x, y + other.y, x + other.z); }
+
+template<typename T>
+template<typename U>
+Vector3<T> Vector3<T>::operator-(const Vector3<U> & other) const { return Vector3<T>(x - other.x, y - other.y, x - other.z); }
+
+template<typename T>
+template<typename U>
+Vector3<T> Vector3<T>::operator*(const Vector3<U>& other) const { return Vector3<T>(x * other.x + y * other.y + z*other.z); }
 
 template<typename T>
 template<typename S>
@@ -58,7 +71,18 @@ Vector3<T> Vector3<T>::operator*(S scale) const { return Vector3<T>(x * scale, y
 template<typename T>
 template<typename S>
 Vector3<T> Vector3<T>::operator/(S scale) const { return Vector3<T>(x / scale, y / scale, z / scale); }
-	
+
+template<typename T>
+T Vector3<T>::magnitude() const { return sqrt(x*x + y * y + z * z); }
+
+template<typename T>
+template<typename U>
+inline void Vector3<T>::getRadialCoordinates(Vector3<U> axis, Vector3<U> origin, T & distance, T & radius) const
+{
+	distance = (*this - origin) * axis;
+	radius = ((*this - origin) - (axis / axis.magnitude() * distance)).magnitude();
+}
+
 template<typename T>
 std::string Vector3<T>::toString()
 {

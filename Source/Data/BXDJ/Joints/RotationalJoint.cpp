@@ -15,14 +15,14 @@ RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> jo
 	
 	Driver driver(Driver::MOTOR);
 	driver.portA = 0;
-	driver.setComponent(Wheel(getChild(), Wheel::NORMAL));
+	driver.setComponent(Wheel(*this, Wheel::NORMAL));
 	setDriver(driver);
 }
 
-Vector3<float> RotationalJoint::getAxisOfRotation() const
+Vector3<> RotationalJoint::getAxisOfRotation() const
 {
 	core::Ptr<core::Vector3D> axis = fusionJointMotion->rotationAxisVector();
-	return Vector3<float>((float)axis->x(), (float)axis->y(), (float)axis->z());
+	return Vector3<>(axis->x(), axis->y(), axis->z());
 }
 
 float RotationalJoint::getCurrentAngle() const
