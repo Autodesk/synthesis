@@ -50,7 +50,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(446, 206);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(441, 155);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // MainTextLbl
@@ -61,16 +61,16 @@
             this.MainTextLbl.Location = new System.Drawing.Point(12, 8);
             this.MainTextLbl.Margin = new System.Windows.Forms.Padding(12, 8, 8, 8);
             this.MainTextLbl.Name = "MainTextLbl";
-            this.MainTextLbl.Size = new System.Drawing.Size(425, 60);
+            this.MainTextLbl.Size = new System.Drawing.Size(415, 60);
             this.MainTextLbl.TabIndex = 0;
-            this.MainTextLbl.Text = "You now completed the initial setup for exporting your robot. Would you like to c" +
-    "ontinue to configure advanced settings or finish and export your robot to Synthe" +
-    "sis?\r\n";
+            this.MainTextLbl.Text = "You have now completed the initial setup for exporting your robot. Would you like" +
+    " to configure advanced settings, or finish and export your robot to Synthesis?\r\n" +
+    "";
             // 
             // AdvancedExportButton
             // 
             this.AdvancedExportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AdvancedExportButton.Location = new System.Drawing.Point(3, 153);
+            this.AdvancedExportButton.Location = new System.Drawing.Point(3, 102);
             this.AdvancedExportButton.Name = "AdvancedExportButton";
             this.AdvancedExportButton.Size = new System.Drawing.Size(210, 50);
             this.AdvancedExportButton.TabIndex = 1;
@@ -82,7 +82,7 @@
             // 
             this.exportRobotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.exportRobotButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.exportRobotButton.Location = new System.Drawing.Point(233, 153);
+            this.exportRobotButton.Location = new System.Drawing.Point(228, 102);
             this.exportRobotButton.Name = "exportRobotButton";
             this.exportRobotButton.Size = new System.Drawing.Size(210, 50);
             this.exportRobotButton.TabIndex = 2;
@@ -94,7 +94,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(470, 230);
+            this.ClientSize = new System.Drawing.Size(465, 179);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "ExportOrAdvancedForm";
             this.ShowIcon = false;
