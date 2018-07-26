@@ -53,7 +53,7 @@ Vector3<> Joint::getChildBasePoint() const
 	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 }
 
-bool Joint::applyConfig(ConfigData config)
+void Joint::applyConfig(ConfigData config)
 {
 	driver = config.getDriver(fusionJoint);
 }

@@ -1,9 +1,6 @@
 #pragma once
 
-#include "../RigidNode.h"
 #include "../../Vector3.h"
-
-using namespace adsk;
 
 namespace BXDJ
 {
