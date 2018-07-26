@@ -29,19 +29,19 @@
 
         for (var c = 0; c < jointData.length; c++)
         {
-            var name = "";
+            var nameLength = "";
             while (jointData[c] != ' ')
+                nameLength += jointData[c++];
+
+            var name = "";
+            for (var i = 0; i < parseInt(nameLength); i++)
                 name += jointData[c++];
 
-            var pointerSize = "";
-            while (jointData[c] != ' ')
-                pointerSize += jointData[c++];
-
-            var pointer = "";
+            var id = "";
             for (var i = 0; i < parseInt(pointerSize); i++)
-                pointer += jointData[c++];
+                id += jointData[c++];
 
-            joints.push({ "name": name, "pointer": pointer });
+            joints.push({ "name": name, "id": parseInt(id) });
         }
 
         return joints;
@@ -65,6 +65,7 @@
                 {
                     if (action == 'send')
                     {
+                        console.log(data);
                         jointOptions = processJointDataString(data);
                         displayJointOptions(jointOptions);
                     }
@@ -78,8 +79,8 @@
                     }
                 } catch (e)
                 {
+                    console.log('Exception while excecuting \"' + action + '\":');
                     console.log(e);
-                    console.log('exception caught with command: ' + action + ', data: ' + data);
                 }
                 return 'OK';
             }
