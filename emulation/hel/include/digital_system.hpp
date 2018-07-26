@@ -209,16 +209,16 @@ namespace hel{
         void setPulseLength(uint8_t);
 
         /**
-         * \fn uint8_t getPWMDutyCycle(uint8_t index)const
+         * \fn uint8_t getPWMPulseWidth(uint8_t index)const
          */
 
-        uint8_t getPWMDutyCycle(uint8_t)const;
+        uint8_t getPWMPulseWidth(uint8_t)const;
 
         /**
-         * \fn void setPWMDutyCycle(uint8_t index, uint8_t duty_cycle)
+         * \fn void setPWMPulseWidth(uint8_t index, uint8_t pulse_width)
          */
 
-        void setPWMDutyCycle(uint8_t, uint8_t);
+        void setPWMPulseWidth(uint8_t, uint8_t);
 
         DigitalSystem();
     };

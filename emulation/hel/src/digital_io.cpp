@@ -66,11 +66,11 @@ namespace hel{
         pulse_length = value;
     }
 
-    uint8_t DigitalSystem::getPWMDutyCycle(uint8_t index)const{
+    uint8_t DigitalSystem::getPWMPulseWidth(uint8_t index)const{
         return pwm[index];
     }
 
-    void DigitalSystem::setPWMDutyCycle(uint8_t index, uint8_t value){
+    void DigitalSystem::setPWMPulseWidth(uint8_t index, uint8_t value){
         pwm[index] = value;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
@@ -216,7 +216,7 @@ namespace hel{
             auto instance = hel::RoboRIOManager::getInstance();
             try{
                 if(allowOutput(instance.first->digital_system.getEnabledOutputs().MXP, bitfield_index, true)){
-                    instance.first->digital_system.setPWMDutyCycle(bitfield_index, value);
+                    instance.first->digital_system.setPWMPulseWidth(bitfield_index, value);
                 }
                 instance.second.unlock();
             } catch(std::exception& e){
@@ -228,7 +228,7 @@ namespace hel{
         uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->digital_system.getPWMDutyCycle(bitfield_index);
+            return instance.first->digital_system.getPWMPulseWidth(bitfield_index);
         }
 
         void writePWMDutyCycleB(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
