@@ -60,7 +60,7 @@ namespace Synthesis.Network
         /// <summary>
         /// Describes which resources are required to be transferred by which clients.
         /// </summary>
-        private Dictionary<int, List<int>> dependencyMap;
+        private Dictionary<int, HashSet<int>> dependencyMap;
 
         /// <summary>
         /// Indicates which dependencies have been resolved without transferring.
@@ -78,13 +78,15 @@ namespace Synthesis.Network
 
         private Dictionary<string, List<byte>> fileData;
 
+        private readonly char[] headerSeparator = { '.' };
+
         /// <summary>
         /// Initializes this instance.
         /// </summary>
         private void Awake()
         {
             Instance = this;
-            dependencyMap = new Dictionary<int, List<int>>();
+            dependencyMap = new Dictionary<int, HashSet<int>>();
             resolvedDependencies = new Dictionary<int, bool>();
             uiStateMachine = GameObject.Find("UserInterface").GetComponent<StateMachine>();
             fileData = new Dictionary<string, List<byte>>();
@@ -156,7 +158,7 @@ namespace Synthesis.Network
         {
             HashSet<PlayerIdentity> remainingIdentities = new HashSet<PlayerIdentity>(FindObjectsOfType<PlayerIdentity>());
 
-            foreach (KeyValuePair<int, List<int>> entry in dependencyMap.Where(e => e.Key >= 0))
+            foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap.Where(e => e.Key >= 0))
             {
                 PlayerIdentity identity = PlayerIdentity.FindById(entry.Key);
                 remainingIdentities.Remove(identity);
@@ -173,24 +175,28 @@ namespace Synthesis.Network
         [Server]
         public void DistributeResources()
         {
-            foreach (KeyValuePair<int, List<int>> entry in dependencyMap.Where(e => e.Key >= 0))
-            {
-                PlayerIdentity identity = PlayerIdentity.FindById(entry.Key);
-                string transferPrefix = string.Join(",", entry.Value) + ".";
+            PlayerIdentity.LocalInstance.FileTransferer.StopAllCoroutines();
 
-                foreach (KeyValuePair<string, List<byte>> file in identity.FileData)
-                {
-                    FileTransferer.SendFile(transferPrefix + file.Key, file.Value.ToArray());
-                    Debug.Log("Send it!");
-                }
-                //foreach (int id in entry.Value)
-                //{
-                //    NetworkConnection clientConnection = PlayerIdentity.FindById(id).connectionToClient;
+            Dictionary<string, List<byte>> fieldData = dependencyMap.ContainsKey(-1) ? LoadFieldData() : null;
 
-                //    foreach (KeyValuePair<string, List<byte>> file in identity.FileData)
-                //        fileTransferer.SendFile(file.Key, file.Value.ToArray());
-                //}
-            }
+            foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap)
+                foreach (KeyValuePair<string, List<byte>> file in entry.Key >= 0 ? PlayerIdentity.FindById(entry.Key).FileData : fieldData)
+                    FileTransferer.SendFile(entry.Key.ToString() + "." + file.Key, file.Value.ToArray());
+        }
+
+        /// <summary>
+        /// Loads the field and returns a dictionary of all file names and the data
+        /// associated with each file.
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, List<byte>> LoadFieldData()
+        {
+            Dictionary<string, List<byte>> data = new Dictionary<string, List<byte>>();
+
+            foreach (string file in Directory.GetFiles(PlayerPrefs.GetString("simSelectedField")))
+                data.Add(new FileInfo(file).Name, File.ReadAllBytes(file).ToList());
+
+            return data;
         }
 
         /// <summary>
@@ -200,6 +206,16 @@ namespace Synthesis.Network
         /// <param name="data"></param>
         private void DataFragmentReceived(string transferId, byte[] data)
         {
+            int senderId;
+            string fileName;
+
+            if (!GetTransferInfo(transferId, out senderId, out fileName))
+                return;
+
+            if (!fileData.ContainsKey(fileName))
+                fileData[fileName] = new List<byte>();
+
+            fileData[fileName].AddRange(data);
         }
 
         /// <summary>
@@ -209,7 +225,38 @@ namespace Synthesis.Network
         /// <param name="data"></param>
         private void ReceivingComplete(string transferId, byte[] data)
         {
+            int senderId;
+            string fileName;
+
+            if (!GetTransferInfo(transferId, out senderId, out fileName))
+                return;
+
+            string directory = senderId >= 0 ?
+                PlayerPrefs.GetString("RobotDirectory") + "\\" + PlayerIdentity.FindById(senderId).robotName :
+                PlayerPrefs.GetString("FieldDirectory") + "\\" + fieldName;
+
+            Directory.CreateDirectory(directory);
+
+            new Task(() => File.WriteAllBytes(directory + "\\" + fileName,
+                fileData[fileName].ToArray())).Start();
+
             Debug.Log("Fraggy boi!");
+        }
+
+        /// <summary>
+        /// Returns the file name stored in the given transfer id, or <see cref="string.Empty"/>
+        /// if the id does not match that of this client.
+        /// </summary>
+        /// <param name="transferId"></param>
+        /// <returns></returns>
+        private bool GetTransferInfo(string transferId, out int senderId, out string fileName)
+        {
+            string[] splitId = transferId.Split(headerSeparator, 2);
+
+            senderId = int.Parse(splitId[0]);
+            fileName = splitId[1];
+
+            return PlayerIdentity.LocalInstance.UnresolvedDependencies.Contains(senderId);
         }
 
         /// <summary>
@@ -236,7 +283,7 @@ namespace Synthesis.Network
             foreach (int ownerId in ownerIds)
             {
                 if (!dependencyMap.ContainsKey(ownerId))
-                    dependencyMap[ownerId] = new List<int>();
+                    dependencyMap[ownerId] = new HashSet<int>();
 
                 dependencyMap[ownerId].Add(dependantId);
             }
@@ -278,6 +325,7 @@ namespace Synthesis.Network
         private void PopState(string msg = "")
         {
             StopAllCoroutines();
+            FileTransferer.ResetTransferData();
             RpcPopState(msg);
         }
 
@@ -346,10 +394,10 @@ namespace Synthesis.Network
         [ClientRpc]
         private void RpcPopState(string msg)
         {
-            FileTransferer.ResetTransferData();
             PlayerIdentity.LocalInstance.FileTransferer.ResetTransferData();
-
             PlayerIdentity.LocalInstance.CmdSetReady(false);
+
+            FileTransferer.ResetTransferData();
 
             uiStateMachine.PopState();
 

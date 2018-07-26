@@ -52,6 +52,11 @@ namespace Synthesis.Network
         /// </summary>
         public ClientToServerFileTransferer FileTransferer { get; private set; }
 
+        /// <summary>
+        /// The list of unresolved dependencies associated with this instance.
+        /// </summary>
+        public List<int> UnresolvedDependencies { get; set; }
+
         private HashSet<string> receivedFiles;
         private int numFilesToReceive;
 
@@ -89,6 +94,7 @@ namespace Synthesis.Network
             }
 
             FileData = new Dictionary<string, List<byte>>();
+            UnresolvedDependencies = new List<int>();
             receivedFiles = new HashSet<string>();
             numFilesToReceive = -1;
 
@@ -150,7 +156,7 @@ namespace Synthesis.Network
         /// </summary>
         public void CheckDependencies()
         {
-            List<int> unresolvedDependencies = new List<int>();
+            UnresolvedDependencies.Clear();
 
             foreach (PlayerIdentity otherIdentity in FindObjectsOfType<PlayerIdentity>().Where(p => p.id != id))
             {
@@ -169,7 +175,7 @@ namespace Synthesis.Network
                 }
 
                 if (!robotDependencyResolved)
-                    unresolvedDependencies.Add(otherIdentity.id);
+                    UnresolvedDependencies.Add(otherIdentity.id);
             }
 
             string fieldDirectory = PlayerPrefs.GetString("FieldDirectory");
@@ -187,9 +193,9 @@ namespace Synthesis.Network
             }
 
             if (!fieldDependencyResolved)
-                unresolvedDependencies.Add(-1);
+                UnresolvedDependencies.Add(-1);
 
-            CmdAddDependencies(unresolvedDependencies.ToArray());
+            CmdAddDependencies(UnresolvedDependencies.ToArray());
         }
 
         /// <summary>
