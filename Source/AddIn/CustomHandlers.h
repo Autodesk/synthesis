@@ -13,6 +13,7 @@ namespace Synthesis
 	{
 	public:
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+		std::vector<Ptr<Joint>> * joints;
 		Ptr<Application> app;
 		Ptr<Palette> palette;
 	};
@@ -21,6 +22,7 @@ namespace Synthesis
 	{
 	public:
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
+		std::vector<Ptr<Joint>> * joints;
 		Ptr<Application> app;
 		Ptr<Palette> palette;
 	};
@@ -30,6 +32,7 @@ namespace Synthesis
 	{
 	public:
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
+		std::vector<Ptr<Joint>> * joints;
 		Ptr<Application> app;
 		Ptr<Palette> palette;
 	};

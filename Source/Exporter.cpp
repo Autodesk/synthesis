@@ -74,13 +74,13 @@ void Exporter::exportExampleXml()
 	xml.writeElement("ModelID", "Part2:1");
 }
 
-void Exporter::exportMeshes()
+void Exporter::exportMeshes(BXDJ::ConfigData config)
 {
 	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 	
 	Guid::resetAutomaticSeed();
-	BXDJ::RigidNode rootNode(document->design()->rootComponent(), BXDJ::ConfigData());
+	BXDJ::RigidNode rootNode(document->design()->rootComponent(), config);
 
 	std::string filename = Filesystem::getCurrentRobotDirectory() + "skeleton.bxdj";
 	BXDJ::XmlWriter xml(filename, false);

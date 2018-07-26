@@ -23,7 +23,7 @@ namespace Synthesis
 
 		void exportExample();
 		void exportExampleXml();
-		void exportMeshes();
+		void exportMeshes(BXDJ::ConfigData config);
 
 	private:
 		Ptr<Application> fusionApplication;

@@ -34,6 +34,8 @@ namespace Synthesis
 		Ptr<CommandDefinition> exportButtonCommand;
 		Ptr<Palette> exportPalette;
 
+		std::vector<Ptr<Joint>> joints;
+
 		bool createWorkspace();
 
 		bool defineExportPalette();

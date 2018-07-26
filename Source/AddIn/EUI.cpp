@@ -88,6 +88,7 @@ bool EUI::defineExportPalette()
 			return false;
 
 		ReceiveFormDataHandler * onHTMLEvent = new ReceiveFormDataHandler;
+		onHTMLEvent->joints = &joints;
 		onHTMLEvent->app = app;
 		onHTMLEvent->palette = exportPalette;
 
@@ -119,6 +120,7 @@ bool EUI::defineExportButton()
 		return false;
 	
 	ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler;
+	commandCreatedEventHandler->joints = &joints;
 	commandCreatedEventHandler->app = app;
 	commandCreatedEventHandler->palette = exportPalette;
 	
