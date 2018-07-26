@@ -101,15 +101,15 @@ ExternalProject_Add(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND cd ${WPILIB_DIRECTORY} && ./gradlew :wpilibc:build
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/libwpilibc.so  ./gradlew :wpilibc:build
   INSTALL_COMMAND ""
   )
 
 ExternalProject_Add(ctre
   PREFIX lib/ctre
   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew  && ./gradlew buildneeded
+  CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh  ${CTRE_DIRECTORY} {$CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a   ./gradlew buildneeded
   INSTALL_COMMAND ""
   )
 

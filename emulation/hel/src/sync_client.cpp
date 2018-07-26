@@ -57,7 +57,6 @@ namespace hel {
             }
         end:
             instance.first->deserializeAndUpdate(json_string);
-
             instance.second.unlock();
             usleep(100000);
         }
