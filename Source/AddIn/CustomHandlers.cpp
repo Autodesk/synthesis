@@ -39,15 +39,13 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	// Create config
 	BXDJ::ConfigData config;
 
-	if (joints->size() > 1)
+	for (int i = 0; i < joints->size() && i < eventArgs->data().length(); i++)
 	{
-		BXDJ::Driver driverLeft(BXDJ::Driver::MOTOR);
-		driverLeft.portA = 0;
-		BXDJ::Driver driverRight(BXDJ::Driver::MOTOR);
-		driverRight.portA = 1;
+		BXDJ::Driver driver(BXDJ::Driver::MOTOR);
 
-		config.setDriver((*joints)[0], driverLeft);
-		config.setDriver((*joints)[1], driverRight);
+		driver.portA = (eventArgs->data()[i] == 'L') ? 0 : 1;
+
+		config.setDriver((*joints)[i], driver);
 	}
 
 	exporter.exportMeshes(config);
