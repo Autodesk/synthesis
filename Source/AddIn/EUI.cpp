@@ -15,10 +15,10 @@ EUI::EUI()
 
 }
 
-EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> APP)
+EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 {
-	UI = UI;
-	app = APP;
+	this->UI = UI;
+	this->app = app;
 	createWorkspace();
 };
 
