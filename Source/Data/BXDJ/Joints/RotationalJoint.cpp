@@ -14,7 +14,7 @@ RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> jo
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 	
 	Driver driver(Driver::MOTOR);
-	if (getAxisOfRotation().x > 0)
+	if (getChildBasePoint().x > 0)
 		driver.portA = 0;
 	else
 		driver.portA = 1;
