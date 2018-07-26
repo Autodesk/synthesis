@@ -24,17 +24,19 @@ namespace Synthesis
 	};
 
 	// Palette Events
-	class CloseFormEventHandler : public adsk::core::UserInterfaceGeneralEventHandler
-	{
-	public:
-		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
-		Ptr<Application> app;
-	};
-
 	class ReceiveFormDataHandler : public adsk::core::HTMLEventHandler
 	{
 	public:
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 		Ptr<Application> app;
+		Ptr<Palette> palette;
+	};
+
+	class CloseFormEventHandler : public adsk::core::UserInterfaceGeneralEventHandler
+	{
+	public:
+		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
+		Ptr<Application> app;
+		Ptr<Palette> palette;
 	};
 }

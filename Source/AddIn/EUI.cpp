@@ -89,6 +89,7 @@ bool EUI::defineExportPalette()
 
 		ReceiveFormDataHandler * onHTMLEvent = new ReceiveFormDataHandler;
 		onHTMLEvent->app = app;
+		onHTMLEvent->palette = exportPalette;
 
 		htmlEvent->add(onHTMLEvent);
 
@@ -99,6 +100,7 @@ bool EUI::defineExportPalette()
 
 		CloseFormEventHandler * onClose = new CloseFormEventHandler;
 		onClose->app = app;
+		onClose->palette = exportPalette;
 
 		closeEvent->add(onClose);
 	}
