@@ -73,7 +73,10 @@ void Surface::offsetIndices(int offset)
 
 void BXDA::Surface::setColor(char r, char g, char b)
 {
-	color = r * 0x10000 + g * 0x100 + b;
+	if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255)
+		color = r * 0x10000 + g * 0x100 + b;
+	else
+		color = 0xFFFFFF;
 }
 
 void Surface::setColor(adsk::core::Ptr<adsk::core::ColorProperty> color)
