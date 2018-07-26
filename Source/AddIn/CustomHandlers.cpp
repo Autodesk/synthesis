@@ -36,7 +36,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 
 	if (!palette)
 	{
-		palette = palettes->add("exporterForm", "Robot Exporter Form", "palette/palette.html", false, true, true, 300, 200);
+		palette = palettes->add("exporterForm", "Robot Exporter Form", "Palette/palette.html", false, true, true, 300, 200);
 		if (!palette)
 			return;
 
