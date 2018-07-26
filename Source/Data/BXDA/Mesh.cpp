@@ -41,16 +41,17 @@ void Mesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & maxRad
 	for (std::shared_ptr<SubMesh> subMesh : subMeshes)
 	{
 		double radius;
-		double width;
+		double lowerWidth;
+		double upperWidth;
 		
-		subMesh->calculateWheelShape(axis, origin, radius, width);
+		subMesh->calculateWheelShape(axis, origin, radius, lowerWidth, upperWidth);
 
 		if (first || radius > maxRadius)
 			maxRadius = radius;
-		if (first || width < minWidth)
-			minWidth = width;
-		if (first || width > maxWidth)
-			maxWidth = width;
+		if (first || lowerWidth < minWidth)
+			minWidth = lowerWidth;
+		if (first || upperWidth > maxWidth)
+			maxWidth = upperWidth;
 
 		first = false;
 	}
