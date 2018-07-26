@@ -1,17 +1,12 @@
 #include <Core/CoreAll.h>
-#include <Fusion/FusionAll.h>
-#include <CAM/CAMAll.h>
-
 #include "EUI.h"
 
 using namespace adsk::core;
-using namespace adsk::fusion;
-using namespace adsk::cam;
 
 Ptr<Application> app;
-Ptr<UserInterface> ui;
+Ptr<UserInterface> UI;
 
-Synthesis::EUI * _eui;
+Synthesis::EUI * EUI;
 
 extern "C" XI_EXPORT bool run(const char* context)
 {
@@ -19,21 +14,19 @@ extern "C" XI_EXPORT bool run(const char* context)
 	if (!app)
 		return false;
 
-	ui = app->userInterface();
-	if (!ui)
+	UI = app->userInterface();
+	if (!UI)
 		return false;
 
-	_eui = new Synthesis::EUI(ui, app);
+	EUI = new Synthesis::EUI(UI, app);
 
 	return true;
 }
 
 extern "C" XI_EXPORT bool stop(const char* context)
 {
-	if (ui)
-	{
-		ui = nullptr;
-	}
+	if (UI)
+		UI = nullptr;
 
 	return true;
 }
