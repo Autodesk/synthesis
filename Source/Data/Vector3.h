@@ -80,7 +80,7 @@ template<typename U>
 inline void Vector3<T>::getRadialCoordinates(Vector3<U> axis, Vector3<U> origin, T & distance, T & radius) const
 {
 	distance = (*this - origin) * axis;
-	radius = ((*this - origin) - (axis / axis.magnitude() * distance)).magnitude();
+	radius = ((*this - origin) - (axis * distance)).magnitude();
 }
 
 template<typename T>
