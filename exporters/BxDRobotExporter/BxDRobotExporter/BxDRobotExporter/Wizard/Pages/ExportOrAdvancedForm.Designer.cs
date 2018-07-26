@@ -28,44 +28,49 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.MainTextLbl = new System.Windows.Forms.Label();
             this.AdvancedExportButton = new System.Windows.Forms.Button();
             this.exportRobotButton = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.showAgainCheckBox = new System.Windows.Forms.CheckBox();
+            this.MainLayout.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tableLayoutPanel1
+            // MainLayout
             // 
-            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.MainTextLbl, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.AdvancedExportButton, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.exportRobotButton, 1, 1);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(441, 155);
-            this.tableLayoutPanel1.TabIndex = 0;
+            this.MainLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.MainLayout.ColumnCount = 2;
+            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.MainLayout.Controls.Add(this.MainTextLbl, 0, 0);
+            this.MainLayout.Controls.Add(this.AdvancedExportButton, 1, 0);
+            this.MainLayout.Controls.Add(this.exportRobotButton, 1, 1);
+            this.MainLayout.Controls.Add(this.showAgainCheckBox, 0, 2);
+            this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainLayout.Location = new System.Drawing.Point(0, 0);
+            this.MainLayout.Name = "MainLayout";
+            this.MainLayout.RowCount = 3;
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.MainLayout.Size = new System.Drawing.Size(461, 185);
+            this.MainLayout.TabIndex = 0;
             // 
             // MainTextLbl
             // 
             this.MainTextLbl.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.MainTextLbl, 2);
+            this.MainLayout.SetColumnSpan(this.MainTextLbl, 2);
+            this.MainTextLbl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainTextLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MainTextLbl.Location = new System.Drawing.Point(12, 8);
-            this.MainTextLbl.Margin = new System.Windows.Forms.Padding(12, 8, 8, 8);
+            this.MainTextLbl.Location = new System.Drawing.Point(0, 0);
+            this.MainTextLbl.Margin = new System.Windows.Forms.Padding(0);
             this.MainTextLbl.Name = "MainTextLbl";
-            this.MainTextLbl.Size = new System.Drawing.Size(415, 60);
+            this.MainTextLbl.Size = new System.Drawing.Size(461, 93);
             this.MainTextLbl.TabIndex = 0;
             this.MainTextLbl.Text = "You have now completed the initial setup for exporting your robot. Would you like" +
     " to configure advanced settings, or finish and export your robot to Synthesis?\r\n" +
     "";
+            this.MainTextLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // AdvancedExportButton
             // 
@@ -82,7 +87,7 @@
             // 
             this.exportRobotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.exportRobotButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.exportRobotButton.Location = new System.Drawing.Point(228, 102);
+            this.exportRobotButton.Location = new System.Drawing.Point(248, 102);
             this.exportRobotButton.Name = "exportRobotButton";
             this.exportRobotButton.Size = new System.Drawing.Size(210, 50);
             this.exportRobotButton.TabIndex = 2;
@@ -90,25 +95,36 @@
             this.exportRobotButton.UseVisualStyleBackColor = true;
             this.exportRobotButton.Click += new System.EventHandler(this.exportRobotButton_Click);
             // 
+            // showAgainCheckBox
+            // 
+            this.showAgainCheckBox.AutoSize = true;
+            this.showAgainCheckBox.Location = new System.Drawing.Point(3, 158);
+            this.showAgainCheckBox.Name = "showAgainCheckBox";
+            this.showAgainCheckBox.Size = new System.Drawing.Size(164, 21);
+            this.showAgainCheckBox.TabIndex = 3;
+            this.showAgainCheckBox.Text = "Don\'t show this again";
+            this.showAgainCheckBox.UseVisualStyleBackColor = true;
+            // 
             // ExportOrAdvancedForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(465, 179);
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.ClientSize = new System.Drawing.Size(461, 185);
+            this.Controls.Add(this.MainLayout);
             this.Name = "ExportOrAdvancedForm";
             this.ShowIcon = false;
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
+            this.MainLayout.ResumeLayout(false);
+            this.MainLayout.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel MainLayout;
         private System.Windows.Forms.Button AdvancedExportButton;
         private System.Windows.Forms.Button exportRobotButton;
         private System.Windows.Forms.Label MainTextLbl;
+        private System.Windows.Forms.CheckBox showAgainCheckBox;
     }
 }
