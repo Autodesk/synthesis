@@ -77,10 +77,13 @@ void SubMesh::getConvexCollider(SubMesh & outputMesh) const
 	outputMesh.addSurface(newSurface); // Actual convex hull should have only one surface
 }
 
-void SubMesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & maxRadius, double & maxWidth) const
+void SubMesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & maxRadius, double & minWidth, double & maxWidth) const
 {
-	maxRadius = 0;
-	maxWidth = 0;
+	maxRadius = 0.0;
+	minWidth = 0.0;
+	maxWidth = 0.0;
+
+	bool first = true;
 
 	for (Vertex v : vertices)
 	{
@@ -89,10 +92,14 @@ void SubMesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & max
 
 		v.location.getRadialCoordinates(axis, origin, radius, width);
 
-		if (radius > maxRadius)
+		if (first || radius > maxRadius)
 			maxRadius = radius;
-		if (width > maxWidth)
+		if (first || width < minWidth)
+			minWidth = width;
+		if (first || width > maxWidth)
 			maxWidth = width;
+		
+		first = false;
 	}
 }
 
