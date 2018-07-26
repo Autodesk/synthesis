@@ -119,6 +119,7 @@ bool EUI::defineExportButton()
 		return false;
 	
 	ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler;
+	commandCreatedEventHandler->app = app;
 	commandCreatedEventHandler->palette = exportPalette;
 	
 	return commandCreatedEvent->add(commandCreatedEventHandler);

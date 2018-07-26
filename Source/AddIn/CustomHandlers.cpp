@@ -16,6 +16,7 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 
 	// Add click command to button
 	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler;
+	onShowPaletteCommandExecuted->app = app;
 	onShowPaletteCommandExecuted->palette = palette;
 	exec->add(onShowPaletteCommandExecuted);
 }
@@ -23,7 +24,8 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	palette->sendInfoToHTML("send", "This is a message sent to the palette from Fusion. It has been sent times.");
+	Exporter exporter(app);
+	palette->sendInfoToHTML("send", exporter.collectJoints());
 	palette->isVisible(true);
 }
 
