@@ -75,6 +75,18 @@ public partial class DriveChooser : Form
 
             txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
+            
+            rbCAN.Checked = joint.cDriver.isCan;
+            if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
+            {
+                joint.cDriver.OutputGear = 1;
+            }
+            if (joint.cDriver.InputGear == 0)// prevents input gear from being 0
+            {
+                joint.cDriver.InputGear = 1;
+            }
+            OutputGeartxt.Value = (decimal) joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+            InputGeartxt.Value = (decimal) joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
 
             #region Meta info recovery
             {
@@ -119,9 +131,12 @@ public partial class DriveChooser : Form
             }
             {
                 ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-                if (elevatorMeta != null)
+                if (elevatorMeta != null && (int)elevatorMeta.type < 7)
                 {
                     cmbStages.SelectedIndex = (int)elevatorMeta.type;
+                } else
+                {
+                    cmbStages.SelectedIndex = 0;
                 }
             }
             #endregion
@@ -133,6 +148,8 @@ public partial class DriveChooser : Form
             txtPortB.Value = txtPortB.Minimum;
             txtLowLimit.Value = txtLowLimit.Minimum;
             txtHighLimit.Value = txtHighLimit.Minimum;
+            InputGeartxt.Value = (decimal) 1.0;
+            OutputGeartxt.Value = (decimal) 1.0;
 
             cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
             cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
@@ -153,6 +170,11 @@ public partial class DriveChooser : Form
     {
         if (joint.cDriver == null) return true;
 
+        double inputGear = 1, outputGear = 1;
+        
+        inputGear = (double) InputGeartxt.Value;
+        outputGear = (double)OutputGeartxt.Value;
+                
         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
         WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
@@ -161,7 +183,8 @@ public partial class DriveChooser : Form
             txtPortA.Value != joint.cDriver.portA ||
             txtPortB.Value != joint.cDriver.portB ||
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
-            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit)
+            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
+            inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear)
             return true;
 
         if (pneumatic != null && 
@@ -218,7 +241,6 @@ public partial class DriveChooser : Form
                 chkBoxDriveWheel.Show();
                 rbCAN.Show();
                 rbPWM.Show();
-                rbPWM.Checked = true;
             }
             else if (cType.IsPneumatic())
             {
@@ -234,7 +256,7 @@ public partial class DriveChooser : Form
                 brakePortB.Enabled = false;
                 tabsMeta.TabPages.Clear();
                 chkBoxHasBrake.Show();
-                tabsMeta.TabPages.Add(metaElevatorBrake);
+                //tabsMeta.TabPages.Add(metaElevatorBrake);
                 tabsMeta.TabPages.Add(metaElevatorStages);
                 tabsMeta.TabPages.Add(metaGearing);
 
@@ -263,6 +285,7 @@ public partial class DriveChooser : Form
     /// <param name="e"></param>
     private void SaveButton_Click(object sender, EventArgs e)
     {
+        bool canClose = true;
         if (!ShouldSave())
         {
             Close();
@@ -277,16 +300,24 @@ public partial class DriveChooser : Form
         {
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
 
+            double inputGear = 1, outputGear = 1;
+
+            inputGear = (double)InputGeartxt.Value;
+
+            outputGear = (double)OutputGeartxt.Value;// tries to parse the double from the output gear
+
             joint.cDriver = new JointDriver(cType)
             {
                 portA = (int)txtPortA.Value,
                 portB = (int)txtPortB.Value,
+                InputGear = inputGear,// writes the input gear to the internal joint driver so it can be exported
+                OutputGear = outputGear,// writes the output gear to the internal joint driver so it can be exported
                 lowerLimit = (float)txtLowLimit.Value,
                 upperLimit = (float)txtHighLimit.Value,
                 isCan = rbCAN.Checked
             };
             //Only need to store wheel driver if run by motor and is a wheel.
-            if (cType.IsMotor() && (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
+            if (cType.IsMotor() && (WheelType)cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
             {
                 #region WHEEL_SAVING
                 WheelDriverMeta wheelDriver = new WheelDriverMeta()
@@ -353,6 +384,8 @@ public partial class DriveChooser : Form
                         portA = joint.cDriver.portA,
                         portB = joint.cDriver.portB,
                         isCan = joint.cDriver.isCan,
+                        OutputGear = joint.cDriver.OutputGear,
+                        InputGear = joint.cDriver.InputGear,
                         lowerLimit = joint.cDriver.lowerLimit,
                         upperLimit = joint.cDriver.upperLimit
                     };
@@ -363,9 +396,12 @@ public partial class DriveChooser : Form
             }
         }
 
-        Saved = true;
-        LegacyInterchange.LegacyEvents.OnRobotModified();
-        Close();
+        if (canClose)// make sure there are no outstanding issues for the user to fix before we save
+        {
+            Saved = true;
+            LegacyInterchange.LegacyEvents.OnRobotModified();
+            Close();
+        }
     }
 
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)

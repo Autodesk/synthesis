@@ -220,25 +220,15 @@ namespace OGLViewer
         {
             this.centerOfMass = mesh.physics.centerOfMass;
             baseMesh = mesh;
-
-            meshTriangleCount = 0;
+            
             foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
             {
                 models.Add(new VBOMesh(sub));
-                foreach (BXDAMesh.BXDASurface surf in sub.surfaces)
-                {
-                    meshTriangleCount += surf.indicies.Length / 3;
-                }
             }
-
-            colliderTriangleCount = 0;
+            
             foreach (BXDAMesh.BXDASubMesh sub in mesh.colliders)
             {
                 colliders.Add(new VBOMesh(sub));
-                foreach (BXDAMesh.BXDASurface surf in sub.surfaces)
-                {
-                    colliderTriangleCount += surf.indicies.Length / 3;
-                }
             }
         }
 

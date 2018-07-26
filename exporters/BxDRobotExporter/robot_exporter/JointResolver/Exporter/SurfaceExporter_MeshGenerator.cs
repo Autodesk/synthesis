@@ -11,272 +11,228 @@ using System.Collections.Generic;
 /// </summary>
 public partial class SurfaceExporter
 {
-    private struct ExportPlan
+    public class TooManyVerticesException : ApplicationException
     {
-        public SurfaceBody surf;
-        public bool bestResolution;
-        public bool separateFaces;
+        public TooManyVerticesException() : base("Too many vertices in a surface.") { }
+    }
 
-        public ExportPlan(SurfaceBody b, bool bestResolution, bool separateFaces)
-        {
-            this.surf = b;
-            this.bestResolution = bestResolution;
-            this.separateFaces = separateFaces;
-        }
+    private const uint MAX_VERTS_OR_FACETS = ushort.MaxValue;
+    private class VertexCollection
+    {
+        public double[] coordinates = new double[MAX_VERTS_OR_FACETS * 3];
+        public double[] norms = new double[MAX_VERTS_OR_FACETS * 3];
+        public int count = 0;
+    }
+
+    private class FacetCollection
+    {
+        public int[] indices = new int[MAX_VERTS_OR_FACETS * 3];
+        public int count = 0;
     }
 
     private class PartialSurface
     {
-        public double[] verts = new double[TMP_VERTICIES * 3];
-        public double[] norms = new double[TMP_VERTICIES * 3];
-        public int[] indicies = new int[TMP_VERTICIES * 3];
-#if USE_TEXTURES
-        public double[] textureCoords = new double[TMP_VERTICIES * 2];
-#endif
-        public int vertCount = 0;
-        public int facetCount = 0;
+        public VertexCollection verts = new VertexCollection();
+        public FacetCollection facets = new FacetCollection();
     }
 
-    private const int TMP_VERTICIES = ushort.MaxValue;
-    private const int MAX_BACKGROUND_THREADS = 32;
-
-    private List<System.Threading.ManualResetEvent> waitingThreads = new List<System.Threading.ManualResetEvent>(MAX_BACKGROUND_THREADS);
-
-    // Temporary output
-    private PartialSurface tmpSurface = new PartialSurface();
-
-    // Pre-submesh output
-    private PartialSurface postSurface = new PartialSurface();
-    private List<BXDAMesh.BXDASurface> postSurfaces = new List<BXDAMesh.BXDASurface>();
-
-    private BXDAMesh outputMesh = new BXDAMesh();
-
-    // Tolerances
-    private double[] tolerances = new double[10];
-    private int tmpToleranceCount = 0;
+    /// <summary>
+    /// Default tolerance used when generating meshes (cm)
+    /// </summary>
+    private const double DEFAULT_TOLERANCE = 1;
 
     /// <summary>
-    /// Copies mesh information for the given surface body into the mesh storage structure.
+    /// Used to store asset properties to prevent unnecessary calls to Inventor API.
     /// </summary>
-    /// <param name="surf">The surface body to export</param>
-    /// <param name="bestResolution">Use the best possible resolution</param>
-    /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
-    private void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
+    private static Dictionary<string, AssetProperties> assets = new Dictionary<string, AssetProperties>();
+
+    /// <summary>
+    /// Gets an AssetProperties based on an Inventor Asset.
+    /// </summary>
+    /// <param name="appearance">Inventor Asset to find AssetProperties based on.</param>
+    /// <returns>AssetProperties based on the Inventor Asset. May be pre-existing or newly created.</returns>
+    private AssetProperties GetAssetProperties(Asset appearance)
     {
-        BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
+        string assetName = appearance.DisplayName;
 
-        surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
-
-        int bestIndex = -1;
-        for (int i = 0; i < tmpToleranceCount; i++)
+        lock (assets)
         {
-            if (bestIndex < 0 || ((tolerances[i] < tolerances[bestIndex]) == bestResolution))
-            {
-                bestIndex = i;
-            }
+            if (assets == null)
+                assets = new Dictionary<string, AssetProperties>();
+
+            if (!assets.ContainsKey(assetName))
+                assets.Add(assetName, new AssetProperties(appearance));
+
+            return assets[assetName];
+        }
+    }
+
+    /// <summary>
+    /// Checks if a surface uses multiple assets.
+    /// </summary>
+    /// <param name="surf">Surface to analyze</param>
+    /// <returns>True if multiple assets exist on the surface.</returns>
+    private bool MultipleAssets(Faces surfaceFaces)
+    {
+        string firstAssetName = null;
+
+        foreach (Face face in surfaceFaces)
+        {
+            if (firstAssetName == null)
+                firstAssetName = face.Appearance.DisplayName;
+            else if (face.Appearance.DisplayName != firstAssetName)
+                return true;
         }
 
-        #region SHOULD_SEPARATE_FACES
-        AssetProperties sharedValue = null;
-        string sharedDisp = null;
-        if (separateFaces)  // Only separate if they are actually different colors
-        {
-            separateFaces = false;
-            
-            foreach (Face f in surf.Faces)
-            {
-                try
-                {
-                    Asset ast = f.Appearance;
-                    
-                    if (sharedValue == null)
-                    {
-                        sharedValue = new AssetProperties(ast);
-                        sharedDisp = ast.DisplayName;
-                    }
-                    else if (!ast.DisplayName.Equals(sharedDisp))
-                    {
-                        separateFaces = true;
-                        break;
-                    }
-                }
-                catch
-                {
-                }
-            }
-        }
-        #endregion
+        return false;
+    }
 
-#if USE_TEXTURES
-            surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-            if (tmpSurface.vertCount == 0)
-            {
-                surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-            }
-#else
-        surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
-        if (tmpSurface.vertCount == 0)
+    /// <summary>
+    /// Calculates the facets of a surface, storing them in a <see cref="MeshController"/>.
+    /// </summary>
+    private void CalculateSurfaceFacets(SurfaceBody surf, MeshController outputMesh, bool separateFaces = false)
+    {
+        double tolerance = DEFAULT_TOLERANCE;
+
+        PartialSurface bufferSurface = new PartialSurface();
+
+        // Store a list of faces separate from the Inventor API
+        Faces faces = surf.Faces;
+
+        // Don't separate if only one color
+        if (separateFaces)
+            separateFaces = MultipleAssets(faces);
+
+        // Do separate if too many faces
+        if (!separateFaces)
         {
-            surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
+            surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+
+            if (bufferSurface.verts.count > MAX_VERTS_OR_FACETS || bufferSurface.facets.count > MAX_VERTS_OR_FACETS)
+                separateFaces = true;
         }
-#endif
-        if (separateFaces || tmpSurface.vertCount > TMP_VERTICIES)
+
+        if (separateFaces)
         {
-            Console.WriteLine("Exporting " + surf.Faces.Count + " faces for " + surf.Parent.Name + "\t(" + surf.Name + ")");
-            
-            foreach (Face f in surf.Faces)
+            // Add facets for each face of the surface
+            foreach (Face face in faces)
             {
-                AddFacets(f, tolerances[bestIndex]);
+                face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+                outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(face.Appearance));
             }
         }
         else
         {
-            //Console.WriteLine("Exporting single block for " + surf.Parent.Name + "\t(" + surf.Name + ")");
-            AssetProperties assetProps = sharedValue;
-            if (sharedValue == null)
-            {
-                assetProps = AssetProperties.Create(surf);
-            }
-            AddFacetsInternal(assetProps);
+            // Add facets once for the entire surface
+            outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(faces[1].Appearance));
         }
-    }
-
-    private void DumpMeshBuffer()
-    {
-        // Make sure all index copy threads have completed.
-        if (waitingThreads.Count > 0)
-        {
-         //   Console.WriteLine("Got ahead of ourselves....");
-            System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
-            waitingThreads.Clear();
-        }
-
-        if (postSurface.vertCount == 0 || postSurface.facetCount == 0)
-            return;
-        BXDAMesh.BXDASubMesh subObject = new BXDAMesh.BXDASubMesh();
-        subObject.verts = new double[postSurface.vertCount * 3];
-        subObject.norms = new double[postSurface.vertCount * 3];
-        Array.Copy(postSurface.verts, 0, subObject.verts, 0, postSurface.vertCount * 3);
-        Array.Copy(postSurface.norms, 0, subObject.norms, 0, postSurface.vertCount * 3);
-        Console.WriteLine("Mesh segment " + outputMesh.meshes.Count + " has " + postSurface.vertCount + " verts and " + postSurface.facetCount + " facets");
-        subObject.surfaces = new List<BXDAMesh.BXDASurface>(postSurfaces);
-        outputMesh.meshes.Add(subObject);
-
-        postSurface.vertCount = 0;
-        postSurface.facetCount = 0;
-        postSurfaces = new List<BXDAMesh.BXDASurface>();
-    }
-
-
-    /// <summary>
-    /// Moves the mesh currently in the temporary mesh buffer into the mesh structure itself, 
-    /// with material information from the asset properties.
-    /// </summary>
-    /// <param name="assetProps">Material information to use</param>
-    private void AddFacetsInternal(AssetProperties assetProps)
-    {
-        if (tmpSurface.vertCount > TMP_VERTICIES)
-        {
-            // This is just bad.  It could be fixed by exporting it per-face instead of with a single block.
-            System.Windows.Forms.MessageBox.Show("Warning: Mesh segment exceededed " + TMP_VERTICIES + " verticies.  Strange things may begin to happen.");
-        }
-        // If adding this would cause the sub mesh to overflow dump what currently exists.
-        if (tmpSurface.vertCount + postSurface.vertCount >= TMP_VERTICIES)
-        {
-            DumpMeshBuffer();
-        }
-
-        Array.Copy(tmpSurface.verts, 0, postSurface.verts, postSurface.vertCount * 3, tmpSurface.vertCount * 3);
-        Array.Copy(tmpSurface.norms, 0, postSurface.norms, postSurface.vertCount * 3, tmpSurface.vertCount * 3);
-#if USE_TEXTURES
-        Array.Copy(tmpSurface.textureCoords, 0, postSurface.textureCoords, postSurface.vertCount * 2, tmpSurface.vertCount * 2);
-#endif
-
-        BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
-
-        nextSurface.hasColor = true;
-        nextSurface.color = 0xFFFFFFFF;
-        nextSurface.transparency = 0.0f;
-        nextSurface.translucency = 0.0f;
-        nextSurface.specular = 0.5f;
-
-        if (assetProps != null)
-        {
-            if (assetProps.color != null)
-            {
-                nextSurface.hasColor = true;
-                nextSurface.color = ((uint)assetProps.color.Red << 0) | ((uint)assetProps.color.Green << 8) | ((uint)assetProps.color.Blue << 16) | ((((uint)(assetProps.color.Opacity * 255)) & 0xFF) << 24);
-            }
-            else
-            {
-                //nextSurface.hasColor = false;
-                nextSurface.color = 0xFFFFFFFF;
-            }
-
-            nextSurface.transparency = (float)assetProps.transparency;
-            nextSurface.translucency = (float)assetProps.translucency;
-            nextSurface.specular = (float)assetProps.specular;
-        }
-
-        nextSurface.indicies = new int[tmpSurface.facetCount * 3];
-
-        // Raw copy the indicies for now, then fix the offset in a background thread.
-        Array.Copy(tmpSurface.indicies, nextSurface.indicies, nextSurface.indicies.Length);
-
-        #region Fix Index Buffer Offset
-        // Make sure we haven't exceeded the maximum number of background tasks.
-        if (waitingThreads.Count > MAX_BACKGROUND_THREADS)
-        {
-           // Console.WriteLine("Got ahead of ourselves....");
-            System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
-            waitingThreads.Clear();
-        }
-        {
-            System.Threading.ManualResetEvent lockThing = new System.Threading.ManualResetEvent(false);
-            waitingThreads.Add(lockThing);
-            int offset = postSurface.vertCount;
-            int backingFacetCount = tmpSurface.facetCount;
-            System.Threading.ThreadPool.QueueUserWorkItem(delegate(object obj)
-            {
-                for (int i = 0; i < backingFacetCount * 3; i++)
-                {
-                    nextSurface.indicies[i] = nextSurface.indicies[i] + offset - 1;
-                    // Inventor has one-based indicies.  Zero-based is the way to go for everything except Inventor.
-                }
-                lockThing.Set();
-            }, waitingThreads.Count);
-        }
-        #endregion
-
-        postSurfaces.Add(nextSurface);
-
-        postSurface.facetCount += tmpSurface.facetCount;
-        postSurface.vertCount += tmpSurface.vertCount;
     }
 
     /// <summary>
-    /// Copies mesh information from the Inventor API to the temporary mesh buffer, then into the mesh structure.
+    /// Used for storing shared mesh data.
     /// </summary>
-    /// <param name="surf">The source mesh</param>
-    /// <param name="tolerance">The chord tolerance for the mesh</param>
-    private void AddFacets(Face surf, double tolerance)
+    private class MeshController
     {
-        tmpSurface.vertCount = 0;
-#if USE_TEXTURES
-            surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-            if (tmpSurface.vertCount == 0)
-            {
-                surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-            }
-#else
-        surf.GetExistingFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
-        if (tmpSurface.vertCount == 0)
+        private VertexCollection outputVerts = new VertexCollection();
+        private List<BXDAMesh.BXDASurface> outputMeshSurfaces = new List<BXDAMesh.BXDASurface>();
+
+        private BXDAMesh outputMesh;
+        public BXDAMesh Mesh { get => outputMesh; }
+
+        public MeshController(Guid guid)
         {
-            surf.CalculateFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies);
+            outputMesh = new BXDAMesh(guid);
         }
-#endif
+
+        /// <summary>
+        /// Adds a surface to the output mesh. Not saved as a sub-surface until <see cref="DumpOutput"/> is called.
+        /// </summary>
+        /// <param name="bufferSurface">Surface to add to mesh.</param>
+        /// <param name="asset">Asset for surface.</param>
+        public void AddSurface(ref PartialSurface bufferSurface, AssetProperties asset)
+        {
+            // Create new surface
+            BXDAMesh.BXDASurface newMeshSurface = new BXDAMesh.BXDASurface();
+
+            // Apply Asset Properties
+            if (asset == null)
+                return;
+
+            newMeshSurface.hasColor = true;
+            newMeshSurface.color = asset.color;
+            newMeshSurface.transparency = (float)asset.transparency;
+            newMeshSurface.translucency = (float)asset.translucency;
+            newMeshSurface.specular = (float)asset.specular;
+
+            // Prevent too many vertices
+            if (bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
+                throw new TooManyVerticesException();
+
+            int indexOffset;
+            lock (outputVerts)
+            {
+                // Prevent too many vertices
+                if (outputVerts.count + bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
+                    DumpOutputInternal();
+                
+                // Copy buffer vertices into output
+                Array.Copy(bufferSurface.verts.coordinates, 0, outputVerts.coordinates, outputVerts.count * 3, bufferSurface.verts.count * 3);
+                Array.Copy(bufferSurface.verts.norms, 0, outputVerts.norms, outputVerts.count * 3, bufferSurface.verts.count * 3);
+
+                // Store length of output verts for later
+                indexOffset = outputVerts.count - 1;
+                outputVerts.count += bufferSurface.verts.count;
+            }
+
+            // Copy buffer surface into output, incrementing indices relative to where verts where stitched into the vert array
+            newMeshSurface.indicies = new int[bufferSurface.facets.count * 3];
+            for (int i = 0; i < bufferSurface.facets.count * 3; i++)
+                newMeshSurface.indicies[i] = bufferSurface.facets.indices[i] + indexOffset; // Why does Inventor start from 1?!
+
+            // Add the new surface to the output
+            lock (outputMeshSurfaces)
+                outputMeshSurfaces.Add(newMeshSurface);
+
+            // Empty buffer
+            bufferSurface.verts.count = 0;
+            bufferSurface.facets.count = 0;
+        }
         
-        AssetProperties assetProps = AssetProperties.Create(surf);
-        AddFacetsInternal(assetProps);
+        /// <summary>
+        /// Adds the <see cref="outputVerts"/> and <see cref="outputMeshSurfaces"/> to the <see cref="outputMesh"/>. Thread safe.
+        /// </summary>
+        public void DumpOutput()
+        {
+            lock (outputVerts)
+                lock (outputMeshSurfaces)
+                    DumpOutputInternal();
+        }
+
+        /// <summary>
+        /// Adds the <see cref="outputVerts"/> and <see cref="outputMeshSurfaces"/> to the <see cref="outputMesh"/>.
+        /// </summary>
+        private void DumpOutputInternal()
+        {             
+            if (outputVerts.count == 0 || outputMeshSurfaces.Count == 0)
+                return;
+
+            // Copy the output surface's vertices and normals into the new sub-object
+            BXDAMesh.BXDASubMesh subObject = new BXDAMesh.BXDASubMesh();
+            subObject.verts = new double[outputVerts.count * 3];
+            subObject.norms = new double[outputVerts.count * 3];
+            Array.Copy(outputVerts.coordinates, 0, subObject.verts, 0, outputVerts.count * 3);
+            Array.Copy(outputVerts.norms, 0, subObject.norms, 0, outputVerts.count * 3);
+
+            // Copy the output surfaces into the new sub-object
+            subObject.surfaces = new List<BXDAMesh.BXDASurface>(outputMeshSurfaces);
+
+            // Add the sub-object to the output mesh
+            lock (outputMesh)
+                outputMesh.meshes.Add(subObject);
+
+            // Empty temporary storage
+            outputVerts.count = 0;
+            outputMeshSurfaces.Clear();
+        }
     }
 }

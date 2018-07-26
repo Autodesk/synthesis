@@ -6,6 +6,8 @@ using BulletUnity;
 using BulletSharp;
 using Synthesis.FEA;
 using Synthesis.Utils;
+using UnityEngine.Networking;
+using Synthesis.Network;
 
 public class UnityFieldDefinition : FieldDefinition
 {
@@ -24,7 +26,7 @@ public class UnityFieldDefinition : FieldDefinition
         unityObject = root.gameObject;
     }
 
-    public bool CreateMesh(string filePath)
+    public bool CreateMesh(string filePath, bool multiplayer = false, bool host = false)
     {
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(filePath, null);
@@ -49,9 +51,40 @@ public class UnityFieldDefinition : FieldDefinition
             colliders.Add(new KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>(sub, meshu));
         });
 
+        Dictionary<string, NetworkElement> networkElements = new Dictionary<string, NetworkElement>();
+
+        foreach (NetworkElement ne in Resources.FindObjectsOfTypeAll<NetworkElement>())
+            networkElements[ne.NodeID] = ne;
+
         foreach (FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
         {
-            GameObject subObject = new GameObject(node.NodeID);
+            PropertySet? propertySet = null;
+
+            if (GetPropertySets().ContainsKey(node.PropertySetID))
+                propertySet = GetPropertySets()[node.PropertySetID];
+
+            GameObject subObject;
+
+            if (multiplayer && propertySet.HasValue && propertySet.Value.Mass != 0)
+            {
+                if (host)
+                {
+                    subObject = (GameObject)UnityEngine.Object.Instantiate(Resources.Load("prefabs/NetworkElement"), unityObject.transform);
+                    subObject.GetComponent<NetworkElement>().NodeID = node.NodeID;
+                    subObject.name = node.NodeID;
+                    NetworkServer.Spawn(subObject);
+                }
+                else
+                {
+                    subObject = networkElements[node.NodeID].gameObject;
+                    subObject.name = node.NodeID;
+                }
+            }
+            else
+            {
+                subObject = new GameObject(node.NodeID);
+            }
+
             subObject.transform.parent = unityObject.transform;
 
             GameObject meshObject = new GameObject(node.NodeID + "-mesh");

@@ -23,4 +23,5 @@ installer/cygscripts/http*
 
 Replays/
 *.dll
+!CER_Utility.dll
 *.pdb
