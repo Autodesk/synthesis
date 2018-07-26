@@ -144,6 +144,9 @@
     <ClCompile Include="Source\Data\Guid.cpp" />
     <ClCompile Include="Source\Exporter.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="palette\palette.html" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

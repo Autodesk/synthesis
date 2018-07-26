@@ -46,6 +46,9 @@
     <Filter Include="Source\Data\BXDJ\Components">
       <UniqueIdentifier>{49a37e76-2887-44d3-bcbc-e39d1da352c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\AddIn\HTML">
+      <UniqueIdentifier>{054fec25-2e01-4568-80d5-c9e0c19d0f2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Data\BXDA\Mesh.h">
@@ -176,5 +179,10 @@
     <ClCompile Include="Source\Data\BXDJ\ConfigData.cpp">
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="palette\palette.html">
+      <Filter>Source\AddIn\HTML</Filter>
+    </None>
   </ItemGroup>
 </Project>

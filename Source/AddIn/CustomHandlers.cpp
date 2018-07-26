@@ -2,51 +2,41 @@
 
 using namespace Synthesis;
 
-void ExportCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs)
+/// Button Events
+// Create Palette Button Event
+void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs)
 {
-	// Code to react to the event.
-	//_app->userInterface.messageBox("test");
-	//_UI->messageBox("Test Export");
-	Exporter * e = new Exporter(_APP);
-	e->exportMeshes();
-	delete e;
-	//e->~Exporter();
+	Ptr<UserInterface> UI = app->userInterface();
+
+	Ptr<Command> command = eventArgs->command();
+	if (!command)
+		return;
+
+	Ptr<CommandEvent> exec = command->execute();
+	if (!exec)
+		return;
+
+	// Add click command to button
+	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler;
+	onShowPaletteCommandExecuted->app = app;
+	exec->add(onShowPaletteCommandExecuted);
 }
 
-void ExportWheelCommandCreatedEventHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs)
-{
-	// Code to react to the event.
-	//_app->userInterface.messageBox("test");
-	//_UI->messageBox("Test Export");
-	Exporter * e = new Exporter(_APP);
-	e->exportMeshes();
-	delete e;
-	//e->exportWheel();
-}
-
-void MyCloseEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
-{
-	//close button is clicked
-}
-
-void MyHTMLEventHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
-{
-
-}
-
+// Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	// Create a palette
-	Ptr<UserInterface> _ui = _APP->userInterface();
+	Ptr<UserInterface> UI = app->userInterface();
 
-	Ptr<Palettes> palettes = _ui->palettes();
+	Ptr<Palettes> palettes = UI->palettes();
 	if (!palettes)
 		return;
 
+	// Get palette if it already exists
 	Ptr<Palette> palette = palettes->itemById("myPalette");
+
 	if (!palette)
 	{
-		palette = palettes->add("myPalette", "My Palette", "palette/palette.html", true, true, true, 300, 200);
+		palette = palettes->add("exporterForm", "Robot Exporter Form", "palette/palette.html", false, true, true, 300, 200);
 		if (!palette)
 			return;
 
@@ -58,47 +48,34 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 		if (!htmlEvent)
 			return;
 
-		MyHTMLEventHandler * onHTMLEvent_ = new MyHTMLEventHandler;
-		onHTMLEvent_->_APP = _APP;
+		ReceiveFormDataHandler * onHTMLEvent = new ReceiveFormDataHandler;
+		onHTMLEvent->app = app;
 
-		htmlEvent->add(onHTMLEvent_);
+		htmlEvent->add(onHTMLEvent);
 
 		// Add handler to CloseEvent of the palette
 		Ptr<UserInterfaceGeneralEvent> closeEvent = palette->closed();
 		if (!closeEvent)
 			return;
 
-		MyCloseEventHandler * onClose_ = new MyCloseEventHandler;
-		onClose_->_APP = _APP;
+		CloseFormEventHandler * onClose = new CloseFormEventHandler;
+		onClose->app = app;
 
-		closeEvent->add(onClose_);
+		closeEvent->add(onClose);
 	}
-	else
-	{
-		palette->isVisible(true);
-	}
+
+	// Show palette
+	palette->isVisible(true);
 }
 
-void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs)
-{
-	Ptr<UserInterface> _ui = _APP->userInterface();
-	Ptr<Command> command = eventArgs->command();
-	if (!command)
-		return;
-	Ptr<CommandEvent> exec = command->execute();
-	if (!exec)
-		return;
-
-	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted_ = new ShowPaletteCommandExecuteHandler;
-	onShowPaletteCommandExecuted_->_APP = _APP;
-	exec->add(onShowPaletteCommandExecuted_);
-}
-
+/// Palette Events
+// Send info to palette HTML
 void SendInfoCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	// Send information to the palette.
-	Ptr<UserInterface> _ui = _APP->userInterface();
-	Ptr<Palettes> palettes = _ui->palettes();
+	// Get the palette
+	Ptr<UserInterface> UI = app->userInterface();
+
+	Ptr<Palettes> palettes = UI->palettes();
 	if (!palettes)
 		return;
 
@@ -106,5 +83,18 @@ void SendInfoCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArg
 	if (!palette)
 		return;
 
+	// Send info to the palette
 	palette->sendInfoToHTML("send", "This is a message sent to the palette from Fusion. It has been sent times.");
+}
+
+// Close Exporter Form Event
+void CloseFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+{
+
+}
+
+// Submit Exporter Form Event
+void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
+{
+
 }
