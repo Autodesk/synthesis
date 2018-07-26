@@ -31,12 +31,12 @@
         for (var c = 0; c < jointData.length; c++)
         {
             var nameLength = '';
-            while (jointData[c] != ' ')
+            while (jointData[c] != ' ' && c < jointData.length)
                 nameLength += jointData[c++];
             c++;
-
+            
             var nameStr = '';
-            for (var i = 0; i < parseInt(nameLength); i++)
+            for (var i = 0; i < parseInt(nameLength) && c < jointData.length; i++)
                 nameStr += jointData[c++];
 
             joints.push({ name: nameStr, side: 'X' });
@@ -63,7 +63,6 @@
                 {
                     if (action == 'send')
                     {
-                        console.log(data);
                         jointOptions = processJointDataString(data);
                         displayJointOptions(jointOptions);
                     }

@@ -29,7 +29,7 @@ std::string Synthesis::Exporter::collectJoints(std::vector<Ptr<Joint>> & joints)
 			for (int b = 0; b < sizeof(Ptr<Occurrence>); b++)
 				pointerStr += ((char*)(&occurence))[b];
 
-			stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name();
+			stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + " ";
 			joints.push_back(joint);
 		}
 	}
