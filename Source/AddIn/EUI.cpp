@@ -75,7 +75,7 @@ bool EUI::defineExportPalette()
 	if (!exportPalette)
 	{
 		// Create palette
-		exportPalette = palettes->add("exporterForm", "Robot Exporter Form", "Palette/palette.html", false, true, true, 300, 200);
+		exportPalette = palettes->add("exporterForm", "Robot Exporter Form", "Palette/debug.html", false, true, true, 300, 200);
 		if (!exportPalette)
 			return false;
 
