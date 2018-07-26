@@ -58,11 +58,6 @@ std::string RigidNode::getModelId() const
 		return "empty";
 }
 
-ConfigData BXDJ::RigidNode::getConfigData() const
-{
-	return *configData;
-}
-
 Joint * RigidNode::getParent() const
 {
 	return parent;
@@ -166,15 +161,21 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
 	log += "Jointing occurence \"" + child->fullPathName() + "\"\n";
 
+	std::shared_ptr<Joint> newJoint = nullptr;
+
 	switch (joint->jointMotion()->jointType())
 	{
 	case fusion::JointTypes::RevoluteJointType:
-		addJoint(std::make_shared<RotationalJoint>(this, joint, parent));
+		newJoint = std::make_shared<RotationalJoint>(this, joint, parent);
+		newJoint->applyConfig(*configData);
 		break;
 
 	default:
 		buildTree(child);
+		return;
 	}
+
+	addJoint(newJoint);
 }
 
 void RigidNode::write(XmlWriter & output) const

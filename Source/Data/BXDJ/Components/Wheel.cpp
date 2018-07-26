@@ -7,12 +7,15 @@ Wheel::Wheel(const Wheel & wheelToCopy)
 {
 	radius = wheelToCopy.radius;
 	width = wheelToCopy.width;
-	type = wheelToCopy.type;
 	center = wheelToCopy.center;
+	type = wheelToCopy.type;
 }
 
 Wheel::Wheel(Type)
 {
+	radius = 0;
+	width = 0;
+	center = Vector3<>();
 	this->type = type;
 }
 

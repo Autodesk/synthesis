@@ -19,7 +19,7 @@ namespace BXDJ
 		bool hasLimits() const;
 		float getMinAngle() const;
 		float getMaxAngle() const;
-		void applyConfig(ConfigData);
+		void applyConfig(const ConfigData &);
 
 		void write(XmlWriter &) const;
 
