@@ -25,28 +25,17 @@ namespace Synthesis
 		~EUI();
 
 	private:
-		Ptr<Application> _APP;
-		Ptr<UserInterface> _UI;
-		Ptr<Workspace> _WorkSpace;
-		Ptr<Workspaces> _WorkSpaces;
-		Ptr<ToolbarPanel> _ToolbarPanelExport;
-		Ptr<ToolbarPanel> _ToolbarPanelLoad;
-		Ptr<ToolbarPanel> _ToolbarPanelHelp;
+		Ptr<Application> app;
+		Ptr<UserInterface> UI;
 
-		Ptr<ToolbarControls> _ToolbarControlsExport;
-		Ptr<ToolbarControls> _ToolbarControlsLoad;
-		Ptr<ToolbarControls> _ToolbarControlsHelp;
+		Ptr<Workspace> workSpace;
+		Ptr<ToolbarPanel> toolbar;
+		Ptr<ToolbarControls> toolbarControls;
 
-		Ptr<CommandDefinition> _ExportCommandDefQuick;
-		Ptr<CommandDefinition> _ExportCommandDef;
-		Ptr<CommandDefinition> _ExportCommandLoad;
-		Ptr<CommandDefinition> _ExportCommandHelp;
+		Ptr<CommandDefinition> exportButtonCommand;
 
-		void configButtonQuickExport();
-		void configButtonExport();
-		void configButtonLoad();
-		void configButtonHelp();
-		bool CreateWorkspace();
-		void configPalette();
+		bool createWorkspace();
+		bool defineExportButton();
+
 	};
 }

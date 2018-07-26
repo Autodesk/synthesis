@@ -5,6 +5,7 @@
     <body>
 
         <p id='exportSettings'>
+            <p id='receivedData'></p>
 
             Robot Name:  <input type="text" name="name"><br>
             Team Number: <input type="text" name="number"><br>
@@ -48,7 +49,7 @@
             try {
                 if (action == 'send') {
 					// Update a paragraph with the data passed in.
-					document.getElementById('exporterSettings').innerHTML = data;
+                    document.getElementById('receivedData').innerHTML = data;
 				}
 				else if (action == 'debugger') {
                     debugger;
