@@ -46,7 +46,7 @@ namespace BXDJ
 
 		// Component Functions
 		void setComponent(Wheel);
-		Wheel getWheel();
+		std::unique_ptr<Wheel> getWheel();
 
 	private:
 		std::unique_ptr<Wheel> wheel;

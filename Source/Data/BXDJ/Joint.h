@@ -21,7 +21,8 @@ namespace BXDJ
 		Vector3<float> getChildBasePoint() const;
 
 		void setDriver(Driver);
-		Driver getDriver();
+		void removeDriver();
+		Driver getDriver() const;
 
 		virtual void write(XmlWriter &) const;
 
