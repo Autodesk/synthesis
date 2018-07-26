@@ -2,6 +2,7 @@
 
 #include <map>
 #include <Fusion/Components/Joint.h>
+#include "Driver.h"
 
 namespace BXDJ
 {
