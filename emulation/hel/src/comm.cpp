@@ -318,6 +318,10 @@ extern "C" {
         return 0;
     }
 
+    int64_t FRC_NetworkCommunication_nUsageReporting_report(int32_t, int32_t, int32_t, const char *) {
+        return 0; // TODO: Find what this does
+    }
+
     void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation
 
     int setNewDataOccurRef(uint32_t refnum){
