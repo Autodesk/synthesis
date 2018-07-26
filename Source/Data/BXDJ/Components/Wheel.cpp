@@ -8,16 +8,19 @@ Wheel::Wheel(const Wheel & wheelToCopy)
 	radius = wheelToCopy.radius;
 	width = wheelToCopy.width;
 	type = wheelToCopy.type;
+	center = wheelToCopy.center;
 }
 
 Wheel::Wheel(const RotationalJoint & joint, Type type)
 {
 	this->type = type;
 
+	center = joint.getChildBasePoint();
+
 	// Calculate radius and width
 	BXDA::Mesh mesh(joint.getChild()->getGUID());
 	joint.getChild()->getMesh(mesh);
-	mesh.calculateWheelShape(joint.getAxisOfRotation(), joint.getChildBasePoint(), radius, width);
+	mesh.calculateWheelShape(joint.getAxisOfRotation(), center, radius, width);
 }
 
 double Wheel::getRadius() const
@@ -30,9 +33,9 @@ double Wheel::getWidth() const
 	return width;
 }
 
-Vector3<float> Wheel::getCenter() const
+Vector3<> Wheel::getCenter() const
 {
-	return Vector3<float>();
+	return center;
 }
 
 void Wheel::write(XmlWriter & output) const
