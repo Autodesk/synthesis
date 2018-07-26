@@ -566,7 +566,7 @@ namespace InternalFieldExporter
         } 
         #endregion
 
-        #region RobotExportAPI Events
+        #region InternalFieldExporterAPI Events
         /// <summary>
         /// Selects a list of nodes in Inventor.
         /// </summary>
