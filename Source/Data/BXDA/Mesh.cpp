@@ -30,11 +30,11 @@ int Mesh::getVersion() const
 	return CURRENT_VERSION;
 }
 
-void Mesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & maxRadius, double & minWidth, double & maxWidth) const
+void Mesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & minWidth, double & maxWidth, double & maxRadius) const
 {
-	maxRadius = 0.0;
 	minWidth = 0.0;
 	maxWidth = 0.0;
+	maxRadius = 0.0;
 
 	bool first = true;
 
@@ -44,14 +44,14 @@ void Mesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & maxRad
 		double lowerWidth;
 		double upperWidth;
 		
-		subMesh->calculateWheelShape(axis, origin, radius, lowerWidth, upperWidth);
+		subMesh->calculateWheelShape(axis, origin, lowerWidth, upperWidth, radius);
 
-		if (first || radius > maxRadius)
-			maxRadius = radius;
 		if (first || lowerWidth < minWidth)
 			minWidth = lowerWidth;
 		if (first || upperWidth > maxWidth)
 			maxWidth = upperWidth;
+		if (first || radius > maxRadius)
+			maxRadius = radius;
 
 		first = false;
 	}

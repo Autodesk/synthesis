@@ -23,7 +23,7 @@ namespace BXDA
 		int getVertCount(); // Gets the number of vertices currently stored by the submesh
 		void getConvexCollider(SubMesh &) const; // Fills a submesh with a convex collider of this mesh. NOT FULLY IMPLEMENTED
 		
-		void calculateWheelShape(Vector3<>, Vector3<>, double &, double &, double &) const;
+		void calculateWheelShape(Vector3<>, Vector3<>, double & minWidth, double & maxWidth, double & maxRadius) const;
 
 	private:
 		std::vector<Vertex> vertices;

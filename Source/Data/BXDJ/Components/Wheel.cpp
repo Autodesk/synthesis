@@ -21,12 +21,13 @@ Wheel::Wheel(const RotationalJoint & joint, Type type)
 	BXDA::Mesh mesh(joint.getChild()->getGUID());
 	joint.getChild()->getMesh(mesh);
 
-	double minWidth, maxWidth;
 	Vector3<> axis = joint.getAxisOfRotation();
-	mesh.calculateWheelShape(axis, center, radius, minWidth, maxWidth);
+
+	double minWidth, maxWidth;
+	mesh.calculateWheelShape(axis, center, minWidth, maxWidth, radius);
 	width = maxWidth - minWidth;
 
-	center = center + (axis / axis.magnitude()) * (width / 2); // Offset center to actual center of wheel
+	center = center + axis * (width / 2); // Offset center to actual center of wheel
 }
 
 double Wheel::getRadius() const
