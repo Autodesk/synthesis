@@ -134,7 +134,10 @@ public class DriveJoints
                 {
                     if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
                     {
-                        raycastWheel.ApplyForce(pwm[i]);
+                        float force = pwm[i];
+                        if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                            force *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+                        raycastWheel.ApplyForce(force);
                     }
                 }
 
@@ -147,6 +150,8 @@ public class DriveJoints
                             float maxSpeed = 0f;
                             float impulse = 0f;
                             float friction = 0f;
+                            if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                                impulse *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
 
                             if (rigidNode.HasDriverMeta<WheelDriverMeta>())
                             {
@@ -183,10 +188,9 @@ public class DriveJoints
         }
     }
 
-    public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
+    public static float[] GetPwmValues(UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
         bool IsMecanum = mecanum;
-        int reverse = -1;
 
         float[] pwm;
         float[] can;
@@ -225,6 +229,7 @@ public class DriveJoints
                 (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * 0.25f);
+
             pwm[4] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
 
@@ -336,6 +341,11 @@ public class DriveJoints
             #endregion
         }
 
+        return pwm;
+    }
+
+    public static void UpdateAllMotors(RigidNode_Base skeleton, float[] pwm)
+    {
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
@@ -343,6 +353,8 @@ public class DriveJoints
         {
             foreach (RigidNode_Base node in listOfSubNodes)
             {
+
+
                 RigidNode rigidNode = (RigidNode)node;
 
                 if (pwm[i] != 0f)
@@ -359,19 +371,27 @@ public class DriveJoints
                 {
                     if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
                     {
-                        raycastWheel.ApplyForce(pwm[i]);
+                        float force = pwm[i];
+                        if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                            force *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+                        raycastWheel.ApplyForce(force);
                     }
                 }
 
                 if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
                 {
+
+
                     if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
                     {
+
                         if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
                         {
                             float maxSpeed = 0f;
                             float impulse = 0f;
                             float friction = 0f;
+                            if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                                impulse *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
 
                             if (rigidNode.HasDriverMeta<WheelDriverMeta>())
                             {

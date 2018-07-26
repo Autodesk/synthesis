@@ -24,6 +24,7 @@ namespace EditorsLibrary
         /// A JointEditorEvent triggered upon joint modification
         /// </summary>
         public event JointEditorEvent ModifiedJoint;
+       
 
         /// <summary>
         /// Whether or not joint data is currently being edited
@@ -51,13 +52,20 @@ namespace EditorsLibrary
             RegisterContextAction("Edit Sensors", ListSensors_Internal);
             RegisterContextAction("Edit Limits", (List<RigidNode_Base> nodes) =>
                 {
-                    if (nodes.Count != 1) return;
-
-                    RigidNode_Base node = nodes[0];
-                    if (node != null && node.GetSkeletalJoint() != null)
+                    try// prevent the user from just left clicking on the black joint pane and trying to edit nothing
                     {
-                        EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());
-                        limitEditor.ShowDialog(ParentForm);
+                        if (nodes.Count != 1) return;
+
+                        RigidNode_Base node = nodes[0];
+                        if (node != null && node.GetSkeletalJoint() != null)// prevents the user from trying to edit a null joint
+                        {
+                            EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());// show the limit editor form
+                            limitEditor.ShowDialog(ParentForm);
+                        }
+                    }
+                    catch (NullReferenceException)//catch when the user clicks on the pane without a node selected
+                    {
+                        MessageBox.Show("Please select a node!");
                     }
                 });
 

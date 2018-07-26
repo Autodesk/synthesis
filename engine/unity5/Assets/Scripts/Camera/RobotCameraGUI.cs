@@ -11,7 +11,7 @@ namespace Synthesis.Camera
     /// <summary>
     /// This class handles all GUI elements related to robot camera in Unity
     /// </summary>
-    class RobotCameraGUI : StateBehaviour<MainState>
+    class RobotCameraGUI : LinkedMonoBehaviour<MainState>
     {
         //Stuff needed to make gui work
         GameObject canvas;
@@ -229,7 +229,7 @@ namespace Synthesis.Camera
             configureCameraPanel.SetActive(robotCameraManager.ChangingCameraPosition);
             if (robotCameraManager.ChangingCameraPosition)
             {
-                preConfigCamState = dynamicCamera.cameraState;
+                preConfigCamState = dynamicCamera.ActiveState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, robotCameraManager.CurrentCamera));
                 //Update the node where current camera is attached to
                 cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;

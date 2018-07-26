@@ -32,7 +32,7 @@ namespace Synthesis.States
         public override void Start()
         {
             navPanel = GameObject.Find("NavigationPanel");
-            navPanel.SetActive(false);
+            navPanel?.SetActive(false);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Synthesis.States
         /// </summary>
         public override void End()
         {
-            navPanel.SetActive(true);
+            navPanel?.SetActive(true);
         }
 
         /// <summary>

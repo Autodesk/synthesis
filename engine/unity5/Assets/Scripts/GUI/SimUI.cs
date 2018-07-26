@@ -24,11 +24,11 @@ namespace Synthesis.GUI
     /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
     /// It acomplishes this by having a public function for each button that interacts with the Main State to complete various tasks.
     /// </summary>
-    public class SimUI : StateBehaviour<MainState>
+    public class SimUI : LinkedMonoBehaviour<MainState>
     {
         RobotBase Robot;
 
-        DynamicCamera camera;
+        new DynamicCamera camera;
         Toolkit toolkit;
         DriverPracticeMode dpm;
         LocalMultiplayer multiplayer;
@@ -286,16 +286,15 @@ namespace Synthesis.GUI
                 PlayerPrefs.Save();
 
                 if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                {
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
                     });
-                    SceneManager.LoadScene("Scene");
-                }
-                else
-                {
-                    UserMessageManager.Dispatch("Field directory not found!", 5);
-                }
+
+                SceneManager.LoadScene("Scene");
+            }
+            else
+            {
+                UserMessageManager.Dispatch("Field directory not found!", 5);
             }
         }
 
@@ -348,13 +347,13 @@ namespace Synthesis.GUI
         /// </summary>
         public void CameraToolTips()
         {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
+            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
                 camera.GetComponent<Text>().text = "Driver Station";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
                 camera.GetComponent<Text>().text = "Freeroam";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
                 camera.GetComponent<Text>().text = "Orbit Robot";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
                 camera.GetComponent<Text>().text = "Overview";
         }
 
@@ -363,7 +362,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateFreeroamWindow()
         {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
+            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
             {
                 if (!freeroamWindowClosed)
                 {
@@ -371,7 +370,7 @@ namespace Synthesis.GUI
                 }
 
             }
-            else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
             {
                 freeroamCameraWindow.SetActive(false);
             }
@@ -392,7 +391,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateDriverStationPanel()
         {
-            driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+            driverStationPanel.SetActive(camera.ActiveState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
         }
 
         /// <summary>

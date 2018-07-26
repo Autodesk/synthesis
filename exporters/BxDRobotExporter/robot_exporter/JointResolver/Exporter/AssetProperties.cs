@@ -4,69 +4,27 @@ using Inventor;
 
 public class AssetProperties
 {
-    public Color color = null;
-    public double transparency;
-    public double translucency;
+    public uint color = 0;
+    public double transparency = 0;
+    public double translucency = 0;
     public double specular = 0;
-
-    public static AssetProperties Create(dynamic surf)
-    {
-        try
-        {
-            return new AssetProperties(surf.Appearance);
-        }
-        catch
-        {
-            try
-            {
-                return new AssetProperties(surf.Parent.Appearance);
-            }
-            catch
-            {
-                try
-                {
-                    return new AssetProperties(surf.Parent.Parent.Appearance);
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-        }
-    }
 
     public AssetProperties(Asset asset)
     {
-        foreach (AssetValue val in asset)
+        try
         {
-            //is this one supposed to be different from the others? "DisplayName vs Name"
-            if (val.DisplayName.Equals("Color") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeColor)
-            {
-                color = ((ColorAssetValue) val).Value;
-            }
-            /*    //I am unable to find any reference to gloss in the API, and I've found the value changes from material to material
-            else if (val.Name.Equals("generic_glossiness") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
-            {
-                generic_glossiness = ((FloatAssetValue)val).Value;
-            }
-            */
-            //opacity is a double
-            else if (val.DisplayName.Equals("Transparency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
-            {
-                transparency = ((FloatAssetValue) val).Value;
-            }
-            else if (val.DisplayName.Equals("Translucency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
-            {
-                translucency = ((FloatAssetValue) val).Value;
-            }
-            else if (val.ValueType == AssetValueTypeEnum.kAssetValueTextureType)
-            {
-                AssetTexture tex = ((TextureAssetValue) val).Value;
-            }
-            else if (val.Name.Contains("reflectivity") && val.Name.Contains("0deg") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
-            {
-                specular = ((FloatAssetValue) val).Value;
-            }
+            Color tempColor = ((ColorAssetValue)asset["generic_diffuse"]).Value;
+            color = ((uint)tempColor.Red << 0) | ((uint)tempColor.Green << 8) | ((uint)tempColor.Blue << 16) | ((((uint)(tempColor.Opacity * 255)) & 0xFF) << 24);
         }
+        catch (ArgumentException) { color = 0xFFFFFFFF; }
+
+        try { transparency = ((FloatAssetValue)asset["generic_transparency"]).Value; }
+        catch (ArgumentException) { transparency = 0; }
+
+        try { translucency = ((FloatAssetValue)asset["generic_refraction_translucency_weight"]).Value; }
+        catch (ArgumentException) { translucency = 0; }
+
+        try { specular = ((FloatAssetValue)asset["generic_reflectivity_at_0deg"]).Value; }
+        catch (ArgumentException) { specular = 0.2; }
     }
 }

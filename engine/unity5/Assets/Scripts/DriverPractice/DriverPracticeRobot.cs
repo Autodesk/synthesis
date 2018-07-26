@@ -24,7 +24,7 @@ namespace Synthesis.DriverPractice
     /// To be added to all robots, this class 'cheats physics' to overcome the limitations that our current simulation has to create a beter environment for drivers to practice and interact with game objects.
     /// 
     /// </summary>
-    public class DriverPracticeRobot : StateBehaviour<MainState>
+    public class DriverPracticeRobot : LinkedMonoBehaviour<MainState>
     {
         public UnityEngine.Vector3[] positionOffset; //position offset vectors for gamepiece while its being held
         public List<float[]> releaseVelocity; //release velocity vectors for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
@@ -509,7 +509,7 @@ namespace Synthesis.DriverPractice
                     StateMachine.SceneGlobal.Link<MainState>(moveArrows);
 
                     DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-                    lastCameraState = dynamicCamera.cameraState;
+                    lastCameraState = dynamicCamera.ActiveState;
 
                     dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, spawnIndicator));
 
@@ -971,7 +971,7 @@ namespace Synthesis.DriverPractice
             arrows.GetComponent<MoveArrows>().OnClick = () => GetComponent<SimulatorRobot>().LockRobot();
             arrows.GetComponent<MoveArrows>().OnRelease = () => GetComponent<SimulatorRobot>().UnlockRobot();
 
-            StateMachine.Link<MainState>(arrows, false);
+            StateMachine.SceneGlobal.Link<MainState>(arrows, false);
 
             return arrows;
         }

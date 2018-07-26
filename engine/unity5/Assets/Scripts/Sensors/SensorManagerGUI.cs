@@ -14,7 +14,7 @@ namespace Synthesis.Sensors
     /// <summary>
     /// This class handles every sensor-related GUI elements in Unity
     /// </summary>
-    class SensorManagerGUI : StateBehaviour<MainState>
+    class SensorManagerGUI : LinkedMonoBehaviour<MainState>
     {
         Toolkit toolkit;
         GameObject canvas;
@@ -181,7 +181,7 @@ namespace Synthesis.Sensors
             sensorOptionPanel.SetActive(isChoosingOption);
             if (isChoosingOption)
             {
-                preConfigState = dynamicCamera.cameraState;
+                preConfigState = dynamicCamera.ActiveState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera));
                 ShowAllSensors();
             }
