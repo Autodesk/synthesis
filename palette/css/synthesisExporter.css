@@ -2,7 +2,7 @@
 @font-face
 {
     font-family: 'Artifakt Element';
-    src: url(resources/artifakt.ttf) format("truetype");
+    src: url('../resources/artifakt.ttf') format("truetype");
 }
 
 *
@@ -18,8 +18,7 @@ body
     padding: 0.5rem;
 }
 
-.visual-mesh-dropdown-p
+fieldset
 {
-    display: inline-block;
-    float: left;
+    margin: 0.5rem 0;
 }

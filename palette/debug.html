@@ -5,45 +5,38 @@
         <script src="js/fusionInterface.js"></script>
 
         <style>
-            #finishedButton
+            #finished-button
             {
                 left: 0;
                 bottom: 0;
                 width: 100%;
                 text-align: center;
             }
+            #joint-config-template
+            {
+                display: none;
+            }
         </style>
     </head>
     <body>
-        <p id='exportSettings'>
+        <div id='export-settings'>
             <div class="text-inputs">
                 Robot Name:  <input type="text" name="name"><br>
                 Mass:        <input type="text" name="mass"><br>
             </div>
             <br>
-            <div class="driver-chooser-dropdown">
-                <h3 class="dropbtn">Driver Type: </h3>
-                <select class="Rotational">
-                    <option value="Motor">
-                        <a href=" = " #">Motor</a>
-                    </option>
-                    <option value="Servo">
-                        <a href=" = " #">Servo</a>
-                    </option>
-                    <option value="Bumper_Pnuematic">
-                        <a href=" = " #">Bumper Pnuematic</a>
-                    </option>
-                    <option value="Relay_Pnuematic">
-                        <a href=" = " #">Relay Pnuematic</a>
-                    </option>
-                    <option value="Worm_Screw">
-                        <a href=" = " #">Worm Screw</a>
-                    </option>
-                    <option value="Dual_Motor">
-                        <a href=" = " #">Dual Motor</a>
-                    </option>
+            <fieldset id="joint-config-template" class="joint-config">
+                <h3 class="driver-type-header">Driver Type: </h3>
+                <select class="rotational">
+                    <option value="None">None</option>
+                    <option value="Motor">Motor</option>
+                    <option value="Servo">Servo</option>
+                    <option value="Bumper_Pnuematic">Bumper Pnuematic</option>
+                    <option value="Relay_Pnuematic">Relay Pnuematic</option>
+                    <option value="Worm_Screw">Worm Screw</option>
+                    <option value="Dual_Motor">Dual Motor</option>
                 </select>
-                <select class="Linear">
+                <!--<select class="Linear">
                     <option value="Motor">
                         <a href=" = " #">Elevator</a>
                     </option>
@@ -56,28 +49,11 @@
                     <option value="Worm_Screw">
                         <a href=" = " #">Worm Screw</a>
                     </option>
-                </select>
-            </div>
-            <br>
-            <div class="dropdown">
-                <button class="dropbtn">Physical Mesh Accuracy</button>
-                <div class="dropdown-content">
-                    <select>
-                        <option value="Low">
-                            <a href=" = " #">Low</a>
-                        </option>
-                        <option value="Medium">
-                            <a href=" = " #">Medium</a>
-                        </option>
-                        <option value="High">
-                            <a href=" = " #">High</a>
-                        </option>
-                    </select>
-                </div>
-            </div>
-        </p>
+                </select>-->
+            </fieldset>
+        </div>
 
-        <button id='finishedButton' type='button' onclick='sendInfoToFusion()'>Export Robot</button>
+        <button id='finished-button' type='button' onclick='sendInfoToFusion()'>Export Robot</button>
 
         <script>
             var jointOptions = [];
@@ -99,12 +75,16 @@
 
             function displayJointOptions(joints)
             {
-                /*var str = "";
+                var exportForm = document.getElementById('export-settings');
+                var template = document.getElementById('joint-config-template');
 
                 for (var i = 0; i < joints.length; i++)
-                    str += joints[i].name + ' ' + '\n';
-
-                document.getElementById('exportSettings').innerHTML = str;*/
+                {
+                    var newJoint = template.cloneNode(true);
+                    delete newJoint.id;
+                    
+                    exportForm.appendChild(newJoint);
+                }
             }
 
             window.fusionJavaScriptHandler =
