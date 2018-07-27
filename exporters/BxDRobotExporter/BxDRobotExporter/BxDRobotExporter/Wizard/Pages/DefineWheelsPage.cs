@@ -886,5 +886,24 @@ namespace BxDRobotExporter.Wizard
             // Refresh the UI with new wheel information
             UpdateUI();
         }
+
+        private void RemoveWheelsButton_Click(object sender, EventArgs e)
+        {
+            foreach (string name in leftOrder.ToList())
+                RemoveNodeFromPanel(name);
+            
+            foreach (string name in rightOrder.ToList())
+                RemoveNodeFromPanel(name);
+
+            foreach (string name in middleOrder.ToList())
+                RemoveNodeFromPanel(name);
+
+            foreach (string name in rightBackOrder.ToList())
+                RemoveNodeFromPanel(name);
+
+            foreach (string name in leftBackOrder.ToList())
+                RemoveNodeFromPanel(name);
+                
+        }
     }
 }
