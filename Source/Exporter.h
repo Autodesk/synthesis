@@ -19,7 +19,8 @@ namespace Synthesis
 		Exporter(Ptr<Application>);
 		~Exporter();
 
-		std::string collectJoints(std::vector<Ptr<Joint>> &);
+		std::vector<Ptr<Joint>> collectJoints();
+		std::string stringifyJoints(std::vector<Ptr<Joint>>);
 
 		void exportExample();
 		void exportExampleXml();
