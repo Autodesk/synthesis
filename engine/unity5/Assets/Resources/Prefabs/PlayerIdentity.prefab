@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 114713105398129754}
   - component: {fileID: 114894721244921034}
   - component: {fileID: 114866878076892068}
+  - component: {fileID: 114254214681718566}
   m_Layer: 0
   m_Name: PlayerIdentity
   m_TagString: Untagged
@@ -42,6 +43,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114254214681718566
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1399343340563132}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6948f280074701f4c84cc8aa9130e18d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RobotID: -1
 --- !u!114 &114713105398129754
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -101,3 +114,4 @@ MonoBehaviour:
   robotName: 
   robotGuid: 
   ready: 0
+  gatheringProgress: 0

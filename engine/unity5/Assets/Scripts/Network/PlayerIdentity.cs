@@ -31,6 +31,11 @@ namespace Synthesis.Network
         /// </summary>
         public List<int> UnresolvedDependencies { get; set; }
 
+        /// <summary>
+        /// The local directory of the robot to be loaded.
+        /// </summary>
+        public string RobotFolder { get; set; }
+
         #endregion
 
         #region SyncVars
@@ -70,6 +75,12 @@ namespace Synthesis.Network
         /// </summary>
         [SyncVar]
         public float gatheringProgress;
+
+        /// <summary>
+        /// True if the scene has been generated on this local instance.
+        /// </summary>
+        [SyncVar]
+        public bool sceneGenerated;
 
         #endregion
 
@@ -133,8 +144,13 @@ namespace Synthesis.Network
                 LocalInstance = this;
                 CmdSetPlayerTag(DefaultLocalPlayerTag);
                 CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
+                RobotFolder = PlayerPrefs.GetString("simSelectedRobot");
             }
-
+            else
+            {
+                RobotFolder = string.Empty;
+            }
+            
             FileData = new Dictionary<string, List<byte>>();
             UnresolvedDependencies = new List<int>();
             ReceivedFiles = new HashSet<string>();
@@ -202,40 +218,46 @@ namespace Synthesis.Network
 
             foreach (PlayerIdentity otherIdentity in FindObjectsOfType<PlayerIdentity>().Where(p => p.id != id))
             {
-                string robotDirectory = PlayerPrefs.GetString("RobotDirectory");
-                bool robotDependencyResolved = false;
+                string robotsDirectory = PlayerPrefs.GetString("RobotDirectory");
+                otherIdentity.RobotFolder = string.Empty;
 
-                foreach (string dir in Directory.GetDirectories(robotDirectory, otherIdentity.robotName))
+                foreach (string dir in Directory.GetDirectories(robotsDirectory, otherIdentity.robotName))
                 {
                     RigidNode_Base root = BXDJSkeleton.ReadSkeleton(dir + "\\skeleton.bxdj");
 
                     if (root.GUID.ToString().Equals(otherIdentity.robotGuid))
                     {
-                        robotDependencyResolved = true;
+                        otherIdentity.RobotFolder = dir;
                         break;
                     }
                 }
 
-                if (!robotDependencyResolved)
+                if (otherIdentity.RobotFolder.Length == 0)
+                {
                     UnresolvedDependencies.Add(otherIdentity.id);
+                    otherIdentity.RobotFolder = robotsDirectory + "\\" + otherIdentity.robotName;
+                }
             }
 
-            string fieldDirectory = PlayerPrefs.GetString("FieldDirectory");
-            bool fieldDependencyResolved = false;
+            string fieldsDirectory = PlayerPrefs.GetString("FieldDirectory");
+            MatchManager.Instance.FieldFolder = string.Empty;
             
-            foreach (string dir in Directory.GetDirectories(fieldDirectory, MatchManager.Instance.FieldName))
+            foreach (string dir in Directory.GetDirectories(fieldsDirectory, MatchManager.Instance.FieldName))
             {
                 FieldDefinition definition = BXDFProperties.ReadProperties(dir + "\\definition.bxdf");
 
                 if (definition.GUID.ToString().Equals(MatchManager.Instance.FieldGuid))
                 {
-                    fieldDependencyResolved = true;
+                    MatchManager.Instance.FieldFolder = dir;
                     break;
                 }
             }
 
-            if (!fieldDependencyResolved)
+            if (MatchManager.Instance.FieldFolder.Length == 0)
+            {
                 UnresolvedDependencies.Add(-1);
+                MatchManager.Instance.FieldFolder = fieldsDirectory + "\\" + MatchManager.Instance.FieldName;
+            }
 
             CmdAddDependencies(UnresolvedDependencies.ToArray());
         }
@@ -393,6 +415,16 @@ namespace Synthesis.Network
         public void CmdSetReady(bool playerReady)
         {
             ready = playerReady;
+        }
+
+        /// <summary>
+        /// Sets the value of the scene generated <see cref="SyncVarAttribute"/>.
+        /// </summary>
+        /// <param name="generated"></param>
+        [Command]
+        public void CmdSetSceneGenerated(bool generated)
+        {
+            sceneGenerated = generated;
         }
 
         /// <summary>

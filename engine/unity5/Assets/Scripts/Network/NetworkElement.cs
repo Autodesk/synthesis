@@ -79,7 +79,12 @@ namespace Synthesis.Network
             canSendUpdate = true;
 
             if (rigidBody == null)
-                rigidBody = (RigidBody)gameObject.GetComponent<BRigidBody>().GetCollisionObject();
+            {
+                BRigidBody bRigidBody = gameObject.GetComponent<BRigidBody>();
+
+                if (bRigidBody != null)
+                    rigidBody = (RigidBody)bRigidBody.GetCollisionObject();
+            }
         }
 
         private void FixedUpdate()
