@@ -146,7 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Palette\css\synthesisExporter.css" />
-    <None Include="Palette\debug.html" />
     <None Include="Palette\js\fusionInterface.js" />
     <None Include="palette\palette.html" />
   </ItemGroup>
