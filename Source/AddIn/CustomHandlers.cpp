@@ -15,8 +15,7 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 		return;
 
 	// Add click command to button
-	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler;
-	onShowPaletteCommandExecuted->app = app;
+	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler(app);
 	exec->add(onShowPaletteCommandExecuted);
 }
 

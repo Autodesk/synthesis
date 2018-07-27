@@ -87,8 +87,7 @@ bool EUI::defineExportPalette()
 		if (!htmlEvent)
 			return false;
 
-		ReceiveFormDataHandler * onHTMLEvent = new ReceiveFormDataHandler;
-		onHTMLEvent->app = app;
+		ReceiveFormDataHandler * onHTMLEvent = new ReceiveFormDataHandler(app);
 
 		htmlEvent->add(onHTMLEvent);
 
@@ -97,8 +96,7 @@ bool EUI::defineExportPalette()
 		if (!closeEvent)
 			return false;
 
-		CloseFormEventHandler * onClose = new CloseFormEventHandler;
-		onClose->app = app;
+		CloseFormEventHandler * onClose = new CloseFormEventHandler(app);
 
 		closeEvent->add(onClose);
 	}
@@ -116,8 +114,7 @@ bool EUI::defineExportButton()
 	if (!commandCreatedEvent)
 		return false;
 	
-	ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler;
-	commandCreatedEventHandler->app = app;
+	ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler(app);
 	
 	return commandCreatedEvent->add(commandCreatedEventHandler);
 }
