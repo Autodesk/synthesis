@@ -190,5 +190,8 @@
     <None Include="Palette\js\fusionInterface.js">
       <Filter>Source\AddIn\HTML</Filter>
     </None>
+    <None Include="Palette\css\synthesisExporter.css">
+      <Filter>Source\AddIn\HTML</Filter>
+    </None>
   </ItemGroup>
 </Project>
