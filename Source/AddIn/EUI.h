@@ -20,7 +20,6 @@ namespace Synthesis
 	class EUI
 	{
 	public:
-		EUI();
 		EUI(Ptr<UserInterface>, Ptr<Application>);
 		~EUI();
 
@@ -36,10 +35,13 @@ namespace Synthesis
 		Ptr<Palette> exportPalette;
 
 		bool createWorkspace();
+		void deleteWorkspace();
 
-		bool defineExportPalette();
+		bool createExportPalette();
+		void deleteExportPalette();
 
-		bool defineExportButton();
+		bool createExportButton();
+		void deleteExportButton();
 
 	};
 }

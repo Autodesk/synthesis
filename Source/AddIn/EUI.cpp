@@ -10,11 +10,6 @@
 
 using namespace Synthesis;
 
-EUI::EUI()
-{
-
-}
-
 EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 {
 	this->UI = UI;
@@ -24,7 +19,7 @@ EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 
 EUI::~EUI()
 {
-
+	deleteWorkspace();
 }
 
 bool EUI::createWorkspace()
@@ -48,11 +43,11 @@ bool EUI::createWorkspace()
 		panelControls = panel->controls();
 
 		// Create palettes
-		if (!defineExportPalette())
+		if (!createExportPalette())
 			throw "Failed to create toolbar buttons.";
 
 		// Create buttons
-		if (!defineExportButton())
+		if (!createExportButton())
 			throw "Failed to create toolbar buttons.";
 
 		// Add buttons to panel
@@ -68,7 +63,16 @@ bool EUI::createWorkspace()
 	}
 }
 
-bool EUI::defineExportPalette()
+void Synthesis::EUI::deleteWorkspace()
+{
+	// Delete palettes
+	deleteExportPalette();
+
+	// Delete buttons
+	deleteExportButton();
+}
+
+bool EUI::createExportPalette()
 {
 	Ptr<Palettes> palettes = UI->palettes();
 	if (!palettes)
@@ -76,7 +80,6 @@ bool EUI::defineExportPalette()
 
 	// Check if palette already exists
 	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
-
 	if (!exportPalette)
 	{
 		// Create palette
@@ -109,7 +112,22 @@ bool EUI::defineExportPalette()
 	return true;
 }
 
-bool EUI::defineExportButton()
+void Synthesis::EUI::deleteExportPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette already exists
+	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
+	
+	if (exportPalette)
+		exportPalette->deleteMe();
+
+	exportPalette = nullptr;
+}
+
+bool EUI::createExportButton()
 {
 	// Create button command definition
 	exportButtonCommand = UI->commandDefinitions()->itemById(K_EXPORT_BUTTON);
@@ -128,4 +146,35 @@ bool EUI::defineExportButton()
 	}
 	
 	return true;
+}
+
+void Synthesis::EUI::deleteExportButton()
+{
+	// Delete button
+	Ptr<ToolbarPanelList> panels = UI->allToolbarPanels();
+	if (!panels)
+		return;
+
+	Ptr<ToolbarPanel> panel = panels->itemById(Synthesis::K_PANEL);
+	if (!panel)
+		return;
+
+	Ptr<ToolbarControls> controls = panel->controls();
+	if (!controls)
+		return;
+
+	Ptr<ToolbarControl> ctrl = controls->itemById(K_EXPORT_BUTTON);
+	if (ctrl)
+		ctrl->deleteMe();
+
+	// Delete command
+	Ptr<CommandDefinitions> commandDefinitions = UI->commandDefinitions();
+	if (!commandDefinitions)
+		return;
+
+	exportButtonCommand = commandDefinitions->itemById(K_EXPORT_BUTTON);
+	if (exportButtonCommand)
+		exportButtonCommand->deleteMe();
+
+	exportButtonCommand = nullptr;
 }

@@ -29,7 +29,7 @@
                 <legend class="joint-config-legend">Joint</legend>
 
                 <div class="driver-type-div">
-                    <h3 class="driver-type-header">Driver Type: </h3>
+                    <h3>Driver Type: </h3>
                     <select class="driver-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
                         <option value="0">None</option>
                         <option value="1" class="rotational-driver">Motor</option>
@@ -42,14 +42,19 @@
                     </select>
                 </div>
 
-                <div class="wheel-type-div">
-                    <h3 class="wheel-type-header">Wheel Type: </h3>
+                <div class="wheel-div">
+                    <h3>Wheel Type: </h3>
                     <select class="wheel-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
                         <option value="0">None</option>
                         <option value="1">Normal</option>
                         <option value="2">Omni</option>
                         <option value="3">Mecanum</option>
                     </select>
+
+                    <div class="other-wheel-div">
+                        <span>Is Drive Wheel: </span>
+                        <input type="checkbox" class="is-drive-wheel" />
+                    </div>
                 </div>
             </fieldset>
         </div>
@@ -58,11 +63,18 @@
 
         <script>
             var jointOptions = [];
+            var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
 
             function displayJointOptions(joints)
             {
+                // Delete all existing slots
+                var existing = document.getElementsByClassName('joint-config');
+                while (existing.length > 0)
+                    existing[0].parentNode.removeChild(existing[0]);
+
+                // Add slots for given joinst
+                var template = jointTemplate;
                 var exportForm = document.getElementById('export-settings');
-                var template = document.getElementById('joint-config-template');
 
                 for (var i = 0; i < joints.length; i++)
                 {
@@ -92,8 +104,9 @@
             function updateFieldOptions(fieldset)
             {
                 var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
-                var wheelSelectorDiv = fieldset.getElementsByClassName("wheel-type-div")[0];
+                var wheelSelectorDiv = fieldset.getElementsByClassName("wheel-div")[0];
 
+                // Hide wheel info if driver not set
                 if (selectedDriver == 0)
                     wheelSelectorDiv.style.visibility = "hidden";
                 else
@@ -103,6 +116,12 @@
                     var selectedWheel = fieldset.getElementsByClassName("wheel-type")[0].selectedIndex;
 
                     // Set other wheel info visibility
+                    var otherWheelDiv = wheelSelectorDiv.getElementsByClassName("other-wheel-div")[0];
+
+                    if (selectedWheel == 0)
+                        otherWheelDiv.style.visibility = "hidden";
+                    else
+                        otherWheelDiv.style.visibility = "visible";
                 }
             }
 
@@ -121,7 +140,10 @@
                         var selectedWheel = fieldset.getElementsByClassName("wheel-type")[0].selectedIndex;
 
                         if (selectedWheel > 0)
-                            jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, true);
+                        {
+                            var isDriveWheel = fieldset.getElementsByClassName("is-drive-wheel")[0].checked;
+                            jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
+                        }
                     }
                 }
             }
