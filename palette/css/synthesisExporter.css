@@ -15,6 +15,7 @@
 body
 {
     background-color: rgb(242,242,242);
+    padding: 0.5rem;
 }
 
 .visual-mesh-dropdown-p
