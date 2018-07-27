@@ -77,9 +77,9 @@ namespace InternalFieldExporter.Wizard
         }
 
         /// <summary>
-        /// Detects all the wheel nodes in a robot. Needs improvement
+        /// Detects all the wheel nodes in a Field. Needs improvement
         /// </summary>
-        /// <param name="baseNode">Base node of the robot.</param>
+        /// <param name="baseNode">Base node of the Field.</param>
         /// <param name="leftWheels">Detected wheels on the left side.</param>
         /// <param name="rightWheels">Detected wheels on the right side.</param>
         /// <param name="threshold">Threshold distance for wheels to be detected.</param>
@@ -97,7 +97,7 @@ namespace InternalFieldExporter.Wizard
                 }
             }
 
-            //Find node with the lowest y value to filter out all nodes above bottom of robot
+            //Find node with the lowest y value to filter out all nodes above bottom of Field
             RigidNode_Base lowestNode = null; double lowestY = 0;
             foreach(RigidNode_Base node in potentialWheels)
             {
@@ -189,7 +189,7 @@ namespace InternalFieldExporter.Wizard
                 }
             }
 
-            //Find node with the lowest y value to filter out all nodes above bottom of robot
+            //Find node with the lowest y value to filter out all nodes above bottom of Field
             RigidNode_Base lowestNode = null; double lowestY = 0;
             foreach (RigidNode_Base node in potentialWheels)
             {

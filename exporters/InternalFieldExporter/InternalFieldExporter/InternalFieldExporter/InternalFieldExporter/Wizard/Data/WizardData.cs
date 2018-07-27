@@ -155,16 +155,16 @@ namespace InternalFieldExporter.Wizard
         }
         #endregion
 
-        #region BasicRobotInfoPage
+        #region BasicFieldInfoPage
         //General Info
         /// <summary>
-        /// The name of the robot. Does not do anything now.
+        /// The name of the field. Does not do anything now.
         /// </summary>
-        public string robotName;
+        public string fieldName;
     
         //Drive Information
         /// <summary>
-        /// Drive train set in <see cref="BasicRobotInfoPage"/>
+        /// Drive train set in <see cref="BasicFieldInfoPage"/>
         /// </summary>
         public WizardDriveTrain driveTrain;
         /// <summary>
@@ -174,7 +174,7 @@ namespace InternalFieldExporter.Wizard
 
         //Weight Info
         /// <summary>
-        /// The total weight of the robot in kilograms
+        /// The total weight of the Field in kilograms
         /// </summary>
         public float weightKg;
 

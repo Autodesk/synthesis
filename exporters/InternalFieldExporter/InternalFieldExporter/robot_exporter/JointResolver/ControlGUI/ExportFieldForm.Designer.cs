@@ -1,6 +1,6 @@
 ﻿namespace JointResolver.ControlGUI
 {
-    partial class ExportRobotForm
+    partial class ExportFieldForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,17 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportRobotForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportFieldForm));
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.RobotNameLabel = new System.Windows.Forms.Label();
+            this.FieldNameLabel = new System.Windows.Forms.Label();
             this.RobotNameTextBox = new System.Windows.Forms.TextBox();
-            this.FieldSelectComboBox = new System.Windows.Forms.ComboBox();
             this.ColorBox = new System.Windows.Forms.CheckBox();
-            this.FieldLabel = new System.Windows.Forms.Label();
-            this.OpenSynthesisBox = new System.Windows.Forms.CheckBox();
             this.WindowControlLayout = new System.Windows.Forms.TableLayoutPanel();
             this.ButtonCancel = new System.Windows.Forms.Button();
             this.ButtonOk = new System.Windows.Forms.Button();
+            this.OpenSynthesisBox = new System.Windows.Forms.CheckBox();
             this.MainLayout.SuspendLayout();
             this.WindowControlLayout.SuspendLayout();
             this.SuspendLayout();
@@ -51,15 +49,13 @@
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.MainLayout.Controls.Add(this.RobotNameLabel, 0, 0);
+            this.MainLayout.Controls.Add(this.FieldNameLabel, 0, 0);
             this.MainLayout.Controls.Add(this.RobotNameTextBox, 1, 0);
-            this.MainLayout.Controls.Add(this.FieldSelectComboBox, 2, 2);
             this.MainLayout.Controls.Add(this.ColorBox, 0, 1);
-            this.MainLayout.Controls.Add(this.FieldLabel, 1, 2);
             this.MainLayout.Controls.Add(this.OpenSynthesisBox, 0, 2);
             this.MainLayout.Controls.Add(this.WindowControlLayout, 0, 3);
             this.MainLayout.Location = new System.Drawing.Point(4, 4);
-            this.MainLayout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MainLayout.Margin = new System.Windows.Forms.Padding(4);
             this.MainLayout.Name = "MainLayout";
             this.MainLayout.RowCount = 4;
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -69,79 +65,40 @@
             this.MainLayout.Size = new System.Drawing.Size(570, 123);
             this.MainLayout.TabIndex = 7;
             // 
-            // RobotNameLabel
+            // FieldNameLabel
             // 
-            this.RobotNameLabel.AutoSize = true;
-            this.RobotNameLabel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.RobotNameLabel.Location = new System.Drawing.Point(4, 4);
-            this.RobotNameLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.RobotNameLabel.Name = "RobotNameLabel";
-            this.RobotNameLabel.Size = new System.Drawing.Size(87, 22);
-            this.RobotNameLabel.TabIndex = 2;
-            this.RobotNameLabel.Text = "Robot Name";
-            this.RobotNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.FieldNameLabel.AutoSize = true;
+            this.FieldNameLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.FieldNameLabel.Location = new System.Drawing.Point(4, 4);
+            this.FieldNameLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.FieldNameLabel.Name = "FieldNameLabel";
+            this.FieldNameLabel.Size = new System.Drawing.Size(79, 22);
+            this.FieldNameLabel.TabIndex = 2;
+            this.FieldNameLabel.Text = "Field Name";
+            this.FieldNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // RobotNameTextBox
             // 
             this.MainLayout.SetColumnSpan(this.RobotNameTextBox, 2);
             this.RobotNameTextBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.RobotNameTextBox.Location = new System.Drawing.Point(152, 4);
-            this.RobotNameTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RobotNameTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.RobotNameTextBox.Name = "RobotNameTextBox";
             this.RobotNameTextBox.Size = new System.Drawing.Size(414, 22);
             this.RobotNameTextBox.TabIndex = 1;
             this.RobotNameTextBox.WordWrap = false;
             this.RobotNameTextBox.TextChanged += new System.EventHandler(this.RobotNameTextBox_TextChanged);
             // 
-            // FieldSelectComboBox
-            // 
-            this.FieldSelectComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.FieldSelectComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.FieldSelectComboBox.Enabled = false;
-            this.FieldSelectComboBox.FormattingEnabled = true;
-            this.FieldSelectComboBox.Location = new System.Drawing.Point(198, 63);
-            this.FieldSelectComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.FieldSelectComboBox.Name = "FieldSelectComboBox";
-            this.FieldSelectComboBox.Size = new System.Drawing.Size(368, 24);
-            this.FieldSelectComboBox.TabIndex = 8;
-            this.FieldSelectComboBox.SelectedIndexChanged += new System.EventHandler(this.FieldSelectComboBox_SelectedIndexChanged);
-            // 
             // ColorBox
             // 
             this.ColorBox.AutoSize = true;
             this.ColorBox.Location = new System.Drawing.Point(4, 34);
-            this.ColorBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ColorBox.Margin = new System.Windows.Forms.Padding(4);
             this.ColorBox.Name = "ColorBox";
             this.ColorBox.Size = new System.Drawing.Size(140, 21);
             this.ColorBox.TabIndex = 7;
             this.ColorBox.Text = "Export with colors";
             this.ColorBox.UseVisualStyleBackColor = true;
-            // 
-            // FieldLabel
-            // 
-            this.FieldLabel.AutoSize = true;
-            this.FieldLabel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.FieldLabel.Enabled = false;
-            this.FieldLabel.Location = new System.Drawing.Point(152, 63);
-            this.FieldLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.FieldLabel.Name = "FieldLabel";
-            this.FieldLabel.Size = new System.Drawing.Size(38, 24);
-            this.FieldLabel.TabIndex = 6;
-            this.FieldLabel.Text = "Field";
-            this.FieldLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // OpenSynthesisBox
-            // 
-            this.OpenSynthesisBox.AutoSize = true;
-            this.OpenSynthesisBox.Dock = System.Windows.Forms.DockStyle.Left;
-            this.OpenSynthesisBox.Location = new System.Drawing.Point(4, 66);
-            this.OpenSynthesisBox.Margin = new System.Windows.Forms.Padding(4, 7, 4, 4);
-            this.OpenSynthesisBox.Name = "OpenSynthesisBox";
-            this.OpenSynthesisBox.Size = new System.Drawing.Size(130, 21);
-            this.OpenSynthesisBox.TabIndex = 4;
-            this.OpenSynthesisBox.Text = "Open Synthesis";
-            this.OpenSynthesisBox.UseVisualStyleBackColor = true;
-            this.OpenSynthesisBox.CheckedChanged += new System.EventHandler(this.OpenSynthesisBox_CheckedChanged);
             // 
             // WindowControlLayout
             // 
@@ -188,7 +145,20 @@
             this.ButtonOk.UseVisualStyleBackColor = true;
             this.ButtonOk.Click += new System.EventHandler(this.ButtonOK_Click);
             // 
-            // ExportRobotForm
+            // OpenSynthesisBox
+            // 
+            this.OpenSynthesisBox.AutoSize = true;
+            this.OpenSynthesisBox.Dock = System.Windows.Forms.DockStyle.Left;
+            this.OpenSynthesisBox.Location = new System.Drawing.Point(4, 66);
+            this.OpenSynthesisBox.Margin = new System.Windows.Forms.Padding(4, 7, 4, 4);
+            this.OpenSynthesisBox.Name = "OpenSynthesisBox";
+            this.OpenSynthesisBox.Size = new System.Drawing.Size(130, 21);
+            this.OpenSynthesisBox.TabIndex = 4;
+            this.OpenSynthesisBox.Text = "Open Synthesis";
+            this.OpenSynthesisBox.UseVisualStyleBackColor = true;
+           // this.OpenSynthesisBox.CheckedChanged += new System.EventHandler(this.OpenSynthesisBox_CheckedChanged);
+            // 
+            // ExportFieldForm
             // 
             this.AcceptButton = this.ButtonOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -201,13 +171,13 @@
             this.Controls.Add(this.MainLayout);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ExportRobotForm";
+            this.Name = "ExportFieldForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Export Robot";
+            this.Text = "Export Field";
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             this.WindowControlLayout.ResumeLayout(false);
@@ -218,14 +188,12 @@
 
         #endregion
         private System.Windows.Forms.TableLayoutPanel MainLayout;
-        private System.Windows.Forms.CheckBox OpenSynthesisBox;
-        private System.Windows.Forms.Label FieldLabel;
         private System.Windows.Forms.CheckBox ColorBox;
-        private System.Windows.Forms.ComboBox FieldSelectComboBox;
         private System.Windows.Forms.Button ButtonCancel;
         private System.Windows.Forms.Button ButtonOk;
         private System.Windows.Forms.TableLayoutPanel WindowControlLayout;
-        private System.Windows.Forms.Label RobotNameLabel;
+        private System.Windows.Forms.Label FieldNameLabel;
         private System.Windows.Forms.TextBox RobotNameTextBox;
+        private System.Windows.Forms.CheckBox OpenSynthesisBox;
     }
 }

@@ -11,48 +11,47 @@ using System.IO;
 
 namespace JointResolver.ControlGUI
 {
-    public partial class ExportRobotForm : Form
+    public partial class ExportFieldForm : Form
     {
         static Dictionary<string, string> fields = new Dictionary<string, string>();
 
-        public ExportRobotForm(string initialRobotName)
+        public ExportFieldForm(string initialFieldName)
         {
             InitializeComponent();
-            InitializeFields();
 
-            RobotNameTextBox.Text = initialRobotName;
+            RobotNameTextBox.Text = initialFieldName;
             ColorBox.Checked = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
         }
 
         /// <summary>
         /// Gets the paths for all the synthesis fields.
         /// </summary>
-        public void InitializeFields()
-        {
-            if (fields.Count == 0)
-            {
-                var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Fields");
+        //public void InitializeFields()
+        //{
+        //    if (fields.Count == 0)
+        //    {
+        //        var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Fields");
 
-                foreach (var dir in dirs)
-                {
-                    fields.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last(), dir);
-                    FieldSelectComboBox.Items.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last());
-                }
-            }
-            else
-            {
-                foreach(KeyValuePair<string, string> pair in fields)
-                {
-                    FieldSelectComboBox.Items.Add(pair.Key);
-                }
-            }
-        }
+        //        foreach (var dir in dirs)
+        //        {
+        //            fields.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last(), dir);
+        //            FieldSelectComboBox.Items.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last());
+        //        }
+        //    }
+        //    else
+        //    {
+        //        foreach(KeyValuePair<string, string> pair in fields)
+        //        {
+        //            FieldSelectComboBox.Items.Add(pair.Key);
+        //        }
+        //    }
+        //}
 
         public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field)
         {
             try
             {
-                ExportRobotForm form = new ExportRobotForm(initialRobotName);
+                ExportFieldForm form = new ExportFieldForm(initialRobotName);
                 form.ShowDialog();
                 robotName = form.RobotNameTextBox.Text;
                 colors = form.ColorBox.Checked;
@@ -60,8 +59,8 @@ namespace JointResolver.ControlGUI
 
                 field = null;
                 
-                if (form.OpenSynthesisBox.Checked && form.FieldSelectComboBox.SelectedItem != null)
-                    field = fields[(string)form.FieldSelectComboBox.SelectedItem];
+                //if (form.OpenSynthesisBox.Checked && form.FieldSelectComboBox.SelectedItem != null)
+                //    field = fields[(string)form.FieldSelectComboBox.SelectedItem];
 
                 return form.DialogResult;
             }
@@ -97,25 +96,25 @@ namespace JointResolver.ControlGUI
             }
         }
 
-        private void OpenSynthesisBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (OpenSynthesisBox.Checked)
-            {
-                FieldLabel.Enabled = true;
-                FieldSelectComboBox.Enabled = true;
-            }
-            else
-            {
-                FieldLabel.Enabled = false;
-                FieldSelectComboBox.Enabled = false;
-            }
+        //private void OpenSynthesisBox_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    if (OpenSynthesisBox.Checked)
+        //    {
+        //        FieldLabel.Enabled = true;
+        //        FieldSelectComboBox.Enabled = true;
+        //    }
+        //    else
+        //    {
+        //        FieldLabel.Enabled = false;
+        //        FieldSelectComboBox.Enabled = false;
+        //    }
 
-            CheckFormIsValid();
-        }
+        //    CheckFormIsValid();
+        //}
 
         private bool CheckFormIsValid()
         {
-            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0 && (!OpenSynthesisBox.Checked || FieldSelectComboBox.SelectedItem != null);
+            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0 && (!OpenSynthesisBox.Checked );
             return ButtonOk.Enabled;
         }
 

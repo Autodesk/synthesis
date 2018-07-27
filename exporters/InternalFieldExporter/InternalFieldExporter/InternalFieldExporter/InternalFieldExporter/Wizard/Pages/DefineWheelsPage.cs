@@ -24,7 +24,7 @@ namespace InternalFieldExporter.Wizard
     }
 
     /// <summary>
-    /// Prompts the user to define all the wheels on the robot.
+    /// Prompts the user to define all the wheels on the Field.
     /// </summary>
     public partial class DefineWheelsPage : UserControl, IWizardPage
     {
@@ -855,7 +855,7 @@ namespace InternalFieldExporter.Wizard
 
         private void AutoFill_Click(Object sender, EventArgs e) // Initializes autofill process
         {
-            if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton()) // Load the robot skeleton
+            if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadFieldSkeleton()) // Load the Field skeleton
             {
                 if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
                 {

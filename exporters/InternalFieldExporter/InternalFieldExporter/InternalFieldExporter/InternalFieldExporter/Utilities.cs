@@ -27,7 +27,7 @@ namespace InternalFieldExporter
             IntPtr[] children = CreateChildDialog();
 
             UserInterfaceManager uiMan = app.UserInterfaceManager;
-            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Robot Joint Editor");
+            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "InternalFieldExporter:JointEditor", "Field Joint Editor");
             
             #region EmbededJointPane
             EmbededJointPane.DockingState = DockingStateEnum.kDockBottom;
@@ -44,7 +44,7 @@ namespace InternalFieldExporter
         {
             try
             {
-                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication)// pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
+                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication)// pass the main application to the GUI so classes FieldExporter can access Inventor to read the joints
                 {
                     Opacity = 0.00d
                 };
@@ -112,7 +112,7 @@ namespace InternalFieldExporter
         {
             // Old configurations get overriden (version numbers below 1)
             if (Properties.Settings.Default.SaveLocation == "" || Properties.Settings.Default.SaveLocation == "firstRun" || Properties.Settings.Default.ConfigVersion < 1 )
-                Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Robots";
+                Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Fields";
 
             SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
             {

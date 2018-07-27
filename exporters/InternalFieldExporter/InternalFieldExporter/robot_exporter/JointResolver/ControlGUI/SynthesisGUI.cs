@@ -32,7 +32,7 @@ public partial class SynthesisGUI : Form
     {
         public bool UseSettingsDir;
         public string ActiveDir;
-        public string ActiveRobotName;
+        public string ActiveFieldName;
         private float _totalWeightKg;
         public float TotalWeightKg
         {
@@ -48,7 +48,7 @@ public partial class SynthesisGUI : Form
             {
                 UseSettingsDir = true,
                 ActiveDir = null,
-                ActiveRobotName = null,
+                ActiveFieldName = null,
                 TotalWeightKg = 0,
                 PreferMetric = false,
                 FieldName = null
@@ -67,7 +67,7 @@ public partial class SynthesisGUI : Form
         FormBorderStyle = FormBorderStyle.None
     };
     
-    private Inventor.AssemblyDocument AsmDocument = null; // Set when LoadRobotData is called.
+    private Inventor.AssemblyDocument AsmDocument = null; // Set when LoadFieldData is called.
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
@@ -169,10 +169,10 @@ public partial class SynthesisGUI : Form
         if (robotName == null)
         {
             // Cancel if no robot name is given
-            if (RMeta.ActiveRobotName == null)
+            if (RMeta.ActiveFieldName == null)
                 return;
 
-            robotName = RMeta.ActiveRobotName;
+            robotName = RMeta.ActiveFieldName;
         }
 
         if (fieldName == null)
@@ -183,14 +183,14 @@ public partial class SynthesisGUI : Form
 
             fieldName = RMeta.FieldName;
         }
-        
+
         Process.Start(Utilities.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
     }
 
     /// <summary>
-    /// Build the node tree of the robot from Inventor
+    /// Build the node tree of the field from Inventor
     /// </summary>
-    public bool LoadRobotSkeleton()
+    public bool LoadFieldSkeleton()
     {
         try
         {
@@ -227,7 +227,7 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Load meshes of a robot from Inventor
+    /// Load meshes of a field from Inventor
     /// </summary>
     public bool LoadMeshes()
     {
@@ -285,16 +285,16 @@ public partial class SynthesisGUI : Form
     }
 
     /// <summary>
-    /// Prompts the user for the name of the robot, as well as other information.
+    /// Prompts the user for the name of the field, as well as other information.
     /// </summary>
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
     public bool PromptExportSettings()
     {
-        if (ExportRobotForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        if (ExportFieldForm.Prompt(RMeta.ActiveFieldName, out string fieldName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
         {
             RMeta.UseSettingsDir = true;
             RMeta.ActiveDir = null;
-            RMeta.ActiveRobotName = robotName;
+            RMeta.ActiveFieldName = fieldName;
             RMeta.FieldName = field;
 
             PluginSettings.GeneralUseFancyColors = colors;
@@ -306,7 +306,7 @@ public partial class SynthesisGUI : Form
     }
     public void writeLimits(RigidNode_Base skeleton)// generally, this class iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
         //needed because we want to be able to pull the limits into the joint as the exporter exports, but where the joint is actually written to the .bxdj (the SimulatorAPI) is unable
-        //to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue
+        //to access InternalFieldExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         skeleton.ListAllNodes(nodes);
@@ -386,30 +386,30 @@ public partial class SynthesisGUI : Form
         }
     }
     /// <summary>
-    /// Saves the robot to the directory it was loaded from or the default directory
+    /// Saves the field to the directory it was loaded from or the default directory
     /// </summary>
     /// <returns></returns>
-    public bool ExportRobot()
+    public bool ExportField()
     {
         try
         {
             writeLimits(SkeletonBase);// write the limits from Inventor to the skeleton
-            // If robot has not been named, prompt user for information
-            if (RMeta.ActiveRobotName == null)
+            // If field has not been named, prompt user for information
+            if (RMeta.ActiveFieldName == null)
                 if (!PromptExportSettings())
                     return false;
 
-            if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName))
-                Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName);
+            if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveFieldName))
+                Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveFieldName);
 
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
             BXDJSkeleton.SetupFileNames(SkeletonBase);
-            BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
+            BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveFieldName + "\\skeleton.bxdj", SkeletonBase);
 
             for (int i = 0; i < Meshes.Count; i++)
             {
-                Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\node_" + i + ".bxda");
+                Meshes[i].WriteToFile((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveFieldName + "\\node_" + i + ".bxda");
             }
 
             return true;
@@ -417,7 +417,7 @@ public partial class SynthesisGUI : Form
         catch (Exception e)
         {
             //TODO: Create a form that displays a simple error message with an option to expand it and view the exception info
-            MessageBox.Show("Error saving robot: " + e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("Error saving field: " + e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
         }
     }
@@ -426,9 +426,9 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Loads the joint information from the Inventor assembly file. Returns false if fails.
     /// </summary>
-    /// <param name="asmDocument">Assembly document to load data from. Data will be saved to this document when <see cref="SaveRobotData"/> is called.</param>
+    /// <param name="asmDocument">Assembly document to load data from. Data will be saved to this document when <see cref="SaveFieldData"/> is called.</param>
     /// <returns>True if all data was loaded successfully.</returns>
-    public bool LoadRobotData(Inventor.AssemblyDocument asmDocument)
+    public bool LoadFieldData(Inventor.AssemblyDocument asmDocument)
     {
         if (asmDocument == null)
             return false;
@@ -439,17 +439,17 @@ public partial class SynthesisGUI : Form
         AsmDocument = asmDocument;
         Inventor.PropertySets propertySets = asmDocument.PropertySets;
 
-        // Load Robot Data
+        // Load Field Data
         try
         {
-            // Load global robot data
-            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata", false);
+            // Load global field data
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "fielddata", false);
             
             if (propertySet != null)
             {
-                RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
-                RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
-                RMeta.PreferMetric = Utilities.GetProperty(propertySet, "robot-prefer-metric", false);
+                RMeta.ActiveFieldName = Utilities.GetProperty(propertySet, "field-name", "");
+                RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "field-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
+                RMeta.PreferMetric = Utilities.GetProperty(propertySet, "field-prefer-metric", false);
             }
 
             // Load joint data
@@ -457,7 +457,7 @@ public partial class SynthesisGUI : Form
         }
         catch (Exception e)
         {
-            MessageBox.Show("Robot data could not be loaded from the inventor file. The following error occured:\n" + e.Message);
+            MessageBox.Show("Field data could not be loaded from the inventor file. The following error occured:\n" + e.Message);
             return false;
         }
     }
@@ -550,7 +550,7 @@ public partial class SynthesisGUI : Form
     /// Saves the joint information to the most recently loaded assembly file. Returns false if fails.
     /// </summary>
     /// <returns>True if all data was saved successfully.</returns>
-    public bool SaveRobotData()
+    public bool SaveFieldData()
     {
         if (AsmDocument == null)
             return false;
@@ -560,23 +560,23 @@ public partial class SynthesisGUI : Form
 
         Inventor.PropertySets propertySets = AsmDocument.PropertySets;
 
-        // Save Robot Data
+        // Save Field Data
         try
         {
-            // Save global robot data
-            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata");
+            // Save global field data
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "fielddata");
 
-            if (RMeta.ActiveRobotName != null)
-                Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
-            Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
-            Utilities.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
+            if (RMeta.ActiveFieldName != null)
+                Utilities.SetProperty(propertySet, "field-name", RMeta.ActiveFieldName);
+            Utilities.SetProperty(propertySet, "field-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
+            Utilities.SetProperty(propertySet, "field-prefer-metric", RMeta.PreferMetric);
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
         }
         catch (Exception e)
         {
-            MessageBox.Show("Robot data could not be save to the inventor file. The following error occured:\n" + e.Message);
+            MessageBox.Show("Field data could not be save to the inventor file. The following error occured:\n" + e.Message);
             return false;
         }
     }
@@ -613,8 +613,8 @@ public partial class SynthesisGUI : Form
                 Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
                 Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
                 Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
-                Utilities.SetProperty(propertySet, "driver-inputGear", driver.InputGear);// writes the input gear to the .IAM file incase the user wants to reexport their robot later
-                Utilities.SetProperty(propertySet, "driver-outputGear", driver.OutputGear);// writes the ouotput gear to the .IAM file incase the user wants to reexport their robot later
+                Utilities.SetProperty(propertySet, "driver-inputGear", driver.InputGear);// writes the input gear to the .IAM file incase the user wants to reexport their field later
+                Utilities.SetProperty(propertySet, "driver-outputGear", driver.OutputGear);// writes the ouotput gear to the .IAM file incase the user wants to reexport their field later
 
                 // Save other properties stored in meta
                 // Wheel information
@@ -670,7 +670,7 @@ public partial class SynthesisGUI : Form
         {
             FolderBrowserDialog openDialog = new FolderBrowserDialog()
             {
-                Description = "Select a Robot Folder"
+                Description = "Select a Field Folder"
             };
             DialogResult openResult = openDialog.ShowDialog();
 
@@ -690,13 +690,13 @@ public partial class SynthesisGUI : Form
     /// <returns>Whether the user wishes to overwrite the data</returns>
     private bool WarnOverwrite()
     {
-        DialogResult overwriteResult = MessageBox.Show("Overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
+        DialogResult overwriteResult = MessageBox.Show("Overwrite existing field?", "Overwrite Warning", MessageBoxButtons.YesNo);
 
         return overwriteResult == DialogResult.Yes;
     }
 
     /// <summary>
-    /// Reload all panels with newly loaded robot data
+    /// Reload all panels with newly loaded field data
     /// </summary>
     public void ReloadPanels()
     {
@@ -716,8 +716,8 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Opens the <see cref="SetWeightForm"/> form
     /// </summary>
-    /// <returns>True if robot weight was changed.</returns>
-    public bool PromptRobotWeight()
+    /// <returns>True if field weight was changed.</returns>
+    public bool PromptFieldWeight()
     {
         try
         {
@@ -769,17 +769,17 @@ public partial class SynthesisGUI : Form
     /// Runs the standalone Robot Viewer with and tells it to view the current robot
     /// </summary>
     /// <param name="settingsDir"></param>
-    public void PreviewRobot(string settingsDir = null)
-    {
-        if(RMeta.ActiveDir != null)
-        {
-            Process.Start(Utilities.VIEWER_PATH, "-path \"" + RMeta.ActiveDir + "\"");
-        }
-        else
-        {
-            Process.Start(Utilities.VIEWER_PATH, "-path \"" + settingsDir + "\\" + RMeta.ActiveRobotName + "\"");
-        }
-    }
+    //public void PreviewRobot(string settingsDir = null)
+    //{
+    //    if(RMeta.ActiveDir != null)
+    //    {
+    //        Process.Start(Utilities.VIEWER_PATH, "-path \"" + RMeta.ActiveDir + "\"");
+    //    }
+    //    else
+    //    {
+    //        Process.Start(Utilities.VIEWER_PATH, "-path \"" + settingsDir + "\\" + RMeta.ActiveFieldName + "\"");
+    //    }
+    //}
 
     /// <summary>
     /// Merges a node into the parent. Used during the one click export and the wizard.
@@ -862,10 +862,10 @@ public partial class SynthesisGUI : Form
 
     private ExporterForm exporter = null;
 
-    private void HelpTutorials_Click(object sender, EventArgs e)
-    {
-        Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
-    }
+    //private void HelpTutorials_Click(object sender, EventArgs e)
+    //{
+    //    Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
+    //}
 
     #endregion
 

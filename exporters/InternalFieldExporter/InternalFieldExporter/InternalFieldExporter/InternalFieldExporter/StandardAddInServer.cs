@@ -126,54 +126,54 @@ namespace InternalFieldExporter
 
             #region Setup New Environment and Ribbon
             Environments environments = MainApplication.UserInterfaceManager.Environments;
-            ExporterEnv = environments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, SynthesisLogoSmall, SynthesisLogoLarge);
+            ExporterEnv = environments.Add("Internal Field Exporter", "InternalFieldExporter:Environment", null, SynthesisLogoSmall, SynthesisLogoLarge);
 
             Ribbon assemblyRibbon = MainApplication.UserInterfaceManager.Ribbons["Assembly"];
-            RibbonTab ExporterTab = assemblyRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter:RobotExporterTab", ClientID, "", false, true);
+            RibbonTab ExporterTab = assemblyRibbon.RibbonTabs.Add("Internal Field Exporter", "InternalFieldExporter:FieldExporterTab", ClientID, "", false, true);
 
             ControlDefinitions ControlDefs = MainApplication.CommandManager.ControlDefinitions;
 
-            SetupPanel = ExporterTab.RibbonPanels.Add("Start Over", "BxD:RobotExporter:SetupPanel", ClientID);
-            SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "BxD:RobotExporter:SettingsPanel", ClientID);
-            FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
+            SetupPanel = ExporterTab.RibbonPanels.Add("Start Over", "InternalFieldExporter:SetupPanel", ClientID);
+            SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "InternalFieldExporter:SettingsPanel", ClientID);
+            FilePanel = ExporterTab.RibbonPanels.Add("File", "InternalFieldExporter:FilePanel", ClientID);
 
             // Reset positioning of panels
-            SettingsPanel.Reposition("BxD:RobotExporter:SetupPanel", false);
-            FilePanel.Reposition("BxD:RobotExporter:SettingsPanel", false);
+            SettingsPanel.Reposition("InternalFieldExporter:SetupPanel", false);
+            FilePanel.Reposition("InternalFieldExporter:SettingsPanel", false);
             #endregion
 
             #region Setup Buttons
             //Begin Wizard Export
-            WizardExportButton = ControlDefs.AddButtonDefinition("Exporter Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", ExportSetupRobotIconSmall, ExportSetupRobotIconLarge);
+            WizardExportButton = ControlDefs.AddButtonDefinition("Exporter Setup", "InternalFieldExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", ExportSetupRobotIconSmall, ExportSetupRobotIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
-            WizardExportButton.OnHelp += _OnHelp;
+           // WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
 
             //Set Weight
-            SetWeightButton = ControlDefs.AddButtonDefinition("Robot Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", WeightRobotIconSmall, WeightRobotIconLarge);
+            SetWeightButton = ControlDefs.AddButtonDefinition("Field Weight", "InternalFieldExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the field.", WeightRobotIconSmall, WeightRobotIconLarge);
             SetWeightButton.OnExecute += SetWeight_OnExecute;
-            SetWeightButton.OnHelp += _OnHelp;
+            //SetWeightButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save Configuration", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot configuration to your assembly file for future exporting.", SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save Configuration", "InternalFieldExporter:SaveField", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save field configuration to your assembly file for future exporting.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
-            SaveButton.OnHelp += _OnHelp;
+            //SaveButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(SaveButton, true);
 
             //Export Button
-            ExportButton = ControlDefs.AddButtonDefinition("Export to Synthesis", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot's model to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
+            ExportButton = ControlDefs.AddButtonDefinition("Export to Synthesis", "InternalFieldExporter:ExportField", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your field's model to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
             ExportButton.OnExecute += ExportButton_OnExecute;
-            ExportButton.OnHelp += _OnHelp;
+           // ExportButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(ExportButton, true);
 
             #endregion
 
             #region DEBUG
 #if DEBUG
-            DebugPanel = ExporterTab.RibbonPanels.Add("Debug", "BxD:RobotExporter:DebugPanel", ClientID);
+            DebugPanel = ExporterTab.RibbonPanels.Add("Debug", "InternalFieldExporter:DebugPanel", ClientID);
             //Selection Test
-            DedectionTestButton = ControlDefs.AddButtonDefinition("Detection Test", "BxD:RobotExporter:DetectionTestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
+            DedectionTestButton = ControlDefs.AddButtonDefinition("Detection Test", "InternalFieldExporter:DetectionTestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
             DedectionTestButton.OnExecute += delegate (NameValueMap context)
             {
                 if (Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels))
@@ -186,7 +186,7 @@ namespace InternalFieldExporter
             };
             DebugPanel.CommandControls.AddButton(DedectionTestButton, true);
             //UI Test
-            UITestButton = ControlDefs.AddButtonDefinition("UI Test", "BxD:RobotExporter:UITestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
+            UITestButton = ControlDefs.AddButtonDefinition("UI Test", "InternalFieldExporter:UITestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
             UITestButton.OnExecute += delegate (NameValueMap context)
             {
                     Wizard.WizardForm wizard = new Wizard.WizardForm();
@@ -200,9 +200,9 @@ namespace InternalFieldExporter
             #endregion
 
             #region Final Environment Setup
-            ExporterEnv.DefaultRibbonTab = "BxD:RobotExporter:RobotExporterTab";
+            ExporterEnv.DefaultRibbonTab = "InternalFieldExporter:FieldExporterTab";
             MainApplication.UserInterfaceManager.ParallelEnvironments.Add(ExporterEnv);
-            ExporterEnv.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+            ExporterEnv.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["InternalFieldExporter:Environment"]);
             #endregion
 
             #region Event Handler Assignment
@@ -210,7 +210,7 @@ namespace InternalFieldExporter
             MainApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
             MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
             MainApplication.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
-            LegacyInterchange.LegacyEvents.RobotModified += new Action( () => { PendingChanges = true; } );
+           // LegacyInterchange.LegacyEvents.FieldModified += new Action( () => { PendingChanges = true; } );
             #endregion 
 
             #endregion
@@ -273,15 +273,15 @@ namespace InternalFieldExporter
             
             EnvironmentEnabled = true;
             
-            // Load robot skeleton and prepare UI
-            if (!Utilities.GUI.LoadRobotSkeleton())
+            // Load field skeleton and prepare UI
+            if (!Utilities.GUI.LoadFieldSkeleton())
             {
                 ForceQuitExporter(AsmDocument);
                 return;
             }
 
             // If fails to load existing data, restart wizard
-            if (!Utilities.GUI.LoadRobotData(AsmDocument))
+            if (!Utilities.GUI.LoadFieldData(AsmDocument))
             {
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
                 wizard.ShowDialog();
@@ -457,7 +457,7 @@ namespace InternalFieldExporter
                     // User may not open documents other than assemblies
                     if (!(Context.Item["Document"] is AssemblyDocument assembly))
                     {
-                        MessageBox.Show("Only assemblies can be used with the robot exporter.",
+                        MessageBox.Show("Only assemblies can be used with the field exporter.",
                                         "Invalid Document", MessageBoxButtons.OK);
                         exporterBlocked = true;
 
@@ -506,7 +506,7 @@ namespace InternalFieldExporter
             if (WarnIfUnsaved())
             {
 
-                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
+                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadFieldSkeleton())
                     return;
 
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
@@ -520,34 +520,34 @@ namespace InternalFieldExporter
         }
 
         /// <summary>
-        /// Saves the active robot to the active directory
+        /// Saves the active field to the active directory
         /// </summary>
         /// <param name="Context"></param>
         private void SaveButton_OnExecute(NameValueMap Context)
         {
-            if (Utilities.GUI.SaveRobotData())
+            if (Utilities.GUI.SaveFieldData())
                 PendingChanges = false;
         }
 
         /// <summary>
-        /// Saves the active robot to the active directory
+        /// Saves the active field to the active directory
         /// </summary>
         /// <param name="Context"></param>
         private void ExportButton_OnExecute(NameValueMap Context)
         {
-            if (Utilities.GUI.PromptExportSettings())
-                if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null)
-                    Utilities.GUI.OpenSynthesis();
+            //if (Utilities.GUI.PromptExportSettings())
+            //    if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null)
+            //        Utilities.GUI.OpenSynthesis();
         }
 
         //Settings
         /// <summary>
-        /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
+        /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their field.
         /// </summary>
         /// <param name="Context"></param>
         private void SetWeight_OnExecute(NameValueMap Context)
         {
-            if (Utilities.GUI.PromptRobotWeight())
+            if (Utilities.GUI.PromptFieldWeight())
                 PendingChanges = true;
         }
 
@@ -556,11 +556,11 @@ namespace InternalFieldExporter
         /// </summary>
         /// <param name="Context"></param>
         /// <param name="HandlingCode"></param>
-        private void _OnHelp(NameValueMap Context, out HandlingCodeEnum HandlingCode)
-        {
-            Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
-            HandlingCode = HandlingCodeEnum.kEventHandled;
-        } 
+        //private void _OnHelp(NameValueMap Context, out HandlingCodeEnum HandlingCode)
+        //{
+        //    Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
+        //    HandlingCode = HandlingCodeEnum.kEventHandled;
+        //} 
         #endregion
 
         #region InternalFieldExporterAPI Events
@@ -880,7 +880,7 @@ namespace InternalFieldExporter
             if (!PendingChanges)
                 return true; // No changes to save
 
-            DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
+            DialogResult saveResult = MessageBox.Show("Save field configuration?", "Save",
                                                       allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
 
             if (saveResult == DialogResult.Yes)
@@ -895,21 +895,21 @@ namespace InternalFieldExporter
         }
 
         /// <summary>
-        /// <see cref="ViewDirection.X"/>, <see cref="ViewDirection.Y"/>, <see cref="ViewDirection.Z"/> position the camera right of, in front of, and above the target relative to the front of the robot.
-        /// Bitwise OR <see cref="ViewDirection.X"/>, <see cref="ViewDirection.Y"/>, or <see cref="ViewDirection.Z"/> with <see cref="ViewDirection.Negative"/> to invert these (make them left of, behind or above the robot).
+        /// <see cref="ViewDirection.X"/>, <see cref="ViewDirection.Y"/>, <see cref="ViewDirection.Z"/> position the camera right of, in front of, and above the target relative to the front of the field.
+        /// Bitwise OR <see cref="ViewDirection.X"/>, <see cref="ViewDirection.Y"/>, or <see cref="ViewDirection.Z"/> with <see cref="ViewDirection.Negative"/> to invert these (make them left of, behind or above the field).
         /// </summary>
         public enum ViewDirection : byte
         {
             /// <summary>
-            /// Positions the camera to the right of the robot.
+            /// Positions the camera to the right of the field.
             /// </summary>
             X = 0b00000001,
             /// <summary>
-            /// Positions the camera above the robot.
+            /// Positions the camera above the field.
             /// </summary>
             Y = 0b00000010,
             /// <summary>
-            /// Positions the robot in front of the robot.
+            /// Positions the field in front of the field.
             /// </summary>
             Z = 0b00000100,
             Negative = 0b00001000

@@ -86,9 +86,7 @@
     <Compile Include="ControlGUI\LiteExporterForm.Designer.cs">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\ExportRobotForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="ControlGUI\ExportRobotForm.cs" />
     <Compile Include="ControlGUI\ExportRobotForm.Designer.cs">
       <DependentUpon>ExportRobotForm.cs</DependentUpon>
     </Compile>
