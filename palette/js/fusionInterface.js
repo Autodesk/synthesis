@@ -46,7 +46,7 @@ function stringifyConfigData(joints)
                 args += String.fromCharCode(ASCII_OFFSET + 1);
                 args += String.fromCharCode(ASCII_OFFSET + wheel.type);
                 args += String.fromCharCode(ASCII_OFFSET + wheel.frictionLevel);
-                args += String.fromCharCode(ASCII_OFFSET + wheel.isDriveWheel ? 1 : 0);
+                args += String.fromCharCode(ASCII_OFFSET + (wheel.isDriveWheel ? 1 : 0));
             }
         }
     }
