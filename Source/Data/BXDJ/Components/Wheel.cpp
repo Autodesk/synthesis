@@ -5,20 +5,22 @@ using namespace BXDJ;
 
 Wheel::Wheel(const Wheel & wheelToCopy)
 {
+	type = wheelToCopy.type;
+	frictionLevel = wheelToCopy.frictionLevel;
+	isDriveWheel = wheelToCopy.isDriveWheel;
 	radius = wheelToCopy.radius;
 	width = wheelToCopy.width;
 	center = wheelToCopy.center;
-	type = wheelToCopy.type;
-	frictionLevel = wheelToCopy.frictionLevel;
 }
 
-Wheel::Wheel(Type type, FrictionLevel frictionLevel)
+Wheel::Wheel(Type type, FrictionLevel frictionLevel, bool isDriveWheel)
 {
+	this->type = type;
+	this->frictionLevel = frictionLevel;
+	this->isDriveWheel = isDriveWheel;
 	radius = 0;
 	width = 0;
 	center = Vector3<>();
-	this->type = type;
-	this->frictionLevel = frictionLevel;
 }
 
 Wheel::Wheel(const Wheel & wheel, const RotationalJoint & joint) : Wheel(wheel)

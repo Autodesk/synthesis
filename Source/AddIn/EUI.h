@@ -23,6 +23,15 @@ namespace Synthesis
 		EUI(Ptr<UserInterface>, Ptr<Application>);
 		~EUI();
 
+		bool createWorkspace();
+		void deleteWorkspace();
+
+		bool createExportPalette();
+		void deleteExportPalette();
+
+		bool createExportButton();
+		void deleteExportButton();
+
 	private:
 		Ptr<Application> app;
 		Ptr<UserInterface> UI;
@@ -33,15 +42,6 @@ namespace Synthesis
 
 		Ptr<CommandDefinition> exportButtonCommand;
 		Ptr<Palette> exportPalette;
-
-		bool createWorkspace();
-		void deleteWorkspace();
-
-		bool createExportPalette();
-		void deleteExportPalette();
-
-		bool createExportButton();
-		void deleteExportButton();
 
 	};
 }
