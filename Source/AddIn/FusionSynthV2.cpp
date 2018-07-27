@@ -28,41 +28,11 @@ extern "C" XI_EXPORT bool stop(const char* context)
 {
 	if (UI)
 	{
-		// Delete palette
-		Ptr<Palettes> palettes = UI->palettes();
-		if (!palettes)
-			return false;
-
-		Ptr<Palette> palette = palettes->itemById(Synthesis::K_EXPORT_PALETTE);
-		if (palette)
-			palette->deleteMe();
-
-		// Delete controls and associated command definitions
-		Ptr<ToolbarPanelList> panels = UI->allToolbarPanels();
-		if (!panels)
-			return false;
-
-		Ptr<ToolbarPanel> panel = panels->itemById(Synthesis::K_PANEL);
-		if (!panel)
-			return false;
-
-		Ptr<ToolbarControls> controls = panel->controls();
-		if (!controls)
-			return false;
-
-		Ptr<ToolbarControl> ctrl = controls->itemById(Synthesis::K_EXPORT_BUTTON);
-		if (ctrl)
-			ctrl->deleteMe();
-
-		Ptr<CommandDefinitions> commandDefinitions = UI->commandDefinitions();
-		if (!commandDefinitions)
-			return false;
-
-		Ptr<CommandDefinition> cmdDef = commandDefinitions->itemById(Synthesis::K_EXPORT_BUTTON);
-		if (cmdDef)
-			cmdDef->deleteMe();
+		delete EUI;
+		EUI = nullptr;
 
 		// Delete reference to UI
+		app = nullptr;
 		UI = nullptr;
 	}
 
