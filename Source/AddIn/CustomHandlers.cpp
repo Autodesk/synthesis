@@ -80,9 +80,11 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 				if ((dataReceived[i++] + ASCII_OFFSET) == 1)
 				{
-					driver.setComponent(BXDJ::Wheel((BXDJ::Wheel::Type)(dataReceived[i++] + ASCII_OFFSET),
-									                (BXDJ::Wheel::FrictionLevel)(dataReceived[i++] + ASCII_OFFSET),
-									                (dataReceived[i++] + ASCII_OFFSET) == 1));
+					BXDJ::Wheel wheel;
+					wheel.type = (BXDJ::Wheel::Type)(dataReceived[i++] + ASCII_OFFSET);
+					wheel.frictionLevel = (BXDJ::Wheel::FrictionLevel)(dataReceived[i++] + ASCII_OFFSET);
+					wheel.isDriveWheel = (dataReceived[i++] + ASCII_OFFSET) == 1;
+					driver.setComponent(wheel);
 				}
 
 				config.setDriver(joints[j], driver);
