@@ -9,8 +9,8 @@ var DRIVER_DUAL_MOTOR = 6;
 var DRIVER_ELEVATOR = 7;
 
 // Signal Types
-var PWM = 0;
-var CAN = 1;
+var PWM = 1;
+var CAN = 2;
 
 // Wheel Types
 var WHEEL_NORMAL = 1;
