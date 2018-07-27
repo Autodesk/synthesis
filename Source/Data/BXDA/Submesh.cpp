@@ -80,19 +80,19 @@ void SubMesh::getConvexCollider(SubMesh & outputMesh) const
 
 	// Create vertices
 	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(-1, 0, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(-1, 0, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(-1, 0, 0)));
 	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(-1, 0, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(-1, 0, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(-1, 0, 0)));
 
 	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, -1, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, -1, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, -1, 0)));
 	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, -1, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, -1, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, -1, 0)));
 
 	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, 0, -1)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 0, -1)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 0, -1)));
 	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, 0, -1)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 0, -1)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 0, -1)));
 
 	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(1, 0, 0)));
 	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(1, 0, 0)));
@@ -113,22 +113,22 @@ void SubMesh::getConvexCollider(SubMesh & outputMesh) const
 	std::vector<Triangle> triangles;
 
 	triangles.push_back(Triangle(0, 1, 2));
-	triangles.push_back(Triangle(1, 2, 3));
+	triangles.push_back(Triangle(2, 3, 0));
 
 	triangles.push_back(Triangle(4, 5, 6));
-	triangles.push_back(Triangle(5, 6, 7));
+	triangles.push_back(Triangle(6, 7, 4));
 
 	triangles.push_back(Triangle(8, 9, 10));
-	triangles.push_back(Triangle(9, 10, 11));
+	triangles.push_back(Triangle(10, 11, 8));
 
 	triangles.push_back(Triangle(12, 13, 14));
-	triangles.push_back(Triangle(13, 14, 15));
+	triangles.push_back(Triangle(14, 15, 12));
 
 	triangles.push_back(Triangle(16, 17, 18));
-	triangles.push_back(Triangle(17, 18, 19));
+	triangles.push_back(Triangle(18, 19, 16));
 
 	triangles.push_back(Triangle(20, 21, 22));
-	triangles.push_back(Triangle(21, 22, 23));
+	triangles.push_back(Triangle(22, 23, 20));
 
 	// Create surface
 	Surface newSurface;
