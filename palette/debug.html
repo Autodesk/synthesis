@@ -9,14 +9,52 @@
         <button type='button' onclick='sendInfoToFusion()'>Click to send info to Fusion</button>
     </body>
     <script>
+        var ASCII_OFFSET = 32;
         var jointOptions = [];
+
+        function readFormData()
+        {
+            jointOptions[0].driver = {};
+            jointOptions[0].driver.type = 1;
+            jointOptions[0].driver.portA = 0;
+            jointOptions[0].driver.portB = -1;
+            jointOptions[0].driver.wheel = null;
+        }
 
         function sendInfoToFusion()
         {
+            readFormData();
+
             var args = '';
 
             for (var i = 0; i < jointOptions.length; i++)
-                args += (i < jointOptions.length / 2) ? 'L' : 'R';
+            {
+                var driver = jointOptions[i].driver;
+
+                if (driver == null)
+                    args += String.fromCharCode(ASCII_OFFSET + 0);
+                else
+                {
+                    args += String.fromCharCode(ASCII_OFFSET + 1);
+                    args += String.fromCharCode(ASCII_OFFSET + driver.type);
+                    args += String.fromCharCode(ASCII_OFFSET + driver.portA + 1);
+                    args += String.fromCharCode(ASCII_OFFSET + driver.portB + 1);
+
+                    var wheel = driver.wheel;
+
+                    if (wheel == null)
+                        args += String.fromCharCode(ASCII_OFFSET + 0);
+                    else
+                    {
+                        args += String.fromCharCode(ASCII_OFFSET + 1);
+                        args += String.fromCharCode(ASCII_OFFSET + wheel.type);
+                        args += String.fromCharCode(ASCII_OFFSET + wheel.frictionLevel);
+                        args += String.fromCharCode(ASCII_OFFSET + wheel.isDriveWheel ? 1 : 0);
+                    }
+                }
+            }
+
+            console.log(args);
 
             adsk.fusionSendData('export', args);
         }
@@ -36,7 +74,7 @@
                 for (var i = 0; i < parseInt(nameLength) && c < jointData.length; i++)
                     nameStr += jointData[c++];
 
-                joints.push({ name: nameStr, side: 'X' });
+                joints.push({ name: nameStr, driver: null });
             }
 
             return joints;
@@ -47,7 +85,7 @@
             var str = "";
 
             for (var i = 0; i < joints.length; i++)
-                str += joints[i].name + ' ' + joints[i].side + '\n';
+                str += joints[i].name + ' ' + '\n';
 
             document.getElementById('exportSettings').innerHTML = str;
         }

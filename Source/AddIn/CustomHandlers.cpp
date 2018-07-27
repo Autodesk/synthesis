@@ -64,16 +64,27 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		BXDJ::ConfigData config;
 
 		// Create config
+		int j = 0;
 		std::string dataReceived = eventArgs->data();
-		for (int i = 0; i < joints.size() && i < dataReceived.length(); i++)
+		for (int i = 0; i < joints.size() && i < dataReceived.length();)
 		{
-			BXDJ::Driver driver(BXDJ::Driver::MOTOR);
+			if ((dataReceived[i++] + ASCII_OFFSET) == 1)
+			{
+				BXDJ::Driver driver((BXDJ::Driver::Type)(dataReceived[i++] + ASCII_OFFSET));
 
-			driver.portA = (dataReceived[i] == 'L') ? 0 : 1;
+				driver.portA = (int)(dataReceived[i++] + ASCII_OFFSET);
+				driver.portB = (int)(dataReceived[i++] + ASCII_OFFSET);
 
-			driver.setComponent(BXDJ::Wheel());
+				if ((dataReceived[i++] + ASCII_OFFSET) == 1)
+				{
+					BXDJ::Wheel wheel((BXDJ::Wheel::Type)(dataReceived[i++] + ASCII_OFFSET));
+					wheel.frictionLevel = (BXDJ::Wheel::FrictionLevel)(dataReceived[i++] + ASCII_OFFSET);
+					wheel.isDriveWheel = (dataReceived[i++] + ASCII_OFFSET) == 1;
+					driver.setComponent(wheel);
+				}
 
-			config.setDriver(joints[i], driver);
+				config.setDriver(joints[j++], driver);
+			}
 		}
 
 		palette->isVisible(false);

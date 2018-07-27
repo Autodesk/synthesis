@@ -35,6 +35,7 @@ namespace Synthesis
 		ReceiveFormDataHandler(Ptr<Application> app) : app(app) {}
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 	private:
+		const char ASCII_OFFSET = -32;
 		Ptr<Application> app;
 	};
 
