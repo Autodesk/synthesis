@@ -1,0 +1,19 @@
+
+@font-face
+{
+    font-family: 'Artifakt Element';
+    src: url(resources/artifakt.ttf) format("truetype");
+}
+
+body
+{
+    background-color: rgb(242,242,242);
+    font-family: 'Artifakt Element';
+    font-size: 10px;
+}
+
+.visual-mesh-dropdown-p
+{
+    display: inline-block;
+    float: left;
+}
