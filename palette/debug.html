@@ -27,17 +27,30 @@
             <br>
             <fieldset id="joint-config-template" class="joint-config">
                 <legend class="joint-config-legend">Joint</legend>
-                <h3 class="driver-type-header">Driver Type: </h3>
-                <select class="driver-type">
-                    <option value="0">None</option>
-                    <option value="1" class="rotational-driver">Motor</option>
-                    <option value="2" class="rotational-driver">Servo</option>
-                    <option value="3" class="linear-driver">Worm Screw</option>
-                    <option value="4" class="linear-driver">Bumper Pnuematic</option>
-                    <option value="5" class="linear-driver">Relay Pnuematic</option>
-                    <option value="6" class="rotational-driver">Dual Motor</option>
-                    <option value="7" class="linear-driver">Elevator</option>
-                </select>
+
+                <div class="driver-type-div">
+                    <h3 class="driver-type-header">Driver Type: </h3>
+                    <select class="driver-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
+                        <option value="0">None</option>
+                        <option value="1" class="rotational-driver">Motor</option>
+                        <option value="2" class="rotational-driver">Servo</option>
+                        <option value="3" class="linear-driver">Worm Screw</option>
+                        <option value="4" class="linear-driver">Bumper Pnuematic</option>
+                        <option value="5" class="linear-driver">Relay Pnuematic</option>
+                        <option value="6" class="rotational-driver">Dual Motor</option>
+                        <option value="7" class="linear-driver">Elevator</option>
+                    </select>
+                </div>
+
+                <div class="wheel-type-div">
+                    <h3 class="wheel-type-header">Wheel Type: </h3>
+                    <select class="wheel-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
+                        <option value="0">None</option>
+                        <option value="1">Normal</option>
+                        <option value="2">Omni</option>
+                        <option value="3">Mecanum</option>
+                    </select>
+                </div>
             </fieldset>
         </div>
 
@@ -45,6 +58,53 @@
 
         <script>
             var jointOptions = [];
+
+            function displayJointOptions(joints)
+            {
+                var exportForm = document.getElementById('export-settings');
+                var template = document.getElementById('joint-config-template');
+
+                for (var i = 0; i < joints.length; i++)
+                {
+                    var fieldset = template.cloneNode(true);
+
+                    fieldset.id = "joint-config-" + String(i);
+                    fieldset.getElementsByClassName("joint-config-legend")[0].innerHTML = joints[i].name;
+
+                    // Filter for rotational or linear
+                    var elsToHide;
+                    if (true) // TODO: Get whether joint is rotational or linear
+                        elsToHide = fieldset.getElementsByClassName("linear-driver")
+                    else
+                        elsToHide = fieldset.getElementsByClassName("rotational-driver")
+
+                    for (var j = 0; j < elsToHide.length; j++)
+                        elsToHide[j].style.display = "none";
+
+                    // Show or hide other elements
+                    updateFieldOptions(fieldset);
+
+                    // Add field to form
+                    exportForm.appendChild(fieldset);
+                }
+            }
+
+            function updateFieldOptions(fieldset)
+            {
+                var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
+                var wheelSelectorDiv = fieldset.getElementsByClassName("wheel-type-div")[0];
+
+                if (selectedDriver == 0)
+                    wheelSelectorDiv.style.visibility = "hidden";
+                else
+                {
+                    wheelSelectorDiv.style.visibility = "visible";
+
+                    var selectedWheel = fieldset.getElementsByClassName("wheel-type")[0].selectedIndex;
+
+                    // Set other wheel info visibility
+                }
+            }
 
             function readFormData()
             {
@@ -57,7 +117,11 @@
                     if (selectedDriver > 0)
                     {
                         jointOptions[i].driver = createDriver(selectedDriver, (i < jointOptions.length / 2) ? 0 : 1, -1);
-                        //jointOptions[i].driver.wheel = createWheel(WHEEL_NORMAL, FRICTION_MEDIUM, true);
+
+                        var selectedWheel = fieldset.getElementsByClassName("wheel-type")[0].selectedIndex;
+
+                        if (selectedWheel > 0)
+                            jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, true);
                     }
                 }
             }
@@ -66,33 +130,6 @@
             {
                 readFormData();
                 adsk.fusionSendData('export', stringifyConfigData(jointOptions));
-            }
-
-            function displayJointOptions(joints)
-            {
-                var exportForm = document.getElementById('export-settings');
-                var template = document.getElementById('joint-config-template');
-
-                for (var i = 0; i < joints.length; i++)
-                {
-                    var newJoint = template.cloneNode(true);
-
-                    newJoint.id = "joint-config-" + String(i);
-                    newJoint.getElementsByClassName("joint-config-legend")[0].innerHTML = joints[i].name;
-
-                    // Filter for rotational or linear
-                    var elsToHide;
-                    if (true) // TODO: Get whether joint is rotational or linear
-                        elsToHide = newJoint.getElementsByClassName("linear-driver")
-                    else
-                        elsToHide = newJoint.getElementsByClassName("rotational-driver")
-
-                    for (var j = 0; j < elsToHide.length; j++)
-                        elsToHide[j].style.display = "none";
-
-                    // Add field to form
-                    exportForm.appendChild(newJoint);
-                }
             }
 
             window.fusionJavaScriptHandler =
