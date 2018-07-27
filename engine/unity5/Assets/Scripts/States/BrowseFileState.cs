@@ -57,21 +57,25 @@ namespace Synthesis.States
             if (fileBrowser == null)
             {
                 file = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+
                 //fileManager.RebuildList(path);
                 //path = file;
                 //robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
                 //string robotDirectory = PlayerPrefs.GetString(prefsKey, path);
 
-                fileBrowser = new GUI.FileBrowser("Choose Robot Directory", file, true) { Active = true };
+                fileBrowser = new GUI.FileBrowser("Choose Robot Directory", file, true); //{ Active = false };
+
                 //fileManager.RebuildList(path);
                 fileBrowser.OnComplete += OnBrowserComplete;
+                fileBrowser.Complete();
+
             }
 
-            fileBrowser.Render();
+            //fileBrowser.Render();
 
 
-            if (!fileBrowser.Active)
-                StateMachine.PopState();
+            //if (!fileBrowser.Active)
+            //    StateMachine.PopState();
         }
 
         /// <summary>

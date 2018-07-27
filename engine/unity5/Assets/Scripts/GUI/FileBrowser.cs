@@ -11,7 +11,7 @@ namespace Synthesis.GUI
     /// </summary>
     class FileBrowser
     {
-        private Rect windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
+        //private Rect windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
 
         /// <summary>
         /// The maximum time in seconds between clicks to be considered a double click.
@@ -44,84 +44,9 @@ namespace Synthesis.GUI
         private bool directorySearched;
 
         /// <summary>
-        /// If this file browser is currently visible.
-        /// </summary>
-        public bool Active
-        {
-            get
-            {
-                return _active;
-            }
-            set
-            {
-                _active = value;
-            }
-        }
-
-        /// <summary>
         /// Default Directory Path
         /// </summary>
         private string directoryPath = System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-        /// <summary>
-        /// Internal reference to scroll position.
-        /// </summary>
-        private Vector2 directoryScroll;
-
-        /// <summary>
-        /// Internal reference to the last click time.
-        /// </summary>
-        private float lastClick = 0;
-
-        /// <summary>
-        /// Default textures.
-        /// </summary>
-        private Texture2D buttonTexture;
-        private Texture2D windowTexture;
-        /// <summary>
-        /// Selected button texture.
-        /// </summary>
-        private Texture2D buttonSelected;
-        /// <summary>
-        /// Gravity-Regular font.
-        /// </summary>
-        private Font gravityRegular;
-        private Font russoOne;
-        /// <summary>
-        /// Custom GUIStyle for windows.
-        /// </summary>
-        private GUIStyle fileBrowserWindow;
-        /// <summary>
-        /// Custom GUIStyle for buttons.
-        /// </summary>
-        private static GUIStyle fileBrowserButton;
-        private Texture2D searchedButtonTexture;
-        /// <summary>
-        /// Custom GUIStyle for the search button after searching the current directory
-        /// </summary>
-        private static GUIStyle searchedButton;
-        /// <summary>
-        /// Custom GUIStyle for labels.
-        /// </summary>s
-        private GUIStyle fileBrowserLabel;
-        /// <summary>
-        /// Custom GUIStyle for path labels.
-        /// </summary>
-        private GUIStyle pathLabel;
-
-        /// <summary>
-        /// Custom GUIStyle for highlight feature
-        /// Same theme as scene in ScrollableList.cs
-        /// </summary>
-        private GUIStyle listStyle;
-        private GUIStyle highlightStyle;
-        private GUIStyle targetStyle;
-        private GUIStyle buttonStyle;
-
-        /// <summary>
-        /// Custom GUIStyle for browser description text
-        /// </summary>
-        private GUIStyle descriptionStyle;
 
         private DirectoryInfo tempSelection; 
 
@@ -143,71 +68,6 @@ namespace Synthesis.GUI
 
             directoryLocation = defaultDirectory;
             selectedDirectoryLocation = defaultDirectory;
-
-            //Loads textures and fonts
-            buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
-            buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
-            gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
-            russoOne = Resources.Load("Fonts/Russo_One") as Font;
-            windowTexture = Resources.Load("Images/greyBackground") as Texture2D;
-            searchedButtonTexture = Resources.Load("Images/searchedButton") as Texture2D;
-            //Custom style for windows
-            fileBrowserWindow = new GUIStyle(UnityEngine.GUI.skin.window);
-            fileBrowserWindow.normal.background = windowTexture;
-            fileBrowserWindow.onNormal.background = windowTexture;
-            fileBrowserWindow.font = russoOne;
-
-            //Custom style for buttons
-            fileBrowserButton = new GUIStyle(UnityEngine.GUI.skin.button);
-            fileBrowserButton.font = russoOne;
-            fileBrowserButton.normal.background = buttonTexture;
-            fileBrowserButton.hover.background = buttonSelected;
-            fileBrowserButton.active.background = buttonSelected;
-            fileBrowserButton.onNormal.background = buttonSelected;
-            fileBrowserButton.onHover.background = buttonSelected;
-            fileBrowserButton.onActive.background = buttonSelected;
-
-            //Custom style for the search button after searching
-            searchedButton = new GUIStyle(UnityEngine.GUI.skin.button);
-            searchedButton.font = russoOne;
-            searchedButton.normal.background = searchedButtonTexture;
-            searchedButton.hover.background = searchedButtonTexture;
-            searchedButton.active.background = searchedButtonTexture;
-            searchedButton.onNormal.background = searchedButtonTexture;
-            searchedButton.onHover.background = searchedButtonTexture;
-            searchedButton.onActive.background = searchedButtonTexture;
-
-            //Custom style for highlighted directory buttons (same theme as seen in the ScrollableList.cs)
-            listStyle = new GUIStyle("button");
-            listStyle.normal.background = buttonTexture;
-            listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
-            listStyle.active.background = Resources.Load("Images/highlightsquaretexture") as Texture2D;
-            listStyle.font = russoOne;
-
-            //Custome style for highlight feature
-            highlightStyle = new GUIStyle(listStyle);
-            highlightStyle.normal.background = listStyle.active.background;
-            highlightStyle.hover.background = highlightStyle.normal.background;
-
-            //Custom style for target folder buttons
-            targetStyle = new GUIStyle(listStyle);
-            targetStyle.normal.background = Resources.Load("Images/targetsquaretexture") as Texture2D;
-            targetStyle.hover.background = listStyle.active.background;
-
-            //Custom style for labels
-            fileBrowserLabel = new GUIStyle(UnityEngine.GUI.skin.label);
-            fileBrowserLabel.font = russoOne;
-
-            //Custom style for path labels (smaller font size than  fileBrowserLabel
-            pathLabel = new GUIStyle(UnityEngine.GUI.skin.label);
-            pathLabel.font = russoOne;
-            pathLabel.fontSize = 12;
-
-            //Custom style for description text
-            descriptionStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-            descriptionStyle.font = Resources.GetBuiltinResource<Font>("Arial.ttf") as Font;
-            descriptionStyle.fontSize = 13;
-            descriptionStyle.margin = new RectOffset(5, 5, 5, 2);
         }
 
         /// <summary>
@@ -235,10 +95,16 @@ namespace Synthesis.GUI
                 directoryInfo = fileSelection.Directory;
             }
 
+            // if empty string
             //If click Exit, close file browser
-            if (_allowEsc && UnityEngine.GUI.Button(new Rect(410, 10, 80, 20), "Exit", fileBrowserButton))
+            if (_allowEsc)
             {
-                Active = false;
+                // return default path
+                //If there is no directory in the current location go back to its parent folder
+                if (directoryInfo.GetDirectories().Length == 0 && title.Equals("Load Robot"))
+                {
+                    directoryInfo = directoryInfo.Parent;
+                }
             }
 
             //Create a scrolling list and all the buttons having the folder names
@@ -250,7 +116,7 @@ namespace Synthesis.GUI
 
             if (directorySelection != null && selectedDirectoryLocation != null)
             {
-                bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
+                
                 //Use try/catch to prevent users from getting in unauthorized folders
                 try
                 {
@@ -278,78 +144,83 @@ namespace Synthesis.GUI
                 }
             }
 
-            // The manual location box and the select button
-            GUILayout.BeginArea(new Rect(12, 335, 480, 25));
-            //GUILayout.BeginHorizontal();
-            const int labelLen = 70;
+            //// The manual location box and the select button
+            //GUILayout.BeginArea(new Rect(12, 335, 480, 25));
+            ////GUILayout.BeginHorizontal();
+            //const int labelLen = 70;
 
-            bool twoClicks = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
+            //bool twoClicks = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
 
-            try
-            {
-                if (twoClicks)
-                {
-                    //If the file path is greater than labelLen, then it will replace part of the path name with "..."
-                    GUILayout.Label(directoryLocation.Length > labelLen ?
-                            directoryLocation.Substring(0, 5) + "..." + directoryLocation.Substring(directoryLocation.Length - labelLen + 8) :
-                            directoryLocation, pathLabel);
-                }
-                else
-                {
-                    //One click displays the path of the selected folder
-                    GUILayout.Label(selectedDirectoryLocation.Length > labelLen ?
-                                    selectedDirectoryLocation.Substring(0, 5) + "..." +
-                                    selectedDirectoryLocation.Substring(selectedDirectoryLocation.Length - labelLen + 8) :
-                                    selectedDirectoryLocation, pathLabel);
-                }
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                UserMessageManager.Dispatch("You don't have the authorization to access this folder", 3f);
-            }
-            GUILayout.EndArea();
-            LabelPanel();
+            //try
+            //{
+            //    if (twoClicks)
+            //    {
+            //        //If the file path is greater than labelLen, then it will replace part of the path name with "..."
+            //        GUILayout.Label(directoryLocation.Length > labelLen ?
+            //                directoryLocation.Substring(0, 5) + "..." + directoryLocation.Substring(directoryLocation.Length - labelLen + 8) :
+            //                directoryLocation, pathLabel);
+            //    }
+            //    else
+            //    {
+            //        //One click displays the path of the selected folder
+            //        GUILayout.Label(selectedDirectoryLocation.Length > labelLen ?
+            //                        selectedDirectoryLocation.Substring(0, 5) + "..." +
+            //                        selectedDirectoryLocation.Substring(selectedDirectoryLocation.Length - labelLen + 8) :
+            //                        selectedDirectoryLocation, pathLabel);
+            //    }
+            //}
+            //catch (UnauthorizedAccessException e)
+            //{
+            //    UserMessageManager.Dispatch("You don't have the authorization to access this folder", 3f);
+            //}
+            //GUILayout.EndArea();
+            //LabelPanel();
             
         }
 
-        public void LabelPanel()
+        //public void LabelPanel()
+        //{
+        //    GUILayout.BeginArea(new Rect(12, 360, 480, 25));
+        //    GUILayout.BeginHorizontal();
+
+        //    if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
+        //    {
+        //        _active = false;
+        //        OnComplete?.Invoke(selectedDirectoryLocation);
+        //    }
+        //    //if (directorySelection != null)
+        //    //{
+        //    //    lastClick = Time.time;
+        //    //}
+
+        //    GUILayout.EndHorizontal();
+        //    GUILayout.EndArea();
+        //}
+
+        public void Complete()
         {
-            GUILayout.BeginArea(new Rect(12, 360, 480, 25));
-            GUILayout.BeginHorizontal();
-
-            if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
-            {
-                _active = false;
-                OnComplete?.Invoke(selectedDirectoryLocation);
-            }
-            //if (directorySelection != null)
-            //{
-            //    lastClick = Time.time;
-            //}
-
-            GUILayout.EndHorizontal();
-            GUILayout.EndArea();
+            OnComplete?.Invoke(selectedDirectoryLocation);
         }
 
         /// <summary>
         /// Renders the window if it is active.
         /// </summary>
-        public void Render()
-        {
-            if (_active)
-            {
-                windowRect = new Rect((Screen.width - 500) / 2, (Screen.height - 420) / 2, 500, 420);
-                UnityEngine.GUI.Window(0, windowRect, FileBrowserWindow, title, fileBrowserWindow);
-            }
-        }
+        //public void Render()
+        //{
+        //    if (_active)
+        //    {
+        //        windowRect = new Rect((Screen.width - 500) / 2, (Screen.height - 420) / 2, 500, 420);
+        //        UnityEngine.GUI.Window(0, windowRect, FileBrowserWindow, title, fileBrowserWindow);
+        //    }
+        //}
 
         /// <summary>
         /// Gets the rect.
         /// </summary>
         /// <returns>The rect.</returns>
-        public Rect GetWindowRect()
-        {
-            return windowRect;
-        }
+        //public Rect GetWindowRect()
+        //{
+        //    return windowRect;
+        //}
     }
 }
