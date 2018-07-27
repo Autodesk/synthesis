@@ -59,7 +59,12 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	if (!palette)
 		return;
 
-	if (eventArgs->action() == "export")
+	if (eventArgs->action() == "send_joints")
+	{
+		Exporter exporter(app);
+		palette->sendInfoToHTML("joints", exporter.stringifyJoints(exporter.collectJoints()));
+	}
+	else if (eventArgs->action() == "export")
 	{
 		Exporter exporter(app);
 

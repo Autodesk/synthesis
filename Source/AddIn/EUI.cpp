@@ -79,7 +79,7 @@ bool EUI::createExportPalette()
 	if (!exportPalette)
 	{
 		// Create palette
-		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/debug.html", false, true, true, 300, 200);
+		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/palette.html", false, true, true, 300, 200);
 		if (!exportPalette)
 			return false;
 

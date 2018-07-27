@@ -1,67 +1,281 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <script src="js/fusionInterface.js"></script>
+
+        <style>
+            #finished-button
+            {
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                text-align: center;
+            }
+            #joint-config-template
+            {
+                display: none;
+            }
+        </style>
     </head>
     <body>
-
-        <p id='exportSettings'>
-            <p id='receivedData'></p>
-
-            Robot Name:  <input type="text" name="name"><br>
-            Team Number: <input type="text" name="number"><br>
-            Mass:        <input type="text" name="mass"><br>
-
-            <br>
-            <div class="dropdown">
-              <button class="dropbtn">Visual Mesh Accuracy</button>
-              <div class="dropdown-content">
-                <a href="#">Low</a>
-                <a href="#">Medium</a>
-                <a href="#">High</a>
-              </div>
+        <div id='export-settings'>
+            <div class="text-inputs">
+                Robot Name:  <input type="text" name="name"><br>
+                Mass:        <input type="text" name="mass"><br>
             </div>
             <br>
-            <div class="dropdown">
-              <button class="dropbtn">Physical Mesh Accuracy</button>
-              <div class="dropdown-content">
-                <a href="#">Low</a>
-                <a href="#">Medium</a>
-                <a href="#">High</a>
-              </div>
-            </div>
-        </p>
+            <fieldset id="joint-config-template" class="joint-config">
+                <legend class="joint-config-legend">Joint</legend>
 
-        <button type='button' onclick='sendInfoToFusion()'>Click to send info to Fusion</button> 
-        <br /><br />
-        
-    </body>
+                <div class="driver-type-div">
+                    <h3>Driver Type: </h3>
+                    <select class="driver-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
+                        <option value="0">None</option>
+                        <option value="1" class="rotational-driver">Motor</option>
+                        <option value="2" class="rotational-driver">Servo</option>
+                        <option value="3" class="linear-driver">Worm Screw</option>
+                        <option value="4" class="linear-driver">Bumper Pnuematic</option>
+                        <option value="5" class="linear-driver">Relay Pnuematic</option>
+                        <option value="6" class="rotational-driver">Dual Motor</option>
+                        <option value="7" class="linear-driver">Elevator</option>
+                    </select>
+                </div>
 
-    <script>
-        function sendInfoToFusion(){
-            var args = {
-                arg1 : "Sample argument 1",
-                arg2 : "Sample argument 2"
-            };
-            adsk.fusionSendData('send', JSON.stringify(args));
-        }
-        
-        window.fusionJavaScriptHandler = {handle: function(action, data){
-            try {
-                if (action == 'send') {
-					// Update a paragraph with the data passed in.
-                    document.getElementById('receivedData').innerHTML = data;
-				}
-				else if (action == 'debugger') {
-                    debugger;
-				}
-				else {
-					return 'Unexpected command type: ' + action;
-                }
-            } catch (e) {
-                console.log(e);
-                console.log('exception caught with command: ' + action + ', data: ' + data);
+                <div class="wheel-div">
+                    <h3>Wheel Type: </h3>
+                    <select class="wheel-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
+                        <option value="0">None</option>
+                        <option value="1">Normal</option>
+                        <option value="2">Omni</option>
+                        <option value="3">Mecanum</option>
+                    </select>
+
+                    <div class="other-wheel-div">
+                        <span>Is Drive Wheel: </span>
+                        <input type="checkbox" class="is-drive-wheel" onchange="updateFieldOptions(this.parentNode.parentNode.parentNode)" />
+                    </div>
+
+                    <div class="ports-div">
+                        <div class="generic-ports-div">
+                            <select class="port-signal">
+                                <option value="1">PWM</option>
+                                <option value="2">CAN</option>
+                            </select>
+                            <select class="port-number-a">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                            <select class="port-number-b">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+
+                        <div class="wheel-side-div">
+                            <select class="wheel-side">
+                                <option value="0">Left Wheel</option>
+                                <option value="1">Right Wheel</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </fieldset>
+        </div>
+
+        <button id='finished-button' type='button' onclick='sendInfoToFusion()'>Export Robot</button>
+
+        <script>
+            var jointOptions = [];
+            var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
+
+            // Prompts the Fusion add-in for joint data
+            function getInfoFromFusion()
+            {
+                adsk.fusionSendData('send_joints', '');
             }
-            return 'OK';
-        }};
-    </script>
+
+            // Populates the form with joints
+            function displayJointOptions(joints)
+            {
+                // Delete all existing slots
+                var existing = document.getElementsByClassName('joint-config');
+                while (existing.length > 0)
+                    existing[0].parentNode.removeChild(existing[0]);
+
+                // Add slots for given joinst
+                var template = jointTemplate;
+                var exportForm = document.getElementById('export-settings');
+
+                for (var i = 0; i < joints.length; i++)
+                {
+                    var fieldset = template.cloneNode(true);
+
+                    fieldset.id = "joint-config-" + String(i);
+                    fieldset.getElementsByClassName("joint-config-legend")[0].innerHTML = joints[i].name;
+
+                    // Filter for rotational or linear
+                    var elsToHide;
+                    if (true) // TODO: Get whether joint is rotational or linear
+                        elsToHide = fieldset.getElementsByClassName("linear-driver")
+                    else
+                        elsToHide = fieldset.getElementsByClassName("rotational-driver")
+
+                    for (var j = 0; j < elsToHide.length; j++)
+                        elsToHide[j].style.display = "none";
+
+                    // Show or hide other elements
+                    updateFieldOptions(fieldset);
+
+                    // Add field to form
+                    exportForm.appendChild(fieldset);
+                }
+            }
+
+            // Hides or shows fields based on the values of other fields
+            function updateFieldOptions(fieldset)
+            {
+                var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
+                var wheelSelectorDiv = fieldset.getElementsByClassName("wheel-div")[0];
+                var genericPortsDiv = wheelSelectorDiv.getElementsByClassName("generic-ports-div")[0];
+                var wheelSideDiv = wheelSelectorDiv.getElementsByClassName("wheel-side-div")[0];
+
+                // Hide wheel info if driver not set
+                if (selectedDriver == 0)
+                {
+                    wheelSelectorDiv.style.visibility = "hidden";
+                    genericPortsDiv.style.display = "block";
+                    wheelSideDiv.style.display = "none";
+                }
+                else
+                {
+                    wheelSelectorDiv.style.visibility = "visible";
+
+                    // Hide port B selector if not a dual motor
+                    var portBSelector = wheelSelectorDiv.getElementsByClassName("port-number-b")[0];
+                    if (selectedDriver == 6)
+                        portBSelector.style.visibility = "visible";
+                    else
+                        portBSelector.style.visibility = "hidden";
+
+                    var selectedWheel = wheelSelectorDiv.getElementsByClassName("wheel-type")[0].selectedIndex;
+
+                    // Set other wheel info visibility and generic ports/wheel side
+                    var otherWheelDiv = wheelSelectorDiv.getElementsByClassName("other-wheel-div")[0];
+
+                    if (selectedWheel == 0)
+                    {
+                        otherWheelDiv.style.visibility = "hidden";
+                        genericPortsDiv.style.display = "block";
+                        wheelSideDiv.style.display = "none";
+                    }
+                    else
+                    {
+                        otherWheelDiv.style.visibility = "visible";
+
+                        var isDriveWheel = otherWheelDiv.getElementsByClassName("is-drive-wheel")[0].checked;
+                        
+                        // Set drive side visibility
+                        var driveSideDiv = otherWheelDiv.getElementsByClassName("drive-side-div")[0];
+
+                        if (isDriveWheel)
+                        {
+                            genericPortsDiv.style.display = "none";
+                            wheelSideDiv.style.display = "block";
+                        }
+                        else
+                        {
+                            genericPortsDiv.style.display = "block";
+                            wheelSideDiv.style.display = "none";
+                        }
+                    }
+                }
+            }
+
+            // Updates jointOptions with the currently entered data
+            function readFormData()
+            {
+                for (var i = 0; i < jointOptions.length; i++)
+                {
+                    var fieldset = document.getElementById("joint-config-" + String(i));
+
+                    var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
+
+                    if (selectedDriver > 0)
+                    {
+                        var signal = fieldset.getElementsByClassName("port-signal")[0].selectedIndex;
+                        var portA = fieldset.getElementsByClassName("port-number-a")[0].selectedIndex;
+                        var portB = fieldset.getElementsByClassName("port-number-b")[0].selectedIndex;
+
+                        jointOptions[i].driver = createDriver(selectedDriver, signal, portA, portB);
+
+                        var selectedWheel = fieldset.getElementsByClassName("wheel-type")[0].selectedIndex;
+
+                        if (selectedWheel > 0)
+                        {
+                            var isDriveWheel = fieldset.getElementsByClassName("is-drive-wheel")[0].checked;
+                            jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
+
+                            if (isDriveWheel)
+                            {
+                                jointOptions[i].driver.signal = PWM;
+                                jointOptions[i].driver.portA = fieldset.getElementsByClassName("wheel-side")[0].selectedIndex;
+                                jointOptions[i].driver.portB = fieldset.getElementsByClassName("wheel-side")[0].selectedIndex;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Sends the data to the Fusion add-in
+            function sendInfoToFusion()
+            {
+                readFormData();
+                adsk.fusionSendData('export', stringifyConfigData(jointOptions));
+            }
+
+            window.fusionJavaScriptHandler =
+                {
+                    handle: function (action, data)
+                    {
+                        try
+                        {
+                            if (action == 'joints')
+                            {
+                                jointOptions = processJointDataString(data);
+                                displayJointOptions(jointOptions);
+                            }
+                            else if (action == 'debugger')
+                            {
+                                debugger;
+                            }
+                            else
+                            {
+                                return 'Unexpected command type: ' + action;
+                            }
+                        } catch (e)
+                        {
+                            console.log('Exception while excecuting \"' + action + '\":');
+                            console.log(e);
+                        }
+                        return 'OK';
+                    }
+                };
+        </script>
+    </body>
 </html>

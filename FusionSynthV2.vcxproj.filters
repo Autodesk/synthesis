@@ -184,9 +184,6 @@
     <None Include="palette\palette.html">
       <Filter>Source\AddIn\HTML</Filter>
     </None>
-    <None Include="Palette\debug.html">
-      <Filter>Source\AddIn\HTML</Filter>
-    </None>
     <None Include="Palette\js\fusionInterface.js">
       <Filter>Source\AddIn\HTML</Filter>
     </None>
