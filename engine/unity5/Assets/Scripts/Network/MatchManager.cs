@@ -22,6 +22,13 @@ namespace Synthesis.Network
         public static MatchManager Instance { get; private set; }
 
         /// <summary>
+        /// A reference to the <see cref="NetworkMultiplayerUI"/> <see cref="StateMachine"/>.
+        /// </summary>
+        private StateMachine uiStateMachine;
+
+        #region SyncVars
+
+        /// <summary>
         /// The name of the selected field.
         /// </summary>
         public string FieldName
@@ -51,11 +58,27 @@ namespace Synthesis.Network
         [SyncVar]
         public bool syncing;
 
+        /// <summary>
+        /// A percentage value representing distribution progress.
+        /// </summary>
+        [SyncVar]
+        public float distributionProgress;
+
+        /// <summary>
+        /// The name of the selected field.
+        /// </summary>
         [SyncVar]
         private string fieldName;
 
+        /// <summary>
+        /// The selected field's GUID.
+        /// </summary>
         [SyncVar]
         private string fieldGuid;
+
+        #endregion
+
+        #region ServerFields
 
         /// <summary>
         /// Describes which resources are required to be transferred by which clients.
@@ -68,17 +91,45 @@ namespace Synthesis.Network
         private Dictionary<int, bool> resolvedDependencies;
 
         /// <summary>
+        /// Represents pending file transfer information for each active player.
+        /// </summary>
+        private Dictionary<int, Dictionary<string, List<string>>> pendingTransfers;
+
+        /// <summary>
+        /// The number of pending file transfers.
+        /// </summary>
+        private int numTotalTransfers;
+
+        /// <summary>
+        /// The number of completed file tansfers.
+        /// </summary>
+        private int numCompletedTransfers;
+
+        /// <summary>
+        /// Called when dependency map generation is complete.
+        /// </summary>
+        private Action dependencyGenerationComplete;
+
+        /// <summary>
         /// The <see cref="ServerToClientFileTransferer"/> associated with this instance.
         /// </summary>
         public ServerToClientFileTransferer FileTransferer { get; private set; }
 
-        private Action generationComplete;
+        #endregion
 
-        private StateMachine uiStateMachine;
+        #region ClientFields
 
+        /// <summary>
+        /// The separator used for splitting the transfer ID into the header and file name.
+        /// </summary>
+        private readonly char[] headerSeparator = { '.' };
+
+        /// <summary>
+        /// File data transferred from the server to the client.
+        /// </summary>
         private Dictionary<string, List<byte>> fileData;
 
-        private readonly char[] headerSeparator = { '.' };
+        #endregion
 
         /// <summary>
         /// Initializes this instance.
@@ -88,6 +139,7 @@ namespace Synthesis.Network
             Instance = this;
             dependencyMap = new Dictionary<int, HashSet<int>>();
             resolvedDependencies = new Dictionary<int, bool>();
+            pendingTransfers = new Dictionary<int, Dictionary<string, List<string>>>();
             uiStateMachine = GameObject.Find("UserInterface").GetComponent<StateMachine>();
             fileData = new Dictionary<string, List<byte>>();
 
@@ -139,7 +191,7 @@ namespace Synthesis.Network
         [Server]
         public void GenerateDependencyMap(Action onGenerationComplete)
         {
-            generationComplete = onGenerationComplete;
+            dependencyGenerationComplete = onGenerationComplete;
 
             dependencyMap.Clear();
             resolvedDependencies.Clear();
@@ -176,8 +228,44 @@ namespace Synthesis.Network
         public void DistributeResources()
         {
             PlayerIdentity.LocalInstance.FileTransferer.StopAllCoroutines();
+            distributionProgress = 0f;
+            numTotalTransfers = 0;
+            numCompletedTransfers = 0;
 
-            Dictionary<string, List<byte>> fieldData = dependencyMap.ContainsKey(-1) ? LoadFieldData() : null;
+            pendingTransfers.Clear();
+
+            foreach (PlayerIdentity p in FindObjectsOfType<PlayerIdentity>())
+                pendingTransfers[p.id] = new Dictionary<string, List<string>>();
+
+            foreach (KeyValuePair<int, HashSet<int>> dependency in dependencyMap.Where(kvp => kvp.Key >= 0))
+            {
+                PlayerIdentity currentIdentity = PlayerIdentity.FindById(dependency.Key);
+                List<string> files = currentIdentity.ReceivedFiles.ToList();
+
+                foreach (int dependant in dependency.Value)
+                {
+                    numTotalTransfers += files.Count;
+                    pendingTransfers[dependant].Add(currentIdentity.robotName, files);
+                }
+            }
+
+            Dictionary<string, List<byte>> fieldData;
+
+            if (dependencyMap.ContainsKey(-1))
+            {
+                fieldData = LoadFieldData();
+                List<string> files = fieldData.Keys.ToList();
+
+                foreach (int dependant in dependencyMap[-1])
+                {
+                    numTotalTransfers += fieldData.Count;
+                    pendingTransfers[dependant].Add(fieldName, files);
+                }
+            }
+            else
+            {
+                fieldData = null;
+            }
 
             foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap)
                 foreach (KeyValuePair<string, List<byte>> file in entry.Key >= 0 ? PlayerIdentity.FindById(entry.Key).FileData : fieldData)
@@ -212,10 +300,10 @@ namespace Synthesis.Network
             if (!GetTransferInfo(transferId, out senderId, out fileName))
                 return;
 
-            if (!fileData.ContainsKey(fileName))
-                fileData[fileName] = new List<byte>();
+            if (!fileData.ContainsKey(transferId))
+                fileData[transferId] = new List<byte>();
 
-            fileData[fileName].AddRange(data);
+            fileData[transferId].AddRange(data);
         }
 
         /// <summary>
@@ -231,16 +319,38 @@ namespace Synthesis.Network
             if (!GetTransferInfo(transferId, out senderId, out fileName))
                 return;
 
-            string directory = senderId >= 0 ?
-                PlayerPrefs.GetString("RobotDirectory") + "\\" + PlayerIdentity.FindById(senderId).robotName :
-                PlayerPrefs.GetString("FieldDirectory") + "\\" + fieldName;
+            string folderName = senderId >= 0 ? PlayerIdentity.FindById(senderId).robotName : fieldName;
+            string directory = PlayerPrefs.GetString(senderId >= 0 ? "RobotDirectory" : "FieldDirectory") +
+                "\\" + folderName;
 
-            Directory.CreateDirectory(directory);
+            Task task = new Task(() =>
+            {
+                Directory.CreateDirectory(directory);
 
-            new Task(() => File.WriteAllBytes(directory + "\\" + fileName,
-                fileData[fileName].ToArray())).Start();
+                File.WriteAllBytes(directory + "\\" + fileName,
+                    fileData[transferId].ToArray());
+            });
 
-            Debug.Log("Fraggy boi!");
+            task.ContinueWith(t =>
+            {
+                PlayerIdentity.LocalInstance.CmdConfirmFileTransferred(folderName, fileName);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+
+            task.Start();
+        }
+
+        /// <summary>
+        /// Tells the server that the given dependency has been resolved.
+        /// </summary>
+        /// <param name="senderId"></param>
+        /// <param name="receiverId"></param>
+        public void ConfirmFileTransferred(int playerId, string folderName, string fileName)
+        {
+            if (pendingTransfers[playerId][folderName].Remove(fileName))
+            {
+                numCompletedTransfers++;
+                distributionProgress = (float)numCompletedTransfers / numTotalTransfers;
+            }
         }
 
         /// <summary>
@@ -289,7 +399,7 @@ namespace Synthesis.Network
             }
 
             if (!resolvedDependencies.ContainsValue(false))
-                generationComplete();
+                dependencyGenerationComplete();
         }
 
         /// <summary>

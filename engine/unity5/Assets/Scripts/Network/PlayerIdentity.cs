@@ -14,6 +14,8 @@ namespace Synthesis.Network
     [NetworkSettings(channel = 0, sendInterval = 0f)]
     public class PlayerIdentity : NetworkBehaviour
     {
+        #region ClientFields
+
         /// <summary>
         /// The local <see cref="PlayerIdentity"/> instance.
         /// </summary>
@@ -24,22 +26,58 @@ namespace Synthesis.Network
         /// </summary>
         public static string DefaultLocalPlayerTag { get; set; }
 
+        /// <summary>
+        /// The list of unresolved dependencies associated with this instance.
+        /// </summary>
+        public List<int> UnresolvedDependencies { get; set; }
 
+        #endregion
+
+        #region SyncVars
+
+        /// <summary>
+        /// The ID associatd with this <see cref="PlayerIdentity"/> instance.
+        /// </summary>
         [SyncVar]
         public int id;
 
+        /// <summary>
+        /// The player tag associated with this <see cref="PlayerIdentity"/> instance.
+        /// </summary>
         [SyncVar]
         public string playerTag;
 
+        /// <summary>
+        /// The robot name selected by this <see cref="PlayerIdentity"/>.
+        /// </summary>
         [SyncVar]
         public string robotName;
 
+        /// <summary>
+        /// The robot GUID of the selected robot.
+        /// </summary>
         [SyncVar]
         public string robotGuid;
 
+        /// <summary>
+        /// If true, this instance is ready to move to the next state.
+        /// </summary>
         [SyncVar]
         public bool ready;
 
+        /// <summary>
+        /// A percentage representing how much progress has been made gathering resources.
+        /// </summary>
+        [SyncVar]
+        public float gatheringProgress;
+
+        #endregion
+
+        #region ServerFields
+
+        /// <summary>
+        /// Represents the next available <see cref="PlayerIdentity"/> ID.
+        /// </summary>
         private static int nextId = 0;
 
         /// <summary>
@@ -53,12 +91,16 @@ namespace Synthesis.Network
         public ClientToServerFileTransferer FileTransferer { get; private set; }
 
         /// <summary>
-        /// The list of unresolved dependencies associated with this instance.
+        /// A hash set containing the names of files received on the server from the client.
         /// </summary>
-        public List<int> UnresolvedDependencies { get; set; }
+        public HashSet<string> ReceivedFiles { get; private set; }
 
-        private HashSet<string> receivedFiles;
+        /// <summary>
+        /// The number of files the server is expecting to receive from the client.
+        /// </summary>
         private int numFilesToReceive;
+
+        #endregion
 
         /// <summary>
         /// Returns the <see cref="PlayerIdentity"/> with the given ID.
@@ -95,7 +137,7 @@ namespace Synthesis.Network
 
             FileData = new Dictionary<string, List<byte>>();
             UnresolvedDependencies = new List<int>();
-            receivedFiles = new HashSet<string>();
+            ReceivedFiles = new HashSet<string>();
             numFilesToReceive = -1;
 
             PlayerList.Instance.AddPlayerEntry(this);
@@ -210,14 +252,26 @@ namespace Synthesis.Network
         }
 
         /// <summary>
+        /// Tells the server that this instance properly received the given file.
+        /// </summary>
+        /// <param name="folderName"></param>
+        /// <param name="fileName"></param>
+        [Command]
+        public void CmdConfirmFileTransferred(string folderName, string fileName)
+        {
+            MatchManager.Instance.ConfirmFileTransferred(id, folderName, fileName);
+        }
+
+        /// <summary>
         /// Transfers the resources owned by the client instance to the server (this instance)
         /// </summary>
         [Server]
         public void TransferResources()
         {
             FileData.Clear();
-            receivedFiles.Clear();
+            ReceivedFiles.Clear();
             numFilesToReceive = -1;
+            gatheringProgress = 0f;
 
             TargetTransferResources(connectionToClient);
         }
@@ -275,11 +329,11 @@ namespace Synthesis.Network
         [Server]
         private void ReceivingComplete(string transferId, byte[] data)
         {
-            receivedFiles.Add(transferId);
+            ReceivedFiles.Add(transferId);
 
-            //Debug.Log(transferId + " from " + robotName);
+            gatheringProgress = ReceivedFiles.Count / (float)numFilesToReceive;
 
-            if (receivedFiles.Count == numFilesToReceive)
+            if (ReceivedFiles.Count == numFilesToReceive)
                 ready = true;
         }
 
