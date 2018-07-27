@@ -22,11 +22,11 @@ var FRICTION_LOW = 1;
 var FRICTION_MEDIUM = 2;
 var FRICTION_HIGH = 3;
 
-function stringifyConfigData(joints)
+function stringifyConfigData(name, joints)
 {
     var ASCII_OFFSET = 32;
 
-    var args = '';
+    var args = String.fromCharCode(name.length) + String(name);
 
     for (var i = 0; i < joints.length; i++)
     {

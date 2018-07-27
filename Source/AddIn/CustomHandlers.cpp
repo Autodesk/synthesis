@@ -74,7 +74,17 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 		// Create config
 		std::string dataReceived = eventArgs->data();
-		for (int j = 0, i = 0; j < joints.size() && i < dataReceived.length(); j++)
+
+		// Get robot name
+		char nameLength = dataReceived[1];
+		std::string name = "";
+		int i = 0;
+		for (int j = 0; j < nameLength && i < dataReceived.length(); j++)
+			name += dataReceived[i++];
+		Filesystem::setRobotName(name);
+
+		// Get joint data
+		for (int j = 0; j < joints.size() && i < dataReceived.length(); j++)
 		{
 			if ((dataReceived[i++] + ASCII_OFFSET) == 1)
 			{
@@ -97,6 +107,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 			}
 		}
 
+		// Export robot
 		palette->isVisible(false);
 		exporter.exportMeshes(config);
 	}
