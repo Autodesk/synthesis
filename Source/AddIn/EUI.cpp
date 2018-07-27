@@ -59,9 +59,6 @@ bool EUI::createWorkspace()
 		if (!panelControls->itemById(K_EXPORT_BUTTON))
 			panelControls->addCommand(exportButtonCommand)->isPromoted(true);
 
-		// Activate workspace
-		workSpace->activate();
-
 		return true;
 	}
 	catch (std::exception e)
