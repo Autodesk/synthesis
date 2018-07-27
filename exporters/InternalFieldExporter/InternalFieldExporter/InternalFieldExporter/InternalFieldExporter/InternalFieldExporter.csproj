@@ -17,7 +17,7 @@
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
-    <RootNamespace>BxDRobotExporter</RootNamespace>
+    <RootNamespace>InternalFieldExporter</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <StartupObject>
     </StartupObject>
@@ -26,7 +26,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>4.0</OldToolsVersion>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <NuGetPackageImportStamp>
@@ -85,7 +85,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyName>BxDRobotExporter</AssemblyName>
+    <AssemblyName>InternalFieldExporter</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -134,6 +134,12 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Wizard\FieldExportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizard\FieldExportForm.Designer.cs">
+      <DependentUpon>FieldExportForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -161,6 +167,12 @@
     </Compile>
     <Compile Include="Wizard\Components\DefinePartPanel.Designer.cs">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Wizard\FieldSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizard\FieldSelector.Designer.cs">
+      <DependentUpon>FieldSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\Pages\DefineMovingPartsPage.cs">
       <SubType>UserControl</SubType>
@@ -227,6 +239,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Components\DefinePartPanel.resx">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\FieldExportForm.resx">
+      <DependentUpon>FieldExportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\FieldSelector.resx">
+      <DependentUpon>FieldSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\DefineMovingPartsPage.resx">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>

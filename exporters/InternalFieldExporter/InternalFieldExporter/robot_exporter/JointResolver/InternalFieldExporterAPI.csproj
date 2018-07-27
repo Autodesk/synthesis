@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JointResolver</RootNamespace>
     <AssemblyName>RobotExportAPI</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -86,11 +86,9 @@
     <Compile Include="ControlGUI\LiteExporterForm.Designer.cs">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\ExportFieldForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\ExportFieldForm.Designer.cs">
-      <DependentUpon>ExportFieldForm.cs</DependentUpon>
+    <Compile Include="ControlGUI\ExportRobotForm.cs" />
+    <Compile Include="ControlGUI\ExportRobotForm.Designer.cs">
+      <DependentUpon>ExportRobotForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlGUI\NodeEditorPane.cs">
       <SubType>UserControl</SubType>
@@ -219,8 +217,8 @@
     <EmbeddedResource Include="ControlGUI\LiteExporterForm.resx">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\ExportFieldForm.resx">
-      <DependentUpon>ExportFieldForm.cs</DependentUpon>
+    <EmbeddedResource Include="ControlGUI\ExportRobotForm.resx">
+      <DependentUpon>ExportRobotForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\NodeEditorPane.resx">
       <DependentUpon>NodeEditorPane.cs</DependentUpon>
