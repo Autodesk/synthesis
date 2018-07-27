@@ -28,29 +28,16 @@
             <fieldset id="joint-config-template" class="joint-config">
                 <legend class="joint-config-legend">Joint</legend>
                 <h3 class="driver-type-header">Driver Type: </h3>
-                <select class="rotational">
-                    <option value="None">None</option>
-                    <option value="Motor">Motor</option>
-                    <option value="Servo">Servo</option>
-                    <option value="Bumper_Pnuematic">Bumper Pnuematic</option>
-                    <option value="Relay_Pnuematic">Relay Pnuematic</option>
-                    <option value="Worm_Screw">Worm Screw</option>
-                    <option value="Dual_Motor">Dual Motor</option>
+                <select class="driver-type">
+                    <option value="0">None</option>
+                    <option value="1" class="rotational-driver">Motor</option>
+                    <option value="2" class="rotational-driver">Servo</option>
+                    <option value="3" class="linear-driver">Worm Screw</option>
+                    <option value="4" class="linear-driver">Bumper Pnuematic</option>
+                    <option value="5" class="linear-driver">Relay Pnuematic</option>
+                    <option value="6" class="rotational-driver">Dual Motor</option>
+                    <option value="7" class="linear-driver">Elevator</option>
                 </select>
-                <!--<select class="Linear">
-                    <option value="Motor">
-                        <a href=" = " #">Elevator</a>
-                    </option>
-                    <option value="Bumper_Pnuematic">
-                        <a href=" = " #">Bumper Pnuematic</a>
-                    </option>
-                    <option value="Relay_Pnuematic">
-                        <a href=" = " #">Relay Pnuematic</a>
-                    </option>
-                    <option value="Worm_Screw">
-                        <a href=" = " #">Worm Screw</a>
-                    </option>
-                </select>-->
             </fieldset>
         </div>
 
@@ -63,8 +50,15 @@
             {
                 for (var i = 0; i < jointOptions.length; i++)
                 {
-                    jointOptions[i].driver = createDriver(DRIVER_MOTOR, (i < jointOptions.length / 2) ? 0 : 1, -1);
-                    jointOptions[i].driver.wheel = createWheel(WHEEL_NORMAL, FRICTION_MEDIUM, true);
+                    var fieldset = document.getElementById("joint-config-" + String(i));
+
+                    var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
+
+                    if (selectedDriver > 0)
+                    {
+                        jointOptions[i].driver = createDriver(selectedDriver, (i < jointOptions.length / 2) ? 0 : 1, -1);
+                        //jointOptions[i].driver.wheel = createWheel(WHEEL_NORMAL, FRICTION_MEDIUM, true);
+                    }
                 }
             }
 
@@ -86,6 +80,17 @@
                     newJoint.id = "joint-config-" + String(i);
                     newJoint.getElementsByClassName("joint-config-legend")[0].innerHTML = joints[i].name;
 
+                    // Filter for rotational or linear
+                    var elsToHide;
+                    if (true) // TODO: Get whether joint is rotational or linear
+                        elsToHide = newJoint.getElementsByClassName("linear-driver")
+                    else
+                        elsToHide = newJoint.getElementsByClassName("rotational-driver")
+
+                    for (var j = 0; j < elToHide.length; j++)
+                        elsToHide[j].style.display = "none";
+
+                    // Add field to form
                     exportForm.appendChild(newJoint);
                 }
             }
