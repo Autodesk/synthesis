@@ -10,6 +10,7 @@
 #include <ctime>
 #include <iostream>
 #include <unistd.h>
+#include "ctre/Phoenix.h"
 
 class Robot : public frc::IterativeRobot {
     frc::Spark m_leftMotor{0};
@@ -20,6 +21,7 @@ class Robot : public frc::IterativeRobot {
     frc::Relay r{0};
     frc::AnalogOutput ao{1};
     frc::AnalogInput ai{0};
+    ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
 
     bool current_state = false;
 
@@ -41,6 +43,8 @@ public:
         double d = (std::rand() % 5001) / 1000.0;
         ao.SetVoltage(d);
         current_state = !current_state;
+
+        talon.Set(0.3);
 
         std::cout<<"AnalogInput:"<<ai.GetVoltage()<<"\n";
 

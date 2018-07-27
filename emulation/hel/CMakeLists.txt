@@ -17,10 +17,11 @@ set (hel_VERSION_MINOR 0)
 
 set (WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
 set (ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
-set (CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
+set (CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre")
 
 set (VM_BUILD_COMMAND "./run_vm.sh")
 set (CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
+set (CLONE_CTRE_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_ctre.sh")
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++14")
 
@@ -47,7 +48,7 @@ if(ARCH MATCHES "[Aa][Rr][Mm]")
     set(NO_UNIT "TRUE")
   endif()
 
-  link_directories ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena ${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/hal/build/libs/halAthena/shared ${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/ ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/ ${CTRE_DIRECTORY}/libraries/driver/lib/)
+  link_directories ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena ${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/hal/build/libs/halAthena/shared ${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/ ${CTRE_DIRECTORY}/libraries/driver/lib)
 elseif(ARCH MATCHES "([Xx]86([-_]64)?)")
 
   set (CMAKE_C_COMPILER gcc)
@@ -85,18 +86,23 @@ ExternalProject_Add(wpilib
   INSTALL_COMMAND ""
   )
 
-ExternalProject_Add(ctre
-  PREFIX lib/ctre
-  GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
-  GIT_TAG Phoenix_v5.3.1.0
-  CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
-  INSTALL_COMMAND ""
+add_custom_target(download_ctre ALL
+  COMMAND ${CLONE_CTRE_COMMAND}
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/scripts
+  COMMENT "Download the CTRE library"
+  VERBATIM)
+
+file(GLOB_RECURSE CTRE_SRC
+  "${CTRE_DIRECTORY}/cpp/*.cpp"
   )
-add_dependencies(ctre wpilib)
+
+add_library(CTRE_Phoenix SHARED ${CTRE_SRC})
+add_dependencies(CTRE_Phoenix download_ctre wpilib)
+target_include_directories(CTRE_Phoenix SYSTEM PRIVATE "${CTRE_DIRECTORY}/cpp/include" "${CTRE_DIRECTORY}/libraries/driver/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers" "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers" "${WPILIB_DIRECTORY}/ni-libraries/include")
+target_link_libraries(CTRE_Phoenix pthread libCTRE_PhoenixCCI.a)
 
 add_library (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/error.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp src/alarm.cpp src/system.cpp src/sync_client.cpp src/interrupt_manager.cpp src/analog_input_calibration.cpp)
-add_dependencies(hel asio wpilib) 
+add_dependencies(hel asio wpilib)
 
 target_include_directories( hel SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
 if(ARCH MATCHES "[Aa][Rr][Mm]")
@@ -112,18 +118,18 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
     if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
       add_executable(FRCUserProgram tests/test_projects/robot_io.cpp)
-      add_dependencies(FRCUserProgram wpilib #[[ctre]])
+      add_dependencies(FRCUserProgram wpilib CTRE_Phoenix)
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/headers")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers")
-      #target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/cpp/include/")
-      #target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/libraries/driver/include")
+      target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/cpp/include/")
+      target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/libraries/driver/include")
       set_target_properties(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user_code")
       target_compile_options(FRCUserProgram PUBLIC -pthread)
       target_link_libraries(FRCUserProgram wpi)
-      #target_link_libraries(FRCUserProgram libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
+      target_link_libraries(FRCUserProgram libCTRE_Phoenix.so)
     else()
       message(WARNING "Robot code generation not supported on x86_64.")
     endif()
