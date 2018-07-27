@@ -57,11 +57,13 @@
             this.AutoFillToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.WheelNodeGroupBox.SuspendLayout();
             this.WheelJointsLayout.SuspendLayout();
+            this.LeftWheelsGroup.SuspendLayout();
             this.RobotInfoGroupBox.SuspendLayout();
             this.RobotInfoLayout.SuspendLayout();
             this.DriveTrainLayout.SuspendLayout();
             this.WeightLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
+            this.RightWheelsGroup.SuspendLayout();
             this.MainLayout.SuspendLayout();
             this.MiddleWheelsGroup.SuspendLayout();
             this.RightBackWheelsGroup.SuspendLayout();
@@ -178,9 +180,8 @@
             this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
             this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
             this.LeftWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.LeftWheelsPanel.Size = new System.Drawing.Size(290, 124);
+            this.LeftWheelsPanel.Size = new System.Drawing.Size(290, 398);
             this.LeftWheelsPanel.TabIndex = 1;
-            this.LeftWheelsPanel.Visible = true;
             this.LeftWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.LeftWheelsPanel_DragDrop);
             this.LeftWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
             // 
@@ -360,9 +361,8 @@
             this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
             this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 567F));
             this.RightWheelsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.RightWheelsPanel.Size = new System.Drawing.Size(290, 0);
+            this.RightWheelsPanel.Size = new System.Drawing.Size(291, 398);
             this.RightWheelsPanel.TabIndex = 1;
-            this.RightWheelsPanel.Visible = true;
             this.RightWheelsPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RightWheelsPanel_DragDrop);
             this.RightWheelsPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.Field_DragEnter);
             // 
@@ -516,6 +516,7 @@
             this.WheelNodeGroupBox.PerformLayout();
             this.WheelJointsLayout.ResumeLayout(false);
             this.WheelJointsLayout.PerformLayout();
+            this.LeftWheelsGroup.ResumeLayout(false);
             this.RobotInfoGroupBox.ResumeLayout(false);
             this.RobotInfoGroupBox.PerformLayout();
             this.RobotInfoLayout.ResumeLayout(false);
@@ -525,6 +526,7 @@
             this.WeightLayout.ResumeLayout(false);
             this.WeightLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).EndInit();
+            this.RightWheelsGroup.ResumeLayout(false);
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             this.MiddleWheelsGroup.ResumeLayout(false);
