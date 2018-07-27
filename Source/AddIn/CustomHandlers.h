@@ -13,14 +13,18 @@ namespace Synthesis
 	class ShowPaletteCommandCreatedHandler : public adsk::core::CommandCreatedEventHandler
 	{
 	public:
+		ShowPaletteCommandCreatedHandler(Ptr<Application> app) : app(app) {}
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+	private:
 		Ptr<Application> app;
 	};
 
 	class ShowPaletteCommandExecuteHandler : public adsk::core::CommandEventHandler
 	{
 	public:
+		ShowPaletteCommandExecuteHandler(Ptr<Application> app) : app(app) {}
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
+	private:
 		Ptr<Application> app;
 	};
 
@@ -28,14 +32,18 @@ namespace Synthesis
 	class ReceiveFormDataHandler : public adsk::core::HTMLEventHandler
 	{
 	public:
+		ReceiveFormDataHandler(Ptr<Application> app) : app(app) {}
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
+	private:
 		Ptr<Application> app;
 	};
 
 	class CloseFormEventHandler : public adsk::core::UserInterfaceGeneralEventHandler
 	{
 	public:
+		CloseFormEventHandler(Ptr<Application> app) : app(app) {}
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
+	private:
 		Ptr<Application> app;
 	};
 }
