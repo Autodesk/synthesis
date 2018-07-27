@@ -75,6 +75,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 			{
 				BXDJ::Driver driver((BXDJ::Driver::Type)(dataReceived[i++] + ASCII_OFFSET));
 
+				driver.portSignal = (BXDJ::Driver::Signal)(dataReceived[i++] + ASCII_OFFSET);
 				driver.portA = (int)(dataReceived[i++] - 1 + ASCII_OFFSET);
 				driver.portB = (int)(dataReceived[i++] - 1 + ASCII_OFFSET);
 

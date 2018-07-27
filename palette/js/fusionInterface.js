@@ -8,6 +8,10 @@ var DRIVER_RELAY_PNEUMATIC = 5;
 var DRIVER_DUAL_MOTOR = 6;
 var DRIVER_ELEVATOR = 7;
 
+// Signal Types
+var PWM = 0;
+var CAN = 1;
+
 // Wheel Types
 var WHEEL_NORMAL = 1;
 var WHEEL_OMNI = 2;
@@ -34,6 +38,7 @@ function stringifyConfigData(joints)
         {
             args += String.fromCharCode(ASCII_OFFSET + 1);
             args += String.fromCharCode(ASCII_OFFSET + driver.type);
+            args += String.fromCharCode(ASCII_OFFSET + driver.signal);
             args += String.fromCharCode(ASCII_OFFSET + driver.portA + 1);
             args += String.fromCharCode(ASCII_OFFSET + driver.portB + 1);
 
@@ -75,9 +80,9 @@ function processJointDataString(jointData)
     return joints;
 }
 
-function createDriver(_type = DRIVER_MOTOR, _portA = 0, _portB = -1)
+function createDriver(_type = DRIVER_MOTOR, signal = PWM, _portA = 0, _portB = -1)
 {
-    return {type: _type, portA: _portA, portB: _portB, wheel: null};
+    return {type: _type, signal: _signal, portA: _portA, portB: _portB, wheel: null};
 }
 
 function createWheel(_type = WHEEL_NORMAL, _frictionLevel = FRICTION_MEDIUM, _isDriveWheel = false)
