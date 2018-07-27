@@ -21,8 +21,8 @@
     <body>
         <div id='export-settings'>
             <div class="text-inputs">
-                Robot Name:  <input type="text" name="name"><br>
-                Mass:        <input type="text" name="mass"><br>
+                Robot Name:  <input type="text" id="name"><br>
+                Mass:        <input type="number" id="mass"><br>
             </div>
             <br>
             <fieldset id="joint-config-template" class="joint-config">
@@ -126,18 +126,18 @@
                 {
                     var fieldset = template.cloneNode(true);
 
-                    fieldset.id = "joint-config-" + String(i);
-                    fieldset.getElementsByClassName("joint-config-legend")[0].innerHTML = joints[i].name;
+                    fieldset.id = 'joint-config-' + String(i);
+                    fieldset.getElementsByClassName('joint-config-legend')[0].innerHTML = joints[i].name;
 
                     // Filter for rotational or linear
                     var elsToHide;
                     if (true) // TODO: Get whether joint is rotational or linear
-                        elsToHide = fieldset.getElementsByClassName("linear-driver")
+                        elsToHide = fieldset.getElementsByClassName('linear-driver')
                     else
-                        elsToHide = fieldset.getElementsByClassName("rotational-driver")
+                        elsToHide = fieldset.getElementsByClassName('rotational-driver')
 
                     for (var j = 0; j < elsToHide.length; j++)
-                        elsToHide[j].style.display = "none";
+                        elsToHide[j].style.display = 'none';
 
                     // Show or hide other elements
                     updateFieldOptions(fieldset);
@@ -150,58 +150,58 @@
             // Hides or shows fields based on the values of other fields
             function updateFieldOptions(fieldset)
             {
-                var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
-                var wheelSelectorDiv = fieldset.getElementsByClassName("wheel-div")[0];
-                var genericPortsDiv = wheelSelectorDiv.getElementsByClassName("generic-ports-div")[0];
-                var wheelSideDiv = wheelSelectorDiv.getElementsByClassName("wheel-side-div")[0];
+                var selectedDriver = fieldset.getElementsByClassName('driver-type')[0].selectedIndex;
+                var wheelSelectorDiv = fieldset.getElementsByClassName('wheel-div')[0];
+                var genericPortsDiv = wheelSelectorDiv.getElementsByClassName('generic-ports-div')[0];
+                var wheelSideDiv = wheelSelectorDiv.getElementsByClassName('wheel-side-div')[0];
 
                 // Hide wheel info if driver not set
                 if (selectedDriver == 0)
                 {
-                    wheelSelectorDiv.style.visibility = "hidden";
-                    genericPortsDiv.style.display = "block";
-                    wheelSideDiv.style.display = "none";
+                    wheelSelectorDiv.style.visibility = 'hidden';
+                    genericPortsDiv.style.display = 'block';
+                    wheelSideDiv.style.display = 'none';
                 }
                 else
                 {
-                    wheelSelectorDiv.style.visibility = "visible";
+                    wheelSelectorDiv.style.visibility = 'visible';
 
                     // Hide port B selector if not a dual motor
-                    var portBSelector = wheelSelectorDiv.getElementsByClassName("port-number-b")[0];
+                    var portBSelector = wheelSelectorDiv.getElementsByClassName('port-number-b')[0];
                     if (selectedDriver == 6)
-                        portBSelector.style.visibility = "visible";
+                        portBSelector.style.visibility = 'visible';
                     else
-                        portBSelector.style.visibility = "hidden";
+                        portBSelector.style.visibility = 'hidden';
 
-                    var selectedWheel = wheelSelectorDiv.getElementsByClassName("wheel-type")[0].selectedIndex;
+                    var selectedWheel = wheelSelectorDiv.getElementsByClassName('wheel-type')[0].selectedIndex;
 
                     // Set other wheel info visibility and generic ports/wheel side
-                    var otherWheelDiv = wheelSelectorDiv.getElementsByClassName("other-wheel-div")[0];
+                    var otherWheelDiv = wheelSelectorDiv.getElementsByClassName('other-wheel-div')[0];
 
                     if (selectedWheel == 0)
                     {
-                        otherWheelDiv.style.visibility = "hidden";
-                        genericPortsDiv.style.display = "block";
-                        wheelSideDiv.style.display = "none";
+                        otherWheelDiv.style.visibility = 'hidden';
+                        genericPortsDiv.style.display = 'block';
+                        wheelSideDiv.style.display = 'none';
                     }
                     else
                     {
-                        otherWheelDiv.style.visibility = "visible";
+                        otherWheelDiv.style.visibility = 'visible';
 
-                        var isDriveWheel = otherWheelDiv.getElementsByClassName("is-drive-wheel")[0].checked;
+                        var isDriveWheel = otherWheelDiv.getElementsByClassName('is-drive-wheel')[0].checked;
                         
                         // Set drive side visibility
-                        var driveSideDiv = otherWheelDiv.getElementsByClassName("drive-side-div")[0];
+                        var driveSideDiv = otherWheelDiv.getElementsByClassName('drive-side-div')[0];
 
                         if (isDriveWheel)
                         {
-                            genericPortsDiv.style.display = "none";
-                            wheelSideDiv.style.display = "block";
+                            genericPortsDiv.style.display = 'none';
+                            wheelSideDiv.style.display = 'block';
                         }
                         else
                         {
-                            genericPortsDiv.style.display = "block";
-                            wheelSideDiv.style.display = "none";
+                            genericPortsDiv.style.display = 'block';
+                            wheelSideDiv.style.display = 'none';
                         }
                     }
                 }
@@ -212,30 +212,30 @@
             {
                 for (var i = 0; i < jointOptions.length; i++)
                 {
-                    var fieldset = document.getElementById("joint-config-" + String(i));
+                    var fieldset = document.getElementById('joint-config-' + String(i));
 
-                    var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
+                    var selectedDriver = fieldset.getElementsByClassName('driver-type')[0].selectedIndex;
 
                     if (selectedDriver > 0)
                     {
-                        var signal = fieldset.getElementsByClassName("port-signal")[0].selectedIndex;
-                        var portA = fieldset.getElementsByClassName("port-number-a")[0].selectedIndex;
-                        var portB = fieldset.getElementsByClassName("port-number-b")[0].selectedIndex;
+                        var signal = fieldset.getElementsByClassName('port-signal')[0].selectedIndex;
+                        var portA = fieldset.getElementsByClassName('port-number-a')[0].selectedIndex;
+                        var portB = fieldset.getElementsByClassName('port-number-b')[0].selectedIndex;
 
                         jointOptions[i].driver = createDriver(selectedDriver, signal, portA, portB);
 
-                        var selectedWheel = fieldset.getElementsByClassName("wheel-type")[0].selectedIndex;
+                        var selectedWheel = fieldset.getElementsByClassName('wheel-type')[0].selectedIndex;
 
                         if (selectedWheel > 0)
                         {
-                            var isDriveWheel = fieldset.getElementsByClassName("is-drive-wheel")[0].checked;
+                            var isDriveWheel = fieldset.getElementsByClassName('is-drive-wheel')[0].checked;
                             jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
 
                             if (isDriveWheel)
                             {
                                 jointOptions[i].driver.signal = PWM;
-                                jointOptions[i].driver.portA = fieldset.getElementsByClassName("wheel-side")[0].selectedIndex;
-                                jointOptions[i].driver.portB = fieldset.getElementsByClassName("wheel-side")[0].selectedIndex;
+                                jointOptions[i].driver.portA = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
+                                jointOptions[i].driver.portB = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
                             }
                         }
                     }
@@ -245,8 +245,10 @@
             // Sends the data to the Fusion add-in
             function sendInfoToFusion()
             {
+                var name = document.getElementById('name').value;
+
                 readFormData();
-                adsk.fusionSendData('export', stringifyConfigData(jointOptions));
+                adsk.fusionSendData('export', stringifyConfigData(name, jointOptions));
             }
 
             window.fusionJavaScriptHandler =
