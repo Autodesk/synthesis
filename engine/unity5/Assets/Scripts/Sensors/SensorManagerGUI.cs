@@ -409,7 +409,7 @@ namespace Synthesis.Sensors
             if (isAddingGyro)
             {
                 addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
-                AddGyro();
+                //AddGyro();
 
                 if (PlayerPrefs.GetInt("analytics") == 1)
                 {
@@ -491,11 +491,10 @@ namespace Synthesis.Sensors
         /// </summary>
         public void AddGyro()
         {
-            if (selectedNode != null)
-            {
-                currentSensor = sensorManager.AddGyro(selectedNode, Vector3.zero, Vector3.zero);
-                DisplayOutput();
-            }
+            currentSensor = sensorManager.AddGyro();
+            Debug.Log("currentSensor is now " + currentSensor);
+            DisplayOutput();
+            StartConfiguration();
         }
 
         #endregion
@@ -507,7 +506,8 @@ namespace Synthesis.Sensors
         /// </summary>
         public void StartConfiguration()
         {
-            HideInvisibleSensors();
+            //HideInvisibleSensors();
+            Debug.Log("currentSensor is " + currentSensor);
             currentSensor.ChangeVisibility(true);
             SyncHideSensorButton();
             currentSensor.IsChangingPosition = true;
@@ -747,16 +747,17 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ToggleHideSensor()
         {
-            currentSensor.IsVisible = !currentSensor.IsVisible;
-            currentSensor.SyncVisibility();
-            if (currentSensor.IsVisible)
-            {
-                hideSensorButton.GetComponentInChildren<Text>().text = "Hide Sensor";
-            }
-            else
-            {
-                hideSensorButton.GetComponentInChildren<Text>().text = "Show Sensor";
-            }
+            //currentSensor.IsVisible = !currentSensor.IsVisible;
+            //currentSensor.SyncVisibility();
+            //if (currentSensor.IsVisible)
+            //{
+            //    hideSensorButton.GetComponentInChildren<Text>().text = "Hide Sensor";
+            //}
+            //else
+            //{
+            //    hideSensorButton.GetComponentInChildren<Text>().text = "Show Sensor";
+            //}
+            currentSensor.ChangeVisibility(!currentSensor.IsVisible);
         }
 
         /// <summary>

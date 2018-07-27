@@ -63,6 +63,18 @@ namespace Synthesis.Sensors
             }
         }
 
+        public GameObject AddNewSensor(GameObject sensorToCopy, String type)
+        {
+            GameObject sensor = GameObject.Instantiate(sensorToCopy, main.ActiveRobot.transform.Find("node_0.bxda").transform);
+            sensor.transform.localPosition = new Vector3(0, 0.2f, 0);
+            sensor.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            sensor.name = type + " " + sensorList.Count;
+            sensor.GetComponent<SensorBase>().Robot = main.ActiveRobot;
+            sensorList.Add(sensor);
+            activeSensorList.Add(sensor);
+            return sensor;
+        }
+
         /// <summary>
         /// Instantiate an ultrasonic sensor (a distance sensor actually) and set its name, local position, local rotation, and add it to 
         /// both sensor list and active sensor list
@@ -111,18 +123,18 @@ namespace Synthesis.Sensors
         /// <param name="parent"></param> the parent node to which the sensor is attached
         /// <param name="position"></param> local position of the sensor
         /// <param name="rotation"></param> local rotation of the sensor
-        public SensorBase AddGyro(GameObject parent, Vector3 position, Vector3 rotation)
+        public SensorBase AddGyro()
         {
-            GameObject gyro = GameObject.Instantiate(Gyro, parent.transform);
-            gyro.transform.localPosition = position;
-            gyro.transform.localRotation = Quaternion.Euler(rotation);
-            gyro.name = "Gyro_" + sensorList.Count;
-            gyro.GetComponent<SensorBase>().Robot = main.ActiveRobot;
-            sensorList.Add(gyro);
-            activeSensorList.Add(gyro);
-
-            Gyro sensor = gyro.GetComponent<Gyro>();
-            return sensor;
+            //GameObject gyro = GameObject.Instantiate(Gyro, parent.transform);
+            //gyro.transform.localPosition = position;
+            //gyro.transform.localRotation = Quaternion.Euler(rotation);
+            //gyro.name = "Gyro_" + sensorList.Count;
+            //gyro.GetComponent<SensorBase>().Robot = main.ActiveRobot;
+            //sensorList.Add(gyro);
+            //activeSensorList.Add(gyro);
+            //Gyro sensor = gyro.GetComponent<Gyro>();
+            //return sensor;
+            return AddNewSensor(Gyro, "Gyro").GetComponent<Gyro>();
         }
 
         /// <summary>

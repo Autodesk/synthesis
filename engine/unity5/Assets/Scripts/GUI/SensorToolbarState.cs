@@ -1,6 +1,8 @@
 ﻿using Synthesis.Camera;
+using Synthesis.DriverPractice;
 using Synthesis.FSM;
 using Synthesis.Sensors;
+using Synthesis.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +16,6 @@ namespace Assets.Scripts.GUI
     {
         RobotCameraGUI robotCameraGUI;
         SensorManagerGUI sensorManagerGUI;
-
 
         public override void Start()
         {
@@ -37,5 +38,11 @@ namespace Assets.Scripts.GUI
         {
             sensorManagerGUI.ToggleSensorOption();
         }
+
+        public void OnGyroButtonPressed()
+        {
+            sensorManagerGUI.AddGyro();
+        }
+
     }
 }
