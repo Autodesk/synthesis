@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Crosstales.FB.Demo
+namespace Crosstales.FB
 {
     public class NativeFile : MonoBehaviour
     {
