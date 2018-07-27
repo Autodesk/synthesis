@@ -26,6 +26,7 @@
             </div>
             <br>
             <fieldset id="joint-config-template" class="joint-config">
+                <legend class="joint-config-legend">Joint</legend>
                 <h3 class="driver-type-header">Driver Type: </h3>
                 <select class="rotational">
                     <option value="None">None</option>
@@ -81,8 +82,10 @@
                 for (var i = 0; i < joints.length; i++)
                 {
                     var newJoint = template.cloneNode(true);
-                    delete newJoint.id;
-                    
+
+                    newJoint.id = "joint-config-" + String(i);
+                    newJoint.getElementsByClassName("joint-config-legend")[0].innerHTML = joints[i].name;
+
                     exportForm.appendChild(newJoint);
                 }
             }
