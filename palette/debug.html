@@ -16,64 +16,124 @@
     </head>
     <body>
         <p id='exportSettings'>
+            <div class="text-inputs">
+                Robot Name:  <input type="text" name="name"><br>
+                Mass:        <input type="text" name="mass"><br>
+            </div>
+            <br>
+            <div class="driver-chooser-dropdown">
+                <h3 class="dropbtn">Driver Type: </h3>
+                <select class="Rotational">
+                    <option value="Motor">
+                        <a href=" = " #">Motor</a>
+                    </option>
+                    <option value="Servo">
+                        <a href=" = " #">Servo</a>
+                    </option>
+                    <option value="Bumper_Pnuematic">
+                        <a href=" = " #">Bumper Pnuematic</a>
+                    </option>
+                    <option value="Relay_Pnuematic">
+                        <a href=" = " #">Relay Pnuematic</a>
+                    </option>
+                    <option value="Worm_Screw">
+                        <a href=" = " #">Worm Screw</a>
+                    </option>
+                    <option value="Dual_Motor">
+                        <a href=" = " #">Dual Motor</a>
+                    </option>
+                </select>
+                <select class="Linear">
+                    <option value="Motor">
+                        <a href=" = " #">Elevator</a>
+                    </option>
+                    <option value="Bumper_Pnuematic">
+                        <a href=" = " #">Bumper Pnuematic</a>
+                    </option>
+                    <option value="Relay_Pnuematic">
+                        <a href=" = " #">Relay Pnuematic</a>
+                    </option>
+                    <option value="Worm_Screw">
+                        <a href=" = " #">Worm Screw</a>
+                    </option>
+                </select>
+            </div>
+            <br>
+            <div class="dropdown">
+                <button class="dropbtn">Physical Mesh Accuracy</button>
+                <div class="dropdown-content">
+                    <select>
+                        <option value="Low">
+                            <a href=" = " #">Low</a>
+                        </option>
+                        <option value="Medium">
+                            <a href=" = " #">Medium</a>
+                        </option>
+                        <option value="High">
+                            <a href=" = " #">High</a>
+                        </option>
+                    </select>
+                </div>
+            </div>
         </p>
 
         <button id='finishedButton' type='button' onclick='sendInfoToFusion()'>Export Robot</button>
-    </body>
-    <script>
-        var jointOptions = [];
 
-        function readFormData()
-        {
-            for (var i = 0; i < jointOptions.length; i++)
+        <script>
+            var jointOptions = [];
+
+            function readFormData()
             {
-                jointOptions[i].driver = createDriver(DRIVER_MOTOR, (i < jointOptions.length / 2) ? 0 : 1, -1);
-                jointOptions[i].driver.wheel = createWheel(WHEEL_NORMAL, FRICTION_MEDIUM, true);
-            }
-        }
-
-        function sendInfoToFusion()
-        {
-            readFormData();
-            adsk.fusionSendData('export', stringifyConfigData(jointOptions));
-        }
-
-        function displayJointOptions(joints)
-        {
-            var str = "";
-
-            for (var i = 0; i < joints.length; i++)
-                str += joints[i].name + ' ' + '\n';
-
-            document.getElementById('exportSettings').innerHTML = str;
-        }
-
-        window.fusionJavaScriptHandler =
-        {
-            handle: function (action, data)
-            {
-                try
+                for (var i = 0; i < jointOptions.length; i++)
                 {
-                    if (action == 'joints')
-                    {
-                        jointOptions = processJointDataString(data);
-                        displayJointOptions(jointOptions);
-                    }
-                    else if (action == 'debugger')
-                    {
-                        debugger;
-                    }
-                    else
-                    {
-                        return 'Unexpected command type: ' + action;
-                    }
-                } catch (e)
-                {
-                    console.log('Exception while excecuting \"' + action + '\":');
-                    console.log(e);
+                    jointOptions[i].driver = createDriver(DRIVER_MOTOR, (i < jointOptions.length / 2) ? 0 : 1, -1);
+                    jointOptions[i].driver.wheel = createWheel(WHEEL_NORMAL, FRICTION_MEDIUM, true);
                 }
-                return 'OK';
             }
-        };
-    </script>
+
+            function sendInfoToFusion()
+            {
+                readFormData();
+                adsk.fusionSendData('export', stringifyConfigData(jointOptions));
+            }
+
+            function displayJointOptions(joints)
+            {
+                /*var str = "";
+
+                for (var i = 0; i < joints.length; i++)
+                    str += joints[i].name + ' ' + '\n';
+
+                document.getElementById('exportSettings').innerHTML = str;*/
+            }
+
+            window.fusionJavaScriptHandler =
+                {
+                    handle: function (action, data)
+                    {
+                        try
+                        {
+                            if (action == 'joints')
+                            {
+                                jointOptions = processJointDataString(data);
+                                displayJointOptions(jointOptions);
+                            }
+                            else if (action == 'debugger')
+                            {
+                                debugger;
+                            }
+                            else
+                            {
+                                return 'Unexpected command type: ' + action;
+                            }
+                        } catch (e)
+                        {
+                            console.log('Exception while excecuting \"' + action + '\":');
+                            console.log(e);
+                        }
+                        return 'OK';
+                    }
+                };
+        </script>
+    </body>
 </html>
