@@ -53,15 +53,45 @@
 
                     <div class="other-wheel-div">
                         <span>Is Drive Wheel: </span>
-                        <input type="checkbox" class="is-drive-wheel" />
-
-                        <div class="drive-side-div">
-                            Drive side
-                        </div>
+                        <input type="checkbox" class="is-drive-wheel" onchange="updateFieldOptions(this.parentNode.parentNode.parentNode)" />
                     </div>
 
                     <div class="ports-div">
-                        Ports
+                        <div class="generic-ports-div">
+                            <select class="port-signal">
+                                <option value="0">PWM</option>
+                                <option value="1">CAN</option>
+                            </select>
+                            <select class="port-number-a">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                            <select class="port-number-b">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+
+                        <div class="wheel-side-div">
+                            <select class="wheel-side">
+                                <option value="0">Left Wheel</option>
+                                <option value="1">Right Wheel</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -116,43 +146,56 @@
             {
                 var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
                 var wheelSelectorDiv = fieldset.getElementsByClassName("wheel-div")[0];
+                var genericPortsDiv = wheelSelectorDiv.getElementsByClassName("generic-ports-div")[0];
+                var wheelSideDiv = wheelSelectorDiv.getElementsByClassName("wheel-side-div")[0];
 
                 // Hide wheel info if driver not set
                 if (selectedDriver == 0)
+                {
                     wheelSelectorDiv.style.visibility = "hidden";
+                    genericPortsDiv.style.display = "block";
+                    wheelSideDiv.style.display = "none";
+                }
                 else
                 {
                     wheelSelectorDiv.style.visibility = "visible";
 
+                    // Hide port B selector if not a dual motor
+                    var portBSelector = wheelSelectorDiv.getElementsByClassName("port-number-b")[0];
+                    if (selectedDriver == 6)
+                        portBSelector.style.visibility = "visible";
+                    else
+                        portBSelector.style.visibility = "hidden";
+
                     var selectedWheel = wheelSelectorDiv.getElementsByClassName("wheel-type")[0].selectedIndex;
 
-                    // Set other wheel info visibility
+                    // Set other wheel info visibility and generic ports/wheel side
                     var otherWheelDiv = wheelSelectorDiv.getElementsByClassName("other-wheel-div")[0];
-                    var portsDiv = wheelSelectorDiv.getElementsByClassName("ports-div")[0];
 
                     if (selectedWheel == 0)
                     {
                         otherWheelDiv.style.visibility = "hidden";
-                        portsDiv.style.visibility = "visible";
+                        genericPortsDiv.style.display = "block";
+                        wheelSideDiv.style.display = "none";
                     }
                     else
                     {
                         otherWheelDiv.style.visibility = "visible";
 
                         var isDriveWheel = otherWheelDiv.getElementsByClassName("is-drive-wheel")[0].checked;
-
+                        
                         // Set drive side visibility
                         var driveSideDiv = otherWheelDiv.getElementsByClassName("drive-side-div")[0];
 
                         if (isDriveWheel)
                         {
-                            portsDiv.style.visibility = "hidden";
-                            driveSideDiv.style.visibility = "visible";
+                            genericPortsDiv.style.display = "none";
+                            wheelSideDiv.style.display = "block";
                         }
                         else
                         {
-                            portsDiv.style.visibility = "visible";
-                            driveSideDiv.style.visibility = "hidden";
+                            genericPortsDiv.style.display = "block";
+                            wheelSideDiv.style.display = "none";
                         }
                     }
                 }
@@ -169,7 +212,11 @@
 
                     if (selectedDriver > 0)
                     {
-                        jointOptions[i].driver = createDriver(selectedDriver, (i < jointOptions.length / 2) ? 0 : 1, -1);
+                        var signal = fieldset.getElementsByClassName("port-signal")[0].selectedIndex;
+                        var portA = fieldset.getElementsByClassName("port-number-a")[0].selectedIndex;
+                        var portB = fieldset.getElementsByClassName("port-number-b")[0].selectedIndex;
+
+                        jointOptions[i].driver = createDriver(selectedDriver, signal, portA, portB);
 
                         var selectedWheel = fieldset.getElementsByClassName("wheel-type")[0].selectedIndex;
 
@@ -177,6 +224,13 @@
                         {
                             var isDriveWheel = fieldset.getElementsByClassName("is-drive-wheel")[0].checked;
                             jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
+
+                            if (isDriveWheel)
+                            {
+                                jointOptions[i].driver.signal = PWM;
+                                jointOptions[i].driver.portA = fieldset.getElementsByClassName("wheel-side")[0].selectedIndex;
+                                jointOptions[i].driver.portB = fieldset.getElementsByClassName("wheel-side")[0].selectedIndex;
+                            }
                         }
                     }
                 }
