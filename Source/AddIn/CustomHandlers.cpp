@@ -64,16 +64,15 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		BXDJ::ConfigData config;
 
 		// Create config
-		int j = 0;
 		std::string dataReceived = eventArgs->data();
-		for (int i = 0; i < joints.size() && i < dataReceived.length();)
+		for (int j = 0, i = 0; j < joints.size() && i < dataReceived.length(); j++)
 		{
 			if ((dataReceived[i++] + ASCII_OFFSET) == 1)
 			{
 				BXDJ::Driver driver((BXDJ::Driver::Type)(dataReceived[i++] + ASCII_OFFSET));
 
-				driver.portA = (int)(dataReceived[i++] + ASCII_OFFSET);
-				driver.portB = (int)(dataReceived[i++] + ASCII_OFFSET);
+				driver.portA = (int)(dataReceived[i++] - 1 + ASCII_OFFSET);
+				driver.portB = (int)(dataReceived[i++] - 1 + ASCII_OFFSET);
 
 				if ((dataReceived[i++] + ASCII_OFFSET) == 1)
 				{
@@ -83,7 +82,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 					driver.setComponent(wheel);
 				}
 
-				config.setDriver(joints[j++], driver);
+				config.setDriver(joints[j], driver);
 			}
 		}
 
