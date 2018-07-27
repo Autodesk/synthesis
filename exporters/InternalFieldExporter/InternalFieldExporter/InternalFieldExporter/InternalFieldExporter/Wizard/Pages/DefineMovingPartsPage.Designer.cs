@@ -43,7 +43,7 @@
             this.Step3InfoLabel.Name = "Step3InfoLabel";
             this.Step3InfoLabel.Size = new System.Drawing.Size(454, 26);
             this.Step3InfoLabel.TabIndex = 1;
-            this.Step3InfoLabel.Text = "If you have any other moving parts on your robot that you believe would be useful" +
+            this.Step3InfoLabel.Text = "If you have any other moving parts on your field that you believe would be useful" +
     " to have in the simulation, set them up here by checking any of the nodes on the" +
     " list.\r\n";
             // 

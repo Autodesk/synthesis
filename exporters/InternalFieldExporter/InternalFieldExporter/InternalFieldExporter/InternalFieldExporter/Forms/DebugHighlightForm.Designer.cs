@@ -1,4 +1,4 @@
-﻿namespace BxDRobotExporter.Forms
+﻿namespace InternalFieldExporter.Forms
 {
     partial class DebugHighlightForm
     {

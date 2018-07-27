@@ -89,7 +89,7 @@ namespace OGLViewer
                     if (color[3] != 1 && effects)
                     {
                         GL.Enable(EnableCap.Blend);
-                        GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                        //GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
                     }
                     else
                     {

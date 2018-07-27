@@ -2,9 +2,9 @@
   <!--Created for Autodesk Inventor Version 21.0-->
   <ClassId>{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}</ClassId>
   <ClientId>{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}</ClientId>
-  <DisplayName>BxDRobotExporter</DisplayName>
-  <Description>BxDRobotExporter</Description>
-  <Assembly>C:\Program Files (x86)\Autodesk\Synthesis\BxDRobotExporter.dll</Assembly>
+  <DisplayName>InternalFieldExporter</DisplayName>
+  <Description>InternalFieldExporter</Description>
+  <Assembly>C:\Program Files (x86)\Autodesk\Synthesis\InternalFieldExporter.dll</Assembly>
   <LoadOnStartUp>1</LoadOnStartUp>
   <UserUnloadable>1</UserUnloadable>
   <Hidden>0</Hidden>
