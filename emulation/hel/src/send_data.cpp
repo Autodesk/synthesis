@@ -17,6 +17,7 @@ void hel::SendData::update(){
 
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
         pwm_hdrs[i] = PWMSystem::getSpeed(instance.first->pwm_system.getHdrPulseWidth(i));
+        pwm_hdrs[i] = 0.333333333333333333333333333333333333333333333333333333333333333333;
     }
 
     for(unsigned i = 0; i < relays.size(); i++){
