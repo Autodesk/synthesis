@@ -54,8 +54,17 @@
                     <div class="other-wheel-div">
                         <span>Is Drive Wheel: </span>
                         <input type="checkbox" class="is-drive-wheel" />
+
+                        <div class="drive-side-div">
+                            Drive side
+                        </div>
+                    </div>
+
+                    <div class="ports-div">
+                        Ports
                     </div>
                 </div>
+
             </fieldset>
         </div>
 
@@ -65,6 +74,7 @@
             var jointOptions = [];
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
 
+            // Populates the form with joints
             function displayJointOptions(joints)
             {
                 // Delete all existing slots
@@ -101,6 +111,7 @@
                 }
             }
 
+            // Hides or shows fields based on the values of other fields
             function updateFieldOptions(fieldset)
             {
                 var selectedDriver = fieldset.getElementsByClassName("driver-type")[0].selectedIndex;
@@ -113,18 +124,41 @@
                 {
                     wheelSelectorDiv.style.visibility = "visible";
 
-                    var selectedWheel = fieldset.getElementsByClassName("wheel-type")[0].selectedIndex;
+                    var selectedWheel = wheelSelectorDiv.getElementsByClassName("wheel-type")[0].selectedIndex;
 
                     // Set other wheel info visibility
                     var otherWheelDiv = wheelSelectorDiv.getElementsByClassName("other-wheel-div")[0];
+                    var portsDiv = wheelSelectorDiv.getElementsByClassName("ports-div")[0];
 
                     if (selectedWheel == 0)
+                    {
                         otherWheelDiv.style.visibility = "hidden";
+                        portsDiv.style.visibility = "visible";
+                    }
                     else
+                    {
                         otherWheelDiv.style.visibility = "visible";
+
+                        var isDriveWheel = otherWheelDiv.getElementsByClassName("is-drive-wheel")[0].checked;
+
+                        // Set drive side visibility
+                        var driveSideDiv = otherWheelDiv.getElementsByClassName("drive-side-div")[0];
+
+                        if (isDriveWheel)
+                        {
+                            portsDiv.style.visibility = "hidden";
+                            driveSideDiv.style.visibility = "visible";
+                        }
+                        else
+                        {
+                            portsDiv.style.visibility = "visible";
+                            driveSideDiv.style.visibility = "hidden";
+                        }
+                    }
                 }
             }
 
+            // Updates jointOptions with the currently entered data
             function readFormData()
             {
                 for (var i = 0; i < jointOptions.length; i++)
@@ -148,6 +182,7 @@
                 }
             }
 
+            // Sends the data to the Fusion add-in
             function sendInfoToFusion()
             {
                 readFormData();
