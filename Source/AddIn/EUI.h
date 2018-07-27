@@ -10,6 +10,7 @@
 
 #include "../Exporter.h"
 #include "CustomHandlers.h"
+#include "Identifiers.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;
@@ -28,8 +29,8 @@ namespace Synthesis
 		Ptr<UserInterface> UI;
 
 		Ptr<Workspace> workSpace;
-		Ptr<ToolbarPanel> toolbar;
-		Ptr<ToolbarControls> toolbarControls;
+		Ptr<ToolbarPanel> panel;
+		Ptr<ToolbarControls> panelControls;
 
 		Ptr<CommandDefinition> exportButtonCommand;
 		Ptr<Palette> exportPalette;

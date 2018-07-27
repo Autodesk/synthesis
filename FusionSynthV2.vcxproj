@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="Source\AddIn\CustomHandlers.h" />
     <ClInclude Include="Source\AddIn\EUI.h" />
+    <ClInclude Include="Source\AddIn\Identifiers.h" />
     <ClInclude Include="Source\Data\BXDA\BinaryWriter.h" />
     <ClInclude Include="Source\Data\BXDA\SubMesh.h" />
     <ClInclude Include="Source\Data\BXDA\Triangle.h" />

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core/CoreAll.h>
+#include "Identifiers.h"
 #include "../Exporter.h"
 
 using namespace adsk::core;
@@ -15,7 +16,6 @@ namespace Synthesis
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
 		std::vector<Ptr<Joint>> * joints;
 		Ptr<Application> app;
-		Ptr<Palette> palette;
 	};
 
 	class ShowPaletteCommandExecuteHandler : public adsk::core::CommandEventHandler
@@ -24,7 +24,6 @@ namespace Synthesis
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
 		std::vector<Ptr<Joint>> * joints;
 		Ptr<Application> app;
-		Ptr<Palette> palette;
 	};
 
 	// Palette Events
@@ -34,7 +33,6 @@ namespace Synthesis
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 		std::vector<Ptr<Joint>> * joints;
 		Ptr<Application> app;
-		Ptr<Palette> palette;
 	};
 
 	class CloseFormEventHandler : public adsk::core::UserInterfaceGeneralEventHandler
@@ -42,6 +40,5 @@ namespace Synthesis
 	public:
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
 		Ptr<Application> app;
-		Ptr<Palette> palette;
 	};
 }

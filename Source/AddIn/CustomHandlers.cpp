@@ -18,15 +18,26 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler;
 	onShowPaletteCommandExecuted->joints = joints;
 	onShowPaletteCommandExecuted->app = app;
-	onShowPaletteCommandExecuted->palette = palette;
 	exec->add(onShowPaletteCommandExecuted);
 }
 
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
+	Ptr<UserInterface> UI = app->userInterface();
+	if (!UI)
+		return;
+
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
+	if (!palette)
+		return;
+
 	Exporter exporter(app);
-	palette->sendInfoToHTML("send", exporter.collectJoints(*joints));
+	palette->sendInfoToHTML("joints", exporter.collectJoints(*joints));
 	palette->isVisible(true);
 }
 
@@ -34,24 +45,39 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 // Submit Exporter Form Event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
-	Exporter exporter(app);
+	Ptr<UserInterface> UI = app->userInterface();
+	if (!UI)
+		return;
 
-	// Create config
-	BXDJ::ConfigData config;
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
 
-	for (int i = 0; i < joints->size() && i < eventArgs->data().length(); i++)
+	Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
+	if (!palette)
+		return;
+
+	if (eventArgs->action() == "export")
 	{
-		BXDJ::Driver driver(BXDJ::Driver::MOTOR);
+		BXDJ::ConfigData config;
 
-		driver.portA = (eventArgs->data()[i] == 'L') ? 0 : 1;
+		// Create config
+		std::string dataReceived = eventArgs->data();
+		for (int i = 0; i < joints->size() && i < dataReceived.length(); i++)
+		{
+			BXDJ::Driver driver(BXDJ::Driver::MOTOR);
 
-		driver.setComponent(BXDJ::Wheel());
+			driver.portA = (dataReceived[i] == 'L') ? 0 : 1;
 
-		config.setDriver((*joints)[i], driver);
+			driver.setComponent(BXDJ::Wheel());
+
+			config.setDriver((*joints)[i], driver);
+		}
+
+		palette->isVisible(false);
+		Exporter exporter(app);
+		exporter.exportMeshes(config);
 	}
-
-	exporter.exportMeshes(config);
-	palette->isVisible(false);
 }
 
 // Close Exporter Form Event

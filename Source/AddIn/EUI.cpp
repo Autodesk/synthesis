@@ -32,13 +32,13 @@ bool EUI::createWorkspace()
 	try
 	{
 		// Create workspace
-		workSpace = UI->workspaces()->add(app->activeProduct()->productType(), "SynthesisExporterAddIn", "Synthesis", "Resources/Sample");
+		workSpace = UI->workspaces()->add(app->activeProduct()->productType(), K_WORKSPACE, "Synthesis", "Resources/Sample");
 		workSpace->tooltip("Export robot models to the Synthesis simulator");
 		
-		// Create toolbar
+		// Create panel
 		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
-		toolbar = workSpace->toolbarPanels()->add("SynthesisExport", "Export");
-		toolbarControls = toolbar->controls();
+		panel = workSpace->toolbarPanels()->add(K_PANEL, "Export");
+		panelControls = panel->controls();
 
 		// Create palettes
 		if (!defineExportPalette())
@@ -48,9 +48,9 @@ bool EUI::createWorkspace()
 		if (!defineExportButton())
 			throw "Failed to create toolbar buttons.";
 
-		// Add buttons to toolbar
-		toolbarControls->addCommand(exportButtonCommand)->isPromoted(true);
-		
+		// Add buttons to panel
+		panelControls->addCommand(exportButtonCommand)->isPromoted(true);
+
 		// Activate workspace
 		workSpace->activate();
 
@@ -70,12 +70,12 @@ bool EUI::defineExportPalette()
 		return false;
 
 	// Check if palette already exists
-	exportPalette = palettes->itemById("exporterForm");
+	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
 
 	if (!exportPalette)
 	{
 		// Create palette
-		exportPalette = palettes->add("exporterForm", "Robot Exporter Form", "Palette/debug.html", false, true, true, 300, 200);
+		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/debug.html", false, true, true, 300, 200);
 		if (!exportPalette)
 			return false;
 
@@ -90,7 +90,6 @@ bool EUI::defineExportPalette()
 		ReceiveFormDataHandler * onHTMLEvent = new ReceiveFormDataHandler;
 		onHTMLEvent->joints = &joints;
 		onHTMLEvent->app = app;
-		onHTMLEvent->palette = exportPalette;
 
 		htmlEvent->add(onHTMLEvent);
 
@@ -101,7 +100,6 @@ bool EUI::defineExportPalette()
 
 		CloseFormEventHandler * onClose = new CloseFormEventHandler;
 		onClose->app = app;
-		onClose->palette = exportPalette;
 
 		closeEvent->add(onClose);
 	}
@@ -112,7 +110,7 @@ bool EUI::defineExportPalette()
 bool EUI::defineExportButton()
 {
 	// Create button command definition
-	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition("ExportRobotButton", "Export", "Setup your robot for exporting to Synthesis.", "Resources/Sample");
+	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Export", "Setup your robot for exporting to Synthesis.", "Resources/Sample");
 
 	// Add create and click events to button
 	Ptr<CommandCreatedEvent> commandCreatedEvent = exportButtonCommand->commandCreated();
@@ -122,7 +120,6 @@ bool EUI::defineExportButton()
 	ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler;
 	commandCreatedEventHandler->joints = &joints;
 	commandCreatedEventHandler->app = app;
-	commandCreatedEventHandler->palette = exportPalette;
 	
 	return commandCreatedEvent->add(commandCreatedEventHandler);
 }
