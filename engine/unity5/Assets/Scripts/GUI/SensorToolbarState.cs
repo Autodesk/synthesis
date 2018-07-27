@@ -54,5 +54,10 @@ namespace Assets.Scripts.GUI
             sensorManagerGUI.AddGyro();
         }
 
+        public void OnShowOutputsButtonPressed()
+        {
+            sensorManagerGUI.ToggleSensorOutput();
+        }
+
     }
 }

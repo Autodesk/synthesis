@@ -869,28 +869,15 @@ namespace Synthesis.Sensors
         }
 
         /// <summary>
-        /// Toggle between showing sensor output and hiding them
+        /// Show sensor outputs
         /// </summary>
         public void ShowSensorOutput()
         {
-            if (sensorOutputPanel.activeSelf)
-            {
-                sensorOutputPanel.SetActive(false);
-                //isHidingOutput = true;
-                //showSensorButton.SetActive(true);
-                //showSensorButton.transform.position = sensorOutputPanel.transform.position;
-            }
-            else
-            {
-                sensorOutputPanel.SetActive(true);
-                //isHidingOutput = false;
-                //showSensorButton.SetActive(false);
-                //sensorOutputPanel.transform.position = showSensorButton.transform.position;
-            }
+            sensorOutputPanel.SetActive(true);
         }
 
         /// <summary>
-        /// Hide sensor output
+        /// Hide sensor outputs
         /// </summary>
         public void HideSensorOutput()
         {
@@ -898,6 +885,14 @@ namespace Synthesis.Sensors
             //isHidingOutput = true;
             //showSensorButton.SetActive(true);
             //showSensorButton.transform.position = sensorOutputPanel.transform.position;
+        }
+
+        /// <summary>
+        /// Toggle between showing sensor outputs and hiding them
+        /// </summary>
+        public void ToggleSensorOutput()
+        {
+            sensorOutputPanel.SetActive(!sensorOutputPanel.activeSelf);
         }
         #endregion
 
