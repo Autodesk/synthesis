@@ -5,7 +5,10 @@ std::string Filesystem::robotName = "unnamed";
 
 void Filesystem::setRobotName(std::string name)
 {
-	robotName = name;
+	if (name.length() > 0)
+		robotName = name;
+	else
+		robotName = "untitled";
 }
 
 std::string Filesystem::getCurrentRobotDirectory()
