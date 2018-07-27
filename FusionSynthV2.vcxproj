@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Palette\debug.html" />
+    <None Include="Palette\js\fusionInterface.js" />
     <None Include="palette\palette.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script src="js/fusionInterface.js"></script>
     </head>
     <body>
         <p id='exportSettings'>
@@ -9,75 +10,21 @@
         <button type='button' onclick='sendInfoToFusion()'>Click to send info to Fusion</button>
     </body>
     <script>
-        var ASCII_OFFSET = 32;
         var jointOptions = [];
 
         function readFormData()
         {
-            jointOptions[0].driver = {};
-            jointOptions[0].driver.type = 1;
-            jointOptions[0].driver.portA = 0;
-            jointOptions[0].driver.portB = -1;
-            jointOptions[0].driver.wheel = null;
+            for (var i = 0; i < jointOptions.length; i++)
+            {
+                jointOptions[i].driver = createDriver(DRIVER_MOTOR, (i < jointOptions.length / 2) ? 0 : 1, -1);
+                jointOptions[i].driver.wheel = createWheel(WHEEL_NORMAL, FRICTION_MEDIUM, true);
+            }
         }
 
         function sendInfoToFusion()
         {
             readFormData();
-
-            var args = '';
-
-            for (var i = 0; i < jointOptions.length; i++)
-            {
-                var driver = jointOptions[i].driver;
-
-                if (driver == null)
-                    args += String.fromCharCode(ASCII_OFFSET + 0);
-                else
-                {
-                    args += String.fromCharCode(ASCII_OFFSET + 1);
-                    args += String.fromCharCode(ASCII_OFFSET + driver.type);
-                    args += String.fromCharCode(ASCII_OFFSET + driver.portA + 1);
-                    args += String.fromCharCode(ASCII_OFFSET + driver.portB + 1);
-
-                    var wheel = driver.wheel;
-
-                    if (wheel == null)
-                        args += String.fromCharCode(ASCII_OFFSET + 0);
-                    else
-                    {
-                        args += String.fromCharCode(ASCII_OFFSET + 1);
-                        args += String.fromCharCode(ASCII_OFFSET + wheel.type);
-                        args += String.fromCharCode(ASCII_OFFSET + wheel.frictionLevel);
-                        args += String.fromCharCode(ASCII_OFFSET + wheel.isDriveWheel ? 1 : 0);
-                    }
-                }
-            }
-
-            console.log(args);
-
-            adsk.fusionSendData('export', args);
-        }
-
-        function processJointDataString(jointData)
-        {
-            var joints = [];
-
-            for (var c = 0; c < jointData.length; c++)
-            {
-                var nameLength = '';
-                while (jointData[c] != ' ' && c < jointData.length)
-                    nameLength += jointData[c++];
-                c++;
-            
-                var nameStr = '';
-                for (var i = 0; i < parseInt(nameLength) && c < jointData.length; i++)
-                    nameStr += jointData[c++];
-
-                joints.push({ name: nameStr, driver: null });
-            }
-
-            return joints;
+            adsk.fusionSendData('export', stringifyConfigData(jointOptions));
         }
 
         function displayJointOptions(joints)
