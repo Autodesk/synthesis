@@ -283,6 +283,8 @@ namespace BxDRobotExporter
                 return;
             }
 
+            disabledAssemblyOccurences = new List<ComponentOccurrence>();
+            disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
             if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
@@ -293,9 +295,7 @@ namespace BxDRobotExporter
             else
                 PendingChanges = false; // No changes are pending if data has been loaded
 
-            // Hide non-jointed components
-            disabledAssemblyOccurences = new List<ComponentOccurrence>();
-            disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
+            // Hide non-jointed components;
             
             // Reload panels in UI
             Utilities.GUI.ReloadPanels();
