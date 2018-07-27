@@ -32,12 +32,19 @@ bool EUI::createWorkspace()
 	try
 	{
 		// Create workspace
-		workSpace = UI->workspaces()->add(app->activeProduct()->productType(), K_WORKSPACE, "Synthesis", "Resources/Sample");
-		workSpace->tooltip("Export robot models to the Synthesis simulator");
+		workSpace = UI->workspaces()->itemById(K_WORKSPACE);
+		if (!workSpace)
+		{
+			workSpace = UI->workspaces()->add(app->activeProduct()->productType(), K_WORKSPACE, "Synthesis", "Resources/Sample");
+			workSpace->tooltip("Export robot models to the Synthesis simulator");
+		}
 		
 		// Create panel
 		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
-		panel = workSpace->toolbarPanels()->add(K_PANEL, "Export");
+		panel = workSpace->toolbarPanels()->itemById(K_PANEL);
+		if (!panel)
+			panel = workSpace->toolbarPanels()->add(K_PANEL, "Export");
+
 		panelControls = panel->controls();
 
 		// Create palettes
@@ -49,7 +56,8 @@ bool EUI::createWorkspace()
 			throw "Failed to create toolbar buttons.";
 
 		// Add buttons to panel
-		panelControls->addCommand(exportButtonCommand)->isPromoted(true);
+		if (!panelControls->itemById(K_EXPORT_BUTTON))
+			panelControls->addCommand(exportButtonCommand)->isPromoted(true);
 
 		// Activate workspace
 		workSpace->activate();
@@ -107,14 +115,20 @@ bool EUI::defineExportPalette()
 bool EUI::defineExportButton()
 {
 	// Create button command definition
-	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Export", "Setup your robot for exporting to Synthesis.", "Resources/Sample");
+	exportButtonCommand = UI->commandDefinitions()->itemById(K_EXPORT_BUTTON);
+	if (!exportButtonCommand)
+	{
+		exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Export", "Setup your robot for exporting to Synthesis.", "Resources/Sample");
 
-	// Add create and click events to button
-	Ptr<CommandCreatedEvent> commandCreatedEvent = exportButtonCommand->commandCreated();
-	if (!commandCreatedEvent)
-		return false;
+		// Add create and click events to button
+		Ptr<CommandCreatedEvent> commandCreatedEvent = exportButtonCommand->commandCreated();
+		if (!commandCreatedEvent)
+			return false;
+
+		ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler(app);
+
+		return commandCreatedEvent->add(commandCreatedEventHandler);
+	}
 	
-	ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler(app);
-	
-	return commandCreatedEvent->add(commandCreatedEventHandler);
+	return true;
 }
