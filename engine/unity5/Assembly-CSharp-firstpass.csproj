@@ -48,7 +48,7 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
     <UnityProjectType>GamePlugins:3</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
+    <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>2018.2.0f2</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -284,16 +284,16 @@
     <None Include="Assets\Plugins\crosstales\Common\README.txt" />
     <None Include="Assets\Plugins\crosstales\Common\UI\Colors.txt" />
     <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -491,7 +491,7 @@
       <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="CTCommon">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Plugins/crosstales/Common/Scripts/CTCommon.dll</HintPath>
@@ -503,13 +503,13 @@
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Plugins/crosstales/FileBrowser/Native/Windows/System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
-      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
-      <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
-      <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

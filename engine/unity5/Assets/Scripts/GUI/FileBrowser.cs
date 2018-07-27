@@ -9,7 +9,7 @@ namespace Synthesis.GUI
     /// Modified version of http://wiki.unity3d.com/index.php?title=FileBrowser.
     /// Directory only based file browser.
     /// </summary>
-    class FileBrowser : OverlayWindow
+    class FileBrowser
     {
         private Rect windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
 
@@ -62,7 +62,6 @@ namespace Synthesis.GUI
         /// Default Directory Path
         /// </summary>
         private string directoryPath = System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private string backupPath = new DirectoryInfo(Application.dataPath).FullName;
 
         /// <summary>
         /// Internal reference to scroll position.
@@ -124,7 +123,7 @@ namespace Synthesis.GUI
         /// </summary>
         private GUIStyle descriptionStyle;
 
-        private DirectoryInfo tempSelection;
+        private DirectoryInfo tempSelection; 
 
         public FileBrowser(string windowTitle, bool allowEsc = true)
         {
@@ -209,53 +208,7 @@ namespace Synthesis.GUI
             descriptionStyle.font = Resources.GetBuiltinResource<Font>("Arial.ttf") as Font;
             descriptionStyle.fontSize = 13;
             descriptionStyle.margin = new RectOffset(5, 5, 5, 2);
-
         }
-
-        /// <summary>
-        /// Draws the given list as buttons, and returns whichever one was selected.
-        /// </summary>
-        /// <typeparam name="T">The object type</typeparam>
-        /// <param name="items">The items</param>
-        /// <param name="stringify">Optional function to convert object to string</param>
-        /// <param name="highlight">Optional currently-selected item's string representation</param>
-        /// <param name="targetName"></param>A list of target folder names that needs to be highlighted</param>
-        /// <returns>The selected object</returns>
-        private object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify, string highlight, List<string> targetName)
-        {
-            object selected = null;
-            foreach (T o in items)
-            {
-                string entry = stringify != null ? stringify(o) : o.ToString(); ;
-
-                //highlight temporary selection
-                if (tempSelection != null && entry.Equals(tempSelection.Name) && !targetName.Contains(entry))
-                {
-                    if (GUILayout.Button(entry, highlightStyle))
-                    {
-                        selected = o;
-                        tempSelection = o as DirectoryInfo;
-                    }
-                }
-                //highlight target folders after searching
-                else if (targetName.Contains(entry))
-                {
-                    if (GUILayout.Button(entry, targetStyle))
-                    {
-                        selected = o;
-                        tempSelection = o as DirectoryInfo;
-                    }
-                }
-                //regular button style
-                else if (GUILayout.Button(entry, listStyle))
-                {
-                    selected = o;
-                    tempSelection = o as DirectoryInfo;
-                }
-            }
-            return selected;
-        }
-
 
         /// <summary>
         /// Renders the browser window.
@@ -288,34 +241,12 @@ namespace Synthesis.GUI
                 Active = false;
             }
 
-            //If hit Up One Level, go back to parent folder level
-            if (directoryInfo.Parent != null && UnityEngine.GUI.Button(new Rect(10, 10, 120, 25), "Up One Level", fileBrowserButton))
-            {
-                directoryInfo = directoryInfo.Parent;
-                directoryLocation = directoryInfo.FullName;
-                selectedDirectoryLocation = directoryInfo.FullName;
-                tempSelection = null;
-                //Reset the target folder list and set the folder to unsearched
-                targetFolderList.Clear();
-                directorySearched = false;
-            }
-
-            // Handle the directories list
-            GUILayout.BeginArea(new Rect(10, 35, 480, 300));
-
-            GUILayout.Label("When choosing a folder, please select the field/robot folder containing these elements" +
-                    " " + "NOT the field/robot itself!", descriptionStyle);
-
-            directoryScroll = GUILayout.BeginScrollView(directoryScroll);
-
             //Create a scrolling list and all the buttons having the folder names
-            directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
-            {
-                return o.Name;
-            }, new DirectoryInfo(directoryLocation).Name, targetFolderList) as DirectoryInfo;
-
-            GUILayout.EndScrollView();
-            GUILayout.EndArea();
+            directorySelection = new DirectoryInfo(selectedDirectoryLocation);
+            //directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
+            //{
+            //    return o.Name;
+            //}, new DirectoryInfo(directoryLocation).Name, targetFolderList) as DirectoryInfo;
 
             if (directorySelection != null && selectedDirectoryLocation != null)
             {
@@ -323,41 +254,23 @@ namespace Synthesis.GUI
                 //Use try/catch to prevent users from getting in unauthorized folders
                 try
                 {
-                    if (doubleClick)
-                    {
-                        // If directory contains field or robot files, display error message to user prompting them to select directory
-                        // instead of the actual field
-                        if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
-                                                                          || directorySelection.GetFiles("*.bxdj").Length != 0)
-                        {
-                            UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
-                        }
-                        else
-                        {
-                            // If a directory without robot/field files was double clicked, jump there
-                            directoryLocation = directorySelection.FullName;
+                    // If directory contains field or robot files, display error message to user prompting them to select directory
+                    // instead of the actual field
+                    //if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
+                    //                                                  || directorySelection.GetFiles("*.bxdj").Length != 0)
+                    //{
+                    //    UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
+                    //}
+                    //else
+                    //{
+                    //    // If a directory without robot/field files was double clicked, jump there
+                    //    directoryLocation = directorySelection.FullName;
+                    //    selectedDirectoryLocation = directorySelection.FullName;
 
-                            targetFolderList.Clear();
-                            directorySearched = false;
-                        }
-                        tempSelection = null;
-
-                    }
-                    else
-                    {
-                        // If directory contains field or robot files, display error message to user prompting them to select directory
-                        // instead of the actual field
-                        if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
-                                                                              || directorySelection.GetFiles("*.bxdj").Length != 0)
-                        {
-                            UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
-                        }
-                        else
-                        {
-                            // If directory was clicked once, select it as a current path and highlight it
-                            selectedDirectoryLocation = directorySelection.FullName;
-                        }
-                    }
+                    //    targetFolderList.Clear();
+                    //    directorySearched = false;
+                    //}
+                    //tempSelection = null;
                 }
                 catch (UnauthorizedAccessException e)
                 {
@@ -395,51 +308,26 @@ namespace Synthesis.GUI
                 UserMessageManager.Dispatch("You don't have the authorization to access this folder", 3f);
             }
             GUILayout.EndArea();
+            LabelPanel();
+            
+        }
+
+        public void LabelPanel()
+        {
             GUILayout.BeginArea(new Rect(12, 360, 480, 25));
             GUILayout.BeginHorizontal();
 
-            //When this button is clicked, search the directory for target files
-            if (!directorySearched)
-            {
-                if (GUILayout.Button("Search for Target Directory", fileBrowserButton, GUILayout.Width(250)))
-                {
-                    SearchDirectories(directoryInfo);
-
-                    //Notify the user there's nothing related inside the current directory
-                    if (targetFolderList.Count == 0)
-                    {
-                        if (title.Equals("Choose Robot Directory"))
-                        {
-                            UserMessageManager.Dispatch("No exported robot files found in current directory", 5f);
-                        }
-                        else if (title.Equals("Choose Field Directory"))
-                        {
-                            UserMessageManager.Dispatch("No exported robot files found in current directory", 5f);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (GUILayout.Button("Search for Target Directory", searchedButton, GUILayout.Width(250)))
-                {
-                    UserMessageManager.Dispatch("The current directory has been searched.", 5f);
-                }
-            }
             if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
             {
                 _active = false;
                 OnComplete?.Invoke(selectedDirectoryLocation);
             }
-            if (directorySelection != null)
-            {
-                lastClick = Time.time;
-            }
+            //if (directorySelection != null)
+            //{
+            //    lastClick = Time.time;
+            //}
 
             GUILayout.EndHorizontal();
-            GUILayout.EndArea();
-            GUILayout.BeginArea(new Rect(12, 385, 480, 25));
-            GUILayout.Label("Searching through a large directory takes time. Please be patient :)", descriptionStyle);
             GUILayout.EndArea();
         }
 
@@ -462,46 +350,6 @@ namespace Synthesis.GUI
         public Rect GetWindowRect()
         {
             return windowRect;
-        }
-
-        /// <summary>
-        /// Search through the directory to look for target files and add the name of the directory containing those files
-        /// to the list for highlighting
-        /// </summary>
-        /// <param name="directoryInfo"></param>
-        public void SearchDirectories(DirectoryInfo directoryInfo)
-        {
-            if (!directorySearched)
-            {
-                SearchOption so = SearchOption.AllDirectories;
-                foreach (DirectoryInfo info in directoryInfo.GetDirectories())
-                {
-                    //Use try/catch to prevent users from getting in unauthorized folders
-                    try
-                    {
-                        if (title.Equals("Choose Robot Directory"))
-                        {
-                            if (info.GetFiles("*.bxdj", so).Length > 0 && info.GetFiles("*.bxda", so).Length > 0)
-                            {
-                                targetFolderList.Add(info.Name);
-                            }
-                        }
-                        else if (title.Equals("Choose Field Directory"))
-                        {
-                            if (info.GetFiles("*.bxdf", so).Length > 0 && info.GetFiles("*.bxda", so).Length > 0)
-                            {
-                                targetFolderList.Add(info.Name);
-                            }
-                        }
-                    }
-                    catch (UnauthorizedAccessException e)
-                    {
-                        continue;
-                    }
-                }
-                //Prevent unnecessary multiple search after searching result is out
-                directorySearched = true;
-            }
         }
     }
 }

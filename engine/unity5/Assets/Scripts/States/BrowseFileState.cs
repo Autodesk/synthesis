@@ -12,6 +12,10 @@ namespace Synthesis.States
 
         private FileBrowserNew fileBrowserNew;
         private FileBrowser fileBrowser;
+        private static Crosstales.FB.NativeFile fileManager;
+
+        public string file;
+
         private GameObject navPanel;
 
         /// <summary>
@@ -31,8 +35,9 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            navPanel = GameObject.Find("NavigationPanel");
-            navPanel?.SetActive(false);
+            //navPanel = GameObject.Find("NavigationPanel");
+            //navPanel?.SetActive(false);
+            //fileBrowser.Active = true;
         }
 
         /// <summary>
@@ -41,7 +46,7 @@ namespace Synthesis.States
         /// </summary>
         public override void End()
         {
-            navPanel?.SetActive(true);
+            //navPanel?.SetActive(true);
         }
 
         /// <summary>
@@ -51,14 +56,19 @@ namespace Synthesis.States
         {
             if (fileBrowser == null)
             {
-                string path = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+                file = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+                //fileManager.RebuildList(path);
+                //path = file;
                 //robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
                 //string robotDirectory = PlayerPrefs.GetString(prefsKey, path);
-                fileBrowser = new GUI.FileBrowser("Choose Robot Directory", path, true) { Active = true };
+
+                fileBrowser = new GUI.FileBrowser("Choose Robot Directory", file, true) { Active = true };
+                //fileManager.RebuildList(path);
                 fileBrowser.OnComplete += OnBrowserComplete;
             }
 
             fileBrowser.Render();
+
 
             if (!fileBrowser.Active)
                 StateMachine.PopState();
