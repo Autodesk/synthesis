@@ -301,6 +301,7 @@
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
     <Compile Include="Assets\Scripts\States\FetchingMetadataState.cs" />
     <Compile Include="Assets\Scripts\States\GatheringResourcesState.cs" />
+    <Compile Include="Assets\Scripts\States\GeneratingSceneState.cs" />
     <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
     <Compile Include="Assets\Scripts\States\HostJoinState.cs" />
     <Compile Include="Assets\Scripts\States\LoadFieldState.cs" />

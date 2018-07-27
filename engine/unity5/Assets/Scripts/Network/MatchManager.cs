@@ -76,6 +76,12 @@ namespace Synthesis.Network
         [SyncVar]
         private string fieldGuid;
 
+        /// <summary>
+        /// Returns true if the server has finished generating the scene.
+        /// </summary>
+        [SyncVar]
+        public bool serverSceneGenerated;
+
         #endregion
 
         #region ServerFields
@@ -118,6 +124,11 @@ namespace Synthesis.Network
         #endregion
 
         #region ClientFields
+
+        /// <summary>
+        /// The local directory of the field to be loaded.
+        /// </summary>
+        public string FieldFolder { get; set; }
 
         /// <summary>
         /// The separator used for splitting the transfer ID into the header and file name.
@@ -234,9 +245,6 @@ namespace Synthesis.Network
 
             pendingTransfers.Clear();
 
-            foreach (PlayerIdentity p in FindObjectsOfType<PlayerIdentity>())
-                pendingTransfers[p.id] = new Dictionary<string, List<string>>();
-
             foreach (KeyValuePair<int, HashSet<int>> dependency in dependencyMap.Where(kvp => kvp.Key >= 0))
             {
                 PlayerIdentity currentIdentity = PlayerIdentity.FindById(dependency.Key);
@@ -245,9 +253,17 @@ namespace Synthesis.Network
                 foreach (int dependant in dependency.Value)
                 {
                     numTotalTransfers += files.Count;
+
+                    if (!pendingTransfers.ContainsKey(dependant))
+                        pendingTransfers[dependant] = new Dictionary<string, List<string>>();
+
                     pendingTransfers[dependant].Add(currentIdentity.robotName, files);
                 }
             }
+
+            foreach (PlayerIdentity p in FindObjectsOfType<PlayerIdentity>())
+                if (!pendingTransfers.ContainsKey(p.id))
+                    p.ready = true;
 
             Dictionary<string, List<byte>> fieldData;
 
@@ -350,7 +366,13 @@ namespace Synthesis.Network
             {
                 numCompletedTransfers++;
                 distributionProgress = (float)numCompletedTransfers / numTotalTransfers;
+
+                if (pendingTransfers[playerId][folderName].Count == 0)
+                    pendingTransfers[playerId].Remove(folderName);
             }
+
+            if (pendingTransfers[playerId].Count == 0)
+                PlayerIdentity.FindById(playerId).ready = true;
         }
 
         /// <summary>

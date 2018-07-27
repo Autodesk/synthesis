@@ -215,6 +215,8 @@ namespace Synthesis.States
         {
             if (SpawnedRobots.Count < MAX_ROBOTS)
             {
+                DynamicCamera.ControlEnabled = true;
+
                 //Initializes the physical robot based off of robot directory. Returns false if not sucessful
                 if (!playerRobot.InitializeRobot(directory)) return false;
 

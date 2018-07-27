@@ -94,6 +94,7 @@ namespace Synthesis.GUI
             LinkPanel<AnalyzingResourcesState>("AnalyzingResourcesPanel");
             LinkPanel<GatheringResourcesState>("GatheringResourcesPanel");
             LinkPanel<DistributingResourcesState>("DistributingResourcesPanel");
+            LinkPanel<GeneratingSceneState>("GeneratingScenePanel");
         }
 
         /// <summary>

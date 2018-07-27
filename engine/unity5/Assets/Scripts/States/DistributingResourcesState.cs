@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Synthesis.States
@@ -18,10 +19,13 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            percentageText = UnityEngine.GameObject.Find("DistributingPercentageText").GetComponent<Text>();
+            percentageText = GameObject.Find("DistributingPercentageText").GetComponent<Text>();
 
             if (Host)
+            {
+                MatchManager.Instance.AwaitChangeState<GeneratingSceneState>(false);
                 MatchManager.Instance.DistributeResources();
+            }
         }
 
         /// <summary>
