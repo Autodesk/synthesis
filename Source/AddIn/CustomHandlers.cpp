@@ -1,4 +1,5 @@
 #include "CustomHandlers.h"
+#include "EUI.h"
 
 using namespace Synthesis;
 
@@ -15,13 +16,16 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 		return;
 
 	// Add click command to button
-	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler(app);
+	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler(app, eui);
 	exec->add(onShowPaletteCommandExecuted);
 }
 
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
+	if (!eui->createExportPalette())
+		return;
+
 	Ptr<UserInterface> UI = app->userInterface();
 	if (!UI)
 		return;
@@ -76,10 +80,9 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 				if ((dataReceived[i++] + ASCII_OFFSET) == 1)
 				{
-					BXDJ::Wheel wheel((BXDJ::Wheel::Type)(dataReceived[i++] + ASCII_OFFSET));
-					wheel.frictionLevel = (BXDJ::Wheel::FrictionLevel)(dataReceived[i++] + ASCII_OFFSET);
-					wheel.isDriveWheel = (dataReceived[i++] + ASCII_OFFSET) == 1;
-					driver.setComponent(wheel);
+					driver.setComponent(BXDJ::Wheel((BXDJ::Wheel::Type)(dataReceived[i++] + ASCII_OFFSET),
+									                (BXDJ::Wheel::FrictionLevel)(dataReceived[i++] + ASCII_OFFSET),
+									                (dataReceived[i++] + ASCII_OFFSET) == 1));
 				}
 
 				config.setDriver(joints[j], driver);

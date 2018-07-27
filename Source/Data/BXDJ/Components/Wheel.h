@@ -28,7 +28,7 @@ namespace BXDJ
 		bool isDriveWheel;
 
 		Wheel(const Wheel &);
-		Wheel(Type = NORMAL, FrictionLevel = MEDIUM);
+		Wheel(Type = NORMAL, FrictionLevel = MEDIUM, bool isDriveWheel = false);
 		Wheel(const Wheel &, const RotationalJoint &);
 
 		double getRadius() const;

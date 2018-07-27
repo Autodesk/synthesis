@@ -30,7 +30,7 @@ bool EUI::createWorkspace()
 		workSpace = UI->workspaces()->itemById(K_WORKSPACE);
 		if (!workSpace)
 		{
-			workSpace = UI->workspaces()->add(app->activeProduct()->productType(), K_WORKSPACE, "Synthesis", "Resources/Sample");
+			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/Sample");
 			workSpace->tooltip("Export robot models to the Synthesis simulator");
 		}
 		
@@ -41,10 +41,6 @@ bool EUI::createWorkspace()
 			panel = workSpace->toolbarPanels()->add(K_PANEL, "Export");
 
 		panelControls = panel->controls();
-
-		// Create palettes
-		if (!createExportPalette())
-			throw "Failed to create toolbar buttons.";
 
 		// Create buttons
 		if (!createExportButton())
@@ -140,7 +136,7 @@ bool EUI::createExportButton()
 		if (!commandCreatedEvent)
 			return false;
 
-		ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler(app);
+		ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler(app, this);
 
 		return commandCreatedEvent->add(commandCreatedEventHandler);
 	}

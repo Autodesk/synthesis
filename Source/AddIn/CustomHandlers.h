@@ -9,23 +9,27 @@ using namespace adsk::fusion;
 
 namespace Synthesis
 {
+	class EUI;
+
 	// Button Events
 	class ShowPaletteCommandCreatedHandler : public adsk::core::CommandCreatedEventHandler
 	{
 	public:
-		ShowPaletteCommandCreatedHandler(Ptr<Application> app) : app(app) {}
+		ShowPaletteCommandCreatedHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) {}
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
 	private:
 		Ptr<Application> app;
+		EUI * eui;
 	};
 
 	class ShowPaletteCommandExecuteHandler : public adsk::core::CommandEventHandler
 	{
 	public:
-		ShowPaletteCommandExecuteHandler(Ptr<Application> app) : app(app) {}
+		ShowPaletteCommandExecuteHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) {}
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
 	private:
 		Ptr<Application> app;
+		EUI * eui;
 	};
 
 	// Palette Events
