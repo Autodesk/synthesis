@@ -85,11 +85,15 @@ void Exporter::exportMeshes(BXDJ::ConfigData config)
 	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 	
+	// Generate tree
 	Guid::resetAutomaticSeed();
 	BXDJ::RigidNode rootNode(document->design()->rootComponent(), config);
 
+	// Write robot to file
+	Filesystem::createDirectory(Filesystem::getCurrentRobotDirectory());
 	std::string filename = Filesystem::getCurrentRobotDirectory() + "skeleton.bxdj";
 	BXDJ::XmlWriter xml(filename, false);
+
 	xml.startElement("BXDJ");
 	xml.writeAttribute("Version", "3.0.0");
 	xml.write(rootNode);

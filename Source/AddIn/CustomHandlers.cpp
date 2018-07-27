@@ -76,9 +76,9 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		std::string dataReceived = eventArgs->data();
 
 		// Get robot name
-		char nameLength = dataReceived[1];
-		std::string name = "";
 		int i = 0;
+		char nameLength = dataReceived[i++];
+		std::string name = "";
 		for (int j = 0; j < nameLength && i < dataReceived.length(); j++)
 			name += dataReceived[i++];
 		Filesystem::setRobotName(name);
