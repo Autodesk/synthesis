@@ -16,7 +16,6 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 
 	// Add click command to button
 	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler;
-	onShowPaletteCommandExecuted->joints = joints;
 	onShowPaletteCommandExecuted->app = app;
 	exec->add(onShowPaletteCommandExecuted);
 }
@@ -37,7 +36,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 		return;
 
 	Exporter exporter(app);
-	palette->sendInfoToHTML("joints", exporter.collectJoints(*joints));
+	palette->sendInfoToHTML("joints", exporter.stringifyJoints(exporter.collectJoints()));
 	palette->isVisible(true);
 }
 
@@ -59,11 +58,15 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 	if (eventArgs->action() == "export")
 	{
+		Exporter exporter(app);
+
+		std::vector<Ptr<Joint>> joints = exporter.collectJoints();
+
 		BXDJ::ConfigData config;
 
 		// Create config
 		std::string dataReceived = eventArgs->data();
-		for (int i = 0; i < joints->size() && i < dataReceived.length(); i++)
+		for (int i = 0; i < joints.size() && i < dataReceived.length(); i++)
 		{
 			BXDJ::Driver driver(BXDJ::Driver::MOTOR);
 
@@ -71,11 +74,10 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 			driver.setComponent(BXDJ::Wheel());
 
-			config.setDriver((*joints)[i], driver);
+			config.setDriver(joints[i], driver);
 		}
 
 		palette->isVisible(false);
-		Exporter exporter(app);
 		exporter.exportMeshes(config);
 	}
 }

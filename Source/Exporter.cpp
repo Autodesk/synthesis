@@ -8,32 +8,32 @@ Exporter::Exporter(Ptr<Application> app) : fusionApplication(app)
 Exporter::~Exporter()
 {}
 
-std::string Synthesis::Exporter::collectJoints(std::vector<Ptr<Joint>> & joints)
+std::vector<Ptr<Joint>> Exporter::collectJoints()
 {
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 
 	std::string stringifiedJoints;
 
-	joints.clear();
 	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
+	std::vector<Ptr<Joint>> joints;
 
 	for (int j = 0; j < allJoints.size(); j++)
 	{
 		Ptr<Joint> joint = allJoints[j];
 
 		if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType)
-		{
-			std::string pointerStr = "";
-
-			Ptr<Occurrence> occurence = joint->occurrenceOne();
-
-			for (int b = 0; b < sizeof(Ptr<Occurrence>); b++)
-				pointerStr += ((char*)(&occurence))[b];
-
-			stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + " ";
 			joints.push_back(joint);
-		}
 	}
+
+	return joints;
+}
+
+std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
+{
+	std::string stringifiedJoints = "";
+
+	for (Ptr<Joint> joint : joints)
+		stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + " ";
 
 	return stringifiedJoints;
 }
