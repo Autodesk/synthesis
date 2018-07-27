@@ -114,6 +114,9 @@
     <ClInclude Include="Source\Data\BXDJ\ConfigData.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
+    <ClInclude Include="Source\AddIn\Identifiers.h">
+      <Filter>Headers\AddIn</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">

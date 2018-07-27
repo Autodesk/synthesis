@@ -1,67 +1,64 @@
 <!DOCTYPE html>
 <html>
-<head>
-</head>
-<body>
+    <head>
+    </head>
+    <body>
+        <p id='exportSettings'>
+        </p>
 
-    <p id='exportSettings'>
-    </p>
+        <button type='button' onclick='sendInfoToFusion()'>Click to send info to Fusion</button>
+    </body>
+    <script>
+        var jointOptions = [];
 
-    <button type='button' onclick='sendInfoToFusion()'>Click to send info to Fusion</button>
-
-</body>
-
-<script>
-    var jointOptions = [];
-
-    function sendInfoToFusion()
-    {
-        var args = '';
-
-        for (var i = 0; i < jointOptions.length; i++)
-            args += (i < jointOptions.length / 2) ? 'L' : 'R';
-
-        adsk.fusionSendData('send', args);
-    }
-
-    function processJointDataString(jointData)
-    {
-        var joints = [];
-
-        for (var c = 0; c < jointData.length; c++)
+        function sendInfoToFusion()
         {
-            var nameLength = '';
-            while (jointData[c] != ' ' && c < jointData.length)
-                nameLength += jointData[c++];
-            c++;
-            
-            var nameStr = '';
-            for (var i = 0; i < parseInt(nameLength) && c < jointData.length; i++)
-                nameStr += jointData[c++];
+            var args = '';
 
-            joints.push({ name: nameStr, side: 'X' });
+            for (var i = 0; i < jointOptions.length; i++)
+                args += (i < jointOptions.length / 2) ? 'L' : 'R';
+
+            adsk.fusionSendData('export', args);
         }
 
-        return joints;
-    }
+        function processJointDataString(jointData)
+        {
+            var joints = [];
 
-    function displayJointOptions(joints)
-    {
-        var str = "";
+            for (var c = 0; c < jointData.length; c++)
+            {
+                var nameLength = '';
+                while (jointData[c] != ' ' && c < jointData.length)
+                    nameLength += jointData[c++];
+                c++;
+            
+                var nameStr = '';
+                for (var i = 0; i < parseInt(nameLength) && c < jointData.length; i++)
+                    nameStr += jointData[c++];
 
-        for (var i = 0; i < joints.length; i++)
-            str += joints[i].name + ' ' + joints[i].side + '\n';
+                joints.push({ name: nameStr, side: 'X' });
+            }
 
-        document.getElementById('exportSettings').innerHTML = str;
-    }
+            return joints;
+        }
 
-    window.fusionJavaScriptHandler =
+        function displayJointOptions(joints)
+        {
+            var str = "";
+
+            for (var i = 0; i < joints.length; i++)
+                str += joints[i].name + ' ' + joints[i].side + '\n';
+
+            document.getElementById('exportSettings').innerHTML = str;
+        }
+
+        window.fusionJavaScriptHandler =
         {
             handle: function (action, data)
             {
                 try
                 {
-                    if (action == 'send')
+                    if (action == 'joints')
                     {
                         jointOptions = processJointDataString(data);
                         displayJointOptions(jointOptions);
@@ -82,5 +79,5 @@
                 return 'OK';
             }
         };
-</script>
+    </script>
 </html>
