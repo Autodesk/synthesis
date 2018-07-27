@@ -80,7 +80,7 @@ function processJointDataString(jointData)
     return joints;
 }
 
-function createDriver(_type = DRIVER_MOTOR, signal = PWM, _portA = 0, _portB = -1)
+function createDriver(_type = DRIVER_MOTOR, _signal = PWM, _portA = 0, _portB = -1)
 {
     return {type: _type, signal: _signal, portA: _portA, portB: _portB, wheel: null};
 }
