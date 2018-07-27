@@ -471,11 +471,9 @@ namespace Synthesis.Sensors
         /// </summary>
         public void AddUltrasonic()
         {
-            if (selectedNode != null)
-            {
-                currentSensor = sensorManager.AddUltrasonic(selectedNode, new Vector3(0, 0.2f, 0), Vector3.zero);
-                DisplayOutput();
-            }
+            currentSensor = sensorManager.AddUltrasonic();
+            DisplayOutput();
+            StartConfiguration();
         }
 
         /// <summary>
@@ -483,11 +481,9 @@ namespace Synthesis.Sensors
         /// </summary>
         public void AddBeamBreaker()
         {
-            if (selectedNode != null)
-            {
-                currentSensor = sensorManager.AddBeamBreaker(selectedNode, Vector3.zero, Vector3.zero);
-                DisplayOutput();
-            }
+            currentSensor = sensorManager.AddBeamBreaker();
+            DisplayOutput();
+            StartConfiguration();
         }
 
         /// <summary>
@@ -496,7 +492,6 @@ namespace Synthesis.Sensors
         public void AddGyro()
         {
             currentSensor = sensorManager.AddGyro();
-            //Debug.Log("currentSensor is now " + currentSensor);
             DisplayOutput();
             StartConfiguration();
         }
@@ -519,6 +514,19 @@ namespace Synthesis.Sensors
             //sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
             currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(true);
+        }
+
+        public void ToggleConfiguration()
+        {
+            if (configureSensorPanel.activeSelf)
+            {
+                configureSensorPanel.SetActive(false);
+                //switch camera state back to what it was
+            }
+            else
+            {
+                StartConfiguration();
+            }
         }
 
         /// <summary>

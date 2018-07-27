@@ -34,9 +34,19 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggles the state of the sensor button in the toolbar when clicked
         /// </summary>
-        public void OnSensorButtonPressed()
+        //public void OnSensorButtonPressed()
+        //{
+        //    sensorManagerGUI.ToggleSensorOption();
+        //}
+
+        public void OnUltrasonicButtonPressed()
         {
-            sensorManagerGUI.ToggleSensorOption();
+            sensorManagerGUI.AddUltrasonic();
+        }
+
+        public void OnBeamBreakButtonPressed()
+        {
+            sensorManagerGUI.AddBeamBreaker();
         }
 
         public void OnGyroButtonPressed()

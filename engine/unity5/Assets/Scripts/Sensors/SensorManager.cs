@@ -66,7 +66,7 @@ namespace Synthesis.Sensors
         public GameObject AddNewSensor(GameObject sensorToCopy, String type)
         {
             GameObject sensor = GameObject.Instantiate(sensorToCopy, main.ActiveRobot.transform.Find("node_0.bxda").transform);
-            sensor.transform.localPosition = new Vector3(0, 0.2f, 0); //so it doesn't initialize in the middle of the robot
+            sensor.transform.localPosition = new Vector3(0, 0.2f, 0); //so it doesn't initialize in the middle of the robot BUT CHANGE IT
             sensor.transform.localRotation = Quaternion.Euler(Vector3.zero);
             sensorList.Add(sensor);
             sensor.name = type + " " + sensorList.Count;
@@ -82,16 +82,17 @@ namespace Synthesis.Sensors
         /// <param name="parent"></param> the parent node to which the sensor is attached
         /// <param name="position"></param> local position of the sensor
         /// <param name="rotation"></param> local rotation of the sensor
-        public SensorBase AddUltrasonic(GameObject parent, Vector3 position, Vector3 rotation)
+        public SensorBase AddUltrasonic()
         {
-            GameObject ultrasonic = GameObject.Instantiate(Ultrasonic, parent.transform);
-            ultrasonic.transform.localPosition = position;
-            ultrasonic.transform.localRotation = Quaternion.Euler(rotation);
-            ultrasonic.name = "Ultrasonic_" + sensorList.Count;
-            ultrasonic.GetComponent<SensorBase>().Robot = main.ActiveRobot;
-            sensorList.Add(ultrasonic);
-            activeSensorList.Add(ultrasonic);
-            return ultrasonic.GetComponent<UltraSensor>();
+            //GameObject ultrasonic = GameObject.Instantiate(Ultrasonic, parent.transform);
+            //ultrasonic.transform.localPosition = position;
+            //ultrasonic.transform.localRotation = Quaternion.Euler(rotation);
+            //ultrasonic.name = "Ultrasonic_" + sensorList.Count;
+            //ultrasonic.GetComponent<SensorBase>().Robot = main.ActiveRobot;
+            //sensorList.Add(ultrasonic);
+            //activeSensorList.Add(ultrasonic);
+            //return ultrasonic.GetComponent<UltraSensor>();
+            return AddNewSensor(Ultrasonic, "Ultrasonic").GetComponent<UltraSensor>();
         }
 
         /// <summary>
@@ -102,18 +103,19 @@ namespace Synthesis.Sensors
         /// <param name="position"></param> local position of the sensor
         /// <param name="rotation"></param> local rotation of the sensor
         /// <param name="distance"></param> the distance offset between the emitter and receiver
-        public SensorBase AddBeamBreaker(GameObject parent, Vector3 position, Vector3 rotation, float distance = 0.4f)
+        public SensorBase AddBeamBreaker(float distance = 0.4f)
         {
-            GameObject beamBreaker = GameObject.Instantiate(BeamBreaker, parent.transform);
-            beamBreaker.transform.localPosition = position;
-            beamBreaker.transform.localRotation = Quaternion.Euler(rotation);
-            beamBreaker.name = "BeamBreaker_" + sensorList.Count;
-            beamBreaker.GetComponent<SensorBase>().Robot = main.ActiveRobot;
-            sensorList.Add(beamBreaker);
-            activeSensorList.Add(beamBreaker);
-            BeamBreaker sensor = beamBreaker.GetComponent<BeamBreaker>();
-            sensor.SetSensorRange(distance);
-            return sensor;
+            //GameObject beamBreaker = GameObject.Instantiate(BeamBreaker, parent.transform);
+            //beamBreaker.transform.localPosition = position;
+            //beamBreaker.transform.localRotation = Quaternion.Euler(rotation);
+            //beamBreaker.name = "BeamBreaker_" + sensorList.Count;
+            //beamBreaker.GetComponent<SensorBase>().Robot = main.ActiveRobot;
+            //sensorList.Add(beamBreaker);
+            //activeSensorList.Add(beamBreaker);
+            //BeamBreaker sensor = beamBreaker.GetComponent<BeamBreaker>();
+            //sensor.SetSensorRange(distance);
+            //return sensor;
+            return AddNewSensor(BeamBreaker, "Beam Break").GetComponent<BeamBreaker>();
         }
 
         /// <summary>
