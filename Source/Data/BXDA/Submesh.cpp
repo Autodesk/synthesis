@@ -64,17 +64,76 @@ void SubMesh::getConvexCollider(SubMesh & outputMesh) const
 {
 	outputMesh = SubMesh();
 
-	// TODO: Use convex hull to actually get a convex collider
+	// Find bounding box
+	Vector3<> min, max; bool first = true;
 
 	for (Vertex vertex : vertices)
-		outputMesh.vertices.push_back(vertex);
+	{
+		if (vertex.location.x < min.x || first) min.x = vertex.location.x;
+		if (vertex.location.x > max.x || first) max.x = vertex.location.x;
+		if (vertex.location.y < min.y || first) min.y = vertex.location.y;
+		if (vertex.location.y > max.y || first) max.y = vertex.location.y;
+		if (vertex.location.z < min.z || first) min.z = vertex.location.z;
+		if (vertex.location.z > max.z || first) max.z = vertex.location.z;
+		first = false;
+	}
 
-	// Create one surface that contains all triangles
+	// Create vertices
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(-1, 0, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(-1, 0, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(-1, 0, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(-1, 0, 0)));
+
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, -1, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, -1, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, -1, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, -1, 0)));
+
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, 0, -1)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 0, -1)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 0, -1)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, 0, -1)));
+
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(1, 0, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(1, 0, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(1, 0, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(1, 0, 0)));
+
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 1, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 1, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 1, 0)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 1, 0)));
+
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 0, 1)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, 0, 1)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, 0, 1)));
+	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 0, 1)));
+
+	// Create triangles
+	std::vector<Triangle> triangles;
+
+	triangles.push_back(Triangle(0, 1, 2));
+	triangles.push_back(Triangle(1, 2, 3));
+
+	triangles.push_back(Triangle(4, 5, 6));
+	triangles.push_back(Triangle(5, 6, 7));
+
+	triangles.push_back(Triangle(8, 9, 10));
+	triangles.push_back(Triangle(9, 10, 11));
+
+	triangles.push_back(Triangle(12, 13, 14));
+	triangles.push_back(Triangle(13, 14, 15));
+
+	triangles.push_back(Triangle(16, 17, 18));
+	triangles.push_back(Triangle(17, 18, 19));
+
+	triangles.push_back(Triangle(20, 21, 22));
+	triangles.push_back(Triangle(21, 22, 23));
+
+	// Create surface
 	Surface newSurface;
-	for (std::shared_ptr<Surface> surface : surfaces)
-		newSurface.addTriangles(*surface);
-
-	outputMesh.addSurface(newSurface); // Actual convex hull should have only one surface
+	newSurface.addTriangles(triangles);
+	outputMesh.addSurface(newSurface);
 }
 
 void SubMesh::calculateWheelShape(Vector3<> axis, Vector3<> origin, double & minWidth, double & maxWidth, double & maxRadius) const
