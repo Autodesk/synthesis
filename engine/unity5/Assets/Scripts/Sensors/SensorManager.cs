@@ -66,11 +66,11 @@ namespace Synthesis.Sensors
         public GameObject AddNewSensor(GameObject sensorToCopy, String type)
         {
             GameObject sensor = GameObject.Instantiate(sensorToCopy, main.ActiveRobot.transform.Find("node_0.bxda").transform);
-            sensor.transform.localPosition = new Vector3(0, 0.2f, 0);
+            sensor.transform.localPosition = new Vector3(0, 0.2f, 0); //so it doesn't initialize in the middle of the robot
             sensor.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            sensorList.Add(sensor);
             sensor.name = type + " " + sensorList.Count;
             sensor.GetComponent<SensorBase>().Robot = main.ActiveRobot;
-            sensorList.Add(sensor);
             activeSensorList.Add(sensor);
             return sensor;
         }
