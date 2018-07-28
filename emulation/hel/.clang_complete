@@ -6,6 +6,8 @@
 -Ilib/wpilib/src/wpilib/wpilibc/src/main/native/include/frc
 -Ilib/wpilib/src/wpilib/wpiutil/src/main/native/include/
 -Ilib/ASIO/asio/include/
+-Ilib/ASIO/asio/include/
+-Ilib/ASIO/asio/include/
 -std=c++14
 -pedantic
 -Wextra

@@ -81,15 +81,14 @@ ExternalProject_Add(wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
   GIT_TAG v2018.4.1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/libwpilibc.so ./gradlew :wpilibc:build WPILib
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/libwpilibc.so  ./gradlew :wpilibc:build WPILib
   INSTALL_COMMAND ""
   )
 
 ExternalProject_Add(ctre
   PREFIX lib/ctre
   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
-  GIT_TAG Phoenix_v5.6.0.0
-  UPDATE_COMMAND find ${CTRE_DIRECTORY} -name "*.h" -o -name "*.cpp" "|"xargs sed -i s/llvm::/wpi::/g
+  GIT_TAG Phoenix_v5.3.1.0
   CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
   INSTALL_COMMAND ""
@@ -113,18 +112,18 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
     if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
       add_executable(FRCUserProgram tests/test_projects/robot_teleop.cpp)
-      add_dependencies(FRCUserProgram wpilib ctre)
+      add_dependencies(FRCUserProgram wpilib #[[ctre]])
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/headers")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native/include")
       target_include_directories(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers")
-      target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/cpp/include/")
-      target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/libraries/driver/include")
+      #target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/cpp/include/")
+      #target_include_directories(FRCUserProgram SYSTEM PRIVATE "${CTRE_DIRECTORY}/libraries/driver/include")
       set_target_properties(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user_code")
       target_compile_options(FRCUserProgram PUBLIC -pthread)
       target_link_libraries(FRCUserProgram wpi)
-      target_link_libraries(FRCUserProgram libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
+      #target_link_libraries(FRCUserProgram libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
     else()
       message(WARNING "Robot code generation not supported on x86_64.")
     endif()
