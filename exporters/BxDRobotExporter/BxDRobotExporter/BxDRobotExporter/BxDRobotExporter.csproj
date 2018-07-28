@@ -183,6 +183,12 @@
     <Compile Include="Wizard\Components\WheelSetupPanel.Designer.cs">
       <DependentUpon>WheelSetupPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Wizard\Pages\ExportOrAdvancedForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizard\Pages\ExportOrAdvancedForm.Designer.cs">
+      <DependentUpon>ExportOrAdvancedForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Wizard\WizardForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -237,6 +243,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Components\WheelSetupPanel.resx">
       <DependentUpon>WheelSetupPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Pages\ExportOrAdvancedForm.resx">
+      <DependentUpon>ExportOrAdvancedForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\WizardForm.resx">
       <DependentUpon>WizardForm.cs</DependentUpon>

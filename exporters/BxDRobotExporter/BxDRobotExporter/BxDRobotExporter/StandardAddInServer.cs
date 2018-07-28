@@ -543,12 +543,17 @@ namespace BxDRobotExporter
                     Utilities.GUI.OpenSynthesis();
         }
 
-        //Settings
-        /// <summary>
-        /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
-        /// </summary>
-        /// <param name="Context"></param>
-        private void SetWeight_OnExecute(NameValueMap Context)
+        public void ForceExport()
+        {
+            ExportButton_OnExecute(null);
+        }
+
+    //Settings
+    /// <summary>
+    /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
+    /// </summary>
+    /// <param name="Context"></param>
+    private void SetWeight_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.PromptRobotWeight())
                 PendingChanges = true;
