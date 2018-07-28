@@ -2,6 +2,7 @@
 #include "send_data.hpp"
 
 #include <unistd.h>
+#include <iostream>
 
 using asio::ip::tcp;
 
@@ -21,14 +22,14 @@ namespace hel {
         while(1) {
 
             auto instance = hel::SendDataManager::getInstance();
-            auto data =  instance.first->serialize();
 
+            auto data =  instance.first->serialize();
+            instance.second.unlock();
+
+            std::cout << data << "\n";
             asio::write(socket, asio::buffer(data), asio::transfer_all());
 
-            packet_number++;
-            printf("%d\n", packet_number);
-            instance.second.unlock();
-            usleep(100000);
+            usleep(30000);
         }
     }
 }

@@ -20,7 +20,7 @@ public:
     void TeleopInit(){}
 
     void TeleopPeriodic(){
-        std::cout<<"Joystick forward:"<<(-m_stick.GetY())<<" rotate:"<<m_stick.GetX()<<"\n";
+        //std::cout<<"Joystick forward:"<<(-m_stick.GetY())<<" rotate:"<<m_stick.GetX()<<"\n";
         m_robotDrive.ArcadeDrive(-m_stick.GetY(), m_stick.GetX());
 
         frc::Wait(0.005);
