@@ -1,5 +1,6 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -57,7 +58,11 @@ namespace Synthesis.States
             if (fileBrowser == null)
             {
                 file = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
-
+                if (string.IsNullOrEmpty(file))
+                {
+                    Debug.Log("empty");
+                    file = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//Fields");
+                }
                 //fileManager.RebuildList(path);
                 //path = file;
                 //robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
