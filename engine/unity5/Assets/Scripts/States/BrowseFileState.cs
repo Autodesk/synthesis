@@ -13,9 +13,8 @@ namespace Synthesis.States
 
         private FileBrowserNew fileBrowserNew;
         private FileBrowser fileBrowser;
-        private static Crosstales.FB.NativeFile fileManager;
 
-        public string file;
+        public string filePath;
 
         private GameObject navPanel;
 
@@ -57,22 +56,17 @@ namespace Synthesis.States
         {
             if (fileBrowser == null)
             {
-                file = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
-                if (string.IsNullOrEmpty(file))
+                filePath = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+
+                // check for empty string (if native file browser is closed without selection) and default to Fields directory
+                if (string.IsNullOrEmpty(filePath))
                 {
-                    Debug.Log("empty");
-                    file = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//Fields");
+                    filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//Fields");
                 }
-                //fileManager.RebuildList(path);
-                //path = file;
-                //robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
-                //string robotDirectory = PlayerPrefs.GetString(prefsKey, path);
 
-                fileBrowser = new GUI.FileBrowser("Choose Robot Directory", file, true); //{ Active = false };
-
-                //fileManager.RebuildList(path);
+                fileBrowser = new GUI.FileBrowser("Choose Robot Directory", filePath, true);
                 fileBrowser.OnComplete += OnBrowserComplete;
-                fileBrowser.Complete();
+                fileBrowser.CompleteDirectorySelection();
 
             }
 
