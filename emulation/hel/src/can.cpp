@@ -25,38 +25,145 @@ namespace hel{
       instance.second.unlock();
     }
 
+    std::string to_string(CANDevice::Type type){
+        switch(type){
+        case CANDevice::Type::TALON_SRX:
+            return "TALON_SRX";
+        case CANDevice::Type::VICTOR_SPX:
+            return "VICTOR_SPX";
+        case CANDevice::Type::UNKNOWN:
+            return "UNKNOWN";
+        default:
+            throw UnhandledEnumConstantException("hel::MXPData::Config");
+        }
+    }
+    std::string CANDevice::toString()const{
+        std::string s = "(";
+        s += "type:" + to_string(type) + ", ";
+        s += "id:" + to_string(id);
+        if(type != Type::UNKNOWN){
+            s += ", speed:" + std::to_string(speed);
+        }
+        s += ")";
+        return s;
+    }
+
+    CANDevice::Type CANDevice::getType()const{
+        return type;
+    }
+
+    void CANDevice::setSpeed(BoundsCheckedArray<uint8_t, CANBus::Message::MAX_DATA_SIZE> data){
+        /*
+          For CAN motor controllers:
+          data[x] - data[0] results in the number with the correct sign
+          data[1] - data[0] is the number of 256*256's
+          data[2] - data[0] is the number of 256's
+          data[3] - data[0] is the number of 1's
+          divide by (256*256*4) to scale from -256*256*4 to 256*256*4 to -1.0 to 1.0
+        */
+        speed = ((double)((data[1] - data[0])*256*256 + (data[2] - data[0])*256 + (data[3] - data[0])))/(256*256*4);
+    }
+
+    double CANDevice::getSpeed()const{
+        return speed;
+    }
+
+    CANDevice::CANDevice():type(Type::UNKNOWN),id(0),speed(0.0){}
+
+    CANDevice::CANDevice(uint32_t message_id):CANDevice(){
+        if(message_id >= VICTOR_SPX_ZERO_ADDRESS && message_id <= (VICTOR_SPX_ZERO_ADDRESS + MAX_CAN_BUS_ADDRESS)){
+            id = message_id - VICTOR_SPX_ZERO_ADDRESS;
+            type = Type::VICTOR_SPX;
+        } else if(message_id >= TALON_SRX_ZERO_ADDRESS && message_id <= (TALON_SRX_ZERO_ADDRESS + MAX_CAN_BUS_ADDRESS)){
+            id = message_id - VICTOR_SPX_ZERO_ADDRESS;
+            type = Type::TALON_SRX;
+        }
+    }
+
+    bool checkCANID(uint32_t id_a, uint32_t id_b, uint32_t id_mask){
+        unsigned msb = std::max(findMostSignificantBit(id_a), findMostSignificantBit(id_b));
+        for(unsigned i = 0 ; i < msb; i++){
+            if(checkBitHigh(id_mask,i)){
+                if(checkBitHigh(id_a,i) != checkBitHigh(id_b,i)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     CANBus::Message::Message():id(),data(),data_size(),time_stamp(){}
 
     CANBus::CANBus():in_message_queue(),out_message_queue(){}
 }
 
-void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
-    auto instance = hel::RoboRIOManager::getInstance();
-    hel::CANBus::Message m;
-    m.id = messageID;
-    m.data_size = dataSize;
-    std::copy(data, data + dataSize, std::begin(m.data));
-    instance.first->can_bus.enqueueMessage(m);
-    instance.second.unlock();
-    //TODO handle repeating messages - currently unsupported
+extern "C"{
+
+    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t periodMs, int32_t* /*status*/){
+        /*
+        printf("FRC_NetworkCommunication_CANSessionMux_sendMessage(");
+        printf("messageID:%d,", messageID);
+        printf("data:");
+        for(int i = 0; i < dataSize; i++){
+            printf("%d,",data[i]);
+        }
+        printf("dataSize:%d,periodMs:%d)\n",dataSize,periodMs);
+        */
+
+        auto instance = hel::RoboRIOManager::getInstance();
+        hel::CANBus::Message m;
+        m.id = messageID;
+        m.data_size = dataSize;
+        std::copy(data, data + dataSize, std::begin(m.data));
+        instance.first->can_bus.enqueueMessage(m);
+
+        if(instance.first->can_devices.find(messageID) == instance.first->can_devices.end()){
+            instance.first->can_devices[messageID] = hel::CANDevice(messageID);
+        }
+        if(instance.first->can_devices[messageID].getType() != hel::CANDevice::Type::UNKNOWN){
+            instance.first->can_devices[messageID].setSpeed(m.data);
+        }
+        instance.second.unlock();
+        //TODO handle repeating messages - currently unsupported
+    }
+
+    void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t messageIDMask, uint8_t* data, uint8_t* dataSize, uint32_t* timeStamp, int32_t* /*status*/){
+        printf("FRC_NetworkCommunication_CANSessionMux_receiveMessage(messageID:%d messageIDMask:%d)\n", *messageID, messageIDMask);
+        auto instance = hel::RoboRIOManager::getInstance();
+        hel::CANBus::Message m = instance.first->can_bus.getNextMessage();
+        instance.first->can_bus.popNextMessage();
+        *timeStamp = hel::Global::getCurrentTime();
+        *messageID = m.id; //TODO use message mask?
+        *dataSize = m.data_size;
+        std::copy(std::begin(m.data), std::end(m.data), data);
+
+        for(auto i = instance.first->can_devices.begin(); i != instance.first->can_devices.end(); ++i){
+            if(hel::checkCANID(*messageID,i->first,messageIDMask)){
+                //TODO
+            }
+        }
+
+        instance.second.unlock();
+        //TODO figure out what time stamp is marking and add it
+    }
+
+    void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t messageID, uint32_t messageIDMask, uint32_t maxMessages, int32_t* /*status*/){//TODO
+        printf("FRC_NetworkCommunication_CANSessionMux_openStreamSession(\n");
+        printf("messageID:%d, ",messageID);
+        printf("messageIDMask:%d, ",messageIDMask);
+        printf("maxMessages:%d)\n",maxMessages);
+    }
+
+    void FRC_NetworkCommunication_CANSessionMux_closeStreamSession(uint32_t sessionHandle){ //TODO
+        printf("FRC_NetworkCommunication_CANSessionMux_closeStreamSession(sessionHandle:%d)\n",sessionHandle);
+    }
+
+    void FRC_NetworkCommunication_CANSessionMux_readStreamSession(uint32_t sessionHandle, struct tCANStreamMessage* /*messages*/, uint32_t messagesToRead, uint32_t* /*messagesRead*/, int32_t* /*status*/){//TODO
+        printf("FRC_NetworkCommunication_CANSessionMux_readStreamSession(sessionHandle:%d,messagesRead:%d)\n",sessionHandle,messagesToRead);
+    }
+
+    void FRC_NetworkCommunication_CANSessionMux_getCANStatus(float* /*percentBusUtilization*/, uint32_t* /*busOffCount*/, uint32_t* /*txFullCount*/, uint32_t* /*receiveErrorCount*/, uint32_t* /*transmitErrorCount*/, int32_t* /*status*/){ //unnecessary for emulation
+        printf("FRC_NetworkCommunication_CANSessionMux_getCANStatus\n");
+    }
+
 }
-
-void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t /*messageIDMask*/, uint8_t* data, uint8_t* dataSize, uint32_t* /*timeStamp*/, int32_t* /*status*/){
-    auto instance = hel::RoboRIOManager::getInstance();
-    hel::CANBus::Message m = instance.first->can_bus.getNextMessage();
-    instance.first->can_bus.popNextMessage();
-    *messageID = m.id; //TODO use message mask?
-    *dataSize = m.data_size;
-    std::copy(std::begin(m.data), std::end(m.data), data);
-    instance.second.unlock();
-    //TODO figure out what time stamp is marking and add it
-}
-
-void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t /*messageID*/, uint32_t /*messageIDMask*/, uint32_t /*maxMessages*/, int32_t* /*status*/){} //TODO
-
-void FRC_NetworkCommunication_CANSessionMux_closeStreamSession(uint32_t /*sessionHandle*/){} //TODO
-
-void FRC_NetworkCommunication_CANSessionMux_readStreamSession(uint32_t /*sessionHandle*/, struct tCANStreamMessage* /*messages*/, uint32_t /*messagesToRead*/, uint32_t* /*messagesRead*/, int32_t* /*status*/){} //TODO
-
-void FRC_NetworkCommunication_CANSessionMux_getCANStatus(float* /*percentBusUtilization*/, uint32_t* /*busOffCount*/, uint32_t* /*txFullCount*/, uint32_t* /*receiveErrorCount*/, uint32_t* /*transmitErrorCount*/, int32_t* /*status*/){} //unnecessary for emulation
-

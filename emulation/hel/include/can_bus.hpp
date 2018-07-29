@@ -16,11 +16,20 @@ namespace hel{
     struct CANBus{
 
         /**
+         * \var static constexpr uint8_t MAX_CAN_BUS_ADDRESS
+         * \brief The maximum CAN bus address allowed on the RoboRIO
+         * Valid addresses are 0-62, but using 0 is not recommended
+         */
+        static constexpr uint8_t MAX_CAN_BUS_ADDRESS = 62;
+
+        /**
          * \struct Message
          * \brief Holds internally all parts of a CAN bus message
          */
 
         struct Message{
+
+            static constexpr uint8_t MAX_DATA_SIZE = 8;
 
             /**
              * \var uint32_t id
@@ -36,7 +45,7 @@ namespace hel{
              * The data can array can vary from 0-8 bytes in size.
              */
 
-            BoundsCheckedArray<uint8_t, 8> data;
+            BoundsCheckedArray<uint8_t, MAX_DATA_SIZE> data;
 
             /**
              * \var uint8_t data_size

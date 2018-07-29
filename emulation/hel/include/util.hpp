@@ -130,18 +130,33 @@ namespace hel{
         Maybe() : _is_valid(false) {};
     };
 
-    template<typename T, size_t LEN>
-    std::string to_string(std::array<T, LEN> a, std::function<std::string(T)> to_s, std::string delimiter = ",", bool include_brackets = true){
+    template<typename T>
+    std::string to_string(T iterable, std::function<std::string(typename T::value_type)> to_s, std::string delimiter = ",", bool include_brackets = true){
         std::string s = "";
         if(include_brackets){
-            "[";
+            s += "[";
         }
-        for(unsigned i = 0; i < a.size(); i++){
-            s += to_s(a[i]);
-            if((i + 1) < a.size()){
+        for(auto i = iterable.begin(); i != iterable.end(); ++i){
+            if(i != iterable.begin()){
                 s += delimiter;
             }
+            s += to_s(*i);
         }
+        if(include_brackets){
+            s += "]";
+        }
+        return s;
+    }
+
+    template<typename FIRST, typename SECOND>
+    std::string to_string(std::pair<FIRST, SECOND> a, std::function<std::string(FIRST)> first_to_s, std::function<std::string(SECOND)> second_to_s, std::string delimiter = ",", bool include_brackets = true){
+        std::string s = "";
+        if(include_brackets){
+            s += "[";
+        }
+        s += first_to_s(a.first);
+        s += delimiter;
+        s += second_to_s(a.second);
         if(include_brackets){
             s += "]";
         }
