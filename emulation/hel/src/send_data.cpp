@@ -169,6 +169,15 @@ std::string hel::SendData::serialize(){
         })
     );
 
+    serialized_data += ",";
+    serialized_data += serializeList(
+        "\"can_devices\"",
+        can_devices,
+        std::function<std::string(std::pair<uint32_t,CANDevice>)>([&](std::pair<uint32_t, CANDevice> a){
+            return a.second.serialize();
+        })
+    );
+
     serialized_data += "}}";
     serialized_data += JSON_PACKET_SUFFIX;
     gen_serialization = false;

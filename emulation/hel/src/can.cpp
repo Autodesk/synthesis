@@ -1,4 +1,5 @@
 #include "roborio.hpp"
+#include "json_util.hpp"
 
 #include <algorithm>
 
@@ -37,6 +38,20 @@ namespace hel{
             throw UnhandledEnumConstantException("hel::MXPData::Config");
         }
     }
+
+    CANDevice::Type s_to_can_device_type(std::string s){
+        switch(hasher(s.c_str())){
+        case hasher("TALON_SRX"):
+            return CANDevice::Type::TALON_SRX;
+        case hasher("VICTOR_SPX"):
+            return CANDevice::Type::VICTOR_SPX;
+        case hasher("UNKNOWN"):
+            return CANDevice::Type::UNKNOWN;
+        default:
+            throw UnhandledCase();
+        }
+    }
+
     std::string CANDevice::toString()const{
         std::string s = "(";
         s += "type:" + to_string(type) + ", ";
@@ -46,6 +61,23 @@ namespace hel{
         }
         s += ")";
         return s;
+    }
+
+    std::string CANDevice::serialize()const{
+        std::string s = "{";
+        s += "\"type\":" + hel::quote(hel::to_string(type)) + ", ";
+        s += "\"id\":" + std::to_string(id);
+        s += "\"speed\":" + std::to_string(speed);
+        s += "}";
+        return s;
+    }
+
+    CANDevice CANDevice::deserialize(std::string s){
+        CANDevice a;
+        a.type = s_to_can_device_type(hel::unquote(hel::pullValue("\"type\"",s)));
+        a.id = std::stod(hel::pullValue("\"id\"",s));
+        a.speed = std::stod(hel::pullValue("\"speed\"",s));
+        return a;
     }
 
     CANDevice::Type CANDevice::getType()const{

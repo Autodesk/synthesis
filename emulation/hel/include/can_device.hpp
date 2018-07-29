@@ -46,6 +46,23 @@ namespace hel{
 
         double getSpeed()const;
 
+        /**
+         * \fn std::string serialize()const
+         * \brief Convert the CANDevice to a JSON object
+         * \return a string representing the data in JSON format
+         */
+
+        std::string serialize()const;
+
+        /**
+         * \fn static CANDevice deserialize(std::string input)
+         * \brief Convert a JSON object string to a CANDevice object
+         * \param input the data to parse
+         * \return the generated CANDevice object
+         */
+
+        static CANDevice deserialize(std::string);
+
         CANDevice();
 
         CANDevice(uint32_t);
@@ -54,6 +71,8 @@ namespace hel{
     bool checkCANID(uint32_t,uint32_t,uint32_t);
 
     std::string to_string(CANDevice::Type);
+
+    CANDevice::Type s_to_can_device_type(std::string);
 }
 
 #endif
