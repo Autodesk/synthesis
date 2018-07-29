@@ -125,8 +125,6 @@ namespace hel{
 
     public:
 
-        double getSpeed(std::array<uint8_t,Message::MAX_DATA_SIZE>);
-
         /**
          * \fn void enqueueMessage(Message m)
          * \brief Add a CAN message to the output queue.

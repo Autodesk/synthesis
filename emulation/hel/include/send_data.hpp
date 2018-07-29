@@ -2,14 +2,15 @@
 #define _SEND_DATA_HPP_
 
 #include <array>
-#include <string>
+#include <map>
 #include <memory>
 #include <mutex>
-
-#include "mxp_data.hpp"
+#include <string>
 
 #include "analog_outputs.hpp"
+#include "can_device.hpp"
 #include "digital_system.hpp"
+#include "mxp_data.hpp"
 #include "relay_system.hpp"
 
 namespace hel{
@@ -29,6 +30,8 @@ namespace hel{
         std::array<hel::MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
 
         std::array<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
+
+        std::map<uint32_t, CANDevice> can_devices;
     public:
         SendData();
 
