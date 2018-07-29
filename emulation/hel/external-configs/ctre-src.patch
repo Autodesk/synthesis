@@ -1,0 +1,22 @@
+diff -u ctre/src/ctre/cpp/src/MotorControl/CAN/WPI_TalonSRX.cpp ctre.bak/src/ctre/cpp/src/MotorControl/CAN/WPI_TalonSRX.cpp
+--- ctre/src/ctre/cpp/src/MotorControl/CAN/WPI_TalonSRX.cpp	2018-07-28 20:31:01.595096114 -0700
+@@ -145,7 +145,7 @@
+ 	_safetyHelper.SetSafetyEnabled(enabled);
+ }
+ 
++void WPI_TalonSRX::GetDescription(wpi::raw_ostream& desc) const {
+-void WPI_TalonSRX::GetDescription(llvm::raw_ostream& desc) const {
+ 	desc << _desc.c_str();
+ }
+ 
+diff -u ctre/src/ctre/cpp/src/MotorControl/CAN/WPI_VictorSPX.cpp ctre.bak/src/ctre/cpp/src/MotorControl/CAN/WPI_VictorSPX.cpp
+--- ctre/src/ctre/cpp/src/MotorControl/CAN/WPI_VictorSPX.cpp	2018-07-28 20:31:14.310159349 -0700
+@@ -145,7 +145,7 @@
+ 	_safetyHelper.SetSafetyEnabled(enabled);
+ }
+ 
++void WPI_VictorSPX::GetDescription(wpi::raw_ostream& desc) const {
+-void WPI_VictorSPX::GetDescription(llvm::raw_ostream& desc) const {
+ 	desc << _desc.c_str();
+ }
+ 
