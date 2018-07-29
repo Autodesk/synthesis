@@ -2,7 +2,7 @@
 
 success=true
 libhel_source=lib/libhel.so
-user_program_source=user_code/FRCUserProgram
+user_program_source=user-code/FRCUserProgram
 
 if [ -f lib/libhel.so ]; then
     printf "Copying $libhel_source\n"

@@ -1,0 +1,22 @@
+diff -u ctre/src/ctre/cpp/include/ctre/phoenix/MotorControl/CAN/WPI_TalonSRX.h ctre.bak/src/ctre/cpp/include/ctre/phoenix/MotorControl/CAN/WPI_TalonSRX.h
+--- ctre/src/ctre/cpp/include/ctre/phoenix/MotorControl/CAN/WPI_TalonSRX.h	2018-07-28 20:29:40.320553472 -0700
+@@ -111,7 +111,7 @@
+ 
+ 	void SetSafetyEnabled(bool enabled);
+ 
++	void GetDescription(wpi::raw_ostream& desc) const;
+-	void GetDescription(llvm::raw_ostream& desc) const;
+ 
+ protected:
+ 	virtual void InitSendable(frc::SendableBuilder& builder);
+diff -u ctre/src/ctre/cpp/include/ctre/phoenix/MotorControl/CAN/WPI_VictorSPX.h ctre.bak/src/ctre/cpp/include/ctre/phoenix/MotorControl/CAN/WPI_VictorSPX.h
+--- ctre/src/ctre/cpp/include/ctre/phoenix/MotorControl/CAN/WPI_VictorSPX.h	2018-07-28 20:29:48.890098922 -0700
+@@ -111,7 +111,7 @@
+ 
+ 	void SetSafetyEnabled(bool enabled);
+ 
++	void GetDescription(wpi::raw_ostream& desc) const;
+-	void GetDescription(llvm::raw_ostream& desc) const;
+ 
+ protected:
+ 	virtual void InitSendable(frc::SendableBuilder& builder);
