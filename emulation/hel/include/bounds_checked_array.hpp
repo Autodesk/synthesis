@@ -12,6 +12,8 @@ namespace hel{
      */
     template<typename T, std::size_t LEN>
     struct BoundsCheckedArray{
+        using value_type = T;
+
     private:
 
         /**

@@ -2,7 +2,7 @@
 #include "roborio.hpp"
 
 TEST(AnalogInputTest, ReadWriteConfig) {
-    auto value = hal::tAI::tConfig{};
+    auto value = nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig{};
     value.ScanSize = 3;
     value.ConvertRate = 65536;
     auto instance = hel::RoboRIOManager::getInstance();

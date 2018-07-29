@@ -18,22 +18,17 @@ namespace hel{
         const char* what()const throw();
     };
 
-    template<typename T, size_t LEN>
-    std::string serializeList(std::string label, std::array<T, LEN> arr, std::function<std::string(T)> to_s){
+    template<typename T>
+    std::string serializeList(std::string label, T iterable, std::function<std::string(typename T::value_type)> to_s){
         std::string s = label + ":[";
-        for(unsigned i = 0; i < arr.size(); i++){
-            s += to_s(arr[i]);
-            if((i + 1) < arr.size()){
+        for(auto i = iterable.begin(); i != iterable.end(); ++i){
+            if(i != iterable.begin()){
                 s += ",";
             }
+            s += to_s(*i);
         }
         s += "]";
         return s;
-    }
-
-    template<typename T, size_t LEN>
-    std::string serializeList(std::string label, BoundsCheckedArray<T, LEN> arr, std::function<std::string(T)> to_s){
-        serializeList(label, arr, to_s);
     }
 
     /**
