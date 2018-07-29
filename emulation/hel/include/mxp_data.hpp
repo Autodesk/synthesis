@@ -34,6 +34,8 @@ namespace hel{
 
         double value;
 
+        std::string toString()const;
+
         /**
          * \fn std::string serialize()const
          * \brief Convert the port to a JSON object
