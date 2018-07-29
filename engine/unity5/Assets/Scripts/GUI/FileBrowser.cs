@@ -32,7 +32,7 @@ namespace Synthesis.GUI
 
         private List<string> targetFolderList = new List<string>();
 
-        public bool directoryCompleted = false;
+        private bool directorySearched;
 
         /// <summary>
         /// Default Directory Path
@@ -46,8 +46,6 @@ namespace Synthesis.GUI
 
         public FileBrowser(string windowTitle, string defaultDirectory, bool allowEsc = true)
         {
-            directoryCompleted = false;
-
             DirectoryInfo directorySelection;
 
             if (Directory.Exists(defaultDirectory)) directoryPath = defaultDirectory;
@@ -55,29 +53,29 @@ namespace Synthesis.GUI
 
             directorySelection = new DirectoryInfo(defaultDirectory);
 
-            if (defaultDirectory != null)
-            {
+            //if (defaultDirectory != null)
+            //{
 
-                //Use try/catch to prevent users from getting in unauthorized folders
-                try
-                {
-                    //If directory contains field or robot files, display error message to user prompting them to select directory
-                    //instead of the actual field
-                    if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
-                                                                      || directorySelection.GetFiles("*.bxdj").Length != 0)
-                    {
-                        UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
-                        defaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//");
-                        //directorySelection = directorySelection.Parent;
-                        //defaultDirectory = directorySelection.FullName;
-                    }
-                    tempSelection = null;
-                }
-                catch (UnauthorizedAccessException e)
-                {
-                    UserMessageManager.Dispatch("You don't have the authorization to access this folder", 3f);
-                }
-            }
+            //    //Use try/catch to prevent users from getting in unauthorized folders
+            //    try
+            //    {
+            //        //If directory contains field or robot files, display error message to user prompting them to select directory
+            //        //instead of the actual field
+            //        if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
+            //                                                          || directorySelection.GetFiles("*.bxdj").Length != 0)
+            //        {
+            //            UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
+            //            defaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//");
+            //            //directorySelection = directorySelection.Parent;
+            //            //defaultDirectory = directorySelection.FullName;
+            //        }
+            //        tempSelection = null;
+            //    }
+            //    catch (UnauthorizedAccessException e)
+            //    {
+            //        UserMessageManager.Dispatch("You don't have the authorization to access this folder", 3f);
+            //    }
+            //}
         }
 
         void Init(string windowTitle, string defaultDirectory, bool allowEsc = true)
@@ -92,7 +90,6 @@ namespace Synthesis.GUI
         public void CompleteDirectorySelection()
         {
             OnComplete?.Invoke(selectedDirectoryLocation);
-            directoryCompleted = true;
         }
     }
 }

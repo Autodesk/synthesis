@@ -64,14 +64,11 @@ namespace Synthesis.States
                     filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//Fields");
                 }
 
-                fileBrowser = new GUI.FileBrowser("Choose Robot Directory", filePath, true);
+                fileBrowser = new GUI.FileBrowser("Choose Directory", filePath, true);
                 fileBrowser.OnComplete += OnBrowserComplete;
                 fileBrowser.CompleteDirectorySelection();
 
             }
-
-            //fileBrowser.Render();
-
 
             //if (!fileBrowser.Active)
             //    StateMachine.PopState();
