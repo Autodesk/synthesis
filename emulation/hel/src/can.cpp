@@ -25,6 +25,22 @@ namespace hel{
       instance.second.unlock();
     }
 
+    double CANBus::getSpeed(std::array<uint8_t, CANBus::Message::MAX_DATA_SIZE> data){
+        double speed = 0;
+
+        /*
+          For CAN motor controllers:
+          data[x] - data[0] results in the number with the correct sign
+          data[1] - data[0] is the number of 256*256's
+          data[2] - data[0] is the number of 256's
+          data[3] - data[0] is the number of 1's
+          divide by (256*256*4) to scale from -256*256*4 to 256*256*4 to -1.0 to 1.0
+        */
+        speed = (double)((data[1] - data[0])*256*256 + (data[2] - data[0])*256 + (data[3] - data[0]))/(256*256*4);
+
+        return speed;
+    }
+
     CANBus::Message::Message():id(),data(),data_size(),time_stamp(){}
 
     CANBus::CANBus():in_message_queue(),out_message_queue(){}

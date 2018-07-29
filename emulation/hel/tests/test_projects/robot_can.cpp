@@ -17,6 +17,8 @@ class Robot : public frc::IterativeRobot {
 
     bool current_state = false;
 
+    double power = -1.0; //(std::rand() % 2000 - 1000) / 1000.0;
+
 public:
     void RobotInit(){}
 
@@ -27,12 +29,17 @@ public:
     }
 
     void TeleopPeriodic() {
-        double power = 1.0; //(std::rand() % 2000 - 1000) / 1000.0;
+        //RobotController::GetCANStatus();
 
+        if(power >= 1.0){
+            power = -1.0;
+        } else {
+            power += 0.005;
+        }
+        std::cout<<"Setting power to : "<<power<<"\n";
         talon.Set(power);
 
         //exit(0);
-        //std::cout<<"Power: "<<power<<" Talon:"<<talon.GetBusVoltage()<<"\n";
 
         usleep(45000);
     }

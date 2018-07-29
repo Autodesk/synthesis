@@ -29,6 +29,8 @@ namespace hel{
 
         struct Message{
 
+            static constexpr uint8_t MAX_DATA_SIZE = 8;
+
             /**
              * \var uint32_t id
              * \brief the message identifier which also communicates priority
@@ -43,7 +45,7 @@ namespace hel{
              * The data can array can vary from 0-8 bytes in size.
              */
 
-            BoundsCheckedArray<uint8_t, 8> data;
+            BoundsCheckedArray<uint8_t, MAX_DATA_SIZE> data;
 
             /**
              * \var uint8_t data_size
@@ -122,6 +124,8 @@ namespace hel{
         std::queue<Message> out_message_queue;
 
     public:
+
+        double getSpeed(std::array<uint8_t,Message::MAX_DATA_SIZE>);
 
         /**
          * \fn void enqueueMessage(Message m)
