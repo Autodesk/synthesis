@@ -16,6 +16,7 @@
  */
 
 #include <array>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <vector>
@@ -30,6 +31,7 @@
 #include "analog_inputs.hpp"
 #include "analog_outputs.hpp"
 #include "can_bus.hpp"
+#include "can_device.hpp"
 #include "counter.hpp"
 #include "digital_system.hpp"
 #include "encoder.hpp"
@@ -73,6 +75,7 @@ namespace hel{
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
         CANBus can_bus;
+        std::map<uint32_t,CANDevice> can_devices;
         std::array<Counter, Counter::MAX_COUNTER_COUNT> counters;
         DigitalSystem digital_system;
         std::vector<DSError> ds_errors;

@@ -39,6 +39,13 @@ hel::MXPData::Config hel::s_to_mxp_config(std::string s){
 
 hel::MXPData::MXPData():config(hel::MXPData::Config::DI),value(0.0){}
 
+std::string hel::MXPData::toString()const{
+    std::string s = "(";
+    s += "config:" + hel::to_string(config) + ", ";
+    s += "value:" + std::to_string(value) + ")";
+    return s;
+}
+
 std::string hel::MXPData::serialize()const{
     std::string s = "{";
     s += "\"config\":" + hel::quote(hel::to_string(config)) + ", ";
