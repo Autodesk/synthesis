@@ -12,7 +12,7 @@ namespace Synthesis.States
         private readonly string prefsKey;
         private readonly string directory;
 
-        private FileBrowser fileBrowser;
+        private SynthesisFileBrowser fileBrowser;
         public string filePath;
         Text pathLabel = GameObject.Find("PathLabel").GetComponent<Text>();
 
@@ -46,7 +46,7 @@ namespace Synthesis.States
         }
 
         /// <summary>
-        /// Renders the file browser.
+        /// Renders the file browser. Native filebrowser class derived from Crosstales plugin.
         /// </summary>
         public override void OnGUI()
         {
@@ -57,17 +57,14 @@ namespace Synthesis.States
                 // check for empty string (if native file browser is closed without selection) and default to Fields directory
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("\\synthesis");
+                    filePath = PlayerPrefs.GetString(prefsKey, directory);
                 }
 
-                fileBrowser = new GUI.FileBrowser("Choose Directory", filePath, true);
+                fileBrowser = new GUI.SynthesisFileBrowser("Choose Directory", filePath, true);
                 fileBrowser.OnComplete += OnBrowserComplete;
                 fileBrowser.CompleteDirectorySelection();
                 pathLabel.text = filePath;
             }
-
-            //if (!fileBrowser.Active)
-            //    StateMachine.PopState();
         }
 
         /// <summary>
