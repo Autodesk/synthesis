@@ -44,9 +44,10 @@ namespace BxDRobotExporter.Wizard
         public DefineWheelsPage()
         {
             InitializeComponent();
+
             AutoFillToolTip.SetToolTip(AutoFillButton, "Attempt to detect left and right wheels automatically. Remember to double check your configuration after using this tool.");
 
-            // Hide `rizontal scroll bars
+            // Hide horizontal scroll bars
             LeftWheelsPanel.AutoScroll = false;
             LeftWheelsPanel.HorizontalScroll.Maximum = 0;
             LeftWheelsPanel.AutoScroll = true;
@@ -274,6 +275,8 @@ namespace BxDRobotExporter.Wizard
 
             _initialized = true;
 
+            FillFromPreviousSetup(Utilities.GUI.SkeletonBase);
+
             UpdateUI();
             OnInvalidatePage(); // Reset the next page in the wizard
         }
@@ -298,6 +301,51 @@ namespace BxDRobotExporter.Wizard
                 }
 
                 _initialized = value;
+            }
+        }
+
+        public void FillFromPreviousSetup(RigidNode_Base baseNode)
+        {
+            foreach (RigidNode_Base node in baseNode.ListAllNodes())
+            {
+                //For the first filter, we take out any nodes that do not have parents and rotational joints.
+                if (node.GetParent() != null && node.GetSkeletalJoint() != null && 
+                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
+                {
+                    if(node.GetSkeletalJoint().cDriver.portA == 0 && ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
+                        switch (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).type)
+                        {
+                            case WheelType.NORMAL:
+                                SetWheelType(node, WizardData.WizardWheelType.NORMAL);
+                                break;
+                            case WheelType.MECANUM:
+                                SetWheelType(node, WizardData.WizardWheelType.MECANUM);
+                                break;
+                            case WheelType.OMNI:
+                                SetWheelType(node, WizardData.WizardWheelType.OMNI);
+                                break;
+
+                        }
+                        SetWheelSide(node, WheelSide.RIGHT, true);
+                    }
+                    if (node.GetSkeletalJoint().cDriver.portA == 1 && ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel)
+                    {
+                        switch (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).type)
+                        {
+                            case WheelType.NORMAL:
+                                SetWheelType(node, WizardData.WizardWheelType.NORMAL);
+                                break;
+                            case WheelType.MECANUM:
+                                SetWheelType(node, WizardData.WizardWheelType.MECANUM);
+                                break;
+                            case WheelType.OMNI:
+                                SetWheelType(node, WizardData.WizardWheelType.OMNI);
+                                break;
+
+                        }
+                        SetWheelSide(node, WheelSide.LEFT, true);
+                    }
+                }
             }
         }
 
