@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
+// TODO: Make it so they can see the lobby while in simulation.
+
 namespace Synthesis.Network
 {
     [NetworkSettings(channel = 0, sendInterval = 0f)]
@@ -478,13 +480,13 @@ namespace Synthesis.Network
         /// Cancels the synchronization process.
         /// </summary>
         [Server]
-        public void CancelSync()
+        public void CancelSync(bool displayMessage = true)
         {
             if (!syncing)
                 return;
 
             syncing = false;
-            PopState("Synchronization cancelled!");
+            PopState(displayMessage ? "Synchronization cancelled!" : string.Empty);
         }
 
         /// <summary>

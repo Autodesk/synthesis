@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Synthesis.GUI;
 
 namespace Synthesis.States
 {
@@ -15,12 +16,18 @@ namespace Synthesis.States
         private bool sceneGenerated;
         private bool renderingStarted;
 
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
         public override void Awake()
         {
             sceneGenerated = false;
             renderingStarted = false;
         }
 
+        /// <summary>
+        /// Starts scene generation on the host.
+        /// </summary>
         public override void Start()
         {
             if (Host)
@@ -32,6 +39,9 @@ namespace Synthesis.States
             }
         }
 
+        /// <summary>
+        /// Updates this instance.
+        /// </summary>
         public override void Update()
         {
             if (Host)
@@ -45,6 +55,9 @@ namespace Synthesis.States
             }
         }
 
+        /// <summary>
+        /// Generates the scene on this instance.
+        /// </summary>
         private void GenerateScene()
         {
             sceneGenerated = true;
@@ -56,18 +69,25 @@ namespace Synthesis.States
 
             if (!Host)
             {
-                StartSceneRendering();
                 PlayerIdentity.LocalInstance.CmdSetSceneGenerated(true);
                 PlayerIdentity.LocalInstance.CmdSetReady(true);
+                StartSceneRendering();
             }
         }
 
+        /// <summary>
+        /// Starts rendering the scene on this instance.
+        /// </summary>
         private void StartSceneRendering()
         {
             renderingStarted = true;
 
-            StateMachine.GetComponent<Canvas>().enabled = false;
-            UnityEngine.Object.FindObjectOfType<UnityEngine.Camera>().cullingMask |= (1 << LayerMask.NameToLayer("Default"));
+            NetworkMultiplayerUI.Instance.Visible = false;
+
+            if (Host)
+                MatchManager.Instance.syncing = false;
+
+            StateMachine.PopState();
         }
     }
 }

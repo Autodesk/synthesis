@@ -20,6 +20,29 @@ namespace Synthesis.GUI
         /// </summary>
         public static NetworkMultiplayerUI Instance { get; private set; }
 
+        /// <summary>
+        /// Sets or gets the visibility of the UI.
+        /// </summary>
+        public bool Visible
+        {
+            get
+            {
+                return visible;
+            }
+            set
+            {
+                visible = value;
+                canvas.enabled = visible;
+
+                if (visible)
+                    FindObjectOfType<UnityEngine.Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Default"));
+                else
+                    FindObjectOfType<UnityEngine.Camera>().cullingMask |= (1 << LayerMask.NameToLayer("Default"));
+            }
+        }
+
+        private bool visible;
+
         private StateMachine uiStateMachine;
         private Canvas canvas;
 
