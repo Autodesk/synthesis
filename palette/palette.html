@@ -3,6 +3,7 @@
     <head>
         <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
+        <script src="js/palette.js"></script>
 
         <style>
             #finished-button
@@ -28,7 +29,7 @@
             <fieldset id="joint-config-template" class="joint-config">
                 <legend class="joint-config-legend">Joint</legend>
 
-                <div class="driver-type-div">
+                <div class="driver-div">
                     <h3>Driver Type: </h3>
                     <select class="driver-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
                         <option value="0">None</option>
@@ -40,23 +41,34 @@
                         <option value="6" class="angular-driver">Dual Motor</option>
                         <option value="7" class="linear-driver">Elevator</option>
                     </select>
-                </div>
 
-                <div class="wheel-div">
-                    <h3>Wheel Type: </h3>
-                    <select class="wheel-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
-                        <option value="0">None</option>
-                        <option value="1">Normal</option>
-                        <option value="2">Omni</option>
-                        <option value="3">Mecanum</option>
-                    </select>
+                    <div class="has-driver-div">
+                        <div class="angular-joint-div">
+                            <h3>Wheel Type: </h3>
+                            <select class="wheel-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
+                                <option value="0">None</option>
+                                <option value="1">Normal</option>
+                                <option value="2">Omni</option>
+                                <option value="3">Mecanum</option>
+                            </select>
 
-                    <div class="other-wheel-div">
-                        <span>Is Drive Wheel: </span>
-                        <input type="checkbox" class="is-drive-wheel" onchange="updateFieldOptions(this.parentNode.parentNode.parentNode)" />
-                    </div>
+                            <div class="has-wheel-div">
+                                <span>Is Drive Wheel: </span>
+                                <input type="checkbox" class="is-drive-wheel" onchange="updateFieldOptions(this.parentNode.parentNode.parentNode)" />
 
-                    <div class="ports-div">
+                                <div class="drive-wheel-ports-div">
+                                    <select class="wheel-side">
+                                        <option value="0">Left Wheel</option>
+                                        <option value="1">Right Wheel</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="linear-joint-div">
+                            Not implemented
+                        </div>
+
                         <div class="generic-ports-div">
                             <select class="port-signal">
                                 <option value="1">PWM</option>
@@ -85,213 +97,15 @@
                                 <option value="8">8</option>
                             </select>
                         </div>
-
-                        <div class="wheel-side-div">
-                            <select class="wheel-side">
-                                <option value="0">Left Wheel</option>
-                                <option value="1">Right Wheel</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
-
             </fieldset>
         </div>
 
         <button id='finished-button' type='button' onclick='sendInfoToFusion()'>Export Robot</button>
 
         <script>
-            var jointOptions = [];
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
-
-            // Prompts the Fusion add-in for joint data
-            function requestInfoFromFusion()
-            {
-                console.log("Requesting joint info...");
-                adsk.fusionSendData('send_joints', '');
-            }
-
-            // Handles the receiving of data from Fusion
-            window.fusionJavaScriptHandler =
-                {
-                    handle: function (action, data)
-                    {
-                        try
-                        {
-                            if (action == 'joints')
-                            {
-                                console.log("Receiving joint info...");
-                                console.log(data);
-                                jointOptions = processJointDataString(data);
-                                displayJointOptions(jointOptions);
-                            }
-                            else if (action == 'debugger')
-                            {
-                                debugger;
-                            }
-                            else
-                            {
-                                return 'Unexpected command type: ' + action;
-                            }
-                        }
-                        catch (e)
-                        {
-                            console.log('Exception while excecuting \"' + action + '\":');
-                            console.log(e);
-                        }
-                        return 'OK';
-                    }
-                };
-
-            // Populates the form with joints
-            function displayJointOptions(joints)
-            {
-                // Delete all existing slots
-                var existing = document.getElementsByClassName('joint-config');
-                while (existing.length > 0)
-                    existing[0].parentNode.removeChild(existing[0]);
-
-                // Add slots for given joinst
-                var template = jointTemplate;
-                var exportForm = document.getElementById('export-settings');
-
-                for (var i = 0; i < joints.length; i++)
-                {
-                    var fieldset = template.cloneNode(true);
-
-                    fieldset.id = 'joint-config-' + String(i);
-                    fieldset.getElementsByClassName('joint-config-legend')[0].innerHTML = joints[i].name;
-
-                    // Filter for angular or linear joints
-                    var elsToHide = [];
-
-                    if ((joints[i].type & JOINT_ANGULAR) != JOINT_ANGULAR)
-                        elsToHide = elsToHide.concat(Array.from(fieldset.getElementsByClassName('angular-driver')));
-
-                    if ((joints[i].type & JOINT_LINEAR) != JOINT_LINEAR)
-                        elsToHide = elsToHide.concat(Array.from(fieldset.getElementsByClassName('linear-driver')));
-
-                    for (var j = 0; j < elsToHide.length; j++)
-                        elsToHide[j].style.display = 'none';
-
-                    // Show or hide other elements
-                    updateFieldOptions(fieldset);
-
-                    // Add field to form
-                    exportForm.appendChild(fieldset);
-                }
-            }
-
-            // Hides or shows fields based on the values of other fields
-            function updateFieldOptions(fieldset)
-            {
-                var selectedDriver = fieldset.getElementsByClassName('driver-type')[0].selectedIndex;
-                var wheelSelectorDiv = fieldset.getElementsByClassName('wheel-div')[0];
-                var genericPortsDiv = wheelSelectorDiv.getElementsByClassName('generic-ports-div')[0];
-                var portBSelector = wheelSelectorDiv.getElementsByClassName('port-number-b')[0];
-                var wheelSideDiv = wheelSelectorDiv.getElementsByClassName('wheel-side-div')[0];
-
-                // Hide wheel info if driver not set
-                if (selectedDriver == 0)
-                {
-                    wheelSelectorDiv.style.visibility = 'hidden';
-                    genericPortsDiv.style.display = 'block';
-                    portBSelector.style.visibility = 'hidden';
-                    wheelSideDiv.style.display = 'none';
-                }
-                else
-                {
-                    wheelSelectorDiv.style.visibility = 'visible';
-
-                    // Hide port B selector if not a dual motor
-                    if (selectedDriver == 6)
-                        portBSelector.style.visibility = 'visible';
-                    else
-                        portBSelector.style.visibility = 'hidden';
-
-                    var selectedWheel = wheelSelectorDiv.getElementsByClassName('wheel-type')[0].selectedIndex;
-
-                    // Set other wheel info visibility and generic ports/wheel side
-                    var otherWheelDiv = wheelSelectorDiv.getElementsByClassName('other-wheel-div')[0];
-
-                    if (selectedWheel == 0)
-                    {
-                        otherWheelDiv.style.visibility = 'hidden';
-                        genericPortsDiv.style.display = 'block';
-                        wheelSideDiv.style.display = 'none';
-                    }
-                    else
-                    {
-                        otherWheelDiv.style.visibility = 'visible';
-
-                        var isDriveWheel = otherWheelDiv.getElementsByClassName('is-drive-wheel')[0].checked;
-                        
-                        // Set drive side visibility
-                        var driveSideDiv = otherWheelDiv.getElementsByClassName('drive-side-div')[0];
-
-                        if (isDriveWheel)
-                        {
-                            genericPortsDiv.style.display = 'none';
-                            wheelSideDiv.style.display = 'block';
-                        }
-                        else
-                        {
-                            genericPortsDiv.style.display = 'block';
-                            wheelSideDiv.style.display = 'none';
-                        }
-                    }
-                }
-            }
-
-            // Updates jointOptions with the currently entered data
-            function readFormData()
-            {
-                for (var i = 0; i < jointOptions.length; i++)
-                {
-                    var fieldset = document.getElementById('joint-config-' + String(i));
-
-                    var selectedDriver = fieldset.getElementsByClassName('driver-type')[0].selectedIndex;
-
-                    if (selectedDriver > 0)
-                    {
-                        var signal = parseInt(fieldset.getElementsByClassName('port-signal')[0].value);
-                        var portA = fieldset.getElementsByClassName('port-number-a')[0].selectedIndex;
-                        var portB = fieldset.getElementsByClassName('port-number-b')[0].selectedIndex;
-
-                        jointOptions[i].driver = createDriver(selectedDriver, signal, portA, portB);
-                        jointOptions[i].driver.signal = signal;
-                        jointOptions[i].driver.portA = portA;
-                        jointOptions[i].driver.portB = portB;
-
-                        var selectedWheel = fieldset.getElementsByClassName('wheel-type')[0].selectedIndex;
-
-                        if (selectedWheel > 0)
-                        {
-                            var isDriveWheel = fieldset.getElementsByClassName('is-drive-wheel')[0].checked;
-                            jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
-
-                            if (isDriveWheel)
-                            {
-                                jointOptions[i].driver.signal = PWM;
-                                jointOptions[i].driver.portA = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
-                                jointOptions[i].driver.portB = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Sends the data to the Fusion add-in
-            function sendInfoToFusion()
-            {
-                var name = document.getElementById('name').value;
-
-                if (name.length == 0)
-                    return;
-
-                readFormData();
-                adsk.fusionSendData('export', stringifyConfigData(name, jointOptions));
-            }
         </script>
     </body>
 </html>

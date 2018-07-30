@@ -5,6 +5,7 @@
 #include "XmlWriter.h"
 // Components
 #include "Components/Wheel.h"
+#include "Components/Pneumatic.h"
 
 namespace BXDJ
 {
@@ -47,10 +48,13 @@ namespace BXDJ
 		// Component Functions
 		void removeComponents();
 		void setComponent(Wheel);
+		void setComponent(Pneumatic);
 		std::unique_ptr<Wheel> getWheel();
+		std::unique_ptr<Pneumatic> getPneumatic();
 
 	private:
 		std::unique_ptr<Wheel> wheel;
+		std::unique_ptr<Pneumatic> pneumatic;
 
 		static std::string toString(Type);
 		static std::string toString(Signal);

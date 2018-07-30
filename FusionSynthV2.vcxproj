@@ -109,6 +109,7 @@
     <ClInclude Include="Source\Data\BXDA\Physics.h" />
     <ClInclude Include="Source\Data\BXDA\Surface.h" />
     <ClInclude Include="Source\Data\BXDA\Vertex.h" />
+    <ClInclude Include="Source\Data\BXDJ\Components\Pneumatic.h" />
     <ClInclude Include="Source\Data\BXDJ\Components\Wheel.h" />
     <ClInclude Include="Source\Data\BXDJ\ConfigData.h" />
     <ClInclude Include="Source\Data\BXDJ\Driver.h" />
@@ -135,6 +136,7 @@
     <ClCompile Include="Source\Data\BXDA\Physics.cpp" />
     <ClCompile Include="Source\Data\BXDA\Surface.cpp" />
     <ClCompile Include="Source\Data\BXDA\Vertex.cpp" />
+    <ClCompile Include="Source\Data\BXDJ\Components\Pneumatic.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Components\Wheel.cpp" />
     <ClCompile Include="Source\Data\BXDJ\ConfigData.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Driver.cpp" />
@@ -152,6 +154,7 @@
   <ItemGroup>
     <None Include="Palette\css\synthesisExporter.css" />
     <None Include="Palette\js\fusionInterface.js" />
+    <None Include="Palette\js\palette.js" />
     <None Include="palette\palette.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
