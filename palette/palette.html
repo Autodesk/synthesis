@@ -32,12 +32,12 @@
                     <h3>Driver Type: </h3>
                     <select class="driver-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
                         <option value="0">None</option>
-                        <option value="1" class="rotational-driver">Motor</option>
-                        <option value="2" class="rotational-driver">Servo</option>
+                        <option value="1" class="angular-driver">Motor</option>
+                        <option value="2" class="angular-driver">Servo</option>
                         <option value="3" class="linear-driver">Worm Screw</option>
                         <option value="4" class="linear-driver">Bumper Pnuematic</option>
                         <option value="5" class="linear-driver">Relay Pnuematic</option>
-                        <option value="6" class="rotational-driver">Dual Motor</option>
+                        <option value="6" class="angular-driver">Dual Motor</option>
                         <option value="7" class="linear-driver">Elevator</option>
                     </select>
                 </div>
@@ -162,12 +162,14 @@
                     fieldset.id = 'joint-config-' + String(i);
                     fieldset.getElementsByClassName('joint-config-legend')[0].innerHTML = joints[i].name;
 
-                    // Filter for rotational or linear
-                    var elsToHide;
-                    if (true) // TODO: Get whether joint is rotational or linear
-                        elsToHide = fieldset.getElementsByClassName('linear-driver')
-                    else
-                        elsToHide = fieldset.getElementsByClassName('rotational-driver')
+                    // Filter for angular or linear joints
+                    var elsToHide = [];
+
+                    if (joints[i].type & JOINT_ANGULAR != JOINT_ANGULAR)
+                        elsToHide = elsToHide.concat(fieldset.getElementsByClassName('angular-driver'));
+
+                    if (joints[i].type & JOINT_LINEAR != JOINT_LINEAR)
+                        elsToHide = elsToHide.concat(fieldset.getElementsByClassName('linear-driver'));
 
                     for (var j = 0; j < elsToHide.length; j++)
                         elsToHide[j].style.display = 'none';

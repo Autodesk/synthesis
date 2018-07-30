@@ -1,0 +1,45 @@
+#include "RigidNode.h"
+
+using namespace BXDJ;
+
+void RigidNode::getMesh(BXDA::Mesh & mesh) const
+{
+	// Each occurrence is a submesh
+	for (core::Ptr<fusion::Occurrence> occurrence : fusionOccurrences)
+	{
+		std::shared_ptr<BXDA::SubMesh> subMesh = std::make_shared<BXDA::SubMesh>();
+
+		// Each body of the mesh is a sub-mesh
+		for (core::Ptr<fusion::BRepBody> body : occurrence->bRepBodies())
+		{
+			core::Ptr<fusion::TriangleMeshCalculator> meshCalculator = body->meshManager()->createMeshCalculator();
+			meshCalculator->setQuality(fusion::LowQualityTriangleMesh);
+
+			core::Ptr<fusion::TriangleMesh> fusionMesh = meshCalculator->calculate();
+
+			// Add faces to sub-mesh
+			std::shared_ptr<BXDA::Surface> surface = std::make_shared<BXDA::Surface>(fusionMesh->nodeIndices(), subMesh->getVertCount());
+
+			surface->setColor(body->appearance()->appearanceProperties()->itemByName("Color"));
+			subMesh->addSurface(surface);
+
+			// Add vertices to sub-mesh
+			std::vector<double> coords = fusionMesh->nodeCoordinatesAsDouble();
+			std::vector<double> norms = fusionMesh->normalVectorsAsDouble();
+			subMesh->addVertices(coords, norms);
+		}
+
+		if (subMesh->getVertCount() > 0)
+		{
+			// Add physics properties to mesh
+			core::Ptr<fusion::PhysicalProperties> physics = occurrence->physicalProperties();
+			if (physics->mass() > 0)
+			{
+				Vector3<float> centerOfMass((float)physics->centerOfMass()->x(), (float)physics->centerOfMass()->y(), (float)physics->centerOfMass()->z());
+				mesh.addPhysics(BXDA::Physics(centerOfMass, (float)occurrence->physicalProperties()->mass()));
+			}
+
+			mesh.addSubMesh(subMesh);
+		}
+	}
+}

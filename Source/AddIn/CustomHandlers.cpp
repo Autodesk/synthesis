@@ -38,10 +38,10 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 	if (!palette)
 		return;
 
-	palette->isVisible(true);
-
 	Exporter exporter(app);
 	palette->sendInfoToHTML("joints", exporter.stringifyJoints(exporter.collectJoints()));
+
+	palette->isVisible(true);
 }
 
 /// Palette Events

@@ -117,6 +117,12 @@
     <ClInclude Include="Source\AddIn\Identifiers.h">
       <Filter>Headers\AddIn</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Joints\SliderJoint.h">
+      <Filter>Headers\Data\BXDJ\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Joints\LinearJoint.h">
+      <Filter>Headers\Data\BXDJ\Joints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -177,6 +183,15 @@
       <Filter>Source\Data\BXDJ\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\BXDJ\ConfigData.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Joints\SliderJoint.cpp">
+      <Filter>Source\Data\BXDJ\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\RigidNode-Mesh.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\RigidNode-Tree.cpp">
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
   </ItemGroup>
