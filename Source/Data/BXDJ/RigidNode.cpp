@@ -30,8 +30,9 @@ RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData conf
 	configData = std::make_shared<ConfigData>(config);
 	jointSummary = std::make_shared<JointSummary>(getJointSummary(rootComponent));
 
-	for (core::Ptr<fusion::Occurrence> occurence : rootComponent->occurrences()->asList())
-		buildTree(occurence);
+	for (core::Ptr<fusion::Occurrence> occurrence : rootComponent->occurrences()->asList())
+		if (std::find(jointSummary->children.begin(), jointSummary->children.end(), occurrence) == jointSummary->children.end())
+			buildTree(occurrence);
 }
 
 RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occ, Joint * parent)

@@ -54,15 +54,15 @@ Vector3<T>::Vector3(T x, T y, T z)
 
 template<typename T>
 template<typename U>
-Vector3<T> Vector3<T>::operator+(const Vector3<U> & other) const { return Vector3<T>(x + other.x, y + other.y, x + other.z); }
+Vector3<T> Vector3<T>::operator+(const Vector3<U> & other) const { return Vector3<T>(x + other.x, y + other.y, z + other.z); }
 
 template<typename T>
 template<typename U>
-Vector3<T> Vector3<T>::operator-(const Vector3<U> & other) const { return Vector3<T>(x - other.x, y - other.y, x - other.z); }
+Vector3<T> Vector3<T>::operator-(const Vector3<U> & other) const { return Vector3<T>(x - other.x, y - other.y, z - other.z); }
 
 template<typename T>
 template<typename U>
-T Vector3<T>::operator*(const Vector3<U>& other) const { return x * other.x + y * other.y + z*other.z; }
+T Vector3<T>::operator*(const Vector3<U>& other) const { return x*other.x + y*other.y + z*other.z; }
 
 template<typename T>
 template<typename S>
@@ -73,7 +73,7 @@ template<typename S>
 Vector3<T> Vector3<T>::operator/(S scale) const { return Vector3<T>(x / scale, y / scale, z / scale); }
 
 template<typename T>
-T Vector3<T>::magnitude() const { return sqrt(x*x + y * y + z * z); }
+T Vector3<T>::magnitude() const { return sqrt(x*x + y*y + z*z); }
 
 template<typename T>
 template<typename U>

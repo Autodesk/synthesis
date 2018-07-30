@@ -25,18 +25,17 @@ Wheel::Wheel(Type type, FrictionLevel frictionLevel, bool isDriveWheel)
 
 Wheel::Wheel(const Wheel & wheel, const RotationalJoint & joint) : Wheel(wheel)
 {
+	Vector3<> axis = joint.getAxisOfRotation();
 	center = joint.getChildBasePoint();
 
 	// Calculate radius and width
 	BXDA::Mesh mesh(joint.getChild()->getGUID());
 	joint.getChild()->getMesh(mesh);
 
-	Vector3<> axis = joint.getAxisOfRotation();
-
 	double minWidth, maxWidth;
 	mesh.calculateWheelShape(axis, center, minWidth, maxWidth, radius);
-	width = maxWidth - minWidth;
 
+	width = maxWidth - minWidth;
 	center = center + axis * (width / 2); // Offset center to actual center of wheel
 }
 
