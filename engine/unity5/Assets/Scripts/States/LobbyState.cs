@@ -81,7 +81,7 @@ namespace Synthesis.States
         public override void Resume()
         {
             if (PlayerIdentity.LocalInstance != null)
-                PlayerIdentity.LocalInstance.SetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
+                PlayerIdentity.LocalInstance.CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
 
             if (host && MatchManager.Instance != null)
                 MatchManager.Instance.FieldName = PlayerPrefs.GetString("simSelectedFieldName");

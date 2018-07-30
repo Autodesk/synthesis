@@ -41,7 +41,7 @@ namespace Synthesis.Network
         }
 
         /// <summary>
-        /// Removes a <see cref="PlayerIdentity"/> from teh dictionary of tracked <see cref="PlayerIdentity"/> instances.
+        /// Removes a <see cref="PlayerIdentity"/> from the dictionary of tracked <see cref="PlayerIdentity"/> instances.
         /// </summary>
         /// <param name="identity"></param>
         public void RemovePlayerEntry(PlayerIdentity identity)

@@ -18,6 +18,7 @@ using Synthesis.Utils;
 using Synthesis.BUExtensions;
 using Synthesis.Input;
 using Synthesis.Network;
+using Synthesis.GUI;
 
 namespace Synthesis.States
 {
@@ -153,6 +154,9 @@ namespace Synthesis.States
                 //AppModel.ErrorToMenu("Robot instance not valid.");
                 return;
             }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
+                NetworkMultiplayerUI.Instance.Visible = !NetworkMultiplayerUI.Instance.Visible;
 
             // Toggles between the different camera states if the camera toggle button is pressed
             if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)))

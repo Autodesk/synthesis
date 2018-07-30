@@ -144,13 +144,9 @@ namespace Synthesis.Network
                 LocalInstance = this;
                 CmdSetPlayerTag(DefaultLocalPlayerTag);
                 CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
-                RobotFolder = PlayerPrefs.GetString("simSelectedRobot");
             }
-            else
-            {
-                RobotFolder = string.Empty;
-            }
-            
+
+            RobotFolder = string.Empty;
             FileData = new Dictionary<string, List<byte>>();
             UnresolvedDependencies = new List<int>();
             ReceivedFiles = new HashSet<string>();
@@ -215,6 +211,8 @@ namespace Synthesis.Network
         public void CheckDependencies()
         {
             UnresolvedDependencies.Clear();
+
+            RobotFolder = PlayerPrefs.GetString("simSelectedRobot");
 
             foreach (PlayerIdentity otherIdentity in FindObjectsOfType<PlayerIdentity>().Where(p => p.id != id))
             {
@@ -370,28 +368,11 @@ namespace Synthesis.Network
         }
 
         /// <summary>
-        /// Sets the robot name on this instance accross all clients.
-        /// </summary>
-        /// <param name="name"></param>
-        public void SetRobotName(string name)
-        {
-            if (isServer)
-            {
-                robotName = name;
-                robotGuid = string.Empty;
-            }
-            else
-            {
-                CmdSetRobotName(name);
-            }
-        }
-
-        /// <summary>
         /// Sets the robot name of this instance accross all clients.
         /// </summary>
         /// <param name="name"></param>
         [Command]
-        private void CmdSetRobotName(string name)
+        public void CmdSetRobotName(string name)
         {
             robotName = name;
             CmdSetRobotGuid(string.Empty);
