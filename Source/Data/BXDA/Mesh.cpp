@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-#define SHOW_COLLIDERS
+//#define SHOW_COLLIDERS
 
 using namespace BXDA;
 

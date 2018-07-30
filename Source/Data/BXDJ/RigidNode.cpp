@@ -91,15 +91,18 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 			subMesh->addVertices(coords, norms);
 		}
 
-		// Add physics properties to mesh
-		core::Ptr<fusion::PhysicalProperties> physics = occurrence->physicalProperties();
-		if (physics->mass() > 0)
+		if (subMesh->getVertCount() > 0)
 		{
-			Vector3<float> centerOfMass((float)physics->centerOfMass()->x(), (float)physics->centerOfMass()->y(), (float)physics->centerOfMass()->z());
-			mesh.addPhysics(BXDA::Physics(centerOfMass, (float)occurrence->physicalProperties()->mass()));
-		}
+			// Add physics properties to mesh
+			core::Ptr<fusion::PhysicalProperties> physics = occurrence->physicalProperties();
+			if (physics->mass() > 0)
+			{
+				Vector3<float> centerOfMass((float)physics->centerOfMass()->x(), (float)physics->centerOfMass()->y(), (float)physics->centerOfMass()->z());
+				mesh.addPhysics(BXDA::Physics(centerOfMass, (float)occurrence->physicalProperties()->mass()));
+			}
 
-		mesh.addSubMesh(subMesh);
+			mesh.addSubMesh(subMesh);
+		}
 	}
 }
 
