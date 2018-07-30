@@ -27,6 +27,10 @@ namespace Synthesis.Sensors
         private List<GameObject> inactiveSensorList = new List<GameObject>();
         private List<GameObject> sensorList = new List<GameObject>();
 
+        private List<GameObject> ultrasonicList = new List<GameObject>();
+        private List<GameObject> beamBreakerList = new List<GameObject>();
+        private List<GameObject> gyroList = new List<GameObject>();
+
         private List<Color> hoveredColors = new List<Color>();
         private List<Color> selectedColors = new List<Color>();
         private Color selectedColor = new Color(1, 0, 0);
@@ -63,13 +67,13 @@ namespace Synthesis.Sensors
             }
         }
 
-        public GameObject AddNewSensor(GameObject sensorToCopy, String type)
+        public GameObject AddNewSensor(GameObject sensorToCopy, String name)
         {
             GameObject sensor = GameObject.Instantiate(sensorToCopy, main.ActiveRobot.transform.Find("node_0.bxda").transform);
             sensor.transform.localPosition = new Vector3(0, 0.2f, 0); //so it doesn't initialize in the middle of the robot BUT CHANGE IT
             sensor.transform.localRotation = Quaternion.Euler(Vector3.zero);
             sensorList.Add(sensor);
-            sensor.name = type + " " + sensorList.Count;
+            sensor.name = name;
             sensor.GetComponent<SensorBase>().Robot = main.ActiveRobot;
             activeSensorList.Add(sensor);
             return sensor;
@@ -92,7 +96,9 @@ namespace Synthesis.Sensors
             //sensorList.Add(ultrasonic);
             //activeSensorList.Add(ultrasonic);
             //return ultrasonic.GetComponent<UltraSensor>();
-            return AddNewSensor(Ultrasonic, "Ultrasonic").GetComponent<UltraSensor>();
+            GameObject sensor = AddNewSensor(Ultrasonic, "Ultrasonic " + (ultrasonicList.Count + 1));
+            ultrasonicList.Add(sensor);
+            return sensor.GetComponent<UltraSensor>();
         }
 
         /// <summary>
@@ -115,7 +121,9 @@ namespace Synthesis.Sensors
             //BeamBreaker sensor = beamBreaker.GetComponent<BeamBreaker>();
             //sensor.SetSensorRange(distance);
             //return sensor;
-            return AddNewSensor(BeamBreaker, "Beam Break").GetComponent<BeamBreaker>();
+            GameObject sensor = AddNewSensor(BeamBreaker, "Beam Break " + (beamBreakerList.Count + 1));
+            beamBreakerList.Add(sensor);
+            return sensor.GetComponent<BeamBreaker>();
         }
 
         /// <summary>
@@ -136,7 +144,9 @@ namespace Synthesis.Sensors
             //activeSensorList.Add(gyro);
             //Gyro sensor = gyro.GetComponent<Gyro>();
             //return sensor;
-            return AddNewSensor(Gyro, "Gyro").GetComponent<Gyro>();
+            GameObject sensor = AddNewSensor(Gyro, "Gyro " + (gyroList.Count + 1));
+            gyroList.Add(sensor);
+            return sensor.GetComponent<Gyro>();
         }
 
         /// <summary>
