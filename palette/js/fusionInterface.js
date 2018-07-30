@@ -1,6 +1,8 @@
 // Joint Types
-var JOINT_ANGULAR = 5;
-var JOINT_LINEAR = 6;
+var JOINT_NEITHER = 0;
+var JOINT_ANGULAR = 1;
+var JOINT_LINEAR = 2;
+var JOINT_BOTH = 3;
 
 // Driver Types
 var DRIVER_UNKNOWN = 0;
@@ -79,7 +81,7 @@ function processJointDataString(jointData)
             nameStr += jointData[c++];
         c++;
 
-        var jointType = jointData.charCodeAt(c++);
+        var jointType = jointData.charCodeAt(c++) - 4; // Incremented to prevent null termination
 
         joints.push({ name: nameStr, type: jointType, driver: null });
     }

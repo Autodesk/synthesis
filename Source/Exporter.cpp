@@ -40,7 +40,7 @@ std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
 		// Specify if joint supports linear and/or angular motion
 		if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType)		 // Angular motion only
 			stringifiedJoints += 5;
-		else if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType) // Linear motion only
+		else if (joint->jointMotion()->jointType() == JointTypes::SliderJointType) // Linear motion only
 			stringifiedJoints += 6;
 		else if (false)                                                              // Both angular and linear motion
 			stringifiedJoints += 7;

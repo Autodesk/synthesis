@@ -165,11 +165,11 @@
                     // Filter for angular or linear joints
                     var elsToHide = [];
 
-                    if (joints[i].type & JOINT_ANGULAR != JOINT_ANGULAR)
-                        elsToHide = elsToHide.concat(fieldset.getElementsByClassName('angular-driver'));
+                    if ((joints[i].type & JOINT_ANGULAR) != JOINT_ANGULAR)
+                        elsToHide = elsToHide.concat(Array.from(fieldset.getElementsByClassName('angular-driver')));
 
-                    if (joints[i].type & JOINT_LINEAR != JOINT_LINEAR)
-                        elsToHide = elsToHide.concat(fieldset.getElementsByClassName('linear-driver'));
+                    if ((joints[i].type & JOINT_LINEAR) != JOINT_LINEAR)
+                        elsToHide = elsToHide.concat(Array.from(fieldset.getElementsByClassName('linear-driver')));
 
                     for (var j = 0; j < elsToHide.length; j++)
                         elsToHide[j].style.display = 'none';
@@ -254,11 +254,14 @@
 
                     if (selectedDriver > 0)
                     {
-                        var signal = fieldset.getElementsByClassName('port-signal')[0].selectedIndex;
+                        var signal = parseInt(fieldset.getElementsByClassName('port-signal')[0].value);
                         var portA = fieldset.getElementsByClassName('port-number-a')[0].selectedIndex;
                         var portB = fieldset.getElementsByClassName('port-number-b')[0].selectedIndex;
 
                         jointOptions[i].driver = createDriver(selectedDriver, signal, portA, portB);
+                        jointOptions[i].driver.signal = signal;
+                        jointOptions[i].driver.portA = portA;
+                        jointOptions[i].driver.portB = portB;
 
                         var selectedWheel = fieldset.getElementsByClassName('wheel-type')[0].selectedIndex;
 
