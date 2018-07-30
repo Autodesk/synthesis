@@ -1,5 +1,7 @@
 #include "Mesh.h"
 
+#define SHOW_COLLIDERS
+
 using namespace BXDA;
 
 Mesh::Mesh(Guid guid) : guid(guid)
@@ -64,23 +66,36 @@ std::string Mesh::toString()
 
 void Mesh::write(BinaryWriter & output) const
 {
+	// Generate colliders
+	std::vector<std::shared_ptr<SubMesh>> colliders;
+	for (std::shared_ptr<SubMesh> submesh : subMeshes)
+	{
+		std::shared_ptr<SubMesh> tempColliderMesh = std::make_shared<SubMesh>();
+		submesh->getConvexCollider(*tempColliderMesh);
+	}
+
 	// Output general information
 	output.write(CURRENT_VERSION);
 	output.write(guid.toString());
 
 	// Output meshes
+#ifndef SHOW_COLLIDERS
 	output.write((int)subMeshes.size());
 	for (std::shared_ptr<SubMesh> submesh : subMeshes)
 		output.write(*submesh);
+#else
+	// Output colliders as visual mesh as well
+	output.write((int)subMeshes.size() + (int)colliders.size());
+	for (std::shared_ptr<SubMesh> submesh : subMeshes)
+		output.write(*submesh);
+	for (std::shared_ptr<SubMesh> collider : colliders)
+		output.write(*collider);
+#endif
 
 	// Output colliders
-	output.write((int)subMeshes.size());
-	SubMesh tempColliderMesh = SubMesh();
-	for (std::shared_ptr<SubMesh> submesh : subMeshes)
-	{
-		submesh->getConvexCollider(tempColliderMesh);
-		output.write(tempColliderMesh);
-	}
+	output.write((int)colliders.size());
+	for (std::shared_ptr<SubMesh> collider : colliders)
+		output.write(*collider);
 
 	// Output physics data
 	output.write(physics);
