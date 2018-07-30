@@ -52,7 +52,9 @@ namespace Synthesis.States
         {
             if (fileBrowser == null)
             {
+                StateMachine.CurrentState.Pause();
                 filePath = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+                StateMachine.CurrentState.Resume();
 
                 // check for empty string (if native file browser is closed without selection) and default to Fields directory
                 if (string.IsNullOrEmpty(filePath))
@@ -61,6 +63,7 @@ namespace Synthesis.States
                 }
 
                 fileBrowser = new GUI.SynthesisFileBrowser("Choose Directory", filePath, true);
+
                 fileBrowser.OnComplete += OnBrowserComplete;
                 fileBrowser.CompleteDirectorySelection();
                 pathLabel.text = filePath;
