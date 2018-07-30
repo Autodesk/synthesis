@@ -231,7 +231,10 @@ namespace Synthesis.Network
             }
 
             foreach (PlayerIdentity identity in remainingIdentities)
+            {
                 identity.ready = true;
+                identity.gatheringProgress = 1f;
+            }
         }
 
         /// <summary>
@@ -472,7 +475,13 @@ namespace Synthesis.Network
         [Server]
         private IEnumerator StartWhenReady(Action whenReady)
         {
-            yield return new WaitUntil(() => FindObjectsOfType<PlayerIdentity>().All(p => p.ready));
+            PlayerIdentity[] identities = FindObjectsOfType<PlayerIdentity>();
+
+            yield return new WaitUntil(() => identities.All(p => p.ready));
+
+            foreach (PlayerIdentity p in identities)
+                p.ready = false;
+
             whenReady();
         }
 
@@ -499,10 +508,7 @@ namespace Synthesis.Network
             State state = StringToState(stateType);
 
             if (state != null)
-            {
-                PlayerIdentity.LocalInstance.CmdSetReady(false);
                 uiStateMachine.PushState(state);
-            }
         }
 
         /// <summary>
@@ -516,10 +522,7 @@ namespace Synthesis.Network
             State state = StringToState(stateType);
 
             if (state != null)
-            {
-                PlayerIdentity.LocalInstance.CmdSetReady(false);
                 uiStateMachine.ChangeState(state, hardReset);
-            }
         }
 
         /// <summary>
