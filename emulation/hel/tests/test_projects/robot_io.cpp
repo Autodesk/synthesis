@@ -26,6 +26,10 @@ class Robot : public frc::IterativeRobot {
     bool current_state = false;
 
 public:
+    void RobotInit(){}
+
+    void RobotPeriodic(){}
+    
     void TeleopInit() {
         std::srand(std::time(nullptr));
     }
