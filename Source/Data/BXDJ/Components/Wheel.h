@@ -35,6 +35,15 @@ namespace BXDJ
 		double getWidth() const;
 		Vector3<> getCenter() const;
 
+		float getForwardAsympSlip() const;
+		float getForwardAsympValue() const;
+		float getForwardExtremeSlip() const;
+		float getForwardExtremeValue() const;
+		float getSideAsympSlip() const;
+		float getSideAsympValue() const;
+		float getSideExtremeSlip() const;
+		float getSideExtremeValue() const;
+
 		void write(XmlWriter &) const;
 
 	private:
