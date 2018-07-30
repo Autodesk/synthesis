@@ -6559,7 +6559,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Configure
+  m_Text: Camera
 --- !u!222 &137182499
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54732,7 +54732,7 @@ GameObject:
   - component: {fileID: 1080173126}
   - component: {fileID: 1080173125}
   m_Layer: 5
-  m_Name: SensorButton
+  m_Name: UltrasonicButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
