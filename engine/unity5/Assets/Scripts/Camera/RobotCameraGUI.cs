@@ -35,6 +35,8 @@ namespace Synthesis.Camera
         GameObject showFOVButton;
         GameObject FOVEntry;
 
+        GameObject cameraNodePanel;
+
         GameObject robotCameraViewWindow;
         RenderTexture robotCameraView;
 
@@ -118,6 +120,7 @@ namespace Synthesis.Camera
             changeCameraNodeButton = Auxiliary.FindObject(configureCameraPanel, "ChangeNodeButton");
             cameraNodeText = Auxiliary.FindObject(configureCameraPanel, "NodeText").GetComponent<Text>();
             cancelNodeSelectionButton = Auxiliary.FindObject(configureCameraPanel, "CancelNodeSelectionButton");
+            cameraNodePanel = Auxiliary.FindObject(configureCameraPanel, "CameraAttachmentPanel");
 
             //For camera angle configuration
             cameraAnglePanel = Auxiliary.FindObject(canvas, "CameraAnglePanel");
@@ -248,29 +251,43 @@ namespace Synthesis.Camera
         }
 
         /// <summary>
-        /// Going into the state of selecting a new node and confirming it
+        /// Toggle the state of selecting a new node and confirming it
         /// </summary>
         public void ToggleChangeNode()
         {
-            if (!robotCameraManager.SelectingNode && robotCameraManager.SelectedNode == null)
+            if (!robotCameraManager.SelectingNode && robotCameraManager.SelectedNode == null) //open the panel and start selecting
             {
+                cameraNodePanel.SetActive(true);
                 robotCameraManager.DefineNode(); //Start selecting a new node, set SelectingNode to true
-                changeCameraNodeButton.GetComponentInChildren<Text>().text = "Confirm";
-                cancelNodeSelectionButton.SetActive(true);
+                //changeCameraNodeButton.GetComponentInChildren<Text>().text = "Confirm";
+                //cancelNodeSelectionButton.SetActive(true);
             }
-            else if (robotCameraManager.SelectingNode && robotCameraManager.SelectedNode != null)
+            else if (robotCameraManager.SelectingNode) //close the panel (without saving)
             {
-                //Change the node where camera is attached to, clear selected node, and update name of current node
-                robotCameraManager.ChangeNodeAttachment();
-                cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
-                changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
-                cancelNodeSelectionButton.SetActive(false);
-
+                //robotCameraManager.ChangeNodeAttachment();
+                //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
+                //changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+                //cancelNodeSelectionButton.SetActive(false);
+                //if (robotCameraManager.SelectedNode != null) robotCameraManager.ChangeNodeAttachment();
+                CancelNodeSelection();
+                //cameraNodePanel.SetActive(false);
             }
         }
 
         /// <summary>
-        /// Exit the state of selecting node attachment
+        /// Exit the state of selecting node attatchment and save the selected node
+        /// </summary>
+        public void SaveNodeSelection()
+        {
+            if (robotCameraManager.SelectedNode != null)
+            {
+                robotCameraManager.ChangeNodeAttachment();
+                CancelNodeSelection();
+            }
+        }
+
+        /// <summary>
+        /// Exit the state of selecting node attachment without saving
         /// </summary>
         public void CancelNodeSelection()
         {
@@ -279,7 +296,7 @@ namespace Synthesis.Camera
             robotCameraManager.SelectingNode = false;
             //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
             //changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
-            cancelNodeSelectionButton.SetActive(false);
+            cameraNodePanel.SetActive(false);
         }
 
         /// <summary>
