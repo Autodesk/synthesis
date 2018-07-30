@@ -30,8 +30,8 @@ namespace Synthesis.GUI.Scrollables
 
             listStyle = new GUIStyle("button");
             listStyle.normal.background = new Texture2D(0, 0);
-            listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
-            listStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
+            listStyle.hover.background = Resources.Load("Images/Old Assets/darksquaretexture") as Texture2D;
+            listStyle.active.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.alignment = TextAnchor.MiddleLeft;
             listStyle.normal.textColor = Color.white;
 

@@ -23,7 +23,6 @@ namespace Assets.Scripts.GUI
         GameObject canvas;
 
         DynamicCamera camera;
-        DriverPracticeMode dpm;
         MainState State;
         SensorManagerGUI sensorManagerGUI;
         RobotCameraGUI robotCameraGUI;
@@ -73,8 +72,7 @@ namespace Assets.Scripts.GUI
             inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
             bindedKeyPanel = Auxiliary.FindObject(canvas, "BindedKeyPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
-
-            dpm = StateMachine.SceneGlobal.GetComponent<DriverPracticeMode>();
+            
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();
             multiplayer = StateMachine.SceneGlobal.GetComponent<LocalMultiplayer>();
             simUI = StateMachine.SceneGlobal.GetComponent<SimUI>();
@@ -114,8 +112,8 @@ namespace Assets.Scripts.GUI
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     break;
                 case 3:
-                    Auxiliary.FindObject(GameObject.Find("ResetRobot"), "Dropdown List").SetActive(false);
-                    Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                    Auxiliary.FindObject(canvas, "ResetRobotDropdown").SetActive(false);
+                    Auxiliary.FindObject(canvas, "LoadingPanel").SetActive(true);
                     SceneManager.LoadScene("Scene");
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     break;
@@ -259,8 +257,7 @@ namespace Assets.Scripts.GUI
             inputManagerPanel.SetActive(false);
 
             simUI.CancelOrientation();
-
-            dpm.EndProcesses();
+            
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();

@@ -17,6 +17,7 @@ using Synthesis.Robot;
 using Synthesis.Configuration;
 using Synthesis.FEA;
 using Synthesis.BUExtensions;
+using Synthesis.Field;
 
 namespace Synthesis.DriverPractice
 {
@@ -26,287 +27,157 @@ namespace Synthesis.DriverPractice
     /// </summary>
     public class DriverPracticeRobot : LinkedMonoBehaviour<MainState>
     {
-        public UnityEngine.Vector3[] positionOffset; //position offset vectors for gamepiece while its being held
-        public List<float[]> releaseVelocity; //release velocity vectors for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
-        public float[] primaryVelocity = new float[3];
-        public float[] secondaryVelocity = new float[3];
+        private int controlIndex;
+        public int controlType = 0;
         public GameObject[] moveArrows;
-
-        public List<UnityEngine.Vector3> releaseVelocityVector;
-
-        public List<GameObject> intakeNode; //node that is identified for intaking gamepieces
-        public List<GameObject> releaseNode; //node that is identified for holding/releasing gamepieces
-        private List<Interactor> intakeInteractor;
-
-        public List<int> holdingLimit; //the maximum number of game objects that this robot can hold at any given time.
-
-        public List<List<GameObject>> objectsHeld; //list of gamepieces this robot is currently holding
-        public List<GameObject> primaryHeld;
-        public List<GameObject> secondaryHeld;
-
-        public List<string> gamepieceNames; //list of the identifiers of gamepieces
-        
-
-        public List<bool> displayTrajectories; //projects gamepiece trajectories if true
-        private List<LineRenderer> drawnTrajectory;
-
-        public bool modeEnabled = false;
-
-        private int configuringIndex = 0;
-        private int processingIndex = 0; //we use this to alternate which index is processed first.
-
-        public bool addingGamepiece = false; //true when user is currently selecting a gamepiece to be added.
-        public bool definingIntake = false; // true when user is currently selecting a robot part for the intake mechanism
-        public bool definingRelease = false; //true when user is currently selecting a robot part for the release mechanism
-
-        //for highlight current mechanism features
-        private GameObject highlightedNode;
-        private List<Color> originalColors = new List<Color>();
-        private Color highlightColor = new Color(1, 1, 0, 0.1f);
-        private int highlightTimer = -1;
-
-        //for defining mechanism features
-        private GameObject hoveredNode;
-        private List<Color> hoveredColors = new List<Color>();
-        private Color hoverColor = new Color(1, 1, 0, 0.1f);
-
-        //for gamepiece spawning customizability
-        private List<UnityEngine.Vector3> gamepieceSpawn;
-        private GameObject spawnIndicator;
-        public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
-        private DynamicCamera.CameraState lastCameraState;
-
-        public int controlIndex;
-
-        private UnityEngine.Quaternion startParentRotation;
-        private UnityEngine.Quaternion startChildRotation;
-
-
-        /// <summary>
-        /// If configuration file exists, loads information and auto-configures robot.
-        /// If coniguration file doesn't exist, initializes variables for users to configure.
-        /// 
-        /// Also loads gamepiece list from MainState.cs.
-        /// 
-        /// *NOTE: Because gamepiece identification in the new field format doesn't exist yet, we are using a predetermined gamepiece list. This must be changed as soon as support for gamepieces is added in the field exporter.*
-        /// </summary>
-        public void Initialize(string robotDirectory)
+        public bool drawing = false;
+        private void Start()
         {
-            //Initializes all the configurable values and assigns them a default value.
-            positionOffset = new UnityEngine.Vector3[2];
-            positionOffset[0] = UnityEngine.Vector3.zero;
-            positionOffset[1] = UnityEngine.Vector3.zero;
-
-            releaseVelocity = new List<float[]>();
-            releaseVelocity.Add(primaryVelocity);
-            releaseVelocity.Add(secondaryVelocity);
-
-            releaseVelocityVector = new List<UnityEngine.Vector3>();
-            releaseVelocityVector.Add(UnityEngine.Vector3.zero);
-            releaseVelocityVector.Add(UnityEngine.Vector3.zero);
-
-            intakeNode = new List<GameObject>();
-            intakeNode.Add(transform.GetChild(0).gameObject);
-            intakeNode.Add(transform.GetChild(0).gameObject);
-
-            releaseNode = new List<GameObject>();
-            releaseNode.Add(transform.GetChild(0).gameObject);
-            releaseNode.Add(transform.GetChild(0).gameObject);
-
-            intakeInteractor = new List<Interactor>();
-            intakeInteractor.Add(null);
-            intakeInteractor.Add(null);
-
-            objectsHeld = new List<List<GameObject>>();
-            primaryHeld = new List<GameObject>();
-            secondaryHeld = new List<GameObject>();
-            objectsHeld.Add(primaryHeld);
-            objectsHeld.Add(secondaryHeld);
-
-            gamepieceNames = new List<string>();
-            gamepieceNames.Add("NOT CONFIGURED");
-            gamepieceNames.Add("NOT CONFIGURED");
-            
-
-            holdingLimit = new List<int>();
-            holdingLimit.Add(30);
-            holdingLimit.Add(30);
-
-            SetInteractor(intakeNode[0], 0);
-            SetInteractor(intakeNode[1], 1);
-
-            gamepieceSpawn = new List<UnityEngine.Vector3>();
-            gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
-            gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
-
-
-            //Setting up the trajectory renderers
-            drawnTrajectory = new List<LineRenderer>();
-            GameObject firstLine = GameObject.Find("DrawnTrajectory1");
-            drawnTrajectory.Add(firstLine.GetComponent<LineRenderer>());
-            GameObject secondLine = GameObject.Find("DrawnTrajectory2");
-            drawnTrajectory.Add(secondLine.GetComponent<LineRenderer>());
-
-            displayTrajectories = new List<bool>();
-            displayTrajectories.Add(false);
-            displayTrajectories.Add(false);
-
-            //After initializing all the lists and variables, try to load from the robot directory.
-            Load(robotDirectory);
-
-            moveArrows = new GameObject[2];
-
-            for (int i = 0; i < moveArrows.Length; i++)
-                moveArrows[i] = CreateMoveArrows(i);
-
             controlIndex = GetComponent<SimulatorRobot>().ControlIndex;
-            modeEnabled = true;
+            SetAllInteractors();
         }
-
-        /// <summary>
-        /// Update is called once per frame to process controls, tick the highlight timer, and draw trajectories
-        /// </summary>
-        void Update()
+        private void Update()
         {
-            if (modeEnabled)
+            controlIndex = GetComponent<SimulatorRobot>().ControlIndex;
+            ProcessControls();
+        }
+        private void ProcessControls()
+        {
+            /*for (int i = 0; i < Input.Controls.buttons[controlIndex].pickup.Count; i++)
             {
-                ProcessControls();
-
-                if (UnityEngine.Input.GetMouseButtonDown(0))
+                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
                 {
-                    if (addingGamepiece) SetGamepiece(configuringIndex);
-                    else if (definingIntake || definingRelease) SetMechanism(configuringIndex);
-                }
-
-                if (definingIntake || definingRelease)
-                    SelectingNode();
-
-                if (settingSpawn != 0)
-                    UpdateGamepieceSpawn();
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                if (displayTrajectories[i])
-                {
-                    releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
-                    if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
-                    DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
-                }
-                else
-                {
-                    if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
+                    if (InputControl.GetButton(Controls.buttons[controlIndex].pickup[i])) { Debug.Log(Controls.buttons[controlIndex].pickup[i].primaryInput.ToString());  Intake(i); }
+                    else HoldGamepiece(i);
                 }
             }
-
-            if (highlightTimer > 0) highlightTimer--;
-            else if (highlightTimer == 0) RevertHighlight();
-        }
-
-        #region Gamepiece Manipulation Functions
-        /// <summary>
-        /// If the robot's intake node is touching an gamepiece, make the robot 'intake' it by adding it to the list of held objects and cheats physics by disabling collisions on the gamepiece.
-        /// </summary>
-        void Intake(int index)
-        {
-            if (objectsHeld[index].Count < holdingLimit[index] && intakeInteractor[index].GetDetected(index))
+            for (int i = 0; i < Input.Controls.buttons[controlIndex].release.Count; i++)
             {
-                for (int i = 0; i < objectsHeld[0].Count; i++)
-                    if (objectsHeld[0][i].Equals(intakeInteractor[0].GetObject(index)))
-                        return; //This makes sure the object the robot is touching isn't an object already being held.
-
-                for (int i = 0; i < objectsHeld[1].Count; i++)
-                    if (objectsHeld[1][i].Equals(intakeInteractor[1].GetObject(index)))
-                        return; //This makes sure the object the robot is touching isn't an object already being held.
-
-                GameObject newObject = intakeInteractor[index].GetObject(index);
-                newObject.GetComponent<BRigidBody>().SetPosition(releaseNode[index].transform.position +
-                    releaseNode[index].transform.rotation * positionOffset[index]);
-
-                BFixedConstraintEx fc = newObject.AddComponent<BFixedConstraintEx>();
-                fc.otherRigidBody = releaseNode[index].GetComponent<BRigidBody>();
-                fc.localConstraintPoint = positionOffset[index];
-                fc.localRotationOffset = UnityEngine.Quaternion.Inverse(releaseNode[index].transform.rotation) * newObject.transform.rotation;
-
+                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
+                {
+                    if (InputControl.GetButton(Controls.buttons[controlIndex].release[i])) Release(i);
+                    else HoldGamepiece(i);
+                }
+            }
+            for (int i = 0; i < Input.Controls.buttons[controlIndex].spawnPieces.Count; i++)
+            {
+                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
+                {
+                    if (InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
+                    else HoldGamepiece(i);
+                }
+            }
+            */
+            //if (InputControl.GetButtonDown(Controls.buttons[controlIndex].trajectory)) drawing = drawing ? false : true;
+            //if (UnityEngine.Input.GetKey(KeyCode.Delete))
+            //    if(FieldDataHandler.gamepieces.Count() > 0) for(int i = 0; i < 5; i++) Spawn(FieldDataHandler.gamepieces[0]);
+        }
+        #region DriverPractice Creation Stuff
+        public DriverPractice GetDriverPractice(Gamepiece g)
+        {
+            DriverPractice dp = new DriverPractice(g.name, "node_0.bxda", "node_0.bxda", UnityEngine.Vector3.zero, UnityEngine.Vector3.zero);
+            if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(g.name)).Count() > 0) dp = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(g.name)).ToArray()[0];
+            else
+            {
+                DPMDataHandler.dpmodes.Add(dp);
+                DPMDataHandler.WriteRobot();
+                SetAllInteractors();
+            }
+            return dp;
+        }
+        #endregion
+        #region Intake Stuff
+        private List<Interactor> intakeInteractor = new List<Interactor>();
+        private List<List<GameObject>> objectsHeld = new List<List<GameObject>>();
+        private void Intake(int id)
+        {
+            while (objectsHeld.Count <= id) objectsHeld.Add(new List<GameObject>());
+            if (objectsHeld[id].Count() < FieldDataHandler.gamepieces[id].holdingLimit && intakeInteractor[id].GetDetected(id))
+            {
+                #region disables intake functionality for already held gamepieces
+                for (int i = 0; i < objectsHeld[id].Count; i++)
+                    if (objectsHeld[id][i].Equals(intakeInteractor[id].GetObject(id)))
+                        return;
+                #endregion
+                GameObject collisionObject = intakeInteractor[id].GetObject(id);
+                #region move gamepiece to release node location
+                GameObject releaseNode = Auxiliary.FindObject(gameObject, DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[id].name)).ToArray()[0].releaseNode);
+                UnityEngine.Vector3 releasePosition = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[id].name)).ToArray()[0].releasePosition;
+                collisionObject.GetComponent<BRigidBody>().SetPosition(releaseNode.transform.position + releaseNode.transform.rotation * releasePosition);
+                #endregion
+                #region changes colliders for gamepiece
+                BFixedConstraintEx fc = collisionObject.AddComponent<BFixedConstraintEx>();
+                fc.otherRigidBody = releaseNode.GetComponent<BRigidBody>();  
+                fc.localConstraintPoint = releasePosition;
+                fc.localRotationOffset = UnityEngine.Quaternion.Inverse(releaseNode.transform.rotation) * collisionObject.transform.rotation;
                 foreach (List<GameObject> l in objectsHeld)
                     foreach (GameObject g in l)
-                        newObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(g.GetComponent<BRigidBody>().GetCollisionObject(), true);
-
+                        collisionObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(g.GetComponent<BRigidBody>().GetCollisionObject(), true);
                 foreach (BRigidBody rb in GetComponentsInChildren<BRigidBody>())
-                    newObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
+                    collisionObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
+                objectsHeld[id].Add(collisionObject);
+                #endregion
 
-                objectsHeld[index].Add(newObject);
-                intakeInteractor[index].heldGamepieces.Add(newObject);
             }
         }
-
-        /// <summary>
-        /// Binds every gamepiece the robot is holding to the proper node and its position.
-        /// </summary>
-        private void HoldGamepiece(int index)
+        #endregion
+        #region keep gamepiece with robot
+        private void HoldGamepiece(int id)
         {
-            if (objectsHeld[index].Count == 0)
+            while (objectsHeld.Count <= id) objectsHeld.Add(new List<GameObject>());
+            if (objectsHeld[id].Count == 0)
                 return;
-
-            foreach (GameObject g in objectsHeld[index])
+            foreach (GameObject g in objectsHeld[id])
             {
                 BRigidBody orb = g.GetComponent<BRigidBody>();
-
                 if (UnityEngine.Input.GetKey(KeyCode.Backslash))
                     ((RigidBody)orb.GetCollisionObject()).ClearForces();
-
-                if (orb.GetComponent<BFixedConstraintEx>().localConstraintPoint != positionOffset[index])
+                UnityEngine.Vector3 releasePosition = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[id].name)).ToArray()[0].releasePosition;
+                if (orb.GetComponent<BFixedConstraintEx>().localConstraintPoint != releasePosition)
                 {
                     orb.GetCollisionObject().Activate();
-                    orb.GetComponent<BFixedConstraintEx>().localConstraintPoint = positionOffset[index];
+                    orb.GetComponent<BFixedConstraintEx>().localConstraintPoint = releasePosition;
                 }
             }
         }
 
-        /// <summary>
-        /// Releases the gamepiece from the robot at a set velocity
-        /// </summary>
-        private void ReleaseGamepiece(int index)
+        public void SetAllInteractors()
         {
-            if (objectsHeld[index].Count > 0)
+            for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
             {
-                GameObject currentObject = objectsHeld[index][0];
-                objectsHeld[index].RemoveAt(0);
+                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
+                    SetInteractor(DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray()[0].intakeNode, i);
+            }
+        }
+        private void SetInteractor(string n, int index)
+        {
+            GameObject node = Auxiliary.FindObject(gameObject, n);
+            if (node.GetComponent<Interactor>() == null) intakeInteractor.Insert(index, node.AddComponent<Interactor>());
+            else intakeInteractor.Insert(index, node.GetComponent<Interactor>());
 
-                StartCoroutine(UnIgnoreCollision(currentObject));
-                intakeInteractor[index].heldGamepieces.Remove(currentObject);
-
-                BRigidBody intakeRigidBody = intakeInteractor[index].GetComponent<BRigidBody>();
-
+            intakeInteractor[index].AddGamepiece(FieldDataHandler.gamepieces[index].name, index);
+        }
+        #endregion
+        #region Release Functionality
+        private void Release(int id)
+        {
+            if (objectsHeld[id].Count > 0)
+            {
+                GameObject heldObject = objectsHeld[id][0];
+                objectsHeld[id].RemoveAt(0);
+                StartCoroutine(UnIgnoreCollision(heldObject));
+                BRigidBody intakeRigidBody = intakeInteractor[id].GetComponent<BRigidBody>();
                 if (intakeRigidBody != null && !intakeRigidBody.GetCollisionObject().IsActive)
                     intakeRigidBody.GetCollisionObject().Activate();
-
-                BRigidBody orb = currentObject.GetComponent<BRigidBody>();
-
+                BRigidBody orb = heldObject.GetComponent<BRigidBody>();
                 Destroy(orb.GetComponent<BFixedConstraintEx>());
-
-                orb.velocity += releaseNode[index].transform.rotation * releaseVelocityVector[index];
+                GameObject releaseNode = Auxiliary.FindObject(gameObject, DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[id].name)).ToArray()[0].releaseNode);
+                UnityEngine.Vector3 releaseVelocity = VelocityToVector3(DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[id].name)).ToArray()[0].releaseVelocity);
+                orb.velocity += releaseNode.transform.rotation * releaseVelocity;
                 orb.angularFactor = UnityEngine.Vector3.one;
             }
         }
-
-        /// <summary>
-        /// Destroys all gamepieces held by this <see cref="DriverPracticeRobot"/>.
-        /// </summary>
-        public void DestroyAllGamepieces()
-        {
-            foreach (List<GameObject> gameObjects in objectsHeld)
-            {
-                foreach (GameObject g in gameObjects)
-                    Destroy(g);
-
-                gameObjects.Clear();
-            }
-        }
-
-        /// <summary>
-        /// Waits .5 seconds before renabling collisions between the release gamepiece and the robot.
-        /// </summary>
+        #region renable collision on held gameobjects after .5 seconds
         IEnumerator UnIgnoreCollision(GameObject obj)
         {
             List<GameObject>[] cachedObjectsHeld = new List<GameObject>[objectsHeld.Count];
@@ -323,621 +194,34 @@ namespace Synthesis.DriverPractice
             foreach (BRigidBody rb in GetComponentsInChildren<BRigidBody>())
                 obj.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), false);
         }
-
-        /// <summary>
-        /// Converts a velocity from a scalar speed and two angles into a Unity Vector3 format
-        /// </summary>
-        private UnityEngine.Vector3 VelocityToVector3(float speed, float horAngle, float verAngle)
+        #endregion
+        #region converts vector data with 2 scalars and angle to velocity vector
+        private UnityEngine.Vector3 VelocityToVector3(UnityEngine.Vector3 release)
         {
             UnityEngine.Quaternion horVector;
             UnityEngine.Quaternion verVector;
             UnityEngine.Vector3 finalVector = UnityEngine.Vector3.zero;
 
-            horVector = UnityEngine.Quaternion.AngleAxis(horAngle, UnityEngine.Vector3.up);
-            verVector = UnityEngine.Quaternion.AngleAxis(verAngle, UnityEngine.Vector3.right);
+            horVector = UnityEngine.Quaternion.AngleAxis(release.z, UnityEngine.Vector3.up);
+            verVector = UnityEngine.Quaternion.AngleAxis(release.y, UnityEngine.Vector3.right);
 
-            UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(verAngle, horAngle, 0);
+            UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(release.y, release.z, 0);
 
-            finalVector = (UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.forward, UnityEngine.Vector3.up) * horVector * verVector) * UnityEngine.Vector3.forward * speed;
+            finalVector = (UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.forward, UnityEngine.Vector3.up) * horVector * verVector) * UnityEngine.Vector3.forward * release.x;
 
             return (finalVector);
         }
-
-        /// <summary>
-        /// Illustrates the trajectory a released gamepiece would follow.
-        /// Does this by creating rendering lines bounded to several vertices positioned based on multiplying velocity, gravity, and time.
-        /// </summary>
-        /// <param name="position">starting position of the gamepiece</param>
-        /// <param name="velocity">starting velocity of the gamepiece</param>
-        void DrawTrajectory(UnityEngine.Vector3 position, UnityEngine.Vector3 velocity, LineRenderer line)
+        #endregion
+        #endregion
+        #region Gamepiece Spawn
+        private void Spawn(Gamepiece g)
         {
-            int verts = 100; //This determines how far along time the illustration goes.
-            line.positionCount = verts;
-
-            UnityEngine.Vector3 pos = position;
-            UnityEngine.Vector3 vel = velocity;
-            UnityEngine.Vector3 grav = GameObject.Find("BulletPhysicsWorld").GetComponent<BPhysicsWorld>().gravity;
-            for (int i = 0; i < verts; i++)
-            {
-                line.SetPosition(i, pos);
-                vel = vel + grav * Time.fixedDeltaTime;
-                pos = pos + vel * Time.fixedDeltaTime;
-            }
+            GameObject gamepieceClone = Instantiate(GameObject.Find(g.name).GetComponentInParent<BRigidBody>().gameObject, g.spawnpoint, UnityEngine.Quaternion.identity);
+            gamepieceClone.name = g.name + "(Clone)";
+            gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
+            gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
         }
         #endregion
-
-        #region Configuring Gamepiece
-
-        /// <summary>
-        /// Allows the user to select a dynamic object with their mouse and add it to the list of gamepieces.
-        /// </summary>
-        public void SetGamepiece(int index)
-        {
-            //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
-            BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
-            BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
-
-            //Creates a callback result that will be updated if we do a ray test with it
-            ClosestRayResultCallback rayResult = new ClosestRayResultCallback(ref start, ref end);
-
-            //Retrieves the bullet physics world and does a ray test with the given coordinates and updates the callback object
-            BPhysicsWorld world = BPhysicsWorld.Get();
-            world.world.RayTest(start, end, rayResult);
-
-            //If there is a collision object and it is dynamic and not a robot part, change the gamepiece to that
-            if (rayResult.CollisionObject != null)
-            {
-                GameObject collisionObject = (rayResult.CollisionObject.UserObject as BRigidBody).gameObject;
-                if (rayResult.CollisionObject.CollisionFlags == BulletSharp.CollisionFlags.StaticObject)
-                {
-                    UserMessageManager.Dispatch("The gamepiece must be a dynamic object!", 3);
-                }
-                else if (collisionObject == null)
-                {
-                    Debug.Log("DPM: Game object not found");
-
-                }
-                else if (collisionObject.transform.parent != null && collisionObject.transform.parent.name == "Robot")
-                {
-                    UserMessageManager.Dispatch("You cannot select a robot part as a gamepiece!", 3);
-                }
-                else
-                {
-                    string name = collisionObject.name.Replace("(Clone)", ""); //gets rid of the clone tag given to spawned gamepieces 
-                    gamepieceNames[index] = name;
-                    intakeInteractor[index].SetKeyword(gamepieceNames[index], index);
-                    GameObject gamepiece = collisionObject;
-
-                    UserMessageManager.Dispatch(name + " has been selected as the gamepiece", 2);
-                    addingGamepiece = false;
-                }
-            }
-            else
-            {
-
-            }
-        }
-
-        public void DefineGamepiece(int index)
-        {
-            if (modeEnabled)
-            {
-                if (definingIntake || definingRelease) UserMessageManager.Dispatch("You must select a robot part first!", 5);
-                else if (settingSpawn != 0) UserMessageManager.Dispatch("You must set the gamepiece spawnpoint first! Press enter to save your the current position", 5);
-                else
-                {
-                    UserMessageManager.Dispatch("Click on a dynamic object to add it as a gamepiece", 5);
-                    configuringIndex = index;
-                    addingGamepiece = true;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Spawns a new gamepiece at its defined spawn location, or at the field's origin if one hasn't been defined.
-        /// </summary>
-        /// <param name="index">0 if primary gamepiece, 1 if secondary gamepiece</param>
-        public void SpawnGamepiece(int index)
-        {
-            if (gamepieceNames[index] != null)
-            {
-                try //In case the game piece somehow doens't exist in the scene
-                {
-                    GameObject gameobject = Instantiate(GameObject.Find(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
-                    gameobject.name = gamepieceNames[index] + "(Clone)";
-                    gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
-                    gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
-                    MainState.spawnedGamepieces[index].Add(gameobject);
-                }
-                catch
-                {
-                    UserMessageManager.Dispatch("Gamepiece not found!", 5);
-                }
-            }
-            else UserMessageManager.Dispatch("You must define the gamepiece first!", 5);
-        }
-
-        /// <summary>
-        /// Clears all the gamepieces sharing the same name as the ones that have been configured from the field.
-        /// </summary>
-        public void ClearGamepieces()
-        {
-            for (int i = 0; i < MainState.spawnedGamepieces.Count; i++)
-            {
-                foreach (GameObject g in MainState.spawnedGamepieces[i])
-                {
-                    Destroy(g);
-                }
-                MainState.spawnedGamepieces[i].Clear();
-            }
-        }
-
-        public void StartGamepieceSpawn(int index)
-        {
-            if (definingRelease || definingIntake || addingGamepiece) Debug.Log("User Error"); //Message Manager already dispatches error message to user
-            else if (settingSpawn == 0)
-            {
-                if (GameObject.Find(gamepieceNames[index]) != null)
-                {
-                    if (spawnIndicator != null) Destroy(spawnIndicator);
-                    if (spawnIndicator == null)
-                    {
-                        spawnIndicator = Instantiate(Auxiliary.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
-                        spawnIndicator.name = "SpawnIndicator";
-                        Destroy(spawnIndicator.GetComponent<BRigidBody>());
-                        Destroy(spawnIndicator.GetComponent<BCollisionShape>());
-                        Destroy(spawnIndicator.GetComponent<Tracker>());
-                        if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
-                        Renderer render = spawnIndicator.GetComponentInChildren<Renderer>();
-                        render.material.shader = Shader.Find("Transparent/Diffuse");
-                        Color newColor = render.material.color;
-                        newColor.a = 0.6f;
-                        render.material.color = newColor;
-                    }
-                    spawnIndicator.transform.position = gamepieceSpawn[index];
-                    settingSpawn = index + 1;
-
-                    GameObject moveArrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
-                    moveArrows.name = "IndicatorMoveArrows";
-                    moveArrows.transform.parent = spawnIndicator.transform;
-                    moveArrows.transform.localPosition = UnityEngine.Vector3.zero;
-
-                    moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
-                        spawnIndicator.transform.Translate(translation, Space.World);
-
-                    StateMachine.SceneGlobal.Link<MainState>(moveArrows);
-
-                    DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-                    lastCameraState = dynamicCamera.cameraState;
-
-                    dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, spawnIndicator));
-
-                    //MainState.ControlsDisabled = true;
-                }
-                else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
-            }
-            else FinishGamepieceSpawn(); //if already setting spawn, end editing process
-        }
-
-        private void UpdateGamepieceSpawn()
-        {
-            int index = settingSpawn - 1;
-            if (spawnIndicator != null)
-            {
-                if (UnityEngine.Input.GetKey(KeyCode.A)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.D)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.W)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.S)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
-                {
-                    UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
-                    gamepieceSpawn[index] = spawnIndicator.transform.position;
-                    FinishGamepieceSpawn();
-                }
-            }
-        }
-
-        public void ResettingGamepieceSpawn()
-        {
-            if (spawnIndicator != null)
-            {
-                spawnIndicator.transform.position = new UnityEngine.Vector3(0, 3, 0);
-            }
-        }
-
-        public void FinishGamepieceSpawn()
-        {
-            settingSpawn = 0;
-            if (spawnIndicator != null) Destroy(spawnIndicator);
-            if (lastCameraState != null)
-            {
-                DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-                dynamicCamera.SwitchCameraState(lastCameraState);
-                lastCameraState = null;
-            }
-            //MainState.ControlsDisabled = false;
-        }
-
-        #endregion
-
-        #region Configuring Mechanisms
-
-        /// <summary>
-        /// Allows the user to select a robot node with their mouse and change the intake/release node
-        /// </summary>
-        /// <param name="index">configuring index</param>
-        public void SetMechanism(int index)
-        {
-            //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
-            BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
-            BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
-
-            //Creates a callback result that will be updated if we do a ray test with it
-            ClosestRayResultCallback rayResult = new ClosestRayResultCallback(ref start, ref end);
-
-            //Retrieves the bullet physics world and does a ray test with the given coordinates and updates the callback object
-            BPhysicsWorld world = BPhysicsWorld.Get();
-            world.world.RayTest(start, end, rayResult);
-
-            //If there is a collision object and it is dynamic and not a robot part, change the gamepiece to that
-            if (rayResult.CollisionObject != null)
-            {
-                GameObject collisionObject = (rayResult.CollisionObject.UserObject as BRigidBody).gameObject;
-                if (rayResult.CollisionObject.CollisionFlags == BulletSharp.CollisionFlags.StaticObject)
-                {
-                    UserMessageManager.Dispatch("Please click on a robot part", 3);
-                }
-                else if (collisionObject == null)
-                {
-                    Debug.Log("DPM: Game object not found");
-
-                }
-                else if (collisionObject.transform.parent == transform)
-                {
-                    if (definingIntake)
-                    {
-                        intakeNode[index] = collisionObject;
-                        SetInteractor(intakeNode[index], index);
-
-                        UserMessageManager.Dispatch(collisionObject.name + " has been selected as intake node", 5);
-
-                        definingIntake = false;
-                    }
-                    else
-                    {
-                        releaseNode[index] = collisionObject;
-                        SetInteractor(releaseNode[index], index);
-                        moveArrows[index].transform.parent = releaseNode[index].transform;
-
-                        UserMessageManager.Dispatch(collisionObject.name + " has been selected as release node", 5);
-
-                        definingRelease = false;
-                    }
-
-                    RevertNodeColors(hoveredNode, hoveredColors);
-                    moveArrows[index].SetActive(true);
-                    RefreshMoveArrows();
-                }
-                else
-                {
-                    UserMessageManager.Dispatch("A gamepiece is NOT a robot part!", 3);
-                }
-            }
-            else
-            {
-
-            }
-        }
-
-        private void SelectingNode()
-        {
-            //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
-            BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
-            BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
-
-            //Creates a callback result that will be updated if we do a ray test with it
-            ClosestRayResultCallback rayResult = new ClosestRayResultCallback(ref start, ref end);
-
-            //Retrieves the bullet physics world and does a ray test with the given coordinates and updates the callback object
-            BPhysicsWorld world = BPhysicsWorld.Get();
-            world.world.RayTest(start, end, rayResult);
-
-            //If there is a collision object and it is dynamic and not a robot part, change the gamepiece to that
-            if (rayResult.CollisionObject != null)
-            {
-                GameObject collisionObject = (rayResult.CollisionObject.UserObject as BRigidBody).gameObject;
-                if (rayResult.CollisionObject.CollisionFlags == BulletSharp.CollisionFlags.StaticObject)
-                {
-                    RevertNodeColors(hoveredNode, hoveredColors);
-                }
-                else if (collisionObject == null)
-                {
-                    Debug.Log("DPM: Game object not found");
-                    RevertNodeColors(hoveredNode, hoveredColors);
-                }
-                else if (collisionObject.transform.parent == transform)
-                {
-                    if (hoveredNode != collisionObject)
-                    {
-                        RevertNodeColors(hoveredNode, hoveredColors);
-                    }
-
-                    hoveredNode = collisionObject;
-
-                    ChangeNodeColors(hoveredNode, hoverColor, hoveredColors);
-
-                }
-                else RevertNodeColors(hoveredNode, hoveredColors);
-            }
-        }
-
-        public void DefineIntake(int index)
-        {
-            if (modeEnabled)
-            {
-                if (addingGamepiece) UserMessageManager.Dispatch("You must select a gamepiece first!", 5);
-                else if (definingRelease) UserMessageManager.Dispatch("You must define the release mechanism first!", 5);
-                else
-                {
-                    UserMessageManager.Dispatch("Click on a robot part to define it as the intake mechanism", 5);
-                    configuringIndex = index;
-                    definingIntake = true;
-                }
-            }
-        }
-
-        public void DefineRelease(int index)
-        {
-            if (modeEnabled)
-            {
-                if (addingGamepiece) UserMessageManager.Dispatch("You must select a gamepiece first!", 5);
-                else if (definingIntake) UserMessageManager.Dispatch("You must define the intake mechanism first!", 5);
-                else
-                {
-                    UserMessageManager.Dispatch("Click on a robot part to define it as the release mechanism", 5);
-                    configuringIndex = index;
-                    definingRelease = true;
-                }
-            }
-        }
-
-        private void SetInteractor(GameObject node, int index)
-        {
-            if (node.GetComponent<Interactor>() == null) intakeInteractor[index] = node.AddComponent<Interactor>();
-            else intakeInteractor[index] = node.GetComponent<Interactor>();
-
-            intakeInteractor[index].SetKeyword(gamepieceNames[index], index);
-
-            //RefreshMoveArrows();
-        }
-
-        public void HighlightNode(GameObject node)
-        {
-            RevertHighlight();
-            highlightedNode = node;
-            ChangeNodeColors(highlightedNode, highlightColor, originalColors);
-            highlightTimer = 80;
-
-
-        }
-        public void RevertHighlight()
-        {
-            RevertNodeColors(highlightedNode, originalColors);
-            highlightedNode = null;
-            highlightTimer = -1;
-        }
-
-        #endregion
-
-        #region Configuring Vector Values
-
-
-        public void ChangeOffsetX(float amount, int index)
-        {
-            positionOffset[index].x += amount;
-            RefreshMoveArrows();
-        }
-        public void ChangeOffsetY(float amount, int index)
-        {
-            positionOffset[index].y += amount;
-            RefreshMoveArrows();
-        }
-        public void ChangeOffsetZ(float amount, int index)
-        {
-            positionOffset[index].z += amount;
-            RefreshMoveArrows();
-        }
-        public void ChangeReleaseSpeed(float amount, int index)
-        {
-            releaseVelocity[index][0] += amount;
-        }
-        public void ChangeReleaseHorizontalAngle(float amount, int index)
-        {
-            releaseVelocity[index][1] += amount;
-        }
-        public void ChangeReleaseVerticalAngle(float amount, int index)
-        {
-            releaseVelocity[index][2] += amount;
-        }
-        #endregion
-
-        #region Highlighting Functions
-        private void ChangeNodeColors(GameObject node, Color color, List<Color> storedColors)
-        {
-            foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
-            {
-                foreach (Material m in renderers.materials)
-                {
-                    storedColors.Add(m.color);
-                    m.color = color;
-                }
-            }
-        }
-
-        private void RevertNodeColors(GameObject node, List<Color> storedColors)
-        {
-            if (node != null && storedColors.Count != 0)
-            {
-                int counter = 0;
-                foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
-                {
-                    foreach (Material m in renderers.materials)
-                    {
-                        m.color = storedColors[counter];
-                        counter++;
-                    }
-                }
-                storedColors.Clear();
-            }
-        }
-        #endregion
-
-        /// <summary>
-        /// Saves all the configured values into a text file for future access
-        /// </summary>
-        public void Save()
-        {
-            string filePath = PlayerPrefs.GetString("simSelectedRobot");
-            if (File.Exists(filePath + "\\dpmConfig.txt"))
-            {
-                File.Delete(filePath + "\\dpmConfig.txt");
-            }
-            Debug.Log("Saving to " + filePath + "\\dpmConfig.txt");
-            using (StreamWriter writer = new StreamWriter(filePath + "\\dpmConfig.txt", false))
-            {
-                StringBuilder sb;
-                for (int i = 0; i < gamepieceNames.Count; i++)
-                {
-                    writer.WriteLine("##Gamepiece" + i);
-                    writer.WriteLine("#Name");
-                    writer.WriteLine(gamepieceNames[i]);
-
-                    writer.WriteLine("#Spawnpoint");
-                    sb = new StringBuilder();
-                    writer.WriteLine(sb.Append(gamepieceSpawn[i].x).Append("|").Append(gamepieceSpawn[i].y).Append("|").Append(gamepieceSpawn[i].z));
-
-                    writer.WriteLine("#Intake Node");
-                    writer.WriteLine(intakeNode[i].name);
-
-                    writer.WriteLine("#Release Node");
-                    writer.WriteLine(releaseNode[i].name);
-
-                    writer.WriteLine("#Release Position");
-                    sb = new StringBuilder();
-                    writer.WriteLine(sb.Append(positionOffset[i].x).Append("|").Append(positionOffset[i].y).Append("|").Append(positionOffset[i].z));
-
-                    writer.WriteLine("#Release Velocity");
-                    sb = new StringBuilder();
-                    writer.WriteLine(sb.Append(releaseVelocity[i][0]).Append("|").Append(releaseVelocity[i][1]).Append("|").Append(releaseVelocity[i][2]));
-                }
-                writer.Close();
-            }
-            Debug.Log("Save successful!");
-        }
-
-        /// <summary>
-        /// Tries to load a text file from a set directory. If the file exists, sets the robot's configuration to match the file contents.
-        /// </summary>
-        /// <param name="robotDirectory"></param>
-        public void Load(string robotDirectory)
-        {
-            string filePath = robotDirectory + "\\dpmConfig.txt";
-            if (File.Exists(filePath))
-            {
-                StreamReader reader = new StreamReader(filePath);
-                string line = "";
-                int counter = 0;
-                int index = 0;
-
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (line.Equals("#Name")) counter++;
-                    else if (counter == 1)
-                    {
-                        if (line.Equals("#Spawnpoint")) counter++;
-                        else
-                        {
-                            gamepieceNames[index] = line;
-                        }
-                    }
-                    else if (counter == 2)
-                    {
-                        if (line.Equals("#Intake Node")) counter++;
-                        else gamepieceSpawn[index] = DeserializeVector3Array(line);
-                    }
-                    else if (counter == 3)
-                    {
-                        if (line.Equals("#Release Node")) counter++;
-                        else intakeNode[index] = Auxiliary.FindObject(gameObject, line);
-                    }
-                    else if (counter == 4)
-                    {
-                        if (line.Equals("#Release Position")) counter++;
-                        else releaseNode[index] = Auxiliary.FindObject(gameObject, line);
-                    }
-                    else if (counter == 5)
-                    {
-                        if (line.Equals("#Release Velocity")) counter++;
-                        else positionOffset[index] = DeserializeVector3Array(line);
-                    }
-                    else if (counter == 6)
-                    {
-                        if (line.Contains("#Gamepiece"))
-                        {
-                            counter = 0;
-                            index++;
-                        }
-                        else releaseVelocity[index] = DeserializeArray(line);
-                    }
-                }
-                reader.Close();
-
-                for (int i = 0; i < 2; i++)
-                {
-                    SetInteractor(intakeNode[i], i);
-                    releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// Converts a line reading "float1|float2|float3" into Vector3 with the 3 float values as it's x,y,z componets respectively.
-        /// </summary>
-        /// <param name="aData">the line to deserialize</param>
-        /// <returns>the result vector 3</returns>
-        public static UnityEngine.Vector3 DeserializeVector3Array(string aData)
-        {
-            UnityEngine.Vector3 result = new UnityEngine.Vector3(0, 0, 0);
-            string[] values = aData.Split('|');
-            //Debug.Log(values[0]);
-            if (values.Length != 3)
-                throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
-            result = new UnityEngine.Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
-            return result;
-        }
-
-        /// <summary>
-        /// Converts a line reading "float1|float2|float3" into a float array with those 3 values.
-        /// </summary>
-        /// <param name="aData">the line to deserialize</param>
-        /// <returns>the result float array</returns>
-        public static float[] DeserializeArray(string aData)
-        {
-            float[] result = new float[3];
-            string[] values = aData.Split('|');
-            if (values.Length != 3)
-                throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = float.Parse(values[i]);
-            }
-            return result;
-        }
-
         /// <summary>
         /// Refreshes the position of the move arrows with the position offsets.
         /// </summary>
@@ -945,8 +229,8 @@ namespace Synthesis.DriverPractice
         {
             for (int i = 0; i < moveArrows.Length; i++)
             {
-                moveArrows[i].transform.parent = releaseNode[i].transform;
-                moveArrows[i].transform.localPosition = positionOffset[i];
+                moveArrows[i].transform.parent = Auxiliary.FindObject(gameObject, DPMDataHandler.dpmodes[i].releaseNode).transform;
+                moveArrows[i].transform.localPosition = DPMDataHandler.dpmodes[i].releasePosition;
             }
         }
         
@@ -959,13 +243,13 @@ namespace Synthesis.DriverPractice
         {
             GameObject arrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
             arrows.name = "ReleasePositionMoveArrows";
-            arrows.transform.parent = releaseNode[index].transform;
-            arrows.transform.localPosition = positionOffset[index];
+            arrows.transform.parent = Auxiliary.FindObject(gameObject, DPMDataHandler.dpmodes[index].releaseNode).transform;
+            arrows.transform.localPosition = DPMDataHandler.dpmodes[index].releasePosition;
 
             arrows.GetComponent<MoveArrows>().Translate = (translation) =>
             {
                 arrows.transform.position += translation;
-                positionOffset[index] = arrows.transform.localPosition;
+                DPMDataHandler.dpmodes[index].releasePosition = arrows.transform.localPosition;
             };
             
             arrows.GetComponent<MoveArrows>().OnClick = () => GetComponent<SimulatorRobot>().LockRobot();
@@ -975,79 +259,20 @@ namespace Synthesis.DriverPractice
 
             return arrows;
         }
-
-        /// <summary>
-        /// Receives the user input and processes various functions based on input
-        /// The processingIndex variable is alternated between to ensure that the primary and secondary controls do not have precedent over the other.
-        /// </summary>
-        private void ProcessControls()
+        public void DestroyAllHeld(bool clone = false, string name = "")
         {
-            if (processingIndex == 0)
+            foreach(List<GameObject> gList in objectsHeld)
             {
-                if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupPrimary)))
+                for(int i = 0; i < gList.Count; i++)
                 {
-
-                    Intake(0);
+                    if (!clone || gList[i].name.Equals(name + "(Clone)"))
+                    {
+                        Destroy(gList[i]);
+                        gList.RemoveAt(i);
+                    }
                 }
-                if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupSecondary)))
-                {
-                    Intake(1);
-                }
-                if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].releasePrimary)))
-                {
-                    ReleaseGamepiece(0);
-                }
-                else
-                {
-                    HoldGamepiece(0);
-                }
-                if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].releaseSecondary)))
-                {
-                    ReleaseGamepiece(1);
-                }
-                else
-                {
-                    HoldGamepiece(1);
-                }
-                processingIndex = 1;
             }
-            else
-            {
-                if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupSecondary)))
-                {
-
-                    Intake(1);
-                }
-                if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupPrimary)))
-                {
-                    Intake(0);
-                }
-                if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].releaseSecondary)))
-                {
-                    ReleaseGamepiece(1);
-                }
-                else
-                {
-                    HoldGamepiece(1);
-                }
-                if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].releasePrimary)))
-                {
-                    ReleaseGamepiece(0);
-                }
-                else
-                {
-                    HoldGamepiece(0);
-                }
-                processingIndex = 0;
-            }
-
-            if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPrimary))) SpawnGamepiece(0);
-            if ((Input.InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnSecondary))) SpawnGamepiece(1);
         }
 
-        private void OnDestroy()
-        {
-            modeEnabled = false;
-        }
     }
 }

@@ -17,19 +17,16 @@ namespace Synthesis.DriverPractice
     /// </summary>
     public class Interactor : MonoBehaviour, ICollisionCallback
     {
-        private GameObject[] collisionObject = new GameObject[2];
-        private bool[] collisionDetected = new bool[2];
-        public string[] collisionKeyword = new string[2];
-
-        public List<GameObject> heldGamepieces = new List<GameObject>();
-
+        
         private List<PersistentManifold> lastManifolds;
+        public List<string> gamepiece = new List<string>();
+        private List<bool> collisionDetector = new List<bool>();
+        private List<GameObject> collisionObject = new List<GameObject>();
 
         private void Awake()
         {
             if (GetComponent<BMultiCallbacks>() != null)
                 GetComponent<BMultiCallbacks>().AddCallback(this);
-
             lastManifolds = new List<PersistentManifold>();
         }
 
@@ -41,36 +38,17 @@ namespace Synthesis.DriverPractice
         /// <param name="manifoldList">List of collision manifolds--this isn't used</param>
         public void BOnCollisionEnter(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
         {
-            string gamepiece;
-            for (int i = 0; i < collisionKeyword.Length; i++)
+            for (int i = 0; i < gamepiece.Count; i++)
             {
-                if (collisionKeyword[i] != null)
+                if (other.UserObject.ToString().Contains(gamepiece[i]))
                 {
-                    gamepiece = collisionKeyword[i];
-                    if (other.UserObject.ToString().Contains(gamepiece))
-                    {
-                        bool skip = false;
-                        //Debug.Log(other.UserObject.ToString());
-                        GameObject tempGamepiece = ((BRigidBody)other.UserObject).gameObject;
-                        foreach (GameObject gp in heldGamepieces)
-                        {
-                            if (gp == tempGamepiece) skip = true;
-                        }
-                        if (!skip)
-                        {
-                            //Debug.Log("does this happen");
-                            collisionObject[i] = tempGamepiece;
-                            collisionDetected[i] = true;
-                            //Debug.Log(collisionObject[i].ToString() + i.ToString());
-                        }
-                    }
+                    collisionDetector[i] = true;
+                    collisionObject.Insert(i, ((BRigidBody)other.UserObject).gameObject);
                 }
             }
         }
 
-        public void BOnCollisionStay(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
-        {
-        }
+
 
         /// <summary>
         /// Method is called whenever interactor stops colliding with another object.
@@ -79,36 +57,36 @@ namespace Synthesis.DriverPractice
         /// <param name="other">The object the interactor stopped colliding with</param>
         public void BOnCollisionExit(CollisionObject other)
         {
-            string gamepiece;
-            for (int i = 0; i < collisionKeyword.Length; i++)
+            for (int i = 0; i < gamepiece.Count; i++)
             {
-                if (collisionKeyword[i] != null)
+                if (other.UserObject.ToString().Contains(gamepiece[i]))
                 {
-                    gamepiece = collisionKeyword[i];
-                    if (other.UserObject.ToString().Contains(gamepiece))
-                    {
-                        collisionDetected[i] = false;
-                    }
+                    collisionDetector[i] = false;
                 }
             }
         }
-
-        public GameObject GetObject(int index)
+        public void AddGamepiece(string gamepiece, int id)
         {
-            collisionDetected[index] = false;
-            return collisionObject[index];
+            while (this.gamepiece.Count < id) this.gamepiece.Add("");
+            this.gamepiece.Insert(id, gamepiece);
+            while (collisionDetector.Count < id) collisionDetector.Add(false);
+            collisionDetector.Insert(id, false);
+            while (collisionObject.Count < id) collisionObject.Add(new GameObject());
+        }
+        public bool GetDetected(int id)
+        {
+            return collisionDetector[id];
         }
 
-        public bool GetDetected(int index)
+        public GameObject GetObject(int id)
         {
-            return collisionDetected[index];
+            return collisionObject[id];
         }
 
-        public void SetKeyword(string keyword, int index)
+        #region ICollisionCallback placeholders
+        public void BOnCollisionStay(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
         {
-            collisionKeyword[index] = keyword;
         }
-
         public void OnVisitPersistentManifold(PersistentManifold pm)
         {
             lastManifolds.Add(pm);
@@ -121,5 +99,8 @@ namespace Synthesis.DriverPractice
 
             lastManifolds.Clear();
         }
+        #endregion
+
+
     }
 }

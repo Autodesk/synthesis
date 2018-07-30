@@ -18,6 +18,7 @@ using Synthesis.States;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Assets.Scripts.GUI;
+using Synthesis.Field;
 
 namespace Synthesis.GUI
 {
@@ -31,18 +32,18 @@ namespace Synthesis.GUI
 
         new DynamicCamera camera;
         Toolkit toolkit;
-        DriverPracticeMode dpm;
         LocalMultiplayer multiplayer;
         SensorManagerGUI sensorManagerGUI;
         SensorManager sensorManager;
         RobotCameraManager robotCameraManager;
         RobotCameraGUI robotCameraGUI;
+        GoalManager gm;
 
         GameObject canvas;
 
         GameObject freeroamCameraWindow;
         GameObject spawnpointPanel;
-
+        
         GameObject changeRobotPanel;
         GameObject robotListPanel;
         GameObject changeFieldPanel;
@@ -81,12 +82,11 @@ namespace Synthesis.GUI
 
         private void Update()
         {
-            if (dpm == null)
+            if (toolkit == null)
             {
                 camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
 
                 toolkit = GetComponent<Toolkit>();
-                dpm = GetComponent<DriverPracticeMode>();
                 multiplayer = GetComponent<LocalMultiplayer>();
                 sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
@@ -248,6 +248,7 @@ namespace Synthesis.GUI
                 robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
                 sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
+                DPMDataHandler.Load();
                 State.ChangeRobot(directory, false);
 
             }
@@ -313,7 +314,8 @@ namespace Synthesis.GUI
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
                     });
-
+                FieldDataHandler.Load();
+                DPMDataHandler.Load();
                 SceneManager.LoadScene("Scene");
             }
             else
@@ -360,18 +362,18 @@ namespace Synthesis.GUI
             }
         }
 
-        //public void ToggleChangePanel()
-        //{
-        //    if (changePanel.activeSelf == true)
-        //    {
-        //        changePanel.SetActive(false);
-        //    }
-        //    else
-        //    {
-        //        changePanel.SetActive(true);
-        //        addPanel.SetActive(false);
-        //    }
-        //}
+        public void ToggleChangePanel()
+        {
+            if (changePanel.activeSelf == true)
+            {
+                changePanel.SetActive(false);
+            }
+            else
+            {
+                changePanel.SetActive(true);
+                addPanel.SetActive(false);
+            }
+        }
 
         #endregion
         #region camera button functions
@@ -771,8 +773,7 @@ namespace Synthesis.GUI
             ToggleHotKeys(false);
 
             CancelOrientation();
-
-            dpm.EndProcesses();
+            
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();

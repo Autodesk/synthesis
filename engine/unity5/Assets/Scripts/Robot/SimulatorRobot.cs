@@ -4,6 +4,7 @@ using Synthesis.Camera;
 using Synthesis.Configuration;
 using Synthesis.DriverPractice;
 using Synthesis.FEA;
+using Synthesis.Field;
 using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Input;
@@ -88,7 +89,6 @@ namespace Synthesis.Robot
 
             //Initializes Driver Practice component
             dpmRobot = gameObject.AddComponent<DriverPracticeRobot>();
-            dpmRobot.Initialize(RobotDirectory);
 
             //Initializing robot cameras
             bool hasRobotCamera = false;
@@ -214,11 +214,10 @@ namespace Synthesis.Robot
         /// <param name="resetTransform"></param>
         public void BeginReset()
         {
-            GetDriverPractice().DestroyAllGamepieces();
+            //GetDriverPractice().DestroyAllGamepieces();
 
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             lastCameraState = dynamicCamera.cameraState;
-            Debug.Log(lastCameraState);
             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
 
             foreach (SimulatorRobot robot in state.SpawnedRobots)
@@ -292,13 +291,8 @@ namespace Synthesis.Robot
             {
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
-
-                if (lastCameraState != null)
-                {
-                    DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-                    dynamicCamera.SwitchCameraState(lastCameraState);
-                    lastCameraState = null;
-                }
+                FieldDataHandler.robotSpawn = robotStartPosition;
+                FieldDataHandler.WriteField();
 
                 EndReset();
             }
@@ -323,6 +317,8 @@ namespace Synthesis.Robot
         /// </summary>
         public void EndReset()
         {
+
+
             IsResetting = false;
 
             foreach (RigidNode n in RootNode.ListAllNodes())
@@ -335,6 +331,13 @@ namespace Synthesis.Robot
                 RigidBody r = (RigidBody)br.GetCollisionObject();
 
                 r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+            }
+
+            if (lastCameraState != null)
+            {
+                DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
+                dynamicCamera.SwitchCameraState(lastCameraState);
+                lastCameraState = null;
             }
 
             OnEndReset();

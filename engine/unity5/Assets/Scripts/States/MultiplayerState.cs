@@ -18,6 +18,7 @@ using Synthesis.NetworkMultiplayer;
 using Synthesis.Utils;
 using Synthesis.BUExtensions;
 using Synthesis.Input;
+using Synthesis.Field;
 
 /// <summary>
 /// This is the main class of the simulator; it handles all the initialization of robot and field objects within the simulator.
