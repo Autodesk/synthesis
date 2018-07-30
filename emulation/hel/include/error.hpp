@@ -2,6 +2,7 @@
 #define _ERROR_HPP_
 
 #include <string>
+#include <iostream>
 
 namespace hel{
 
@@ -108,6 +109,17 @@ namespace hel{
 
     struct UnhandledCase: public std::exception{
         const char* what()const throw();
+    };
+
+    struct UnsupportedFeature: std::exception{
+    private:
+        std::string details;
+
+    public:
+        const char* what()const throw();
+
+        UnsupportedFeature();
+        UnsupportedFeature(std::string);
     };
 }
 

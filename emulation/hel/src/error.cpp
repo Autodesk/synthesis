@@ -32,10 +32,22 @@ std::string hel::to_string(hel::DSError::Type t){
 hel::UnhandledEnumConstantException::UnhandledEnumConstantException(std::string s):enum_type(s){}
 
 const char* hel::UnhandledEnumConstantException::what()const throw(){
-    std::string s = "Exception: unhandled enum constant for " + enum_type;
+    std::string s = "Synthesis exception: unhandled enum constant for " + enum_type;
     return s.c_str();
 }
 
 const char* hel::UnhandledCase::what()const throw(){
-    return "Exception: unhandled case";
+    return "Synthesis exception: unhandled case";
+}
+
+hel::UnsupportedFeature::UnsupportedFeature(std::string s):details(s){}
+hel::UnsupportedFeature::UnsupportedFeature():UnsupportedFeature(""){}
+
+const char* hel::UnsupportedFeature::what()const throw(){
+    std::string s = "Synthesis exception: feature unsupported by Synthesis";
+    if(details.size() > 0){
+        s += ": " + details;
+    }
+    s += "\n";
+    return s.c_str();
 }

@@ -30,7 +30,6 @@
 #include "alarm.hpp"
 #include "analog_inputs.hpp"
 #include "analog_outputs.hpp"
-#include "can_bus.hpp"
 #include "can_device.hpp"
 #include "counter.hpp"
 #include "digital_system.hpp"
@@ -74,7 +73,6 @@ namespace hel{
         Alarm alarm;
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
-        CANBus can_bus;
         std::map<uint32_t,CANDevice> can_devices;
         std::array<Counter, Counter::MAX_COUNTER_COUNT> counters;
         DigitalSystem digital_system;

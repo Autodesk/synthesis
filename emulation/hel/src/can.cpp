@@ -8,24 +8,6 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
 
-    void CANBus::enqueueMessage(CANBus::Message m){
-    	out_message_queue.push(m);
-      auto instance = SendDataManager::getInstance();
-      instance.first->update();
-      instance.second.unlock();
-    }
-
-    CANBus::Message CANBus::getNextMessage()const{
-    	return in_message_queue.front();
-    }
-
-    void CANBus::popNextMessage(){
-    	in_message_queue.pop();
-      auto instance = SendDataManager::getInstance();
-      instance.first->update();
-      instance.second.unlock();
-    }
-
     std::string to_string(CANDevice::Type type){
         switch(type){
         case CANDevice::Type::TALON_SRX:
@@ -84,7 +66,7 @@ namespace hel{
         return type;
     }
 
-    void CANDevice::setSpeed(BoundsCheckedArray<uint8_t, CANBus::Message::MAX_DATA_SIZE> data){
+    void CANDevice::setSpeed(BoundsCheckedArray<uint8_t, CANDevice::MAX_MESSAGE_DATA_SIZE> data){
         /*
           For CAN motor controllers:
           data[x] - data[0] results in the number with the correct sign
@@ -123,16 +105,11 @@ namespace hel{
         }
         return true;
     }
-
-    CANBus::Message::Message():id(),data(),data_size(),time_stamp(){}
-
-    CANBus::CANBus():in_message_queue(),out_message_queue(){}
 }
 
 extern "C"{
 
     void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t periodMs, int32_t* /*status*/){
-        /*
         printf("FRC_NetworkCommunication_CANSessionMux_sendMessage(");
         printf("messageID:%d,", messageID);
         printf("data:");
@@ -140,34 +117,25 @@ extern "C"{
             printf("%d,",data[i]);
         }
         printf("dataSize:%d,periodMs:%d)\n",dataSize,periodMs);
-        */
 
         auto instance = hel::RoboRIOManager::getInstance();
-        hel::CANBus::Message m;
-        m.id = messageID;
-        m.data_size = dataSize;
-        std::copy(data, data + dataSize, std::begin(m.data));
-        instance.first->can_bus.enqueueMessage(m);
 
         if(instance.first->can_devices.find(messageID) == instance.first->can_devices.end()){
             instance.first->can_devices[messageID] = hel::CANDevice(messageID);
         }
-        if(instance.first->can_devices[messageID].getType() != hel::CANDevice::Type::UNKNOWN){
-            instance.first->can_devices[messageID].setSpeed(m.data);
+        if(instance.first->can_devices[messageID].getType() == hel::CANDevice::Type::UNKNOWN){
+            std::cerr<<"Synthesis warning: Attempting to write message to unknown CAN device using message ID "<<messageID<<"\n";
+        } else{
+            hel::BoundsCheckedArray<uint8_t, hel::CANDevice::MAX_MESSAGE_DATA_SIZE> data_array;
+            std::copy(data, data + dataSize, data_array.begin());
+            instance.first->can_devices[messageID].setSpeed(data_array);
         }
         instance.second.unlock();
-        //TODO handle repeating messages - currently unsupported
     }
 
     void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t messageIDMask, uint8_t* data, uint8_t* dataSize, uint32_t* timeStamp, int32_t* /*status*/){
         printf("FRC_NetworkCommunication_CANSessionMux_receiveMessage(messageID:%d messageIDMask:%d)\n", *messageID, messageIDMask);
         auto instance = hel::RoboRIOManager::getInstance();
-        hel::CANBus::Message m = instance.first->can_bus.getNextMessage();
-        instance.first->can_bus.popNextMessage();
-        *timeStamp = hel::Global::getCurrentTime();
-        *messageID = m.id; //TODO use message mask?
-        *dataSize = m.data_size;
-        std::copy(std::begin(m.data), std::end(m.data), data);
 
         for(auto i = instance.first->can_devices.begin(); i != instance.first->can_devices.end(); ++i){
             if(hel::checkCANID(*messageID,i->first,messageIDMask)){
@@ -195,7 +163,7 @@ extern "C"{
     }
 
     void FRC_NetworkCommunication_CANSessionMux_getCANStatus(float* /*percentBusUtilization*/, uint32_t* /*busOffCount*/, uint32_t* /*txFullCount*/, uint32_t* /*receiveErrorCount*/, uint32_t* /*transmitErrorCount*/, int32_t* /*status*/){ //unnecessary for emulation
-        printf("FRC_NetworkCommunication_CANSessionMux_getCANStatus\n");
+        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_getCANStatus");
     }
 
 }
