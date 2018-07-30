@@ -42,7 +42,8 @@ namespace BxDRobotExporter.Wizard
         public enum WizardWheelType
         {
             NORMAL = 1,
-            OMNI = 2
+            OMNI = 2,
+            MECANUM = 3
         }
         public enum WizardFrictionLevel
         {
