@@ -62,7 +62,7 @@ namespace hel{
     }
 
     void Accelerometer::setZAccel(float accel){
-       z_accel = accel; 
+       z_accel = accel;
     }
 
     float Accelerometer::convertAccel(std::pair<uint8_t, uint8_t> accel){

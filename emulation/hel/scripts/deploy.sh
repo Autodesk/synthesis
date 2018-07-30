@@ -21,8 +21,8 @@ if [ $# -eq 0 ]; then
         success=false
     fi
 else
-    if [ -f $1 ]; then
-        printf "Copying $user_program_source\n"
+    if [ -f $1 ] || [ -d $1 ]; then
+        printf "Copying $1\n"
         sshpass -p "adskbxd" scp -r -P 10022 $1 synthesis@localhost:/home/synthesis
     else
         printf "Error: $1 not found\n"
