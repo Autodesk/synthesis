@@ -31,7 +31,7 @@
 
                 <div class="driver-div">
                     <h3>Driver Type: </h3>
-                    <select class="driver-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
+                    <select class="driver-type" onchange="updateFieldOptions(this)">
                         <option value="0">None</option>
                         <option value="1" class="angular-driver">Motor</option>
                         <option value="2" class="angular-driver">Servo</option>
@@ -45,7 +45,7 @@
                     <div class="has-driver-div">
                         <div class="angular-joint-div">
                             <h3>Wheel Type: </h3>
-                            <select class="wheel-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
+                            <select class="wheel-type" onchange="updateFieldOptions(this)">
                                 <option value="0">None</option>
                                 <option value="1">Normal</option>
                                 <option value="2">Omni</option>
@@ -54,7 +54,7 @@
 
                             <div class="has-wheel-div">
                                 <span>Is Drive Wheel: </span>
-                                <input type="checkbox" class="is-drive-wheel" onchange="updateFieldOptions(this.parentNode.parentNode.parentNode)" />
+                                <input type="checkbox" class="is-drive-wheel" onchange="updateFieldOptions(this)" />
 
                                 <div class="drive-wheel-ports-div">
                                     <select class="wheel-side">
