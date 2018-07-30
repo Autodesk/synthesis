@@ -203,23 +203,23 @@ namespace Synthesis.Camera
         public void ToggleCameraIndicator()
         {
             indicatorActive = !indicatorActive;
-            configureRobotCameraButton.SetActive(indicatorActive);
+            //configureRobotCameraButton.SetActive(indicatorActive);
 
-            if (indicatorActive)
-            {
-                //Only allow the camera configuration when the indicator is active
-                //showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
-            }
-            else
-            {
-                //showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
-                //Close the panel when indicator is not active and stop all configuration
-                ResetConfigurationWindow();
-                //configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
-                configureRobotCameraButton.SetActive(false);
+            //if (indicatorActive)
+            //{
+            //    //Only allow the camera configuration when the indicator is active
+            //    //showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
+            //}
+            //else
+            //{
+            //    //showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
+            //    //Close the panel when indicator is not active and stop all configuration
+            //    ResetConfigurationWindow();
+            //    //configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
+            //    configureRobotCameraButton.SetActive(false);
 
-                robotCameraManager.ArrowsActive = false;
-            }
+            //    robotCameraManager.ArrowsActive = false;
+            //}
             CameraIndicator.SetActive(indicatorActive);
         }
 
