@@ -69,6 +69,7 @@ float BXDJ::Wheel::getForwardAsympValue() const
 	case MEDIUM: return 5.0f;
 	case HIGH: return 8.0f;
 	}
+	return 0.0f;
 }
 
 float BXDJ::Wheel::getForwardExtremeSlip() const
@@ -84,6 +85,7 @@ float BXDJ::Wheel::getForwardExtremeValue() const
 	case MEDIUM: return 7.0f;
 	case HIGH: return 10.0f;
 	}
+	return 0.0f;
 }
 
 float BXDJ::Wheel::getSideAsympSlip() const
@@ -102,6 +104,7 @@ float BXDJ::Wheel::getSideAsympValue() const
 		case MEDIUM: return 5.0f;
 		case HIGH: return 8.0f;
 		}
+	return 0.0f;
 }
 
 float BXDJ::Wheel::getSideExtremeSlip() const
@@ -120,6 +123,7 @@ float BXDJ::Wheel::getSideExtremeValue() const
 		case MEDIUM: return 7.0f;
 		case HIGH: return 10.0f;
 		}
+	return 0.0f;
 }
 
 #pragma endregion

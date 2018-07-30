@@ -1,4 +1,5 @@
 #include "RotationalJoint.h"
+#include <Core/Geometry/Vector3D.h>
 
 using namespace BXDJ;
 
@@ -23,7 +24,7 @@ float RotationalJoint::getCurrentAngle() const
 	return (float)fusionJointMotion->rotationValue();
 }
 
-bool BXDJ::RotationalJoint::hasLimits() const
+bool RotationalJoint::hasLimits() const
 {
 	return fusionJointMotion->rotationLimits()->isMinimumValueEnabled() || fusionJointMotion->rotationLimits()->isMaximumValueEnabled();
 }
@@ -44,7 +45,7 @@ float RotationalJoint::getMaxAngle() const
 		return std::numeric_limits<float>::max();
 }
 
-void BXDJ::RotationalJoint::applyConfig(const ConfigData & config)
+void RotationalJoint::applyConfig(const ConfigData & config)
 {
 	// Update wheels with actual mesh information
 	std::unique_ptr<Driver> driver = config.getDriver(getFusionJoint());

@@ -21,7 +21,8 @@ std::vector<Ptr<Joint>> Exporter::collectJoints()
 	{
 		Ptr<Joint> joint = allJoints[j];
 
-		if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType)
+		if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType ||
+			joint->jointMotion()->jointType() == JointTypes::SliderJointType)
 			joints.push_back(joint);
 	}
 
@@ -33,7 +34,21 @@ std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
 	std::string stringifiedJoints = "";
 
 	for (Ptr<Joint> joint : joints)
+	{
 		stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + " ";
+
+		// Specify if joint supports linear and/or angular motion
+		if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType)		 // Angular motion only
+			stringifiedJoints += 5;
+		else if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType) // Linear motion only
+			stringifiedJoints += 6;
+		else if (false)                                                              // Both angular and linear motion
+			stringifiedJoints += 7;
+		else                                                                         // Neither angular nor linear motion
+			stringifiedJoints += 4;
+
+		stringifiedJoints += " ";
+	}
 
 	return stringifiedJoints;
 }
