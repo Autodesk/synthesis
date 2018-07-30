@@ -25,7 +25,7 @@ namespace Synthesis.GUI.Scrollables
 
         void OnEnable()
         {
-            directory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//fields"));
+            directory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\synthesis\\fields"));
             items = new List<string>();
             items.Clear();
         }

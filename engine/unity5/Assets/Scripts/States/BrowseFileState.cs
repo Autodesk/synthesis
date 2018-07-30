@@ -38,6 +38,8 @@ namespace Synthesis.States
             //navPanel = GameObject.Find("NavigationPanel");
             //navPanel?.SetActive(false);
             //fileBrowser.Active = true;
+            pathLabel = GameObject.Find("PathLabel");
+            pathLabel?.SetActive(true);
         }
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace Synthesis.States
                 // check for empty string (if native file browser is closed without selection) and default to Fields directory
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//Fields");
+                    filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("\\synthesis\\Fields");
                 }
 
                 fileBrowser = new GUI.FileBrowser("Choose Directory", filePath, true);
