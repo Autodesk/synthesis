@@ -115,23 +115,35 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 	// Find all jointed occurrences in the structure
 	for (core::Ptr<fusion::Joint> joint : rootComponent->allJoints())
 	{
-		core::Ptr<fusion::Occurrence> lowerOccurrence;
-		core::Ptr<fusion::Occurrence> upperOccurrence;
-
-		// Find which occurence is higher in the heirarchy
-		if (levelOfOccurrence(joint->occurrenceOne()) > levelOfOccurrence(joint->occurrenceTwo()))
+		if (joint->occurrenceOne() != nullptr && joint->occurrenceTwo() != nullptr)
 		{
-			lowerOccurrence = joint->occurrenceOne();
-			upperOccurrence = joint->occurrenceTwo();
-		}
-		else
-		{
-			upperOccurrence = joint->occurrenceOne();
-			lowerOccurrence = joint->occurrenceTwo();
-		}
+			core::Ptr<fusion::Occurrence> lowerOccurrence;
+			core::Ptr<fusion::Occurrence> upperOccurrence;
 
-		jointSummary.children.push_back(lowerOccurrence);
-		jointSummary.parents[upperOccurrence].push_back(joint);
+			// Find which occurence is higher in the heirarchy
+			if (levelOfOccurrence(joint->occurrenceOne()) >= levelOfOccurrence(joint->occurrenceTwo()))
+			{
+				lowerOccurrence = joint->occurrenceOne();
+				upperOccurrence = joint->occurrenceTwo();
+			}
+			else
+			{
+				upperOccurrence = joint->occurrenceOne();
+				lowerOccurrence = joint->occurrenceTwo();
+			}
+
+			jointSummary.children.push_back(lowerOccurrence);
+			jointSummary.parents[upperOccurrence].push_back(joint);
+		}
+		else if (joint->occurrenceOne() != nullptr || joint->occurrenceTwo() != nullptr)
+		{
+			core::Ptr<fusion::Occurrence> lowerOccurrence = (joint->occurrenceOne() != nullptr) ? joint->occurrenceOne() : joint->occurrenceTwo();
+			core::Ptr<fusion::OccurrenceList> upperOccurrences = rootComponent->allOccurrencesByComponent(joint->parentComponent());
+
+			jointSummary.children.push_back(lowerOccurrence);
+			for (core::Ptr<fusion::Occurrence> upperOccurrence : upperOccurrences)
+				jointSummary.parents[upperOccurrence].push_back(joint);
+		}
 	}
 
 	return jointSummary;

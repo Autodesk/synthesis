@@ -133,6 +133,7 @@ void SubMesh::getConvexCollider(SubMesh & outputMesh) const
 	// Create surface
 	Surface newSurface;
 	newSurface.addTriangles(triangles);
+	newSurface.setColor(0, 255, 0, 126);
 	outputMesh.addSurface(newSurface);
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Core/Application/Application.h>
-#include <Core/UserInterface/UserInterface.h>
+#include <Core/CoreAll.h>
+#include <Fusion/FusionAll.h>
 #include "Data/BXDA/Mesh.h"
 #include "Data/BXDJ/ConfigData.h"
 #include "Data/BXDJ/RigidNode.h"

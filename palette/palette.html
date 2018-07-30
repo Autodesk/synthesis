@@ -105,10 +105,43 @@
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
 
             // Prompts the Fusion add-in for joint data
-            function getInfoFromFusion()
+            function requestInfoFromFusion()
             {
+                console.log("Requesting joint info...");
                 adsk.fusionSendData('send_joints', '');
             }
+
+            // Handles the receiving of data from Fusion
+            window.fusionJavaScriptHandler =
+                {
+                    handle: function (action, data)
+                    {
+                        try
+                        {
+                            if (action == 'joints')
+                            {
+                                console.log("Receiving joint info...");
+                                console.log(data);
+                                jointOptions = processJointDataString(data);
+                                displayJointOptions(jointOptions);
+                            }
+                            else if (action == 'debugger')
+                            {
+                                debugger;
+                            }
+                            else
+                            {
+                                return 'Unexpected command type: ' + action;
+                            }
+                        }
+                        catch (e)
+                        {
+                            console.log('Exception while excecuting \"' + action + '\":');
+                            console.log(e);
+                        }
+                        return 'OK';
+                    }
+                };
 
             // Populates the form with joints
             function displayJointOptions(joints)
@@ -153,6 +186,7 @@
                 var selectedDriver = fieldset.getElementsByClassName('driver-type')[0].selectedIndex;
                 var wheelSelectorDiv = fieldset.getElementsByClassName('wheel-div')[0];
                 var genericPortsDiv = wheelSelectorDiv.getElementsByClassName('generic-ports-div')[0];
+                var portBSelector = wheelSelectorDiv.getElementsByClassName('port-number-b')[0];
                 var wheelSideDiv = wheelSelectorDiv.getElementsByClassName('wheel-side-div')[0];
 
                 // Hide wheel info if driver not set
@@ -160,6 +194,7 @@
                 {
                     wheelSelectorDiv.style.visibility = 'hidden';
                     genericPortsDiv.style.display = 'block';
+                    portBSelector.style.visibility = 'hidden';
                     wheelSideDiv.style.display = 'none';
                 }
                 else
@@ -167,7 +202,6 @@
                     wheelSelectorDiv.style.visibility = 'visible';
 
                     // Hide port B selector if not a dual motor
-                    var portBSelector = wheelSelectorDiv.getElementsByClassName('port-number-b')[0];
                     if (selectedDriver == 6)
                         portBSelector.style.visibility = 'visible';
                     else
@@ -247,39 +281,12 @@
             {
                 var name = document.getElementById('name').value;
 
+                if (name.length == 0)
+                    return;
+
                 readFormData();
                 adsk.fusionSendData('export', stringifyConfigData(name, jointOptions));
             }
-
-            window.fusionJavaScriptHandler =
-                {
-                    handle: function (action, data)
-                    {
-                        try
-                        {
-                            if (action == 'joints')
-                            {
-                                jointOptions = processJointDataString(data);
-                                displayJointOptions(jointOptions);
-                            }
-                            else if (action == 'debugger')
-                            {
-                                debugger;
-                            }
-                            else
-                            {
-                                return 'Unexpected command type: ' + action;
-                            }
-                        } catch (e)
-                        {
-                            console.log('Exception while excecuting \"' + action + '\":');
-                            console.log(e);
-                        }
-                        return 'OK';
-                    }
-                };
-
-            getInfoFromFusion();
         </script>
     </body>
 </html>
