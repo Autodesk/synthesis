@@ -21,7 +21,6 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
 
     private GameObject canvas;
     private SimUI simUI;
-    MainToolbarState mainToolbarState;
 
     private GameObject multiplayerWindow;
     private GameObject addRobotWindow;
@@ -80,7 +79,7 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
             activeIndex = index;
             UpdateUI();
 
-            GetComponent<DriverPracticeMode>().ChangeActiveRobot(index);
+            State.SwitchActiveRobot(index);
         }
     }
 
@@ -130,10 +129,14 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
     /// </summary>
     public void RemoveRobot()
     {
-        State.RemoveRobot(activeIndex);
-        activeIndex = State.SpawnedRobots.IndexOf(State.ActiveRobot);
-        GetComponent<DriverPracticeMode>().ChangeActiveRobot(activeIndex);
-        UpdateUI();
+        if (State.SpawnedRobots.Count > 1)
+        {
+            State.RemoveRobot(activeIndex);
+            activeIndex = State.SpawnedRobots.IndexOf(State.ActiveRobot);
+            State.SwitchActiveRobot(activeIndex);
+            UpdateUI();
+        }
+        else UserMessageManager.Dispatch("Cannot Delete. Must Have At Least One Robot on Field.", 5);
     }
 
     /// <summary>
@@ -186,7 +189,7 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
     /// </summary>
     public void HideTooltip()
     {
-        GameObject.Find("MultiplayerTooltip").SetActive(false);
+        Auxiliary.FindObject(multiplayerWindow, "MultiplayerTooltip").SetActive(false);
     }
 
     /// <summary>
@@ -200,6 +203,6 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
 
     public void EndProcesses()
     {
-        if (multiplayerWindow.activeSelf) mainToolbarState.OnMultiplayerButtonPressed();
+        if (multiplayerWindow.activeSelf) multiplayerWindow.SetActive(false);
     }
 }

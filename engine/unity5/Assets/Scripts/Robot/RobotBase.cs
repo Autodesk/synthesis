@@ -22,6 +22,7 @@ using UnityEngine.SceneManagement;
 using BulletSharp;
 using Synthesis.GUI;
 using UnityEngine.Networking;
+using Synthesis.Field;
 
 namespace Synthesis.Robot
 {
@@ -126,6 +127,7 @@ namespace Synthesis.Robot
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
+            robotStartPosition = FieldDataHandler.robotSpawn;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
             if (!File.Exists(directory + "\\skeleton.bxdj"))

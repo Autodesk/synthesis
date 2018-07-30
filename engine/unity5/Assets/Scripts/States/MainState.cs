@@ -21,6 +21,8 @@ using Synthesis.Sensors;
 using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
+using Synthesis.Field;
+
 namespace Synthesis.States
 {
     /// <summary>
@@ -106,8 +108,7 @@ namespace Synthesis.States
             //starts a new instance of unity packet which receives packets from the driver station
             unityPacket.Start();
 
-            //loads all the controls
-            Controls.Load();
+            
 
             //If a replay has been selected, load the replay. Otherwise, load the field and robot.
             string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
@@ -121,12 +122,16 @@ namespace Synthesis.States
                     AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
                     return;
                 }
+                else FieldDataHandler.Load();
 
                 if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                 {
                     AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                     return;
                 }
+                else DPMDataHandler.Load();
+
+                Controls.Load();
 
                 if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
                 {
@@ -138,6 +143,8 @@ namespace Synthesis.States
                 awaitingReplay = true;
                 LoadReplay(selectedReplay);
             }
+
+            Controls.Load();
 
             //initializes the dynamic camera
             DynamicCameraObject = GameObject.Find("Main Camera");
@@ -154,6 +161,8 @@ namespace Synthesis.States
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
             StateMachine.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
             StateMachine.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
+            StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetSpawnpointUI"));
+            StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
         }
 
         /// <summary>
@@ -535,7 +544,7 @@ namespace Synthesis.States
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory)) return false;
 
-            robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
+            robotObject.AddComponent<DriverPracticeRobot>();
 
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (ActiveRobot == null)

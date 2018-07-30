@@ -1,4 +1,5 @@
-﻿using Synthesis.FSM;
+﻿using Synthesis.DriverPractice;
+using Synthesis.FSM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,9 @@ namespace Assets.Scripts.GUI
 {
     public class ScoringToolbarState : State
     {
+        public void OnScoringHelpButtonPressed()
+        {
 
+        }
     }
 }
