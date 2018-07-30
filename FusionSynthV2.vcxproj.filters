@@ -123,6 +123,9 @@
     <ClInclude Include="Source\Data\BXDJ\Joints\LinearJoint.h">
       <Filter>Headers\Data\BXDJ\Joints</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Components\Pneumatic.h">
+      <Filter>Headers\Data\BXDJ\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -194,6 +197,9 @@
     <ClCompile Include="Source\Data\BXDJ\RigidNode-Tree.cpp">
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Components\Pneumatic.cpp">
+      <Filter>Source\Data\BXDJ\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="palette\palette.html">
@@ -203,6 +209,9 @@
       <Filter>Source\AddIn\HTML</Filter>
     </None>
     <None Include="Palette\css\synthesisExporter.css">
+      <Filter>Source\AddIn\HTML</Filter>
+    </None>
+    <None Include="Palette\js\palette.js">
       <Filter>Source\AddIn\HTML</Filter>
     </None>
   </ItemGroup>

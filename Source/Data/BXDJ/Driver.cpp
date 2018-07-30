@@ -54,8 +54,8 @@ void Driver::write(XmlWriter & output) const
 	// Component Information
 	if (wheel != nullptr)
 		output.write(*wheel);
-	//else if (wheel != nullptr)
-	//	output.write(*wheel); // Future component types
+	else if (pneumatic != nullptr)
+		output.write(*pneumatic);
 
 	output.endElement();
 }
@@ -64,6 +64,7 @@ void Driver::write(XmlWriter & output) const
 void Driver::removeComponents()
 {
 	this->wheel = nullptr;
+	this->pneumatic = nullptr;
 }
 
 void Driver::setComponent(Wheel wheel)
@@ -72,10 +73,24 @@ void Driver::setComponent(Wheel wheel)
 	this->wheel = std::make_unique<Wheel>(wheel);
 }
 
+void BXDJ::Driver::setComponent(Pneumatic pneumatic)
+{
+	removeComponents();
+	this->pneumatic = std::make_unique<Pneumatic>(pneumatic);
+}
+
 std::unique_ptr<Wheel> Driver::getWheel()
 {
 	if (wheel != nullptr)
 		return std::make_unique<Wheel>(*wheel);
+	else
+		return nullptr;
+}
+
+std::unique_ptr<Pneumatic> BXDJ::Driver::getPneumatic()
+{
+	if (pneumatic != nullptr)
+		return std::make_unique<Pneumatic>(*pneumatic);
 	else
 		return nullptr;
 }
