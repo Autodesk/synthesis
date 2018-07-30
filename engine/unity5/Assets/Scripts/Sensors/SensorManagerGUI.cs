@@ -513,7 +513,7 @@ namespace Synthesis.Sensors
             sensorConfigHeader.GetComponentInChildren<Text>().text = currentSensor.name;
             //sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
-            currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(true);
+            //currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(true);
         }
 
         public void ToggleConfiguration()
@@ -727,6 +727,15 @@ namespace Synthesis.Sensors
                 SyncSensorRange();
                 isEditingRange = false;
             }
+        }
+
+        /// <summary>
+        /// Toggle the state of changing the sensor position with move arrows
+        /// </summary>
+        public void ToggleChangePosition()
+        {
+            currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(
+                !currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.activeSelf);
         }
 
         /// <summary>
