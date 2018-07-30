@@ -3,6 +3,7 @@ using Synthesis.GUI;
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Synthesis.States
 {
@@ -11,12 +12,9 @@ namespace Synthesis.States
         private readonly string prefsKey;
         private readonly string directory;
 
-        private FileBrowserNew fileBrowserNew;
         private FileBrowser fileBrowser;
-
         public string filePath;
-
-        private GameObject navPanel;
+        Text pathLabel = GameObject.Find("PathLabel").GetComponent<Text>();
 
         /// <summary>
         /// Initializes a new <see cref="BrowseFileState"/> instance.
@@ -35,11 +33,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            //navPanel = GameObject.Find("NavigationPanel");
-            //navPanel?.SetActive(false);
-            //fileBrowser.Active = true;
-            pathLabel = GameObject.Find("PathLabel");
-            pathLabel?.SetActive(true);
+
         }
 
         /// <summary>
@@ -48,7 +42,7 @@ namespace Synthesis.States
         /// </summary>
         public override void End()
         {
-            //navPanel?.SetActive(true);
+
         }
 
         /// <summary>
@@ -63,13 +57,13 @@ namespace Synthesis.States
                 // check for empty string (if native file browser is closed without selection) and default to Fields directory
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("\\synthesis\\Fields");
+                    filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("\\synthesis");
                 }
 
                 fileBrowser = new GUI.FileBrowser("Choose Directory", filePath, true);
                 fileBrowser.OnComplete += OnBrowserComplete;
                 fileBrowser.CompleteDirectorySelection();
-
+                pathLabel.text = filePath;
             }
 
             //if (!fileBrowser.Active)
