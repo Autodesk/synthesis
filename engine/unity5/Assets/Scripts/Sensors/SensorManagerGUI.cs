@@ -144,7 +144,7 @@ namespace Synthesis.Sensors
             cancelNodeSelectionButton = Auxiliary.FindObject(configureSensorPanel, "CancelNodeSelectionButton");
             deleteSensorButton = Auxiliary.FindObject(configureSensorPanel, "DeleteSensorButton");
             hideSensorButton = Auxiliary.FindObject(configureSensorPanel, "HideSensorButton");
-            sensorConfigHeader = Auxiliary.FindObject(configureSensorPanel, "SensorConfigHeader11");
+            sensorConfigHeader = Auxiliary.FindObject(configureSensorPanel, "SensorConfigHeader");
             nodePanel = Auxiliary.FindObject(configureSensorPanel, "AttatchmentPanel");
 
             //For Sensor angle configuration
