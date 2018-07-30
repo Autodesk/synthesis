@@ -14,7 +14,9 @@ namespace hel{
      * Holds all internal data needed to model analog inputs on the RoboRIO.
      */
     struct AnalogInputs {
-        static constexpr const int32_t NUM_ANALOG_INPUTS = 8; //hal::kNumAnalogInputs
+        static constexpr const int32_t NUM_ANALOG_INPUTS_HDRS = 4;
+        static constexpr const int32_t NUM_ANALOG_INPUTS_MXP = 4;
+        static constexpr const int32_t NUM_ANALOG_INPUTS = NUM_ANALOG_INPUTS_HDRS + NUM_ANALOG_INPUTS_MXP; //hal::kNumAnalogInputs
 
         static constexpr uint32_t LSB_WEIGHT = 1E9;
         static constexpr int32_t OFFSET = 0;
