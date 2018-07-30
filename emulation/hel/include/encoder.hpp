@@ -8,7 +8,7 @@ namespace hel{
 
     /**
      * \struct Encoder
-     * \brief Data model for encoder input data
+     * \brief Data model for incremental encoder input data
      * Holds all the data for encoder inputs
      */
 
