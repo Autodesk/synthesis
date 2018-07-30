@@ -54,6 +54,76 @@ Vector3<> Wheel::getCenter() const
 	return center;
 }
 
+#pragma region FrictionInfo
+
+float BXDJ::Wheel::getForwardAsympSlip() const
+{
+	return 1.5f;
+}
+
+float BXDJ::Wheel::getForwardAsympValue() const
+{
+	switch (frictionLevel)
+	{
+	case LOW: return 3.0f;
+	case MEDIUM: return 5.0f;
+	case HIGH: return 8.0f;
+	}
+}
+
+float BXDJ::Wheel::getForwardExtremeSlip() const
+{
+	return 1.0f;
+}
+
+float BXDJ::Wheel::getForwardExtremeValue() const
+{
+	switch (frictionLevel)
+	{
+	case LOW: return 5.0f;
+	case MEDIUM: return 7.0f;
+	case HIGH: return 10.0f;
+	}
+}
+
+float BXDJ::Wheel::getSideAsympSlip() const
+{
+	return 1.5f;
+}
+
+float BXDJ::Wheel::getSideAsympValue() const
+{
+	if (type == OMNI)
+		return 0.005f;
+	else
+		switch (frictionLevel)
+		{
+		case LOW: return 3.0f;
+		case MEDIUM: return 5.0f;
+		case HIGH: return 8.0f;
+		}
+}
+
+float BXDJ::Wheel::getSideExtremeSlip() const
+{
+	return 1.0f;
+}
+
+float BXDJ::Wheel::getSideExtremeValue() const
+{
+	if (type == OMNI)
+		return 0.01f;
+	else
+		switch (frictionLevel)
+		{
+		case LOW: return 5.0f;
+		case MEDIUM: return 7.0f;
+		case HIGH: return 10.0f;
+		}
+}
+
+#pragma endregion
+
 void Wheel::write(XmlWriter & output) const
 {
 	output.startElement("WheelDriverMeta");
@@ -69,47 +139,14 @@ void Wheel::write(XmlWriter & output) const
 	output.endElement();
 
 	// Friction Info
-	output.writeElement("ForwardAsympSlip", std::to_string(1.0f));
-	output.writeElement("ForwardExtremeSlip", std::to_string(1.5f));
-	output.writeElement("SideAsympSlip", std::to_string(1.0f));
-	output.writeElement("SideExtremeSlip", std::to_string(1.5f));
-
-	if (frictionLevel == LOW)
-	{
-		output.writeElement("ForwardAsympValue", std::to_string(5.0f));
-		output.writeElement("ForwardExtremeValue", std::to_string(3.0f));
-		if (type != OMNI)
-		{
-			output.writeElement("SideAsympValue", std::to_string(5.0f));
-			output.writeElement("SideExtremeValue", std::to_string(3.0f));
-		}
-	}
-	else if (frictionLevel == MEDIUM)
-	{
-		output.writeElement("ForwardAsympValue", std::to_string(7.0f));
-		output.writeElement("ForwardExtremeValue", std::to_string(5.0f));
-		if (type != OMNI)
-		{
-			output.writeElement("SideAsympValue", std::to_string(7.0f));
-			output.writeElement("SideExtremeValue", std::to_string(5.0f));
-		}
-	}
-	else if (frictionLevel == HIGH)
-	{
-		output.writeElement("ForwardAsympValue", std::to_string(10.0f));
-		output.writeElement("ForwardExtremeValue", std::to_string(8.0f));
-		if (type != OMNI)
-		{
-			output.writeElement("SideAsympValue", std::to_string(10.0f));
-			output.writeElement("SideExtremeValue", std::to_string(8.0f));
-		}
-	}
-
-	if (type == OMNI)
-	{
-		output.writeElement("SideAsympValue", std::to_string(0.01f));
-		output.writeElement("SideExtremeValue", std::to_string(0.005f));
-	}
+	output.writeElement("ForwardAsympSlip", std::to_string(getForwardAsympSlip()));
+	output.writeElement("ForwardAsympValue", std::to_string(getForwardAsympValue()));
+	output.writeElement("ForwardExtremeSlip", std::to_string(getForwardExtremeSlip()));
+	output.writeElement("ForwardExtremeValue", std::to_string(getForwardExtremeValue()));
+	output.writeElement("SideAsympSlip", std::to_string(getSideAsympSlip()));
+	output.writeElement("SideAsympValue", std::to_string(getSideAsympValue()));
+	output.writeElement("SideExtremeSlip", std::to_string(getSideExtremeSlip()));
+	output.writeElement("SideExtremeValue", std::to_string(getSideExtremeValue()));
 
 	output.writeElement("IsDriveWheel", isDriveWheel ? "true" : "false");
 

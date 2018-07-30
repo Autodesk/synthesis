@@ -95,7 +95,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config)
 	BXDJ::XmlWriter xml(filename, false);
 
 	xml.startElement("BXDJ");
-	xml.writeAttribute("Version", "3.0.0");
+	xml.writeAttribute("Version", "2.0.0");
 	xml.write(rootNode);
 	xml.endElement();
 }
