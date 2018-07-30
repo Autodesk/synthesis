@@ -3,13 +3,13 @@ var jointOptions = [];
 // Used for hiding/showing elements in the following function
 function setVisible(element, visible)
 {
-    element.style.visibility = visible ? 'visible' : 'hidden';
+    element.style.visibility = visible ? '' : 'hidden';
 }
 
 // Gets an a single child element that has the class specified
-function getElByClass(fieldset, class)
+function getElByClass(fieldset, className)
 {
-    return fieldset.getElementsByClassName(class)[0]
+    return fieldset.getElementsByClassName(className)[0]
 }
 
 // Prompts the Fusion add-in for joint data
@@ -104,10 +104,18 @@ function displayJointOptions(joints)
 // Hides or shows fields based on the values of other fields
 function updateFieldOptions(fieldset)
 {
-    var selectedDriver = parseInt(getElByClass(fieldset, 'driver-type').value);
+    // Get the parent node that is the fieldset
+    while (fieldset != null && !fieldset.classList.contains('joint-config'))
+        fieldset = fieldset.parentNode;
+
+    if (fieldset == null)
+        return;
+
+    // Update view of fieldset
+    var driverType = parseInt(getElByClass(fieldset, 'driver-type').value);
     var hasDriverDiv = getElByClass(fieldset, 'has-driver-div');
 
-    if (selectedDriver == 0)
+    if (driverType == 0)
         setVisible(hasDriverDiv, false);
     else
     {
@@ -116,11 +124,16 @@ function updateFieldOptions(fieldset)
         var jointType = parseInt(fieldset.dataset.joint_type);
 
         var genericPortsDiv = getElByClass(fieldset, 'generic-ports-div');
+        var portBSelector = getElByClass(fieldset, 'port-number-b');
         setVisible(genericPortsDiv, true);
+        setVisible(portBSelector, false);
 
         // Angular Joint Info
         if ((jointType & JOINT_ANGULAR) == JOINT_ANGULAR)
         {
+            if (driverType == DRIVER_DUAL_MOTOR)
+                setVisible(portBSelector, true);
+
             // Wheel Info
             var selectedWheel = parseInt(getElByClass(fieldset, 'wheel-type').value);
             var hasWheelDiv = getElByClass(fieldset, 'has-wheel-div');
@@ -134,12 +147,13 @@ function updateFieldOptions(fieldset)
                 // Drive wheel
                 var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
                 var driveWheelPortsDiv = getElByClass(fieldset, 'drive-wheel-ports-div');
-
+                
                 if (!isDriveWheel)
                     setVisible(driveWheelPortsDiv, false);
+                else
                 {
-                    setVisible(genericPortsDiv, false);
                     setVisible(driveWheelPortsDiv, true);
+                    setVisible(genericPortsDiv, false);
                 }
             }
         }
