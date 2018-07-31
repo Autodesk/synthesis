@@ -7,7 +7,9 @@
 #include "bounds_checked_array.hpp"
 #include "digital_system.hpp"
 #include "joystick.hpp"
+#include "match_info.hpp"
 #include "mxp_data.hpp"
+#include "robot_mode.hpp"
 
 namespace hel{
     struct ReceiveData{
@@ -18,6 +20,8 @@ namespace hel{
         BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
         BoundsCheckedArray<MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
         BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT>  joysticks;
+        MatchInfo match_info;
+        RobotMode robot_mode;
     public:
         void update()const;
 

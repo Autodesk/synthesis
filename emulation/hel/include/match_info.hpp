@@ -180,6 +180,12 @@ namespace hel{
 
         void setMatchTime(double);
 
+        static MatchInfo deserialize(std::string);
+
+        std::string serialize()const;
+
+        std::string toString()const;
+
         MatchInfo();
     };
 }
