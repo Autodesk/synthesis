@@ -13,7 +13,7 @@ function getElByClass(fieldset, className)
 }
 
 // Used for hiding/showing elements in the following function
-function setPortView(fieldset, view)
+function setPortView(fieldset, portView)
 {
     var motorPorts = Array.from(fieldset.getElementsByClassName('motor-port'));
     var pneumaticPorts = Array.from(fieldset.getElementsByClassName('pneumatic-port'));
@@ -23,13 +23,13 @@ function setPortView(fieldset, view)
     var toShow = [];
 
     // Hide ports based on view
-    if (view == "pneumatic")
+    if (portView == "pneumatic")
     {
         toHide = toHide.concat(motorPorts);
         toHide = toHide.concat(relayPorts);
         toShow = toShow.concat(pneumaticPorts);
     }
-    else if (view = "relay")
+    else if (portView == "relay")
     {
         toHide = toHide.concat(motorPorts);
         toHide = toHide.concat(pneumaticPorts);
@@ -168,8 +168,8 @@ function updateFieldOptions(fieldset)
         var portBSelector = getElByClass(fieldset, 'port-number-b');
         setVisible(genericPortsDiv, true);
         setVisible(portBSelector, false);
-
-        setPortView(fieldset, "motor");
+        
+        setPortView(fieldset, 'motor');
 
         // Angular Joint Info
         if ((jointType & JOINT_ANGULAR) == JOINT_ANGULAR)
@@ -222,10 +222,10 @@ function updateFieldOptions(fieldset)
                 if (driverType == DRIVER_BUMPER_PNEUMATIC)
                 {
                     setVisible(portBSelector, true);
-                    setPortView(fieldset, "pneumatic");
+                    setPortView(fieldset, 'pneumatic');
                 }
                 else
-                    setPortView(fieldset, "relay");
+                    setPortView(fieldset, 'relay');
 
                 setVisible(pneumaticDiv, true);
                 setVisible(angularJointDiv, false);
@@ -245,9 +245,9 @@ function readFormData()
 
         if (selectedDriver > 0)
         {
-            var signal = parseInt(fieldset.getElementsByClassName('port-signal')[0].dataset.port_value);
-            var portA = fieldset.getElementsByClassName('port-number-a')[0].selectedIndex;
-            var portB = fieldset.getElementsByClassName('port-number-b')[0].selectedIndex;
+            var signal = parseInt(getElByClass(fieldset, 'port-signal').querySelector('option:checked').dataset.portValue);
+            var portA = parseInt(getElByClass(fieldset, 'port-number-a').value);
+            var portB = parseInt(getElByClass(fieldset, 'port-number-b').value);
 
             jointOptions[i].driver = createDriver(selectedDriver, signal, portA, portB);
             jointOptions[i].driver.signal = signal;
@@ -256,18 +256,18 @@ function readFormData()
 
             if ((jointOptions[i].type & JOINT_ANGULAR) == JOINT_ANGULAR)
             {
-                var selectedWheel = fieldset.getElementsByClassName('wheel-type')[0].selectedIndex;
+                var selectedWheel = getElByClass(fieldset, 'wheel-type').selectedIndex;
 
                 if (selectedWheel > 0)
                 {
-                    var isDriveWheel = fieldset.getElementsByClassName('is-drive-wheel')[0].checked;
+                    var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
                     jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
 
                     if (isDriveWheel)
                     {
                         jointOptions[i].driver.signal = PWM;
-                        jointOptions[i].driver.portA = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
-                        jointOptions[i].driver.portB = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
+                        jointOptions[i].driver.portA = getElByClass(fieldset, 'wheel-side').selectedIndex;
+                        jointOptions[i].driver.portB = getElByClass(fieldset, 'wheel-side').selectedIndex;
                     }
                 }
             }
@@ -277,8 +277,8 @@ function readFormData()
                 if (selectedDriver == DRIVER_BUMPER_PNEUMATIC ||
                     selectedDriver == DRIVER_RELAY_PNEUMATIC)
                 {
-                    var width = fieldset.getElementsByClassName('pneumatic-width')[0].value;
-                    var pressure = fieldset.getElementsByClassName('pneumatic-pressure')[0].value;
+                    var width = getElByClass(fieldset, 'pneumatic-width').value;
+                    var pressure = getElByClass(fieldset, 'pneumatic-pressure').value;
 
                     jointOptions[i].driver.pneumatic = createPneumatic(width, pressure);
                 }
