@@ -106,8 +106,8 @@ void CylindricalJoint::write(XmlWriter & output) const
 	output.writeElement("LinearEndLimit", std::to_string(getMaxTranslation()));
 
 	// Current position and angle
-	output.writeElement("CurrentAngularPosition", std::to_string(getCurrentAngle()));
 	output.writeElement("CurrentLinearPosition", std::to_string(getCurrentTranslation()));
+	output.writeElement("CurrentAngularPosition", std::to_string(getCurrentAngle()));
 
 	output.endElement();
 
