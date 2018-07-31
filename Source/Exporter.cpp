@@ -21,8 +21,12 @@ std::vector<Ptr<Joint>> Exporter::collectJoints()
 	{
 		Ptr<Joint> joint = allJoints[j];
 
-		if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType ||
-			joint->jointMotion()->jointType() == JointTypes::SliderJointType)
+		JointTypes type = joint->jointMotion()->jointType();
+
+		// Check if joint is supported
+		if (type == JointTypes::RevoluteJointType ||
+			type == JointTypes::SliderJointType ||
+			type == JointTypes::CylindricalJointType)
 			joints.push_back(joint);
 	}
 
@@ -37,14 +41,24 @@ std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
 	{
 		stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + " ";
 
+		JointTypes type = joint->jointMotion()->jointType();
+
 		// Specify if joint supports linear and/or angular motion
-		if (joint->jointMotion()->jointType() == JointTypes::RevoluteJointType)		 // Angular motion only
+		// Angular motion only
+		if (type == JointTypes::RevoluteJointType)         
 			stringifiedJoints += 5;
-		else if (joint->jointMotion()->jointType() == JointTypes::SliderJointType) // Linear motion only
+
+		// Linear motion only
+		else if (type == JointTypes::SliderJointType ||
+				 type == JointTypes::CylindricalJointType)      
 			stringifiedJoints += 6;
-		else if (false)                                                              // Both angular and linear motion
+
+		// Both angular and linear motion (Combo Angular-Linear joints not yet supported in BXDJ file)
+		else if (false) // joint->jointMotion()->jointType() == JointTypes::CylindricalJointType) 
 			stringifiedJoints += 7;
-		else                                                                         // Neither angular nor linear motion
+
+		// Neither angular nor linear motion
+		else                                                                            
 			stringifiedJoints += 4;
 
 		stringifiedJoints += " ";
