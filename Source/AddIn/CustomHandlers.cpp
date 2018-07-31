@@ -107,6 +107,8 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 				if ((dataReceived[i++] + ASCII_OFFSET) == 1)
 				{
 					BXDJ::Pneumatic pneumatic;
+					pneumatic.widthMillimeter = BXDJ::Pneumatic::COMMON_WIDTHS[dataReceived[i++] + ASCII_OFFSET];
+					pneumatic.pressurePSI = BXDJ::Pneumatic::COMMON_PRESSURES[dataReceived[i++] + ASCII_OFFSET];
 					driver.setComponent(pneumatic);
 				}
 
