@@ -1,5 +1,5 @@
-#ifndef _ENCODER_HPP_
-#define _ENCODER_HPP_
+#ifndef _FPGA_ENCODER_HPP_
+#define _FPGA_ENCODER_HPP_
 
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tEncoder.h"
@@ -7,13 +7,13 @@
 namespace hel{
 
     /**
-     * \struct Encoder
+     * \struct FPGAEncoder
      * \brief Data model for incremental encoder input data
      * Holds all the data for encoder inputs
      */
 
-    struct Encoder{
-        static constexpr const int32_t NUM_ENCODERS = 8; //hal::kNumEncoders
+    struct FPGAEncoder{
+        static constexpr const int32_t NUM_ENCODERS = 8; //hal::kNumFPGAEncoders
     private:
 
         /**
@@ -67,7 +67,7 @@ namespace hel{
         void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput);
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const;
         void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig);
-        Encoder();
+        FPGAEncoder();
     };
 }
 
