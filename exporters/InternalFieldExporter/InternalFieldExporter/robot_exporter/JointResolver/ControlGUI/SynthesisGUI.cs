@@ -290,7 +290,7 @@ public partial class SynthesisGUI : Form
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
     public bool PromptExportSettings()
     {
-        if (ExportFieldForm.Prompt(RMeta.ActiveFieldName, out string fieldName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        if (FieldExportForm.Prompt(RMeta.ActiveFieldName, out string fieldName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
         {
             RMeta.UseSettingsDir = true;
             RMeta.ActiveDir = null;

@@ -1,4 +1,4 @@
-namespace FieldExporter.Components
+namespace InternalFieldExporter.Components
 {
     partial class PropertySetsTabControl
     {
