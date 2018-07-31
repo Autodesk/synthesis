@@ -115,6 +115,7 @@
     <ClInclude Include="Source\Data\BXDJ\Driver.h" />
     <ClInclude Include="Source\Data\BXDJ\Joint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\AngularJoint.h" />
+    <ClInclude Include="Source\Data\BXDJ\Joints\BallJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\CylindricalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\SliderJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\LinearJoint.h" />
@@ -142,6 +143,7 @@
     <ClCompile Include="Source\Data\BXDJ\ConfigData.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Driver.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joint.cpp" />
+    <ClCompile Include="Source\Data\BXDJ\Joints\BallJoint.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joints\CylindricalJoint.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joints\SliderJoint.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joints\RotationalJoint.cpp" />

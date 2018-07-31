@@ -129,6 +129,9 @@
     <ClInclude Include="Source\Data\BXDJ\Joints\CylindricalJoint.h">
       <Filter>Headers\Data\BXDJ\Joints</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Joints\BallJoint.h">
+      <Filter>Headers\Data\BXDJ\Joints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -204,6 +207,9 @@
       <Filter>Source\Data\BXDJ\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\BXDJ\Joints\CylindricalJoint.cpp">
+      <Filter>Source\Data\BXDJ\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Joints\BallJoint.cpp">
       <Filter>Source\Data\BXDJ\Joints</Filter>
     </ClCompile>
   </ItemGroup>
