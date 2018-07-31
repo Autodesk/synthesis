@@ -23,7 +23,7 @@ namespace Synthesis.Network
         /// </summary>
         public static MatchManager Instance { get; private set; }
 
-        public TcpFileTransfer FileTransfer { get; private set; }
+        //public TcpFileTransfer FileTransfer { get; private set; }
 
         /// <summary>
         /// A reference to the <see cref="NetworkMultiplayerUI"/> <see cref="StateMachine"/>.
@@ -234,7 +234,7 @@ namespace Synthesis.Network
 
             //FileTransfer.StartTcpListener(() => tcpConnectionEstablished = true);
 
-            foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap.Where(e => e.Key >= 0/* && e.Key != PlayerIdentity.LocalInstance.id*/))
+            foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap.Where(e => e.Key >= 0 && e.Key != PlayerIdentity.LocalInstance.id))
             {
                 PlayerIdentity identity = PlayerIdentity.FindById(entry.Key);
                 remainingIdentities.Remove(identity);
