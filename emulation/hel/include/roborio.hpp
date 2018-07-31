@@ -68,18 +68,18 @@ namespace hel{
         bool user_button;
 
         Accelerometer accelerometer;
-        std::array<Accumulator, AnalogInputs::NUM_ANALOG_INPUTS> accumulators;
+        BoundsCheckedArray<Accumulator, AnalogInputs::NUM_ANALOG_INPUTS> accumulators;
         Alarm alarm;
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
         std::map<uint32_t,CANMotorController> can_motor_controllers;
-        std::array<Counter, Counter::MAX_COUNTER_COUNT> counters;
+        BoundsCheckedArray<Counter, Counter::MAX_COUNTER_COUNT> counters;
         DigitalSystem digital_system;
         std::vector<DSError> ds_errors;
         MatchInfo match_info;
-        std::array<FPGAEncoder, FPGAEncoder::NUM_ENCODERS> fpga_encoders;
+        BoundsCheckedArray<FPGAEncoder, FPGAEncoder::NUM_ENCODERS> fpga_encoders;
         Global global;
-        std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
+        BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
         NetComm net_comm;
         Power power;
         PWMSystem pwm_system;

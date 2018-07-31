@@ -47,14 +47,19 @@ void hel::ReceiveData::update()const{
             ; //Do nothing
         }
     }
-    instance.first->joysticks = joysticks.toArray();
+    instance.first->joysticks = joysticks;
+    instance.first->match_info = match_info;
+    instance.first->robot_mode = robot_mode;
+    instance.second.unlock();
 }
 
 std::string hel::ReceiveData::toString()const{
     std::string s = "(";
     s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
     s += "joysticks:" + hel::to_string(joysticks, std::function<std::string(hel::Joystick)>([&](hel::Joystick joy){ return joy.toString(); })) + ", ";
-    s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>([&](hel::MXPData mxp){ return mxp.serialize();}));
+    s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>([&](hel::MXPData mxp){ return mxp.serialize();})) + ", ";
+    s += "match_info:" + match_info.toString() + ", ";
+    s += "robot_mode:" + robot_mode.toString();
     s += ")";
     return s;
 }
@@ -91,6 +96,20 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
                 hel::pullValue("\"digital_mxp\"", input),
                 std::function<MXPData(std::string)>(MXPData::deserialize),
                 true);
+        } catch(const std::exception& ex){
+            throw JSONParsingException();
+        }
+    }
+    if(input.find(quote("match_info")) != std::string::npos){
+        try{
+            match_info = MatchInfo::deserialize(hel::pullValue("\"match_info\"", input));
+        } catch(const std::exception& ex){
+            throw JSONParsingException();
+        }
+    }
+    if(input.find(quote("robot_mode")) != std::string::npos){
+        try{
+            robot_mode = RobotMode::deserialize(hel::pullValue("\"robot_mode\"", input));
         } catch(const std::exception& ex){
             throw JSONParsingException();
         }
