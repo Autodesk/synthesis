@@ -23,14 +23,20 @@ namespace hel{
 
         static constexpr uint8_t MAX_CAN_BUS_ADDRESS = 62;
 
+        static constexpr uint32_t UNKNOWN_DEVICE_ID = 262271;
+
         enum MessageData{
             COMMAND_BYTE = 7,
             SIZE = 8
         };
 
-        enum CommandByteMask: uint8_t{
+        enum SendCommandByteMask: uint8_t{
             SET_POWER_PERCENT = 5,
             SET_INVERTED = 6
+        };
+
+        enum ReceiveCommandIDMask: uint32_t{
+            GET_POWER_PERCENT = 0b1010000000000
         };
 
     private:
@@ -59,9 +65,13 @@ namespace hel{
 
         uint8_t getID()const;
 
-        void setSpeed(BoundsCheckedArray<uint8_t,MessageData::SIZE>);
+        void setSpeedData(BoundsCheckedArray<uint8_t,MessageData::SIZE>);
+
+        void setSpeed(double);
 
         double getSpeed()const;
+
+        BoundsCheckedArray<uint8_t,MessageData::SIZE> getSpeedData()const;
 
         void setInverted(bool);
 
