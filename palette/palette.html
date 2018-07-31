@@ -22,15 +22,15 @@
     <body>
         <div id='export-settings'>
             <div class="text-inputs">
-                Robot Name:  <input type="text" id="name"><br>
-                Mass:        <input type="number" id="mass"><br>
+                <span>Robot Name: </span><input type="text" id="name"><br />
+                <span>Mass: </span><input type="number" id="mass"><br />
             </div>
             <br>
             <fieldset id="joint-config-template" class="joint-config">
                 <legend class="joint-config-legend">Joint</legend>
 
                 <div class="driver-div">
-                    <h3>Driver Type: </h3>
+                    <span>Driver Type: </span>
                     <select class="driver-type" onchange="updateFieldOptions(this)">
                         <option value="0">None</option>
                         <option value="1" class="angular-driver">Motor</option>
@@ -40,33 +40,38 @@
                         <option value="5" class="linear-driver">Relay Pnuematic</option>
                         <option value="6" class="angular-driver">Dual Motor</option>
                         <option value="7" class="linear-driver">Elevator</option>
-                    </select>
+                    </select><br />
 
                     <div class="has-driver-div">
                         <div class="angular-joint-div">
-                            <h3>Wheel Type: </h3>
+                            <span>Wheel Type: </span>
                             <select class="wheel-type" onchange="updateFieldOptions(this)">
                                 <option value="0">None</option>
                                 <option value="1">Normal</option>
                                 <option value="2">Omni</option>
                                 <option value="3">Mecanum</option>
-                            </select>
+                            </select><br />
 
                             <div class="has-wheel-div">
                                 <span>Is Drive Wheel: </span>
-                                <input type="checkbox" class="is-drive-wheel" onchange="updateFieldOptions(this)" />
+                                <input type="checkbox" class="is-drive-wheel" onchange="updateFieldOptions(this)" /><br />
 
                                 <div class="drive-wheel-ports-div">
                                     <select class="wheel-side">
                                         <option value="0">Left Wheel</option>
                                         <option value="1">Right Wheel</option>
-                                    </select>
+                                    </select><br />
                                 </div>
                             </div>
                         </div>
 
                         <div class="linear-joint-div">
-                            Not implemented
+                            <div class="pneumatic-div">
+                                <span>Width (mm): </span>
+                                <input type="number" class="pneumatic-width"><br />
+                                <span>Pressure (PSI): </span>
+                                <input type="number" class="pneumatic-pressure"><br />
+                            </div>
                         </div>
 
                         <div class="generic-ports-div">
@@ -95,7 +100,7 @@
                                 <option value="6">6</option>
                                 <option value="7">7</option>
                                 <option value="8">8</option>
-                            </select>
+                            </select><br />
                         </div>
                     </div>
                 </div>

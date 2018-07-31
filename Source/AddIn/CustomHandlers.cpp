@@ -104,6 +104,12 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 					driver.setComponent(wheel);
 				}
 
+				if ((dataReceived[i++] + ASCII_OFFSET) == 1)
+				{
+					BXDJ::Pneumatic pneumatic;
+					driver.setComponent(pneumatic);
+				}
+
 				config.setDriver(joints[j], driver);
 			}
 		}
