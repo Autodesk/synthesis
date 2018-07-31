@@ -139,6 +139,15 @@ function displayJointOptions(joints)
     }
 }
 
+// Disable submit button if no name entered
+function updateSubmitButton()
+{
+    var submitButton = document.getElementById('finished-button');
+    var name = document.getElementById('name').value;
+
+    document.getElementById('finished-button').disabled = (name.length == 0);
+}
+
 // Hides or shows fields based on the values of other fields
 function updateFieldOptions(fieldset)
 {
@@ -293,7 +302,10 @@ function sendInfoToFusion()
     var name = document.getElementById('name').value;
 
     if (name.length == 0)
+    {
+        alert("Please enter a name.");
         return;
+    }
 
     readFormData();
     adsk.fusionSendData('export', stringifyConfigData(name, jointOptions));
