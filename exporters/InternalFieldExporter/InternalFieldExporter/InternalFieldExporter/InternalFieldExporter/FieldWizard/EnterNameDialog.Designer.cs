@@ -1,13 +1,13 @@
-namespace FieldExporter.Components
+﻿namespace InternalFieldExporter.FieldWizard
 {
-    partial class InventorTreeView
+    partial class EnterNameDialog
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -20,7 +20,7 @@ namespace FieldExporter.Components
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+        #region Windows Form Designer generated code
 
         /// <summary>
         /// Required method for Designer support - do not modify
@@ -28,13 +28,10 @@ namespace FieldExporter.Components
         /// </summary>
         private void InitializeComponent()
         {
-            this.SuspendLayout();
-            // 
-            // InventorTreeView
-            // 
-            this.LineColor = System.Drawing.Color.Black;
-            this.ResumeLayout(false);
-
+            this.components = new System.ComponentModel.Container();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Text = "EnterNameDialog";
         }
 
         #endregion

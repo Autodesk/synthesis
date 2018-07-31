@@ -17,6 +17,7 @@ using JointResolver.ControlGUI;
 using OGLViewer;
 using Inventor;
 
+
 public delegate bool ValidationAction(RigidNode_Base baseNode, out string message);
 
 [Guid("ec18f8d4-c13e-4c86-8148-7414efb6e1e2")]
@@ -284,26 +285,6 @@ public partial class SynthesisGUI : Form
         return true;
     }
 
-    /// <summary>
-    /// Prompts the user for the name of the field, as well as other information.
-    /// </summary>
-    /// <returns>True if user pressed okay, false if they pressed cancel</returns>
-    public bool PromptExportSettings()
-    {
-        if (ExportFieldForm.Prompt(RMeta.ActiveFieldName, out string fieldName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
-        {
-            RMeta.UseSettingsDir = true;
-            RMeta.ActiveDir = null;
-            RMeta.ActiveFieldName = fieldName;
-            RMeta.FieldName = field;
-
-            PluginSettings.GeneralUseFancyColors = colors;
-            PluginSettings.OnSettingsChanged();
-
-            return true;
-        }
-        return false;
-    }
     public void writeLimits(RigidNode_Base skeleton)// generally, this class iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
         //needed because we want to be able to pull the limits into the joint as the exporter exports, but where the joint is actually written to the .bxdj (the SimulatorAPI) is unable
         //to access InternalFieldExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue

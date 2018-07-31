@@ -1,4 +1,4 @@
-namespace FieldExporter.Components
+﻿namespace InternalFieldExporter.FieldWizard
 {
     partial class ComponentPropertiesTabPage
     {
@@ -20,23 +20,21 @@ namespace FieldExporter.Components
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+        #region Windows Form Designer generated code
 
         /// <summary>
-        /// Required method for Designer support - do not modify 
+        /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
             this.SuspendLayout();
+            //
+            // CreatePhysicsGroupTabPage
+            //
             this.ResumeLayout(false);
-
         }
 
         #endregion
-
-
-
-
     }
 }

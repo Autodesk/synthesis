@@ -1,4 +1,4 @@
-namespace FieldExporter.Components
+﻿namespace InternalFieldExporter.FieldWizard
 {
     partial class PropertySetsTabControl
     {
@@ -20,26 +20,21 @@ namespace FieldExporter.Components
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+        #region Windows Form Designer generated code
 
         /// <summary>
-        /// Required method for Designer support - do not modify 
+        /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
             this.SuspendLayout();
-            // 
-            // PropertySetsTabControl
-            // 
-            this.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.PropertySetsTabControl_Selecting);
-            this.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.PropertySetsTabControl_Deselecting);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PropertySetsTabControl_MouseClick);
+            //
+            // CreatePhysicsGroupTabPage
+            //
             this.ResumeLayout(false);
-
         }
 
         #endregion
-
     }
 }

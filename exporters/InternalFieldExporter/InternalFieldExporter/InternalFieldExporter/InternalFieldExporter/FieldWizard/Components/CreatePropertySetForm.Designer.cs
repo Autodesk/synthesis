@@ -1,4 +1,4 @@
-namespace FieldExporter.Components
+﻿namespace InternalFieldExporter.FieldWizard
 {
     partial class CreatePropertySetForm
     {
@@ -28,44 +28,36 @@ namespace FieldExporter.Components
         /// </summary>
         private void InitializeComponent()
         {
+            this.label1 = new System.Windows.Forms.Label();
             this.createButton = new System.Windows.Forms.Button();
-            this.createLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(6, 165);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(588, 22);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "You have not yet created any Property Sets.";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // createButton
             // 
             this.createButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.createButton.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.createButton.ImageKey = "CreateImage.png";
             this.createButton.Location = new System.Drawing.Point(268, 190);
             this.createButton.Name = "createButton";
             this.createButton.Size = new System.Drawing.Size(64, 32);
-            this.createButton.TabIndex = 3;
+            this.createButton.TabIndex = 1;
             this.createButton.Text = "Create";
             this.createButton.UseVisualStyleBackColor = true;
-            this.createButton.Click += new System.EventHandler(this.newPhysicsButton_Click);
-            // 
-            // createLabel
-            // 
-            this.createLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.createLabel.BackColor = System.Drawing.Color.Transparent;
-            this.createLabel.Location = new System.Drawing.Point(6, 165);
-            this.createLabel.Name = "createLabel";
-            this.createLabel.Size = new System.Drawing.Size(588, 22);
-            this.createLabel.TabIndex = 2;
-            this.createLabel.Text = "You have not yet created any Property Sets.";
-            this.createLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // CreatePropertySetForm
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.Color.White;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.createButton);
-            this.Controls.Add(this.createLabel);
-            this.DoubleBuffered = true;
+            this.Controls.Add(this.label1);
             this.Name = "CreatePropertySetForm";
-            this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(600, 400);
             this.ResumeLayout(false);
 
@@ -73,7 +65,7 @@ namespace FieldExporter.Components
 
         #endregion
 
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button createButton;
-        private System.Windows.Forms.Label createLabel;
     }
 }

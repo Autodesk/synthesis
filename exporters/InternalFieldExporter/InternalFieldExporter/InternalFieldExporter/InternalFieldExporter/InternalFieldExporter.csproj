@@ -104,15 +104,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FieldWizard\Components\BoxColliderPropertiesForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="FieldWizard\Components\BoxColliderPropertiesForm.Designer.cs">
-      <DependentUpon>BoxColliderPropertiesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FieldWizard\Components\ColliderPropertiesForm.cs" />
     <Compile Include="FieldWizard\Components\ComponentPropertiesForm.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FieldWizard\Components\ComponentPropertiesForm.Designer.cs">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
@@ -120,44 +113,32 @@
     <Compile Include="FieldWizard\Components\ComponentPropertiesTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FieldWizard\Components\ComponentPropertiesTabPage.designer.cs">
+    <Compile Include="FieldWizard\Components\ComponentPropertiesTabPage.Designer.cs">
       <DependentUpon>ComponentPropertiesTabPage.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldWizard\Components\CreatePropertySetForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FieldWizard\Components\CreatePropertySetForm.designer.cs">
+    <Compile Include="FieldWizard\Components\CreatePropertySetForm.Designer.cs">
       <DependentUpon>CreatePropertySetForm.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldWizard\Components\CreatePropertySetTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FieldWizard\Components\CreatePropertySetTabPage.designer.cs">
+    <Compile Include="FieldWizard\Components\CreatePropertySetTabPage.Designer.cs">
       <DependentUpon>CreatePropertySetTabPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FieldWizard\Components\InventorTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="FieldWizard\Components\InventorTreeView.designer.cs">
-      <DependentUpon>InventorTreeView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FieldWizard\Components\MeshColliderPropertiesForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="FieldWizard\Components\MeshColliderPropertiesForm.designer.cs">
-      <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldWizard\Components\PropertySetsTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FieldWizard\Components\PropertySetsTabControl.designer.cs">
+    <Compile Include="FieldWizard\Components\PropertySetsTabControl.Designer.cs">
       <DependentUpon>PropertySetsTabControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="FieldWizard\Components\SphereColliderPropertiesForm.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="FieldWizard\EnterNameDialog.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FieldWizard\Components\SphereColliderPropertiesForm.designer.cs">
-      <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
+    <Compile Include="FieldWizard\EnterNameDialog.Designer.cs">
+      <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldWizard\FieldExportForm.cs">
       <SubType>Form</SubType>
@@ -254,32 +235,8 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FieldWizard\Components\BoxColliderPropertiesForm.resx">
-      <DependentUpon>BoxColliderPropertiesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\Components\ComponentPropertiesForm.resx">
-      <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\Components\ComponentPropertiesTabPage.resx">
-      <DependentUpon>ComponentPropertiesTabPage.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FieldWizard\Components\CreatePropertySetForm.resx">
       <DependentUpon>CreatePropertySetForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\Components\CreatePropertySetTabPage.resx">
-      <DependentUpon>CreatePropertySetTabPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\Components\InventorTreeView.resx">
-      <DependentUpon>InventorTreeView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\Components\MeshColliderPropertiesForm.resx">
-      <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\Components\PropertySetsTabControl.resx">
-      <DependentUpon>PropertySetsTabControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\Components\SphereColliderPropertiesForm.resx">
-      <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\DebugHighlightForm.resx">
       <DependentUpon>DebugHighlightForm.cs</DependentUpon>
@@ -390,10 +347,16 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Reference Include="autodesk.inventor.interop, Version=23.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_23.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
+    </Reference>
     <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

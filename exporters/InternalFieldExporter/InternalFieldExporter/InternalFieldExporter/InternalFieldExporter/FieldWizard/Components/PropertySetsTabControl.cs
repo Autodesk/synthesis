@@ -1,11 +1,14 @@
-using InternalFieldExporter.Controls;
-using InternalFieldExporter.Forms;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace InternalFieldExporter.Components
+namespace InternalFieldExporter.FieldWizard
 {
     public partial class PropertySetsTabControl : TabControl
     {
@@ -61,26 +64,23 @@ namespace InternalFieldExporter.Components
         public List<PropertySet> TranslateToPropertySets()
         {
             List<PropertySet> translation = new List<PropertySet>();
-
             foreach (TabPage t in TabPages)
             {
                 if (t is ComponentPropertiesTabPage)
                 {
                     ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
                     tabPage.Invoke(new Action(() =>
-                        {
-                            translation.Add(new PropertySet(
-                                tabPage.Name,
-                                tabPage.ChildForm.GetCollider(),
-                                tabPage.ChildForm.GetFriction(),
-                                tabPage.ChildForm.GetMass()));
-                        }));
+                    {
+                        translation.Add(new PropertySet(
+                            tabPage.Name,
+                            tabPage.ChildForm.GetCollider(),
+                            tabPage.ChildForm.GetFriction(),
+                            tabPage.ChildForm.GetMass()));
+                    }));
                 }
             }
-
             return translation;
         }
-
         /// <summary>
         /// Scans each nonexcluded InventorTreeView and determines if they contian the supplied key.
         /// </summary>
@@ -105,7 +105,6 @@ namespace InternalFieldExporter.Components
             }
             return false;
         }
-
         /// <summary>
         /// Returns the TabPage in which the given node is located.
         /// </summary>
@@ -126,7 +125,6 @@ namespace InternalFieldExporter.Components
             }
             return null;
         }
-
         /// <summary>
         /// Scans each nonexcluded InventorTreeView and removes nodes with the supplied key.
         /// </summary>
@@ -150,7 +148,6 @@ namespace InternalFieldExporter.Components
                 }
             }
         }
-
         /// <summary>
         /// Checks if interaction events are enabled before switching tabs.
         /// </summary>
@@ -161,7 +158,6 @@ namespace InternalFieldExporter.Components
             if (e.TabPage != null)
             {
                 Control[] controlCollection = SelectedTab.Controls.Find("ComponentPropertiesForm", false);
-
                 if (controlCollection.Length > 0)
                 {
                     ComponentPropertiesForm form = (ComponentPropertiesForm)controlCollection[0];
@@ -176,7 +172,6 @@ namespace InternalFieldExporter.Components
                 }
             }
         }
-
         /// <summary>
         /// Adds a new tab if tabs already exist.
         /// </summary>
@@ -195,7 +190,6 @@ namespace InternalFieldExporter.Components
                 }
             }
         }
-
         /// <summary>
         /// Allows the user to right-click the tabs.
         /// </summary>
