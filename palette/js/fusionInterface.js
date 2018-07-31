@@ -29,14 +29,14 @@ var FRICTION_MEDIUM = 2;
 var FRICTION_HIGH = 3;
 
 // Pneumatic Widths
-var WIDTH_2_5MM = 1;
-var WIDTH_5MM = 2;
-var WIDTH_10MM = 3;
+var WIDTH_2_5MM = 0;
+var WIDTH_5MM = 1;
+var WIDTH_10MM = 2;
 
 // Pneumatic Pressures
-var PRESSURE_10PSI = 1;
-var PRESSURE_20PSI = 2;
-var PRESSURE_60PSI = 3;
+var PRESSURE_10PSI = 0;
+var PRESSURE_20PSI = 1;
+var PRESSURE_60PSI = 2;
 
 function stringifyConfigData(name, joints)
 {
