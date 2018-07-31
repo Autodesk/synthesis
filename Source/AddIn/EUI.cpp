@@ -72,7 +72,7 @@ bool EUI::createWorkspace()
 	}
 }
 
-void Synthesis::EUI::deleteWorkspace()
+void EUI::deleteWorkspace()
 {
 	// Delete palettes
 	deleteExportPalette();
@@ -117,7 +117,7 @@ bool EUI::createExportPalette()
 	return true;
 }
 
-void Synthesis::EUI::deleteExportPalette()
+void EUI::deleteExportPalette()
 {
 	Ptr<Palettes> palettes = UI->palettes();
 	if (!palettes)
@@ -151,7 +151,7 @@ bool EUI::createExportButton()
 	return true;
 }
 
-void Synthesis::EUI::deleteExportButton()
+void EUI::deleteExportButton()
 {
 	// Delete button
 	Ptr<ToolbarPanelList> panels = UI->allToolbarPanels();
