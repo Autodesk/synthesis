@@ -1,4 +1,7 @@
 #include "Surface.h"
+#include <Core/Materials/Properties.h>
+#include <Core/Materials/ColorProperty.h>
+#include <Core/Application/Color.h>
 
 using namespace BXDA;
 
@@ -8,7 +11,7 @@ Surface::Surface()
 	color = 0xFFFFFFFF;
 	transparency = 0;
 	translucency = 0;
-	specular = 0.2f;
+	specular = 0.1f;
 }
 
 Surface::Surface(const Surface & s) : triangles(s.triangles.size())
@@ -77,12 +80,26 @@ void BXDA::Surface::setColor(unsigned char r, unsigned char g, unsigned char b, 
 	color = r + g * 0x100 + b * 0x10000 + a * 0x1000000;
 }
 
-void Surface::setColor(adsk::core::Ptr<adsk::core::ColorProperty> color)
+void Surface::setColor(core::Ptr<core::Appearance> appearance)
 {
-	if (color != nullptr && color->value() != nullptr)
-		setColor(color->value()->red(), color->value()->green(), color->value()->blue(), color->value()->opacity());
-	else
-		setColor(255, 255, 255, 255);
+	if (appearance == nullptr)
+		return;
+
+	core::Ptr<core::Properties> properties = appearance->appearanceProperties();
+
+	core::Ptr<core::Property> * propArr = new core::Ptr<core::Property>[properties->count()];
+	properties->copyTo(propArr);
+
+	// Find the first property that is a color. Cannot use findByName, since multiple properties share the name "color" and the one we want is not found by that function.
+	for (int i = 0; i < properties->count(); i++)
+	{
+		core::Ptr<core::ColorProperty> colorProp = propArr[i];
+		if (colorProp != nullptr && propArr[i]->name() == "Color")
+		{
+			setColor(colorProp->value()->red(), colorProp->value()->green(), colorProp->value()->blue(), colorProp->value()->opacity());
+			return;
+		}
+	}
 }
 
 void BXDA::Surface::removeColor()
