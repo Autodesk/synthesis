@@ -3,6 +3,8 @@
 
 #include "FRC_NetworkCommunication/FRCComm.h"
 
+#include <string>
+
 namespace hel{
 
     /**

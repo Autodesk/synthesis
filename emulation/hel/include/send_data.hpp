@@ -11,6 +11,7 @@
 #include "can_motor_controller.hpp"
 #include "digital_system.hpp"
 #include "mxp_data.hpp"
+#include "pwm_system.hpp"
 #include "relay_system.hpp"
 
 namespace hel{
@@ -21,7 +22,7 @@ namespace hel{
         std::string serialized_data;
         bool gen_serialization;
 
-        std::array<double, nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters> pwm_hdrs;
+        std::array<double, PWMSystem::NUM_HDRS> pwm_hdrs;
 
         std::array<RelayState, RelaySystem::NUM_RELAY_HEADERS> relays;
 
