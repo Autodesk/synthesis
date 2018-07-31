@@ -19,8 +19,16 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 
 			// Add faces to sub-mesh
 			std::shared_ptr<BXDA::Surface> surface = std::make_shared<BXDA::Surface>(fusionMesh->nodeIndices(), subMesh->getVertCount());
+			
+			// Add color to surface
+			core::Ptr<core::Appearance> appearance = nullptr;
 
-			surface->setColor(body->appearance()->appearanceProperties()->itemByName("Color"));
+			if (occurrence->appearance() != nullptr)
+				appearance = occurrence->appearance();
+			else if (body->appearance() != nullptr)
+				appearance = body->appearance();
+
+			surface->setColor(appearance);
 			subMesh->addSurface(surface);
 
 			// Add vertices to sub-mesh
