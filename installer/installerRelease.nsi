@@ -116,16 +116,6 @@ File /r "MixAndMatch\*"
 
 SectionEnd
 
-Section
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR
-
-  File "SynthesisLauncher.exe"
-  File "Apache2.rtf"
-
-SectionEnd
-
 Section /o "Standalone Robot Exporter (legacy)"
 
   ; Set output path to the installation directory.
@@ -133,17 +123,6 @@ Section /o "Standalone Robot Exporter (legacy)"
 
   File /r "RobotExporter\*"
 
-SectionEnd
-
-Section /o "Standalone Field Exporter (legacy)"
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\FieldExporter
-
-  File /r "FieldExporter\SimulatorAPI.dll"
-  File /r "FieldExporter\FieldExporter.exe"
-  File /r "FieldExporter\ConvexLibraryWrapper.dll"
-	
 SectionEnd
 
 Section "Robot Exporter Plugin (reccommended)"
@@ -164,33 +143,6 @@ Section "Robot Exporter Plugin (reccommended)"
   File /r "RobotExporter\Viewer\OGLViewer.dll"
   File /r "RobotExporter\Viewer\SimulatorAPI.dll"
 
-SectionEnd
-
-Section "Field Exporter Plugin (reccommended)"
-	
-  ; Set output path to plugin directory
-  SetOutPath "$INSTDIR"
-  File /r "FieldExporter\FieldDistrib.bat"
-  File /r "FieldExporter\autodesk.BxDFieldExporter.inventor.addin"
-  ExecShell open "$INSTDIR\FieldDistrib.bat" SW_HIDE
-
-  SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
-  File /r "FieldExporter\BxDFieldExporter.dll"
-
-SectionEnd
-
-Section "Code Emulator (optional)"
-
-  SetOutPath $INSTDIR\SynthesisDrive
-
-  File /r "SynthesisDrive\*"
-
-  SetOutPath $INSTDIR\cygscripts
-  File /r "cygscripts\*"
-
-  ; installs cygwin
-  ExecWait "$INSTDIR\cygscripts\cygpac.bat"
-  
 SectionEnd
 
 Section "Robot Files"
@@ -216,9 +168,7 @@ Section "Uninstall"
 
   RMDir /r /REBOOTOK $INSTDIR
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
-  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
-  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
   ; Remove files and uninstaller
   Delete $INSTDIR\Synthesis.nsi
   Delete $INSTDIR\uninstall.exe
@@ -246,7 +196,7 @@ MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view 
     NoReadme:
 
 
-    Exec "$INSTDIR\SynthesisLauncher.exe"
+    Exec "$INSTDIR\Synthesis.exe"
 
     MessageBox MB_OK "Synthesis has been installed succsessfully!"
 
