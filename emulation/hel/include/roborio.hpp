@@ -32,7 +32,7 @@
 #include "can_motor_controller.hpp"
 #include "counter.hpp"
 #include "digital_system.hpp"
-#include "encoder.hpp"
+#include "fpga_encoder.hpp"
 #include "error.hpp"
 #include "global.hpp"
 #include "joystick.hpp"
@@ -77,7 +77,7 @@ namespace hel{
         DigitalSystem digital_system;
         std::vector<DSError> ds_errors;
         MatchInfo match_info;
-        std::array<Encoder, Encoder::NUM_ENCODERS> encoders;
+        std::array<FPGAEncoder, FPGAEncoder::NUM_ENCODERS> fpga_encoders;
         Global global;
         std::array<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
         NetComm net_comm;
