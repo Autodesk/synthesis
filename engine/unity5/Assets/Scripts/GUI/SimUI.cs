@@ -222,6 +222,12 @@ namespace Synthesis.GUI
         {
             tabStateMachine.ChangeState(new SensorToolbarState());
         }
+
+        public void OnEmulationTab(string option)
+        {
+            tabStateMachine.ChangeState(new EmulationToolbarState());
+        }
+
         #endregion
         #region change robot/field functions
         public void ChangeRobot()
@@ -797,6 +803,7 @@ namespace Synthesis.GUI
             LinkToolbar<DPMToolbarState>("DPMToolbar");
             LinkToolbar<ScoringToolbarState>("ScoringToolbar");
             LinkToolbar<SensorToolbarState>("SensorToolbar");
+            LinkToolbar<EmulationToolbarState>("EmulationToolbar");
         }
 
         /// <summary>
