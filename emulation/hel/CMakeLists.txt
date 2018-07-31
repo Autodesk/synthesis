@@ -43,10 +43,6 @@ if(ARCH MATCHES "[Aa][Rr][Mm]")
   SET (CMAKE_C_COMPILER arm-frc-linux-gnueabi-gcc)
   SET (CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
 
-  if(NOT NO_UNIT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_UNIT MATCHES "[Oo][Nn]")
-    #SET(NO_UNIT "TRUE")
-  endif()
-
   LINK_DIRECTORIES ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena ${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/hal/build/libs/halAthena/shared ${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/linuxathena/linux/athena/shared ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/ ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/ ${CTRE_DIRECTORY}/libraries/driver/lib/)
 elseif(ARCH MATCHES "([Xx]86([-_]64)?)")
 
@@ -76,7 +72,7 @@ ADD_CUSTOM_TARGET ( asio ALL
   COMMENT "Download the C++ ASIO library"
   VERBATIM )
 
-EXTERNALPROJECT_ADD(wpilib ALL
+EXTERNALPROJECT_ADD(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
   GIT_TAG v2018.4.1
@@ -97,7 +93,7 @@ EXTERNALPROJECT_ADD(ctre
   )
 ADD_DEPENDENCIES(ctre wpilib)
 
-ADD_LIBRARY (hel SHARED src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/error.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp src/alarm.cpp src/system.cpp src/sync_client.cpp src/interrupt_manager.cpp src/analog_input_calibration.cpp)
+ADD_LIBRARY (hel SHARED src/roborio_manager.cpp src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/fpga_encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/error.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp src/alarm.cpp src/system.cpp src/sync_client.cpp src/interrupt_manager.cpp src/analog_input_calibration.cpp src/joystick.cpp src/match_info.cpp src/robot_mode.cpp)
 ADD_DEPENDENCIES(hel asio wpilib) 
 
 TARGET_INCLUDE_DIRECTORIES( hel SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
@@ -166,12 +162,23 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
       ADD_DEPENDENCIES(${test_name} GoogleTest)
       ADD_DEPENDENCIES(${test_name} asio)
       ADD_DEPENDENCIES(${test_name} wpilib)
+      ADD_DEPENDENCIES(${test_name} ctre)
 
       LINK_DIRECTORIES (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86_64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86_64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 )
 
-      TARGET_LINK_LIBRARIES(${test_name} gtest gtest_main pthread hel)
+      TARGET_LINK_LIBRARIES(${test_name} gtest gtest_main pthread hel wpi libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
       INCLUDE_DIRECTORIES(SYSTEM "lib/include")
-      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${ASIO_DIRECTORY}/include" "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "./include")
+
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${CMAKE_BINARY_DIR}/include")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/headers")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native/include")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/ni-libraries/include")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${CTRE_DIRECTORY}/cpp/include/")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${CTRE_DIRECTORY}/libraries/driver/include")
+      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${ASIO_DIRECTORY}/include")
 
       SET_TARGET_PROPERTIES( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
 

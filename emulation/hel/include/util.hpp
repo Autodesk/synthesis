@@ -164,13 +164,15 @@ namespace hel{
     }
 
     bool stob(std::string);
-    std::string to_string(bool);
+    std::string to_string(bool);//TODO maybe rename these? namespace helps prevent accidental type cast and wrong call, but still happens
 
     constexpr std::size_t hasher(const char* input){
         return *input ? static_cast<unsigned>(*input) + 33 * hasher(input + 1) : 5381;
     }
 
     void copystr(const std::string&, char*);
+
+    bool compareBits(uint32_t, uint32_t, uint32_t);
 }
 
 #endif

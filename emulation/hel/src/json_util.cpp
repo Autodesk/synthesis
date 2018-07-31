@@ -1,7 +1,7 @@
 #include "json_util.hpp"
 
 const char* hel::JSONParsingException::what()const throw(){
-    return "Exception: JSON parsing failed due to malformed data";
+    return "Synthesis exception: JSON parsing failed due to malformed data";
 }
 
 std::string hel::quote(std::string s){

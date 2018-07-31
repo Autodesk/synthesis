@@ -15,6 +15,7 @@ namespace hel{
 
     struct PWMSystem{
         static constexpr const int32_t EXPECTED_LOOP_TIMING = 40;
+        static constexpr const int32_t NUM_HDRS = nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters;
     private:
 
         /**
