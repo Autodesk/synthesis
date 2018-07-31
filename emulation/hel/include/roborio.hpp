@@ -1,19 +1,18 @@
 #ifndef _ROBORIO_HPP_
 #define _ROBORIO_HPP_
 
+/**
+ * \file roborio.hpp
+ * \brief Defines internal structure of mock RoboRIO
+ * This file defines the RoboRIOs structure
+ */
+
 #define ASIO_STANDALONE
 #define ASIO_HAS_STD_ADDRESSOF
 #define ASIO_HAS_STD_ARRAY
 #define ASIO_HAS_CSTDINT
 #define ASIO_HAS_STD_SHARED_PTR
 #define ASIO_HAS_STD_TYPE_TRAITS
-
-
-/**
- * \file roborio.h
- * \brief Defines internal structure of mock RoboRIO
- * This file defines the RoboRIOs structure
- */
 
 #include <array>
 #include <map>
@@ -54,7 +53,7 @@ namespace hel{
     extern std::atomic<bool> hal_is_initialized;
 
     /**
-     * \struct RoboRIO roborio.h
+     * \struct RoboRIO roborio.hpp
      * \brief Mock RoboRIO implementation
      *
      * This class represents the internals of the RoboRIO hardware, broken up into several sub-systems:
@@ -95,43 +94,6 @@ namespace hel{
         RoboRIO(RoboRIO const&) = default;
     private:
         RoboRIO& operator=(const RoboRIO& r) = default;
-    };
-    /**
-     *
-     */
-
-    class RoboRIOManager {
-    public:
-
-        // This is the only method exposed to the outside.
-        // All other instance getters should be private, accessible through friend classes
-
-        static std::pair<std::shared_ptr<RoboRIO>, std::unique_lock<std::recursive_mutex>> getInstance() {
-            std::unique_lock<std::recursive_mutex> lock(m);
-            if (instance == nullptr) {
-                instance = std::make_shared<RoboRIO>();
-            }
-            return std::make_pair(instance, std::move(lock));
-        }
-
-        static RoboRIO getCopy() {
-            auto instance = RoboRIOManager::getInstance();
-            auto roborio_copy = RoboRIO(*instance.first);
-            instance.second.unlock();
-            return roborio_copy;
-        }
-
-    private:
-        RoboRIOManager() {}
-        static std::shared_ptr<RoboRIO> instance;
-
-        static std::recursive_mutex m;
-
-    public:
-        RoboRIOManager(RoboRIOManager const&) = delete;
-        void operator=(RoboRIOManager const&) = delete;
-
-        friend class SyncServer;
     };
 }
 #endif
