@@ -90,7 +90,7 @@ EXTERNALPROJECT_ADD(ctre
   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
   GIT_TAG Phoenix_v5.5.0.0
   CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
-  #PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/ctre-includes.patch && patch -p0 < ${CMAKE_BINARY_DIR}/custom-project-configs/ctre-src.patch
+  #PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/ctre-includes.patch && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/ctre-src.patch
   PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/gradle.patch
   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
   INSTALL_COMMAND ""
@@ -114,7 +114,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
 
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
     if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
-      ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_io.cpp)
+      ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
       ADD_DEPENDENCIES(FRCUserProgram wpilib ctre)
       TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
       TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers")
