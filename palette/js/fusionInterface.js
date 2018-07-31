@@ -59,6 +59,15 @@ function stringifyConfigData(name, joints)
                 args += String.fromCharCode(ASCII_OFFSET + wheel.frictionLevel);
                 args += String.fromCharCode(ASCII_OFFSET + (wheel.isDriveWheel ? 1 : 0));
             }
+
+            var pneumatic = driver.pneumatic;
+
+            if (pneumatic == null)
+                args += String.fromCharCode(ASCII_OFFSET + 0);
+            else
+            {
+                args += String.fromCharCode(ASCII_OFFSET + 1);
+            }
         }
     }
 
@@ -91,10 +100,15 @@ function processJointDataString(jointData)
 
 function createDriver(_type = DRIVER_MOTOR, _signal = PWM, _portA = 0, _portB = -1)
 {
-    return {type: _type, signal: _signal, portA: _portA, portB: _portB, wheel: null};
+    return {type: _type, signal: _signal, portA: _portA, portB: _portB, wheel: null, pneumatic: null};
 }
 
 function createWheel(_type = WHEEL_NORMAL, _frictionLevel = FRICTION_MEDIUM, _isDriveWheel = false)
 {
     return { type: _type, frictionLevel: _frictionLevel, isDriveWheel: _isDriveWheel };
+}
+
+function createPneumatic(_width = 5.0, _pressure = 40.0)
+{
+    return { width: _width, pressure: _pressure };
 }

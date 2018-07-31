@@ -161,7 +161,14 @@ function updateFieldOptions(fieldset)
         // Linear Joint Info
         if ((jointType & JOINT_LINEAR) == JOINT_LINEAR)
         {
-            // TODO: Implement pneumatic info
+            // Pneumatic Info
+            var pneumaticDiv = getElByClass(fieldset, 'pneumatic-div');
+
+            if (driverType != DRIVER_BUMPER_PNEUMATIC &&
+                driverType != DRIVER_RELAY_PNEUMATIC)
+                setVisible(pneumaticDiv, false);
+            else
+                setVisible(pneumaticDiv, true);
         }
     }
 }
@@ -186,18 +193,33 @@ function readFormData()
             jointOptions[i].driver.portA = portA;
             jointOptions[i].driver.portB = portB;
 
-            var selectedWheel = fieldset.getElementsByClassName('wheel-type')[0].selectedIndex;
-
-            if (selectedWheel > 0)
+            if ((jointOptions[i].type & JOINT_ANGULAR) == JOINT_ANGULAR)
             {
-                var isDriveWheel = fieldset.getElementsByClassName('is-drive-wheel')[0].checked;
-                jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
+                var selectedWheel = fieldset.getElementsByClassName('wheel-type')[0].selectedIndex;
 
-                if (isDriveWheel)
+                if (selectedWheel > 0)
                 {
-                    jointOptions[i].driver.signal = PWM;
-                    jointOptions[i].driver.portA = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
-                    jointOptions[i].driver.portB = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
+                    var isDriveWheel = fieldset.getElementsByClassName('is-drive-wheel')[0].checked;
+                    jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
+
+                    if (isDriveWheel)
+                    {
+                        jointOptions[i].driver.signal = PWM;
+                        jointOptions[i].driver.portA = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
+                        jointOptions[i].driver.portB = fieldset.getElementsByClassName('wheel-side')[0].selectedIndex;
+                    }
+                }
+            }
+
+            if ((jointOptions[i].type & JOINT_LINEAR) == JOINT_LINEAR)
+            {
+                if (selectedDriver == DRIVER_BUMPER_PNEUMATIC ||
+                    selectedDriver == DRIVER_RELAY_PNEUMATIC)
+                {
+                    var width = fieldset.getElementsByClassName('pneumatic-width')[0].value;
+                    var pressure = fieldset.getElementsByClassName('pneumatic-pressure')[0].value;
+
+                    jointOptions[i].driver.pneumatic = createPneumatic(width, pressure);
                 }
             }
         }
