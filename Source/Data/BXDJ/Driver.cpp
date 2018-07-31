@@ -30,8 +30,8 @@ Driver::Driver(Type type)
 	portSignal = PWM;
 	portA = -1;
 	portB = -1;
-	inputGear = 0;
-	outputGear = 0;
+	inputGear = 1;
+	outputGear = 1;
 
 	wheel = nullptr;
 	pneumatic = nullptr;

@@ -12,6 +12,44 @@ function getElByClass(fieldset, className)
     return fieldset.getElementsByClassName(className)[0]
 }
 
+// Used for hiding/showing elements in the following function
+function setPortView(fieldset, view)
+{
+    var motorPorts = Array.from(fieldset.getElementsByClassName('motor-port'));
+    var pneumaticPorts = Array.from(fieldset.getElementsByClassName('pneumatic-port'));
+    var relayPorts = Array.from(fieldset.getElementsByClassName('relay-port'));
+
+    var toHide = [];
+    var toShow = [];
+
+    // Hide ports based on view
+    if (view == "pneumatic")
+    {
+        toHide = toHide.concat(motorPorts);
+        toHide = toHide.concat(relayPorts);
+        toShow = toShow.concat(pneumaticPorts);
+    }
+    else if (view = "relay")
+    {
+        toHide = toHide.concat(motorPorts);
+        toHide = toHide.concat(pneumaticPorts);
+        toShow = toShow.concat(relayPorts);
+    }
+    else
+    {
+        toHide = toHide.concat(pneumaticPorts);
+        toHide = toHide.concat(relayPorts);
+        toShow = toShow.concat(motorPorts);
+    }
+
+    for (var i = 0; i < toHide.length; i++)
+        toHide[i].style.display = 'none';
+    for (var i = 0; i < toShow.length; i++)
+        toShow[i].style.display = '';
+
+    getElByClass(fieldset, 'port-signal').value = toShow[0].value;
+}
+
 // Prompts the Fusion add-in for joint data
 function requestInfoFromFusion()
 {
@@ -123,10 +161,15 @@ function updateFieldOptions(fieldset)
 
         var jointType = parseInt(fieldset.dataset.joint_type);
 
+        var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');
+        var linearJointDiv = getElByClass(fieldset, 'linear-joint-div');
+
         var genericPortsDiv = getElByClass(fieldset, 'generic-ports-div');
         var portBSelector = getElByClass(fieldset, 'port-number-b');
         setVisible(genericPortsDiv, true);
         setVisible(portBSelector, false);
+
+        setPortView(fieldset, "motor");
 
         // Angular Joint Info
         if ((jointType & JOINT_ANGULAR) == JOINT_ANGULAR)
@@ -139,10 +182,14 @@ function updateFieldOptions(fieldset)
             var hasWheelDiv = getElByClass(fieldset, 'has-wheel-div');
 
             if (selectedWheel == 0)
+            {
                 setVisible(hasWheelDiv, false);
+                setVisible(linearJointDiv, true);
+            }
             else
             {
                 setVisible(hasWheelDiv, true);
+                setVisible(linearJointDiv, false);
 
                 // Drive wheel
                 var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
@@ -166,9 +213,23 @@ function updateFieldOptions(fieldset)
 
             if (driverType != DRIVER_BUMPER_PNEUMATIC &&
                 driverType != DRIVER_RELAY_PNEUMATIC)
+            {
                 setVisible(pneumaticDiv, false);
+                setVisible(angularJointDiv, true);
+            }
             else
+            {
+                if (driverType == DRIVER_BUMPER_PNEUMATIC)
+                {
+                    setVisible(portBSelector, true);
+                    setPortView(fieldset, "pneumatic");
+                }
+                else
+                    setPortView(fieldset, "relay");
+
                 setVisible(pneumaticDiv, true);
+                setVisible(angularJointDiv, false);
+            }
         }
     }
 }
@@ -184,7 +245,7 @@ function readFormData()
 
         if (selectedDriver > 0)
         {
-            var signal = parseInt(fieldset.getElementsByClassName('port-signal')[0].value);
+            var signal = parseInt(fieldset.getElementsByClassName('port-signal')[0].dataset.port_value);
             var portA = fieldset.getElementsByClassName('port-number-a')[0].selectedIndex;
             var portB = fieldset.getElementsByClassName('port-number-b')[0].selectedIndex;
 

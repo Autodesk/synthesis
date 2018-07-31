@@ -68,16 +68,18 @@
                         <div class="linear-joint-div">
                             <div class="pneumatic-div">
                                 <span>Width (mm): </span>
-                                <input type="number" class="pneumatic-width"><br />
+                                <input type="number" class="pneumatic-width" value="5.0"><br />
                                 <span>Pressure (PSI): </span>
-                                <input type="number" class="pneumatic-pressure"><br />
+                                <input type="number" class="pneumatic-pressure" value="40.0"><br />
                             </div>
                         </div>
 
                         <div class="generic-ports-div">
                             <select class="port-signal">
-                                <option value="1">PWM</option>
-                                <option value="2">CAN</option>
+                                <option value="1" data-port-value="1" class="motor-port">PWM</option>
+                                <option value="2" data-port-value="2" class="motor-port">CAN</option>
+                                <option value="3" data-port-value="1" class="pneumatic-port">Solenoid</option>
+                                <option value="4" data-port-value="1" class="relay-port">Relay</option>
                             </select>
                             <select class="port-number-a">
                                 <option value="0">0</option>
