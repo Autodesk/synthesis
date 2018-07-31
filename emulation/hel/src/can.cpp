@@ -40,6 +40,7 @@ namespace hel{
         s += "id:" + std::to_string(id);
         if(type != Type::UNKNOWN){
             s += ", speed:" + std::to_string(speed);
+            s += ", inverted:" + hel::to_string(inverted);
         }
         s += ")";
         return s;
@@ -50,6 +51,7 @@ namespace hel{
         s += "\"type\":" + hel::quote(hel::to_string(type)) + ", ";
         s += "\"id\":" + std::to_string(id);
         s += "\"speed\":" + std::to_string(speed);
+        s += "\"inverted\":" + std::to_string(inverted);
         s += "}";
         return s;
     }
@@ -59,6 +61,7 @@ namespace hel{
         a.type = s_to_can_device_type(hel::unquote(hel::pullValue("\"type\"",s)));
         a.id = std::stod(hel::pullValue("\"id\"",s));
         a.speed = std::stod(hel::pullValue("\"speed\"",s));
+        a.inverted = hel::stob(hel::pullValue("\"inverted\"",s));
         return a;
     }
 
@@ -70,7 +73,7 @@ namespace hel{
         return id;
     }
 
-    void CANDevice::setSpeed(BoundsCheckedArray<uint8_t, CANDevice::MAX_MESSAGE_DATA_SIZE> data){
+    void CANDevice::setSpeed(BoundsCheckedArray<uint8_t, CANDevice::MessageData::SIZE> data){
         /*
           For CAN motor controllers:
           data[x] - data[0] results in the number with the correct sign
@@ -86,18 +89,27 @@ namespace hel{
         return speed;
     }
 
-    uint8_t CANDevice::pullDeviceID(uint32_t message_id){
-        return message_id & ID_MASK_29BIT;
+    void CANDevice::setInverted(bool i){
+        inverted = i;
     }
 
-    CANDevice::CANDevice():type(Type::UNKNOWN),id(0),speed(0.0){}
+    uint8_t CANDevice::pullDeviceID(uint32_t message_id){
+        return message_id & IDMask::DEVICE_ID;
+    }
+
+    CANDevice::Type CANDevice::pullDeviceType(uint32_t message_id){
+        if(compareBits(message_id, IDMask::VICTOR_SPX_TYPE, IDMask::DEVICE_TYPE)){
+            return Type::VICTOR_SPX;
+        } else if(compareBits(message_id, IDMask::TALON_SRX_TYPE, IDMask::DEVICE_TYPE)){
+            return Type::TALON_SRX;
+        }
+        return Type::UNKNOWN;
+    }
+
+    CANDevice::CANDevice():type(Type::UNKNOWN),id(0),speed(0.0),inverted(false){}
 
     CANDevice::CANDevice(uint32_t message_id):CANDevice(){
-        if(compareBits(message_id, BASE_VICTOR_SPX_ID, TYPE_COMPARISON_MASK)){
-            type = Type::VICTOR_SPX;
-        } else if(compareBits(message_id, BASE_TALON_SRX_ID, TYPE_COMPARISON_MASK)){
-            type = Type::TALON_SRX;
-        }
+        type = pullDeviceType(message_id);
         if(type != Type::UNKNOWN){
             id = pullDeviceID(message_id);
         }
@@ -117,16 +129,22 @@ extern "C"{
 
         auto instance = hel::RoboRIOManager::getInstance();
 
-        uint8_t device_id = hel::CANDevice::pullDeviceID(messageID);
-        if(instance.first->can_devices.find(device_id) == instance.first->can_devices.end()){
-            instance.first->can_devices[device_id] = {messageID};
-        }
-        if(instance.first->can_devices[device_id].getType() == hel::CANDevice::Type::UNKNOWN){
+        hel::CANDevice can_device = {messageID};
+        if(can_device.getType() == hel::CANDevice::Type::UNKNOWN){
             std::cerr<<"Synthesis warning: Attempting to write message to unknown CAN device using message ID "<<messageID<<"\n";
-        } else{ //TODO sendMessage doesn't always set speed
-            hel::BoundsCheckedArray<uint8_t, hel::CANDevice::MAX_MESSAGE_DATA_SIZE> data_array;
+        } else{
+            hel::BoundsCheckedArray<uint8_t, hel::CANDevice::MessageData::SIZE> data_array;
             std::copy(data, data + dataSize, data_array.begin());
-            instance.first->can_devices[device_id].setSpeed(data_array);
+            uint8_t command_byte = data[hel::CANDevice::MessageData::COMMAND_BYTE];
+            if(hel::checkBitHigh(command_byte,hel::CANDevice::CommandByteMask::SET_POWER_PERCENT)){
+                can_device.setSpeed(data_array);
+            }
+            if(hel::checkBitHigh(command_byte,hel::CANDevice::CommandByteMask::SET_INVERTED)){
+                can_device.setInverted(true);
+            }
+            instance.first->can_devices[can_device.getID()] = can_device;
+            //throw hel::UnsupportedFeature("Writing to CAN motor controller with device ID " + std::to_string(device_id) + " using command data byte " + std::to_string(command_byte));//TODO
+            std::cout<<"CANDevice:"<<instance.first->can_devices[can_device.getID()].toString()<<"\n";
         }
         instance.second.unlock();
     }
@@ -135,14 +153,14 @@ extern "C"{
         printf("FRC_NetworkCommunication_CANSessionMux_receiveMessage(messageID:%d messageIDMask:%d)\n", *messageID, messageIDMask);
         auto instance = hel::RoboRIOManager::getInstance();
         uint8_t device_id = hel::CANDevice::pullDeviceID(*messageID);
-        if(instance.first->can_devices.find(device_id) == instance.first->can_devices.end()){
-            //TODO
+        if(instance.first->can_devices.find(device_id) != instance.first->can_devices.end()){
+            std::cerr<<"Request for data from CAN device with id "<<((unsigned)device_id)<<"\n";
         }
         instance.second.unlock();
     }
 
     void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t messageID, uint32_t messageIDMask, uint32_t maxMessages, int32_t* /*status*/){//TODO
-        printf("FRC_NetworkCommunication_CANSessionMux_openStreamSession(\n");
+        printf("FRC_NetworkCommunication_CANSessionMux_openStreamSession(");
         printf("messageID:%d, ",messageID);
         printf("messageIDMask:%d, ",messageIDMask);
         printf("maxMessages:%d)\n",maxMessages);
