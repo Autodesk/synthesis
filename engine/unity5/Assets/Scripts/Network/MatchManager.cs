@@ -11,17 +11,19 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-// TODO: Make it so they can see the lobby while in simulation.
-
 namespace Synthesis.Network
 {
     [NetworkSettings(channel = 0, sendInterval = 0f)]
     public class MatchManager : NetworkBehaviour
     {
+        
+
         /// <summary>
         /// The global <see cref="MatchManager"/> instance.
         /// </summary>
         public static MatchManager Instance { get; private set; }
+
+        public TcpFileTransfer FileTransfer { get; private set; }
 
         /// <summary>
         /// A reference to the <see cref="NetworkMultiplayerUI"/> <see cref="StateMachine"/>.
@@ -78,6 +80,9 @@ namespace Synthesis.Network
         [SyncVar]
         private string fieldGuid;
 
+        [SyncVar]
+        public bool tcpConnectionEstablished;
+
         /// <summary>
         /// Returns true if the server has finished generating the scene.
         /// </summary>
@@ -121,7 +126,7 @@ namespace Synthesis.Network
         /// <summary>
         /// The <see cref="ServerToClientFileTransferer"/> associated with this instance.
         /// </summary>
-        public ServerToClientFileTransferer FileTransferer { get; private set; }
+        //public ServerToClientFileTransferer FileTransferer { get; private set; }
 
         #endregion
 
@@ -156,12 +161,14 @@ namespace Synthesis.Network
             uiStateMachine = GameObject.Find("UserInterface").GetComponent<StateMachine>();
             fileData = new Dictionary<string, List<byte>>();
 
-            FileTransferer = GetComponent<ServerToClientFileTransferer>();
+            //FileTransferer = GetComponent<ServerToClientFileTransferer>();
+
+            //FileTransfer = new TcpFileTransfer(MultiplayerNetwork.Instance.networkAddress, FileTransferPort);
 
             if (!isServer)
             {
-                FileTransferer.OnDataFragmentReceived += DataFragmentReceived;
-                FileTransferer.OnReceivingComplete += ReceivingComplete;
+                //FileTransferer.OnDataFragmentReceived += DataFragmentReceived;
+                //FileTransferer.OnReceivingComplete += ReceivingComplete;
             }
         }
 
@@ -223,7 +230,11 @@ namespace Synthesis.Network
         {
             HashSet<PlayerIdentity> remainingIdentities = new HashSet<PlayerIdentity>(FindObjectsOfType<PlayerIdentity>());
 
-            foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap.Where(e => e.Key >= 0))
+            tcpConnectionEstablished = false;
+
+            //FileTransfer.StartTcpListener(() => tcpConnectionEstablished = true);
+
+            foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap.Where(e => e.Key >= 0/* && e.Key != PlayerIdentity.LocalInstance.id*/))
             {
                 PlayerIdentity identity = PlayerIdentity.FindById(entry.Key);
                 remainingIdentities.Remove(identity);
@@ -243,7 +254,7 @@ namespace Synthesis.Network
         [Server]
         public void DistributeResources()
         {
-            PlayerIdentity.LocalInstance.FileTransferer.StopAllCoroutines();
+            //PlayerIdentity.LocalInstance.FileTransferer.StopAllCoroutines();
             distributionProgress = 0f;
             numTotalTransfers = 0;
             numCompletedTransfers = 0;
@@ -288,9 +299,9 @@ namespace Synthesis.Network
                 fieldData = null;
             }
 
-            foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap)
-                foreach (KeyValuePair<string, List<byte>> file in entry.Key >= 0 ? PlayerIdentity.FindById(entry.Key).FileData : fieldData)
-                    FileTransferer.SendFile(entry.Key.ToString() + "." + file.Key, file.Value.ToArray());
+            //foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap)
+            //    foreach (KeyValuePair<string, List<byte>> file in entry.Key >= 0 ? PlayerIdentity.FindById(entry.Key).FileData : fieldData)
+            //        FileTransferer.SendFile(entry.Key.ToString() + "." + file.Key, file.Value.ToArray());
         }
 
         /// <summary>
@@ -462,7 +473,7 @@ namespace Synthesis.Network
         private void PopState(string msg = "")
         {
             StopAllCoroutines();
-            FileTransferer.ResetTransferData();
+            //FileTransferer.ResetTransferData();
             RpcPopState(msg);
         }
 
@@ -531,10 +542,10 @@ namespace Synthesis.Network
         [ClientRpc]
         private void RpcPopState(string msg)
         {
-            PlayerIdentity.LocalInstance.FileTransferer.ResetTransferData();
+            //PlayerIdentity.LocalInstance.FileTransferer.ResetTransferData();
             PlayerIdentity.LocalInstance.CmdSetReady(false);
 
-            FileTransferer.ResetTransferData();
+            //FileTransferer.ResetTransferData();
 
             uiStateMachine.PopState();
 
