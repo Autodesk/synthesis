@@ -46,7 +46,7 @@
     <Filter Include="Source\Data\BXDJ\Components">
       <UniqueIdentifier>{49a37e76-2887-44d3-bcbc-e39d1da352c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\AddIn\HTML">
+    <Filter Include="Source\AddIn\Palette">
       <UniqueIdentifier>{054fec25-2e01-4568-80d5-c9e0c19d0f2f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -203,16 +203,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="palette\palette.html">
-      <Filter>Source\AddIn\HTML</Filter>
+      <Filter>Source\AddIn\Palette</Filter>
     </None>
     <None Include="Palette\js\fusionInterface.js">
-      <Filter>Source\AddIn\HTML</Filter>
+      <Filter>Source\AddIn\Palette</Filter>
     </None>
     <None Include="Palette\css\synthesisExporter.css">
-      <Filter>Source\AddIn\HTML</Filter>
+      <Filter>Source\AddIn\Palette</Filter>
     </None>
     <None Include="Palette\js\palette.js">
-      <Filter>Source\AddIn\HTML</Filter>
+      <Filter>Source\AddIn\Palette</Filter>
     </None>
   </ItemGroup>
 </Project>

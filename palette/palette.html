@@ -67,10 +67,18 @@
 
                         <div class="linear-joint-div">
                             <div class="pneumatic-div">
-                                <span>Width (mm): </span>
-                                <input type="number" class="pneumatic-width" value="5.0"><br />
-                                <span>Pressure (PSI): </span>
-                                <input type="number" class="pneumatic-pressure" value="40.0"><br />
+                                <span>Width: </span>
+                                <select class="pneumatic-width">
+                                    <option value="1">2.5 mm</option>
+                                    <option value="2" checked>5 mm</option>
+                                    <option value="3">10 mm</option>
+                                </select>
+                                <span>Pressure: </span>
+                                <select class="pneumatic-pressure">
+                                    <option value="1">10 PSI</option>
+                                    <option value="2" checked>20 PSI</option>
+                                    <option value="3">60 PSI</option>
+                                </select>
                             </div>
                         </div>
 

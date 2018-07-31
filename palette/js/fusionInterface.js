@@ -28,6 +28,16 @@ var FRICTION_LOW = 1;
 var FRICTION_MEDIUM = 2;
 var FRICTION_HIGH = 3;
 
+// Pneumatic Widths
+var WIDTH_2_5MM = 1;
+var WIDTH_5MM = 2;
+var WIDTH_10MM = 3;
+
+// Pneumatic Pressures
+var PRESSURE_10PSI = 1;
+var PRESSURE_20PSI = 2;
+var PRESSURE_60PSI = 3;
+
 function stringifyConfigData(name, joints)
 {
     var ASCII_OFFSET = 32;
@@ -67,6 +77,8 @@ function stringifyConfigData(name, joints)
             else
             {
                 args += String.fromCharCode(ASCII_OFFSET + 1);
+                args += String.fromCharCode(ASCII_OFFSET + pneumatic.width);
+                args += String.fromCharCode(ASCII_OFFSET + pneumatic.pressure);
             }
         }
     }

@@ -241,7 +241,7 @@ function readFormData()
     {
         var fieldset = document.getElementById('joint-config-' + String(i));
 
-        var selectedDriver = fieldset.getElementsByClassName('driver-type')[0].selectedIndex;
+        var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
 
         if (selectedDriver > 0)
         {
@@ -256,7 +256,7 @@ function readFormData()
 
             if ((jointOptions[i].type & JOINT_ANGULAR) == JOINT_ANGULAR)
             {
-                var selectedWheel = getElByClass(fieldset, 'wheel-type').selectedIndex;
+                var selectedWheel = parseInt(getElByClass(fieldset, 'wheel-type').value);
 
                 if (selectedWheel > 0)
                 {
@@ -266,8 +266,8 @@ function readFormData()
                     if (isDriveWheel)
                     {
                         jointOptions[i].driver.signal = PWM;
-                        jointOptions[i].driver.portA = getElByClass(fieldset, 'wheel-side').selectedIndex;
-                        jointOptions[i].driver.portB = getElByClass(fieldset, 'wheel-side').selectedIndex;
+                        jointOptions[i].driver.portA = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        jointOptions[i].driver.portB = parseInt(getElByClass(fieldset, 'wheel-side').value);
                     }
                 }
             }
@@ -277,8 +277,8 @@ function readFormData()
                 if (selectedDriver == DRIVER_BUMPER_PNEUMATIC ||
                     selectedDriver == DRIVER_RELAY_PNEUMATIC)
                 {
-                    var width = getElByClass(fieldset, 'pneumatic-width').value;
-                    var pressure = getElByClass(fieldset, 'pneumatic-pressure').value;
+                    var width = parseInt(getElByClass(fieldset, 'pneumatic-width').value);
+                    var pressure = parseInt(getElByClass(fieldset, 'pneumatic-pressure').value);
 
                     jointOptions[i].driver.pneumatic = createPneumatic(width, pressure);
                 }
