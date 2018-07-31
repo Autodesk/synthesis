@@ -23,7 +23,7 @@ std::vector<Ptr<Joint>> Exporter::collectJoints()
 
 		JointTypes type = joint->jointMotion()->jointType();
 
-		// Check if joint is supported
+		// Check if joint is supported to have drivers
 		if (type == JointTypes::RevoluteJointType ||
 			type == JointTypes::SliderJointType ||
 			type == JointTypes::CylindricalJointType)
@@ -53,8 +53,8 @@ std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
 				 type == JointTypes::CylindricalJointType)      
 			stringifiedJoints += 6;
 
-		// Both angular and linear motion (Combo Angular-Linear joints not yet supported in BXDJ file)
-		else if (false) // joint->jointMotion()->jointType() == JointTypes::CylindricalJointType) 
+		// Both angular and linear motion
+		else if (false)
 			stringifiedJoints += 7;
 
 		// Neither angular nor linear motion

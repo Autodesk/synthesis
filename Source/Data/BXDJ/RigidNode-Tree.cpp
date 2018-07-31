@@ -3,6 +3,7 @@
 #include "Joints/RotationalJoint.h"
 #include "Joints/SliderJoint.h"
 #include "Joints/CylindricalJoint.h"
+#include "Joints/BallJoint.h"
 
 using namespace BXDJ;
 
@@ -88,6 +89,8 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 		newJoint = std::make_shared<SliderJoint>(this, joint, parent);
 	else if (jointType == fusion::JointTypes::CylindricalJointType)
 		newJoint = std::make_shared<CylindricalJoint>(this, joint, parent);
+	else if (jointType == fusion::JointTypes::BallJointType)
+		newJoint = std::make_shared<BallJoint>(this, joint, parent);
 	else 
 	{
 		// If joint type is unsupported, add as if occurence is attached by rigid joint (same rigid node)

@@ -85,7 +85,7 @@ void CylindricalJoint::applyConfig(const ConfigData & config)
 void CylindricalJoint::write(XmlWriter & output) const
 {
 	// Write joint information
-	output.startElement("LinearJoint");
+	output.startElement("CylindricalJoint");
 
 	// Base point
 	output.startElement("BXDVector3");
@@ -100,10 +100,13 @@ void CylindricalJoint::write(XmlWriter & output) const
 	output.endElement();
 
 	// Limits
-	output.writeElement("LinearLowLimit", std::to_string(getMinTranslation()));
-	output.writeElement("LinearUpperLimit", std::to_string(getMaxTranslation()));
+	output.writeElement("AngularLowLimit", std::to_string(getMinAngle()));
+	output.writeElement("AngularHighLimit", std::to_string(getMaxAngle()));
+	output.writeElement("LinearStartLimit", std::to_string(getMinTranslation()));
+	output.writeElement("LinearEndLimit", std::to_string(getMaxTranslation()));
 
-	// Current angle
+	// Current position and angle
+	output.writeElement("CurrentAngularPosition", std::to_string(getCurrentAngle()));
 	output.writeElement("CurrentLinearPosition", std::to_string(getCurrentTranslation()));
 
 	output.endElement();
