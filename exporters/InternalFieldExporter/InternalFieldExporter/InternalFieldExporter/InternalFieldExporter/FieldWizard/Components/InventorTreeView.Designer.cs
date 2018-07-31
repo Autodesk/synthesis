@@ -1,6 +1,6 @@
 ﻿namespace InternalFieldExporter.FieldWizard
 {
-    partial class ComponentPropertiesForm
+    partial class InventorTreeView
     {
         /// <summary>
         /// Required designer variable.
@@ -30,9 +30,11 @@
         {
             this.SuspendLayout();
             //
-            // CreatePhysicsGroupTabPage
+            // InventorTreeView
             //
+            this.LineColor = System.Drawing.Color.Black;
             this.ResumeLayout(false);
+
         }
 
         #endregion
