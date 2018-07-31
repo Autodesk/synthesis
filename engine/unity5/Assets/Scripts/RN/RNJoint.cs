@@ -91,8 +91,8 @@ namespace Synthesis.RN
                     bc.localConstraintAxisX = cAxis;
                     bc.localConstraintAxisY = new Vector3(cAxis.y, cAxis.z, cAxis.x);
 
-                    bc.linearLimitLower = new Vector3((cNode.linearLimitStart - cNode.currentAngularPosition) * 0.01f, 0f, 0f);
-                    bc.linearLimitUpper = new Vector3((cNode.linearLimitEnd - cNode.currentAngularPosition) * 0.01f, 0f, 0f);
+                    bc.linearLimitLower = new Vector3((cNode.linearLimitStart - cNode.currentLinearPosition) * 0.01f, 0f, 0f);
+                    bc.linearLimitUpper = new Vector3((cNode.linearLimitEnd - cNode.currentLinearPosition) * 0.01f, 0f, 0f);
 
                     // TODO: Implement angular cylinder limits
 
