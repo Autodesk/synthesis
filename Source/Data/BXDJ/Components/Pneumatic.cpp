@@ -2,6 +2,9 @@
 
 using namespace BXDJ;
 
+const float Pneumatic::COMMON_WIDTHS[] = { 2.5f, 5.0f, 10.0f };
+const float Pneumatic::COMMON_PRESSURES[] = { 10.0f, 20.0f, 60.0f };
+
 Pneumatic::Pneumatic(const Pneumatic & pneumaticToCopy)
 {
 	widthMillimeter = pneumaticToCopy.widthMillimeter;
