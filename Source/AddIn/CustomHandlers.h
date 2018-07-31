@@ -11,29 +11,46 @@ namespace Synthesis
 {
 	class EUI;
 
-	// Button Events
-	class ShowPaletteCommandCreatedHandler : public adsk::core::CommandCreatedEventHandler
+	// Workspace Events
+	class WorkspaceActivatedHandler : public WorkspaceEventHandler
 	{
 	public:
-		ShowPaletteCommandCreatedHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) {}
+		WorkspaceActivatedHandler(EUI * eui) : eui(eui) {}
+		void notify(const Ptr<WorkspaceEventArgs>& eventArgs) override;
+	private:
+		EUI * eui;
+	};
+
+	class WorkspaceDeactivatedHandler : public WorkspaceEventHandler
+	{
+	public:
+		WorkspaceDeactivatedHandler(Ptr<UserInterface> UI) : UI(UI) {}
+		void notify(const Ptr<WorkspaceEventArgs>& eventArgs) override;
+	private:
+		Ptr<UserInterface> UI;
+	};
+
+	// Button Events
+	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
+	{
+	public:
+		ShowPaletteCommandCreatedHandler(Ptr<Application> app) : app(app) {}
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
 	private:
 		Ptr<Application> app;
-		EUI * eui;
 	};
 
-	class ShowPaletteCommandExecuteHandler : public adsk::core::CommandEventHandler
+	class ShowPaletteCommandExecuteHandler : public CommandEventHandler
 	{
 	public:
-		ShowPaletteCommandExecuteHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) {}
+		ShowPaletteCommandExecuteHandler(Ptr<Application> app) : app(app) {}
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
 	private:
 		Ptr<Application> app;
-		EUI * eui;
 	};
 
 	// Palette Events
-	class ReceiveFormDataHandler : public adsk::core::HTMLEventHandler
+	class ReceiveFormDataHandler : public HTMLEventHandler
 	{
 	public:
 		ReceiveFormDataHandler(Ptr<Application> app) : app(app) {}
@@ -43,7 +60,7 @@ namespace Synthesis
 		Ptr<Application> app;
 	};
 
-	class CloseFormEventHandler : public adsk::core::UserInterfaceGeneralEventHandler
+	class CloseFormEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:
 		CloseFormEventHandler(Ptr<Application> app) : app(app) {}

@@ -3,6 +3,31 @@
 
 using namespace Synthesis;
 
+/// Workspace Events
+// Activate Workspace Event
+void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
+{
+	if (eventArgs->workspace()->id() == K_WORKSPACE)
+		eui->createExportPalette();
+}
+
+// Deactivate Workspace Event
+void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
+{
+	if (eventArgs->workspace()->id() == K_WORKSPACE)
+	{
+		Ptr<Palettes> palettes = UI->palettes();
+		if (!palettes)
+			return;
+
+		Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
+		if (!palette)
+			return;
+
+		palette->isVisible(false);
+	}
+}
+
 /// Button Events
 // Create Palette Button Event
 void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>& eventArgs)
@@ -16,16 +41,12 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 		return;
 
 	// Add click command to button
-	ShowPaletteCommandExecuteHandler * onShowPaletteCommandExecuted = new ShowPaletteCommandExecuteHandler(app, eui);
-	exec->add(onShowPaletteCommandExecuted);
+	exec->add(new ShowPaletteCommandExecuteHandler(app));
 }
 
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	if (!eui->createExportPalette())
-		return;
-
 	Ptr<UserInterface> UI = app->userInterface();
 	if (!UI)
 		return;
