@@ -29,7 +29,7 @@ namespace Synthesis.States
     /// Handles replay tracking and loading
     /// Handles interfaces between the SimUI and the active robot such as resetting, orienting, etc.
     /// </summary>
-    public class MainState : State
+    public class MainState : State, IRobotProvider
     {
         private const int SolverIterations = 100;
 
@@ -41,7 +41,21 @@ namespace Synthesis.States
 
         private UnityPacket unityPacket;
 
+        /// <summary>
+        /// The active robot in this state.
+        /// </summary>
         public SimulatorRobot ActiveRobot { get; private set; }
+
+        /// <summary>
+        /// Used for accessing the active robot in this state.
+        /// </summary>
+        /// <returns></returns>
+        public RobotBase Robot => ActiveRobot;
+
+        /// <summary>
+        /// True if the robot is not resetting.
+        /// </summary>
+        public bool RobotActive => !ActiveRobot.IsResetting;
 
         private DynamicCamera dynamicCamera;
         public GameObject DynamicCameraObject;
@@ -174,7 +188,7 @@ namespace Synthesis.States
             // Toggles between the different camera states if the camera toggle button is pressed
             if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
-                dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
+                dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             // Switches to replay mode
             if (!ActiveRobot.IsResetting && UnityEngine.Input.GetKeyDown(KeyCode.Tab))
@@ -299,7 +313,7 @@ namespace Synthesis.States
 
             if (LoadRobot(directory, isMixAndMatch))
             {
-                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
+                //dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
                 DynamicCamera.ControlEnabled = true;
                 return true;
             }
@@ -337,7 +351,7 @@ namespace Synthesis.States
                     ActiveRobot = SpawnedRobots[0];
                 }
 
-                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
+                //dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }
 
@@ -349,7 +363,7 @@ namespace Synthesis.States
             if (index < SpawnedRobots.Count)
             {
                 ActiveRobot = SpawnedRobots[index];
-                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
+                //dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }
 
@@ -666,6 +680,7 @@ namespace Synthesis.States
                 if (robot != ActiveRobot) robot.Packet = null;
             }
         }
+
         #endregion
     }
 }

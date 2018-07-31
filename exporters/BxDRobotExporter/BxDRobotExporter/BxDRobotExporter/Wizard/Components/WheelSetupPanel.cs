@@ -58,8 +58,11 @@ namespace BxDRobotExporter.Wizard
                 wantedPWM = (byte)0x00;
             } else if( Side == WheelSide.LEFT){
                 wantedPWM = (byte)0x01;
-            } else{
+            } else if(Side == WheelSide.MIDDLE || Side == WheelSide.RIGHTBACK){
                 wantedPWM = (byte)0x02;
+            } else
+            {
+                wantedPWM = (byte)0x03;
             }
             return new WizardData.WheelSetupData
             {

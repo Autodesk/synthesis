@@ -36,16 +36,13 @@ namespace BxDRobotExporter.Wizard
         public enum WizardDriveTrain
         {
             TANK = 1,
-            MECANUM,
-            SWERVE,
             H_DRIVE,
             CUSTOM
         }
         public enum WizardWheelType
         {
             NORMAL = 1,
-            OMNI = 2,
-            MECANUM = 3
+            OMNI = 2
         }
         public enum WizardFrictionLevel
         {
@@ -61,13 +58,20 @@ namespace BxDRobotExporter.Wizard
         {
             public WizardWheelType WheelType;
             public WizardFrictionLevel FrictionLevel;
-            public byte PWMPort;
+            public int PWMPort;
+            public int PWMPort2;
             public RigidNode_Base Node;
 
             public void ApplyToNode()
             {
                 Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR);
-                Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
+                //if (WheelType != WizardWheelType.MECANUM)
+                //{
+                    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
+                //} else
+                //{
+                //    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort, 1);
+                //}
                 WheelDriverMeta wheelDriver = new WheelDriverMeta();
                 switch (FrictionLevel)
                 {

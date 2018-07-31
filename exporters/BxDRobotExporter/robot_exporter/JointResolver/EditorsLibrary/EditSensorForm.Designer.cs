@@ -46,10 +46,9 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 12);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(17, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(70, 13);
+            this.label1.Size = new System.Drawing.Size(93, 17);
             this.label1.TabIndex = 0;
             this.label1.Text = "Sensor Type:";
             // 
@@ -57,54 +56,52 @@
             // 
             this.typeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.typeBox.FormattingEnabled = true;
-            this.typeBox.Location = new System.Drawing.Point(87, 10);
-            this.typeBox.Margin = new System.Windows.Forms.Padding(2);
+            this.typeBox.Location = new System.Drawing.Point(116, 12);
+            this.typeBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.typeBox.Name = "typeBox";
-            this.typeBox.Size = new System.Drawing.Size(202, 21);
+            this.typeBox.Size = new System.Drawing.Size(268, 24);
             this.typeBox.TabIndex = 0;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 67);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Location = new System.Drawing.Point(11, 82);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
+            this.label2.Size = new System.Drawing.Size(50, 17);
             this.label2.TabIndex = 2;
             this.label2.Text = "Port #:";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 39);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Location = new System.Drawing.Point(11, 48);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(55, 13);
+            this.label3.Size = new System.Drawing.Size(70, 17);
             this.label3.TabIndex = 3;
             this.label3.Text = "Module #:";
             // 
             // portTextBox
             // 
-            this.portTextBox.Location = new System.Drawing.Point(68, 67);
-            this.portTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.portTextBox.Location = new System.Drawing.Point(91, 82);
+            this.portTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.portTextBox.Name = "portTextBox";
-            this.portTextBox.Size = new System.Drawing.Size(36, 20);
+            this.portTextBox.Size = new System.Drawing.Size(47, 22);
             this.portTextBox.TabIndex = 2;
             // 
             // moduleTextBox
             // 
-            this.moduleTextBox.Location = new System.Drawing.Point(68, 39);
-            this.moduleTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.moduleTextBox.Location = new System.Drawing.Point(91, 48);
+            this.moduleTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.moduleTextBox.Name = "moduleTextBox";
-            this.moduleTextBox.Size = new System.Drawing.Size(36, 20);
+            this.moduleTextBox.Size = new System.Drawing.Size(47, 22);
             this.moduleTextBox.TabIndex = 1;
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(155, 124);
-            this.SaveButton.Margin = new System.Windows.Forms.Padding(2);
+            this.SaveButton.Location = new System.Drawing.Point(207, 153);
+            this.SaveButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(134, 28);
+            this.SaveButton.Size = new System.Drawing.Size(179, 34);
             this.SaveButton.TabIndex = 0;
             this.SaveButton.Text = "Save Sensor";
             this.SaveButton.UseVisualStyleBackColor = true;
@@ -113,20 +110,19 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(146, 42);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Location = new System.Drawing.Point(195, 52);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(118, 13);
+            this.label4.Size = new System.Drawing.Size(157, 17);
             this.label4.TabIndex = 7;
             this.label4.Text = "Polynomial Coefficients:";
             // 
             // secondaryBox
             // 
             this.secondaryBox.AutoSize = true;
-            this.secondaryBox.Location = new System.Drawing.Point(27, 99);
-            this.secondaryBox.Margin = new System.Windows.Forms.Padding(2);
+            this.secondaryBox.Location = new System.Drawing.Point(36, 122);
+            this.secondaryBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.secondaryBox.Name = "secondaryBox";
-            this.secondaryBox.Size = new System.Drawing.Size(77, 17);
+            this.secondaryBox.Size = new System.Drawing.Size(99, 21);
             this.secondaryBox.TabIndex = 4;
             this.secondaryBox.Text = "Use Linear";
             this.secondaryBox.UseVisualStyleBackColor = true;
@@ -134,30 +130,29 @@
             // 
             // coefficentTextBox
             // 
-            this.coefficentTextBox.Location = new System.Drawing.Point(149, 67);
-            this.coefficentTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.coefficentTextBox.Location = new System.Drawing.Point(199, 82);
+            this.coefficentTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.coefficentTextBox.Name = "coefficentTextBox";
-            this.coefficentTextBox.Size = new System.Drawing.Size(115, 20);
+            this.coefficentTextBox.Size = new System.Drawing.Size(152, 22);
             this.coefficentTextBox.TabIndex = 3;
             this.coefficentTextBox.TextChanged += new System.EventHandler(this.coefficentTextBox_TextChanged);
             // 
             // lblEquationParsed
             // 
             this.lblEquationParsed.AutoSize = true;
-            this.lblEquationParsed.Location = new System.Drawing.Point(146, 99);
-            this.lblEquationParsed.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblEquationParsed.Location = new System.Drawing.Point(195, 122);
             this.lblEquationParsed.Name = "lblEquationParsed";
-            this.lblEquationParsed.Size = new System.Drawing.Size(66, 13);
+            this.lblEquationParsed.Size = new System.Drawing.Size(88, 17);
             this.lblEquationParsed.TabIndex = 11;
             this.lblEquationParsed.Text = "Polynomial...";
             // 
             // CancelButton
             // 
             this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelButton.Location = new System.Drawing.Point(11, 124);
-            this.CancelButton.Margin = new System.Windows.Forms.Padding(2);
+            this.CancelButton.Location = new System.Drawing.Point(15, 153);
+            this.CancelButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(134, 28);
+            this.CancelButton.Size = new System.Drawing.Size(179, 34);
             this.CancelButton.TabIndex = 12;
             this.CancelButton.Text = "Cancel";
             this.CancelButton.UseVisualStyleBackColor = true;
@@ -165,10 +160,9 @@
             // EditSensorForm
             // 
             this.AcceptButton = this.SaveButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.CancelButton;
-            this.ClientSize = new System.Drawing.Size(300, 168);
+            this.ClientSize = new System.Drawing.Size(400, 207);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.lblEquationParsed);
             this.Controls.Add(this.coefficentTextBox);
@@ -183,7 +177,7 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EditSensorForm";

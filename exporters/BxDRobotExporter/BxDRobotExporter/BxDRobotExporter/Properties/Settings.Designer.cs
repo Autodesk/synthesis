@@ -70,7 +70,22 @@ namespace BxDRobotExporter.Properties {
                 this["FancyColors"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowExportOrAdvancedForm
+        {
+            get
+            {
+                return ((bool)(this["ShowExportOrAdvancedForm"]));
+            }
+            set
+            {
+                this["ShowExportOrAdvancedForm"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]

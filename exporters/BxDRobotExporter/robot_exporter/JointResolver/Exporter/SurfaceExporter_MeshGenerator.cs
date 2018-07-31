@@ -99,7 +99,20 @@ public partial class SurfaceExporter
         // Store a list of faces separate from the Inventor API
         Faces faces = surf.Faces;
 
-        if (separateFaces && MultipleAssets(faces))
+        // Don't separate if only one color
+        if (separateFaces)
+            separateFaces = MultipleAssets(faces);
+
+        // Do separate if too many faces
+        if (!separateFaces)
+        {
+            surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+
+            if (bufferSurface.verts.count > MAX_VERTS_OR_FACETS || bufferSurface.facets.count > MAX_VERTS_OR_FACETS)
+                separateFaces = true;
+        }
+
+        if (separateFaces)
         {
             // Add facets for each face of the surface
             foreach (Face face in faces)
@@ -111,8 +124,7 @@ public partial class SurfaceExporter
         else
         {
             // Add facets once for the entire surface
-            surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-            outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(surf.Faces[1].Appearance));
+            outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(faces[1].Appearance));
         }
     }
 

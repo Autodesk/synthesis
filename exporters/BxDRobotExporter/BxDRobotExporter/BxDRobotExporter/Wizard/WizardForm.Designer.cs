@@ -37,24 +37,26 @@
             this.WizardPages.BackColor = System.Drawing.Color.Transparent;
             this.WizardPages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.WizardPages.Location = new System.Drawing.Point(0, 0);
+            this.WizardPages.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.WizardPages.Name = "WizardPages";
-            this.WizardPages.Size = new System.Drawing.Size(484, 711);
+            this.WizardPages.Size = new System.Drawing.Size(643, 875);
             this.WizardPages.TabIndex = 0;
             // 
             // WizardForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(484, 711);
+            this.ClientSize = new System.Drawing.Size(643, 875);
             this.Controls.Add(this.WizardPages);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(500, 10000);
+            this.MaximumSize = new System.Drawing.Size(661, 12297);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(500, 750);
+            this.MinimumSize = new System.Drawing.Size(661, 912);
             this.Name = "WizardForm";
             this.Text = "Exporter Setup";
             this.ResumeLayout(false);
