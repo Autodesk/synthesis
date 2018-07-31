@@ -1,4 +1,4 @@
-﻿namespace InternalFieldExporter.FieldWizard.Components
+﻿namespace InternalFieldExporter.FieldWizard
 {
     partial class ComponentPropertiesForm
     {
