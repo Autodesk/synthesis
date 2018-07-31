@@ -34,6 +34,19 @@ bool EUI::createWorkspace()
 			workSpace->tooltip("Export robot models to the Synthesis simulator");
 		}
 		
+		// Create workspace events
+		Ptr<WorkspaceEvent> workspaceActivatedEvent = UI->workspaceActivated();
+		if (!workspaceActivatedEvent)
+			throw "Failed to create workspace events.";
+
+		workspaceActivatedEvent->add(new WorkspaceActivatedHandler(this));
+
+		Ptr<WorkspaceEvent> workspaceDeactivatedEvent = UI->workspaceDeactivated();
+		if (!workspaceDeactivatedEvent)
+			throw "Failed to create workspace events.";
+
+		workspaceDeactivatedEvent->add(new WorkspaceDeactivatedHandler(UI));
+
 		// Create panel
 		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
 		panel = workSpace->toolbarPanels()->itemById(K_PANEL);
@@ -91,18 +104,14 @@ bool EUI::createExportPalette()
 		if (!htmlEvent)
 			return false;
 
-		ReceiveFormDataHandler * onHTMLEvent = new ReceiveFormDataHandler(app);
-
-		htmlEvent->add(onHTMLEvent);
+		htmlEvent->add(new ReceiveFormDataHandler(app));
 
 		// Add handler to CloseEvent of the palette
 		Ptr<UserInterfaceGeneralEvent> closeEvent = exportPalette->closed();
 		if (!closeEvent)
 			return false;
 
-		CloseFormEventHandler * onClose = new CloseFormEventHandler(app);
-
-		closeEvent->add(onClose);
+		closeEvent->add(new CloseFormEventHandler(app));
 	}
 
 	return true;
@@ -136,9 +145,7 @@ bool EUI::createExportButton()
 		if (!commandCreatedEvent)
 			return false;
 
-		ShowPaletteCommandCreatedHandler* commandCreatedEventHandler = new ShowPaletteCommandCreatedHandler(app, this);
-
-		return commandCreatedEvent->add(commandCreatedEventHandler);
+		return commandCreatedEvent->add(new ShowPaletteCommandCreatedHandler(app));
 	}
 	
 	return true;
