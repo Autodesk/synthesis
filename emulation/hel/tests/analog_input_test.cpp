@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "roborio.hpp"
+#include "roborio_manager.hpp"
 
 TEST(AnalogInputTest, ReadWriteConfig) {
     auto value = nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig{};

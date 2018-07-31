@@ -21,11 +21,16 @@ class Robot : public frc::IterativeRobot {
     frc::Relay r{0};
     frc::AnalogOutput ao{1};
     frc::AnalogInput ai{0};
+    frc::Encoder encoder{0,1};
     ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
 
     bool current_state = false;
 
 public:
+    void RobotInit(){}
+
+    void RobotPeriodic(){}
+
     void TeleopInit() {
         std::srand(std::time(nullptr));
     }
@@ -47,6 +52,7 @@ public:
         talon.Set(0.3);
 
         std::cout<<"AnalogInput:"<<ai.GetVoltage()<<"\n";
+        std::cout<<"Encoder:"<<encoder.Get()<<"\n";
 
         usleep(45000);
     }

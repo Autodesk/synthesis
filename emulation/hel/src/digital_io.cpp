@@ -1,4 +1,4 @@
-#include "roborio.hpp"
+#include "roborio_manager.hpp"
 #include "util.hpp"
 #include "error.hpp"
 
@@ -101,7 +101,7 @@ namespace hel{
     }
 
     const char* DigitalSystem::DIOConfigurationException::what()const throw(){
-        std::string s = "Exception: digital IO failed attempting " + to_string(expected_configuration) + " but configured for " + to_string(configuration) + " on digital port " + std::to_string(port);
+        std::string s = "Synthesis exception: digital IO failed attempting " + to_string(expected_configuration) + " but configured for " + to_string(configuration) + " on digital port " + std::to_string(port);
         return s.c_str();
     }
 
@@ -213,30 +213,24 @@ namespace hel{
         }
 
         void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
-            try{
-                if(allowOutput(instance.first->digital_system.getEnabledOutputs().MXP, bitfield_index, true)){
-                    instance.first->digital_system.setPWMPulseWidth(bitfield_index, value);
-                }
-                instance.second.unlock();
-            } catch(std::exception& e){
-                instance.second.unlock();
-                throw;
-            }
+            throw hel::UnsupportedFeature("Function call tDIO::writePWMDutyCycleA");
         }
 
         uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* /*status*/){
+            throw hel::UnsupportedFeature("Function call tDIO::readPWMDutyCycleA");
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getPWMPulseWidth(bitfield_index);
         }
 
         void writePWMDutyCycleB(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
-            writePWMDutyCycleA(bitfield_index, value, status); //no need to reimplement writePWMDutyCycleA, they do the same thing
+            throw hel::UnsupportedFeature("Function call tDIO::writePWMDutyCycleB");
+            //no need to reimplement writePWMDutyCycleA, they do the same thing
         }
 
         uint8_t readPWMDutyCycleB(uint8_t bitfield_index, tRioStatusCode* status){
-            return readPWMDutyCycleA(bitfield_index, status);
+            throw hel::UnsupportedFeature("Function call tDIO::readPWMDutyCycleB");
+            //no need to reimplement readPWMDutyCycleA, they do the same thing
         }
 
         void writeFilterSelectHdr(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
@@ -347,7 +341,8 @@ namespace hel{
         void writePulse(tPulse value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             if(instance.first->digital_system.getPulses().value != (new tPulse)->value){
-                //TODO error handling multiple pulses active at once
+                std::cerr<<"Synthesis warning: multiple digital output pulses should not be allowed at once\n";
+                return;
             }
             try{
                 if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){

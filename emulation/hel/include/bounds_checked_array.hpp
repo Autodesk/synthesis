@@ -271,17 +271,26 @@ namespace hel{
 
         ~BoundsCheckedArray() = default;
 
-        bool operator==(const BoundsCheckedArray<T, LEN>& b){
-            return internal == b.internal;
-        }
 
-        bool operator!=(const BoundsCheckedArray<T, LEN>& b){
-            return !(*this == b);
-        }
+        template<typename S, std::size_t L>
+        friend bool operator==(const BoundsCheckedArray<S, L>&, const BoundsCheckedArray<S, L>&);
+
+        template<typename S, std::size_t L>
+        friend bool operator!=(const BoundsCheckedArray<S, L>&, const BoundsCheckedArray<S, L>&);
 
         template<typename S, std::size_t L>
         friend std::string to_string(const BoundsCheckedArray<S, L>&, std::function<std::string(S)>);
     };
+
+    template<typename T, std::size_t LEN>
+    bool operator==(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b){
+        return a.internal == b.internal;
+    }
+
+    template<typename T, std::size_t LEN>
+    bool operator!=(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b){
+        return !(a == b);
+    }
 
     template<typename T, std::size_t LEN>
     std::string to_string(const BoundsCheckedArray<T, LEN>& a, std::function<std::string(T)> to_s){

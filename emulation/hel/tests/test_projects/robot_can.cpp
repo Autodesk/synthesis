@@ -29,8 +29,6 @@ public:
     }
 
     void TeleopPeriodic() {
-        //RobotController::GetCANStatus();
-
         if(power >= 1.0){
             power = -1.0;
         } else {
@@ -38,10 +36,6 @@ public:
         }
         std::cout<<"Setting power to : "<<power<<"\n";
         talon.Set(power);
-        double power_received = talon.GetMotorOutputPercent();
-        std::cout<<"Getting power: "<<power_received<<"\n";
-
-        //exit(0);
 
         usleep(45000);
     }

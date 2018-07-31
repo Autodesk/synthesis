@@ -3,6 +3,8 @@
 
 #include "FRC_NetworkCommunication/FRCComm.h"
 
+#include <string>
+
 namespace hel{
 
     /**
@@ -10,7 +12,7 @@ namespace hel{
      * \brief Represents match phase and robot enabled state
      */
 
-    struct RobotMode{ 
+    struct RobotMode{
 
         /**
          * \enum Mode
@@ -146,6 +148,12 @@ namespace hel{
          */
 
         ControlWord_t toControlWord()const;
+
+        static RobotMode deserialize(std::string);
+
+        std::string serialize()const;
+
+        std::string toString()const;
 
         RobotMode();
     };

@@ -1,4 +1,4 @@
-#include "roborio.hpp"
+#include "roborio_manager.hpp"
 #include "util.hpp"
 #include "json_util.hpp"
 
@@ -102,7 +102,7 @@ void hel::SendData::update(){
             }
         }
     }
-    can_devices = instance.first->can_devices;
+    can_motor_controllers = instance.first->can_motor_controllers;
     gen_serialization = true;
     instance.second.unlock();
 }
@@ -129,7 +129,7 @@ std::string hel::SendData::toString()const{
     s += "analog_outputs:" + hel::to_string(analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
     s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(MXPData)>([&](MXPData a){ return a.toString();})) + ", ";
     s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
-    s += "can_devices:" + hel::to_string(can_devices, std::function<std::string(std::pair<uint32_t,CANDevice>)>([&](std::pair<uint32_t, CANDevice> a){ return "[" + std::to_string(a.first) + ", " + a.second.toString() + "]";}));
+    s += "can_motor_controllers:" + hel::to_string(can_motor_controllers, std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){ return "[" + std::to_string(a.first) + ", " + a.second.toString() + "]";}));
     s += ")";
     return s;
 }
@@ -171,9 +171,9 @@ std::string hel::SendData::serialize(){
 
     /*serialized_data += ",";
     serialized_data += serializeList(
-        "\"can_devices\"",
-        can_devices,
-        std::function<std::string(std::pair<uint32_t,CANDevice>)>([&](std::pair<uint32_t, CANDevice> a){
+        "\"can_motor_controllers\"",
+        can_motor_controllers,
+        std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){
             return a.second.serialize();
         })
         );*/
