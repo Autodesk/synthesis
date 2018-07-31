@@ -113,6 +113,9 @@ namespace BxDRobotExporter
             stdole.IPictureDisp WeightRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight16));
             stdole.IPictureDisp WeightRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight32));
 
+            stdole.IPictureDisp SynthesisLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
+            stdole.IPictureDisp SynthesisLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
+
             #region DEBUG
 #if DEBUG
             stdole.IPictureDisp DebugButtonSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand16));
@@ -126,7 +129,7 @@ namespace BxDRobotExporter
 
             #region Setup New Environment and Ribbon
             Environments environments = MainApplication.UserInterfaceManager.Environments;
-            ExporterEnv = environments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, ExportRobotIconSmall, ExportRobotIconLarge);
+            ExporterEnv = environments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, SynthesisLogoSmall, SynthesisLogoLarge);
 
             Ribbon assemblyRibbon = MainApplication.UserInterfaceManager.Ribbons["Assembly"];
             RibbonTab ExporterTab = assemblyRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter:RobotExporterTab", ClientID, "", false, true);
@@ -540,12 +543,17 @@ namespace BxDRobotExporter
                     Utilities.GUI.OpenSynthesis();
         }
 
-        //Settings
-        /// <summary>
-        /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
-        /// </summary>
-        /// <param name="Context"></param>
-        private void SetWeight_OnExecute(NameValueMap Context)
+        public void ForceExport()
+        {
+            ExportButton_OnExecute(null);
+        }
+
+    //Settings
+    /// <summary>
+    /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
+    /// </summary>
+    /// <param name="Context"></param>
+    private void SetWeight_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.PromptRobotWeight())
                 PendingChanges = true;
@@ -799,7 +807,7 @@ namespace BxDRobotExporter
         /// <param name="viewDistance">The distence from <paramref name="occurrence"/> that the camera will be</param>
         /// <param name="viewDirection">The direction of the camera</param>
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
-        public void ViewOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = true)
+        public void ViewOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, ViewDirection viewDirection = ViewDirection.Y, bool animate = false)
         {
             if (occurrences.Count < 1)
                 return;

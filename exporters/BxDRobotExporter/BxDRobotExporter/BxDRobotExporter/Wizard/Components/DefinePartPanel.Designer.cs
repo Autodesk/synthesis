@@ -30,32 +30,57 @@
         {
             this.NodeGroupBox = new System.Windows.Forms.GroupBox();
             this.MainTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.tabsMeta = new System.Windows.Forms.TabControl();
+            this.metaPneumatic = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
+            this.lblPressure = new System.Windows.Forms.Label();
+            this.cmbPneumaticDiameter = new System.Windows.Forms.ComboBox();
+            this.lblDiameter = new System.Windows.Forms.Label();
+            this.metaGearing = new System.Windows.Forms.TabPage();
+            this.GearLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.InputGeartxt = new System.Windows.Forms.NumericUpDown();
+            this.OutputGeartxt = new System.Windows.Forms.NumericUpDown();
+            this.lblOutputGear = new System.Windows.Forms.Label();
+            this.lblInputGear = new System.Windows.Forms.Label();
+            this.metaElevatorStages = new System.Windows.Forms.TabPage();
+            this.cmbStages = new System.Windows.Forms.ComboBox();
             this.DriverLayout = new System.Windows.Forms.TableLayoutPanel();
             this.SelectDriverLabel = new System.Windows.Forms.Label();
             this.DriverComboBox = new System.Windows.Forms.ComboBox();
             this.PortsGroupBox = new System.Windows.Forms.GroupBox();
             this.PortLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.rbCAN = new System.Windows.Forms.RadioButton();
+            this.rbPWM = new System.Windows.Forms.RadioButton();
             this.PortOneLabel = new System.Windows.Forms.Label();
             this.PortTwoLabel = new System.Windows.Forms.Label();
             this.PortTwoUpDown = new System.Windows.Forms.NumericUpDown();
             this.PortOneUpDown = new System.Windows.Forms.NumericUpDown();
-            this.MetaTabControl = new System.Windows.Forms.TabControl();
-            this.PneumaticTab = new System.Windows.Forms.TabPage();
-            this.PneumaticLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.PressureLabel = new System.Windows.Forms.Label();
-            this.DiameterLabel = new System.Windows.Forms.Label();
-            this.PneumaticPressureComboBox = new System.Windows.Forms.ComboBox();
-            this.PneumaticDiameterComboBox = new System.Windows.Forms.ComboBox();
+            this.metaElevatorBrake = new System.Windows.Forms.TabPage();
+            this.BreakLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.brakePortB = new System.Windows.Forms.NumericUpDown();
+            this.lblBrakePort = new System.Windows.Forms.Label();
+            this.brakePortA = new System.Windows.Forms.NumericUpDown();
+            this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
             this.NodeGroupBox.SuspendLayout();
             this.MainTableLayout.SuspendLayout();
+            this.tabsMeta.SuspendLayout();
+            this.metaPneumatic.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.metaGearing.SuspendLayout();
+            this.GearLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).BeginInit();
+            this.metaElevatorStages.SuspendLayout();
             this.DriverLayout.SuspendLayout();
             this.PortsGroupBox.SuspendLayout();
             this.PortLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).BeginInit();
-            this.MetaTabControl.SuspendLayout();
-            this.PneumaticTab.SuspendLayout();
-            this.PneumaticLayout.SuspendLayout();
+            this.metaElevatorBrake.SuspendLayout();
+            this.BreakLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).BeginInit();
             this.SuspendLayout();
             // 
             // NodeGroupBox
@@ -65,10 +90,10 @@
             this.NodeGroupBox.Controls.Add(this.MainTableLayout);
             this.NodeGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.NodeGroupBox.Location = new System.Drawing.Point(0, 0);
-            this.NodeGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.NodeGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.NodeGroupBox.Name = "NodeGroupBox";
-            this.NodeGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.NodeGroupBox.Size = new System.Drawing.Size(533, 285);
+            this.NodeGroupBox.Padding = new System.Windows.Forms.Padding(4);
+            this.NodeGroupBox.Size = new System.Drawing.Size(533, 242);
             this.NodeGroupBox.TabIndex = 0;
             this.NodeGroupBox.TabStop = false;
             this.NodeGroupBox.Text = "Empty";
@@ -80,19 +105,244 @@
             this.MainTableLayout.ColumnCount = 2;
             this.MainTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.MainTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.MainTableLayout.Controls.Add(this.tabsMeta, 0, 2);
             this.MainTableLayout.Controls.Add(this.DriverLayout, 0, 0);
             this.MainTableLayout.Controls.Add(this.PortsGroupBox, 0, 1);
-            this.MainTableLayout.Controls.Add(this.MetaTabControl, 1, 2);
             this.MainTableLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.MainTableLayout.Location = new System.Drawing.Point(4, 19);
-            this.MainTableLayout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MainTableLayout.Margin = new System.Windows.Forms.Padding(4);
             this.MainTableLayout.Name = "MainTableLayout";
             this.MainTableLayout.RowCount = 3;
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainTableLayout.Size = new System.Drawing.Size(525, 262);
+            this.MainTableLayout.Size = new System.Drawing.Size(525, 219);
             this.MainTableLayout.TabIndex = 14;
+            // 
+            // tabsMeta
+            // 
+            this.MainTableLayout.SetColumnSpan(this.tabsMeta, 2);
+            this.tabsMeta.Controls.Add(this.metaPneumatic);
+            this.tabsMeta.Controls.Add(this.metaElevatorStages);
+            this.tabsMeta.Controls.Add(this.metaGearing);
+            this.tabsMeta.Location = new System.Drawing.Point(3, 125);
+            this.tabsMeta.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);
+            this.tabsMeta.Name = "tabsMeta";
+            this.tabsMeta.SelectedIndex = 0;
+            this.tabsMeta.Size = new System.Drawing.Size(522, 92);
+            this.tabsMeta.TabIndex = 13;
+            // 
+            // metaPneumatic
+            // 
+            this.metaPneumatic.Controls.Add(this.tableLayoutPanel1);
+            this.metaPneumatic.Location = new System.Drawing.Point(4, 25);
+            this.metaPneumatic.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.metaPneumatic.Name = "metaPneumatic";
+            this.metaPneumatic.Size = new System.Drawing.Size(514, 63);
+            this.metaPneumatic.TabIndex = 1;
+            this.metaPneumatic.Text = "Pneumatic";
+            this.metaPneumatic.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.cmbPneumaticPressure, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblPressure, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.cmbPneumaticDiameter, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblDiameter, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(514, 53);
+            this.tableLayoutPanel1.TabIndex = 13;
+            // 
+            // cmbPneumaticPressure
+            // 
+            this.cmbPneumaticPressure.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cmbPneumaticPressure.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPneumaticPressure.FormattingEnabled = true;
+            this.cmbPneumaticPressure.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.cmbPneumaticPressure.Items.AddRange(new object[] {
+            "60 psi",
+            "20 psi",
+            "10 psi"});
+            this.cmbPneumaticPressure.Location = new System.Drawing.Point(260, 27);
+            this.cmbPneumaticPressure.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cmbPneumaticPressure.Name = "cmbPneumaticPressure";
+            this.cmbPneumaticPressure.Size = new System.Drawing.Size(251, 24);
+            this.cmbPneumaticPressure.TabIndex = 6;
+            // 
+            // lblPressure
+            // 
+            this.lblPressure.AutoSize = true;
+            this.lblPressure.Location = new System.Drawing.Point(261, 4);
+            this.lblPressure.Margin = new System.Windows.Forms.Padding(4);
+            this.lblPressure.Name = "lblPressure";
+            this.lblPressure.Size = new System.Drawing.Size(65, 17);
+            this.lblPressure.TabIndex = 13;
+            this.lblPressure.Text = "Pressure";
+            this.lblPressure.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // cmbPneumaticDiameter
+            // 
+            this.cmbPneumaticDiameter.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cmbPneumaticDiameter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPneumaticDiameter.FormattingEnabled = true;
+            this.cmbPneumaticDiameter.Items.AddRange(new object[] {
+            "1 in",
+            ".5 in",
+            ".25 in"});
+            this.cmbPneumaticDiameter.Location = new System.Drawing.Point(3, 27);
+            this.cmbPneumaticDiameter.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cmbPneumaticDiameter.Name = "cmbPneumaticDiameter";
+            this.cmbPneumaticDiameter.Size = new System.Drawing.Size(251, 24);
+            this.cmbPneumaticDiameter.TabIndex = 12;
+            // 
+            // lblDiameter
+            // 
+            this.lblDiameter.AutoSize = true;
+            this.lblDiameter.Location = new System.Drawing.Point(4, 4);
+            this.lblDiameter.Margin = new System.Windows.Forms.Padding(4);
+            this.lblDiameter.Name = "lblDiameter";
+            this.lblDiameter.Size = new System.Drawing.Size(116, 17);
+            this.lblDiameter.TabIndex = 9;
+            this.lblDiameter.Text = "Internal Diameter";
+            this.lblDiameter.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // metaGearing
+            // 
+            this.metaGearing.Controls.Add(this.GearLayout);
+            this.metaGearing.Location = new System.Drawing.Point(4, 25);
+            this.metaGearing.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.metaGearing.Name = "metaGearing";
+            this.metaGearing.Size = new System.Drawing.Size(514, 63);
+            this.metaGearing.TabIndex = 2;
+            this.metaGearing.Text = "Gear Ratio";
+            this.metaGearing.UseVisualStyleBackColor = true;
+            // 
+            // GearLayout
+            // 
+            this.GearLayout.AutoSize = true;
+            this.GearLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.GearLayout.ColumnCount = 2;
+            this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.GearLayout.Controls.Add(this.InputGeartxt, 0, 1);
+            this.GearLayout.Controls.Add(this.OutputGeartxt, 0, 1);
+            this.GearLayout.Controls.Add(this.lblOutputGear, 1, 0);
+            this.GearLayout.Controls.Add(this.lblInputGear, 0, 0);
+            this.GearLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.GearLayout.Location = new System.Drawing.Point(0, 0);
+            this.GearLayout.Margin = new System.Windows.Forms.Padding(4);
+            this.GearLayout.Name = "GearLayout";
+            this.GearLayout.RowCount = 2;
+            this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.GearLayout.Size = new System.Drawing.Size(514, 56);
+            this.GearLayout.TabIndex = 13;
+            // 
+            // InputGeartxt
+            // 
+            this.InputGeartxt.DecimalPlaces = 5;
+            this.InputGeartxt.Location = new System.Drawing.Point(3, 31);
+            this.InputGeartxt.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.InputGeartxt.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
+            this.InputGeartxt.Name = "InputGeartxt";
+            this.InputGeartxt.Size = new System.Drawing.Size(251, 22);
+            this.InputGeartxt.TabIndex = 17;
+            this.InputGeartxt.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // OutputGeartxt
+            // 
+            this.OutputGeartxt.DecimalPlaces = 5;
+            this.OutputGeartxt.Location = new System.Drawing.Point(260, 31);
+            this.OutputGeartxt.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.OutputGeartxt.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
+            this.OutputGeartxt.Name = "OutputGeartxt";
+            this.OutputGeartxt.Size = new System.Drawing.Size(251, 22);
+            this.OutputGeartxt.TabIndex = 16;
+            this.OutputGeartxt.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // lblOutputGear
+            // 
+            this.lblOutputGear.AutoSize = true;
+            this.lblOutputGear.Location = new System.Drawing.Point(261, 4);
+            this.lblOutputGear.Margin = new System.Windows.Forms.Padding(4);
+            this.lblOutputGear.Name = "lblOutputGear";
+            this.lblOutputGear.Size = new System.Drawing.Size(78, 20);
+            this.lblOutputGear.TabIndex = 14;
+            this.lblOutputGear.Text = "Output Gear";
+            this.lblOutputGear.UseCompatibleTextRendering = true;
+            // 
+            // lblInputGear
+            // 
+            this.lblInputGear.AutoSize = true;
+            this.lblInputGear.Location = new System.Drawing.Point(4, 4);
+            this.lblInputGear.Margin = new System.Windows.Forms.Padding(4);
+            this.lblInputGear.Name = "lblInputGear";
+            this.lblInputGear.Size = new System.Drawing.Size(75, 17);
+            this.lblInputGear.TabIndex = 11;
+            this.lblInputGear.Text = "Input Gear";
+            // 
+            // metaElevatorStages
+            // 
+            this.metaElevatorStages.Controls.Add(this.cmbStages);
+            this.metaElevatorStages.Location = new System.Drawing.Point(4, 25);
+            this.metaElevatorStages.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.metaElevatorStages.Name = "metaElevatorStages";
+            this.metaElevatorStages.Size = new System.Drawing.Size(514, 63);
+            this.metaElevatorStages.TabIndex = 4;
+            this.metaElevatorStages.Text = "Stages";
+            this.metaElevatorStages.UseVisualStyleBackColor = true;
+            // 
+            // cmbStages
+            // 
+            this.cmbStages.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cmbStages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbStages.FormattingEnabled = true;
+            this.cmbStages.Items.AddRange(new object[] {
+            "Single Stage Elevator",
+            "Cascading Stage One",
+            "Cascading Stage Two",
+            "Continuous Stage One",
+            "Continuos Stage Two"});
+            this.cmbStages.Location = new System.Drawing.Point(0, 0);
+            this.cmbStages.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cmbStages.Name = "cmbStages";
+            this.cmbStages.Size = new System.Drawing.Size(514, 24);
+            this.cmbStages.TabIndex = 0;
             // 
             // DriverLayout
             // 
@@ -118,7 +368,7 @@
             this.SelectDriverLabel.AutoSize = true;
             this.SelectDriverLabel.Dock = System.Windows.Forms.DockStyle.Right;
             this.SelectDriverLabel.Location = new System.Drawing.Point(4, 4);
-            this.SelectDriverLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SelectDriverLabel.Margin = new System.Windows.Forms.Padding(4);
             this.SelectDriverLabel.Name = "SelectDriverLabel";
             this.SelectDriverLabel.Size = new System.Drawing.Size(80, 24);
             this.SelectDriverLabel.TabIndex = 1;
@@ -138,7 +388,7 @@
             "Relay Pneumatic",
             "Dual Motor"});
             this.DriverComboBox.Location = new System.Drawing.Point(92, 4);
-            this.DriverComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.DriverComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.DriverComboBox.Name = "DriverComboBox";
             this.DriverComboBox.Size = new System.Drawing.Size(429, 24);
             this.DriverComboBox.TabIndex = 2;
@@ -152,10 +402,10 @@
             this.PortsGroupBox.Controls.Add(this.PortLayout);
             this.PortsGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.PortsGroupBox.Location = new System.Drawing.Point(4, 36);
-            this.PortsGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PortsGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.PortsGroupBox.Name = "PortsGroupBox";
-            this.PortsGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PortsGroupBox.Size = new System.Drawing.Size(517, 53);
+            this.PortsGroupBox.Padding = new System.Windows.Forms.Padding(4);
+            this.PortsGroupBox.Size = new System.Drawing.Size(517, 83);
             this.PortsGroupBox.TabIndex = 6;
             this.PortsGroupBox.TabStop = false;
             this.PortsGroupBox.Text = "Ports";
@@ -169,27 +419,58 @@
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.PortLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PortLayout.Controls.Add(this.rbCAN, 1, 1);
+            this.PortLayout.Controls.Add(this.rbPWM, 0, 1);
             this.PortLayout.Controls.Add(this.PortOneLabel, 0, 0);
             this.PortLayout.Controls.Add(this.PortTwoLabel, 2, 0);
             this.PortLayout.Controls.Add(this.PortTwoUpDown, 3, 0);
             this.PortLayout.Controls.Add(this.PortOneUpDown, 1, 0);
             this.PortLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.PortLayout.Location = new System.Drawing.Point(4, 19);
-            this.PortLayout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PortLayout.Margin = new System.Windows.Forms.Padding(4);
             this.PortLayout.Name = "PortLayout";
-            this.PortLayout.RowCount = 1;
-            this.PortLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.PortLayout.Size = new System.Drawing.Size(509, 30);
+            this.PortLayout.RowCount = 2;
+            this.PortLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PortLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PortLayout.Size = new System.Drawing.Size(509, 60);
             this.PortLayout.TabIndex = 4;
+            // 
+            // rbCAN
+            // 
+            this.rbCAN.AutoSize = true;
+            this.rbCAN.Location = new System.Drawing.Point(71, 32);
+            this.rbCAN.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.rbCAN.Name = "rbCAN";
+            this.rbCAN.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.rbCAN.Size = new System.Drawing.Size(60, 21);
+            this.rbCAN.TabIndex = 9;
+            this.rbCAN.TabStop = true;
+            this.rbCAN.Text = "CAN";
+            this.rbCAN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.rbCAN.UseVisualStyleBackColor = true;
+            // 
+            // rbPWM
+            // 
+            this.rbPWM.AutoSize = true;
+            this.rbPWM.Dock = System.Windows.Forms.DockStyle.Right;
+            this.rbPWM.Location = new System.Drawing.Point(3, 32);
+            this.rbPWM.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.rbPWM.Name = "rbPWM";
+            this.rbPWM.Size = new System.Drawing.Size(62, 26);
+            this.rbPWM.TabIndex = 8;
+            this.rbPWM.TabStop = true;
+            this.rbPWM.Text = "PWM";
+            this.rbPWM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.rbPWM.UseVisualStyleBackColor = true;
             // 
             // PortOneLabel
             // 
             this.PortOneLabel.AutoSize = true;
             this.PortOneLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PortOneLabel.Location = new System.Drawing.Point(4, 4);
-            this.PortOneLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PortOneLabel.Margin = new System.Windows.Forms.Padding(4);
             this.PortOneLabel.Name = "PortOneLabel";
-            this.PortOneLabel.Size = new System.Drawing.Size(46, 22);
+            this.PortOneLabel.Size = new System.Drawing.Size(60, 22);
             this.PortOneLabel.TabIndex = 1;
             this.PortOneLabel.Text = "Port 1";
             this.PortOneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -198,8 +479,8 @@
             // 
             this.PortTwoLabel.AutoSize = true;
             this.PortTwoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PortTwoLabel.Location = new System.Drawing.Point(258, 4);
-            this.PortTwoLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PortTwoLabel.Location = new System.Drawing.Point(265, 4);
+            this.PortTwoLabel.Margin = new System.Windows.Forms.Padding(4);
             this.PortTwoLabel.Name = "PortTwoLabel";
             this.PortTwoLabel.Size = new System.Drawing.Size(46, 22);
             this.PortTwoLabel.TabIndex = 2;
@@ -209,15 +490,15 @@
             // PortTwoUpDown
             // 
             this.PortTwoUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortTwoUpDown.Location = new System.Drawing.Point(312, 4);
-            this.PortTwoUpDown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PortTwoUpDown.Location = new System.Drawing.Point(319, 4);
+            this.PortTwoUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.PortTwoUpDown.Maximum = new decimal(new int[] {
             8,
             0,
             0,
             0});
             this.PortTwoUpDown.Name = "PortTwoUpDown";
-            this.PortTwoUpDown.Size = new System.Drawing.Size(193, 22);
+            this.PortTwoUpDown.Size = new System.Drawing.Size(186, 22);
             this.PortTwoUpDown.TabIndex = 3;
             this.PortTwoUpDown.Value = new decimal(new int[] {
             3,
@@ -228,15 +509,15 @@
             // PortOneUpDown
             // 
             this.PortOneUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PortOneUpDown.Location = new System.Drawing.Point(58, 4);
-            this.PortOneUpDown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PortOneUpDown.Location = new System.Drawing.Point(72, 4);
+            this.PortOneUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.PortOneUpDown.Maximum = new decimal(new int[] {
             8,
             0,
             0,
             0});
             this.PortOneUpDown.Name = "PortOneUpDown";
-            this.PortOneUpDown.Size = new System.Drawing.Size(192, 22);
+            this.PortOneUpDown.Size = new System.Drawing.Size(185, 22);
             this.PortOneUpDown.TabIndex = 0;
             this.PortOneUpDown.Value = new decimal(new int[] {
             2,
@@ -244,101 +525,76 @@
             0,
             0});
             // 
-            // MetaTabControl
+            // metaElevatorBrake
             // 
-            this.MetaTabControl.Controls.Add(this.PneumaticTab);
-            this.MetaTabControl.Dock = System.Windows.Forms.DockStyle.Top;
-            this.MetaTabControl.Location = new System.Drawing.Point(265, 95);
-            this.MetaTabControl.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.MetaTabControl.Name = "MetaTabControl";
-            this.MetaTabControl.SelectedIndex = 0;
-            this.MetaTabControl.Size = new System.Drawing.Size(257, 165);
-            this.MetaTabControl.TabIndex = 12;
-            this.MetaTabControl.Visible = false;
+            this.metaElevatorBrake.Controls.Add(this.BreakLayout);
+            this.metaElevatorBrake.Location = new System.Drawing.Point(4, 25);
+            this.metaElevatorBrake.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.metaElevatorBrake.Name = "metaElevatorBrake";
+            this.metaElevatorBrake.Size = new System.Drawing.Size(514, 63);
+            this.metaElevatorBrake.TabIndex = 3;
+            this.metaElevatorBrake.Text = "Break Info";
+            this.metaElevatorBrake.UseVisualStyleBackColor = true;
             // 
-            // PneumaticTab
+            // BreakLayout
             // 
-            this.PneumaticTab.Controls.Add(this.PneumaticLayout);
-            this.PneumaticTab.Location = new System.Drawing.Point(4, 25);
-            this.PneumaticTab.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.PneumaticTab.Name = "PneumaticTab";
-            this.PneumaticTab.Size = new System.Drawing.Size(249, 136);
-            this.PneumaticTab.TabIndex = 1;
-            this.PneumaticTab.Text = "Pneumatic";
-            this.PneumaticTab.UseVisualStyleBackColor = true;
+            this.BreakLayout.AutoSize = true;
+            this.BreakLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BreakLayout.ColumnCount = 2;
+            this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.BreakLayout.Controls.Add(this.brakePortB, 1, 1);
+            this.BreakLayout.Controls.Add(this.lblBrakePort, 0, 0);
+            this.BreakLayout.Controls.Add(this.brakePortA, 0, 1);
+            this.BreakLayout.Controls.Add(this.chkBoxHasBrake, 1, 0);
+            this.BreakLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.BreakLayout.Location = new System.Drawing.Point(0, 0);
+            this.BreakLayout.Margin = new System.Windows.Forms.Padding(4);
+            this.BreakLayout.Name = "BreakLayout";
+            this.BreakLayout.RowCount = 2;
+            this.BreakLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.BreakLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.BreakLayout.Size = new System.Drawing.Size(514, 55);
+            this.BreakLayout.TabIndex = 13;
             // 
-            // PneumaticLayout
+            // brakePortB
             // 
-            this.PneumaticLayout.AutoSize = true;
-            this.PneumaticLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PneumaticLayout.ColumnCount = 1;
-            this.PneumaticLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.PneumaticLayout.Controls.Add(this.PressureLabel, 0, 2);
-            this.PneumaticLayout.Controls.Add(this.DiameterLabel, 0, 0);
-            this.PneumaticLayout.Controls.Add(this.PneumaticPressureComboBox, 0, 3);
-            this.PneumaticLayout.Controls.Add(this.PneumaticDiameterComboBox, 0, 1);
-            this.PneumaticLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PneumaticLayout.Location = new System.Drawing.Point(0, 0);
-            this.PneumaticLayout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PneumaticLayout.Name = "PneumaticLayout";
-            this.PneumaticLayout.RowCount = 4;
-            this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PneumaticLayout.Size = new System.Drawing.Size(249, 114);
-            this.PneumaticLayout.TabIndex = 15;
+            this.brakePortB.Dock = System.Windows.Forms.DockStyle.Top;
+            this.brakePortB.Location = new System.Drawing.Point(260, 31);
+            this.brakePortB.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.brakePortB.Name = "brakePortB";
+            this.brakePortB.Size = new System.Drawing.Size(251, 22);
+            this.brakePortB.TabIndex = 3;
             // 
-            // PressureLabel
+            // lblBrakePort
             // 
-            this.PressureLabel.AutoSize = true;
-            this.PressureLabel.Location = new System.Drawing.Point(4, 61);
-            this.PressureLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PressureLabel.Name = "PressureLabel";
-            this.PressureLabel.Size = new System.Drawing.Size(65, 17);
-            this.PressureLabel.TabIndex = 13;
-            this.PressureLabel.Text = "Pressure";
+            this.lblBrakePort.AutoSize = true;
+            this.lblBrakePort.Location = new System.Drawing.Point(4, 4);
+            this.lblBrakePort.Margin = new System.Windows.Forms.Padding(4);
+            this.lblBrakePort.Name = "lblBrakePort";
+            this.lblBrakePort.Size = new System.Drawing.Size(75, 17);
+            this.lblBrakePort.TabIndex = 1;
+            this.lblBrakePort.Text = "Brake Port";
             // 
-            // DiameterLabel
+            // brakePortA
             // 
-            this.DiameterLabel.AutoSize = true;
-            this.DiameterLabel.Location = new System.Drawing.Point(4, 4);
-            this.DiameterLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.DiameterLabel.Name = "DiameterLabel";
-            this.DiameterLabel.Size = new System.Drawing.Size(116, 17);
-            this.DiameterLabel.TabIndex = 9;
-            this.DiameterLabel.Text = "Internal Diameter";
+            this.brakePortA.Dock = System.Windows.Forms.DockStyle.Top;
+            this.brakePortA.Location = new System.Drawing.Point(3, 31);
+            this.brakePortA.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.brakePortA.Name = "brakePortA";
+            this.brakePortA.Size = new System.Drawing.Size(251, 22);
+            this.brakePortA.TabIndex = 2;
             // 
-            // PneumaticPressureComboBox
+            // chkBoxHasBrake
             // 
-            this.PneumaticPressureComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PneumaticPressureComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.PneumaticPressureComboBox.FormattingEnabled = true;
-            this.PneumaticPressureComboBox.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.PneumaticPressureComboBox.Items.AddRange(new object[] {
-            "60 psi",
-            "20 psi",
-            "10 psi"});
-            this.PneumaticPressureComboBox.Location = new System.Drawing.Point(4, 86);
-            this.PneumaticPressureComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PneumaticPressureComboBox.Name = "PneumaticPressureComboBox";
-            this.PneumaticPressureComboBox.Size = new System.Drawing.Size(241, 24);
-            this.PneumaticPressureComboBox.TabIndex = 6;
-            // 
-            // PneumaticDiameterComboBox
-            // 
-            this.PneumaticDiameterComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PneumaticDiameterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.PneumaticDiameterComboBox.FormattingEnabled = true;
-            this.PneumaticDiameterComboBox.Items.AddRange(new object[] {
-            "1 in",
-            ".5 in",
-            ".25 in"});
-            this.PneumaticDiameterComboBox.Location = new System.Drawing.Point(4, 29);
-            this.PneumaticDiameterComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PneumaticDiameterComboBox.Name = "PneumaticDiameterComboBox";
-            this.PneumaticDiameterComboBox.Size = new System.Drawing.Size(241, 24);
-            this.PneumaticDiameterComboBox.TabIndex = 12;
+            this.chkBoxHasBrake.AutoSize = true;
+            this.chkBoxHasBrake.Location = new System.Drawing.Point(261, 4);
+            this.chkBoxHasBrake.Margin = new System.Windows.Forms.Padding(4);
+            this.chkBoxHasBrake.Name = "chkBoxHasBrake";
+            this.chkBoxHasBrake.Size = new System.Drawing.Size(96, 21);
+            this.chkBoxHasBrake.TabIndex = 0;
+            this.chkBoxHasBrake.Text = "Has Brake";
+            this.chkBoxHasBrake.UseVisualStyleBackColor = true;
             // 
             // DefinePartPanel
             // 
@@ -347,14 +603,26 @@
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.NodeGroupBox);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(533, 0);
             this.Name = "DefinePartPanel";
-            this.Size = new System.Drawing.Size(533, 285);
+            this.Size = new System.Drawing.Size(533, 242);
             this.NodeGroupBox.ResumeLayout(false);
             this.NodeGroupBox.PerformLayout();
             this.MainTableLayout.ResumeLayout(false);
             this.MainTableLayout.PerformLayout();
+            this.tabsMeta.ResumeLayout(false);
+            this.metaPneumatic.ResumeLayout(false);
+            this.metaPneumatic.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.metaGearing.ResumeLayout(false);
+            this.metaGearing.PerformLayout();
+            this.GearLayout.ResumeLayout(false);
+            this.GearLayout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).EndInit();
+            this.metaElevatorStages.ResumeLayout(false);
             this.DriverLayout.ResumeLayout(false);
             this.DriverLayout.PerformLayout();
             this.PortsGroupBox.ResumeLayout(false);
@@ -363,11 +631,12 @@
             this.PortLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PortTwoUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).EndInit();
-            this.MetaTabControl.ResumeLayout(false);
-            this.PneumaticTab.ResumeLayout(false);
-            this.PneumaticTab.PerformLayout();
-            this.PneumaticLayout.ResumeLayout(false);
-            this.PneumaticLayout.PerformLayout();
+            this.metaElevatorBrake.ResumeLayout(false);
+            this.metaElevatorBrake.PerformLayout();
+            this.BreakLayout.ResumeLayout(false);
+            this.BreakLayout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -383,15 +652,31 @@
         private System.Windows.Forms.Label PortTwoLabel;
         private System.Windows.Forms.Label PortOneLabel;
         private System.Windows.Forms.NumericUpDown PortOneUpDown;
-        private System.Windows.Forms.TabControl MetaTabControl;
-        private System.Windows.Forms.TabPage PneumaticTab;
-        private System.Windows.Forms.Label PressureLabel;
-        private System.Windows.Forms.ComboBox PneumaticPressureComboBox;
-        private System.Windows.Forms.ComboBox PneumaticDiameterComboBox;
-        private System.Windows.Forms.Label DiameterLabel;
         private System.Windows.Forms.TableLayoutPanel MainTableLayout;
         private System.Windows.Forms.TableLayoutPanel DriverLayout;
-        private System.Windows.Forms.TableLayoutPanel PneumaticLayout;
         private System.Windows.Forms.TableLayoutPanel PortLayout;
+        private System.Windows.Forms.TabControl tabsMeta;
+        private System.Windows.Forms.TabPage metaPneumatic;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ComboBox cmbPneumaticPressure;
+        private System.Windows.Forms.Label lblPressure;
+        private System.Windows.Forms.ComboBox cmbPneumaticDiameter;
+        private System.Windows.Forms.Label lblDiameter;
+        private System.Windows.Forms.TabPage metaGearing;
+        private System.Windows.Forms.TableLayoutPanel GearLayout;
+        private System.Windows.Forms.Label lblOutputGear;
+        private System.Windows.Forms.Label lblInputGear;
+        private System.Windows.Forms.TabPage metaElevatorBrake;
+        private System.Windows.Forms.TableLayoutPanel BreakLayout;
+        private System.Windows.Forms.NumericUpDown brakePortB;
+        private System.Windows.Forms.Label lblBrakePort;
+        private System.Windows.Forms.NumericUpDown brakePortA;
+        private System.Windows.Forms.CheckBox chkBoxHasBrake;
+        private System.Windows.Forms.TabPage metaElevatorStages;
+        private System.Windows.Forms.ComboBox cmbStages;
+        private System.Windows.Forms.RadioButton rbPWM;
+        private System.Windows.Forms.RadioButton rbCAN;
+        private System.Windows.Forms.NumericUpDown OutputGeartxt;
+        private System.Windows.Forms.NumericUpDown InputGeartxt;
     }
 }
