@@ -7,7 +7,7 @@ using namespace adsk;
 
 namespace BXDJ
 {
-	class RotationalJoint : public AngularJoint
+	class RotationalJoint : public Joint, public AngularJoint
 	{
 	public:
 		RotationalJoint(const RotationalJoint &);
@@ -18,8 +18,8 @@ namespace BXDJ
 		bool hasLimits() const;
 		float getMinAngle() const;
 		float getMaxAngle() const;
-		void applyConfig(const ConfigData &);
 
+		void applyConfig(const ConfigData &);
 		void write(XmlWriter &) const;
 
 	private:

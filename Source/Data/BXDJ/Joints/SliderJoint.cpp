@@ -3,12 +3,12 @@
 
 using namespace BXDJ;
 
-SliderJoint::SliderJoint(const SliderJoint & jointToCopy) : LinearJoint(jointToCopy)
+SliderJoint::SliderJoint(const SliderJoint & jointToCopy) : Joint(jointToCopy)
 {
 	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
-SliderJoint::SliderJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : LinearJoint(parent, joint, parentOccurrence)
+SliderJoint::SliderJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, joint, parentOccurrence)
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 }
@@ -77,5 +77,5 @@ void SliderJoint::write(XmlWriter & output) const
 	output.endElement();
 
 	// Write driver information
-	LinearJoint::Joint::write(output);
+	Joint::write(output);
 }

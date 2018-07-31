@@ -126,6 +126,9 @@
     <ClInclude Include="Source\Data\BXDJ\Components\Pneumatic.h">
       <Filter>Headers\Data\BXDJ\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Joints\CylindricalJoint.h">
+      <Filter>Headers\Data\BXDJ\Joints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -199,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="Source\Data\BXDJ\Components\Pneumatic.cpp">
       <Filter>Source\Data\BXDJ\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Joints\CylindricalJoint.cpp">
+      <Filter>Source\Data\BXDJ\Joints</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
