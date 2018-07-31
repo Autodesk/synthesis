@@ -238,6 +238,9 @@
     <EmbeddedResource Include="FieldWizard\Components\CreatePropertySetForm.resx">
       <DependentUpon>CreatePropertySetForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\EnterNameDialog.resx">
+      <DependentUpon>EnterNameDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DebugHighlightForm.resx">
       <DependentUpon>DebugHighlightForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -284,7 +284,7 @@ public partial class SynthesisGUI : Form
             
         return true;
     }
-
+    
     public void writeLimits(RigidNode_Base skeleton)// generally, this class iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
         //needed because we want to be able to pull the limits into the joint as the exporter exports, but where the joint is actually written to the .bxdj (the SimulatorAPI) is unable
         //to access InternalFieldExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue

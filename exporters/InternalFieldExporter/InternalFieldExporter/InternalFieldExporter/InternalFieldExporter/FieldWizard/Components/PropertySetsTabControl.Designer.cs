@@ -1,4 +1,5 @@
-﻿namespace InternalFieldExporter.FieldWizard
+namespace InternalFieldExporter.FieldWizard
+
 {
     partial class PropertySetsTabControl
     {
