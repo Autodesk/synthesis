@@ -8,7 +8,7 @@
 #include <string>
 
 #include "analog_outputs.hpp"
-#include "can_device.hpp"
+#include "can_motor_controller.hpp"
 #include "digital_system.hpp"
 #include "mxp_data.hpp"
 #include "relay_system.hpp"
@@ -31,7 +31,7 @@ namespace hel{
 
         std::array<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
 
-        std::map<uint32_t, CANDevice> can_devices;
+        std::map<uint32_t, CANMotorController> can_motor_controllers;
     public:
         SendData();
 

@@ -30,7 +30,7 @@
 #include "alarm.hpp"
 #include "analog_inputs.hpp"
 #include "analog_outputs.hpp"
-#include "can_device.hpp"
+#include "can_motor_controller.hpp"
 #include "counter.hpp"
 #include "digital_system.hpp"
 #include "encoder.hpp"
@@ -73,7 +73,7 @@ namespace hel{
         Alarm alarm;
         AnalogInputs analog_inputs;
         AnalogOutputs analog_outputs;
-        std::map<uint32_t,CANDevice> can_devices;
+        std::map<uint32_t,CANMotorController> can_motor_controllers;
         std::array<Counter, Counter::MAX_COUNTER_COUNT> counters;
         DigitalSystem digital_system;
         std::vector<DSError> ds_errors;
