@@ -3,6 +3,7 @@
 #include "ctre/Phoenix.h"
 #include "roborio_manager.hpp"
 #include <iostream>
+#include <cmath>
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
@@ -26,4 +27,29 @@ TEST(CANTest, checkBits){
     EXPECT_EQ(true, hel::compareBits(a,b,comparison_mask_1));
     EXPECT_EQ(false, hel::compareBits(a,c,comparison_mask_1));
     EXPECT_EQ(true, hel::compareBits(send_talon,base_talon,comparison_mask_2));
+}
+
+TEST(CANTest, speedData){
+    hel::CANMotorController a = {33816705};
+    double speed = 1.0;
+    {
+        a.setSpeed(speed);
+        a.setSpeedData(a.getSpeedData());
+
+        EXPECT_DOUBLE_EQ(std::round(a.getSpeed() * 1000) / 1000, std::round(speed * 1000) / 1000);
+    }
+    {
+        speed = -0.5;
+        a.setSpeed(speed);
+        a.setSpeedData(a.getSpeedData());
+
+        EXPECT_DOUBLE_EQ(std::round(a.getSpeed() * 1000) / 1000, std::round(speed * 1000) / 1000);
+    }
+    {
+        speed = 0.726132;
+        a.setSpeed(speed);
+        a.setSpeedData(a.getSpeedData());
+
+        EXPECT_DOUBLE_EQ(std::round(a.getSpeed() * 1000) / 1000, std::round(speed * 1000) / 1000);
+    }
 }
