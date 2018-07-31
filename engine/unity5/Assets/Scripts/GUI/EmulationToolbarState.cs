@@ -66,26 +66,5 @@ namespace Assets.Scripts.GUI
         {
 
         }
-
-
-        public void RobotState(string theState)
-        {
-            switch (theState)
-            {
-                case "teleop":
-                    state = DriveState.Teleop;
-                    //Debug.Log(state);
-                    break;
-                case "auto":
-                    state = DriveState.Auto;
-                    break;
-                case "test":
-                    state = DriveState.Test;
-                    break;
-                default:
-                    state = DriveState.Teleop;
-                    break;
-            }
-        }
     }
 }

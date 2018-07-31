@@ -1,11 +1,13 @@
 ﻿using Synthesis.FSM;
 using Synthesis.States;
+using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Synthesis.GUI
 {
@@ -33,6 +35,15 @@ namespace Synthesis.GUI
 
         bool isRobotDisabled;
         bool isActiveState;
+
+        GameObject canvas;
+        InputField gameDataInput;
+
+        private void Start()
+        {
+            canvas = GameObject.Find("Canvas");
+            GameData();
+        }
 
         public void RobotState(string theState)
         {
@@ -67,27 +78,27 @@ namespace Synthesis.GUI
         {
             switch (teamStation)
             {
-                case:
+                case 1:
                     allianceStation = AllianceStation.Red1;
                     Debug.Log(allianceStation);
                     break;
-                case 1:
+                case 2:
                     allianceStation = AllianceStation.Red2;
                     Debug.Log(allianceStation);
                     break;
-                case 2:
+                case 3:
                     allianceStation = AllianceStation.Red3;
                     Debug.Log(allianceStation);
                     break;
-                case 3:
+                case 4:
                     allianceStation = AllianceStation.Blue1;
                     Debug.Log(allianceStation);
                     break;
-                case 4:
+                case 5:
                     allianceStation = AllianceStation.Blue2;
                     Debug.Log(allianceStation);
                     break;
-                case 5:
+                case 6:
                     allianceStation = AllianceStation.Blue3;
                     Debug.Log(allianceStation);
                     break;
@@ -95,6 +106,12 @@ namespace Synthesis.GUI
                     allianceStation = AllianceStation.Red1;
                     break;
             }
+        }
+
+        public void GameData()
+        {
+            gameDataInput = Auxiliary.FindObject("InputField").GetComponent<InputField>();
+            gameDataInput.onValueChanged.AddListener(delegate { Debug.Log(gameDataInput.text.ToString()); });
         }
     }
 }
