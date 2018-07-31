@@ -36,8 +36,8 @@ namespace hel{
 
     std::string CANDevice::toString()const{
         std::string s = "(";
-        s += "type:" + to_string(type) + ", ";
-        s += "id:" + to_string(id);
+        s += "type:" + hel::to_string(type) + ", ";
+        s += "id:" + std::to_string(id);
         if(type != Type::UNKNOWN){
             s += ", speed:" + std::to_string(speed);
         }
@@ -66,6 +66,10 @@ namespace hel{
         return type;
     }
 
+    uint8_t CANDevice::getID()const{
+        return id;
+    }
+
     void CANDevice::setSpeed(BoundsCheckedArray<uint8_t, CANDevice::MAX_MESSAGE_DATA_SIZE> data){
         /*
           For CAN motor controllers:
@@ -82,28 +86,21 @@ namespace hel{
         return speed;
     }
 
+    uint8_t CANDevice::pullDeviceID(uint32_t message_id){
+        return message_id & ID_MASK_29BIT;
+    }
+
     CANDevice::CANDevice():type(Type::UNKNOWN),id(0),speed(0.0){}
 
     CANDevice::CANDevice(uint32_t message_id):CANDevice(){
-        if(message_id >= VICTOR_SPX_ZERO_ADDRESS && message_id <= (VICTOR_SPX_ZERO_ADDRESS + MAX_CAN_BUS_ADDRESS)){
-            id = message_id - VICTOR_SPX_ZERO_ADDRESS;
+        if(compareBits(message_id, BASE_VICTOR_SPX_ID, TYPE_COMPARISON_MASK)){
             type = Type::VICTOR_SPX;
-        } else if(message_id >= TALON_SRX_ZERO_ADDRESS && message_id <= (TALON_SRX_ZERO_ADDRESS + MAX_CAN_BUS_ADDRESS)){
-            id = message_id - VICTOR_SPX_ZERO_ADDRESS;
+        } else if(compareBits(message_id, BASE_TALON_SRX_ID, TYPE_COMPARISON_MASK)){
             type = Type::TALON_SRX;
         }
-    }
-
-    bool checkCANID(uint32_t id_a, uint32_t id_b, uint32_t id_mask){
-        unsigned msb = std::max(findMostSignificantBit(id_a), findMostSignificantBit(id_b));
-        for(unsigned i = 0 ; i < msb; i++){
-            if(checkBitHigh(id_mask,i)){
-                if(checkBitHigh(id_a,i) != checkBitHigh(id_b,i)){
-                    return false;
-                }
-            }
+        if(type != Type::UNKNOWN){
+            id = pullDeviceID(message_id);
         }
-        return true;
     }
 }
 
@@ -120,15 +117,16 @@ extern "C"{
 
         auto instance = hel::RoboRIOManager::getInstance();
 
-        if(instance.first->can_devices.find(messageID) == instance.first->can_devices.end()){
-            instance.first->can_devices[messageID] = hel::CANDevice(messageID);
+        uint8_t device_id = hel::CANDevice::pullDeviceID(messageID);
+        if(instance.first->can_devices.find(device_id) == instance.first->can_devices.end()){
+            instance.first->can_devices[device_id] = {messageID};
         }
-        if(instance.first->can_devices[messageID].getType() == hel::CANDevice::Type::UNKNOWN){
+        if(instance.first->can_devices[device_id].getType() == hel::CANDevice::Type::UNKNOWN){
             std::cerr<<"Synthesis warning: Attempting to write message to unknown CAN device using message ID "<<messageID<<"\n";
-        } else{
+        } else{ //TODO sendMessage doesn't always set speed
             hel::BoundsCheckedArray<uint8_t, hel::CANDevice::MAX_MESSAGE_DATA_SIZE> data_array;
             std::copy(data, data + dataSize, data_array.begin());
-            instance.first->can_devices[messageID].setSpeed(data_array);
+            instance.first->can_devices[device_id].setSpeed(data_array);
         }
         instance.second.unlock();
     }
@@ -136,15 +134,11 @@ extern "C"{
     void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t messageIDMask, uint8_t* data, uint8_t* dataSize, uint32_t* timeStamp, int32_t* /*status*/){
         printf("FRC_NetworkCommunication_CANSessionMux_receiveMessage(messageID:%d messageIDMask:%d)\n", *messageID, messageIDMask);
         auto instance = hel::RoboRIOManager::getInstance();
-
-        for(auto i = instance.first->can_devices.begin(); i != instance.first->can_devices.end(); ++i){
-            if(hel::checkCANID(*messageID,i->first,messageIDMask)){
-                //TODO
-            }
+        uint8_t device_id = hel::CANDevice::pullDeviceID(*messageID);
+        if(instance.first->can_devices.find(device_id) == instance.first->can_devices.end()){
+            //TODO
         }
-
         instance.second.unlock();
-        //TODO figure out what time stamp is marking and add it
     }
 
     void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t messageID, uint32_t messageIDMask, uint32_t maxMessages, int32_t* /*status*/){//TODO

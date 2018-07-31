@@ -25,6 +25,7 @@ namespace hel{
 
         static constexpr uint8_t MAX_MESSAGE_DATA_SIZE = 8;
 
+        #if 0
         /**
          * \var static constexpr int32_t CAN_SEND_PERIOD_NO_REPEAT
          * \brief a send period communicating the message should not be repeated
@@ -67,12 +68,18 @@ namespace hel{
          */
 
         static constexpr uint32_t CAN_11BIT_MESSAGE_ID_MASK = 0x000007FF;
+        #endif
 
     private:
+        static constexpr uint32_t ID_MASK_29BIT = 0b01111111;
 
-        static constexpr uint32_t TALON_SRX_ZERO_ADDRESS = 33816704; //base talon srx arbitration id 0x02040000
+        static constexpr uint32_t ID_COMPARISON_MASK = 0b11000001000000000001111111;
 
-        static constexpr uint32_t VICTOR_SPX_ZERO_ADDRESS = 17039488; //base victor spx arbitration id 0x01040000
+        static constexpr uint32_t TYPE_COMPARISON_MASK = 0b11000001000000000000000000;
+
+        static constexpr uint32_t BASE_TALON_SRX_ID = 0x02040000; // 33816704
+
+        static constexpr uint32_t BASE_VICTOR_SPX_ID = 0x01040000; // 17039488
 
         Type type;
 
@@ -81,10 +88,13 @@ namespace hel{
         double speed;
 
     public:
+        static uint8_t pullDeviceID(uint32_t);
 
         std::string toString()const;
 
         Type getType()const;
+
+        uint8_t getID()const;
 
         void setSpeed(BoundsCheckedArray<uint8_t,MAX_MESSAGE_DATA_SIZE>);
 
@@ -111,8 +121,6 @@ namespace hel{
 
         CANDevice(uint32_t);
     };
-
-    bool checkCANID(uint32_t,uint32_t,uint32_t);
 
     std::string to_string(CANDevice::Type);
 
