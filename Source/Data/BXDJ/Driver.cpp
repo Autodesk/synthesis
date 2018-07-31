@@ -17,6 +17,11 @@ Driver::Driver(const Driver & driverToCopy)
 		setComponent(*driverToCopy.wheel);
 	else
 		wheel = nullptr;
+
+	if (driverToCopy.pneumatic != nullptr)
+		setComponent(*driverToCopy.pneumatic);
+	else
+		pneumatic = nullptr;
 }
 
 Driver::Driver(Type type)
@@ -29,6 +34,7 @@ Driver::Driver(Type type)
 	outputGear = 0;
 
 	wheel = nullptr;
+	pneumatic = nullptr;
 }
 
 void Driver::write(XmlWriter & output) const
