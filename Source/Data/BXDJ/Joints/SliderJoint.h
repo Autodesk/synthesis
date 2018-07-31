@@ -7,7 +7,7 @@ using namespace adsk;
 
 namespace BXDJ
 {
-	class SliderJoint : public LinearJoint
+	class SliderJoint : public Joint, public LinearJoint
 	{
 	public:
 		SliderJoint(const SliderJoint &);
@@ -17,8 +17,8 @@ namespace BXDJ
 		float getCurrentTranslation() const;
 		float getMinTranslation() const;
 		float getMaxTranslation() const;
-		void applyConfig(const ConfigData &);
 
+		void applyConfig(const ConfigData &);
 		void write(XmlWriter &) const;
 
 	private:

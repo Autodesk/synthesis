@@ -3,12 +3,12 @@
 
 using namespace BXDJ;
 
-RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : AngularJoint(jointToCopy)
+RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : Joint(jointToCopy)
 {
 	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
-RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : AngularJoint(parent, joint, parentOccurrence)
+RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, joint, parentOccurrence)
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 }
@@ -88,5 +88,5 @@ void RotationalJoint::write(XmlWriter & output) const
 	output.endElement();
 
 	// Write driver information
-	AngularJoint::Joint::write(output);
+	Joint::write(output);
 }
