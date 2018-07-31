@@ -1,17 +1,17 @@
-#ifndef _CAN_DEVICE_HPP_
-#define _CAN_DEVICE_HPP_
+#ifndef _CAN_MOTOR_CONTROLLER_HPP_
+#define _CAN_MOTOR_CONTROLLER_HPP_
 
 #include "bounds_checked_array.hpp"
 
 namespace hel{
 
     /**
-     * \struct CANDevice
+     * \struct CANMotorController
      * \brief Models a CAN device on the CAN bus
      * Holds data for generic CAN devices and CAN motor controllers
      */
 
-    struct CANDevice{//TODO rename to CANMotorController
+    struct CANMotorController{
 
         enum class Type{VICTOR_SPX,TALON_SRX,UNKNOWN};
 
@@ -67,29 +67,29 @@ namespace hel{
 
         /**
          * \fn std::string serialize()const
-         * \brief Convert the CANDevice to a JSON object
+         * \brief Convert the CANMotorController to a JSON object
          * \return a string representing the data in JSON format
          */
 
         std::string serialize()const;
 
         /**
-         * \fn static CANDevice deserialize(std::string input)
-         * \brief Convert a JSON object string to a CANDevice object
+         * \fn static CANMotorController deserialize(std::string input)
+         * \brief Convert a JSON object string to a CANMotorController object
          * \param input the data to parse
-         * \return the generated CANDevice object
+         * \return the generated CANMotorController object
          */
 
-        static CANDevice deserialize(std::string);
+        static CANMotorController deserialize(std::string);
 
-        CANDevice();
+        CANMotorController();
 
-        CANDevice(uint32_t);
+        CANMotorController(uint32_t);
     };
 
-    std::string to_string(CANDevice::Type);
+    std::string to_string(CANMotorController::Type);
 
-    CANDevice::Type s_to_can_device_type(std::string);
+    CANMotorController::Type s_to_can_device_type(std::string);
 }
 
 #endif
