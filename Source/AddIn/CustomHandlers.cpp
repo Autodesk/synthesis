@@ -1,5 +1,6 @@
 #include "CustomHandlers.h"
 #include "EUI.h"
+#include "../Data/BXDJ/Utility.h"
 
 using namespace Synthesis;
 
@@ -86,10 +87,45 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		Exporter exporter(app);
 		palette->sendInfoToHTML("joints", exporter.stringifyJoints(exporter.collectJoints()));
 	}
+	else if (eventArgs->action() == "highlight")
+	{
+		Exporter exporter(app);
+		std::vector<Ptr<Joint>> joints = exporter.collectJoints();
+
+		// Find the joint that was selected
+		Ptr<Joint> highlightedJoint = nullptr;
+		for (Ptr<Joint> joint : joints)
+		{
+			if (joint->name() == eventArgs->data())
+			{
+				highlightedJoint = joint;
+				break;
+			}
+		}
+
+		if (highlightedJoint == nullptr)
+			return;
+
+		// Set camera view
+		Ptr<Camera> cam = app->activeViewport()->camera();
+
+		Ptr<JointGeometry> geo = highlightedJoint->geometryOrOriginOne();
+		Ptr<Point3D> eyeLocation = Point3D::create(geo->origin()->x(), geo->origin()->y(), geo->origin()->z());
+		eyeLocation->translateBy(Vector3D::create(0, 100, 0));
+
+		cam->target(geo->origin());
+		cam->upVector(Vector3D::create(1, 0, 0));
+		cam->eye(eyeLocation);
+
+		cam->isSmoothTransition(true);
+		app->activeViewport()->camera(cam);
+
+		// Highlight the parts of the joint
+		UI->activeSelections()->add(BXDJ::Utility::lowerOccurrence(highlightedJoint));
+	}
 	else if (eventArgs->action() == "export")
 	{
 		Exporter exporter(app);
-
 		std::vector<Ptr<Joint>> joints = exporter.collectJoints();
 
 		BXDJ::ConfigData config;

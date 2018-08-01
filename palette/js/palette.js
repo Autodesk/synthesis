@@ -53,8 +53,15 @@ function setPortView(fieldset, portView)
 // Prompts the Fusion add-in for joint data
 function requestInfoFromFusion()
 {
-    console.log("Requesting joint info...");
+    console.log('Requesting joint info...');
     adsk.fusionSendData('send_joints', '');
+}
+
+// Highlight a joint in Fusion
+function highlightJoint(jointName)
+{
+    console.log('Highlighting ' + jointName);
+    adsk.fusionSendData('highlight', jointName);
 }
 
 // Handles the receiving of data from Fusion
@@ -106,7 +113,10 @@ function displayJointOptions(joints)
         var fieldset = template.cloneNode(true);
 
         fieldset.id = 'joint-config-' + String(i);
-        fieldset.getElementsByClassName('joint-config-legend')[0].innerHTML = joints[i].name;
+
+        var jointTitle = getElByClass(fieldset, 'joint-config-legend');
+        jointTitle.innerHTML = joints[i].name;
+        jointTitle.onclick = function () { highlightJoint(this.innerHTML); };
 
         // Filter for angular or linear joints
         var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');

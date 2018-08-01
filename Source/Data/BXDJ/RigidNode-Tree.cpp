@@ -1,4 +1,5 @@
 #include "RigidNode.h"
+#include "Utility.h"
 #include "Joint.h"
 #include "Joints/RotationalJoint.h"
 #include "Joints/SliderJoint.h"
@@ -41,20 +42,8 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 	{
 		if (joint->occurrenceOne() != nullptr && joint->occurrenceTwo() != nullptr)
 		{
-			core::Ptr<fusion::Occurrence> lowerOccurrence;
-			core::Ptr<fusion::Occurrence> upperOccurrence;
-
-			// Find which occurence is higher in the heirarchy
-			if (levelOfOccurrence(joint->occurrenceOne()) >= levelOfOccurrence(joint->occurrenceTwo()))
-			{
-				lowerOccurrence = joint->occurrenceOne();
-				upperOccurrence = joint->occurrenceTwo();
-			}
-			else
-			{
-				upperOccurrence = joint->occurrenceOne();
-				lowerOccurrence = joint->occurrenceTwo();
-			}
+			core::Ptr<fusion::Occurrence> lowerOccurrence = Utility::lowerOccurrence(joint);
+			core::Ptr<fusion::Occurrence> upperOccurrence = Utility::upperOccurrence(joint);
 
 			jointSummary.children.push_back(lowerOccurrence);
 			jointSummary.parents[upperOccurrence].push_back(joint);
@@ -106,16 +95,4 @@ void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion:
 void RigidNode::addJoint(std::shared_ptr<Joint> joint)
 {
 	childrenJoints.push_back(joint);
-}
-
-int RigidNode::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
-{
-	std::string pathName = occurrence->fullPathName();
-
-	int count = 0;
-	for (char c : pathName)
-		if (c == '+')
-			count++;
-
-	return count;
 }
