@@ -63,8 +63,5 @@ namespace BXDJ
 		void addJoint(core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
 		void write(XmlWriter &) const;
 
-		// Gets the level of a component occurence in the heirarchy
-		static int levelOfOccurrence(core::Ptr<fusion::Occurrence>);
-
 	};
 };
