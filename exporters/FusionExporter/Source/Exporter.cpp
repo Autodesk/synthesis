@@ -145,7 +145,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 		binary->write(*mesh);
 		delete mesh; delete binary;
 
-		progressCallback(0.1 + 0.9 * (i / allNodes.size()));
+		progressCallback(0.1 + 0.9 * ((double)i / allNodes.size()));
 	}
 
 	progressCallback(1);
