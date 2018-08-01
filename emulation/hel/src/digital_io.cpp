@@ -213,24 +213,23 @@ namespace hel{
         }
 
         void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
-            throw hel::UnsupportedFeature("Function call tDIO::writePWMDutyCycleA");
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call tDIO::writePWMDutyCycleA\n";
         }
 
         uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* /*status*/){
-            throw hel::UnsupportedFeature("Function call tDIO::readPWMDutyCycleA");
-            auto instance = hel::RoboRIOManager::getInstance();
-            instance.second.unlock();
-            return instance.first->digital_system.getPWMPulseWidth(bitfield_index);
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call tDIO::readPWMDutyCycleA\n";
+            return 0;
         }
 
         void writePWMDutyCycleB(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
-            throw hel::UnsupportedFeature("Function call tDIO::writePWMDutyCycleB");
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call tDIO::writePWMDutyCycleB\n";
             //no need to reimplement writePWMDutyCycleA, they do the same thing
         }
 
         uint8_t readPWMDutyCycleB(uint8_t bitfield_index, tRioStatusCode* status){
-            throw hel::UnsupportedFeature("Function call tDIO::readPWMDutyCycleB");
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call tDIO::readPWMDutyCycleB\n";
             //no need to reimplement readPWMDutyCycleA, they do the same thing
+            return 0;
         }
 
         void writeFilterSelectHdr(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation

@@ -83,10 +83,10 @@ void hel::SendData::update(){
             }
             break;
         case hel::MXPData::Config::SPI:
-            digital_mxp[i].value = 0; //TODO
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Digital MXP input "<<i<<" configured for SPI during data send phase to engine\n";
             break;
         case hel::MXPData::Config::I2C:
-            digital_mxp[i].value = 0; //TODO
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Digital MXP input "<<i<<" configured for I2C during data send phase to engine\n";
             break;
         default:
             break; //do nothing

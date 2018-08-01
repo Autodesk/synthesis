@@ -38,10 +38,10 @@ void hel::ReceiveData::update()const{
             break;
         }
         case MXPData::Config::I2C:
-            //TODO
+            std::cerr<<"Digital MXP input "<<i<<" configured for I2C during data update phase from engine\n";
             break;
         case MXPData::Config::SPI:
-            //TODO
+            std::cerr<<"Digital MXP input "<<i<<" configured for SPI during data update phase from engine\n";
             break;
         default:
             ; //Do nothing

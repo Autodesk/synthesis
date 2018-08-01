@@ -18,8 +18,8 @@ extern "C" {
         return 0;
     }
 
-    int64_t FRC_NetworkCommunication_nUsageReporting_report(int32_t, int32_t, int32_t, const char *) {
-        return 0; // TODO: Find what this does
+    int64_t FRC_NetworkCommunication_nUsageReporting_report(int32_t, int32_t, int32_t, const char *){ //unnecessary for emulation
+        return 0;
     }
 
     void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation

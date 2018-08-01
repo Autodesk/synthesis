@@ -149,9 +149,7 @@ namespace hel{
 
     CANMotorController::CANMotorController(uint32_t message_id):CANMotorController(){
         type = CANDevice::pullDeviceType(message_id);
-        if(type != CANDevice::Type::TALON_SRX && type != CANDevice::Type::VICTOR_SPX){
-            //TODO error
-        }
+        assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
         id = CANDevice::pullDeviceID(message_id);
     }
 }
@@ -191,8 +189,7 @@ extern "C"{
                        i != hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT &&
                        i != hel::CANMotorController::SendCommandByteMask::SET_INVERTED
                     ){
-                        instance.second.unlock();
-                        throw hel::UnsupportedFeature("Writing to CAN motor controller with device ID " + std::to_string(can_device.getID()) + " using command data byte " + std::to_string(command_byte));
+                        std::cerr<<"Synthesis warning: Writing to CAN motor controller with device ID "<<can_device.getID()<<" using command data byte "<<command_byte<<"\n";
                     }
                 }
             }
@@ -225,7 +222,7 @@ extern "C"{
             if(instance.first->can_motor_controllers.find(device_id) == instance.first->can_motor_controllers.end()){
                 std::cerr<<"Synthesis warning: Attempting to read from missing CAN motor controller (" + hel::to_string(target_type) + " with ID "<<((unsigned)device_id)<<")\n";
             } else{
-                std::cerr<<"Synthesis warning: Unsupported feature: Attempting to read from CAN motor controller (" + hel::to_string(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
+                std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Attempting to read from CAN motor controller (" + hel::to_string(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
                 /*
                 if(hel::compareBits(*messageID, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
                     hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array = instance.first->can_motor_controllers[device_id].getSpeedData();
@@ -249,19 +246,19 @@ extern "C"{
     }
 
     void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t /*messageID*/, uint32_t /*messageIDMask*/, uint32_t /*maxMessages*/, int32_t* /*status*/){
-        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_openStreamSession");
+        std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call FRC_NetworkCommunication_CANSessionMux_openStreamSession\n";
     }
 
     void FRC_NetworkCommunication_CANSessionMux_closeStreamSession(uint32_t /*sessionHandle*/){
-        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_closeStreamSession");
+        std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call FRC_NetworkCommunication_CANSessionMux_closeStreamSession\n";
     }
 
     void FRC_NetworkCommunication_CANSessionMux_readStreamSession(uint32_t /*sessionHandle*/, struct tCANStreamMessage* /*messages*/, uint32_t /*messagesToRead*/, uint32_t* /*messagesRead*/, int32_t* /*status*/){
-        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_readStreamSession");
+        std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call FRC_NetworkCommunication_CANSessionMux_readStreamSession\n";
     }
 
     void FRC_NetworkCommunication_CANSessionMux_getCANStatus(float* /*percentBusUtilization*/, uint32_t* /*busOffCount*/, uint32_t* /*txFullCount*/, uint32_t* /*receiveErrorCount*/, uint32_t* /*transmitErrorCount*/, int32_t* /*status*/){
-        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_getCANStatus");
+        std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call FRC_NetworkCommunication_CANSessionMux_getCANStatus\n";
     }
 
 }
