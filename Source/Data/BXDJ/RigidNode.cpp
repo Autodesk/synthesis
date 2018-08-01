@@ -1,5 +1,10 @@
 #include "RigidNode.h"
+#include <Fusion/Components/Occurrences.h>
+#include <Fusion/Components/OccurrenceList.h>
+#include "ConfigData.h"
 #include "Joint.h"
+#include "../Filesystem.h"
+#include "../BXDA/Mesh.h"
 
 using namespace BXDJ;
 

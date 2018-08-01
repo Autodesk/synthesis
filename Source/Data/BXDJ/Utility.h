@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Fusion/Components/Occurrence.h>
-#include <Fusion/Components/Joint.h>
+#include <Core/Memory.h>
 
 namespace BXDJ
 {

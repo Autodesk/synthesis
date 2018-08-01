@@ -2,11 +2,7 @@
 
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
-#include "Data/BXDA/Mesh.h"
 #include "Data/BXDJ/ConfigData.h"
-#include "Data/BXDJ/RigidNode.h"
-#include "Data/BXDA/BinaryWriter.h"
-#include "Data/BXDJ/XmlWriter.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;

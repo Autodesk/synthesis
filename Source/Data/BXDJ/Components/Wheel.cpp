@@ -1,5 +1,7 @@
 #include "Wheel.h"
+#include "../RigidNode.h"
 #include "../Joints/RotationalJoint.h"
+#include "../../BXDA/Mesh.h"
 
 using namespace BXDJ;
 

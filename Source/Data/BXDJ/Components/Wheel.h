@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../XmlWriter.h"
 #include "../../Vector3.h"
 
 namespace BXDJ

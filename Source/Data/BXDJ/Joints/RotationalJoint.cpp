@@ -1,5 +1,9 @@
 #include "RotationalJoint.h"
+#include <Fusion/Components/JointLimits.h>
 #include <Core/Geometry/Vector3D.h>
+#include "../ConfigData.h"
+#include "../Driver.h"
+#include "../Components/Wheel.h"
 
 using namespace BXDJ;
 

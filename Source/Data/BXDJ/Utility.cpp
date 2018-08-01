@@ -1,4 +1,6 @@
 #include "Utility.h"
+#include <Fusion/Components/Occurrence.h>
+#include <Fusion/Components/Joint.h>
 
 using namespace adsk;
 using namespace BXDJ;

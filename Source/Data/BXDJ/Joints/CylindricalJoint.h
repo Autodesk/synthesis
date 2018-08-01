@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Fusion/Components/CylindricalJointMotion.h>
+#include "../Joint.h"
 #include "AngularJoint.h"
 #include "LinearJoint.h"
 
@@ -8,6 +9,8 @@ using namespace adsk;
 
 namespace BXDJ
 {
+	class ConfigData;
+
 	class CylindricalJoint : public Joint, public AngularJoint, public LinearJoint
 	{
 	public:

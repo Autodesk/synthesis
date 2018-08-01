@@ -1,4 +1,5 @@
 #include "RigidNode.h"
+#include <Fusion/Components/OccurrenceList.h>
 #include "Utility.h"
 #include "Joint.h"
 #include "Joints/RotationalJoint.h"

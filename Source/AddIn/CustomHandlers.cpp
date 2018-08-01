@@ -1,6 +1,11 @@
 #include "CustomHandlers.h"
+#include "Identifiers.h"
 #include "EUI.h"
+#include "../Exporter.h"
+#include "../Data/Filesystem.h"
 #include "../Data/BXDJ/Utility.h"
+#include "../Data/BXDJ/Driver.h"
+#include "../Data/BXDJ/Components.h"
 
 using namespace Synthesis;
 

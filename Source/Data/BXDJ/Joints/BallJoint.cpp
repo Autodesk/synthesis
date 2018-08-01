@@ -1,5 +1,7 @@
 #include "BallJoint.h"
 #include <Core/Geometry/Vector3D.h>
+#include "../ConfigData.h"
+#include "../Driver.h"
 
 using namespace BXDJ;
 

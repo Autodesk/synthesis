@@ -6,8 +6,6 @@
 
 namespace BXDJ
 {
-	class Driver;
-
 	class ConfigData
 	{
 	public:

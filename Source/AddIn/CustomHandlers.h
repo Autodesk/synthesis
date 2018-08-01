@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Core/CoreAll.h>
-#include "Identifiers.h"
-#include "../Exporter.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;

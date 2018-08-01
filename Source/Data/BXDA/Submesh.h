@@ -3,10 +3,13 @@
 #include <vector>
 #include "BinaryWriter.h"
 #include "Vertex.h"
-#include "Surface.h"
+#include "../Vector3.h"
 
 namespace BXDA
 {
+	class Vertex;
+	class Surface;
+
 	class SubMesh : public BinaryWritable
 	{
 	public:

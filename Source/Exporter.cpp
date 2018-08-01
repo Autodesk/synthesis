@@ -1,4 +1,11 @@
 #include "Exporter.h"
+#include "Data/Filesystem.h"
+#include "Data/BXDA/Mesh.h"
+#include "Data/BXDA/SubMesh.h"
+#include "Data/BXDA/Vertex.h"
+#include "Data/BXDA/Surface.h"
+#include "Data/BXDA/Triangle.h"
+#include "Data/BXDJ/RigidNode.h"
 
 using namespace Synthesis;
 

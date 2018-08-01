@@ -1,13 +1,18 @@
 #pragma once
 
-#include <Fusion/Components/JointLimits.h>
-#include <vector>
-#include <limits>
-#include "RigidNode.h"
+#include <Fusion/Components/Joint.h>
+#include <Fusion/Components/Occurrence.h>
+#include "XmlWriter.h"
 #include "Driver.h"
+#include "../Vector3.h"
+
+using namespace adsk;
 
 namespace BXDJ
 {	
+	class RigidNode;
+	class ConfigData;
+
 	// Links RigidNodes together
 	class Joint : public XmlWritable
 	{
