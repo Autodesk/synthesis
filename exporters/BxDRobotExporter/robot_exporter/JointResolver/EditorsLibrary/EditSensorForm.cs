@@ -37,12 +37,24 @@ namespace EditorsLibrary
                 Port1NumericUpDown.Value = (decimal)sensor.port1;
                 Port2NumericUpDown.Value = (decimal)sensor.port2;
             }
-            this.port1Lbl.Enabled = false;
-            this.Port1NumericUpDown.Enabled = false;
-            this.Port2Lbl.Visible = false;
-            this.Port2NumericUpDown.Visible = false;
-            this.ConversionLbl.Visible = false;
-            this.ConversionNumericUpDown.Visible = false;
+            if (typeBox.SelectedIndex == 0)
+            {
+                this.port1Lbl.Enabled = true;
+                this.Port1NumericUpDown.Enabled = true;
+                this.Port2Lbl.Visible = true;
+                this.Port2NumericUpDown.Visible = true;
+                this.ConversionLbl.Visible = true;
+                this.ConversionNumericUpDown.Visible = true;
+            }
+            else
+            {
+                this.port1Lbl.Enabled = false;
+                this.Port1NumericUpDown.Enabled = false;
+                this.Port2Lbl.Visible = false;
+                this.Port2NumericUpDown.Visible = false;
+                this.ConversionLbl.Visible = false;
+                this.ConversionNumericUpDown.Visible = false;
+            }
         }
 
         private void saveButton_Click(object sender, EventArgs e)

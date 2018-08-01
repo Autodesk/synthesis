@@ -82,12 +82,6 @@ namespace EditorsLibrary
             sensorListView.Height = newListHeight;
             sensorListView.Width = newListWidth;
         }
-
-        private void SensorListForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void sensorListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             addSensorButton.Text = joint.attachedSensors.IndexOf(
@@ -95,10 +89,17 @@ namespace EditorsLibrary
                 sensorListView.SelectedItems[0].Tag is RobotSensor ?
                 (RobotSensor) sensorListView.SelectedItems[0].Tag : null) >= 0 ? "Edit Sensor" : "Add Sensor";
         }
-
         private void closeButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void sensorListView_SelectedIndexChanged(object sender, MouseEventArgs e)
+        {
+            addSensorButton.Text = joint.attachedSensors.IndexOf(
+                sensorListView.SelectedItems.Count > 0 &&
+                sensorListView.SelectedItems[0].Tag is RobotSensor ?
+                (RobotSensor)sensorListView.SelectedItems[0].Tag : null) >= 0 ? "Edit Sensor" : "Add Sensor";
         }
     }
 }
