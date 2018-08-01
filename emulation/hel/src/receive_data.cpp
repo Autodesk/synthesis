@@ -51,6 +51,9 @@ void hel::ReceiveData::update()const{
     instance.first->match_info = match_info;
     instance.first->robot_mode = robot_mode;
     instance.first->encoder_managers = encoder_managers;
+    for(Encoder& a: instance.first->encoder_managers){
+        a.update();
+    }
     instance.second.unlock();
 }
 

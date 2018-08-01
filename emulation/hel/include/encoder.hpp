@@ -40,6 +40,8 @@ namespace hel{
     public:
         void setTicks(int32_t);
 
+        int32_t getTicks()const;
+
         void update();
 
         std::string serialize()const;

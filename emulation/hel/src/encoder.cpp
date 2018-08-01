@@ -91,7 +91,6 @@ namespace hel{
                 return;
             }
         }
-        //TODO error, matching encoder not found
         type = Type::UNKNOWN;
         index = 0;
         instance.second.unlock();
@@ -99,6 +98,10 @@ namespace hel{
 
     void Encoder::setTicks(int32_t t){
         ticks = t;
+    }
+
+    int32_t Encoder::getTicks()const{
+        return ticks;
     }
 
     void Encoder::update(){
