@@ -51,3 +51,11 @@ const char* hel::UnsupportedFeature::what()const throw(){
     s += "\n";
     return s.c_str();
 }
+
+
+hel::InputConfigurationException::InputConfigurationException(std::string s):details(s){}
+
+const char* hel::InputConfigurationException::what()const throw(){
+    std::string s = "Synthesis exception: no matching input found in user code for input configured in robot model (" + details + ")\n";
+    return s.c_str();
+}

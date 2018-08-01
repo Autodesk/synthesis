@@ -78,6 +78,7 @@ namespace hel{
         DigitalSystem digital_system;
         std::vector<DSError> ds_errors;
         MatchInfo match_info;
+        BoundsCheckedArray<Encoder, FPGAEncoder::NUM_ENCODERS> encoder_managers;
         BoundsCheckedArray<FPGAEncoder, FPGAEncoder::NUM_ENCODERS> fpga_encoders;
         Global global;
         BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;

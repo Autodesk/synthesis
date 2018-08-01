@@ -121,6 +121,17 @@ namespace hel{
         UnsupportedFeature();
         UnsupportedFeature(std::string);
     };
+
+
+    struct InputConfigurationException: std::exception{
+    private:
+        std::string details;
+
+    public:
+        const char* what()const throw();
+
+        InputConfigurationException(std::string);
+    };
 }
 
 #endif
