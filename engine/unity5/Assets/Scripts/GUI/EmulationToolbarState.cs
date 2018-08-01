@@ -13,11 +13,13 @@ namespace Assets.Scripts.GUI
 {
     public class EmulationToolbarState : State
     {
-        EmulationDriverStation emuDriverStation;
+        GameObject canvas;
+        GameObject emuDriverStation;
 
         public override void Start()
         {
-
+            canvas = GameObject.Find("Canvas");
+            emuDriverStation = Auxiliary.FindObject(canvas, "EmulationDriverStation");
         }
 
         public void OnSelectRobotCodeButtonPressed()
@@ -27,7 +29,14 @@ namespace Assets.Scripts.GUI
 
         public void OnDriverStationButtonPressed()
         {
-            emuDriverStation.ToggleEmuDriverStation();
+            if (emuDriverStation.activeSelf == true)
+            {
+                emuDriverStation.SetActive(false);
+            }
+            else
+            {
+                emuDriverStation.SetActive(true);
+            }
         }
 
         public void OnStartRobotCodeButtonPressed()

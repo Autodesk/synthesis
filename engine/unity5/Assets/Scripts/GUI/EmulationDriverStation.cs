@@ -38,30 +38,14 @@ namespace Synthesis.GUI
         int teamStation;
 
         GameObject canvas;
-        GameObject emuDriverStation;
         InputField gameDataInput;
 
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
-            emuDriverStation = Auxiliary.FindObject(canvas, "EmulationDriverStation");
-
+            gameDataInput = GameObject.Find("InputField").GetComponent<InputField>();
             GameData();
-            TeamStation(teamStation);
         }
-
-        public void ToggleEmuDriverStation()
-        {
-            if (emuDriverStation.activeSelf == true)
-            {
-                emuDriverStation.SetActive(false);
-            }
-            else
-            {
-                emuDriverStation.SetActive(true);
-            }
-        }
-
 
         public void RobotState(string theState)
         {
@@ -129,7 +113,6 @@ namespace Synthesis.GUI
 
         public void GameData()
         {
-            gameDataInput = Auxiliary.FindObject("InputField").GetComponent<InputField>();
             gameDataInput.onValueChanged.AddListener(delegate { Debug.Log(gameDataInput.text.ToString()); });
         }
     }
