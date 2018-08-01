@@ -7,7 +7,7 @@ window.fusionJavaScriptHandler =
             {
                 if (action == 'progress')
                 {
-                    document.getElementById('progress').innerHTML = String(parseFloat(data) * 100) + '%';
+                    document.getElementById('progress').value = parseFloat(data) * 100;
                     console.log(data);
                 }
                 else if (action == 'debugger')

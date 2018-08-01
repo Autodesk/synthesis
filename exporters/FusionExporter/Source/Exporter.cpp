@@ -121,7 +121,6 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 	allNodes.push_back(rootNode);
 	rootNode->getChildren(allNodes, true);
 
-	progressCallback(0.05);
 	// Write robot to file
 	Filesystem::createDirectory(Filesystem::getCurrentRobotDirectory(config.robotName));
 
@@ -134,7 +133,6 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 	xml.write(*rootNode);
 	xml.endElement();
 
-	progressCallback(0.1);
 	// Write BXDA files
 	for (int i = 0; i < allNodes.size(); i++)
 	{
@@ -145,7 +143,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 		binary->write(*mesh);
 		delete mesh; delete binary;
 
-		progressCallback(0.1 + 0.9 * ((double)i / allNodes.size()));
+		progressCallback((double)(i + 1) / allNodes.size());
 	}
 
 	progressCallback(1);
