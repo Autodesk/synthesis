@@ -270,8 +270,7 @@
     <Compile Include="Assets\Scripts\Network\ServerNetworkDiscovery.cs" />
     <Compile Include="Assets\Scripts\Network\ServerStatus.cs" />
     <Compile Include="Assets\Scripts\Network\ServerToClientFileTransferer.cs" />
-    <Compile Include="Assets\Scripts\Network\TcpFileReceiver.cs" />
-    <Compile Include="Assets\Scripts\Network\TcpFileSender.cs" />
+    <Compile Include="Assets\Scripts\Network\TcpFileTransfer.cs" />
     <Compile Include="Assets\Scripts\RN\RNCommon.cs" />
     <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
