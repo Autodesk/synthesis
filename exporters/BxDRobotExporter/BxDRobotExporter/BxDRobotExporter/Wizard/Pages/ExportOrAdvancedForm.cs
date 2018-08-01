@@ -33,10 +33,6 @@ namespace BxDRobotExporter.Wizard
             Close();
             StandardAddInServer.Instance.ForceExport();
         }
-
-        private void MainLayout_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
+        
     }
 }

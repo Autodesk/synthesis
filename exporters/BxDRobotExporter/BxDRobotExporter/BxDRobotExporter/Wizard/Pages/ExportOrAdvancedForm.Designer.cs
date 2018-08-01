@@ -58,7 +58,6 @@
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.MainLayout.Size = new System.Drawing.Size(461, 185);
             this.MainLayout.TabIndex = 0;
-            this.MainLayout.Paint += new System.Windows.Forms.PaintEventHandler(this.MainLayout_Paint);
             // 
             // MainTextLbl
             // 
