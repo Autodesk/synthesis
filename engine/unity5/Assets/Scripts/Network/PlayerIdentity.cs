@@ -15,7 +15,7 @@ namespace Synthesis.Network
     [NetworkSettings(channel = 0, sendInterval = 0f)]
     public class PlayerIdentity : NetworkBehaviour
     {
-        private const int FileTransferBasePort = 11000;
+        private const int FileTransferBasePort = 1234;
 
         #region ClientFields
 
@@ -73,9 +73,6 @@ namespace Synthesis.Network
         [SyncVar]
         public bool ready;
 
-        [SyncVar]
-        private bool tcpConnectionEstablished;
-
         /// <summary>
         /// A percentage representing how much progress has been made gathering resources.
         /// </summary>
@@ -93,22 +90,6 @@ namespace Synthesis.Network
         #region ServerFields
 
         /// <summary>
-        /// Represents the next available <see cref="PlayerIdentity"/> ID.
-        /// </summary>
-        private static int nextId = 0;
-
-        /// <summary>
-        /// Robot file data received on the server from the client.
-        /// </summary>
-        public Dictionary<string, List<byte>> FileData { get; private set; }
-
-        /// <summary>
-        /// The <see cref="ClientToServerFileTransferer"/> associated with this instance.
-        /// </summary>
-        //public ClientToServerFileTransferer FileTransferer { get; private set; }
-
-
-        /// <summary>
         /// A hash set containing the names of files received on the server from the client.
         /// </summary>
         public HashSet<string> ReceivedFiles { get; private set; }
@@ -117,6 +98,11 @@ namespace Synthesis.Network
         /// The number of files the server is expecting to receive from the client.
         /// </summary>
         private int numFilesToReceive;
+
+        /// <summary>
+        /// Represents the next available <see cref="PlayerIdentity"/> ID.
+        /// </summary>
+        private static int nextId = 0;
 
         #endregion
 
@@ -137,14 +123,8 @@ namespace Synthesis.Network
         /// </summary>
         private void Start()
         {
-            //FileTransferer = GetComponent<ClientToServerFileTransferer>();
-
             if (isServer)
-            {
                 id = nextId++;
-                //FileTransferer.OnDataFragmentReceived += DataFragmentReceived;
-                //FileTransferer.OnReceivingComplete += ReceivingComplete;
-            }
 
             if (isLocalPlayer)
             {
@@ -153,10 +133,7 @@ namespace Synthesis.Network
                 CmdSetRobotName(PlayerPrefs.GetString("simSelectedRobotName"));
             }
 
-            //FileTransfer = new TcpFileTransfer(MultiplayerNetwork.Instance.networkAddress, FileTransferBasePort + id);
-
             RobotFolder = string.Empty;
-            FileData = new Dictionary<string, List<byte>>();
             UnresolvedDependencies = new List<int>();
             ReceivedFiles = new HashSet<string>();
             numFilesToReceive = -1;
@@ -297,15 +274,15 @@ namespace Synthesis.Network
         [Server]
         public void TransferResources()
         {
-            FileData.Clear();
             ReceivedFiles.Clear();
             numFilesToReceive = -1;
             gatheringProgress = 0f;
-            tcpConnectionEstablished = false;
 
             int port = FileTransferBasePort + id;
 
-            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + "\\" + robotName);
+            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + "\\" + robotName,
+                OnFileReceived);
+
             TargetTransferResources(connectionToClient, port);
         }
 
@@ -315,68 +292,60 @@ namespace Synthesis.Network
         [TargetRpc]
         private void TargetTransferResources(NetworkConnection target, int port)
         {
-            TcpFileTransfer.SendFiles(MultiplayerNetwork.Instance.networkAddress, port, PlayerPrefs.GetString("simSelectedRobot"));
-            //fileSender = new TcpFileSender(MultiplayerNetwork.Instance.networkAddress, port);
-            //fileSender.StartTcpSender(PlayerPrefs.GetString("simSelectedRobot"), OnReadyToSend, OnSendingComplete);
+            string[] files = Directory.GetFiles(PlayerPrefs.GetString("simSelectedRobot"));
 
-            //FileTransfer = new TcpFileTransfer(MultiplayerNetwork.Instance.networkAddress, FileTransferBasePort + id);
+            CmdSetNumFilesToReceive(files.Length);
 
-            //FileTransfer.StartTcpSender(PlayerPrefs.GetString("simSelectedRobot"),
-            //    OnReadyToSend, OnSendingComplete);
-
-            //FileTransferer.ResetTransferData();
-
-            //string[] fileList = Directory.GetFiles(PlayerPrefs.GetString("simSelectedRobot"));
-
-            //CmdSetNumFilesToReceive(fileList.Length);
-
-            //var task = new Task<List<Tuple<string, byte[]>>>(() =>
-            //{
-            //    List<Tuple<string, byte[]>> files = new List<Tuple<string, byte[]>>();
-
-            //    foreach (string file in fileList)
-            //        files.Add(new Tuple<string, byte[]>(new FileInfo(file).Name, File.ReadAllBytes(file)));
-
-            //    return files;
-            //});
-
-            //task.ContinueWith(t =>
-            //{
-            //    //foreach (Tuple<string, byte[]> file in t.Result)
-            //    //    FileTransferer.SendFile(file.Item1, file.Item2);
-            //}, TaskScheduler.FromCurrentSynchronizationContext());
-
-            //task.Start();
-        }
-        
-        /// <summary>
-        /// Called when a data fragment is received.
-        /// </summary>
-        /// <param name="transferId"></param>
-        /// <param name="data"></param>
-        [Server]
-        private void DataFragmentReceived(string transferId, byte[] data)
-        {
-            if (!FileData.ContainsKey(transferId))
-                FileData[transferId] = new List<byte>();
-
-            FileData[transferId].AddRange(data);
+            TcpFileTransfer.SendFiles(MultiplayerNetwork.Instance.networkAddress, port, files);
         }
 
         /// <summary>
-        /// Called when receiving file data has completed.
+        /// Updates the set of received files and the progress value.
         /// </summary>
-        /// <param name="transferId"></param>
-        /// <param name="data"></param>
-        [Server]
-        private void ReceivingComplete(string transferId, byte[] data)
+        /// <param name="fileName"></param>
+        private void OnFileReceived(string fileName)
         {
-            ReceivedFiles.Add(transferId);
+            ReceivedFiles.Add(fileName);
 
-            gatheringProgress = ReceivedFiles.Count / (float)numFilesToReceive;
+            gatheringProgress = numFilesToReceive > 0f ? ReceivedFiles.Count / (float)numFilesToReceive : 0f;
 
             if (ReceivedFiles.Count == numFilesToReceive)
                 ready = true;
+        }
+
+        /// <summary>
+        /// Distributes resources associated with this instance to all dependent clients.
+        /// </summary>
+        /// <param name="destinationIds"></param>
+        [Server]
+        public void DistributeResources(HashSet<int> destinationIds)
+        {
+            List<string> networkAddresses = new List<string>();
+            int port = FileTransferBasePort + id;
+
+            foreach (PlayerIdentity identity in FindObjectsOfType<PlayerIdentity>()
+                .Where(p => p.id != LocalInstance.id && destinationIds.Contains(p.id)))
+            {
+                string ipv6 = identity.connectionToClient.address;
+                networkAddresses.Add(ipv6.Substring(ipv6.LastIndexOf(':') + 1));
+                identity.TargetReceiveFiles(identity.connectionToClient, port, robotName);
+            }
+
+            if (networkAddresses.Any())
+                TcpFileTransfer.SendFiles(networkAddresses.ToArray(), port, Directory.GetFiles(RobotFolder));
+        }
+
+        /// <summary>
+        /// Receives files from the given port and saves them to a folder of the provided name
+        /// in the robot directory.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="port"></param>
+        /// <param name="folderName"></param>
+        [TargetRpc]
+        private void TargetReceiveFiles(NetworkConnection target, int port, string folderName)
+        {
+            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + "\\" + folderName);
         }
 
         /// <summary>
