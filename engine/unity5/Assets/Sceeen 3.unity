@@ -57434,10 +57434,12 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: Orbit Robot
-      m_Image: {fileID: 21300000, guid: 1a11d30f34bd69944b9bd0b7aa4c97ed, type: 3}
-    - m_Text: Driver Station
-      m_Image: {fileID: 21300000, guid: 17909d50b89d0cc46934235ebca630ff, type: 3}
+    - m_Text: ;alksdjf
+      m_Image: {fileID: 0}
+    - m_Text: iuorpoiuqwrq
+      m_Image: {fileID: 0}
+    - m_Text: ',mzx.cnv,zxm'
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -62452,7 +62454,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1200667899}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.00000053644}
+  m_LocalPosition: {x: 0, y: 0, z: -1.819e-12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1205062973}
@@ -62461,7 +62463,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0000019073}
+  m_AnchoredPosition: {x: 0, y: 28}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1200667901
@@ -85529,7 +85531,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1678443901
 RectTransform:
   m_ObjectHideFlags: 0
