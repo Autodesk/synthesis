@@ -130,16 +130,6 @@ namespace Assets.Scripts.GUI
             gyroDropdown.value = 0;
         }
 
-        public void OnBeamBreakButtonPressed()
-        {
-            sensorManagerGUI.AddBeamBreaker();
-        }
-
-        public void OnGyroButtonPressed()
-        {
-            sensorManagerGUI.AddGyro();
-        }
-
         public void OnShowOutputsButtonPressed()
         {
             sensorManagerGUI.ToggleSensorOutput();
