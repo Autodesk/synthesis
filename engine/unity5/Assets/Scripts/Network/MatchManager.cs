@@ -16,8 +16,6 @@ namespace Synthesis.Network
     [NetworkSettings(channel = 0, sendInterval = 0f)]
     public class MatchManager : NetworkBehaviour
     {
-        
-
         /// <summary>
         /// The global <see cref="MatchManager"/> instance.
         /// </summary>
@@ -298,6 +296,12 @@ namespace Synthesis.Network
             {
                 fieldData = null;
             }
+
+            foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap.Where(e => e.Key >= 0))
+                PlayerIdentity.FindById(entry.Key).DistributeResources(entry.Value);
+
+            // TODO: Maybe consider sending things form the player identity since you don't have the issue
+            // of client vs server priority.
 
             //foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap)
             //    foreach (KeyValuePair<string, List<byte>> file in entry.Key >= 0 ? PlayerIdentity.FindById(entry.Key).FileData : fieldData)
