@@ -1,5 +1,6 @@
 ﻿using BulletSharp;
 using BulletUnity;
+using Synthesis.BUExtensions;
 using Synthesis.Camera;
 using Synthesis.Configuration;
 using Synthesis.DriverPractice;
@@ -29,6 +30,8 @@ namespace Synthesis.Robot
         /// </summary>
         public bool IsResetting { get; private set; } = false;
 
+        public SimulatorRobot simRobot { get; private set; }
+
         private const float ResetVelocity = 0.05f;
         private const float HoldTime = 0.8f;
 
@@ -53,6 +56,7 @@ namespace Synthesis.Robot
         private void Awake()
         {
             StateMachine.SceneGlobal.Link<MainState>(this);
+            simRobot = this;
         }
 
         /// <summary>
@@ -191,6 +195,35 @@ namespace Synthesis.Robot
                 Speed = (float)Math.Round(Speed * 3.28084, 3);
                 Acceleration = (float)Math.Round(Acceleration * 3.28084, 3);
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
+            }
+
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+
+                if (n.GetSkeletalJoint() != null)
+                {
+                    //Debug.Log(b.transform.localRotation.x);
+                    foreach (RobotSensor sensor in n.GetSkeletalJoint().attachedSensors)
+                    {
+
+                        BRaycastWheel b = n.MainObject.GetComponent<BRaycastWheel>();
+
+                        if (sensor.type == RobotSensorType.ENCODER)
+                        {
+                            if (sensor.conversionFactor == 0)
+                                sensor.conversionFactor = 1;
+                            b.wheelCounter += b.transform.localRotation.x / sensor.conversionFactor;
+                        }
+
+                        //Debug.Log(sensor.type.ToString());
+                        //Debug.Log(sensor.type.ToString() + " " + sensor.conTypePort1 + " " + sensor.conTypePort2 + " " + sensor.conversionFactor +
+                        //    " " + sensor.port1 + " " + sensor.port2);
+                        //Debug.Log(b.wheelCounter);
+                        
+
+                        Debug.Log(b.wheelCounter);
+                    }
+                }
             }
 
             if (IsResetting)

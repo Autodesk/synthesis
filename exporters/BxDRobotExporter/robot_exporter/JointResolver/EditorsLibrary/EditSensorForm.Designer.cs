@@ -31,150 +31,167 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditSensorForm));
             this.label1 = new System.Windows.Forms.Label();
             this.typeBox = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.portTextBox = new System.Windows.Forms.TextBox();
-            this.moduleTextBox = new System.Windows.Forms.TextBox();
+            this.port1Lbl = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.secondaryBox = new System.Windows.Forms.CheckBox();
-            this.coefficentTextBox = new System.Windows.Forms.TextBox();
-            this.lblEquationParsed = new System.Windows.Forms.Label();
             this.CancelButton = new System.Windows.Forms.Button();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.Port1NumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.Port2Lbl = new System.Windows.Forms.Label();
+            this.Port2NumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.ConversionLbl = new System.Windows.Forms.Label();
+            this.ConversionNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Port1NumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Port2NumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ConversionNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(17, 15);
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 17);
+            this.label1.Size = new System.Drawing.Size(94, 42);
             this.label1.TabIndex = 0;
             this.label1.Text = "Sensor Type:";
             // 
             // typeBox
             // 
+            this.tableLayoutPanel1.SetColumnSpan(this.typeBox, 2);
             this.typeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.typeBox.FormattingEnabled = true;
-            this.typeBox.Location = new System.Drawing.Point(116, 12);
+            this.typeBox.Items.AddRange(new object[] {
+            "Encoder"});
+            this.typeBox.Location = new System.Drawing.Point(103, 2);
             this.typeBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.typeBox.Name = "typeBox";
-            this.typeBox.Size = new System.Drawing.Size(268, 24);
+            this.typeBox.Size = new System.Drawing.Size(194, 24);
             this.typeBox.TabIndex = 0;
+            this.typeBox.SelectedIndexChanged += new System.EventHandler(this.typeBox_SelectedIndexChanged);
             // 
-            // label2
+            // port1Lbl
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 82);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(50, 17);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Port #:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 48);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(70, 17);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Module #:";
-            // 
-            // portTextBox
-            // 
-            this.portTextBox.Location = new System.Drawing.Point(91, 82);
-            this.portTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.portTextBox.Name = "portTextBox";
-            this.portTextBox.Size = new System.Drawing.Size(47, 22);
-            this.portTextBox.TabIndex = 2;
-            // 
-            // moduleTextBox
-            // 
-            this.moduleTextBox.Location = new System.Drawing.Point(91, 48);
-            this.moduleTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.moduleTextBox.Name = "moduleTextBox";
-            this.moduleTextBox.Size = new System.Drawing.Size(47, 22);
-            this.moduleTextBox.TabIndex = 1;
+            this.port1Lbl.AutoSize = true;
+            this.port1Lbl.Location = new System.Drawing.Point(3, 42);
+            this.port1Lbl.Name = "port1Lbl";
+            this.port1Lbl.Size = new System.Drawing.Size(50, 17);
+            this.port1Lbl.TabIndex = 2;
+            this.port1Lbl.Text = "Port 1:";
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(207, 153);
+            this.tableLayoutPanel1.SetColumnSpan(this.SaveButton, 2);
+            this.SaveButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.SaveButton.Location = new System.Drawing.Point(203, 128);
             this.SaveButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(179, 34);
+            this.SaveButton.Size = new System.Drawing.Size(194, 34);
             this.SaveButton.TabIndex = 0;
             this.SaveButton.Text = "Save Sensor";
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(195, 52);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(157, 17);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "Polynomial Coefficients:";
-            // 
-            // secondaryBox
-            // 
-            this.secondaryBox.AutoSize = true;
-            this.secondaryBox.Location = new System.Drawing.Point(36, 122);
-            this.secondaryBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.secondaryBox.Name = "secondaryBox";
-            this.secondaryBox.Size = new System.Drawing.Size(99, 21);
-            this.secondaryBox.TabIndex = 4;
-            this.secondaryBox.Text = "Use Linear";
-            this.secondaryBox.UseVisualStyleBackColor = true;
-            this.secondaryBox.Visible = false;
-            // 
-            // coefficentTextBox
-            // 
-            this.coefficentTextBox.Location = new System.Drawing.Point(199, 82);
-            this.coefficentTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.coefficentTextBox.Name = "coefficentTextBox";
-            this.coefficentTextBox.Size = new System.Drawing.Size(152, 22);
-            this.coefficentTextBox.TabIndex = 3;
-            this.coefficentTextBox.TextChanged += new System.EventHandler(this.coefficentTextBox_TextChanged);
-            // 
-            // lblEquationParsed
-            // 
-            this.lblEquationParsed.AutoSize = true;
-            this.lblEquationParsed.Location = new System.Drawing.Point(195, 122);
-            this.lblEquationParsed.Name = "lblEquationParsed";
-            this.lblEquationParsed.Size = new System.Drawing.Size(88, 17);
-            this.lblEquationParsed.TabIndex = 11;
-            this.lblEquationParsed.Text = "Polynomial...";
-            // 
             // CancelButton
             // 
+            this.tableLayoutPanel1.SetColumnSpan(this.CancelButton, 2);
             this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelButton.Location = new System.Drawing.Point(15, 153);
+            this.CancelButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.CancelButton.Location = new System.Drawing.Point(3, 128);
             this.CancelButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(179, 34);
+            this.CancelButton.Size = new System.Drawing.Size(194, 34);
             this.CancelButton.TabIndex = 12;
             this.CancelButton.Text = "Cancel";
             this.CancelButton.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.Controls.Add(this.port1Lbl, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.CancelButton, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.SaveButton, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.typeBox, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.Port1NumericUpDown, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.button1, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.Port2Lbl, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.Port2NumericUpDown, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.ConversionLbl, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.ConversionNumericUpDown, 1, 2);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(400, 165);
+            this.tableLayoutPanel1.TabIndex = 13;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(303, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(0, 0);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // Port1NumericUpDown
+            // 
+            this.Port1NumericUpDown.Location = new System.Drawing.Point(103, 45);
+            this.Port1NumericUpDown.Name = "Port1NumericUpDown";
+            this.Port1NumericUpDown.Size = new System.Drawing.Size(94, 22);
+            this.Port1NumericUpDown.TabIndex = 14;
+            // 
+            // Port2Lbl
+            // 
+            this.Port2Lbl.AutoSize = true;
+            this.Port2Lbl.Location = new System.Drawing.Point(203, 42);
+            this.Port2Lbl.Name = "Port2Lbl";
+            this.Port2Lbl.Size = new System.Drawing.Size(50, 17);
+            this.Port2Lbl.TabIndex = 15;
+            this.Port2Lbl.Text = "Port 2:";
+            // 
+            // Port2NumericUpDown
+            // 
+            this.Port2NumericUpDown.Location = new System.Drawing.Point(303, 45);
+            this.Port2NumericUpDown.Name = "Port2NumericUpDown";
+            this.Port2NumericUpDown.Size = new System.Drawing.Size(94, 22);
+            this.Port2NumericUpDown.TabIndex = 16;
+            // 
+            // ConversionLbl
+            // 
+            this.ConversionLbl.AutoSize = true;
+            this.ConversionLbl.Location = new System.Drawing.Point(3, 84);
+            this.ConversionLbl.Name = "ConversionLbl";
+            this.ConversionLbl.Size = new System.Drawing.Size(46, 17);
+            this.ConversionLbl.TabIndex = 17;
+            this.ConversionLbl.Text = "label2";
+            // 
+            // ConversionNumericUpDown
+            // 
+            this.ConversionNumericUpDown.Location = new System.Drawing.Point(103, 87);
+            this.ConversionNumericUpDown.Name = "ConversionNumericUpDown";
+            this.ConversionNumericUpDown.Size = new System.Drawing.Size(94, 22);
+            this.ConversionNumericUpDown.TabIndex = 18;
             // 
             // EditSensorForm
             // 
             this.AcceptButton = this.SaveButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(400, 207);
-            this.Controls.Add(this.CancelButton);
-            this.Controls.Add(this.lblEquationParsed);
-            this.Controls.Add(this.coefficentTextBox);
-            this.Controls.Add(this.secondaryBox);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.SaveButton);
-            this.Controls.Add(this.moduleTextBox);
-            this.Controls.Add(this.portTextBox);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.typeBox);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(400, 165);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -184,6 +201,11 @@
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sensor";
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Port1NumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Port2NumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ConversionNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -193,15 +215,15 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox typeBox;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox portTextBox;
-        private System.Windows.Forms.TextBox moduleTextBox;
+        private System.Windows.Forms.Label port1Lbl;
         private System.Windows.Forms.Button SaveButton;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox secondaryBox;
-        private System.Windows.Forms.TextBox coefficentTextBox;
-        private System.Windows.Forms.Label lblEquationParsed;
         private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.NumericUpDown Port1NumericUpDown;
+        private System.Windows.Forms.Label Port2Lbl;
+        private System.Windows.Forms.NumericUpDown Port2NumericUpDown;
+        private System.Windows.Forms.Label ConversionLbl;
+        private System.Windows.Forms.NumericUpDown ConversionNumericUpDown;
     }
 }

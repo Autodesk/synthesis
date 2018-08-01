@@ -33,29 +33,15 @@ namespace EditorsLibrary
             {
                 RobotSensor sensor = joint.attachedSensors[sourceIndex];
                 typeBox.SelectedIndex = Array.IndexOf(sensorTypeOptions, sensor.type);
-                portTextBox.Text = Convert.ToString(sensor.port);
-                moduleTextBox.Text = Convert.ToString(sensor.module);
-                secondaryBox.Checked = sensor.useSecondarySource;
-                {
-                    StringBuilder coeffTxt = new StringBuilder();
-                    for (int i = sensor.equation.coeff.Length - 1; i >= 0; i--)
-                    {
-                        coeffTxt.Append(sensor.equation.coeff[i]);
-                        if (i > 0)
-                        {
-                            coeffTxt.Append(",");
-                        }
-                    }
-                    coefficentTextBox.Text = coeffTxt.ToString();
-                    coefficentTextBox_TextChanged(null, null);
-                }
+                Port1NumericUpDown.Value = (decimal)sensor.port1;
+                Port2NumericUpDown.Value = (decimal)sensor.port2;
             }
-
-            ///Only applies to cylindrical joints.  True use secondary means to use the linear component rather than rotation.
-            if (joint.GetJointType() == SkeletalJointType.CYLINDRICAL)
-            {
-                secondaryBox.Visible = true;
-            }
+            this.port1Lbl.Enabled = false;
+            this.Port1NumericUpDown.Enabled = false;
+            this.Port2Lbl.Visible = false;
+            this.Port2NumericUpDown.Visible = false;
+            this.ConversionLbl.Visible = false;
+            this.ConversionNumericUpDown.Visible = false;
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -73,39 +59,10 @@ namespace EditorsLibrary
             }
 
             //Doesn't save if numbers aren't entered correctly.
-            try
-            {
-                addedSensor.module = Convert.ToInt16(moduleTextBox.Text);
-                addedSensor.port = Convert.ToInt16(portTextBox.Text);
-            }
-            catch
-            {
-                MessageBox.Show("Enter an integer for the module and port numbers.");
-                return;
-            }
-
-
-            ///Gets all of the entered polynomial coefficients, seperating by commas.
-            string[] coefficients = coefficentTextBox.Text.Split(',');
-
-            float[] polyCoeff = new float[coefficients.Length];
-
-            for (int i = 0; i < coefficients.Length; i++)
-            {
-                ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
-                try
-                {
-                    polyCoeff[coefficients.Length - 1 - i] = Convert.ToSingle(coefficients[i]);
-                }
-                catch
-                {
-                    MessageBox.Show("For coefficients, enter only numbers followed by commas.");
-                    return;
-                }
-            }
-            addedSensor.equation = new Polynomial(polyCoeff);
-            addedSensor.useSecondarySource = secondaryBox.Checked;
-
+            addedSensor.port1 = (int)this.Port1NumericUpDown.Value;
+            addedSensor.port2 = (int)this.Port2NumericUpDown.Value;
+            addedSensor.conversionFactor = (int)this.ConversionNumericUpDown.Value;
+            
             if (sourceIndex >= 0 && sourceIndex < joint.attachedSensors.Count)
             {
                 joint.attachedSensors[sourceIndex] = addedSensor;
@@ -118,25 +75,48 @@ namespace EditorsLibrary
             LegacyInterchange.LegacyEvents.OnRobotModified();
             Close();
         }
-
-        private void coefficentTextBox_TextChanged(object sender, EventArgs e)
+        
+        public void ShowEncoderFields()
         {
-            string[] coefficients = coefficentTextBox.Text.Split(',');
-            float[] polyCoeff = new float[coefficients.Length];
-            for (int i = 0; i < coefficients.Length; i++)
+            this.Port2Lbl.Visible = true;
+            this.Port2NumericUpDown.Visible = true;
+            this.ConversionLbl.Visible = true;
+            this.ConversionNumericUpDown.Visible = true;
+            this.ConversionLbl.Text = "Counts per Rev";
+        }
+        public void HideSecondFields()
+        {
+            this.Port2Lbl.Visible = false;
+            this.Port2NumericUpDown.Visible = false;
+            this.ConversionLbl.Visible = false;
+            this.ConversionNumericUpDown.Visible = false;
+        }
+
+        private void typeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch ((RobotSensorType)typeBox.SelectedIndex)
             {
-                ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
-                try
-                {
-                    polyCoeff[coefficients.Length - 1 - i] = Convert.ToSingle(coefficients[i]);
-                }
-                catch
-                {
-                    lblEquationParsed.Text = "Parse Error";
-                    return;
-                }
+                case RobotSensorType.ENCODER:
+                    ShowEncoderFields();
+                    this.Port1NumericUpDown.Enabled = true;
+                    this.port1Lbl.Enabled = true;
+                    break;
+                case RobotSensorType.LIMIT:
+                    HideSecondFields();
+                    this.Port1NumericUpDown.Enabled = true;
+                    this.ConversionLbl.Enabled = true;
+                    break;
+                case RobotSensorType.POTENTIOMETER:
+                    HideSecondFields();
+                    this.Port1NumericUpDown.Enabled = true;
+                    this.ConversionLbl.Enabled = true;
+                    break;
+                default:
+                    HideSecondFields();
+                    this.Port1NumericUpDown.Enabled = false;
+                    this.ConversionLbl.Enabled = false;
+                    break;
             }
-            lblEquationParsed.Text = new Polynomial(polyCoeff).ToString();
         }
     }
 }

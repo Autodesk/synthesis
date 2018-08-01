@@ -140,6 +140,26 @@ namespace Synthesis.Robot
             RootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
             RootNode.ListAllNodes(nodes);
 
+            foreach (RigidNode_Base Base in RootNode.ListAllNodes())
+            {
+                try
+                {
+                    if (Base.GetSkeletalJoint().attachedSensors != null)
+                    {
+                        foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
+                        {
+
+                            Debug.Log(sensor.type.ToString() + " " + sensor.conTypePort1 + " " + sensor.conTypePort2 + " " + sensor.conversionFactor +
+                                " " + sensor.port1 + " " + sensor.port2);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.ToString());
+                }
+            }
+
             //Initializes the wheel variables
             int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
             float collectiveMass = 0f;
