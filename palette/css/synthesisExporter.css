@@ -22,3 +22,14 @@ fieldset
 {
     margin: 1rem 0;
 }
+
+a
+{
+    text-decoration: underline;
+    color: #f99500;
+}
+
+a:hover
+{
+    color: #ffa726;
+}
