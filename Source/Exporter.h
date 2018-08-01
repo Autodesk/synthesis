@@ -12,18 +12,11 @@ namespace Synthesis
 	class Exporter
 	{
 	public:
-		Exporter(Ptr<Application>);
-		~Exporter();
+		static std::vector<Ptr<Joint>> collectJoints(Ptr<FusionDocument>);
+		static std::string stringifyJoints(std::vector<Ptr<Joint>>);
 
-		std::vector<Ptr<Joint>> collectJoints();
-		std::string stringifyJoints(std::vector<Ptr<Joint>>);
-
-		void exportExample();
-		void exportExampleXml();
-		void exportMeshes(BXDJ::ConfigData config);
-
-	private:
-		Ptr<Application> fusionApplication;
-
+		static void exportExample();
+		static void exportExampleXml();
+		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>);
 	};
 }

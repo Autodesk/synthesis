@@ -9,16 +9,8 @@
 
 using namespace Synthesis;
 
-Exporter::Exporter(Ptr<Application> app) : fusionApplication(app)
-{}
-
-Exporter::~Exporter()
-{}
-
-std::vector<Ptr<Joint>> Exporter::collectJoints()
+std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 {
-	Ptr<FusionDocument> document = fusionApplication->activeDocument();
-
 	std::string stringifiedJoints;
 
 	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
@@ -116,10 +108,8 @@ void Exporter::exportExampleXml()
 	xml.writeElement("ModelID", "Part2:1");
 }
 
-void Exporter::exportMeshes(BXDJ::ConfigData config)
-{
-	Ptr<FusionDocument> document = fusionApplication->activeDocument();
-	
+void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document)
+{	
 	// Generate tree
 	Guid::resetAutomaticSeed();
 	BXDJ::RigidNode rootNode(document->design()->rootComponent(), config);
