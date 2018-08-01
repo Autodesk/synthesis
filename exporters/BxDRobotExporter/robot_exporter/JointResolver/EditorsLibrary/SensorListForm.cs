@@ -93,7 +93,11 @@ namespace EditorsLibrary
         {
             Close();
         }
-
+        private void sensorListView_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = this.sensorListView.Columns[e.ColumnIndex].Width;
+        }
         private void sensorListView_SelectedIndexChanged(object sender, MouseEventArgs e)
         {
             addSensorButton.Text = joint.attachedSensors.IndexOf(
@@ -101,5 +105,6 @@ namespace EditorsLibrary
                 sensorListView.SelectedItems[0].Tag is RobotSensor ?
                 (RobotSensor)sensorListView.SelectedItems[0].Tag : null) >= 0 ? "Edit Sensor" : "Add Sensor";
         }
+        
     }
 }
