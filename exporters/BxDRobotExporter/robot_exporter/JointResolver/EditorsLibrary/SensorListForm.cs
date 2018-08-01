@@ -30,10 +30,22 @@ namespace EditorsLibrary
 
             foreach (RobotSensor sensor in joint.attachedSensors)
             {
-                System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                    sensor.type.ToString(), sensor.port1.ToString(), sensor.port2.ToString(), sensor.conversionFactor.ToString()});
-                item.Tag = sensor;
-                sensorListView.Items.Add(item);
+                if (sensor.type.Equals(RobotSensorType.ENCODER))
+                {// if the sensor is an encoder show both ports
+                    System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {
+                    char.ToUpper(sensor.type.ToString()[0]) + sensor.type.ToString().Substring(1).ToLower(),
+                        sensor.port1.ToString(), sensor.port2.ToString()});
+                    item.Tag = sensor;
+                    sensorListView.Items.Add(item);
+                } else
+                {
+                    System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {
+                    char.ToUpper(sensor.type.ToString()[0]) + sensor.type.ToString().Substring(1).ToLower(),
+                        sensor.port1.ToString()});
+                    item.Tag = sensor;
+                    sensorListView.Items.Add(item);
+
+                }
             }
         }
 
