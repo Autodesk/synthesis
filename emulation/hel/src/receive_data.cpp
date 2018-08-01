@@ -50,6 +50,7 @@ void hel::ReceiveData::update()const{
     instance.first->joysticks = joysticks;
     instance.first->match_info = match_info;
     instance.first->robot_mode = robot_mode;
+    instance.first->encoder_managers = encoder_managers;
     instance.second.unlock();
 }
 
@@ -60,6 +61,7 @@ std::string hel::ReceiveData::toString()const{
     s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>([&](hel::MXPData mxp){ return mxp.serialize();})) + ", ";
     s += "match_info:" + match_info.toString() + ", ";
     s += "robot_mode:" + robot_mode.toString();
+    s += "encoder_managers:" + hel::to_string(encoder_managers, std::function<std::string(hel::Encoder)>([&](hel::Encoder a){ return a.serialize();})) + ", ";
     s += ")";
     return s;
 }
@@ -110,6 +112,16 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
     if(input.find(quote("robot_mode")) != std::string::npos){
         try{
             robot_mode = RobotMode::deserialize(hel::pullValue("\"robot_mode\"", input));
+        } catch(const std::exception& ex){
+            throw JSONParsingException();
+        }
+    }
+    if(input.find(quote("encoders")) != std::string::npos){
+        try{
+            encoder_managers = hel::deserializeList(
+                hel::pullValue("\"encoders\"", input),
+                std::function<Encoder(std::string)>(Encoder::deserialize),
+                true);
         } catch(const std::exception& ex){
             throw JSONParsingException();
         }

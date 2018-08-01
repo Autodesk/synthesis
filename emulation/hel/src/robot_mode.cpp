@@ -104,13 +104,13 @@ namespace hel{
     }
 
     std::string RobotMode::toString()const{
-        std::string s = "{";
+        std::string s = "(";
         s += "mode:" + hel::to_string(mode) + ", ";
         s += "enabled:" + hel::to_string(enabled) + ", ";
         s += "emergency_stopped:" + hel::to_string(emergency_stopped) + ", ";
         s += "fms_attached:" + hel::to_string(fms_attached) + ", ";
         s += "ds_attached:" + hel::to_string(ds_attached);
-        s += "}";
+        s += ")";
         return s;
     }
 

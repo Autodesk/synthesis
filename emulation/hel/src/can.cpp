@@ -146,7 +146,7 @@ namespace hel{
 extern "C"{
     static const uint32_t SILENT_UNKNOWN_DEVICE_ID = 262271;
 
-    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t periodMs, int32_t* /*status*/){
+    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
         if(messageID == SILENT_UNKNOWN_DEVICE_ID){
             return;
         }
