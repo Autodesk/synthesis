@@ -31,7 +31,7 @@ namespace BXDJ
 		Guid getGUID() const;
 		std::string getModelId() const;
 		Joint * getParent() const;
-		void getMesh(BXDA::Mesh &) const;
+		void getMesh(BXDA::Mesh &, bool ignorePhysics = false) const;
 
 		void addJoint(std::shared_ptr<Joint> joint);
 		

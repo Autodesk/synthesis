@@ -32,7 +32,7 @@ Wheel::Wheel(const Wheel & wheel, const RotationalJoint & joint) : Wheel(wheel)
 
 	// Calculate radius and width
 	BXDA::Mesh mesh(joint.getChild()->getGUID());
-	joint.getChild()->getMesh(mesh);
+	joint.getChild()->getMesh(mesh, true);
 
 	double minWidth, maxWidth;
 	mesh.calculateWheelShape(axis, center, minWidth, maxWidth, radius);
