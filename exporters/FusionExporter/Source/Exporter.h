@@ -2,6 +2,7 @@
 
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
+#include <functional>
 #include "Data/BXDJ/ConfigData.h"
 
 using namespace adsk::core;
@@ -17,6 +18,6 @@ namespace Synthesis
 
 		static void exportExample();
 		static void exportExampleXml();
-		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>);
+		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>, std::function<void(double)> progressCallback);
 	};
 }

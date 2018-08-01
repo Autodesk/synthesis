@@ -31,6 +31,7 @@ namespace BXDJ
 		Guid getGUID() const;
 		std::string getModelId() const;
 		Joint * getParent() const;
+		void getChildren(std::vector<std::shared_ptr<RigidNode>> &, bool recursive = false) const;
 		void getMesh(BXDA::Mesh &, bool ignorePhysics = false) const;
 
 		void addJoint(std::shared_ptr<Joint> joint);
