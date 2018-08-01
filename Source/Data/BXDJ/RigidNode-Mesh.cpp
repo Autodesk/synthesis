@@ -14,7 +14,7 @@
 
 using namespace BXDJ;
 
-void RigidNode::getMesh(BXDA::Mesh & mesh) const
+void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics) const
 {
 	// Each occurrence is a submesh
 	for (core::Ptr<fusion::Occurrence> occurrence : fusionOccurrences)
@@ -49,14 +49,16 @@ void RigidNode::getMesh(BXDA::Mesh & mesh) const
 			subMesh->addVertices(coords, norms);
 		}
 
-		if (subMesh->getVertCount() > 0)
+		if (!ignorePhysics && subMesh->getVertCount() > 0)
 		{
 			// Add physics properties to mesh
 			core::Ptr<fusion::PhysicalProperties> physics = occurrence->physicalProperties();
-			if (physics->mass() > 0)
+			double mass = physics->mass();
+			if (mass > 0)
 			{
-				Vector3<float> centerOfMass((float)physics->centerOfMass()->x(), (float)physics->centerOfMass()->y(), (float)physics->centerOfMass()->z());
-				mesh.addPhysics(BXDA::Physics(centerOfMass, (float)occurrence->physicalProperties()->mass()));
+				core::Ptr<core::Point3D> com = physics->centerOfMass();
+				Vector3<float> centerOfMass((float)com->x(), (float)com->y(), (float)com->z());
+				mesh.addPhysics(BXDA::Physics(centerOfMass, (float)mass));
 			}
 
 			mesh.addSubMesh(subMesh);
