@@ -1,9 +1,9 @@
-﻿using FieldExporter.Forms;
+﻿using InternalFieldExporter.Forms;
 using System;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace FieldExporter
+namespace InternalFieldExporter
 {
     public static class Program
     {
@@ -53,7 +53,7 @@ namespace FieldExporter
         /// <summary>
         /// The global MainWindow instance.
         /// </summary>
-        public static MainWindow MAINWINDOW;
+        public static FieldExportForm MAINWINDOW;
 
         /// <summary>
         /// Used for distinguishing between the first assembly document open and another one opened later.

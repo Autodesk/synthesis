@@ -140,6 +140,12 @@
     <Compile Include="FieldWizard\Components\PropertySetsTabControl.Designer.cs">
       <DependentUpon>PropertySetsTabControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldWizard\CrashForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FieldWizard\CrashForm.Designer.cs">
+      <DependentUpon>CrashForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FieldWizard\EnterNameDialog.cs">
       <SubType>Form</SubType>
     </Compile>

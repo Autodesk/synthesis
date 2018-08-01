@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
-namespace InternalFieldExporter.FieldWizard
+namespace InternalFieldExporter
 {
     public partial class InventorTreeView : TreeView
     {

@@ -1,6 +1,6 @@
-﻿namespace InternalFieldExporter
+﻿namespace InternalFieldExporter.FieldWizard
 {
-    partial class InventorTreeView
+    partial class CrashForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,13 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.SuspendLayout();
-            //
-            // InventorTreeView
-            //
-            this.LineColor = System.Drawing.Color.Black;
-            this.ResumeLayout(false);
-
+            this.components = new System.ComponentModel.Container();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Text = "CrashForm";
         }
 
         #endregion
