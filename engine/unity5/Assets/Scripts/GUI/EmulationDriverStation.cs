@@ -33,20 +33,35 @@ namespace Synthesis.GUI
         DriveState state;
         AllianceStation allianceStation;
 
-        bool isRobotDisabled;
+        bool isRobotDisabled = false;
         bool isActiveState;
         int teamStation;
 
         GameObject canvas;
+        GameObject emuDriverStation;
         InputField gameDataInput;
 
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
+            emuDriverStation = Auxiliary.FindObject(canvas, "EmulationDriverStation");
+
             GameData();
-            teamStation = GetComponent<Dropdown>().value;
             TeamStation(teamStation);
         }
+
+        public void ToggleEmuDriverStation()
+        {
+            if (emuDriverStation.activeSelf == true)
+            {
+                emuDriverStation.SetActive(false);
+            }
+            else
+            {
+                emuDriverStation.SetActive(true);
+            }
+        }
+
 
         public void RobotState(string theState)
         {

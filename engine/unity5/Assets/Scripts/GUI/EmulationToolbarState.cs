@@ -13,36 +13,11 @@ namespace Assets.Scripts.GUI
 {
     public class EmulationToolbarState : State
     {
-        enum DriveState
-        {
-            Auto,
-            Teleop,
-            Test,
-        };
-
-        enum AllianceStation
-        {
-            Red1,
-            Red2,
-            Red3,
-            Blue1,
-            Blue2,
-            Blue3,
-        };
-
-        DriveState state;
-        AllianceStation allianceStation;
-
-        bool isRobotDisabled;
-        bool isActiveState;
-
-        GameObject canvas;
-        GameObject emuDriverStation;
+        EmulationDriverStation emuDriverStation;
 
         public override void Start()
         {
-            canvas = GameObject.Find("Canvas");
-            emuDriverStation = Auxiliary.FindObject(canvas, "EmulationDriverStation");
+
         }
 
         public void OnSelectRobotCodeButtonPressed()
@@ -52,14 +27,7 @@ namespace Assets.Scripts.GUI
 
         public void OnDriverStationButtonPressed()
         {
-            if (emuDriverStation.activeSelf == true)
-            {
-                emuDriverStation.SetActive(false);
-            }
-            else
-            {
-                emuDriverStation.SetActive(true);
-            }
+            emuDriverStation.ToggleEmuDriverStation();
         }
 
         public void OnStartRobotCodeButtonPressed()
