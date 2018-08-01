@@ -104,6 +104,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="FieldWizard\Components\BoxColliderPropertiesForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FieldWizard\Components\BoxColliderPropertiesForm.Designer.cs">
+      <DependentUpon>BoxColliderPropertiesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FieldWizard\Components\ColliderPropertiesForm.cs" />
     <Compile Include="FieldWizard\Components\ComponentPropertiesForm.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -248,6 +255,9 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FieldWizard\Components\BoxColliderPropertiesForm.resx">
+      <DependentUpon>BoxColliderPropertiesForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FieldWizard\Components\CreatePropertySetForm.resx">
       <DependentUpon>CreatePropertySetForm.cs</DependentUpon>
     </EmbeddedResource>
