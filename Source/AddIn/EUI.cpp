@@ -198,13 +198,12 @@ void EUI::startExportThread(BXDJ::ConfigData & config)
 #ifdef ALLOW_MULTITHREADING
 	exportThreads.push_back(new std::thread(&EUI::exportRobot, this, config));
 #else
-	exportRobot(config);
+	Exporter::exportMeshes(config, app->activeDocument());
 #endif
 }
 
 void EUI::exportRobot(BXDJ::ConfigData config)
 {
-	Exporter exporter(app);
-	exporter.exportMeshes(config);
+	Exporter::exportMeshes(config, app->activeDocument());
 	UI->messageBox(config.robotName + " has finished exporting.");
 }

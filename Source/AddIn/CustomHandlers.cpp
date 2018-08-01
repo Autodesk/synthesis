@@ -65,8 +65,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 	if (!palette)
 		return;
 
-	Exporter exporter(app);
-	palette->sendInfoToHTML("joints", exporter.stringifyJoints(exporter.collectJoints()));
+	palette->sendInfoToHTML("joints", Exporter::stringifyJoints(Exporter::collectJoints(app->activeDocument())));
 
 	palette->isVisible(true);
 }
@@ -89,13 +88,11 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 	if (eventArgs->action() == "send_joints")
 	{
-		Exporter exporter(app);
-		palette->sendInfoToHTML("joints", exporter.stringifyJoints(exporter.collectJoints()));
+		palette->sendInfoToHTML("joints", Exporter::stringifyJoints(Exporter::collectJoints(app->activeDocument())));
 	}
 	else if (eventArgs->action() == "highlight")
 	{
-		Exporter exporter(app);
-		std::vector<Ptr<Joint>> joints = exporter.collectJoints();
+		std::vector<Ptr<Joint>> joints = Exporter::collectJoints(app->activeDocument());
 
 		// Find the joint that was selected
 		Ptr<Joint> highlightedJoint = nullptr;
@@ -131,8 +128,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	}
 	else if (eventArgs->action() == "export")
 	{
-		Exporter exporter(app);
-		std::vector<Ptr<Joint>> joints = exporter.collectJoints();
+		std::vector<Ptr<Joint>> joints = Exporter::collectJoints(app->activeDocument());
 
 		BXDJ::ConfigData config;
 
