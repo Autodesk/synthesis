@@ -155,7 +155,7 @@ bool EUI::createProgressPalette()
 	if (!progressPalette)
 	{
 		// Create palette
-		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", false, false, true, 300, 200);
+		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", false, false, true, 300, 50);
 		if (!progressPalette)
 			return false;
 
@@ -242,10 +242,8 @@ void EUI::startExportThread(BXDJ::ConfigData & config)
 		delete exportThread;
 	}
 
-	exportThread = new std::thread(&EUI::exportRobot, this, config);
-
-	//updateProgress(0);
 	progressPalette->isVisible(true);
+	exportThread = new std::thread(&EUI::exportRobot, this, config);
 #else
 	Exporter::exportMeshes(config, app->activeDocument());
 #endif
