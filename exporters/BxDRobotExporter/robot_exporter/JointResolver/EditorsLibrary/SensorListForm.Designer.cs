@@ -41,7 +41,7 @@
             // typeColumnHeader
             // 
             this.typeColumnHeader.Text = "Sensor Type";
-            this.typeColumnHeader.Width = 115;
+            this.typeColumnHeader.Width = 134;
             // 
             // moduleColumnHeader
             // 
@@ -71,6 +71,7 @@
             this.sensorListView.TabIndex = 0;
             this.sensorListView.UseCompatibleStateImageBehavior = false;
             this.sensorListView.View = System.Windows.Forms.View.Details;
+            this.sensorListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.sensorListView_ColumnWidthChanging);
             this.sensorListView.SelectedIndexChanged += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
             this.sensorListView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.sensorListView_SelectedIndexChanged);
             // 
