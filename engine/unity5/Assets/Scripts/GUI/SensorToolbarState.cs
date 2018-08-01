@@ -51,7 +51,8 @@ namespace Assets.Scripts.GUI
             if (sensors != null) dropdown.AddOptions((from sensor in sensors select sensor.name).ToList());
 
             //Add option at the end for add new sensor
-            dropdown.AddOptions(new List<string> { "Add" });
+            dropdown.AddOptions(new List<Dropdown.OptionData> { new Dropdown.OptionData("Add",
+                Sprite.Create(Resources.Load("Images/New Icons/Add") as Texture2D, new Rect(0, 0, 24, 24), Vector2.zero)) });
 
             ultrasonicDropdown.RefreshShownValue();
         }
@@ -74,20 +75,17 @@ namespace Assets.Scripts.GUI
 
         public void OnUltrasonicDropdownClicked(int i)
         {
-            //Debug.Log("i is " + i);
             if (i == 0) return;
-            if (i - 1 == numUltrasonics) //Add button clicked
+            if (i - 1 == numUltrasonics) //Add button
             {
                 List<GameObject> updatedList = sensorManagerGUI.AddUltrasonic();
                 UpdateSensorDropdown(ultrasonicDropdown, updatedList);
                 numUltrasonics++;
-                Debug.Log("new");
             }
-            else //One of the existing sensors was selected
+            else //Edit one of the existing sensors
             {
                 sensorManagerGUI.SetUltrasonicAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
-                Debug.Log("existing");
             }
             ultrasonicDropdown.value = 0;
         }
