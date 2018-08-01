@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Fusion/Components/RevoluteJointMotion.h>
+#include "../Joint.h"
 #include "AngularJoint.h"
 
 using namespace adsk;

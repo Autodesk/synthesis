@@ -1,4 +1,5 @@
 #include "Surface.h"
+#include <Core/Materials/Appearance.h>
 #include <Core/Materials/Properties.h>
 #include <Core/Materials/ColorProperty.h>
 #include <Core/Application/Color.h>

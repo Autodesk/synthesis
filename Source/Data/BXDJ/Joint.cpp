@@ -1,4 +1,7 @@
 #include "Joint.h"
+#include <Fusion/Components/JointGeometry.h>
+#include <Core/Geometry/Point3D.h>
+#include "RigidNode.h"
 
 using namespace BXDJ;
 

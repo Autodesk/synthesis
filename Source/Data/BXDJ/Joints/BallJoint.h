@@ -7,6 +7,8 @@ using namespace adsk;
 
 namespace BXDJ
 {
+	class ConfigData;
+
 	class BallJoint : public Joint
 	{
 	public:

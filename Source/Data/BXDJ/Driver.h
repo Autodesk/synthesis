@@ -1,16 +1,11 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include "XmlWriter.h"
-// Components
-#include "Components/Wheel.h"
-#include "Components/Pneumatic.h"
+#include "Components.h"
 
 namespace BXDJ
 {
-	class Joint;
-
 	class Driver : public XmlWritable
 	{
 	public:

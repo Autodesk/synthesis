@@ -1,5 +1,8 @@
 #include "CylindricalJoint.h"
+#include <Fusion/Components/JointLimits.h>
 #include <Core/Geometry/Vector3D.h>
+#include "../Driver.h"
+#include "../ConfigData.h"
 
 using namespace BXDJ;
 

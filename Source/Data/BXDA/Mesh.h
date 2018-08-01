@@ -1,13 +1,16 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "BinaryWriter.h"
-#include "Submesh.h"
 #include "Physics.h"
 #include "../Guid.h"
+#include "../Vector3.h"
 
 namespace BXDA
 {
+	class SubMesh;
+
 	class Mesh : public BinaryWritable
 	{
 	public:

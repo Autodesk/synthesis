@@ -1,4 +1,16 @@
 #include "RigidNode.h"
+#include <Fusion/Components/Occurrence.h>
+#include <Fusion/BRep/BRepBody.h>
+#include <Fusion/BRep/BRepBodies.h>
+#include <Fusion/MeshData/MeshManager.h>
+#include <Fusion/MeshData/TriangleMeshCalculator.h>
+#include <Fusion/MeshData/TriangleMesh.h>
+#include <Fusion/Fusion/PhysicalProperties.h>
+#include <Core/Geometry/Point3D.h>
+#include "../BXDA/Mesh.h"
+#include "../BXDA/SubMesh.h"
+#include "../BXDA/Surface.h"
+#include "../BXDA/Physics.h"
 
 using namespace BXDJ;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Fusion/Components/SliderJointMotion.h>
+#include "../Joint.h"
 #include "LinearJoint.h"
 
 using namespace adsk;

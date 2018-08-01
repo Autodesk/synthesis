@@ -2,21 +2,21 @@
 
 #include <vector>
 #include <map>
-#include <algorithm>
-#include <Fusion/FusionAll.h>
-#include <Core/CoreAll.h>
+#include <Fusion/Components/Component.h>
+#include <Fusion/Components/Occurrence.h>
 #include "XmlWriter.h"
-#include "ConfigData.h"
 #include "../Guid.h"
-#include "../Filesystem.h"
-#include "../BXDA/BinaryWriter.h"
-#include "../BXDA/Mesh.h"
-#include "../BXDA/Physics.h"
 
 using namespace adsk;
 
+namespace BXDA
+{
+	class Mesh;
+}
+
 namespace BXDJ
 {
+	class ConfigData;
 	class Joint;
 
 	// Stores the collection of component occurences that act as a single rigidbody in Synthesis

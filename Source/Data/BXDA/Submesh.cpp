@@ -1,4 +1,6 @@
 #include "Submesh.h"
+#include "Triangle.h"
+#include "Surface.h"
 
 using namespace BXDA;
 
