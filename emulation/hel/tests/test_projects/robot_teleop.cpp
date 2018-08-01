@@ -13,13 +13,28 @@ class Robot: public frc::IterativeRobot{
     frc::Spark m_rightMotor{1};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
     frc::Joystick m_stick{0};
+    frc::Timer auto_timer;
 
     bool driveMode = false;
 
 public:
     void RobotInit(){}
-
+    void DisabledInit(){}
     void TeleopInit(){}
+    void TestInit(){}
+    void RobotPeriodic(){}
+    void DisabledPeriodic(){}
+    void TestPeriodic(){}
+
+    void AutonomousInit(){
+        auto_timer.Start();
+    }
+
+    void AutonomousPeriodic(){
+        if(!auto_timer.HasPeriodPassed(5)){
+            m_robotDrive.TankDrive(1.0,1.0);
+        }
+    }
 
     void TeleopPeriodic(){
         //std::cout<<"Joystick forward:"<<(-m_stick.GetY())<<" rotate:"<<m_stick.GetX()<<"\n";
