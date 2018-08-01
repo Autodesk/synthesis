@@ -109,7 +109,7 @@ namespace hel{
 
     struct DIOManager: public tDIO{
         tSystemInterface* getSystemInterface() override{
-            return nullptr;
+            return new SystemInterface();
         }
 
     private:
@@ -212,21 +212,21 @@ namespace hel{
             return instance.first->digital_system.getOutputs().MXP;
         }
 
-        void writePWMDutyCycleA(uint8_t bitfield_index, uint8_t value, tRioStatusCode* /*status*/){
+        void writePWMDutyCycleA(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){
             std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call tDIO::writePWMDutyCycleA\n";
         }
 
-        uint8_t readPWMDutyCycleA(uint8_t bitfield_index, tRioStatusCode* /*status*/){
+        uint8_t readPWMDutyCycleA(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
             std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call tDIO::readPWMDutyCycleA\n";
             return 0;
         }
 
-        void writePWMDutyCycleB(uint8_t bitfield_index, uint8_t value, tRioStatusCode* status){
+        void writePWMDutyCycleB(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){
             std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call tDIO::writePWMDutyCycleB\n";
             //no need to reimplement writePWMDutyCycleA, they do the same thing
         }
 
-        uint8_t readPWMDutyCycleB(uint8_t bitfield_index, tRioStatusCode* status){
+        uint8_t readPWMDutyCycleB(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
             std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call tDIO::readPWMDutyCycleB\n";
             //no need to reimplement readPWMDutyCycleA, they do the same thing
             return 0;
@@ -460,7 +460,7 @@ namespace hel{
 
         void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
             if(value > static_cast<uint8_t>(DigitalSystem::MAX_PULSE_LENGTH)){
-                //TODO handle pulse request longer than max pulse length
+                throw "Synthesis exception: Digital pulse exceeds maximum pulse length (given " + std::to_string(value) + " microseconds when max length is " + std::to_string(DigitalSystem::MAX_PULSE_LENGTH) + " microseconds)";
             }
             auto instance = hel::RoboRIOManager::getInstance();
             instance.first->digital_system.setPulseLength(value);
@@ -504,15 +504,3 @@ namespace nFPGA{
         }
     }
 }
-
-#ifdef DIGITAL_IO_TEST
-
-int main(){
-    uint16_t value = 1u << 3;
-    tDIO* a = tDIO::create(nullptr);
-    a->writeOutputEnable_Headers(1u << 3, nullptr);
-    a->writeDO_Headers(value, nullptr);
-}
-
-#endif
-

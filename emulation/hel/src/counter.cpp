@@ -46,7 +46,7 @@ namespace hel{
         CounterManager(uint8_t i):index(i){}
 
         tSystemInterface* getSystemInterface(){
-            return nullptr;
+            return new SystemInterface();
         }
 
         uint8_t getSystemIndex(){

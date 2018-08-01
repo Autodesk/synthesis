@@ -20,7 +20,7 @@ namespace hel{
 
     struct RelayManager: public tRelay{
         tSystemInterface* getSystemInterface(){
-            return nullptr;
+            return new SystemInterface();
         }
 
         void writeValue(tValue value, tRioStatusCode* /*status*/){

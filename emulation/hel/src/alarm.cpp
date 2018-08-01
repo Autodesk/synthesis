@@ -22,7 +22,7 @@ namespace hel{
 
     struct AlarmManager: public tAlarm{ //TODO implement full logic
         tSystemInterface* getSystemInterface(){
-            return nullptr;
+            return new SystemInterface();
         }
 
         void writeEnable(bool value, tRioStatusCode* /*status*/){

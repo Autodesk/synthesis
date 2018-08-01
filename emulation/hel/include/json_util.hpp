@@ -15,7 +15,13 @@ namespace hel{
      */
 
     struct JSONParsingException: std::exception{
+    private:
+        std::string details;
+
+    public:
         const char* what()const throw();
+
+        JSONParsingException(std::string);
     };
 
     template<typename T>

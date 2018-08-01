@@ -83,7 +83,7 @@ namespace hel{
 
     struct PWMManager: public tPWM{
         tSystemInterface* getSystemInterface(){
-            return nullptr;
+            return new SystemInterface();
         }
 
         uint32_t readCycleStartTime(tRioStatusCode* /*status*/){

@@ -16,7 +16,7 @@ namespace hel{
 
     struct SysWatchdogManager: public tSysWatchdog{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation
-           return nullptr;
+            return new SystemInterface();
         }
 
         tStatus readStatus(tRioStatusCode* /*status*/){

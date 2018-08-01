@@ -36,7 +36,7 @@ namespace hel{
 
     public:
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation
-            return nullptr;
+            return new SystemInterface();
         }
  
         uint8_t getSystemIndex(){

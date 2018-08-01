@@ -19,7 +19,7 @@ namespace hel{
 
     struct AnalogOutputManager: public tAO{
         tSystemInterface* getSystemInterface(){
-            return nullptr;
+            return new SystemInterface();
         }
 
         void writeMXP(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
@@ -43,11 +43,3 @@ namespace nFPGA{
     	}
     }
 }
-
-#ifdef ANALOG_OUTPUT_TEST
-
-int main(){
-    //tAO* a = tAO::create(nullptr);
-}
-
-#endif

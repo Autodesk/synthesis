@@ -50,7 +50,7 @@ namespace hel{
         void setBType(PortType);
         void setTicks(int32_t);
         int32_t getTicks()const;
-        void update();
+        void update(); //TODO add reset capability
 
         std::string serialize()const;
 

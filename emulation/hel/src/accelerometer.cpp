@@ -117,7 +117,7 @@ namespace hel{
         static constexpr uint8_t CONTROL_STOP = 4;
     public:
         tSystemInterface* getSystemInterface(){
-            return nullptr;
+            return new SystemInterface();
         }
 
         uint8_t readSTAT(tRioStatusCode* /*status*/){
