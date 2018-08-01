@@ -329,11 +329,8 @@
     <Reference Include="UnityEditor.OSXStandalone.Extensions">
       <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetZip">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/NuGet/Editor/DotNetZip.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGetForUnity">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/NuGet/Editor/NuGetForUnity.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="CTCommonEditor">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Plugins/crosstales/Common/Editor/CTCommonEditor.dll</HintPath>
@@ -367,9 +364,6 @@
     </Reference>
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net45/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

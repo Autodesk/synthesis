@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace Synthesis.GUI
 {
-    class EmulationDriverStation : LinkedMonoBehaviour<MainState>
+    class EmulationDriverStation : MonoBehaviour
     {
         enum DriveState
         {

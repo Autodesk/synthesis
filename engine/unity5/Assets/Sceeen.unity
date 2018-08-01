@@ -19926,6 +19926,7 @@ GameObject:
   m_Component:
   - component: {fileID: 387565512}
   - component: {fileID: 387565511}
+  - component: {fileID: 387565513}
   m_Layer: 0
   m_Name: SensorManager
   m_TagString: Untagged
@@ -19962,6 +19963,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &387565513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 387565510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb785a0939d116b4398db5048b4d5f29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &387656283
 GameObject:
   m_ObjectHideFlags: 0
@@ -30953,8 +30965,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231154}
-        m_MethodName: TeamStation
+      - m_Target: {fileID: 11500000, guid: cb785a0939d116b4398db5048b4d5f29, type: 3}
+        m_MethodName: 
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -38364,7 +38376,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &732915099
 RectTransform:
   m_ObjectHideFlags: 0
@@ -54581,6 +54593,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1023030254}
   - component: {fileID: 1023030253}
+  - component: {fileID: 1023030255}
   m_Layer: 0
   m_Name: TopbarNDS
   m_TagString: Untagged
@@ -54647,6 +54660,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1023030255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1023030252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb785a0939d116b4398db5048b4d5f29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1023509646
 GameObject:
   m_ObjectHideFlags: 0
@@ -84164,6 +84188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1658117056}
   - component: {fileID: 1658117055}
+  - component: {fileID: 1658117057}
   m_Layer: 0
   m_Name: Gyro
   m_TagString: Untagged
@@ -84230,6 +84255,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1658117057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1658117054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb785a0939d116b4398db5048b4d5f29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1658842211
 GameObject:
   m_ObjectHideFlags: 0
