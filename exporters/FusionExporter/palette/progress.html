@@ -3,6 +3,34 @@
     <head>
         <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
         <script src="js/progress.js"></script>
+
+        <style>
+            p
+            {
+                text-align: center;
+            }
+
+            #progress[value]
+            {
+                -webkit-appearance: none;
+                width: 100%;
+            }
+
+            /* Partial credit to https://css-tricks.com/html5-progress-element/ */
+            #progress[value]::-webkit-progress-bar
+            {
+                background-color: #eee;
+                border-radius: 2px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+            }
+
+            #progress[value]::-webkit-progress-value
+            {
+                background-color: #f29000;
+                border-radius: 2px;
+                transition: width 1.0s;
+            }
+        </style>
     </head>
     <body>
         <p>Loading...</p>

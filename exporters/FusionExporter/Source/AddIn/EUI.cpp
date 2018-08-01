@@ -155,12 +155,13 @@ bool EUI::createProgressPalette()
 	if (!progressPalette)
 	{
 		// Create palette
-		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", false, false, false, 100, 100);
+		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", false, false, false, 150, 150);
 		if (!progressPalette)
 			return false;
 
 		// Dock the palette to the right side of Fusion window.
-		progressPalette->dockingState(PaletteDockStateRight);
+		progressPalette->dockingState(PaletteDockStateBottom);
+		progressPalette->dockingOption(PaletteDockOptionsToVerticalOnly);
 	}
 
 	return true;
