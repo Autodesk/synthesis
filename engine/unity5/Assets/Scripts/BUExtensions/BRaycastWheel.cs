@@ -25,6 +25,8 @@ namespace Synthesis.BUExtensions
 
         public const float MassTorqueScalar = 0.05f;
 
+        public double wheelCounter = 0.0;
+
         /// <summary>
         /// Sets or gets the radius of the wheel.
         /// </summary>
