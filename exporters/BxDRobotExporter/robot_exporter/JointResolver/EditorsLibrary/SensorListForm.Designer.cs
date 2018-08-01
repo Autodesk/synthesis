@@ -34,24 +34,23 @@
             this.moduleColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.portColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.sensorListView = new System.Windows.Forms.ListView();
-            this.polynomialHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.deleteButton = new System.Windows.Forms.Button();
             this.addSensorButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // typeColumnHeader
             // 
-            this.typeColumnHeader.Text = "Type";
+            this.typeColumnHeader.Text = "Sensor Type";
             this.typeColumnHeader.Width = 115;
             // 
             // moduleColumnHeader
             // 
-            this.moduleColumnHeader.Text = "Module #";
+            this.moduleColumnHeader.Text = "Port 1";
             this.moduleColumnHeader.Width = 76;
             // 
             // portColumnHeader
             // 
-            this.portColumnHeader.Text = "Port #";
+            this.portColumnHeader.Text = "Port 2";
             // 
             // sensorListView
             // 
@@ -59,8 +58,7 @@
             this.sensorListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.typeColumnHeader,
             this.moduleColumnHeader,
-            this.portColumnHeader,
-            this.polynomialHeader});
+            this.portColumnHeader});
             this.sensorListView.FullRowSelect = true;
             this.sensorListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.sensorListView.HoverSelection = true;
@@ -69,21 +67,16 @@
             this.sensorListView.MultiSelect = false;
             this.sensorListView.Name = "sensorListView";
             this.sensorListView.ShowGroups = false;
-            this.sensorListView.Size = new System.Drawing.Size(516, 196);
+            this.sensorListView.Size = new System.Drawing.Size(507, 196);
             this.sensorListView.TabIndex = 0;
             this.sensorListView.UseCompatibleStateImageBehavior = false;
             this.sensorListView.View = System.Windows.Forms.View.Details;
             this.sensorListView.SelectedIndexChanged += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
             // 
-            // polynomialHeader
-            // 
-            this.polynomialHeader.Text = "Polynomial";
-            this.polynomialHeader.Width = 134;
-            // 
             // deleteButton
             // 
             this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.deleteButton.Location = new System.Drawing.Point(12, 223);
+            this.deleteButton.Location = new System.Drawing.Point(12, 222);
             this.deleteButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(129, 36);
@@ -95,7 +88,7 @@
             // addSensorButton
             // 
             this.addSensorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.addSensorButton.Location = new System.Drawing.Point(415, 223);
+            this.addSensorButton.Location = new System.Drawing.Point(404, 222);
             this.addSensorButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.addSensorButton.Name = "addSensorButton";
             this.addSensorButton.Size = new System.Drawing.Size(115, 36);
@@ -108,7 +101,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(541, 272);
+            this.ClientSize = new System.Drawing.Size(531, 271);
             this.Controls.Add(this.addSensorButton);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.sensorListView);
@@ -135,7 +128,6 @@
         private System.Windows.Forms.ListView sensorListView;
         private System.Windows.Forms.Button deleteButton;
         private System.Windows.Forms.Button addSensorButton;
-        private System.Windows.Forms.ColumnHeader polynomialHeader;
 
     }
 }

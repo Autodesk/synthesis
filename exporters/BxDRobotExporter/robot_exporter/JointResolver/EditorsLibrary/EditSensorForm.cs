@@ -25,7 +25,8 @@ namespace EditorsLibrary
             sensorTypeOptions = RobotSensor.GetAllowedSensors(joint);
             foreach (RobotSensorType sensorType in sensorTypeOptions)
             {
-                typeBox.Items.Add(Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ').ToLowerInvariant());
+                typeBox.Items.Add(char.ToUpper(Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ')[0])
+                    + Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ').Substring(1).ToLower());
             }
             Console.WriteLine(sourceIndex >= 0 && sourceIndex < joint.attachedSensors.Count);
             base.Text = (sourceIndex >= 0 && sourceIndex < joint.attachedSensors.Count) ? ("Editing Sensor # " + sourceIndex) : "New Sensor";
