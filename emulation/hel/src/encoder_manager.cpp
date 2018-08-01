@@ -6,57 +6,57 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    std::string to_string(Encoder::Type type){
+    std::string to_string(EncoderManager::Type type){
         switch(type){
-        case Encoder::Type::UNKNOWN:
+        case EncoderManager::Type::UNKNOWN:
             return "UNKNOWN";
-        case Encoder::Type::FPGA_ENCODER:
+        case EncoderManager::Type::FPGA_ENCODER:
             return "FPGA_ENCODER";
-        case Encoder::Type::COUNTER:
+        case EncoderManager::Type::COUNTER:
             return "COUNTER";
         default:
-            throw UnhandledEnumConstantException("hel::Encoder::Type");
+            throw UnhandledEnumConstantException("hel::EncoderManager::Type");
         }
     }
-    std::string to_string(Encoder::PortType type){
+    std::string to_string(EncoderManager::PortType type){
         switch(type){
-        case Encoder::PortType::DI:
+        case EncoderManager::PortType::DI:
             return "DI";
-        case Encoder::PortType::AI:
+        case EncoderManager::PortType::AI:
             return "AI";
         default:
-            throw UnhandledEnumConstantException("hel::Encoder::PortType");
+            throw UnhandledEnumConstantException("hel::EncoderManager::PortType");
         }
     }
 
-    Encoder::PortType s_to_encoder_port_type(std::string s){
+    EncoderManager::PortType s_to_encoder_port_type(std::string s){
         switch(hasher(s.c_str())){
         case hasher("DI"):
-            return Encoder::PortType::DI;
+            return EncoderManager::PortType::DI;
         case hasher("AI"):
-            return Encoder::PortType::AI;
+            return EncoderManager::PortType::AI;
         default:
             throw UnhandledCase();
         }
     }
 
-    uint8_t getChannel(uint8_t channel, bool module,Encoder::PortType type){
+    uint8_t getChannel(uint8_t channel, bool module,EncoderManager::PortType type){
         if(module){
             switch(type){
-            case Encoder::PortType::AI:
+            case EncoderManager::PortType::AI:
                 channel += AnalogInputs::NUM_ANALOG_INPUTS_HDRS;
                 break;
-            case Encoder::PortType::DI:
+            case EncoderManager::PortType::DI:
                 channel += DigitalSystem::NUM_DIGITAL_HEADERS;
                 break;
             default:
-                throw UnhandledEnumConstantException("hel::Encoder::PortType");
+                throw UnhandledEnumConstantException("hel::EncoderManager::PortType");
             }
         }
         return channel;
     }
 
-    bool Encoder::checkDevice(uint8_t a, bool a_module, bool a_analog, uint8_t b, bool b_module, bool b_analog)const{
+    bool EncoderManager::checkDevice(uint8_t a, bool a_module, bool a_analog, uint8_t b, bool b_module, bool b_analog)const{
         if(
             (a_analog && a_type != PortType::AI) ||
             (b_analog && b_type != PortType::AI)
@@ -71,7 +71,7 @@ namespace hel{
         return true;
     }
 
-    void Encoder::findDevice(){
+    void EncoderManager::findDevice(){
         auto instance = RoboRIOManager::getInstance();
         for(unsigned i = 0; i < instance.first->fpga_encoders.size(); i++){
             tEncoder::tConfig config = instance.first->fpga_encoders[i].getConfig();
@@ -96,21 +96,61 @@ namespace hel{
         instance.second.unlock();
     }
 
-    void Encoder::setTicks(int32_t t){
+    EncoderManager::Type EncoderManager::getType()const{
+        return type;
+    }
+
+    uint8_t EncoderManager::getIndex()const{
+        return index;
+    }
+
+    uint8_t EncoderManager::getAChannel()const{
+        return a_channel;
+    }
+
+    void EncoderManager::setAChannel(uint8_t a){
+        a_channel = a;
+    }
+
+    EncoderManager::PortType EncoderManager::getAType()const{
+        return a_type;
+    }
+
+    void EncoderManager::setAType(PortType t){
+        a_type = t;
+    }
+
+    uint8_t EncoderManager::getBChannel()const{
+        return b_channel;
+    }
+
+    void EncoderManager::setBChannel(uint8_t b){
+        b_channel = b;
+    }
+
+    EncoderManager::PortType EncoderManager::getBType()const{
+        return b_type;
+    }
+
+    void EncoderManager::setBType(PortType t){
+        b_type = t;
+    }
+
+    void EncoderManager::setTicks(int32_t t){
         ticks = t;
     }
 
-    int32_t Encoder::getTicks()const{
+    int32_t EncoderManager::getTicks()const{
         return ticks;
     }
 
-    void Encoder::update(){
+    void EncoderManager::update(){
         findDevice();
         auto instance = RoboRIOManager::getInstance();
         switch(type){
         case Type::UNKNOWN:
             instance.second.unlock();
-            throw InputConfigurationException("Encoder with a channel on " + hel::to_string(a_type) + " port " + std::to_string(a_channel) + " and b channel on " + hel::to_string(b_type) + " port " + std::to_string(b_channel));
+            throw InputConfigurationException("EncoderManager with a channel on " + hel::to_string(a_type) + " port " + std::to_string(a_channel) + " and b channel on " + hel::to_string(b_type) + " port " + std::to_string(b_channel));
         case Type::FPGA_ENCODER:
         {
             tEncoder::tOutput output;
@@ -128,12 +168,12 @@ namespace hel{
             break;
         }
         default:
-            throw UnhandledEnumConstantException("hel::Encoder::Type");
+            throw UnhandledEnumConstantException("hel::EncoderManager::Type");
         }
         instance.second.unlock();
     }
 
-    std::string Encoder::serialize()const{
+    std::string EncoderManager::serialize()const{
         std::string s = "{";
         s += "\"a_channel\":" + std::to_string(a_channel) + ", ";
         s += "\"a_type\":" + quote(hel::to_string(a_type)) + ", ";
@@ -144,8 +184,8 @@ namespace hel{
         return s;
     }
 
-    Encoder Encoder::deserialize(std::string s){
-        Encoder a;
+    EncoderManager EncoderManager::deserialize(std::string s){
+        EncoderManager a;
         a.a_channel = std::stoi(hel::pullValue("\"a_channel\"",s));
         a.b_channel = std::stoi(hel::pullValue("\"b_channel\"",s));
         a.a_type = hel::s_to_encoder_port_type(unquote(hel::pullValue("\"a_type\"",s)));
@@ -154,7 +194,7 @@ namespace hel{
         return a;
     }
 
-    std::string Encoder::toString()const{
+    std::string EncoderManager::toString()const{
         std::string s = "(";
         s += "type:" + hel::to_string(type) + ", ";
         s += "index:" + std::to_string(index) + ", ";
@@ -167,6 +207,6 @@ namespace hel{
         return s;
     }
 
-    Encoder::Encoder():Encoder(0,PortType::DI,0,PortType::DI){}
-    Encoder::Encoder(uint8_t a,PortType a_t,uint8_t b,PortType b_t):type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0){}
+    EncoderManager::EncoderManager():EncoderManager(0,PortType::DI,0,PortType::DI){}
+    EncoderManager::EncoderManager(uint8_t a,PortType a_t,uint8_t b,PortType b_t):type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0){}
 }

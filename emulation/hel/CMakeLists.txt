@@ -93,7 +93,7 @@ EXTERNALPROJECT_ADD(ctre
   )
 ADD_DEPENDENCIES(ctre wpilib)
 
-ADD_LIBRARY (hel SHARED src/roborio_manager.cpp src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/fpga_encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/error.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp src/alarm.cpp src/system.cpp src/sync_client.cpp src/interrupt_manager.cpp src/analog_input_calibration.cpp src/joystick.cpp src/match_info.cpp src/robot_mode.cpp src/encoder.cpp)
+ADD_LIBRARY (hel SHARED src/roborio_manager.cpp src/init.cpp src/analog_input.cpp src/analog_output.cpp src/pwm.cpp src/digital_io.cpp src/can.cpp src/relay.cpp src/global.cpp src/comm.cpp src/counter.cpp src/accelerometer.cpp src/accumulator.cpp src/fpga_encoder.cpp src/power.cpp src/sys_watchdog.cpp src/spi.cpp src/net_comm.cpp src/mxp_data.cpp src/error.cpp src/util.cpp src/json_util.cpp src/send_data.cpp src/receive_data.cpp src/sync_server.cpp src/alarm.cpp src/system.cpp src/sync_client.cpp src/interrupt_manager.cpp src/analog_input_calibration.cpp src/joystick.cpp src/match_info.cpp src/robot_mode.cpp src/encoder_manager.cpp)
 ADD_DEPENDENCIES(hel asio wpilib) 
 
 TARGET_INCLUDE_DIRECTORIES( hel SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native" "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers" "${WPILIB_DIRECTORY}/hal/src/main/native/include" "${WPILIB_DIRECTORY}/ni-libraries/include" "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include" "${ASIO_DIRECTORY}/include" "./include")
@@ -110,7 +110,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
 
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
     if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
-      ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_can.cpp)
+      ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
       ADD_DEPENDENCIES(FRCUserProgram wpilib ctre)
       TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
       TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers")

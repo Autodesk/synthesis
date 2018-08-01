@@ -3,6 +3,7 @@
 success=true
 libhel_source=lib/libhel.so
 user_program_source=user-code/FRCUserProgram
+tests_source=bin/tests
 
 if [ $# -eq 0 ]; then
     if [ -f lib/libhel.so ]; then
@@ -18,6 +19,14 @@ if [ $# -eq 0 ]; then
         sshpass -p "adskbxd" scp -r -P 10022 $user_program_source synthesis@localhost:/home/synthesis
     else
         printf "Error: $user_program_source not found\n"
+        success=false
+    fi
+    
+    if [ -d $tests_source ]; then
+        printf "Copying $tests_source\n"
+        sshpass -p "adskbxd" scp -r -P 10022 $tests_source synthesis@localhost:/home/synthesis
+    else
+        printf "Error: $tests_source not found\n"
         success=false
     fi
 else

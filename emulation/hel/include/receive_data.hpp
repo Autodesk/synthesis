@@ -6,7 +6,7 @@
 
 #include "bounds_checked_array.hpp"
 #include "digital_system.hpp"
-#include "encoder.hpp"
+#include "encoder_manager.hpp"
 #include "fpga_encoder.hpp"
 #include "joystick.hpp"
 #include "match_info.hpp"
@@ -24,7 +24,7 @@ namespace hel{
         BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT>  joysticks;
         MatchInfo match_info;
         RobotMode robot_mode;
-        BoundsCheckedArray<Encoder, FPGAEncoder::NUM_ENCODERS> encoder_managers;
+        BoundsCheckedArray<EncoderManager, FPGAEncoder::NUM_ENCODERS> encoder_managers;
     public:
         void update()const;
 

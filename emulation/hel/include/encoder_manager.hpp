@@ -1,12 +1,12 @@
-#ifndef _ENCODER_HPP_
-#define _ENCODER_HPP_
+#ifndef _ENCODER_MANAGER_HPP_
+#define _ENCODER_MANAGER_HPP_
 
 #include <cstdint>
 #include <string>
 
 namespace hel{
 
-    struct Encoder{ //TODO implement
+    struct EncoderManager{
         enum class PortType{
             DI,
             AI
@@ -38,24 +38,32 @@ namespace hel{
         void findDevice();
 
     public:
+        Type getType()const;
+        uint8_t getIndex()const;
+        uint8_t getAChannel()const;
+        void setAChannel(uint8_t);
+        PortType getAType()const;
+        void setAType(PortType);
+        uint8_t getBChannel()const;
+        void setBChannel(uint8_t);
+        PortType getBType()const;
+        void setBType(PortType);
         void setTicks(int32_t);
-
         int32_t getTicks()const;
-
         void update();
 
         std::string serialize()const;
 
-        static Encoder deserialize(std::string);
+        static EncoderManager deserialize(std::string);
 
         std::string toString()const;
 
-        Encoder();
-        Encoder(uint8_t,PortType,uint8_t,PortType);
+        EncoderManager();
+        EncoderManager(uint8_t,PortType,uint8_t,PortType);
     };
 
-    std::string to_string(Encoder::Type);
-    std::string to_string(Encoder::PortType);
+    std::string to_string(EncoderManager::Type);
+    std::string to_string(EncoderManager::PortType);
 }
 
 #endif

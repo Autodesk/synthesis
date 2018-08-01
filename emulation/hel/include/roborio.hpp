@@ -32,7 +32,7 @@
 #include "can_motor_controller.hpp"
 #include "counter.hpp"
 #include "digital_system.hpp"
-#include "encoder.hpp"
+#include "encoder_manager.hpp"
 #include "error.hpp"
 #include "fpga_encoder.hpp"
 #include "global.hpp"
@@ -78,7 +78,7 @@ namespace hel{
         DigitalSystem digital_system;
         std::vector<DSError> ds_errors;
         MatchInfo match_info;
-        BoundsCheckedArray<Encoder, FPGAEncoder::NUM_ENCODERS> encoder_managers;
+        BoundsCheckedArray<EncoderManager, FPGAEncoder::NUM_ENCODERS> encoder_managers;
         BoundsCheckedArray<FPGAEncoder, FPGAEncoder::NUM_ENCODERS> fpga_encoders;
         Global global;
         BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
