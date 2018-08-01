@@ -9,6 +9,8 @@ namespace BXDJ
 	class ConfigData
 	{
 	public:
+		std::string robotName;
+
 		ConfigData();
 
 		ConfigData(const ConfigData & other);

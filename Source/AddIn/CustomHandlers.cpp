@@ -145,7 +145,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		std::string name = "";
 		for (int j = 0; j < nameLength && i < dataReceived.length(); j++)
 			name += dataReceived[i++];
-		Filesystem::setRobotName(name);
+		config.robotName = name;
 
 		// Get joint data
 		for (int j = 0; j < joints.size() && i < dataReceived.length(); j++)
@@ -181,7 +181,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 		// Export robot
 		palette->isVisible(false);
-		exporter.exportMeshes(config);
+		eui->startExportThread(config);
 	}
 }
 

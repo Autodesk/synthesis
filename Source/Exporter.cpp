@@ -98,14 +98,14 @@ void Exporter::exportExample()
 	mesh.addSubMesh(subMesh);
 
 	//Generates timestamp and attaches to file name
-	std::string filename = Filesystem::getCurrentRobotDirectory() + "exampleFusion.bxda";
+	std::string filename = Filesystem::getCurrentRobotDirectory("example") + "exampleFusion.bxda";
 	BXDA::BinaryWriter binary(filename);
 	binary.write(mesh);
 }
 
 void Exporter::exportExampleXml()
 {
-	std::string filename = Filesystem::getCurrentRobotDirectory() + "exampleFusionXml.bxdj";
+	std::string filename = Filesystem::getCurrentRobotDirectory("example") + "exampleFusionXml.bxdj";
 	BXDJ::XmlWriter xml(filename, false);
 	xml.startElement("BXDJ");
 	xml.writeAttribute("Version", "3.0.0");
@@ -118,7 +118,6 @@ void Exporter::exportExampleXml()
 
 void Exporter::exportMeshes(BXDJ::ConfigData config)
 {
-	Ptr<UserInterface> userInterface = fusionApplication->userInterface();
 	Ptr<FusionDocument> document = fusionApplication->activeDocument();
 	
 	// Generate tree
@@ -126,8 +125,8 @@ void Exporter::exportMeshes(BXDJ::ConfigData config)
 	BXDJ::RigidNode rootNode(document->design()->rootComponent(), config);
 
 	// Write robot to file
-	Filesystem::createDirectory(Filesystem::getCurrentRobotDirectory());
-	std::string filename = Filesystem::getCurrentRobotDirectory() + "skeleton.bxdj";
+	Filesystem::createDirectory(Filesystem::getCurrentRobotDirectory(config.robotName));
+	std::string filename = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.bxdj";
 	BXDJ::XmlWriter xml(filename, false);
 
 	xml.startElement("BXDJ");

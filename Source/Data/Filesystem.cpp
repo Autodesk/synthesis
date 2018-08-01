@@ -2,18 +2,12 @@
 #include "Filesystem.h"
 
 const std::string Filesystem::ROBOT_APPDATA_DIRECTORY = "Synthesis\\Robots";
-std::string Filesystem::robotName = "unnamed";
 
-void Filesystem::setRobotName(std::string name)
+std::string Filesystem::getCurrentRobotDirectory(std::string name)
 {
-	if (name.length() > 0)
-		robotName = name;
-	else
-		robotName = "untitled";
-}
+	if (name.length() <= 0)
+		name = "unnamed";
 
-std::string Filesystem::getCurrentRobotDirectory()
-{
 	char *dir;
 	errno_t err = _dupenv_s(&dir, NULL, "APPDATA");
 
@@ -23,7 +17,7 @@ std::string Filesystem::getCurrentRobotDirectory()
 	std::string strDir(dir);
 	free(dir);
 
-	return strDir + '\\' + ROBOT_APPDATA_DIRECTORY + '\\' + robotName + '\\';
+	return strDir + '\\' + ROBOT_APPDATA_DIRECTORY + '\\' + name + '\\';
 }
 
 void Filesystem::createDirectory(std::string path)

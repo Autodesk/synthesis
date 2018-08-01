@@ -49,16 +49,19 @@ void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics) const
 			subMesh->addVertices(coords, norms);
 		}
 
-		if (!ignorePhysics && subMesh->getVertCount() > 0)
+		if (subMesh->getVertCount() > 0)
 		{
-			// Add physics properties to mesh
-			core::Ptr<fusion::PhysicalProperties> physics = occurrence->physicalProperties();
-			double mass = physics->mass();
-			if (mass > 0)
+			if (!ignorePhysics)
 			{
-				core::Ptr<core::Point3D> com = physics->centerOfMass();
-				Vector3<float> centerOfMass((float)com->x(), (float)com->y(), (float)com->z());
-				mesh.addPhysics(BXDA::Physics(centerOfMass, (float)mass));
+				// Add physics properties to mesh
+				core::Ptr<fusion::PhysicalProperties> physics = occurrence->physicalProperties();
+				double mass = physics->mass();
+				if (mass > 0)
+				{
+					core::Ptr<core::Point3D> com = physics->centerOfMass();
+					Vector3<float> centerOfMass((float)com->x(), (float)com->y(), (float)com->z());
+					mesh.addPhysics(BXDA::Physics(centerOfMass, (float)mass));
+				}
 			}
 
 			mesh.addSubMesh(subMesh);

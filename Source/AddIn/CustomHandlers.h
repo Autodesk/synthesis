@@ -51,11 +51,12 @@ namespace Synthesis
 	class ReceiveFormDataHandler : public HTMLEventHandler
 	{
 	public:
-		ReceiveFormDataHandler(Ptr<Application> app) : app(app) {}
+		ReceiveFormDataHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) { }
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 	private:
 		const char ASCII_OFFSET = -32;
 		Ptr<Application> app;
+		EUI * eui;
 	};
 
 	class CloseFormEventHandler : public UserInterfaceGeneralEventHandler

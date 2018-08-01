@@ -6,12 +6,10 @@
 class Filesystem
 {
 public:
-	static void setRobotName(std::string);
-	static std::string getCurrentRobotDirectory();
+	static std::string getCurrentRobotDirectory(std::string robotName);
 	static void createDirectory(std::string);
 
 private:
 	static const std::string ROBOT_APPDATA_DIRECTORY;
-	static std::string robotName;
 
 };
