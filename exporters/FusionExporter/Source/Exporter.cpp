@@ -1,4 +1,5 @@
 #include "Exporter.h"
+#include <vector>
 #include "Data/Filesystem.h"
 #include "Data/BXDA/Mesh.h"
 #include "Data/BXDA/SubMesh.h"
@@ -108,19 +109,44 @@ void Exporter::exportExampleXml()
 	xml.writeElement("ModelID", "Part2:1");
 }
 
-void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document)
+void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document, std::function<void(double)> progressCallback)
 {	
+	progressCallback(0);
 	// Generate tree
 	Guid::resetAutomaticSeed();
-	BXDJ::RigidNode rootNode(document->design()->rootComponent(), config);
+	std::shared_ptr<BXDJ::RigidNode> rootNode = std::make_shared<BXDJ::RigidNode>(document->design()->rootComponent(), config);
 
+	// List all rigid-nodes in tree
+	std::vector<std::shared_ptr<BXDJ::RigidNode>> allNodes;
+	allNodes.push_back(rootNode);
+	rootNode->getChildren(allNodes, true);
+
+	progressCallback(0.05);
 	// Write robot to file
 	Filesystem::createDirectory(Filesystem::getCurrentRobotDirectory(config.robotName));
-	std::string filename = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.bxdj";
-	BXDJ::XmlWriter xml(filename, false);
+
+	// Write BXDJ file
+	std::string filenameBXDJ = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.bxdj";
+	BXDJ::XmlWriter xml(filenameBXDJ, false);
 
 	xml.startElement("BXDJ");
 	xml.writeAttribute("Version", "3.0.0");
-	xml.write(rootNode);
+	xml.write(*rootNode);
 	xml.endElement();
+
+	progressCallback(0.1);
+	// Write BXDA files
+	for (int i = 0; i < allNodes.size(); i++)
+	{
+		std::string filenameBXDA = "node_" + std::to_string(allNodes[i]->getGUID().getSeed()) + ".bxda";
+		BXDA::BinaryWriter * binary = new BXDA::BinaryWriter(Filesystem::getCurrentRobotDirectory(config.robotName) + filenameBXDA);
+		BXDA::Mesh * mesh = new BXDA::Mesh(allNodes[i]->getGUID());
+		allNodes[i]->getMesh(*mesh);
+		binary->write(*mesh);
+		delete mesh; delete binary;
+
+		progressCallback(0.1 + 0.9 * (i / allNodes.size()));
+	}
+
+	progressCallback(1);
 }

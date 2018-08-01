@@ -17,17 +17,17 @@ EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 {
 	this->UI = UI;
 	this->app = app;
+	exportThread = nullptr;
 	createWorkspace();
 };
 
 EUI::~EUI()
 {
 	// Wait for all threads to finish
-	while (exportThreads.size() > 0)
+	if (exportThread != nullptr)
 	{
-		exportThreads.front()->join();
-		delete exportThreads.front();
-		exportThreads.pop_front();
+		exportThread->join();
+		delete exportThread;
 	}
 
 	deleteWorkspace();
@@ -87,6 +87,7 @@ void EUI::deleteWorkspace()
 {
 	// Delete palettes
 	deleteExportPalette();
+	deleteProgressPalette();
 
 	// Delete buttons
 	deleteExportButton();
@@ -103,7 +104,7 @@ bool EUI::createExportPalette()
 	if (!exportPalette)
 	{
 		// Create palette
-		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/palette.html", false, true, true, 300, 200);
+		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/export.html", false, true, true, 300, 200);
 		if (!exportPalette)
 			return false;
 
@@ -141,6 +142,43 @@ void EUI::deleteExportPalette()
 		exportPalette->deleteMe();
 
 	exportPalette = nullptr;
+}
+
+bool EUI::createProgressPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	progressPalette = palettes->itemById(K_PROGRESS_PALETTE);
+	if (!progressPalette)
+	{
+		// Create palette
+		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", false, false, true, 300, 200);
+		if (!progressPalette)
+			return false;
+
+		// Dock the palette to the right side of Fusion window.
+		progressPalette->dockingState(PaletteDockStateRight);
+	}
+
+	return true;
+}
+
+void EUI::deleteProgressPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette already exists
+	progressPalette = palettes->itemById(K_PROGRESS_PALETTE);
+
+	if (progressPalette)
+		progressPalette->deleteMe();
+
+	progressPalette = nullptr;
 }
 
 bool EUI::createExportButton()
@@ -196,14 +234,38 @@ void EUI::deleteExportButton()
 void EUI::startExportThread(BXDJ::ConfigData & config)
 {
 #ifdef ALLOW_MULTITHREADING
-	exportThreads.push_back(new std::thread(&EUI::exportRobot, this, config));
+	// Wait for all threads to finish
+	if (exportThread != nullptr)
+	{
+		progressPalette->isVisible(true);
+		exportThread->join();
+		delete exportThread;
+	}
+
+	exportThread = new std::thread(&EUI::exportRobot, this, config);
+
+	//updateProgress(0);
+	progressPalette->isVisible(true);
 #else
 	Exporter::exportMeshes(config, app->activeDocument());
 #endif
 }
 
+void EUI::updateProgress(double percent)
+{
+	if (percent < 0)
+		percent = 0;
+	
+	if (percent >= 1)
+		progressPalette->isVisible(false);
+	else
+		progressPalette->sendInfoToHTML("progress", std::to_string(percent));
+}
+
 void EUI::exportRobot(BXDJ::ConfigData config)
 {
-	Exporter::exportMeshes(config, app->activeDocument());
-	UI->messageBox(config.robotName + " has finished exporting.");
+	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
+	{
+		updateProgress(percent);
+	});
 }

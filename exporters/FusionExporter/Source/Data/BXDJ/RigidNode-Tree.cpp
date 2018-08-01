@@ -14,6 +14,17 @@ Joint * RigidNode::getParent() const
 	return parent;
 }
 
+void BXDJ::RigidNode::getChildren(std::vector<std::shared_ptr<RigidNode>> & children, bool recursive) const
+{
+	for (std::shared_ptr<Joint> joint : childrenJoints)
+	{
+		children.push_back(joint->getChild());
+
+		if (recursive)
+			joint->getChild()->getChildren(children);
+	}
+}
+
 void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
 {
 	// Add the occurence to this node
