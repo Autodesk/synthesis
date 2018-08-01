@@ -466,14 +466,20 @@ namespace Synthesis.Sensors
             cancelTypeButton.SetActive(false);
         }
 
+        public void SetUltrasonicAsCurrent(int i)
+        {
+            currentSensor = sensorManager.ultrasonicList[i].GetComponent<SensorBase>();
+        }
+
         /// <summary>
         /// Add an ultrasonic sensor to the selected node and display its output
         /// </summary>
-        public void AddUltrasonic()
+        public List<GameObject> AddUltrasonic()
         {
             currentSensor = sensorManager.AddUltrasonic();
             DisplayOutput();
             StartConfiguration();
+            return sensorManager.ultrasonicList;
         }
 
         /// <summary>

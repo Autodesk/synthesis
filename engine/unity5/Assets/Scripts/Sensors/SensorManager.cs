@@ -27,9 +27,9 @@ namespace Synthesis.Sensors
         private List<GameObject> inactiveSensorList = new List<GameObject>();
         private List<GameObject> sensorList = new List<GameObject>();
 
-        private List<GameObject> ultrasonicList = new List<GameObject>();
-        private List<GameObject> beamBreakerList = new List<GameObject>();
-        private List<GameObject> gyroList = new List<GameObject>();
+        public List<GameObject> ultrasonicList { get; } = new List<GameObject>();
+        public List<GameObject> beamBreakerList { get; } = new List<GameObject>();
+        public List<GameObject> gyroList { get; } = new List<GameObject>();
 
         private List<Color> hoveredColors = new List<Color>();
         private List<Color> selectedColors = new List<Color>();
