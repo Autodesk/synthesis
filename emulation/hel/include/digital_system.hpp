@@ -13,7 +13,7 @@ namespace hel{
 		static constexpr int32_t NUM_DIGITAL_HEADERS = 10; //hal::kNumDigitalHeaders
 		static constexpr int32_t NUM_DIGITAL_MXP_CHANNELS = 16; //hal::kNumDigitalMXPChannels
 		static constexpr int32_t NUM_DIGITAL_PWM_OUTPUTS = 6; //hal::kNumDigitalPWMOutputs
-    static constexpr uint16_t MAX_PULSE_LENGTH = 1600; //microseconds //TODO since Ni FPGA manages this as a byte, the pulse length must be a lot shorter than this
+    static constexpr uint16_t MAX_PULSE_LENGTH = 1600; //microseconds; since Ni FPGA manages this as a byte, the pulse length will always be shorter than this
 
     private:
 

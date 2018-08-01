@@ -9,27 +9,35 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
 
-    std::string to_string(CANMotorController::Type type){
+    std::string to_string(CANDevice::Type type){
         switch(type){
-        case CANMotorController::Type::TALON_SRX:
+        case CANDevice::Type::TALON_SRX:
             return "TALON_SRX";
-        case CANMotorController::Type::VICTOR_SPX:
+        case CANDevice::Type::VICTOR_SPX:
             return "VICTOR_SPX";
-        case CANMotorController::Type::UNKNOWN:
+        case CANDevice::Type::UNKNOWN:
             return "UNKNOWN";
+        case CANDevice::Type::PCM:
+            return "PCM";
+        case CANDevice::Type::PDP:
+            return "PDP";
         default:
-            throw UnhandledEnumConstantException("hel::MXPData::Config");
+            throw UnhandledEnumConstantException("hel::CANDevice::Type");
         }
     }
 
-    CANMotorController::Type s_to_can_device_type(std::string s){
+    CANDevice::Type s_to_can_device_type(std::string s){
         switch(hasher(s.c_str())){
         case hasher("TALON_SRX"):
-            return CANMotorController::Type::TALON_SRX;
+            return CANDevice::Type::TALON_SRX;
         case hasher("VICTOR_SPX"):
-            return CANMotorController::Type::VICTOR_SPX;
+            return CANDevice::Type::VICTOR_SPX;
+        case hasher("PCM"):
+            return CANDevice::Type::PCM;
+        case hasher("PDP"):
+            return CANDevice::Type::PDP;
         case hasher("UNKNOWN"):
-            return CANMotorController::Type::UNKNOWN;
+            return CANDevice::Type::UNKNOWN;
         default:
             throw UnhandledCase();
         }
@@ -39,7 +47,7 @@ namespace hel{
         std::string s = "(";
         s += "type:" + hel::to_string(type) + ", ";
         s += "id:" + std::to_string(id);
-        if(type != Type::UNKNOWN){
+        if(type != CANDevice::Type::UNKNOWN){
             s += ", speed:" + std::to_string(speed);
             s += ", inverted:" + hel::to_string(inverted);
         }
@@ -66,7 +74,7 @@ namespace hel{
         return a;
     }
 
-    CANMotorController::Type CANMotorController::getType()const{
+    CANDevice::Type CANMotorController::getType()const{
         return type;
     }
 
@@ -120,45 +128,54 @@ namespace hel{
         inverted = i;
     }
 
-    uint8_t CANMotorController::pullDeviceID(uint32_t message_id){
+    uint8_t CANDevice::pullDeviceID(uint32_t message_id){
         return message_id & IDMask::DEVICE_ID;
     }
 
-    CANMotorController::Type CANMotorController::pullDeviceType(uint32_t message_id){
+    CANDevice::Type CANDevice::pullDeviceType(uint32_t message_id){
         if(compareBits(message_id, IDMask::VICTOR_SPX_TYPE, IDMask::DEVICE_TYPE)){
             return Type::VICTOR_SPX;
         } else if(compareBits(message_id, IDMask::TALON_SRX_TYPE, IDMask::DEVICE_TYPE)){
             return Type::TALON_SRX;
+        } else if(compareBits(message_id, IDMask::PCM_TYPE, IDMask::DEVICE_TYPE)){
+            return Type::PCM;
+        } else if(compareBits(message_id, IDMask::PDP_TYPE, IDMask::DEVICE_TYPE)){
+            return Type::PDP;
         }
         return Type::UNKNOWN;
     }
 
-    CANMotorController::CANMotorController():type(Type::UNKNOWN),id(0),speed(0.0),inverted(false){}
+    CANMotorController::CANMotorController():type(CANDevice::Type::UNKNOWN),id(0),speed(0.0),inverted(false){}
 
     CANMotorController::CANMotorController(uint32_t message_id):CANMotorController(){
-        type = pullDeviceType(message_id);
-        if(type != Type::UNKNOWN){
-            id = pullDeviceID(message_id);
-        }
+        type = CANDevice::pullDeviceType(message_id);
+        assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
+        id = CANDevice::pullDeviceID(message_id);
     }
 }
 
 extern "C"{
     static const uint32_t SILENT_UNKNOWN_DEVICE_ID = 262271;
 
-    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t periodMs, int32_t* /*status*/){
+    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
         if(messageID == SILENT_UNKNOWN_DEVICE_ID){
             return;
         }
-        auto instance = hel::RoboRIOManager::getInstance();
 
-        hel::CANMotorController can_device = {messageID};
-        if(can_device.getType() == hel::CANMotorController::Type::UNKNOWN){
-            std::cerr<<"Synthesis warning: Attempting to write message to unknown CAN device using message ID "<<messageID<<"\n";
-        } else{
+        hel::CANDevice::Type target_type = hel::CANDevice::pullDeviceType(messageID);
+        switch(target_type){
+        case hel::CANDevice::Type::TALON_SRX:
+        case hel::CANDevice::Type::VICTOR_SPX:
+        {
+            auto instance = hel::RoboRIOManager::getInstance();
+
+            hel::CANMotorController can_device = {messageID};
+
             hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array;
             std::copy(data, data + dataSize, data_array.begin());
+
             uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];
+
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT)){
                 can_device.setSpeedData(data_array);
             }
@@ -172,52 +189,76 @@ extern "C"{
                        i != hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT &&
                        i != hel::CANMotorController::SendCommandByteMask::SET_INVERTED
                     ){
-                        throw hel::UnsupportedFeature("Writing to CAN motor controller with device ID " + std::to_string(can_device.getID()) + " using command data byte " + std::to_string(command_byte));
+                        std::cerr<<"Synthesis warning: Writing to CAN motor controller with device ID "<<can_device.getID()<<" using command data byte "<<command_byte<<"\n";
                     }
                 }
             }
+            instance.second.unlock();
+            break;
         }
-        instance.second.unlock();
+        case hel::CANDevice::Type::UNKNOWN:
+        case hel::CANDevice::Type::PCM:
+        case hel::CANDevice::Type::PDP:
+            std::cerr<<"Synthesis warning: Attempting to write to unsupported CAN device (" + hel::to_string(target_type) + ") using message ID "<<messageID<<"\n";
+            break;
+        default:
+            throw hel::UnhandledEnumConstantException("hel::CANDevice::Type");
+        }
     }
 
     void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t /*messageIDMask*/, uint8_t* /*data*/, uint8_t* /*dataSize*/, uint32_t* /*timeStamp*/, int32_t* /*status*/){
         if(*messageID == SILENT_UNKNOWN_DEVICE_ID){
             return;
         }
-        auto instance = hel::RoboRIOManager::getInstance();
 
-        uint8_t device_id = hel::CANMotorController::pullDeviceID(*messageID);
+        hel::CANDevice::Type target_type = hel::CANDevice::pullDeviceType(*messageID);
 
-        if(instance.first->can_motor_controllers.find(device_id) == instance.first->can_motor_controllers.end()){
-            std::cerr<<"Synthesis warning: Request for data unknown from CAN device with id "<<((unsigned)device_id)<<"\n";
-        } else{ // TODO
-            std::cerr<<"Synthesis warning: Attempting to read from CAN motor controller with device ID " + std::to_string(device_id) + " using message ID " + std::to_string(*messageID)<<"\n";
-            /*
-            if(hel::compareBits(*messageID, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
-                hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array = instance.first->can_motor_controllers[device_id].getSpeedData();
-                std::copy(data_array.begin(), data_array.end(), data);
-                *dataSize = hel::CANMotorController::MessageData::SIZE;
-                *timeStamp = hel::Global::getCurrentTime() / 1000;
+        switch(target_type){
+        case hel::CANDevice::Type::TALON_SRX:
+        case hel::CANDevice::Type::VICTOR_SPX:
+        {
+            uint8_t device_id = hel::CANDevice::pullDeviceID(*messageID);
+            auto instance = hel::RoboRIOManager::getInstance();
+            if(instance.first->can_motor_controllers.find(device_id) == instance.first->can_motor_controllers.end()){
+                std::cerr<<"Synthesis warning: Attempting to read from missing CAN motor controller (" + hel::to_string(target_type) + " with ID "<<((unsigned)device_id)<<")\n";
+            } else{
+                std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Attempting to read from CAN motor controller (" + hel::to_string(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
+                /*
+                if(hel::compareBits(*messageID, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
+                    hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array = instance.first->can_motor_controllers[device_id].getSpeedData();
+                    std::copy(data_array.begin(), data_array.end(), data);
+                    *dataSize = hel::CANMotorController::MessageData::SIZE;
+                    *timeStamp = hel::Global::getCurrentTime() / 1000;
+                }
+                */
             }
-            */
+            instance.second.unlock();
+            break;
         }
-        instance.second.unlock();
+        case hel::CANDevice::Type::UNKNOWN:
+        case hel::CANDevice::Type::PCM:
+        case hel::CANDevice::Type::PDP:
+            std::cerr<<"Synthesis warning: Attempting to read from CAN device (" + hel::to_string(target_type) + ") using message ID "<<*messageID<<"\n";
+            break;
+        default:
+            throw hel::UnhandledEnumConstantException("hel::CANDevice::Type");
+        }
     }
 
     void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t /*messageID*/, uint32_t /*messageIDMask*/, uint32_t /*maxMessages*/, int32_t* /*status*/){
-        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_openStreamSession");
+        std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call FRC_NetworkCommunication_CANSessionMux_openStreamSession\n";
     }
 
     void FRC_NetworkCommunication_CANSessionMux_closeStreamSession(uint32_t /*sessionHandle*/){
-        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_closeStreamSession");
+        std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call FRC_NetworkCommunication_CANSessionMux_closeStreamSession\n";
     }
 
     void FRC_NetworkCommunication_CANSessionMux_readStreamSession(uint32_t /*sessionHandle*/, struct tCANStreamMessage* /*messages*/, uint32_t /*messagesToRead*/, uint32_t* /*messagesRead*/, int32_t* /*status*/){
-        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_readStreamSession");
+        std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call FRC_NetworkCommunication_CANSessionMux_readStreamSession\n";
     }
 
     void FRC_NetworkCommunication_CANSessionMux_getCANStatus(float* /*percentBusUtilization*/, uint32_t* /*busOffCount*/, uint32_t* /*txFullCount*/, uint32_t* /*receiveErrorCount*/, uint32_t* /*transmitErrorCount*/, int32_t* /*status*/){
-        throw hel::UnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_getCANStatus");
+        std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Function call FRC_NetworkCommunication_CANSessionMux_getCANStatus\n";
     }
 
 }

@@ -22,6 +22,7 @@ class Robot : public frc::IterativeRobot {
     frc::AnalogOutput ao{1};
     frc::AnalogInput ai{0};
     frc::Encoder encoder{0,1};
+    frc::Solenoid solenoid{0};
     ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
 
     bool current_state = false;
@@ -36,21 +37,20 @@ public:
     }
 
     void TeleopPeriodic() {
+        current_state = !current_state;
         double left = (std::rand() % 2000 - 1000) / 1000.0;
         double right = (std::rand()% 2000 - 1000) / 1000.0;
 
         m_robotDrive.TankDrive(left, right, false);
 
-        std::cout<<"Setting left to "<<left<<" - Set to "<< m_leftMotor.GetSpeed()<<"\nSetting right to "<<right<<" - Set to "<<m_rightMotor.GetSpeed()<<"\n\n";
-
         dio.Set(current_state);
         r.Set(frc::Relay::Value::kForward);
         double d = (std::rand() % 5001) / 1000.0;
         ao.SetVoltage(d);
-        current_state = !current_state;
-
+        solenoid.Set(current_state);
         talon.Set(0.3);
 
+        std::cout<<"Setting left to "<<left<<" - Set to "<< m_leftMotor.GetSpeed()<<"\nSetting right to "<<right<<" - Set to "<<m_rightMotor.GetSpeed()<<"\n\n";
         std::cout<<"AnalogInput:"<<ai.GetVoltage()<<"\n";
         std::cout<<"Encoder:"<<encoder.Get()<<"\n";
 

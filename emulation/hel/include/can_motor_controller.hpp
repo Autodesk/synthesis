@@ -2,52 +2,34 @@
 #define _CAN_MOTOR_CONTROLLER_HPP_
 
 #include "bounds_checked_array.hpp"
+#include "can_device.hpp"
 
 namespace hel{
 
     /**
      * \struct CANMotorController
-     * \brief Models a CAN device on the CAN bus
-     * Holds data for generic CAN devices and CAN motor controllers
+     * \brief Models a CAN motor controller
+     * Holds data for generic CAN motor controllers
      */
 
     struct CANMotorController{
 
-        enum class Type{VICTOR_SPX,TALON_SRX,UNKNOWN};
-
-        /**
-         * \var static constexpr uint8_t MAX_CAN_BUS_ADDRESS
-         * \brief The maximum CAN bus address allowed on the RoboRIO
-         * Valid addresses are 0-62, but using 0 is not recommended
-         */
-
-        static constexpr uint8_t MAX_CAN_BUS_ADDRESS = 62;
-
-        static constexpr uint32_t UNKNOWN_DEVICE_ID = 262271;
-
-        enum MessageData{
+        enum MessageData{ //TODO move to CANDevice?
             COMMAND_BYTE = 7,
             SIZE = 8
         };
 
-        enum SendCommandByteMask: uint8_t{
+        enum SendCommandByteMask: uint8_t{ //TODO move to CANDevice?
             SET_POWER_PERCENT = 5,
             SET_INVERTED = 6
         };
 
-        enum ReceiveCommandIDMask: uint32_t{
+        enum ReceiveCommandIDMask: uint32_t{ //TODO move to CANDevice?
             GET_POWER_PERCENT = 0b1010000000000
         };
 
     private:
-        enum IDMask: uint32_t{
-            DEVICE_ID = 0b01111111,
-            DEVICE_TYPE = 0b11000001000000000000000000,
-            TALON_SRX_TYPE = 0x02040000,
-            VICTOR_SPX_TYPE = 0x01040000
-        };
-
-        Type type;
+        CANDevice::Type type;
 
         uint8_t id;
 
@@ -56,12 +38,9 @@ namespace hel{
         bool inverted;
 
     public:
-        static uint8_t pullDeviceID(uint32_t);
-        static Type pullDeviceType(uint32_t);
-
         std::string toString()const;
 
-        Type getType()const;
+        CANDevice::Type getType()const;
 
         uint8_t getID()const;
 
@@ -96,10 +75,6 @@ namespace hel{
 
         CANMotorController(uint32_t);
     };
-
-    std::string to_string(CANMotorController::Type);
-
-    CANMotorController::Type s_to_can_device_type(std::string);
 }
 
 #endif

@@ -84,7 +84,7 @@ namespace hel{
 
     RobotMode RobotMode::deserialize(std::string s){
         RobotMode a;
-        a.mode = s_to_robot_mode(hel::pullValue("\"mode\"",s));
+        a.mode = s_to_robot_mode(unquote(hel::pullValue("\"mode\"",s)));
         a.enabled = hel::stob(hel::pullValue("\"enabled\"",s));
         a.emergency_stopped = hel::stob(hel::pullValue("\"emergency_stopped\"",s));
         a.fms_attached = hel::stob(hel::pullValue("\"fms_attached\"",s));
@@ -94,7 +94,7 @@ namespace hel{
 
     std::string RobotMode::serialize()const{
         std::string s = "{";
-        s += "\"mode\":" + hel::to_string(mode) + ", ";
+        s += "\"mode\":" + quote(hel::to_string(mode)) + ", ";
         s += "\"enabled\":" + hel::to_string(enabled) + ", ";
         s += "\"emergency_stopped\":" + hel::to_string(emergency_stopped) + ", ";
         s += "\"fms_attached\":" + hel::to_string(fms_attached) + ", ";
@@ -104,13 +104,13 @@ namespace hel{
     }
 
     std::string RobotMode::toString()const{
-        std::string s = "{";
+        std::string s = "(";
         s += "mode:" + hel::to_string(mode) + ", ";
         s += "enabled:" + hel::to_string(enabled) + ", ";
         s += "emergency_stopped:" + hel::to_string(emergency_stopped) + ", ";
         s += "fms_attached:" + hel::to_string(fms_attached) + ", ";
         s += "ds_attached:" + hel::to_string(ds_attached);
-        s += "}";
+        s += ")";
         return s;
     }
 
