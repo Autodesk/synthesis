@@ -43,7 +43,8 @@ namespace Synthesis.GUI
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
-            gameDataInput = GameObject.Find("InputField").GetComponent<InputField>();
+            gameDataInput = Auxiliary.FindObject("InputField").GetComponent<InputField>();
+            gameDataInput.onValueChanged.AddListener(delegate { Debug.Log(gameDataInput.text.ToString()); });
             GameData();
         }
 
@@ -111,9 +112,12 @@ namespace Synthesis.GUI
             }
         }
 
+        /// <summary>
+        /// A game specific message specified by the user
+        /// </summary>
         public void GameData()
         {
-            gameDataInput.onValueChanged.AddListener(delegate { Debug.Log(gameDataInput.text.ToString()); });
+            
         }
     }
 }

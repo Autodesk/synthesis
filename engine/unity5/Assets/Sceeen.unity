@@ -92728,8 +92728,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1822806109}
-        m_MethodName: 
+      - m_Target: {fileID: 1741231154}
+        m_MethodName: GameData
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
