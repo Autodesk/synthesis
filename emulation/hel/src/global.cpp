@@ -25,7 +25,7 @@ namespace hel{
 
     struct GlobalManager: public tGlobal{
         tSystemInterface* getSystemInterface(){
-            return nullptr;
+            return new SystemInterface();
         }
 
         void writeLEDs(tLEDs /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation

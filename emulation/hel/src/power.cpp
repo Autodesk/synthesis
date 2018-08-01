@@ -35,7 +35,7 @@ namespace hel{
 
     struct PowerManager: public tPower{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation
-            return nullptr;
+            return new SystemInterface();
         }
 
         uint16_t readUserVoltage3V3(tRioStatusCode* /*status*/){

@@ -48,6 +48,7 @@
 #include "spi_system.hpp"
 #include "sync_server.hpp"
 #include "sys_watchdog.hpp"
+#include "system_interface.hpp"
 
 namespace hel{
 

@@ -82,7 +82,7 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
                 std::function<bool(std::string)>(hel::stob),
                 true);
         } catch(const std::exception& ex){
-            throw JSONParsingException();
+            throw JSONParsingException("digital_hdrs");
         }
     }
     if(input.find(quote("joysticks")) != std::string::npos){
@@ -92,7 +92,7 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
                 std::function<Joystick(std::string)>(Joystick::deserialize),
                 true);
         } catch(const std::exception& ex){
-            throw JSONParsingException();
+            throw JSONParsingException("joysticks");
         }
     }
     if(input.find(quote("digital_mxp")) != std::string::npos){
@@ -102,21 +102,21 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
                 std::function<MXPData(std::string)>(MXPData::deserialize),
                 true);
         } catch(const std::exception& ex){
-            throw JSONParsingException();
+            throw JSONParsingException("digital_mxp");
         }
     }
     if(input.find(quote("match_info")) != std::string::npos){
         try{
             match_info = MatchInfo::deserialize(hel::pullValue("\"match_info\"", input));
         } catch(const std::exception& ex){
-            throw JSONParsingException();
+            throw JSONParsingException("match_info");
         }
     }
     if(input.find(quote("robot_mode")) != std::string::npos){
         try{
             robot_mode = RobotMode::deserialize(hel::pullValue("\"robot_mode\"", input));
         } catch(const std::exception& ex){
-            throw JSONParsingException();
+            throw JSONParsingException("robot_mode");
         }
     }
     if(input.find(quote("encoders")) != std::string::npos){
@@ -126,7 +126,7 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
                 std::function<EncoderManager(std::string)>(EncoderManager::deserialize),
                 true);
         } catch(const std::exception& ex){
-            throw JSONParsingException();
+            throw JSONParsingException("encoders");
         }
     }
     update();

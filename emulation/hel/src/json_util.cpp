@@ -1,7 +1,10 @@
 #include "json_util.hpp"
 
+hel::JSONParsingException::JSONParsingException(std::string s):details(s){}
+
 const char* hel::JSONParsingException::what()const throw(){
-    return "Synthesis exception: JSON parsing failed due to malformed data";
+    std::string s = "Synthesis exception: JSON parsing failed due to malformed data in " + details;
+    return s.c_str();
 }
 
 std::string hel::quote(std::string s){
@@ -86,7 +89,7 @@ std::vector<std::string> hel::splitObject(std::string input){
     while(input.size() > 0){
         v.push_back(hel::pullObject(input));
         if(input.size() == previous_input_size){
-            throw JSONParsingException();
+            throw JSONParsingException("hel::splitObject");
         }
         previous_input_size = input.size();
     }

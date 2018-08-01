@@ -60,7 +60,7 @@ namespace hel {
 
     struct AnalogInputManager: public tAI{
         tSystemInterface* getSystemInterface(){
-            return nullptr;
+            return new SystemInterface();
         }
 
         int32_t readOutput(tRioStatusCode* /*status*/){
