@@ -471,6 +471,16 @@ namespace Synthesis.Sensors
             currentSensor = sensorManager.ultrasonicList[i].GetComponent<SensorBase>();
         }
 
+        public void SetBeamBreakerAsCurrent(int i)
+        {
+            currentSensor = sensorManager.beamBreakerList[i].GetComponent<SensorBase>();
+        }
+
+        public void SetGyroAsCurrent(int i)
+        {
+            currentSensor = sensorManager.gyroList[i].GetComponent<SensorBase>();
+        }
+
         /// <summary>
         /// Add an ultrasonic sensor to the selected node and display its output
         /// </summary>
@@ -485,21 +495,23 @@ namespace Synthesis.Sensors
         /// <summary>
         /// Add a beam breaker sensor to the selected node and display its output
         /// </summary>
-        public void AddBeamBreaker()
+        public List<GameObject> AddBeamBreaker()
         {
             currentSensor = sensorManager.AddBeamBreaker();
             DisplayOutput();
             StartConfiguration();
+            return sensorManager.beamBreakerList;
         }
 
         /// <summary>
         /// Add a gyro to the selected node and display its output
         /// </summary>
-        public void AddGyro()
+        public List<GameObject> AddGyro()
         {
             currentSensor = sensorManager.AddGyro();
             DisplayOutput();
             StartConfiguration();
+            return sensorManager.gyroList;
         }
 
         #endregion

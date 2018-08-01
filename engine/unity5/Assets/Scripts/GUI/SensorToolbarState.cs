@@ -21,11 +21,14 @@ namespace Assets.Scripts.GUI
 
         GameObject canvas;
         GameObject sensorToolbar;
-        //GameObject dropdownItem;
 
         Dropdown ultrasonicDropdown;
+        Dropdown beamBreakerDropdown;
+        Dropdown gyroDropdown;
 
         int numUltrasonics = 0;
+        int numBeamBreakers = 0;
+        int numGyros = 0;
 
         public override void Start()
         {
@@ -34,12 +37,15 @@ namespace Assets.Scripts.GUI
 
             canvas = GameObject.Find("Canvas");
             sensorToolbar = Auxiliary.FindObject(canvas, "SensorToolbar");
-            //dropdownItem = Auxiliary.FindObject(sensorToolbar, "ItemTemplate");
 
             ultrasonicDropdown = Auxiliary.FindObject(sensorToolbar, "UltrasonicDropdown").GetComponent<Dropdown>();
+            beamBreakerDropdown = Auxiliary.FindObject(sensorToolbar, "BeamBreakDropdown").GetComponent<Dropdown>();
+            gyroDropdown = Auxiliary.FindObject(sensorToolbar, "GyroDropdown").GetComponent<Dropdown>();
 
             //initialize dropdowns
             UpdateSensorDropdown(ultrasonicDropdown, null);
+            UpdateSensorDropdown(beamBreakerDropdown, null);
+            UpdateSensorDropdown(gyroDropdown, null);
         }
 
         public void UpdateSensorDropdown(Dropdown dropdown, IEnumerable<GameObject> sensors)
@@ -88,6 +94,40 @@ namespace Assets.Scripts.GUI
                 sensorManagerGUI.StartConfiguration();
             }
             ultrasonicDropdown.value = 0;
+        }
+
+        public void OnBeamBreakDropdownClicked(int i)
+        {
+            if (i == 0) return;
+            if (i - 1 == numBeamBreakers) //Add button
+            {
+                List<GameObject> updatedList = sensorManagerGUI.AddBeamBreaker();
+                UpdateSensorDropdown(beamBreakerDropdown, updatedList);
+                numBeamBreakers++;
+            }
+            else //Edit one of the existing sensors
+            {
+                sensorManagerGUI.SetBeamBreakerAsCurrent(i - 1);
+                sensorManagerGUI.StartConfiguration();
+            }
+            beamBreakerDropdown.value = 0;
+        }
+
+        public void OnGyroDropdownClicked(int i)
+        {
+            if (i == 0) return;
+            if (i - 1 == numGyros) //Add button
+            {
+                List<GameObject> updatedList = sensorManagerGUI.AddGyro();
+                UpdateSensorDropdown(gyroDropdown, updatedList);
+                numGyros++;
+            }
+            else //Edit one of the existing sensors
+            {
+                sensorManagerGUI.SetGyroAsCurrent(i - 1);
+                sensorManagerGUI.StartConfiguration();
+            }
+            gyroDropdown.value = 0;
         }
 
         public void OnBeamBreakButtonPressed()
