@@ -43,8 +43,7 @@ namespace Synthesis.GUI
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
-            gameDataInput = Auxiliary.FindObject("InputField").GetComponent<InputField>();
-            gameDataInput.onValueChanged.AddListener(delegate { Debug.Log(gameDataInput.text.ToString()); });
+            gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
             GameData();
         }
 
@@ -117,7 +116,8 @@ namespace Synthesis.GUI
         /// </summary>
         public void GameData()
         {
-            
+            gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
+            gameDataInput.onValueChanged.AddListener(delegate { Debug.Log(gameDataInput.text.ToString()); });
         }
     }
 }
