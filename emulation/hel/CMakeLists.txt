@@ -86,7 +86,7 @@ EXTERNALPROJECT_ADD(ctre
   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
   GIT_TAG Phoenix_v5.5.0.0
   CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
-  #PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/ctre-includes.patch && patch -p0 < ${CMAKE_BINARY_DIR}/custom-project-configs/ctre-src.patch
+  #PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/ctre-includes.patch && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/ctre-src.patch
   PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/gradle.patch
   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
   INSTALL_COMMAND ""

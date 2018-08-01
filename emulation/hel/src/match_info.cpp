@@ -133,7 +133,7 @@ namespace hel{
         MatchInfo a;
         a.event_name = unquote(hel::pullValue("\"event_name\"",s));
         a.game_specific_message = unquote(hel::pullValue("\"game_specific_message\"",s));
-        a.match_type = hel::s_to_match_type(unquote(hel::pullValue("\"game_specific_message\"",s)));
+        a.match_type = hel::s_to_match_type(unquote(hel::pullValue("\"match_type\"",s)));
         a.match_number = std::stoi(hel::pullValue("\"match_number\"",s));
         a.replay_number = std::stoi(hel::pullValue("\"replay_number\"",s));
         a.alliance_station_id = hel::s_to_alliance_station_id(unquote(hel::pullValue("\"alliance_station_id\"",s)));
@@ -167,5 +167,5 @@ namespace hel{
         return s;
     }
 
-    MatchInfo::MatchInfo():event_name(),game_specific_message(),match_type(),match_number(0),replay_number(0),alliance_station_id(),match_time(){}
+    MatchInfo::MatchInfo():event_name(),game_specific_message(),match_type(MatchType_t::kMatchType_none),match_number(0),replay_number(0),alliance_station_id(AllianceStationID_t::kAllianceStationID_red1),match_time(){}
 }
