@@ -36,6 +36,7 @@ namespace EditorsLibrary
                 typeBox.SelectedIndex = Array.IndexOf(sensorTypeOptions, sensor.type);
                 Port1NumericUpDown.Value = (decimal)sensor.port1;
                 Port2NumericUpDown.Value = (decimal)sensor.port2;
+                ConversionNumericUpDown.Value = (decimal)sensor.conversionFactor;
             }
             if (typeBox.SelectedIndex == 0)
             {
@@ -74,7 +75,7 @@ namespace EditorsLibrary
             //Doesn't save if numbers aren't entered correctly.
             addedSensor.port1 = (int)this.Port1NumericUpDown.Value;
             addedSensor.port2 = (int)this.Port2NumericUpDown.Value;
-            addedSensor.conversionFactor = (int)this.ConversionNumericUpDown.Value;
+            addedSensor.conversionFactor = (double)this.ConversionNumericUpDown.Value;
             
             if (sourceIndex >= 0 && sourceIndex < joint.attachedSensors.Count)
             {
