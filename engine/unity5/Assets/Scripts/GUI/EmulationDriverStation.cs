@@ -35,6 +35,7 @@ namespace Synthesis.GUI
 
         bool isRobotDisabled;
         bool isActiveState;
+        int teamStation;
 
         GameObject canvas;
         InputField gameDataInput;
@@ -43,6 +44,8 @@ namespace Synthesis.GUI
         {
             canvas = GameObject.Find("Canvas");
             GameData();
+            teamStation = GetComponent<Dropdown>().value;
+            TeamStation(teamStation);
         }
 
         public void RobotState(string theState)
@@ -76,29 +79,30 @@ namespace Synthesis.GUI
 
         public void TeamStation(int teamStation)
         {
+
             switch (teamStation)
             {
-                case 1:
+                case 0:
                     allianceStation = AllianceStation.Red1;
                     Debug.Log(allianceStation);
                     break;
-                case 2:
+                case 1:
                     allianceStation = AllianceStation.Red2;
                     Debug.Log(allianceStation);
                     break;
-                case 3:
+                case 2:
                     allianceStation = AllianceStation.Red3;
                     Debug.Log(allianceStation);
                     break;
-                case 4:
+                case 3:
                     allianceStation = AllianceStation.Blue1;
                     Debug.Log(allianceStation);
                     break;
-                case 5:
+                case 4:
                     allianceStation = AllianceStation.Blue2;
                     Debug.Log(allianceStation);
                     break;
-                case 6:
+                case 5:
                     allianceStation = AllianceStation.Blue3;
                     Debug.Log(allianceStation);
                     break;
