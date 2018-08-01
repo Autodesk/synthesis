@@ -91,7 +91,10 @@ namespace Synthesis.Network
 
             Directory.CreateDirectory(saveDirectory);
 
-            Task.Run(() => ReceiveAllFiles(listener, saveDirectory));
+            Task.Run(() => ReceiveAllFiles(listener, saveDirectory)).ContinueWith(t =>
+            {
+                listener.Stop();
+            });
         }
 
         /// <summary>
