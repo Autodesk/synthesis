@@ -127,7 +127,7 @@ namespace Synthesis.Robot
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
-            robotStartPosition = FieldDataHandler.robotSpawn;
+            robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
             if (!File.Exists(directory + "\\skeleton.bxdj"))

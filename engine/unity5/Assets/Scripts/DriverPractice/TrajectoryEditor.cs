@@ -1,6 +1,8 @@
 ﻿using BulletUnity;
+using Synthesis.Configuration;
 using Synthesis.Field;
 using Synthesis.FSM;
+using Synthesis.Robot;
 using Synthesis.States;
 using Synthesis.Utils;
 using System.Collections;
@@ -21,6 +23,8 @@ namespace Synthesis.DriverPractice
         GameObject dpmToolbar;
         GameObject gamepieceDropdownButton;
         GameObject gamepieceDropdownLabel;
+
+        GameObject moveArrows;
 
         #region TrajectoryPanel
         GameObject trajectoryPanel;
@@ -60,6 +64,7 @@ namespace Synthesis.DriverPractice
                     dpmRobot = mainState.ActiveRobot.GetDriverPractice();
                     FindElements();
                 }
+                SetGamepieceIndex();
                 if (trajectory && !editing) UpdateTrajectoryValues();
                 if (dpmRobot.drawing && DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray().Length > 0) DrawTrajectory();
                 else trajectoryLine.GetComponent<LineRenderer>().enabled = false;
@@ -91,18 +96,21 @@ namespace Synthesis.DriverPractice
             trajectoryLine.AddComponent<LineRenderer>();
             #endregion
 
+            moveArrows = CreateMoveArrows();
+        }
+        private void SetGamepieceIndex()
+        {
+            for (int i = 0; i < FieldDataHandler.gamepieces.Count(); i++)
+                if (gamepieceDropdownLabel.GetComponent<Text>().text.Equals(FieldDataHandler.gamepieces[i].name)) gamepieceIndex = i;    
         }
         public void OpenEditor()
         {
-            for(int i = 0; i < FieldDataHandler.gamepieces.Count(); i++)
-            {
-                if (gamepieceDropdownLabel.GetComponent<Text>().text.Equals(FieldDataHandler.gamepieces[i].name)) gamepieceIndex = i;
-            }
             if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).Count() > 0)
             {
                 trajectory = true;
                 dpmRobot.drawing = true;
                 trajectoryPanel.SetActive(true);
+                moveArrows.SetActive(true);
             }
             //else prompt user to define intake and release first
         }
@@ -110,7 +118,9 @@ namespace Synthesis.DriverPractice
         {
             trajectoryPanel.SetActive(false);
             trajectory = false;
+            dpmRobot.drawing = false;
             DPMDataHandler.WriteRobot();
+            moveArrows.SetActive(false);
         }
         private void UpdateTrajectoryValues()
         {
@@ -122,6 +132,7 @@ namespace Synthesis.DriverPractice
             releaseSpeedEntry.GetComponent<InputField>().text = dp.releaseVelocity.x.ToString();
             releaseVerticalEntry.GetComponent<InputField>().text = dp.releaseVelocity.y.ToString();
             releaseHorizontalEntry.GetComponent<InputField>().text = dp.releaseVelocity.z.ToString();
+            RefreshMoveArrows();
         }
         public void SetPositivePositionIncrement(int xyz)
         {
@@ -299,6 +310,44 @@ namespace Synthesis.DriverPractice
             finalVector = (UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.forward, UnityEngine.Vector3.up) * horVector * verVector) * UnityEngine.Vector3.forward * release.x;
 
             return (finalVector);
+        }
+        /// <summary>
+        /// Refreshes the position of the move arrows with the position offsets.
+        /// </summary>
+        public void RefreshMoveArrows()
+        {
+            DriverPractice dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
+            GameObject releaseNode = GameObject.Find(dp.releaseNode);
+            moveArrows.transform.parent = releaseNode.transform;
+            moveArrows.transform.localPosition = dp.releasePosition;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="GameObject"/> instantiated from the MoveArrows prefab.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private GameObject CreateMoveArrows()
+        {
+            DriverPractice dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
+            GameObject releaseNode = GameObject.Find(dp.releaseNode);
+            GameObject arrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+            arrows.name = "ReleasePositionMoveArrows";
+            arrows.transform.parent = releaseNode.transform;
+            arrows.transform.localPosition = dp.releasePosition;
+
+            arrows.GetComponent<MoveArrows>().Translate = (translation) =>
+            {
+                arrows.transform.position += translation;
+                dp.releasePosition = arrows.transform.localPosition;
+            };
+
+            arrows.GetComponent<MoveArrows>().OnClick = () => dpmRobot.gameObject.GetComponent<SimulatorRobot>().LockRobot();
+            arrows.GetComponent<MoveArrows>().OnRelease = () => dpmRobot.gameObject.GetComponent<SimulatorRobot>().UnlockRobot();
+
+            StateMachine.SceneGlobal.Link<MainState>(arrows, false);
+
+            return arrows;
         }
     }
 }

@@ -16,6 +16,7 @@ using Synthesis.GUI;
 using Synthesis.Input;
 using Synthesis.FEA;
 using Synthesis.Robot;
+using Synthesis.Utils;
 
 namespace Synthesis.States
 {
@@ -270,7 +271,11 @@ namespace Synthesis.States
 
             Button saveButton = GameObject.Find("SaveButton").GetComponent<Button>();
             saveButton.onClick.RemoveAllListeners();
-            saveButton.onClick.AddListener(PushSaveReplayState);        
+            saveButton.onClick.AddListener(PushSaveReplayState);
+
+            Button helpButton = GameObject.Find("HelpButton").GetComponent<Button>();
+            helpButton.onClick.RemoveAllListeners();
+            helpButton.onClick.AddListener(HelpMenu);
         }
 
         /// <summary>
@@ -478,7 +483,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab) || UnityEngine.Input.GetKeyDown(KeyCode.Escape))
                 StateMachine.PopState();
         }
 
@@ -708,6 +713,10 @@ namespace Synthesis.States
                 hover = new GUIStyleState { background = hoverTexture },
                 active = new GUIStyleState { background = pressedTexture }
             };
+        }
+        private void HelpMenu()
+        {
+            
         }
     }
 }

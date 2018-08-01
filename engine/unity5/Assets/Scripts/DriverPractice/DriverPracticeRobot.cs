@@ -43,7 +43,7 @@ namespace Synthesis.DriverPractice
         }
         private void ProcessControls()
         {
-            /*for (int i = 0; i < Input.Controls.buttons[controlIndex].pickup.Count; i++)
+            for (int i = 0; i < Input.Controls.buttons[controlIndex].pickup.Count; i++)
             {
                 if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
                 {
@@ -67,10 +67,7 @@ namespace Synthesis.DriverPractice
                     else HoldGamepiece(i);
                 }
             }
-            */
-            //if (InputControl.GetButtonDown(Controls.buttons[controlIndex].trajectory)) drawing = drawing ? false : true;
-            //if (UnityEngine.Input.GetKey(KeyCode.Delete))
-            //    if(FieldDataHandler.gamepieces.Count() > 0) for(int i = 0; i < 5; i++) Spawn(FieldDataHandler.gamepieces[0]);
+            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].trajectory)) drawing = drawing ? false : true;
         }
         #region DriverPractice Creation Stuff
         public DriverPractice GetDriverPractice(Gamepiece g)

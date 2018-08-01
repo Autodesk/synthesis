@@ -46,6 +46,7 @@ namespace Synthesis.DriverPractice
         {
             if (canvas == null)
                 FindElements();
+
         }
 
         /// <summary>
@@ -130,12 +131,19 @@ namespace Synthesis.DriverPractice
                     descText.text = g[i].GetComponent<Goal>().description;
                     descText.onValueChanged.AddListener(delegate { SetGoalDescription(id, descText.text); });
 
+                    descText.onEndEdit.AddListener(delegate { InputControl.freeze = false; });
+
                     InputField pointValue = Auxiliary.FindObject(newGoalElement, "PointValue").GetComponent<InputField>();
                     pointValue.text = g[i].GetComponent<Goal>().pointValue.ToString();
-                    pointValue.onValueChanged.AddListener(delegate { SetGoalPoints(id, int.Parse(pointValue.text)); });
+                    pointValue.onValueChanged.AddListener(delegate { int value = int.TryParse(pointValue.text, out value) ? int.Parse(pointValue.text) : 0; pointValue.text = value.ToString();  SetGoalPoints(id, value); });
+
+                    pointValue.onEndEdit.AddListener(delegate { InputControl.freeze = false; });
 
                     Button moveButton = Auxiliary.FindObject(newGoalElement, "MoveButton").GetComponent<Button>();
                     moveButton.onClick.AddListener(delegate { MoveGoal(id); });
+
+                    Button scaleButton = Auxiliary.FindObject(newGoalElement, "ScaleButton").GetComponent<Button>();
+                    scaleButton.onClick.AddListener(delegate { ScaleGoal(id); });
 
                     Button deleteButton = Auxiliary.FindObject(newGoalElement, "DeleteButton").GetComponent<Button>();
                     deleteButton.onClick.AddListener(delegate { DeleteGoal(id); });
@@ -182,6 +190,7 @@ namespace Synthesis.DriverPractice
         }
         void SetGoalDescription(int id, string description)
         {
+            InputControl.freeze = true;
             if (color.Equals("Red"))
             {
                 redGoals[gamepieceIndex][id].GetComponent<Goal>().description = description;
@@ -190,10 +199,10 @@ namespace Synthesis.DriverPractice
             {
                 blueGoals[gamepieceIndex][id].GetComponent<Goal>().description = description;
             }
-            
         }
         void SetGoalPoints(int id, int points)
         {
+            InputControl.freeze = true;
             if (color.Equals("Red"))
             {
                 redGoals[gamepieceIndex][id].GetComponent<Goal>().pointValue = points;
@@ -228,7 +237,11 @@ namespace Synthesis.DriverPractice
         }
         void MoveGoal(int id)
         {
-            StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this));
+            StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this, true));
+        }
+        void ScaleGoal(int id)
+        {
+            StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this, false));
         }
         public void NewGoal()
         {
@@ -241,6 +254,7 @@ namespace Synthesis.DriverPractice
             collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f);
             rigid.SetPosition(new UnityEngine.Vector3(0, 4, 0));
             goal.position = new UnityEngine.Vector3(0, 4, 0);
+            goal.scale = Vector3.one;
             goal.SetKeyword(FieldDataHandler.gamepieces[gamepieceIndex].name);
             goal.description = "New Goal";
             goal.color = color;
@@ -268,6 +282,13 @@ namespace Synthesis.DriverPractice
         public void CloseScoreboard()
         {
             scoreboard.SetActive(false);
+        }
+        public void ResetScoreboard(string color)
+        {
+            GameObject score;
+            if (color.Equals("Red")) score = Auxiliary.FindObject(Auxiliary.FindObject(Auxiliary.FindObject("Canvas"), "ScorePanel"), "RedScoreText");
+            else score = Auxiliary.FindObject(Auxiliary.FindObject(Auxiliary.FindObject("Canvas"), "ScorePanel"), "BlueScoreText");
+            score.GetComponent<Text>().text = "0";
         }
     }
 }
