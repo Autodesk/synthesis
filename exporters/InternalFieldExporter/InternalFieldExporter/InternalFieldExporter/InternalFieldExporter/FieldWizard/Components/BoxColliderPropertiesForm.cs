@@ -25,7 +25,7 @@ namespace InternalFieldExporter.FieldWizard.Components
             return new PropertySet.BoxCollider(new BXDVector3(
                 (float)xScaleUpDown.Value,
                 (float)yScaleUpDown.Value,
-                (float)zScaleUpDown.Value);
+                (float)zScaleUpDown.Value));
         }
     }
 }

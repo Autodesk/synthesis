@@ -112,7 +112,7 @@
     </Compile>
     <Compile Include="FieldWizard\Components\ColliderPropertiesForm.cs" />
     <Compile Include="FieldWizard\Components\ComponentPropertiesForm.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="FieldWizard\Components\ComponentPropertiesForm.Designer.cs">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
@@ -141,11 +141,23 @@
     <Compile Include="FieldWizard\Components\InventorTreeView.Designer.cs">
       <DependentUpon>InventorTreeView.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldWizard\Components\MeshColliderPropertiesForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FieldWizard\Components\MeshColliderPropertiesForm.Designer.cs">
+      <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FieldWizard\Components\PropertySetsTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FieldWizard\Components\PropertySetsTabControl.Designer.cs">
       <DependentUpon>PropertySetsTabControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FieldWizard\Components\SphereColliderPropertiesForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FieldWizard\Components\SphereColliderPropertiesForm.Designer.cs">
+      <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldWizard\CrashForm.cs">
       <SubType>Form</SubType>
