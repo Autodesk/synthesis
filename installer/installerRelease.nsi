@@ -5,7 +5,7 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-OutFile "Synthesis Installer.exe"
+OutFile "SynthesisInstaller.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -47,7 +47,6 @@ Page instfiles
 
 UninstPage uninstConfirm
 UninstPage instfiles
-
 
 Section
 
@@ -92,13 +91,10 @@ IfFileExists "$INSTDIR" +1 +28
 
       next:
 
-
-
-
 # default section end
 SectionEnd
 
-Section "Synthesis (required)"
+Section "Synthesis (required)" SynthesisRequired
 
   SectionIn RO
 
@@ -135,10 +131,14 @@ Section "Synthesis (required)"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
+  
+	;Install Fields
+	SetOutPath $APPDATA\Synthesis\Fields
+	File /r "Fields\*"
 
 SectionEnd
 
-Section "MixAndMatch Files"
+Section "MixAndMatch Files" MixMatch
 
 SetOutPath $APPDATA\Synthesis\MixAndMatch
 
@@ -146,7 +146,7 @@ File /r "MixAndMatch\*"
 
 SectionEnd
 
-Section /o "Standalone Robot Exporter (legacy)"
+Section /o "Standalone Robot Exporter (legacy)" LegacyExporter
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\RobotExporter
@@ -155,7 +155,7 @@ Section /o "Standalone Robot Exporter (legacy)"
 
 SectionEnd
 
-Section "Robot Exporter Plugin (reccommended)"
+Section "Robot Exporter Plugin (reccommended)" PluginExporter
 
   ; Set output path to plugin directory
   SetOutPath "$INSTDIR"
@@ -175,7 +175,7 @@ Section "Robot Exporter Plugin (reccommended)"
 
 SectionEnd
 
-Section "Robot Files"
+Section "Robot Files" RoboFiles
 
 SetOutPath $APPDATA\Synthesis\Robots
 
@@ -183,14 +183,25 @@ File /r "Robots\*"
 
 SectionEnd
 
-Section "Field Files"
+;--------------------------------
+;Component Descriptions
 
-SetOutPath $APPDATA\Synthesis\Fields
+  LangString DESC_SynthesisRequired ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
+  LangString DESC_MixMatch ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
+  LangString DESC_LegacyExporter ${LANG_ENGLISH} "The Legacy Robot Exporter is a standalone application used to convert an Autodesk Inventor Assembly file into a format that can be read and loaded by the simulator"
+  LangString DESC_PluginExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor Addin used to import Autodesk Inventor Assemblies directly into the simulator"
+  LangString DESC_RoboFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
 
-File /r "Fields\*"
-
-SectionEnd
-
+  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
+  !insertmacro MUI_DESCRIPTION_TEXT ${MixMatch} $(DESC_MixMatch)
+  !insertmacro MUI_DESCRIPTION_TEXT ${LegacyExporter} $(DESC_LegacyExporter)
+  !insertmacro MUI_DESCRIPTION_TEXT ${PluginExporter} $(DESC_PluginExporter)
+  !insertmacro MUI_DESCRIPTION_TEXT ${RoboFiles} $(DESC_RoboFiles)
+  !insertmacro MUI_FUNCTION_DESCRIPTION_END
+  
+;--------------------------------
+  
 Section "Uninstall"
 
   ; Remove registry keys
