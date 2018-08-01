@@ -16,20 +16,26 @@ namespace hel {
     }
 
     void SyncServer::startSync(asio::io_service& io) {
-        asio::ip::tcp::socket socket(io);
-        asio::ip::tcp::acceptor acceptor(io, endpoint);
-        acceptor.accept(socket);
         while(1) {
+            asio::ip::tcp::socket socket(io);
+            asio::ip::tcp::acceptor acceptor(io, endpoint);
+            acceptor.accept(socket);
+            while(1) {
 
-            auto instance = hel::SendDataManager::getInstance();
+                auto instance = hel::SendDataManager::getInstance();
 
-            auto data =  instance.first->serialize();
-            instance.second.unlock();
+                auto data =  instance.first->serialize();
+                instance.second.unlock();
 
-            std::cout << data << "\n";
-            asio::write(socket, asio::buffer(data), asio::transfer_all());
-
-            usleep(30000);
+                try {
+                    asio::write(socket, asio::buffer(data), asio::transfer_all());
+                }
+                catch(...){
+                    std::cout << std::flush << "Socket disconnected\n";
+                    break;
+                }
+                usleep(30000);
+            }
         }
     }
 }

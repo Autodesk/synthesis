@@ -14,6 +14,8 @@ class Robot: public frc::IterativeRobot{
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
     frc::Joystick m_stick{0};
 
+    bool driveMode = false;
+
 public:
     void RobotInit(){}
 
@@ -21,8 +23,13 @@ public:
 
     void TeleopPeriodic(){
         //std::cout<<"Joystick forward:"<<(-m_stick.GetY())<<" rotate:"<<m_stick.GetX()<<"\n";
-        m_robotDrive.ArcadeDrive(-m_stick.GetY(), m_stick.GetX());
-
+        if(!driveMode)
+            m_robotDrive.ArcadeDrive(-m_stick.GetRawAxis(1), m_stick.GetRawAxis(4));
+        else
+            m_robotDrive.TankDrive(m_stick.GetRawAxis(1), m_stick.GetRawAxis(5));
+        if(m_stick.GetRawButton(2)) {
+            driveMode = !driveMode;
+        }
         frc::Wait(0.005);
     }
 };

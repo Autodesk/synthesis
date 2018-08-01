@@ -169,14 +169,14 @@ std::string hel::SendData::serialize(){
         })
     );
 
-    serialized_data += ",";
+    /*serialized_data += ",";
     serialized_data += serializeList(
         "\"can_motor_controllers\"",
         can_motor_controllers,
         std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){
             return a.second.serialize();
         })
-    );
+        );*/
 
     serialized_data += "}}";
     serialized_data += JSON_PACKET_SUFFIX;
