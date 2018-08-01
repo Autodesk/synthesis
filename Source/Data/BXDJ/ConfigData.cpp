@@ -2,11 +2,15 @@
 
 using namespace BXDJ;
 
-BXDJ::ConfigData::ConfigData()
-{}
+ConfigData::ConfigData()
+{
+	robotName = "unnamed";
+}
 
 ConfigData::ConfigData(const ConfigData & other)
 {
+	robotName = other.robotName;
+
 	for (auto i = other.joints.begin(); i != other.joints.end(); i++)
 		joints[i->first] = std::make_unique<Driver>(*i->second);
 }

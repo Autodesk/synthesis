@@ -6,7 +6,10 @@
 //  Copyright © 2018 Autodesk. All rights reserved.
 //
 
+#define ALLOW_MULTITHREADING
+
 #include "EUI.h"
+#include "../Exporter.h"
 
 using namespace Synthesis;
 
@@ -19,6 +22,14 @@ EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 
 EUI::~EUI()
 {
+	// Wait for all threads to finish
+	while (exportThreads.size() > 0)
+	{
+		exportThreads.front()->join();
+		delete exportThreads.front();
+		exportThreads.pop_front();
+	}
+
 	deleteWorkspace();
 }
 
@@ -104,7 +115,7 @@ bool EUI::createExportPalette()
 		if (!htmlEvent)
 			return false;
 
-		htmlEvent->add(new ReceiveFormDataHandler(app));
+		htmlEvent->add(new ReceiveFormDataHandler(app, this));
 
 		// Add handler to CloseEvent of the palette
 		Ptr<UserInterfaceGeneralEvent> closeEvent = exportPalette->closed();
@@ -180,4 +191,20 @@ void EUI::deleteExportButton()
 		exportButtonCommand->deleteMe();
 
 	exportButtonCommand = nullptr;
+}
+
+void EUI::startExportThread(BXDJ::ConfigData & config)
+{
+#ifdef ALLOW_MULTITHREADING
+	exportThreads.push_back(new std::thread(&EUI::exportRobot, this, config));
+#else
+	exportRobot(config);
+#endif
+}
+
+void EUI::exportRobot(BXDJ::ConfigData config)
+{
+	Exporter exporter(app);
+	exporter.exportMeshes(config);
+	UI->messageBox(config.robotName + " has finished exporting.");
 }

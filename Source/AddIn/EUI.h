@@ -8,9 +8,11 @@
 
 #pragma once
 
-#include "../Exporter.h"
+#include <thread>
+#include <list>
 #include "CustomHandlers.h"
 #include "Identifiers.h"
+#include "../Data/BXDJ/ConfigData.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;
@@ -31,6 +33,8 @@ namespace Synthesis
 
 		bool createExportButton();
 		void deleteExportButton();
+		
+		void startExportThread(BXDJ::ConfigData &);
 
 	private:
 		Ptr<Application> app;
@@ -43,5 +47,7 @@ namespace Synthesis
 		Ptr<CommandDefinition> exportButtonCommand;
 		Ptr<Palette> exportPalette;
 
+		std::list<std::thread *> exportThreads;
+		void exportRobot(BXDJ::ConfigData);
 	};
 }
