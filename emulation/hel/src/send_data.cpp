@@ -5,7 +5,25 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-hel::SendData::SendData():serialized_data(""),gen_serialization(true){}
+hel::SendData::SendData():serialized_data(""),gen_serialization(true){
+    for(auto& a: pwm_hdrs){
+        a = 0.0;
+    }
+    for(auto& a: relays){
+        a = RelayState::OFF;
+    }
+    for(auto& a: analog_outputs){
+        a = 0.0;
+    }
+    for(auto& a: digital_mxp){
+        a = {};
+    }
+    for(auto& a: digital_hdrs){
+        a = {};
+    }
+
+    can_motor_controllers = {};
+}
 
 void hel::SendData::update(){
     if(!hel::hal_is_initialized){
@@ -162,21 +180,21 @@ std::string hel::SendData::serialize(){
     );
     serialized_data += ",";
     serialized_data += serializeList(
-        "\"digital_hdrs\"", 
+        "\"digital_hdrs\"",
         digital_hdrs,
         std::function<std::string(bool)>([&](bool b){
             return b ? "1" : "0";
         })
     );
 
-    /*serialized_data += ",";
+    serialized_data += ",";
     serialized_data += serializeList(
         "\"can_motor_controllers\"",
         can_motor_controllers,
         std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){
             return a.second.serialize();
         })
-        );*/
+    );
 
     serialized_data += "}}";
     serialized_data += JSON_PACKET_SUFFIX;

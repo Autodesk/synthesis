@@ -58,8 +58,8 @@ namespace hel{
     std::string CANMotorController::serialize()const{
         std::string s = "{";
         s += "\"type\":" + hel::quote(hel::to_string(type)) + ", ";
-        s += "\"id\":" + std::to_string(id);
-        s += "\"speed\":" + std::to_string(speed);
+        s += "\"id\":" + std::to_string(id) + ", ";
+        s += "\"speed\":" + std::to_string(speed) + ", ";
         s += "\"inverted\":" + std::to_string(inverted);
         s += "}";
         return s;
