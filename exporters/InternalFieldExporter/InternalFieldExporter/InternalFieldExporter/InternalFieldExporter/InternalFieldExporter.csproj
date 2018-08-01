@@ -171,11 +171,11 @@
     <Compile Include="FieldWizard\EnterNameDialog.Designer.cs">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="FieldWizard\FieldExportForm.cs">
+    <Compile Include="FieldWizard\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FieldWizard\FieldExportForm.Designer.cs">
-      <DependentUpon>FieldExportForm.cs</DependentUpon>
+    <Compile Include="FieldWizard\MainWindow.Designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -287,8 +287,8 @@
     <EmbeddedResource Include="Wizard\Components\DefinePartPanel.resx">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\FieldExportForm.resx">
-      <DependentUpon>FieldExportForm.cs</DependentUpon>
+    <EmbeddedResource Include="FieldWizard\MainWindow.resx">
+      <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FieldWizard\FieldSelector.resx">
       <DependentUpon>FieldSelector.cs</DependentUpon>
