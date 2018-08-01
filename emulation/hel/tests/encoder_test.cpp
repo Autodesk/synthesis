@@ -10,7 +10,7 @@ TEST(EncoderTest, Increment){
     auto instance = hel::RoboRIOManager::getInstance();
     {
         frc::Encoder encoder = {0,11,false,frc::Encoder::EncodingType::k4X};
-        instance.first->encoder_managers[0] = {0,hel::Encoder::PortType::DI,11,hel::Encoder::PortType::DI};
+        instance.first->encoder_managers[0] = {0,hel::EncoderManager::PortType::DI,11,hel::EncoderManager::PortType::DI};
         for(unsigned i = 0; i < 100; i++){
             instance.first->encoder_managers[0].setTicks(i);
             instance.first->encoder_managers[0].update();
@@ -21,7 +21,7 @@ TEST(EncoderTest, Increment){
     }
     {
         frc::Encoder encoder = {12,2,false,frc::Encoder::EncodingType::k1X};
-        instance.first->encoder_managers[1] = {12,hel::Encoder::PortType::DI,2,hel::Encoder::PortType::DI};
+        instance.first->encoder_managers[1] = {12,hel::EncoderManager::PortType::DI,2,hel::EncoderManager::PortType::DI};
         for(int i = 0; i > -100; i--){
             instance.first->encoder_managers[1].setTicks(i);
             instance.first->encoder_managers[1].update();
