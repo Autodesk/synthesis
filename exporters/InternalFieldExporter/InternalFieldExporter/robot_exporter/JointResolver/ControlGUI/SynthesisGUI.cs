@@ -375,11 +375,7 @@ public partial class SynthesisGUI : Form
         try
         {
             writeLimits(SkeletonBase);// write the limits from Inventor to the skeleton
-            // If field has not been named, prompt user for information
-            if (RMeta.ActiveFieldName == null)
-                if (!PromptExportSettings())
-                    return false;
-
+                    
             if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveFieldName))
                 Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveFieldName);
 

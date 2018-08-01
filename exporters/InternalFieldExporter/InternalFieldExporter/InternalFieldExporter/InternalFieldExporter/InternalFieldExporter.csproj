@@ -33,7 +33,7 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>Bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2019\Bin\InternalFielExporter\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>

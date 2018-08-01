@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files\Autodesk\Inventor 2019\Bin\BxDRobotExporter\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2019\Bin\InternalFielExporter\</OutputPath>
     <DefineConstants>TRACE;DEBUG;LITEMODE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -57,7 +57,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>LogoTransparent.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -256,6 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BXDJ File Format.txt" />
+    <Content Include="LogoTransparent.ico" />
     <None Include="Resources\shader.frag" />
     <None Include="Resources\shader.vert" />
     <None Include="Resources\SmallIcon.png" />
