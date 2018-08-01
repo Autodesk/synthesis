@@ -132,33 +132,33 @@ namespace hel{
         uint16_t right_rumble;
 
     public:
-        bool getIsXBox()const;
+        bool getIsXBox()const noexcept;
 
-        void setIsXBox(bool);
+        void setIsXBox(bool)noexcept;
 
-        uint8_t getType()const;
+        uint8_t getType()const noexcept;
 
-        void setType(uint8_t);
+        void setType(uint8_t)noexcept;
 
-        std::string getName()const;
+        std::string getName()const noexcept;
 
-        void setName(std::string);
+        void setName(std::string)noexcept;
 
-        uint32_t getButtons()const;
+        uint32_t getButtons()const noexcept;
 
-        void setButtons(uint32_t);
+        void setButtons(uint32_t)noexcept;
 
-        uint8_t getButtonCount()const;
+        uint8_t getButtonCount()const noexcept;
 
-        void setButtonCount(uint8_t);
+        void setButtonCount(uint8_t)noexcept;
 
         BoundsCheckedArray<int8_t, MAX_AXIS_COUNT> getAxes()const;
 
         void setAxes(BoundsCheckedArray<int8_t, MAX_AXIS_COUNT>);
 
-        uint8_t getAxisCount()const;
+        uint8_t getAxisCount()const noexcept;
 
-        void setAxisCount(uint8_t);
+        void setAxisCount(uint8_t)noexcept;
 
         BoundsCheckedArray<uint8_t, MAX_AXIS_COUNT> getAxisTypes()const;
 
@@ -168,21 +168,21 @@ namespace hel{
 
         void setPOVs(BoundsCheckedArray<int16_t, MAX_POV_COUNT>);
 
-        uint8_t getPOVCount()const;
+        uint8_t getPOVCount()const noexcept;
 
-        void setPOVCount(uint8_t);
+        void setPOVCount(uint8_t)noexcept;
 
-        uint32_t getOutputs()const;
+        uint32_t getOutputs()const noexcept;
 
-        void setOutputs(uint32_t);
+        void setOutputs(uint32_t)noexcept;
 
-        uint16_t getLeftRumble()const;
+        uint16_t getLeftRumble()const noexcept;
 
-        void setLeftRumble(uint16_t);
+        void setLeftRumble(uint16_t)noexcept;
 
-        uint16_t getRightRumble()const;
+        uint16_t getRightRumble()const noexcept;
 
-        void setRightRumble(uint16_t);
+        void setRightRumble(uint16_t)noexcept;
 
         std::string serialize()const;
 
@@ -190,7 +190,7 @@ namespace hel{
 
         std::string toString()const;
 
-        Joystick();
+        Joystick()noexcept;
     };
 }
 

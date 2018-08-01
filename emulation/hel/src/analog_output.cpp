@@ -15,7 +15,7 @@ namespace hel{
       instance.second.unlock();
     }
 
-    AnalogOutputs::AnalogOutputs():mxp_outputs(){}
+    AnalogOutputs::AnalogOutputs()noexcept:mxp_outputs(){}
 
     struct AnalogOutputManager: public tAO{
         tSystemInterface* getSystemInterface(){
