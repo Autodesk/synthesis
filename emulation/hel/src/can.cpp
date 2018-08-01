@@ -43,7 +43,7 @@ namespace hel{
         }
     }
 
-    std::string CANMotorController::toString()const{
+    std::string CANMotorController::toString()const {
         std::string s = "(";
         s += "type:" + hel::to_string(type) + ", ";
         s += "id:" + std::to_string(id);
@@ -55,7 +55,7 @@ namespace hel{
         return s;
     }
 
-    std::string CANMotorController::serialize()const{
+    std::string CANMotorController::serialize()const {
         std::string s = "{";
         s += "\"type\":" + hel::quote(hel::to_string(type)) + ", ";
         s += "\"id\":" + std::to_string(id) + ", ";
@@ -74,15 +74,15 @@ namespace hel{
         return a;
     }
 
-    CANDevice::Type CANMotorController::getType()const{
+    CANDevice::Type CANMotorController::getType()const noexcept{
         return type;
     }
 
-    uint8_t CANMotorController::getID()const{
+    uint8_t CANMotorController::getID()const noexcept{
         return id;
     }
 
-    void CANMotorController::setSpeedData(BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> data){
+    void CANMotorController::setSpeedData(BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> data)noexcept{
         /*
           For CAN motor controllers:
           data[x] - data[0] results in the number with the correct sign
@@ -94,15 +94,15 @@ namespace hel{
         speed = ((double)((data[1] - data[0])*256*256 + (data[2] - data[0])*256 + (data[3] - data[0])))/(256*256*4);
     }
 
-    void CANMotorController::setSpeed(double s){
+    void CANMotorController::setSpeed(double s)noexcept{
         speed = s;
     }
 
-    double CANMotorController::getSpeed()const{
+    double CANMotorController::getSpeed()const noexcept{
         return speed;
     }
 
-    BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> CANMotorController::getSpeedData()const{
+    BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> CANMotorController::getSpeedData()const noexcept{
         BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> data;
         uint32_t speed_int = std::fabs(speed) * 256 * 256 * 4;
         for(uint8_t& a: data){
@@ -124,15 +124,15 @@ namespace hel{
         return data;
     }
 
-    void CANMotorController::setInverted(bool i){
+    void CANMotorController::setInverted(bool i)noexcept{
         inverted = i;
     }
 
-    uint8_t CANDevice::pullDeviceID(uint32_t message_id){
+    uint8_t CANDevice::pullDeviceID(uint32_t message_id)noexcept{
         return message_id & IDMask::DEVICE_ID;
     }
 
-    CANDevice::Type CANDevice::pullDeviceType(uint32_t message_id){
+    CANDevice::Type CANDevice::pullDeviceType(uint32_t message_id)noexcept{
         if(compareBits(message_id, IDMask::VICTOR_SPX_TYPE, IDMask::DEVICE_TYPE)){
             return Type::VICTOR_SPX;
         } else if(compareBits(message_id, IDMask::TALON_SRX_TYPE, IDMask::DEVICE_TYPE)){
@@ -145,9 +145,9 @@ namespace hel{
         return Type::UNKNOWN;
     }
 
-    CANMotorController::CANMotorController():type(CANDevice::Type::UNKNOWN),id(0),speed(0.0),inverted(false){}
+    CANMotorController::CANMotorController()noexcept:type(CANDevice::Type::UNKNOWN),id(0),speed(0.0),inverted(false){}
 
-    CANMotorController::CANMotorController(uint32_t message_id):CANMotorController(){
+    CANMotorController::CANMotorController(uint32_t message_id)noexcept:CANMotorController(){
         type = CANDevice::pullDeviceType(message_id);
         assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
         id = CANDevice::pullDeviceID(message_id);

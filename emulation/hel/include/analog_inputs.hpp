@@ -59,7 +59,7 @@ namespace hel{
          * \param value a tConfig object containing new configuration data.
          */
 
-        void setConfig(nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig value);
+        void setConfig(nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig value)noexcept;
 
         /**
          * \fn tConfig getConfig()
@@ -68,7 +68,7 @@ namespace hel{
          * \return tConfig representing current analog system configuration.
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig getConfig();
+        nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig getConfig()noexcept;
 
         /**
          * \fn void setReadSelect(tReadSelect value)
@@ -77,7 +77,7 @@ namespace hel{
          * \param value a tReadSelect object containing addressing information for the desired analog input.
          */
 
-        void setReadSelect(nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect);
+        void setReadSelect(nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect)noexcept;
 
         /**
          * \fn tConfig getReadSelect()
@@ -86,7 +86,7 @@ namespace hel{
          * \return tReadSelect representing current analog system read selection.
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect getReadSelect();
+        nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect getReadSelect()noexcept;
 
         /**
          * \fn void setOversampleBits(uint8_t channel, uint8_t value)
@@ -163,7 +163,7 @@ namespace hel{
 
         std::vector<int32_t> getValues(uint8_t);
 
-        AnalogInputs();
+        AnalogInputs()noexcept;
 
     private:
 
