@@ -106,6 +106,10 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		if (highlightedJoint == nullptr)
 			return;
 
+		// Highlight the parts of the joint
+		UI->activeSelections()->clear();
+		UI->activeSelections()->add(BXDJ::Utility::lowerOccurrence(highlightedJoint));
+
 		// Set camera view
 		Ptr<Camera> cam = app->activeViewport()->camera();
 
@@ -119,9 +123,6 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 		cam->isSmoothTransition(true);
 		app->activeViewport()->camera(cam);
-
-		// Highlight the parts of the joint
-		UI->activeSelections()->add(BXDJ::Utility::lowerOccurrence(highlightedJoint));
 	}
 	else if (eventArgs->action() == "export")
 	{
