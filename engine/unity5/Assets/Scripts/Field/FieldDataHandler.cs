@@ -39,6 +39,10 @@ namespace Synthesis.Field
                                                                                           new XAttribute("x", g.GetComponent<Goal>().position.x),
                                                                                           new XAttribute("y", g.GetComponent<Goal>().position.y),
                                                                                           new XAttribute("z", g.GetComponent<Goal>().position.z)),
+                                                                                     new XElement("Scale",
+                                                                                        new XAttribute("x", g.GetComponent<Goal>().scale.x),
+                                                                                        new XAttribute("y", g.GetComponent<Goal>().scale.y),
+                                                                                        new XAttribute("z", g.GetComponent<Goal>().scale.z)),
                                                                                      new XElement("Points", g.GetComponent<Goal>().pointValue),
                                                                                      new XElement("Description", g.GetComponent<Goal>().description),
                                                                                      new XElement("Keyword", g.GetComponent<Goal>().gamepieceKeyword)));
@@ -52,6 +56,10 @@ namespace Synthesis.Field
                                                                                           new XAttribute("x", g.GetComponent<Goal>().position.x),
                                                                                           new XAttribute("y", g.GetComponent<Goal>().position.y),
                                                                                           new XAttribute("z", g.GetComponent<Goal>().position.z)),
+                                                                                      new XElement("Scale",
+                                                                                        new XAttribute("x", g.GetComponent<Goal>().scale.x),
+                                                                                        new XAttribute("y", g.GetComponent<Goal>().scale.y),
+                                                                                        new XAttribute("z", g.GetComponent<Goal>().scale.z)),
                                                                                       new XElement("Points", g.GetComponent<Goal>().pointValue),
                                                                                       new XElement("Description", g.GetComponent<Goal>().description),
                                                                                       new XElement("Keyword", g.GetComponent<Goal>().gamepieceKeyword)));
@@ -115,9 +123,11 @@ namespace Synthesis.Field
                     rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
                     Goal goal = g.AddComponent<Goal>();
                     collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f);
-                    rigid.SetPosition(new UnityEngine.Vector3(float.Parse(e.Element("Position").Attribute("x").Value), float.Parse(e.Element("Position").Attribute("y").Value), float.Parse(e.Element("Position").Attribute("z").Value)));
                     goal.pointValue = int.Parse(e.Element("Points").Value);
                     goal.position = new UnityEngine.Vector3(float.Parse(e.Element("Position").Attribute("x").Value), float.Parse(e.Element("Position").Attribute("y").Value), float.Parse(e.Element("Position").Attribute("z").Value));
+                    rigid.SetPosition(goal.position);
+                    goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));
+                    collider.LocalScaling = goal.scale;
                     goal.SetKeyword(e.Element("Keyword").Value);
                     goal.description = e.Element("Description").Value;
                     goal.color = e.Attribute("Color").Value;
@@ -148,9 +158,11 @@ namespace Synthesis.Field
                     rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
                     Goal goal = g.AddComponent<Goal>();
                     collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f);
-                    rigid.SetPosition(new UnityEngine.Vector3(float.Parse(e.Element("Position").Attribute("x").Value), float.Parse(e.Element("Position").Attribute("y").Value), float.Parse(e.Element("Position").Attribute("z").Value)));
                     goal.pointValue = int.Parse(e.Element("Points").Value);
                     goal.position = new UnityEngine.Vector3(float.Parse(e.Element("Position").Attribute("x").Value), float.Parse(e.Element("Position").Attribute("y").Value), float.Parse(e.Element("Position").Attribute("z").Value));
+                    rigid.SetPosition(goal.position);
+                    goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));
+                    collider.LocalScaling = goal.scale;
                     goal.SetKeyword(e.Element("Keyword").Value);
                     goal.description = e.Element("Description").Value;
                     goal.color = e.Attribute("Color").Value;

@@ -71,6 +71,12 @@ namespace Synthesis.GUI
         GameObject orientWindow;
         GameObject resetDropdown;
 
+        GameObject tabs;
+        GameObject mainTab;
+        GameObject dpmTab;
+        GameObject scoringTab;
+        GameObject sensorTab;
+
         HashSet<GameObject> panels = new HashSet<GameObject>();
 
         private bool freeroamWindowClosed = false;
@@ -178,13 +184,20 @@ namespace Synthesis.GUI
             robotCameraGUI = GetComponent<RobotCameraGUI>();
             mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
             toolbar = Auxiliary.FindObject(canvas, "Toolbar");
+
             changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
             addPanel = Auxiliary.FindObject(canvas, "AddPanel");
             //toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
             driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
-            tabStateMachine = Auxiliary.FindGameObject("Tabs").GetComponent<StateMachine>();
+            tabs = Auxiliary.FindGameObject("Tabs");
+            mainTab = Auxiliary.FindObject(tabs, "HomeTab");
+            dpmTab = Auxiliary.FindObject(tabs, "DriverPracticeTab");
+            scoringTab = Auxiliary.FindObject(tabs, "ScoringTab");
+            sensorTab = Auxiliary.FindObject(tabs, "SensorTab");
 
+            tabStateMachine = tabs.GetComponent<StateMachine>();
+            
             CheckControlPanel();
 
             LinkToolbars();

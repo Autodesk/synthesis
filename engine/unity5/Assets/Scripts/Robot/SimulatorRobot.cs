@@ -317,8 +317,6 @@ namespace Synthesis.Robot
         /// </summary>
         public void EndReset()
         {
-
-
             IsResetting = false;
 
             foreach (RigidNode n in RootNode.ListAllNodes())

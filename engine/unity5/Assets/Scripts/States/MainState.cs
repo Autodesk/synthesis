@@ -69,6 +69,8 @@ namespace Synthesis.States
 
         public bool IsMetric;
 
+        bool reset;
+
         public static List<List<GameObject>> spawnedGamepieces = new List<List<GameObject>>() { new List<GameObject>(), new List<GameObject>() };
         /// <summary>
         /// Called when the script instance is being initialized.
@@ -131,8 +133,10 @@ namespace Synthesis.States
                 }
                 else DPMDataHandler.Load();
 
-                Controls.Load();
+                reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
 
+                Controls.Load();
+                
                 if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
                 {
                     Debug.Log(LoadManipulator(RobotTypeManager.ManipulatorPath) ? "Load manipulator success" : "Load manipulator failed");
@@ -143,9 +147,7 @@ namespace Synthesis.States
                 awaitingReplay = true;
                 LoadReplay(selectedReplay);
             }
-
-            Controls.Load();
-
+            
             //initializes the dynamic camera
             DynamicCameraObject = GameObject.Find("Main Camera");
             dynamicCamera = DynamicCameraObject.AddComponent<DynamicCamera>();
@@ -161,8 +163,10 @@ namespace Synthesis.States
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
             StateMachine.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
             StateMachine.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
-            StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetSpawnpointUI"));
+            StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetGamepieceSpawnpointUI"));
             StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
+            StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
+            
         }
 
         /// <summary>
@@ -176,11 +180,17 @@ namespace Synthesis.States
                 return;
             }
 
+            if (reset)
+            {
+                BeginRobotReset();
+                reset = false;
+            }
+
             //Spawn a new robot from the same path or switch active robot
             if (!ActiveRobot.IsResetting)
             {
-                if (UnityEngine.Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
+                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].duplicateRobot) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
+                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].switchActiveRobot)) SwitchActiveRobot();
 
             }
 
@@ -346,7 +356,7 @@ namespace Synthesis.States
             MaMRobot mamRobot = ActiveRobot as MaMRobot;
             mamRobot?.DeleteManipulatorNodes();
         }
-
+        
         /// <summary>
         /// Changes the active robot from the current one to the next one in the list
         /// </summary>

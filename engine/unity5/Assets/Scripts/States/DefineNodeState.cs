@@ -28,6 +28,14 @@ namespace Synthesis.States
         private Color hoverColor = new Color(1, 1, 0, 0.1f);
         private DriverPracticeRobot dpr;
         private Button highlightButton;
+
+        #region help ui variables
+        GameObject ui;
+        GameObject helpMenu;
+        GameObject toolbar;
+        GameObject overlay;
+        #endregion
+
         public DefineNodeState(DriverPractice.DriverPractice dp, Transform t, bool intake, DriverPracticeRobot dpr)
         {
             this.dp = dp;
@@ -42,6 +50,13 @@ namespace Synthesis.States
         // Use this for initialization
         public override void Start()
         {
+            #region init
+            ui = GameObject.Find("DefineNodeUI");
+            helpMenu = Auxiliary.FindObject(ui, "Help");
+            toolbar = Auxiliary.FindObject(ui, "NodeStateToolbar");
+            overlay = Auxiliary.FindObject(ui, "Overlay");
+            #endregion
+
             highlightButton = GameObject.Find("HighlightButton").GetComponent<Button>();
             highlightButton.onClick.RemoveAllListeners();
             highlightButton.onClick.AddListener(HighlightNode);
@@ -51,6 +66,9 @@ namespace Synthesis.States
             Button returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(ReturnToMainState);
+            Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            closeHelp.onClick.RemoveAllListeners();
+            closeHelp.onClick.AddListener(CloseHelpMenu);
         }
 
         // Update is called once per frame
@@ -163,7 +181,25 @@ namespace Synthesis.States
         }
         private void HelpMenu()
         {
-            
+            helpMenu.SetActive(true);
+            overlay.SetActive(true);
+            toolbar.transform.Translate(new Vector3(100, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
+                else t.gameObject.SetActive(false);
+            }
+        }
+        private void CloseHelpMenu()
+        {
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            toolbar.transform.Translate(new Vector3(-100, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
+                else t.gameObject.SetActive(true);
+            }
         }
     }
 }

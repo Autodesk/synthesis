@@ -21,7 +21,9 @@ namespace Synthesis.DriverPractice
         public int pointValue;
 
         public Vector3 position;
-        
+
+        public Vector3 scale;
+
         GameObject score;
 
         /// <summary>

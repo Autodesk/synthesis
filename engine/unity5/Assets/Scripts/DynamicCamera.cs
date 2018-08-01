@@ -622,10 +622,12 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class OverviewState : CameraState
     {
+        Vector3 lagVector;
         Vector3 positionVector;
         Vector3 rotationVector;
         Vector3 fieldVector;
         GameObject field;
+        float magnification = 5.0f;
 
         public OverviewState(MonoBehaviour mono)
         {
@@ -644,6 +646,7 @@ public class DynamicCamera : MonoBehaviour
         }
         public override void Update()
         {
+            
         }
 
         public override void End()

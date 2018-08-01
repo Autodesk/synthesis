@@ -15,6 +15,7 @@ using UnityEngine.Analytics;
 using Synthesis.Input;
 using Synthesis.Sensors;
 using Synthesis.Camera;
+using Synthesis.Field;
 
 namespace Assets.Scripts.GUI
 {
@@ -106,10 +107,11 @@ namespace Assets.Scripts.GUI
                     break;
                 case 2:
                     EndOtherProcesses();
-                    camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    DynamicCamera.ControlEnabled = true;
+                    //camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
+                    //DynamicCamera.ControlEnabled = true;
                     State.BeginRobotReset();
                     resetDropdown.GetComponent<Dropdown>().value = 0;
+                    GameObject.Destroy(Auxiliary.FindObject(resetDropdown, "Dropdown List"));
                     break;
                 case 3:
                     Auxiliary.FindObject(canvas, "ResetRobotDropdown").SetActive(false);
