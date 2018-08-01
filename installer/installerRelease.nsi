@@ -3,7 +3,7 @@
 
 Name "Synthesis"
 
-Icon "logo-outline.ico"
+Icon "W16_SYN_launch.ico"
 
 OutFile "Synthesis Installer.exe"
 
@@ -13,11 +13,41 @@ InstallDirRegKey HKLM "Software\Synthesis" "Install_Dir"
 
 RequestExecutionLevel admin
 
+;--------------------------------
+;Interface Settings
+
+  !define MUI_WELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
+  !define MUI_ICON "W16_SYN_launch.ico"
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_BITMAP "orange-r.bmp"
+  !define MUI_HEADERIMAGE_RIGHT
+  !define MUI_ABORTWARNING
+
+;--------------------------------
+;Pages
+
+  !insertmacro MUI_PAGE_WELCOME
+  !insertmacro MUI_PAGE_LICENSE "Apache2.txt"
+  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_PAGE_FINISH
+
+  !insertmacro MUI_UNPAGE_WELCOME
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
+  !insertmacro MUI_UNPAGE_FINISH
+
+;--------------------------------
+;Languages
+
+  !insertmacro MUI_LANGUAGE "English"
+
 Page components
 Page instfiles
 
 UninstPage uninstConfirm
 UninstPage instfiles
+
 
 Section
 
