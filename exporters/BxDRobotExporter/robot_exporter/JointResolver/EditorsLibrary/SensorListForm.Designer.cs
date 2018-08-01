@@ -72,6 +72,7 @@
             this.sensorListView.UseCompatibleStateImageBehavior = false;
             this.sensorListView.View = System.Windows.Forms.View.Details;
             this.sensorListView.SelectedIndexChanged += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
+            this.sensorListView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.sensorListView_SelectedIndexChanged);
             // 
             // deleteButton
             // 
@@ -114,8 +115,16 @@
             this.Name = "SensorListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Sensor List";
-            this.Load += new System.EventHandler(this.SensorListForm_Load);
+            this.Activated += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
+            this.Deactivate += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
             this.SizeChanged += new System.EventHandler(this.window_SizeChanged);
+            this.Enter += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
+            this.Leave += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
+            this.MouseEnter += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
+            this.MouseHover += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.sensorListView_SelectedIndexChanged);
+            this.Validating += new System.ComponentModel.CancelEventHandler(this.sensorListView_SelectedIndexChanged);
+            this.Validated += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
             this.ResumeLayout(false);
 
         }
