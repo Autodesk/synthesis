@@ -5,25 +5,7 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-hel::SendData::SendData():serialized_data(""),new_data(true){
-    for(auto& a: pwm_hdrs){
-        a = 0.0;
-    }
-    for(auto& a: relays){
-        a = RelayState::OFF;
-    }
-    for(auto& a: analog_outputs){
-        a = 0.0;
-    }
-    for(auto& a: digital_mxp){
-        a = {};
-    }
-    for(auto& a: digital_hdrs){
-        a = {};
-    }
-
-    can_motor_controllers = {};
-}
+hel::SendData::SendData():serialized_data(""),new_data(true),pwm_hdrs(0.0), relays(RelayState::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
 
 bool hel::SendData::hasNewData()const{
     return new_data;

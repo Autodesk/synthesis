@@ -187,6 +187,7 @@ namespace hel{
         std::string toString()const;
 
         MatchInfo()noexcept;
+        MatchInfo(const MatchInfo&)noexcept;
     };
 }
 

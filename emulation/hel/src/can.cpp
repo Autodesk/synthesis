@@ -109,11 +109,8 @@ namespace hel{
     }
 
     BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> CANMotorController::getSpeedData()const noexcept{
-        BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> data;
+        BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> data{0};
         uint32_t speed_int = std::fabs(speed) * 256 * 256 * 4;
-        for(uint8_t& a: data){
-            a = 0;
-        }
 
         data[1] = speed_int / (256*256);
         speed_int %= 256 * 256;
@@ -156,6 +153,15 @@ namespace hel{
 
     CANMotorController::CANMotorController()noexcept:type(CANDevice::Type::UNKNOWN),id(0),speed(0.0),inverted(false){}
 
+    CANMotorController::CANMotorController(const CANMotorController& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(type);
+        COPY(id);
+        COPY(speed);
+        COPY(inverted);
+#undef COPY
+    }
+
     CANMotorController::CANMotorController(uint32_t message_id)noexcept:CANMotorController(){
         type = CANDevice::pullDeviceType(message_id);
         assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
@@ -180,7 +186,7 @@ extern "C"{
         {
             hel::CANMotorController can_device = {messageID};
 
-            hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array;
+            hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array{0};
             std::copy(data, data + dataSize, data_array.begin());
 
             uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];

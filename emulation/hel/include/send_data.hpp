@@ -1,7 +1,6 @@
 #ifndef _SEND_DATA_HPP_
 #define _SEND_DATA_HPP_
 
-#include <array>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -22,15 +21,15 @@ namespace hel{
         std::string serialized_data;
         bool new_data;
 
-        std::array<double, PWMSystem::NUM_HDRS> pwm_hdrs;
+        BoundsCheckedArray<double, PWMSystem::NUM_HDRS> pwm_hdrs;
 
-        std::array<RelayState, RelaySystem::NUM_RELAY_HEADERS> relays;
+        BoundsCheckedArray<RelayState, RelaySystem::NUM_RELAY_HEADERS> relays;
 
-        std::array<double, AnalogOutputs::NUM_ANALOG_OUTPUTS> analog_outputs;
+        BoundsCheckedArray<double, AnalogOutputs::NUM_ANALOG_OUTPUTS> analog_outputs;
 
-        std::array<hel::MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
+        BoundsCheckedArray<hel::MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
 
-        std::array<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
+        BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
 
         std::map<uint32_t, CANMotorController> can_motor_controllers;
     public:

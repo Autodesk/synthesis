@@ -81,7 +81,18 @@ namespace hel{
         instance.second.unlock();
     }
 
-    SPISystem::SPISystem():auto_trigger_config(),auto_byte_count(),chip_select_active_high(),auto_chip_select(),auto_spi_1_select(),auto_rate(),enabled_dio(){}
+    SPISystem::SPISystem()noexcept:auto_trigger_config(),auto_byte_count(),chip_select_active_high(),auto_chip_select(0),auto_spi_1_select(0),auto_rate(0),enabled_dio(0){}
+    SPISystem::SPISystem(const SPISystem& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(auto_trigger_config);
+        COPY(auto_byte_count);
+        COPY(chip_select_active_high);
+        COPY(auto_chip_select);
+        COPY(auto_spi_1_select);
+        COPY(auto_rate);
+        COPY(enabled_dio);
+#undef COPY
+    }
 
     struct SPIManager: public tSPI{
         tSystemInterface* getSystemInterface(){

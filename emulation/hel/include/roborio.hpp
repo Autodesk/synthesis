@@ -91,12 +91,12 @@ namespace hel{
         SPISystem spi_system;
         SysWatchdog watchdog;
 
-        explicit RoboRIO() = default;
+        explicit RoboRIO()noexcept;
 
         friend class RoboRIOManager;
-        RoboRIO(RoboRIO const&) = default;
+        RoboRIO(RoboRIO const&)noexcept;
     private:
-        RoboRIO& operator=(const RoboRIO& r) = default;
+        RoboRIO& operator=(const RoboRIO&);
     };
 }
 #endif

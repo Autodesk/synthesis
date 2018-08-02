@@ -17,6 +17,11 @@ namespace hel{
     }
 
     RelaySystem::RelaySystem()noexcept:value(){}
+    RelaySystem::RelaySystem(const RelaySystem& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(value);
+#undef COPY
+    }
 
     struct RelayManager: public tRelay{
         tSystemInterface* getSystemInterface(){

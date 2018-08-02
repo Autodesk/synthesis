@@ -15,7 +15,12 @@ namespace hel{
       instance.second.unlock();
     }
 
-    AnalogOutputs::AnalogOutputs()noexcept:mxp_outputs(){}
+    AnalogOutputs::AnalogOutputs()noexcept:mxp_outputs(0){}
+    AnalogOutputs::AnalogOutputs(const AnalogOutputs& source)noexcept:AnalogOutputs(){
+#define COPY(NAME) NAME = source.NAME
+        COPY(mxp_outputs);
+#undef COPY
+    }
 
     struct AnalogOutputManager: public tAO{
         tSystemInterface* getSystemInterface(){

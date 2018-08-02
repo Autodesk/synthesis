@@ -86,6 +86,7 @@ namespace hel{
 
         void setDeadband(int32_t)noexcept;
         Accumulator()noexcept;
+        Accumulator(const Accumulator&)noexcept;
     };
 }
 

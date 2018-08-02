@@ -28,7 +28,15 @@ namespace hel{
         deadband = d;
     }
 
-    Accumulator::Accumulator()noexcept:output(),center(),deadband(){}
+    Accumulator::Accumulator()noexcept:output(),center(0),deadband(0){}
+
+    Accumulator::Accumulator(const Accumulator& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(output);
+        COPY(center);
+        COPY(deadband);
+#undef COPY
+    }
 
     struct AccumulatorManager: public tAccumulator{
     private:

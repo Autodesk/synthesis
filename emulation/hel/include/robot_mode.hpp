@@ -156,6 +156,7 @@ namespace hel{
         std::string toString()const;
 
         RobotMode()noexcept;
+        RobotMode(const RobotMode&)noexcept;
     };
 }
 
