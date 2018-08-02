@@ -152,7 +152,7 @@ namespace hel {
 
         uint8_t readOversampleBits(uint8_t channel, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
-            instance.second.unlock();
+            instance.second.unlock(); //TODO unlock in poor position on many of these functions
             return instance.first->analog_inputs.getOversampleBits(channel);
         }
 
@@ -164,7 +164,7 @@ namespace hel {
 
         uint8_t readScanList(uint8_t channel, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
-            return instance.first->analog_inputs.getAverageBits(channel);
+            return instance.first->analog_inputs.getScanList(channel);
             instance.second.unlock();
         }
 

@@ -345,7 +345,7 @@ namespace hel{
             return instance.first->counters[index].getTimerOutput().Stalled;
         }
 
-        void strobeReset(tRioStatusCode* /*status*/){
+        void strobeReset(tRioStatusCode* /*status*/){ //TODO
             //resets counter
             auto instance = hel::RoboRIOManager::getInstance();
             tOutput output = instance.first->counters[index].getOutput();

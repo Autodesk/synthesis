@@ -34,7 +34,7 @@ FIND_PACKAGE(Doxygen)
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Werror")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Werror -Wno-ignored-qualifiers") #TODO review Wno
 else()
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
