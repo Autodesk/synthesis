@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace InternalFieldExporter.FieldWizard
 {
-    public partial class MeshColliderPropertiesForm : UserControl
+    public partial class MeshColliderPropertiesForm : UserControl , ColliderPropertiesForm
     {
         /// <summary>
         /// Initializes a new instance of the MeshColliderPropertiesForm class

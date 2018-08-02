@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace InternalFieldExporter.FieldWizard.Components
 {
-    public partial class SphereColliderPropertiesForm : UserControl
+    public partial class SphereColliderPropertiesForm : UserControl , ColliderPropertiesForm
     {
         /// <summary>
         /// Initializes a new instance of the SphereColliderPropertiesForm class
