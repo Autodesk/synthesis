@@ -15,6 +15,7 @@ namespace hel{
     struct FPGAEncoder{
         static constexpr const int32_t NUM_ENCODERS = 8; //hal::kNumFPGAEncoders
     private:
+        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput zeroed_output;
 
         /**
          * \var tEnoder::tOutput output
@@ -59,8 +60,10 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig timer_config;
 
     public:
-        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getOutput()const noexcept;
-        void setOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput)noexcept;
+        void reset()noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getCurrentOutput()const noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getRawOutput()const noexcept;
+        void setRawOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput)noexcept;
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const noexcept;
         void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig)noexcept;
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const noexcept;

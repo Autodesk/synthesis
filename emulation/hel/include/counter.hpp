@@ -10,6 +10,7 @@ namespace hel{
         static constexpr uint8_t MAX_COUNTER_COUNT = nFPGA::nRoboRIO_FPGANamespace::tCounter::kNumSystems;
     private:
 
+        nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput zeroed_output;
         /**
          * \var nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput output
          * \brief The counter's count
@@ -39,13 +40,16 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig timer_config;
 
     public:
+        void reset()noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getCurrentOutput()const noexcept;
+
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getOutput()const
          * \brief Get the counter's count
          * \return the count
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getOutput()const noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getRawOutput()const noexcept;
 
         /**
          * \fn void setOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput output)
@@ -53,7 +57,7 @@ namespace hel{
          * \param output the count to set the counter to
          */
 
-        void setOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput)noexcept;
+        void setRawOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput)noexcept;
 
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig getConfig()const

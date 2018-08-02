@@ -136,20 +136,12 @@ namespace hel{
         b_type = t;
     }
 
-    void EncoderManager::setRawTicks(int32_t t)noexcept{
+    void EncoderManager::setTicks(int32_t t)noexcept{
         ticks = t;
     }
 
-    int32_t EncoderManager::getRawTicks()const noexcept{
+    int32_t EncoderManager::getTicks()const noexcept{
         return ticks;
-    }
-
-    int32_t EncoderManager::getCurrentTicks()const noexcept{
-        return ticks - zeroed_ticks;
-    }
-
-    void EncoderManager::reset()noexcept{
-        zeroed_ticks = ticks;
     }
 
     void EncoderManager::update(){
@@ -162,17 +154,17 @@ namespace hel{
         case Type::FPGA_ENCODER:
         {
             tEncoder::tOutput output;
-            output.Value = getCurrentTicks();
+            output.Value = getTicks();
             output.Direction = ticks < 0;
-            instance.first->fpga_encoders[index].setOutput(output);
+            instance.first->fpga_encoders[index].setRawOutput(output);
             break;
         }
         case Type::COUNTER:
         {
             tCounter::tOutput output;
-            output.Value = getCurrentTicks();
+            output.Value = getTicks();
             output.Direction = ticks < 0;
-            instance.first->counters[index].setOutput(output);
+            instance.first->counters[index].setRawOutput(output);
             break;
         }
         default:
@@ -225,8 +217,7 @@ namespace hel{
         COPY(b_channel);
         COPY(b_type);
         COPY(ticks);
-        COPY(zeroed_ticks);
 #undef COPY
     }
-    EncoderManager::EncoderManager(uint8_t a,PortType a_t,uint8_t b,PortType b_t)noexcept:type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0),zeroed_ticks(0){}
+    EncoderManager::EncoderManager(uint8_t a,PortType a_t,uint8_t b,PortType b_t)noexcept:type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0){}
 }

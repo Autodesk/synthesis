@@ -24,7 +24,7 @@ namespace hel{
         BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT>  joysticks;
         MatchInfo match_info;
         RobotMode robot_mode;
-        BoundsCheckedArray<EncoderManager, FPGAEncoder::NUM_ENCODERS> encoder_managers;
+        BoundsCheckedArray<Maybe<EncoderManager>, FPGAEncoder::NUM_ENCODERS> encoder_managers;
 
         void deserializeDigitalHdrs(std::string&);
         void deserializeJoysticks(std::string&);

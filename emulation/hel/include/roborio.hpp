@@ -62,6 +62,7 @@ namespace hel{
      * Analog Input, Analog Output, PWM, DIO, SPI, MXP, RS232, and I2C.
      */
     struct RoboRIO{
+        bool engine_initialized;
         /**
          * \var bool user_button
          * \represents the state of the user button on the roborio
@@ -79,7 +80,7 @@ namespace hel{
         DigitalSystem digital_system;
         std::vector<DSError> ds_errors;
         MatchInfo match_info;
-        BoundsCheckedArray<EncoderManager, FPGAEncoder::NUM_ENCODERS> encoder_managers;
+        BoundsCheckedArray<Maybe<EncoderManager>, FPGAEncoder::NUM_ENCODERS> encoder_managers;
         BoundsCheckedArray<FPGAEncoder, FPGAEncoder::NUM_ENCODERS> fpga_encoders;
         Global global;
         BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;
