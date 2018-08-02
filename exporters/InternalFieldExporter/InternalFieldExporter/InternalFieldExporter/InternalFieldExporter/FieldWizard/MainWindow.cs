@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace InternalFieldExporter
 {
-    public partial class FieldExportForm : Form
+    public partial class MainWindow : Form
     {
-        public FieldExportForm()
+        public MainWindow()
         {
             InitializeComponent();
         }
