@@ -156,7 +156,7 @@ namespace Synthesis.Sensors
             editAngleButton = Auxiliary.FindObject(sensorAnglePanel, "EditButton");
 
             //For range configuration
-            sensorRangePanel = Auxiliary.FindObject(canvas, "SensorRangePanel");
+            sensorRangePanel = Auxiliary.FindObject(canvas, "RangePanel");
             RangeEntry = Auxiliary.FindObject(sensorRangePanel, "RangeEntry");
             showRangeButton = Auxiliary.FindObject(configureSensorPanel, "ShowSensorRangeButton");
             editRangeButton = Auxiliary.FindObject(sensorRangePanel, "EditButton");
@@ -568,35 +568,25 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ToggleChangeNode()
         {
-            //deleteSensorButton.SetActive(sensorManager.SelectingNode);
 
             if (!sensorManager.SelectingNode && sensorManager.SelectedNode == null) //open the panel and start selecting
             {
-                nodePanel.SetActive(true);
                 sensorManager.DefineNode(); //Start selecting a new node
-                //changeSensorNodeButton.GetComponentInChildren<Text>().text = "Confirm";
-                //cancelNodeSelectionButton.SetActive(true);
+                nodePanel.SetActive(true);
             }
-            else if (sensorManager.SelectingNode) //close the panel and save node if one is seleccted
+            else if (sensorManager.SelectingNode) //close the panel without saving
             {
-                if (sensorManager.SelectedNode != null) currentSensor.gameObject.transform.parent = sensorManager.SelectedNode.transform;
                 CancelNodeSelection();
-                nodePanel.SetActive(false);
             }
-                
-                    
-            //        && sensorManager.SelectedNode != null) //a node is selected to save and close
-            //{
-            //    //Change the node where Sensor is attached to, clear selected node, and update name of current node
-            //    currentSensor.gameObject.transform.parent = sensorManager.SelectedNode.transform;
-            //    //sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
-            //    CancelNodeSelection();
-            //    nodePanel.SetActive(false);
-            //}
-            //else if (sensorManager.SelectingNode && sensorManager.SelectedNode == null) //close without selecting a node
-            //{
+        }
 
-            //}
+        public void SaveNode()
+        {
+            if (sensorManager.SelectedNode != null)
+            {
+                currentSensor.gameObject.transform.parent = sensorManager.SelectedNode.transform;
+                CancelNodeSelection();
+            }
         }
 
         /// <summary>
@@ -608,6 +598,8 @@ namespace Synthesis.Sensors
             //cancelNodeSelectionButton.SetActive(false);
             //deleteSensorButton.SetActive(true);
             //hideSensorButton.SetActive(true);
+            nodePanel.SetActive(false);
+            
             sensorManager.ClearSelectedNode();
             sensorManager.ResetNodeColors();
             sensorManager.SelectingNode = false;
@@ -711,13 +703,13 @@ namespace Synthesis.Sensors
         public void ToggleSensorRangePanel()
         {
             currentSensor.IsChangingRange = !currentSensor.IsChangingRange;
-            isEditingRange = !isEditingRange;
+            //isEditingRange = !isEditingRange;
             sensorRangePanel.SetActive(currentSensor.IsChangingRange);
 
-            if (!isEditingRange) SyncSensorRange();
+            if (!currentSensor.IsChangingRange) SyncSensorRange();
 
-            lockPositionButton.SetActive(currentSensor.IsChangingRange);
-            lockAngleButton.SetActive(currentSensor.IsChangingRange);
+            //lockPositionButton.SetActive(currentSensor.IsChangingRange);
+            //lockAngleButton.SetActive(currentSensor.IsChangingRange);
 
             //if (currentSensor.IsChangingRange)
             //{
