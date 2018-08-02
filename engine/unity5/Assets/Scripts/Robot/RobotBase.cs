@@ -36,14 +36,23 @@ namespace Synthesis.Robot
         /// </summary>
         public UnityPacket.OutputStatePacket Packet { get; set; }
 
+
+        /// <summary>
+        /// Informational class for emulation to grab encoder tick count
+        /// </summary>
         public sealed class EmuNetworkInfo
         {
             public RobotSensor RobotSensor;
-            public double encoderTickCount;
-            public double previousEuler = 0;
             public RigidNode_Base wheel;
+            public double previousEuler = 0;
+
+            // for emulation data
+            public double encoderTickCount;
         }
 
+        /// <summary>
+        /// Generates list of attached encoder sensors on robot nodes
+        /// </summary>
         public List<EmuNetworkInfo> emuList;
 
         /// <summary>
@@ -162,6 +171,7 @@ namespace Synthesis.Robot
                         {
                             Debug.Log(sensor.type.ToString() + " " + sensor.conTypePort1 + " " + sensor.conTypePort2 + " " + sensor.conversionFactor +
                                 " " + sensor.port1 + " " + sensor.port2);
+
                             if(sensor.type == RobotSensorType.ENCODER)
                             {
                                 EmuNetworkInfo emuStruct = new EmuNetworkInfo();

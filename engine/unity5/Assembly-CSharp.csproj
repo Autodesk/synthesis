@@ -272,7 +272,6 @@
     <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RN\RNWheel.cs" />
-    <Compile Include="Assets\Scripts\Robot\EmulationNetworking.cs" />
     <Compile Include="Assets\Scripts\Robot\IRobotProvider.cs" />
     <Compile Include="Assets\Scripts\Robot\MaMRobot.cs" />
     <Compile Include="Assets\Scripts\Robot\NetworkMesh.cs" />

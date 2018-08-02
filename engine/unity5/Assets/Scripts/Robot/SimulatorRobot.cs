@@ -196,44 +196,44 @@ namespace Synthesis.Robot
 
             foreach (EmuNetworkInfo a in emuList)
             {
-                RigidNode c = null;
+                RigidNode rigidNode = null;
 
                 try
                 {
-                    c = (RigidNode)(a.wheel);
+                    rigidNode = (RigidNode)(a.wheel);
                 }
                 catch (Exception e)
                 {
                     Debug.Log(e.StackTrace);
                 }
 
-                BRaycastWheel b = c.MainObject.GetComponent<BRaycastWheel>();
+                BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
 
                 if (a.RobotSensor.type == RobotSensorType.ENCODER)
                 {
                     if (a.RobotSensor.conversionFactor == 0)
                         a.RobotSensor.conversionFactor = 1;
 
-                    b.GetWheelSpeed();
+                    bRaycastWheel.GetWheelSpeed();
 
-                    double angleDifference = b.transform.eulerAngles.x - a.previousEuler;
+                    double angleDifference = bRaycastWheel.transform.eulerAngles.x - a.previousEuler;
 
-                    if (b.GetWheelSpeed() > 0)
+                    if (bRaycastWheel.GetWheelSpeed() > 0)
                     {
                         if (angleDifference < 0)
                         {
-                            a.encoderTickCount += (((360 - a.previousEuler + b.transform.eulerAngles.x) / 360.0) * a.RobotSensor.conversionFactor);
+                            a.encoderTickCount += (((360 - a.previousEuler + bRaycastWheel.transform.eulerAngles.x) / 360.0) * a.RobotSensor.conversionFactor);
                         }
                         else
                         {
                             a.encoderTickCount += ((angleDifference / 360) * a.RobotSensor.conversionFactor);
                         }   
                     }
-                    else if (b.GetWheelSpeed() < 0)
+                    else if (bRaycastWheel.GetWheelSpeed() < 0)
                     {
                         if (angleDifference > 0)
                         {
-                            a.encoderTickCount += (((((360 - b.transform.eulerAngles.x) + a.previousEuler) * (-1)) / 360.0) * a.RobotSensor.conversionFactor);
+                            a.encoderTickCount += (((((360 - bRaycastWheel.transform.eulerAngles.x) + a.previousEuler) * (-1)) / 360.0) * a.RobotSensor.conversionFactor);
                         }
                         else
                         {
@@ -242,7 +242,7 @@ namespace Synthesis.Robot
                     }
 
                     Debug.Log(a.encoderTickCount);
-                    a.previousEuler = b.transform.eulerAngles.x;
+                    a.previousEuler = bRaycastWheel.transform.eulerAngles.x;
                 }
             }
 
