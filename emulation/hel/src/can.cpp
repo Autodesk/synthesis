@@ -238,7 +238,7 @@ extern "C"{
         case hel::CANDevice::Type::UNKNOWN:
         case hel::CANDevice::Type::PCM:
         case hel::CANDevice::Type::PDP:
-            std::cerr<<"Synthesis warning: Attempting to read from CAN device (" + hel::to_string(target_type) + ") using message ID "<<*messageID<<"\n";
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Attempting to read from CAN device (" + hel::to_string(target_type) + ") using message ID "<<*messageID<<"\n";
             break;
         default:
             throw hel::UnhandledEnumConstantException("hel::CANDevice::Type");

@@ -20,7 +20,7 @@ namespace hel{
 
     private:
         std::string serialized_data;
-        bool gen_serialization;
+        bool new_data;
 
         std::array<double, PWMSystem::NUM_HDRS> pwm_hdrs;
 
@@ -41,6 +41,8 @@ namespace hel{
         std::string toString()const;
 
         std::string serialize();
+
+        bool hasNewData()const;
     };
     std::string to_string(SendData::RelayState);
 
