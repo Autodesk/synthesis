@@ -4,34 +4,34 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tPower::tStatus Power::getStatus()const{
+    tPower::tStatus Power::getStatus()const noexcept{
         return status;
     }
 
-    void Power::setStatus(tPower::tStatus s){
+    void Power::setStatus(tPower::tStatus s)noexcept{
         status = s;
     }
 
-    tPower::tFaultCounts Power::getFaultCounts()const{
+    tPower::tFaultCounts Power::getFaultCounts()const noexcept{
         return fault_counts;
     }
 
-    void Power::setFaultCounts(tPower::tFaultCounts counts){
+    void Power::setFaultCounts(tPower::tFaultCounts counts)noexcept{
         fault_counts = counts;
     }
 
-    tPower::tDisable Power::getDisabled()const{
+    tPower::tDisable Power::getDisabled()const noexcept{
         return disabled;
     }
 
-    void Power::setDisabled(tPower::tDisable d){
+    void Power::setDisabled(tPower::tDisable d)noexcept{
         disabled = d;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    Power::Power():status(),fault_counts(),disabled(){}
+    Power::Power()noexcept:status(),fault_counts(),disabled(){}
 
     struct PowerManager: public tPower{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation

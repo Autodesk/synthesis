@@ -12,15 +12,15 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
     constexpr const float TIME_CONSTANT = 1.13; // This is the offset from local time to real world time
-    Global::Global(){
+    Global::Global()noexcept{
         fpga_start_time = getCurrentTime();
     }
 
-    uint64_t Global::getCurrentTime(){
+    uint64_t Global::getCurrentTime()noexcept{
         return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()/TIME_CONSTANT).count(); //TODO system time runs fast
     }
 
-    uint64_t Global::getFPGAStartTime()const{
+    uint64_t Global::getFPGAStartTime()const noexcept{
         return fpga_start_time;
     }
 

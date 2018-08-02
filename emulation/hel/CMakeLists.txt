@@ -34,7 +34,7 @@ FIND_PACKAGE(Doxygen)
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Werror")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Werror -Wno-ignored-qualifiers") #TODO review Wno
 else()
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
@@ -49,7 +49,7 @@ elseif(ARCH MATCHES "([Xx]86([-_]64)?)")
   SET (CMAKE_C_COMPILER gcc)
   SET (CMAKE_CXX_COMPILER g++)
 
-  LINK_DIRECTORIES (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64 ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared/)
+  LINK_DIRECTORIES ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/linuxx86-64/linux/x86-64/shared ${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/linuxx86-64/linux/x86-64/shared ${WPILIB_DIRECTORY}/wpilibc/build/install/wpilibcTestingBaseTest/lib ${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/linuxx86-64/linux/x86-64/shared ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/ ${CTRE_DIRECTORY}/libraries/driver/lib/)
 
 else()
   MESSAGE(WARNING "No architecture specified; defaulting to x86.")
@@ -57,7 +57,7 @@ else()
   SET (CMAKE_CXX_COMPILER g++)
   SET (ARCH "x86_64")
 
-  LINK_DIRECTORIES (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64 ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared/)
+  LINK_DIRECTORIES ( ${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/ni-libraries/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64 ${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/linuxx86-64/linux/x86-64/shared ${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/linuxx86-64/linux/x86-64/shared ${WPILIB_DIRECTORY}/wpilibc/build/install/wpilibcTestingBaseTest/lib ${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/linuxx86-64/linux/x86-64/shared ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/ ${CTRE_DIRECTORY}/libraries/driver/lib/)
 endif()
 
 ADD_CUSTOM_TARGET ( build_vm
@@ -81,7 +81,7 @@ EXTERNALPROJECT_ADD(wpilib
   INSTALL_COMMAND ""
   )
 
-EXTERNALPROJECT_ADD(ctre
+EXTERNALPROJECT_ADD(ctre #TODO build for x86 when ARCH is specified
   PREFIX lib/ctre
   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
   GIT_TAG Phoenix_v5.5.0.0
@@ -132,13 +132,13 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
 
   if(NOT NO_UNIT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_UNIT MATCHES "[Oo][Nn]")
     if(ARCH MATCHES "[Aa][Rr][Mm]")
-    EXTERNALPROJECT_ADD(GoogleTest
-      PREFIX lib/google_test
-      DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
-      GIT_REPOSITORY https://www.github.com/google/googletest
-      CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-      )
-    elseif()
+      EXTERNALPROJECT_ADD(GoogleTest
+        PREFIX lib/google_test
+        DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
+        GIT_REPOSITORY https://www.github.com/google/googletest
+        CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} #TODO toolchain file does not appear to be used
+        )
+    else()
       EXTERNALPROJECT_ADD(GoogleTest
         PREFIX lib/google_test
         DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
@@ -164,9 +164,13 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
       ADD_DEPENDENCIES(${test_name} wpilib)
       ADD_DEPENDENCIES(${test_name} ctre)
 
-      LINK_DIRECTORIES (${CMAKE_BINARY_DIR}/lib ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86_64 ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86_64 ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64 ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64 )
+      if(ARCH MATCHES "[Aa][Rr][Mm]")
+        TARGET_LINK_LIBRARIES(${test_name} wpi)
+      else()
+        TARGET_LINK_LIBRARIES(${test_name} wpi-x86)
+      endif()
 
-      TARGET_LINK_LIBRARIES(${test_name} gtest gtest_main pthread hel wpi libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
+      TARGET_LINK_LIBRARIES(${test_name} gtest gtest_main pthread hel libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
       INCLUDE_DIRECTORIES(SYSTEM "lib/include")
 
       TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE "${CMAKE_BINARY_DIR}/include")

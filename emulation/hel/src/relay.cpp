@@ -5,18 +5,18 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
 
-    tRelay::tValue RelaySystem::getValue()const{
+    tRelay::tValue RelaySystem::getValue()const noexcept{
         return value;
     }
 
-    void RelaySystem::setValue(tRelay::tValue v){
+    void RelaySystem::setValue(tRelay::tValue v)noexcept{
         value = v;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    RelaySystem::RelaySystem():value(){}
+    RelaySystem::RelaySystem()noexcept:value(){}
 
     struct RelayManager: public tRelay{
         tSystemInterface* getSystemInterface(){

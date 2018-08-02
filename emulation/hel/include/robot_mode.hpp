@@ -67,7 +67,7 @@ namespace hel{
          * \return a State object representing the robot running state
          */
 
-        Mode getMode()const;
+        Mode getMode()const noexcept;
 
         /**
          * \fn void setMode(Mode mode)
@@ -75,7 +75,7 @@ namespace hel{
          * \param state a State object representing the robot running state
          */
 
-        void setMode(Mode);
+        void setMode(Mode)noexcept;
 
         /**
          * \fn bool getEnabled()const
@@ -83,7 +83,7 @@ namespace hel{
          * \return true if the robot is enabled
          */
 
-        bool getEnabled()const;
+        bool getEnabled()const noexcept;
 
         /**
          * \fn void setEnabled(bool enabled)
@@ -91,7 +91,7 @@ namespace hel{
          * \param enabled a bool representing the robot enabled state
          */
 
-        void setEnabled(bool);
+        void setEnabled(bool)noexcept;
 
         /**
          * \fn bool getEmergencyStopped()const
@@ -99,7 +99,7 @@ namespace hel{
          * \return true if the robot is emergency stopped
          */
 
-        bool getEmergencyStopped()const;
+        bool getEmergencyStopped()const noexcept;
 
         /**
          * \fn void setEmergencyStopped(bool emergency_stopped)
@@ -107,7 +107,7 @@ namespace hel{
          * \param emergency_stopped a bool representing the robot emergency stopped state
          */
 
-        void setEmergencyStopped(bool);
+        void setEmergencyStopped(bool)noexcept;
 
         /**
          * \fn bool getFMSAttached()const
@@ -115,7 +115,7 @@ namespace hel{
          * \return true if the robot is connected to the FMS
          */
 
-        bool getFMSAttached()const;
+        bool getFMSAttached()const noexcept;
 
         /**
          * \fn void setFMSAttached(bool fms_attached)
@@ -123,7 +123,7 @@ namespace hel{
          * \param fms_attached a bool representing the robot FMS connection state
          */
 
-        void setFMSAttached(bool);
+        void setFMSAttached(bool)noexcept;
 
         /**
          * \fn bool getDSAttached()const
@@ -131,7 +131,7 @@ namespace hel{
          * \return true if the robot is connected to the driver station
          */
 
-        bool getDSAttached()const;
+        bool getDSAttached()const noexcept;
 
         /**
          * \fn void setDSAttached(bool ds_attached)
@@ -139,7 +139,7 @@ namespace hel{
          * \param ds_attached a bool representing the robot driver station connection state
          */
 
-        void setDSAttached(bool);
+        void setDSAttached(bool)noexcept;
 
         /**
          * \fn ControlWord_t toControlWord()const
@@ -147,7 +147,7 @@ namespace hel{
          * \return a new ControlWord_t object populated from this RobotMode object
          */
 
-        ControlWord_t toControlWord()const;
+        ControlWord_t toControlWord()const noexcept;
 
         static RobotMode deserialize(std::string);
 
@@ -155,7 +155,7 @@ namespace hel{
 
         std::string toString()const;
 
-        RobotMode();
+        RobotMode()noexcept;
     };
 }
 

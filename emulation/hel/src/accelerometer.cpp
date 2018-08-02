@@ -9,63 +9,63 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    Accelerometer:: ControlMode Accelerometer::getControlMode()const{
+    Accelerometer:: ControlMode Accelerometer::getControlMode()const noexcept{
         return control_mode;
     }
 
-    void Accelerometer::setControlMode(Accelerometer::ControlMode mode){
+    void Accelerometer::setControlMode(Accelerometer::ControlMode mode)noexcept{
         control_mode = mode;
     }
 
-    uint8_t Accelerometer::getCommTargetReg()const{
+    uint8_t Accelerometer::getCommTargetReg()const noexcept{
         return comm_target_reg;
     }
 
-    void Accelerometer::setCommTargetReg(uint8_t reg){
+    void Accelerometer::setCommTargetReg(uint8_t reg)noexcept{
         comm_target_reg = reg;
     }
 
-    bool Accelerometer::getActive()const{
+    bool Accelerometer::getActive()const noexcept{
         return active;
     }
 
-    void Accelerometer::setActive(bool a){
+    void Accelerometer::setActive(bool a)noexcept{
         active = a;
     }
 
-    uint8_t Accelerometer::getRange()const{
+    uint8_t Accelerometer::getRange()const noexcept{
         return range;
     }
 
-    void Accelerometer::setRange(uint8_t r){
+    void Accelerometer::setRange(uint8_t r)noexcept{
         range = r;
     }
 
-    float Accelerometer::getXAccel()const{
+    float Accelerometer::getXAccel()const noexcept{
         return x_accel;
     }
 
-    void Accelerometer::setXAccel(float accel){
+    void Accelerometer::setXAccel(float accel)noexcept{
         x_accel = accel;
     }
 
-    float Accelerometer::getYAccel()const{
+    float Accelerometer::getYAccel()const noexcept{
         return y_accel;
     }
 
-    void Accelerometer::setYAccel(float accel){
+    void Accelerometer::setYAccel(float accel)noexcept{
         y_accel = accel;
     }
 
-    float Accelerometer::getZAccel()const{
+    float Accelerometer::getZAccel()const noexcept{
         return z_accel;
     }
 
-    void Accelerometer::setZAccel(float accel){
+    void Accelerometer::setZAccel(float accel)noexcept{
        z_accel = accel;
     }
 
-    float Accelerometer::convertAccel(std::pair<uint8_t, uint8_t> accel){
+    float Accelerometer::convertAccel(std::pair<uint8_t, uint8_t> accel)noexcept{
         uint16_t raw = (accel.first << 4) | (accel.second >> 4);
         raw <<= 4; //correctly convert the integer to 2's compliment if negative
         raw >>= 4;
@@ -82,7 +82,7 @@ namespace hel{
         }
     }
 
-    std::pair<uint8_t, uint8_t> Accelerometer::convertAccel(float accel){
+    std::pair<uint8_t, uint8_t> Accelerometer::convertAccel(float accel)noexcept{
         accel = [&]{
             switch(range) {
                 case 0: //2G
@@ -103,7 +103,7 @@ namespace hel{
         return {first, second};
     }
 
-    Accelerometer::Accelerometer():control_mode(),comm_target_reg(),active(),range(),x_accel(),y_accel(),z_accel(){}
+    Accelerometer::Accelerometer()noexcept:control_mode(),comm_target_reg(),active(),range(),x_accel(),y_accel(),z_accel(){}
 
     struct AccelerometerManager: public tAccel{
     private:

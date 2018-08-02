@@ -4,43 +4,43 @@
 #include "json_util.hpp"
 
 namespace hel{
-    bool Joystick::getIsXBox()const{
+    bool Joystick::getIsXBox()const noexcept{
         return is_xbox;
     }
 
-    void Joystick::setIsXBox(bool xbox){
+    void Joystick::setIsXBox(bool xbox)noexcept{
         is_xbox = xbox;
     }
 
-    uint8_t Joystick::getType()const{
+    uint8_t Joystick::getType()const noexcept{
         return type;
     }
 
-    void Joystick::setType(uint8_t t){
+    void Joystick::setType(uint8_t t)noexcept{
         type = t;
     }
 
-    std::string Joystick::getName()const{
+    std::string Joystick::getName()const noexcept{
         return name;
     }
 
-    void Joystick::setName(std::string n){
+    void Joystick::setName(std::string n)noexcept{
         name = n;
     }
 
-    uint32_t Joystick::getButtons()const{
+    uint32_t Joystick::getButtons()const noexcept{
         return buttons;
     }
 
-    void Joystick::setButtons(uint32_t b){
+    void Joystick::setButtons(uint32_t b)noexcept{
         buttons = b;
     }
 
-    uint8_t Joystick::getButtonCount()const{
+    uint8_t Joystick::getButtonCount()const noexcept{
         return button_count;
     }
 
-    void Joystick::setButtonCount(uint8_t count){
+    void Joystick::setButtonCount(uint8_t count)noexcept{
         button_count = count;
     }
 
@@ -52,11 +52,11 @@ namespace hel{
         axes = a;
     }
 
-    uint8_t Joystick::getAxisCount()const{
+    uint8_t Joystick::getAxisCount()const noexcept{
         return axis_count;
     }
 
-    void Joystick::setAxisCount(uint8_t count){
+    void Joystick::setAxisCount(uint8_t count)noexcept{
         axis_count = count;
     }
 
@@ -76,41 +76,41 @@ namespace hel{
         povs = p;
     }
 
-    uint8_t Joystick::getPOVCount()const{
+    uint8_t Joystick::getPOVCount()const noexcept{
         return pov_count;
     }
 
-    void Joystick::setPOVCount(uint8_t count){
+    void Joystick::setPOVCount(uint8_t count)noexcept{
         pov_count = count;
     }
 
-    uint32_t Joystick::getOutputs()const{
+    uint32_t Joystick::getOutputs()const noexcept{
         return outputs;
     }
 
-    void Joystick::setOutputs(uint32_t outs){
+    void Joystick::setOutputs(uint32_t outs)noexcept{
         outputs = outs;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    uint16_t Joystick::getLeftRumble()const{
+    uint16_t Joystick::getLeftRumble()const noexcept{
         return left_rumble;
     }
 
-    void Joystick::setLeftRumble(uint16_t rumble){
+    void Joystick::setLeftRumble(uint16_t rumble)noexcept{
         left_rumble = rumble;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    uint16_t Joystick::getRightRumble()const{
+    uint16_t Joystick::getRightRumble()const noexcept{
         return right_rumble;
     }
 
-    void Joystick::setRightRumble(uint16_t rumble){
+    void Joystick::setRightRumble(uint16_t rumble)noexcept{
         right_rumble = rumble;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
@@ -188,5 +188,5 @@ namespace hel{
         return joy;
     }
 
-    Joystick::Joystick():is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes(), axis_count(0), axis_types(), povs(), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
+    Joystick::Joystick()noexcept:is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes(), axis_count(0), axis_types(), povs(), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){}
 }

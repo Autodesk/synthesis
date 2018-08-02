@@ -6,63 +6,63 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tDIO::tDO DigitalSystem::getOutputs()const{
+    tDIO::tDO DigitalSystem::getOutputs()const noexcept{
         return outputs;
     }
 
-    void DigitalSystem::setOutputs(tDIO::tDO value){
+    void DigitalSystem::setOutputs(tDIO::tDO value)noexcept{
         outputs = value;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const{
+    tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const noexcept{
         return enabled_outputs;
     }
 
-    void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable value){
+    void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable value)noexcept{
         enabled_outputs = value;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    tDIO::tPulse DigitalSystem::getPulses()const{
+    tDIO::tPulse DigitalSystem::getPulses()const noexcept{
         return pulses;
     }
 
-    void DigitalSystem::setPulses(tDIO::tPulse value){
+    void DigitalSystem::setPulses(tDIO::tPulse value)noexcept{
         pulses = value;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    tDIO::tDI DigitalSystem::getInputs()const{
+    tDIO::tDI DigitalSystem::getInputs()const noexcept{
         return inputs;
     }
 
-    void DigitalSystem::setInputs(tDIO::tDI value){
+    void DigitalSystem::setInputs(tDIO::tDI value)noexcept{
         inputs = value;
     }
 
-    uint16_t DigitalSystem::getMXPSpecialFunctionsEnabled()const{
+    uint16_t DigitalSystem::getMXPSpecialFunctionsEnabled()const noexcept{
     		return mxp_special_functions_enabled;
     }
 
-    void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t value){
+    void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t value)noexcept{
         mxp_special_functions_enabled = value;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
         instance.second.unlock();
     }
 
-    uint8_t DigitalSystem::getPulseLength()const{
+    uint8_t DigitalSystem::getPulseLength()const noexcept{
         return pulse_length;
     }
 
-    void DigitalSystem::setPulseLength(uint8_t value){
+    void DigitalSystem::setPulseLength(uint8_t value)noexcept{
         pulse_length = value;
     }
 
@@ -77,7 +77,7 @@ namespace hel{
         instance.second.unlock();
     }
 
-    DigitalSystem::DigitalSystem():
+    DigitalSystem::DigitalSystem()noexcept:
         outputs(),
         enabled_outputs(),
         pulses(),
@@ -105,7 +105,7 @@ namespace hel{
         return s.c_str();
     }
 
-    DigitalSystem::DIOConfigurationException::DIOConfigurationException(Config config, Config expected, uint8_t p):configuration(config), expected_configuration(expected), port(p){}
+    DigitalSystem::DIOConfigurationException::DIOConfigurationException(Config config, Config expected, uint8_t p)noexcept:configuration(config), expected_configuration(expected), port(p){}
 
     struct DIOManager: public tDIO{
         tSystemInterface* getSystemInterface() override{

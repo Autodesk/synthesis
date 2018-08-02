@@ -4,19 +4,19 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    bool Alarm::getEnabled()const{
+    bool Alarm::getEnabled()const noexcept{
         return enabled;
     }
 
-    void Alarm::setEnabled(bool a){
+    void Alarm::setEnabled(bool a)noexcept{
         enabled = a;
     }
 
-    uint32_t Alarm::getTriggerTime()const{
+    uint32_t Alarm::getTriggerTime()const noexcept{
         return trigger_time;
     }
 
-    void Alarm::setTriggerTime(uint32_t time){
+    void Alarm::setTriggerTime(uint32_t time)noexcept{
         trigger_time = time;
     }
 

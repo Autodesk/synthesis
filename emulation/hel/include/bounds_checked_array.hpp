@@ -139,7 +139,7 @@ namespace hel{
          * \return The internal std::array of this BoundsCheckedArray
          */
 
-        constexpr const std::array<T, LEN>& toArray()const{
+        constexpr const std::array<T, LEN>& toArray()const noexcept{
             return internal;
         }
 
@@ -149,7 +149,7 @@ namespace hel{
          * \return The internal std::array of this BoundsCheckedArray
          */
 
-        constexpr std::array<T, LEN>*& toArray(){
+        constexpr std::array<T, LEN>*& toArray()noexcept{
             return internal;
         }
 
@@ -159,7 +159,7 @@ namespace hel{
          * \return A pointer to the underlying basic array
          */
 
-        constexpr const T* data()const{
+        constexpr const T* data()const noexcept{
             if(LEN == 0){
                 return nullptr;
             }
@@ -172,7 +172,7 @@ namespace hel{
          * \return A pointer to the underlying basic array
          */
 
-        constexpr T* data(){
+        constexpr T* data()noexcept{
             if(LEN == 0){
                 return nullptr;
             }
@@ -185,7 +185,7 @@ namespace hel{
          * \return The number of elements in the array
          */
 
-        constexpr std::size_t size()const{
+        constexpr std::size_t size()const noexcept{
             return internal.size();
         }
 
@@ -195,7 +195,7 @@ namespace hel{
          * \return true if the array is empty, false otherwise
          */
 
-        constexpr bool empty()const{
+        constexpr bool empty()const noexcept{
             return internal.empty();
         }
 
@@ -205,7 +205,7 @@ namespace hel{
          * \return Maximum number of elements
          */
 
-        constexpr std::size_t max_size()const{
+        constexpr std::size_t max_size()const noexcept{
             return internal.max_size();
         }
 
@@ -215,7 +215,7 @@ namespace hel{
          * \return Iterator to the first element
          */
 
-        constexpr typename std::array<T, LEN>::iterator begin(){
+        constexpr typename std::array<T, LEN>::iterator begin()noexcept{
             return internal.begin();
         }
 
@@ -225,7 +225,7 @@ namespace hel{
          * \return Iterator to the first element
          */
 
-        constexpr const typename std::array<T, LEN>::iterator begin()const{
+        constexpr const typename std::array<T, LEN>::iterator begin()const noexcept{
             return internal.begin();
         }
 
@@ -235,7 +235,7 @@ namespace hel{
          * \return Iterator to the last element
          */
 
-        constexpr typename std::array<T, LEN>::iterator end(){
+        constexpr typename std::array<T, LEN>::iterator end()noexcept{
             return internal.end();
         }
 
@@ -245,11 +245,11 @@ namespace hel{
          * \return Iterator to the last element
          */
 
-        constexpr const typename std::array<T, LEN>::iterator end()const{
+        constexpr const typename std::array<T, LEN>::iterator end()const noexcept{
             return internal.end();
         }
 
-        BoundsCheckedArray(){}
+        BoundsCheckedArray()noexcept{}
 
         BoundsCheckedArray(std::initializer_list<T> list){
             if(list.size() != LEN){
@@ -290,11 +290,6 @@ namespace hel{
     template<typename T, std::size_t LEN>
     bool operator!=(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b){
         return !(a == b);
-    }
-
-    template<typename T, std::size_t LEN>
-    std::string to_string(const BoundsCheckedArray<T, LEN>& a, std::function<std::string(T)> to_s){
-        return hel::to_string(a.internal, to_s);
     }
 }
 

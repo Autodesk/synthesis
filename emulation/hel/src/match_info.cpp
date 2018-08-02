@@ -5,59 +5,59 @@
 #include "util.hpp"
 
 namespace hel{
-    std::string MatchInfo::getEventName()const{
+    std::string MatchInfo::getEventName()const noexcept{
         return event_name;
     }
 
-    void MatchInfo::setEventName(std::string name){
+    void MatchInfo::setEventName(std::string name)noexcept{
         event_name = name;
     }
 
-    std::string MatchInfo::getGameSpecificMessage()const{
+    std::string MatchInfo::getGameSpecificMessage()const noexcept{
         return game_specific_message;
     }
 
-    void MatchInfo::setGameSpecificMessage(std::string message){
+    void MatchInfo::setGameSpecificMessage(std::string message)noexcept{
         game_specific_message = message;
     }
 
-    MatchType_t MatchInfo::getMatchType()const{
+    MatchType_t MatchInfo::getMatchType()const noexcept{
         return match_type;
     }
 
-    void MatchInfo::setMatchType(MatchType_t type){
+    void MatchInfo::setMatchType(MatchType_t type)noexcept{
         match_type = type;
     }
 
-    uint16_t MatchInfo::getMatchNumber()const{
+    uint16_t MatchInfo::getMatchNumber()const noexcept{
         return match_number;
     }
 
-    void MatchInfo::setMatchNumber(uint16_t number){
+    void MatchInfo::setMatchNumber(uint16_t number)noexcept{
         match_number = number;
     }
 
-    uint8_t MatchInfo::getReplayNumber()const{
+    uint8_t MatchInfo::getReplayNumber()const noexcept{
         return replay_number;
     }
 
-    void MatchInfo::setReplayNumber(uint8_t number){
+    void MatchInfo::setReplayNumber(uint8_t number)noexcept{
         replay_number = number;
     }
 
-    AllianceStationID_t MatchInfo::getAllianceStationID()const{
+    AllianceStationID_t MatchInfo::getAllianceStationID()const noexcept{
         return alliance_station_id;
     }
 
-    void MatchInfo::setAllianceStationID(AllianceStationID_t id){
+    void MatchInfo::setAllianceStationID(AllianceStationID_t id)noexcept{
         alliance_station_id = id;
     }
 
-    double MatchInfo::getMatchTime()const{
+    double MatchInfo::getMatchTime()const noexcept{
         return match_time;
     }
 
-    void MatchInfo::setMatchTime(double time){
+    void MatchInfo::setMatchTime(double time)noexcept{
         match_time = time;
     }
 
@@ -167,5 +167,5 @@ namespace hel{
         return s;
     }
 
-    MatchInfo::MatchInfo():event_name(),game_specific_message(),match_type(MatchType_t::kMatchType_none),match_number(0),replay_number(0),alliance_station_id(AllianceStationID_t::kAllianceStationID_red1),match_time(){}
+    MatchInfo::MatchInfo()noexcept:event_name(),game_specific_message(),match_type(MatchType_t::kMatchType_none),match_number(0),replay_number(0),alliance_station_id(AllianceStationID_t::kAllianceStationID_red1),match_time(){}
 }

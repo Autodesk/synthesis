@@ -74,7 +74,7 @@ namespace hel{
          * return a standard string representing the event name
          */
 
-        std::string getEventName()const;
+        std::string getEventName()const noexcept;
 
         /**
          * \fn void setEventName(std::string event_name)
@@ -82,7 +82,7 @@ namespace hel{
          * \param event_name a standard string representing the name of the event
          */
 
-        void setEventName(std::string);
+        void setEventName(std::string)noexcept;
 
         /**
          * \fn std::string getGameSpecificMessage()const
@@ -90,7 +90,7 @@ namespace hel{
          * \return a standard string representing any game specific message
          */
 
-        std::string getGameSpecificMessage()const;
+        std::string getGameSpecificMessage()const noexcept;
 
         /**
          * \fn void setGameSpecificMessage(std::string game_specific_message)
@@ -98,7 +98,7 @@ namespace hel{
          * \param game_specific_message the game specific message for the match
          */
 
-        void setGameSpecificMessage(std::string);
+        void setGameSpecificMessage(std::string)noexcept;
 
         /**
          * \fn MatchType_t getMatchType()const
@@ -106,7 +106,7 @@ namespace hel{
          * \return a MatchType_t object representing the type of match
          */
 
-        MatchType_t getMatchType()const;
+        MatchType_t getMatchType()const noexcept;
 
         /**
          * \fn void setMatchType(MatchType_t match_type)
@@ -114,7 +114,7 @@ namespace hel{
          * \param match_type the type of match running
          */
 
-        void setMatchType(MatchType_t);
+        void setMatchType(MatchType_t)noexcept;
 
         /**
          * \fn uint16_t getMatchNumber()const
@@ -122,7 +122,7 @@ namespace hel{
          * \return a 16-bit integer representing the match number
          */
 
-        uint16_t getMatchNumber()const;
+        uint16_t getMatchNumber()const noexcept;
 
         /**
          * \fn void setMatchNumber(uint16_t match_number)
@@ -130,7 +130,7 @@ namespace hel{
          * \param match_number the running match number
          */
 
-        void setMatchNumber(uint16_t);
+        void setMatchNumber(uint16_t)noexcept;
 
         /**
          * \fn uint8_t getReplayNumber()const
@@ -138,7 +138,7 @@ namespace hel{
          * \return a byte representing the replay number of the running match (0 if not a replay)
          */
 
-        uint8_t getReplayNumber()const;
+        uint8_t getReplayNumber()const noexcept;
 
         /**
          * \fn void setReplayNumber(uint8_t replay_number)
@@ -146,7 +146,7 @@ namespace hel{
          * \param replay_number a byte representing the replay number for the running match (0 if not a replay)
          */
 
-        void setReplayNumber(uint8_t);
+        void setReplayNumber(uint8_t)noexcept;
 
         /**
          * \fn AllianceStationID_t getAllianceStationID()const
@@ -154,7 +154,7 @@ namespace hel{
          * \return an AllianceStationID_t object representing the robot's driver station ID
          */
 
-        AllianceStationID_t getAllianceStationID()const;
+        AllianceStationID_t getAllianceStationID()const noexcept;
 
         /**
          * \fn void setAllianceStationID(AllianceStationID_t alliance_station_id)
@@ -162,7 +162,7 @@ namespace hel{
          * \param alliance_station_id the driver station position for the robot
          */
 
-        void setAllianceStationID(AllianceStationID_t);
+        void setAllianceStationID(AllianceStationID_t)noexcept;
 
         /**
          * \fn double getMatchTime()const
@@ -170,7 +170,7 @@ namespace hel{
          * \return a double representing the match time in seconds
          */
 
-        double getMatchTime()const;
+        double getMatchTime()const noexcept;
 
         /**
          * \fn void SetMatchTime(double match_time)
@@ -178,7 +178,7 @@ namespace hel{
          * \param match_time a double representing the match time in seconds
          */
 
-        void setMatchTime(double);
+        void setMatchTime(double)noexcept;
 
         static MatchInfo deserialize(std::string);
 
@@ -186,7 +186,7 @@ namespace hel{
 
         std::string toString()const;
 
-        MatchInfo();
+        MatchInfo()noexcept;
     };
 }
 

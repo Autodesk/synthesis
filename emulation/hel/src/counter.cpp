@@ -4,39 +4,39 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tCounter::tOutput Counter::getOutput()const{
+    tCounter::tOutput Counter::getOutput()const noexcept{
         return output;
     }
 
-    void Counter::setOutput(tCounter::tOutput out){
+    void Counter::setOutput(tCounter::tOutput out)noexcept{
         output = out;
     }
 
-    tCounter::tConfig Counter::getConfig()const{
+    tCounter::tConfig Counter::getConfig()const noexcept{
         return config;
     }
 
-    void Counter::setConfig(tCounter::tConfig c){
+    void Counter::setConfig(tCounter::tConfig c)noexcept{
         config = c;
     }
 
-    tCounter::tTimerOutput Counter::getTimerOutput()const{
+    tCounter::tTimerOutput Counter::getTimerOutput()const noexcept{
         return timer_output;
     }
 
-    void Counter::setTimerOutput(tCounter::tTimerOutput out){
+    void Counter::setTimerOutput(tCounter::tTimerOutput out)noexcept{
         timer_output = out;
     }
 
-    tCounter::tTimerConfig Counter::getTimerConfig()const{
+    tCounter::tTimerConfig Counter::getTimerConfig()const noexcept{
         return timer_config;
     }
 
-    void Counter::setTimerConfig(tCounter::tTimerConfig c){
+    void Counter::setTimerConfig(tCounter::tTimerConfig c)noexcept{
         timer_config = c;
     }
 
-    Counter::Counter():output(),config(),timer_output(),timer_config(){}
+    Counter::Counter()noexcept:output(),config(),timer_output(),timer_config(){}
 
     struct CounterManager: public tCounter{
     private:
@@ -345,7 +345,7 @@ namespace hel{
             return instance.first->counters[index].getTimerOutput().Stalled;
         }
 
-        void strobeReset(tRioStatusCode* /*status*/){
+        void strobeReset(tRioStatusCode* /*status*/){ //TODO
             //resets counter
             auto instance = hel::RoboRIOManager::getInstance();
             tOutput output = instance.first->counters[index].getOutput();

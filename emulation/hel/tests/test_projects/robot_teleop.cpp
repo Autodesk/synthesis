@@ -42,7 +42,7 @@ public:
     }
 
     void TeleopPeriodic(){
-        //std::cout<<"Joystick forward:"<<(-m_stick.GetY())<<" rotate:"<<m_stick.GetX()<<"\n";
+        double start = frc::Timer::GetFPGATimestamp();
         if(!driveMode)
             m_robotDrive.ArcadeDrive(-m_stick.GetRawAxis(1), m_stick.GetRawAxis(4));
         else
@@ -51,6 +51,7 @@ public:
             driveMode = !driveMode;
         }
         frc::Wait(0.005);
+        std::cout<<"Loop time: "<<(frc::Timer::GetFPGATimestamp() - start)<<" s\n";
     }
 };
 
