@@ -25,16 +25,15 @@ namespace hel {
                 auto instance = hel::SendDataManager::getInstance();
 
                 //if(instance.first->hasNewData()){//TODO
-                    auto data =  instance.first->serialize();
-                    instance.second.unlock();
-                    std::cout << instance.first->toString() << "\n";
-                    try {
-                        asio::write(socket, asio::buffer(data), asio::transfer_all());
-                    }
-                    catch(std::system_error){
-                        std::cout << std::flush << "Sender Socket disconnected\n";
-                        break;
-                    }
+                auto data =  instance.first->serialize();
+                instance.second.unlock();
+                try {
+                    asio::write(socket, asio::buffer(data), asio::transfer_all());
+                }
+                catch(std::system_error){
+                    std::cout << std::flush << "Sender Socket disconnected\n";
+                    break;
+                }
                 //} else {
                     //instance.second.unlock();
                 //}
