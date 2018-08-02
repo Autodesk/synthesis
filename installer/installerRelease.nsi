@@ -17,7 +17,9 @@ RequestExecutionLevel admin
 ;Interface Settings
 
   !define MUI_WELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
+  !define MUI_UNWELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
   !define MUI_ICON "W16_SYN_launch.ico"
+  !define MUI_UNICON "W16_SYN_launch.ico"
   !define MUI_HEADERIMAGE
   !define MUI_HEADERIMAGE_BITMAP "orange-r.bmp"
   !define MUI_HEADERIMAGE_RIGHT
@@ -45,8 +47,8 @@ RequestExecutionLevel admin
 
   !insertmacro MUI_LANGUAGE "English"
 
-UninstPage uninstConfirm
-UninstPage instfiles
+;UninstPage uninstConfirm
+;UninstPage instfiles
 
 Section
 
