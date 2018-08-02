@@ -4,15 +4,20 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tSysWatchdog::tStatus SysWatchdog::getStatus()const{
+    tSysWatchdog::tStatus SysWatchdog::getStatus()const noexcept{
         return status;
     }
 
-    void SysWatchdog::setStatus(tSysWatchdog::tStatus s){
+    void SysWatchdog::setStatus(tSysWatchdog::tStatus s)noexcept{
         status = s;
     }
 
-    SysWatchdog::SysWatchdog():status(){}
+    SysWatchdog::SysWatchdog()noexcept:status(){}
+    SysWatchdog::SysWatchdog(const SysWatchdog& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(status);
+#undef COPY
+    }
 
     struct SysWatchdogManager: public tSysWatchdog{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation

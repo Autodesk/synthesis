@@ -191,6 +191,7 @@ namespace hel{
         std::string toString()const;
 
         Joystick()noexcept;
+        Joystick(const Joystick&)noexcept;
     };
 }
 

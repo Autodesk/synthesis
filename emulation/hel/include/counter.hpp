@@ -104,6 +104,7 @@ namespace hel{
         void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig)noexcept;
 
         Counter()noexcept;
+        Counter(const Counter&)noexcept;
     };
 }
 

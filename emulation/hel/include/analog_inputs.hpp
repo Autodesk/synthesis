@@ -50,6 +50,9 @@ namespace hel{
              */
 
             std::vector<int32_t> values;
+
+            AnalogInput()noexcept;
+            AnalogInput(const AnalogInput&)noexcept;
         };
 
         /**
@@ -164,6 +167,7 @@ namespace hel{
         std::vector<int32_t> getValues(uint8_t);
 
         AnalogInputs()noexcept;
+        AnalogInputs(const AnalogInputs&)noexcept;
 
     private:
 

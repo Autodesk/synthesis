@@ -54,6 +54,7 @@ namespace hel{
         static MXPData deserialize(std::string);
 
         MXPData()noexcept;
+        MXPData(const MXPData&)noexcept;
     };
 
     MXPData::Config s_to_mxp_config(std::string);

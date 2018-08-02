@@ -77,8 +77,20 @@ namespace hel{
     }
 
     PWMSystem::PWM::PWM()noexcept:period_scale(0), pulse_width(0){}
+    PWMSystem::PWM::PWM(const PWM& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(period_scale);
+        COPY(pulse_width);
+#undef COPY
+    }
 
-    PWMSystem::PWMSystem()noexcept:hdr(),mxp(){}
+    PWMSystem::PWMSystem()noexcept:hdr({}),mxp({}){}
+    PWMSystem::PWMSystem(const PWMSystem& source)noexcept:PWMSystem(){
+#define COPY(NAME) NAME = source.NAME
+        COPY(hdr);
+        COPY(mxp);
+#undef COPY
+    }
 
     struct PWMManager: public tPWM{
         tSystemInterface* getSystemInterface(){

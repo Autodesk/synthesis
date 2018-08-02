@@ -216,5 +216,17 @@ namespace hel{
     }
 
     EncoderManager::EncoderManager()noexcept:EncoderManager(0,PortType::DI,0,PortType::DI){}
+    EncoderManager::EncoderManager(const EncoderManager& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(type);
+        COPY(index);
+        COPY(a_channel);
+        COPY(a_type);
+        COPY(b_channel);
+        COPY(b_type);
+        COPY(ticks);
+        COPY(zeroed_ticks);
+#undef COPY
+    }
     EncoderManager::EncoderManager(uint8_t a,PortType a_t,uint8_t b,PortType b_t)noexcept:type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0),zeroed_ticks(0){}
 }

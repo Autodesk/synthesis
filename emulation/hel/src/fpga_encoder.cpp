@@ -37,6 +37,14 @@ namespace hel{
     }
 
     FPGAEncoder::FPGAEncoder()noexcept:output(),config(),timer_output(),timer_config(){}
+    FPGAEncoder::FPGAEncoder(const FPGAEncoder& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(output);
+        COPY(config);
+        COPY(timer_output);
+        COPY(timer_config);
+#undef COPY
+    }
 
     struct FPGAEncoderManager: public tEncoder{
     private:

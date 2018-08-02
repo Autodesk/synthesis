@@ -8,7 +8,9 @@ namespace hel{
     struct NetComm{
         uint32_t ref_num;
         std::function<void(uint32_t)> occurFunction;
+
         NetComm()noexcept;
+        NetComm(const NetComm&)noexcept;
     };
 }
 

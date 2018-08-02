@@ -11,9 +11,10 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus status;
 
     public:
-        nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus getStatus()const;
-        void setStatus(nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus);
-        SysWatchdog();
+        nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus getStatus()const noexcept;
+        void setStatus(nFPGA::nRoboRIO_FPGANamespace::tSysWatchdog::tStatus)noexcept;
+        SysWatchdog()noexcept;
+        SysWatchdog(const SysWatchdog&)noexcept;
     };
 }
 

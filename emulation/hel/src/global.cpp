@@ -16,6 +16,12 @@ namespace hel{
         fpga_start_time = getCurrentTime();
     }
 
+    Global::Global(const Global& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(fpga_start_time);
+#undef COPY
+    }
+
     uint64_t Global::getCurrentTime()noexcept{
         return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()/TIME_CONSTANT).count(); //TODO system time runs fast
     }

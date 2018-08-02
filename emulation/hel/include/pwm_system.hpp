@@ -49,6 +49,7 @@ namespace hel{
             uint16_t pulse_width;
 
             PWM()noexcept;
+            PWM(const PWM&)noexcept;
         };
 
         /**
@@ -177,6 +178,7 @@ namespace hel{
         static double getSpeed(uint32_t)noexcept;
 
         PWMSystem()noexcept;
+        PWMSystem(const PWMSystem&)noexcept;
     };
 
     namespace pwm_pulse_width{
