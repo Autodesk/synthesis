@@ -1,8 +1,11 @@
 #pragma once
 
 #include <map>
+#include <vector>
 #include <Fusion/Components/Joint.h>
 #include "Driver.h"
+
+using namespace adsk;
 
 namespace BXDJ
 {
@@ -12,7 +15,7 @@ namespace BXDJ
 		std::string robotName;
 
 		ConfigData();
-
+		ConfigData(std::string jsonConfig, std::vector<core::Ptr<fusion::Joint>>& joints);
 		ConfigData(const ConfigData & other);
 
 		std::unique_ptr<Driver> getDriver(adsk::core::Ptr<adsk::fusion::Joint>) const;
