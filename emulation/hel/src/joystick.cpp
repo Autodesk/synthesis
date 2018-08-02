@@ -188,7 +188,7 @@ namespace hel{
         return joy;
     }
 
-    Joystick::Joystick()noexcept:is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes(), axis_count(0), axis_types(), povs(), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){
+    Joystick::Joystick()noexcept:is_xbox(false), type(0), name(""), buttons(0), button_count(0), axes(0), axis_count(0), axis_types(0), povs(0), pov_count(0), outputs(0), left_rumble(0), right_rumble(0){
         for(auto& a: axes){
             a = 0;
         }
@@ -199,7 +199,7 @@ namespace hel{
             a = -1;
         }
     }
-    Joystick::Joystick(const Joystick& source)noexcept{
+    Joystick::Joystick(const Joystick& source)noexcept:Joystick(){
 #define COPY(NAME) NAME = source.NAME
         COPY(is_xbox);
         COPY(type);

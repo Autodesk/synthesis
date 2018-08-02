@@ -7,23 +7,7 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-hel::ReceiveData::ReceiveData(){
-    last_received_data = "";
-    for(auto& a: digital_hdrs){
-        a = false;
-    }
-    for(auto& a: digital_mxp){
-        a = {};
-    }
-    for(auto& a: joysticks){
-        a = {};
-    }
-    match_info = {};
-    robot_mode = {};
-    for(auto& a: encoder_managers){
-        a = {};
-    }
-}
+hel::ReceiveData::ReceiveData():last_received_data(""),digital_hdrs(false), digital_mxp({}), joysticks({}), match_info({}), robot_mode({}), encoder_managers({}){}
 
 void hel::ReceiveData::update()const{
     if(!hel::hal_is_initialized){

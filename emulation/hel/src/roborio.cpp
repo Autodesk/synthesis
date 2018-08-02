@@ -1,42 +1,9 @@
 #include "roborio.hpp"
 
 namespace hel{
-    RoboRIO::RoboRIO()noexcept{
-        user_button = true;
-        accelerometer = {};
-        for(auto& a: accumulators){
-            a = {};
-        }
-        alarm = {};
-        analog_inputs = {};
-        analog_outputs = {};
-        can_motor_controllers = {};
-        for(auto& a: counters){
-            a = {};
-        }
-        digital_system = {};
-        ds_errors = {};
-        match_info = {};
-        for(auto& a: encoder_managers){
-            a = {};
-        }
-        for(auto& a: fpga_encoders){
-            a = {};
-        }
-        global = {};
-        for(auto& a: joysticks){
-            a = {};
-        }
-        net_comm = {};
-        power = {};
-        pwm_system = {};
-        relay_system = {};
-        robot_mode = {};
-        spi_system = {};
-        watchdog = {};
-    }
+    RoboRIO::RoboRIO()noexcept:user_button(true), accelerometer({}), accumulators({}), alarm({}), analog_inputs({}), analog_outputs({}), can_motor_controllers({}), counters({}), digital_system({}), ds_errors({}), match_info({}), encoder_managers({}), fpga_encoders({}), global({}), joysticks({}), net_comm({}), power({}), pwm_system({}), relay_system({}), robot_mode({}), spi_system({}), watchdog({}){}
 
-    RoboRIO::RoboRIO(const RoboRIO& source)noexcept{
+    RoboRIO::RoboRIO(const RoboRIO& source)noexcept:RoboRIO(){
 #define COPY(NAME) NAME = source.NAME
         COPY(user_button);
         COPY(accelerometer);

@@ -58,7 +58,7 @@ namespace hel {
 
     AnalogInputs::AnalogInput::AnalogInput()noexcept:oversample_bits(0),average_bits(0),scan_list(0),values({}){}
 
-    AnalogInputs::AnalogInput::AnalogInput(const AnalogInput& source)noexcept{
+    AnalogInputs::AnalogInput::AnalogInput(const AnalogInput& source)noexcept:AnalogInput(){
 #define COPY(NAME) NAME = source.NAME
         COPY(oversample_bits);
         COPY(average_bits);
@@ -66,13 +66,9 @@ namespace hel {
 #undef COPY
     }
 
-    AnalogInputs::AnalogInputs()noexcept:analog_inputs(),config(),read_select(){
-        for(auto& a: analog_inputs){
-            a = {};
-        }
-    }
+    AnalogInputs::AnalogInputs()noexcept:analog_inputs({}),config(),read_select(){}
 
-    AnalogInputs::AnalogInputs(const AnalogInputs& source)noexcept{
+    AnalogInputs::AnalogInputs(const AnalogInputs& source)noexcept:AnalogInputs(){
 #define COPY(NAME) NAME = source.NAME
         COPY(analog_inputs);
         COPY(config);

@@ -84,8 +84,8 @@ namespace hel{
 #undef COPY
     }
 
-    PWMSystem::PWMSystem()noexcept:hdr(),mxp(){}
-    PWMSystem::PWMSystem(const PWMSystem& source)noexcept{
+    PWMSystem::PWMSystem()noexcept:hdr({}),mxp({}){}
+    PWMSystem::PWMSystem(const PWMSystem& source)noexcept:PWMSystem(){
 #define COPY(NAME) NAME = source.NAME
         COPY(hdr);
         COPY(mxp);
