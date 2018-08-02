@@ -1,5 +1,5 @@
-#include <windows.h>
 #include "Filesystem.h"
+#include <windows.h>
 
 const std::string Filesystem::ROBOT_APPDATA_DIRECTORY = "Synthesis\\Robots";
 
@@ -22,6 +22,6 @@ std::string Filesystem::getCurrentRobotDirectory(std::string name)
 
 void Filesystem::createDirectory(std::string path)
 {
-	std::wstring stemp = std::wstring(path.begin(), path.end());
-	CreateDirectory(stemp.c_str(), NULL);
+	std::wstring sPath = std::wstring(path.begin(), path.end());
+	CreateDirectory(sPath.c_str(), NULL);
 }
