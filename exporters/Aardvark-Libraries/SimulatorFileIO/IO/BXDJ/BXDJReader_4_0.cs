@@ -895,6 +895,10 @@ public partial class BXDJSkeleton
                 case "SensorConversionFactor":
                     // Assign a value to useSecondarySource.
                     robotSensor.conversionFactor = double.Parse(reader.ReadElementContentAsString());
+                    if(robotSensor.conversionFactor == 0)
+                    {
+                        robotSensor.conversionFactor = 1;
+                    }
                     break;
             }
         }
