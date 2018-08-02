@@ -123,6 +123,13 @@ bool EUI::createExportPalette()
 	return true;
 }
 
+void Synthesis::EUI::openExportPalette()
+{
+	exportButtonCommand->controlDefinition()->isEnabled(false);
+	exportPalette->sendInfoToHTML("joints", Exporter::stringifyJoints(Exporter::collectJoints(app->activeDocument())));
+	exportPalette->isVisible(true);
+}
+
 void EUI::deleteExportPalette()
 {
 	Ptr<Palettes> palettes = UI->palettes();
@@ -141,6 +148,7 @@ void EUI::deleteExportPalette()
 void EUI::closeExportPalette()
 {
 	exportPalette->isVisible(false);
+	exportButtonCommand->controlDefinition()->isEnabled(true);
 }
 
 bool EUI::createProgressPalette()
@@ -166,6 +174,12 @@ bool EUI::createProgressPalette()
 	return true;
 }
 
+void Synthesis::EUI::openProgressPalette()
+{
+	progressPalette->sendInfoToHTML("progress", "0");
+	progressPalette->isVisible(true);
+}
+
 void EUI::deleteProgressPalette()
 {
 	Ptr<Palettes> palettes = UI->palettes();
@@ -184,6 +198,7 @@ void EUI::deleteProgressPalette()
 void EUI::closeProgressPalette()
 {
 	progressPalette->isVisible(false);
+	exportButtonCommand->controlDefinition()->isEnabled(true);
 }
 
 bool EUI::createExportButton()
@@ -199,7 +214,7 @@ bool EUI::createExportButton()
 		if (!commandCreatedEvent)
 			return false;
 
-		return commandCreatedEvent->add(new ShowPaletteCommandCreatedHandler(app));
+		return commandCreatedEvent->add(new ShowPaletteCommandCreatedHandler(this));
 	}
 	
 	return true;
@@ -275,23 +290,21 @@ void EUI::updateProgress(double percent)
 		percent = 1;
 
 	progressPalette->sendInfoToHTML("progress", std::to_string(percent));
-	progressPalette->isVisible(true);
 }
 
 void EUI::exportRobot(BXDJ::ConfigData config)
 {
-	updateProgress(0);
+	openProgressPalette();
 
-	// Add delay so that loading bar has time to animate
-	std::this_thread::sleep_for(std::chrono::milliseconds(250));
-
+	// Export meshes
 	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
 	{
 		updateProgress(percent);
 	}, &killExportThread);
 
-	// Add delay so that loading bar has time to animate
-	std::this_thread::sleep_for(std::chrono::milliseconds(250));
+	// Add delay before closing so that loading bar has time to animate
+	if (!killExportThread)
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
 	closeProgressPalette();
 }
