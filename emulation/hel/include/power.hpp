@@ -43,6 +43,7 @@ namespace hel{
             nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable getDisabled()const noexcept;
             void setDisabled(nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable)noexcept;
             Power()noexcept;
+            Power(const Power&)noexcept;
         };
 }
 

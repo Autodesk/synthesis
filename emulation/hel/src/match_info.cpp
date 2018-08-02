@@ -167,5 +167,16 @@ namespace hel{
         return s;
     }
 
-    MatchInfo::MatchInfo()noexcept:event_name(),game_specific_message(),match_type(MatchType_t::kMatchType_none),match_number(0),replay_number(0),alliance_station_id(AllianceStationID_t::kAllianceStationID_red1),match_time(){}
+    MatchInfo::MatchInfo()noexcept:event_name(""),game_specific_message(""),match_type(MatchType_t::kMatchType_none),match_number(0),replay_number(0),alliance_station_id(AllianceStationID_t::kAllianceStationID_red1),match_time(0){}
+    MatchInfo::MatchInfo(const MatchInfo& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(event_name);
+        COPY(game_specific_message);
+        COPY(match_type);
+        COPY(match_number);
+        COPY(replay_number);
+        COPY(alliance_station_id);
+        COPY(match_time);
+#undef COPY
+    }
 }

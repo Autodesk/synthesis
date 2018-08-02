@@ -147,6 +147,15 @@ namespace hel{
 
     CANMotorController::CANMotorController()noexcept:type(CANDevice::Type::UNKNOWN),id(0),speed(0.0),inverted(false){}
 
+    CANMotorController::CANMotorController(const CANMotorController& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(type);
+        COPY(id);
+        COPY(speed);
+        COPY(inverted);
+#undef COPY
+    }
+
     CANMotorController::CANMotorController(uint32_t message_id)noexcept:CANMotorController(){
         type = CANDevice::pullDeviceType(message_id);
         assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);

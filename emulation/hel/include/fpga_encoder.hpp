@@ -68,6 +68,7 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const noexcept;
         void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig)noexcept;
         FPGAEncoder()noexcept;
+        FPGAEncoder(const FPGAEncoder&)noexcept;
     };
 }
 

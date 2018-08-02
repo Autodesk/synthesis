@@ -37,6 +37,14 @@ namespace hel{
     }
 
     Counter::Counter()noexcept:output(),config(),timer_output(),timer_config(){}
+    Counter::Counter(const Counter& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(output);
+        COPY(config);
+        COPY(timer_output);
+        COPY(timer_config);
+#undef COPY
+    }
 
     struct CounterManager: public tCounter{
     private:

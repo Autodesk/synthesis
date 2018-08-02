@@ -18,6 +18,16 @@ hel::DSError::DSError(bool is_error, int32_t ec, const char* det, const char* lo
     call_stack = cs;
 }
 
+hel::DSError::DSError(const DSError& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+    COPY(type);
+    COPY(error_code);
+    COPY(details);
+    COPY(location);
+    COPY(call_stack);
+#undef COPY
+}
+
 std::string hel::to_string(hel::DSError::Type t){
     switch(t){
     case hel::DSError::Type::WARNING:

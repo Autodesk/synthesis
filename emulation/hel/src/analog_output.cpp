@@ -16,6 +16,11 @@ namespace hel{
     }
 
     AnalogOutputs::AnalogOutputs()noexcept:mxp_outputs(){}
+    AnalogOutputs::AnalogOutputs(const AnalogOutputs& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(mxp_outputs);
+#undef COPY
+    }
 
     struct AnalogOutputManager: public tAO{
         tSystemInterface* getSystemInterface(){

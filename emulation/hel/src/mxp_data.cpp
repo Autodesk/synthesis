@@ -39,6 +39,13 @@ hel::MXPData::Config hel::s_to_mxp_config(std::string s){
 
 hel::MXPData::MXPData()noexcept:config(hel::MXPData::Config::DI),value(0.0){}
 
+hel::MXPData::MXPData(const MXPData& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+    COPY(config);
+    COPY(value);
+#undef COPY
+}
+
 std::string hel::MXPData::toString()const{
     std::string s = "(";
     s += "config:" + hel::to_string(config) + ", ";

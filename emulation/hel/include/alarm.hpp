@@ -28,6 +28,9 @@ namespace hel{
         void setEnabled(bool)noexcept;
         uint32_t getTriggerTime()const noexcept;
         void setTriggerTime(uint32_t)noexcept;
+
+        Alarm()noexcept;
+        Alarm(const Alarm&)noexcept;
     };
 }
 

@@ -12,6 +12,7 @@ namespace hel{
      */
 
     struct ErrorBase{
+        virtual ~ErrorBase(){};
         virtual std::string toString()const = 0;
     };
 
@@ -78,6 +79,7 @@ namespace hel{
          */
 
         DSError(bool, int32_t, const char*, const char*, const char*)noexcept;
+        DSError(const DSError&)noexcept;
     };
 
     std::string to_string(DSError::Type);

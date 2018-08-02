@@ -103,7 +103,19 @@ namespace hel{
         return {first, second};
     }
 
-    Accelerometer::Accelerometer()noexcept:control_mode(),comm_target_reg(),active(),range(),x_accel(),y_accel(),z_accel(){}
+    Accelerometer::Accelerometer()noexcept:control_mode(ControlMode::SET_COMM_TARGET),comm_target_reg(0),active(false),range(0),x_accel(0.0),y_accel(0.0),z_accel(0.0){}
+
+    Accelerometer::Accelerometer(const Accelerometer& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(control_mode);
+        COPY(comm_target_reg);
+        COPY(active);
+        COPY(range);
+        COPY(x_accel);
+        COPY(y_accel);
+        COPY(z_accel);
+#undef COPY
+    }
 
     struct AccelerometerManager: public tAccel{
     private:

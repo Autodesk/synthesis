@@ -61,6 +61,7 @@ namespace hel{
         std::string toString()const;
 
         EncoderManager()noexcept;
+        EncoderManager(const EncoderManager&)noexcept;
         EncoderManager(uint8_t,PortType,uint8_t,PortType)noexcept;
     };
 

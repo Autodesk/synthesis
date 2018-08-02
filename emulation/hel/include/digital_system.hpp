@@ -49,9 +49,10 @@ namespace hel{
         /**
          * \var uint16_t mxp_special_functions_enabled
          * \brief Bit mask for MXP pins representing if their non-DIO option should be active
+         * MXP special functions are enabled high
          */
 
-        uint16_t mxp_special_functions_enabled;//enabled low, double check that
+        uint16_t mxp_special_functions_enabled;
 
         /**
          * \var uint8_t pulse_length
@@ -221,6 +222,7 @@ namespace hel{
         void setPWMPulseWidth(uint8_t, uint8_t);
 
         DigitalSystem()noexcept;
+        DigitalSystem(const DigitalSystem&)noexcept;
     };
 
     std::string to_string(DigitalSystem::DIOConfigurationException::Config);

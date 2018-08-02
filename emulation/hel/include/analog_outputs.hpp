@@ -44,6 +44,7 @@ namespace hel{
         void setMXPOutput(uint8_t,uint16_t);
 
         AnalogOutputs()noexcept;
+        AnalogOutputs(const AnalogOutputs&)noexcept;
     };
 }
 

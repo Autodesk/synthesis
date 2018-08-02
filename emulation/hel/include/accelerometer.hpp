@@ -252,6 +252,7 @@ namespace hel{
         std::pair<uint8_t, uint8_t> convertAccel(float)noexcept;
 
         Accelerometer()noexcept;
+        Accelerometer(const Accelerometer&)noexcept;
     };
 
 }
