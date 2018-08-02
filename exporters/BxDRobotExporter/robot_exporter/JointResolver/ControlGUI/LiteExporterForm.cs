@@ -34,7 +34,7 @@ public partial class LiteExporterForm : Form
     public LiteExporterForm()
     {
         InitializeComponent();
-        LoadingAnimation.Image = JointResolver.Properties.Resources.SyntheMation350x350;
+        LoadingAnimation.Image = JointResolver.Properties.Resources.LoadAnimationNewLogo;
         Instance = this;
         LoadingAnimation.WaitOnLoad = true;
         ExporterWorker.WorkerReportsProgress = true;
