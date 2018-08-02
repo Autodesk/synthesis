@@ -156,7 +156,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
             basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
         }
 
-        currentLinearPosition = wrapped.asmJoint.LinearPosition != null ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
+        currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
 
         hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
         if (hasAngularLimit)
@@ -164,7 +164,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
             angularLimitLow = (float)wrapped.asmJoint.AngularPositionStartLimit.Value;
             angularLimitHigh = (float)wrapped.asmJoint.AngularPositionEndLimit.Value;
         }
-        currentAngularPosition = wrapped.asmJoint.AngularPosition != null ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
+        currentAngularPosition = (wrapped.asmJoint.AngularPosition != null) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
 
         hasLinearStartLimit = wrapped.asmJoint.HasLinearPositionStartLimit;
         hasLinearEndLimit = wrapped.asmJoint.HasLinearPositionEndLimit;
