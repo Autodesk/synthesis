@@ -86,9 +86,12 @@ namespace BxDRobotExporter.Wizard
                     DefinePartPanel panel = new DefinePartPanel(node);
                     panels.Add(panel);
                     AddControlToNewTableRow(panel, DefinePartsLayout);
+                    if (node.GetSkeletalJoint().cDriver != null)
+                    {
+                        panel.refillValues(node.GetSkeletalJoint());
+                    }
                 }
             }
-
             ResumeLayout();
 
             _initialized = true;
