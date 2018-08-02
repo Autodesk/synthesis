@@ -128,32 +128,17 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         }
     }
 
-    public static bool IsCylindricalJoint(CustomRigidJoint jointI)
+    public void ReloadInventorJoint()
     {
-        // kMateLineLineJoint
-        if (jointI.joints.Count == 1)
+        if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
         {
-            AssemblyJointDefinition joint = jointI.joints[0].Definition;
-            return joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType;
-        }
-        return false;
-    }
-
-    public CylindricalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
-    {
-        if (!(IsCylindricalJoint(rigidJoint)))
-            throw new Exception("Not a Cylindrical joint");
-        wrapped = new SkeletalJoint(parent, rigidJoint);
-
-        if (wrapped.childGroup == rigidJoint.groupOne)
-        {
-            axis = Utilities.ToBXDVector(rigidJoint.geomTwo.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomTwo.RootPoint);
+            axis = Utilities.ToBXDVector(wrapped.rigidJoint.geomTwo.Direction);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
         }
         else
         {
-            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
+            axis = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
         }
 
         currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
@@ -180,6 +165,26 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
             throw new Exception("Joints with linear motion need two limits.");
         }
         wrapped.asmJoint.LinearPosition = wrapped.asmJoint.LinearPosition;
+    }
+
+    public static bool IsCylindricalJoint(CustomRigidJoint jointI)
+    {
+        // kMateLineLineJoint
+        if (jointI.joints.Count == 1)
+        {
+            AssemblyJointDefinition joint = jointI.joints[0].Definition;
+            return joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType;
+        }
+        return false;
+    }
+
+    public CylindricalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
+    {
+        if (!(IsCylindricalJoint(rigidJoint)))
+            throw new Exception("Not a Cylindrical joint");
+        wrapped = new SkeletalJoint(parent, rigidJoint);
+
+        ReloadInventorJoint();
     }
 
     protected override string ToString_Internal()

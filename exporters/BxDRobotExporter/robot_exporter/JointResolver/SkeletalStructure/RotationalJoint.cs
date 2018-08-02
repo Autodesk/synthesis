@@ -71,6 +71,28 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
         }
     }
 
+    public void ReloadInventorJoint()
+    {
+        try
+        {
+            axis = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.Normal);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.Center);
+        }
+        catch
+        {
+            axis = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
+        }
+
+        hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
+        if ((hasAngularLimit))
+        {
+            angularLimitLow = (float)wrapped.asmJoint.AngularPositionStartLimit.Value;
+            angularLimitHigh = (float)wrapped.asmJoint.AngularPositionEndLimit.Value;
+        }
+        currentAngularPosition = (wrapped.asmJoint.AngularPosition != null) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
+    }
+
     public static bool IsRotationalJoint(CustomRigidJoint jointI)
     {
         // RigidBodyJointType = kConcentricCircleCircleJoint
@@ -94,25 +116,7 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
             throw new Exception("Not a rotational joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
-        try
-        {
-            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Normal);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.Center);
-        }
-        catch
-        {
-            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
-        }
-
-
-        hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
-        if ((hasAngularLimit))
-        {
-            angularLimitLow = (float) wrapped.asmJoint.AngularPositionStartLimit.Value;
-            angularLimitHigh = (float) wrapped.asmJoint.AngularPositionEndLimit.Value;
-        }
-        currentAngularPosition = (wrapped.asmJoint.AngularPosition != null) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
+        ReloadInventorJoint();
     }
 
     protected override string ToString_Internal()

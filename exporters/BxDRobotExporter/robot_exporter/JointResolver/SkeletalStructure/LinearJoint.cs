@@ -9,8 +9,7 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
     {
         return wrapped;
     }
-
-
+    
     public void DetermineLimits()
     {
         MotionLimits cache = new MotionLimits();
@@ -72,6 +71,31 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         }
     }
 
+    public void ReloadInventorJoint()
+    {
+        if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
+        {
+            axis = Utilities.ToBXDVector(wrapped.rigidJoint.geomTwo.Direction);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
+        }
+        else
+        {
+            axis = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
+        }
+
+        if ((hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit) && (hasLowerLimit = wrapped.asmJoint.HasLinearPositionStartLimit))
+        {
+            linearLimitHigh = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
+            linearLimitLow = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
+        }
+        else
+        {
+            throw new Exception("Joints with linear motion need two limits.");
+        }
+        currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
+    }
+
     public static bool IsLinearJoint(CustomRigidJoint jointI)
     {
         // kTranslationalJoint
@@ -93,28 +117,7 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
             throw new Exception("Not a linear joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
-        if (wrapped.childGroup == rigidJoint.groupOne)
-        {
-            axis = Utilities.ToBXDVector(rigidJoint.geomTwo.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomTwo.RootPoint);
-        }
-        else
-        {
-            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
-        }
-
-        if ((hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit) && (hasLowerLimit = wrapped.asmJoint.HasLinearPositionStartLimit))
-        {
-            linearLimitHigh = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
-            linearLimitLow = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
-        }
-        else
-        {
-            throw new Exception("Joints with linear motion need two limits.");
-        }
-        currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
-
+        ReloadInventorJoint();
     }
 
     protected override string ToString_Internal()
