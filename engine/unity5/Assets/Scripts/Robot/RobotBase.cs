@@ -36,6 +36,16 @@ namespace Synthesis.Robot
         /// </summary>
         public UnityPacket.OutputStatePacket Packet { get; set; }
 
+        public sealed class EmuNetworkInfo
+        {
+            public RobotSensor RobotSensor;
+            public double encoderTickCount;
+            public double previousEuler = 0;
+            public RigidNode_Base wheel;
+        }
+
+        public List<EmuNetworkInfo> emuList;
+
         /// <summary>
         /// Represents the index specifying what control scheme the robot should use.
         /// </summary>
@@ -140,6 +150,8 @@ namespace Synthesis.Robot
             RootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
             RootNode.ListAllNodes(nodes);
 
+            emuList = new List<EmuNetworkInfo>();
+
             foreach (RigidNode_Base Base in RootNode.ListAllNodes())
             {
                 try
@@ -148,9 +160,17 @@ namespace Synthesis.Robot
                     {
                         foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
                         {
-
                             Debug.Log(sensor.type.ToString() + " " + sensor.conTypePort1 + " " + sensor.conTypePort2 + " " + sensor.conversionFactor +
                                 " " + sensor.port1 + " " + sensor.port2);
+                            if(sensor.type == RobotSensorType.ENCODER)
+                            {
+                                EmuNetworkInfo emuStruct = new EmuNetworkInfo();
+                                emuStruct.encoderTickCount = 0;
+                                emuStruct.RobotSensor = sensor;
+                                emuStruct.wheel = Base;
+
+                                emuList.Add(emuStruct);
+                            }
                         }
                     }
                 }

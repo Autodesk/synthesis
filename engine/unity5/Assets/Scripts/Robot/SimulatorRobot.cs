@@ -30,8 +30,6 @@ namespace Synthesis.Robot
         /// </summary>
         public bool IsResetting { get; private set; } = false;
 
-        public SimulatorRobot simRobot { get; private set; }
-
         private const float ResetVelocity = 0.05f;
         private const float HoldTime = 0.8f;
 
@@ -56,7 +54,6 @@ namespace Synthesis.Robot
         private void Awake()
         {
             StateMachine.SceneGlobal.Link<MainState>(this);
-            simRobot = this;
         }
 
         /// <summary>
@@ -197,32 +194,29 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
-            foreach (RigidNode n in RootNode.ListAllNodes())
+            foreach (EmuNetworkInfo a in emuList)
             {
+                RigidNode c = null;
 
-                if (n.GetSkeletalJoint() != null)
+                try
                 {
-                    //Debug.Log(b.transform.localRotation.x);
-                    foreach (RobotSensor sensor in n.GetSkeletalJoint().attachedSensors)
-                    {
+                    c = (RigidNode)(a.wheel);
+                }catch(Exception e)
+                {
+                    Debug.Log(e.StackTrace);
+                }
 
-                        BRaycastWheel b = n.MainObject.GetComponent<BRaycastWheel>();
+                BRaycastWheel b = c.MainObject.GetComponent<BRaycastWheel>();
 
-                        if (sensor.type == RobotSensorType.ENCODER)
-                        {
-                            if (sensor.conversionFactor == 0)
-                                sensor.conversionFactor = 1;
-                            b.wheelCounter += b.transform.localRotation.x / sensor.conversionFactor;
-                        }
+                if (a.RobotSensor.type == RobotSensorType.ENCODER)
+                {
+                    if (a.RobotSensor.conversionFactor == 0)
+                        a.RobotSensor.conversionFactor = 1;
 
-                        //Debug.Log(sensor.type.ToString());
-                        //Debug.Log(sensor.type.ToString() + " " + sensor.conTypePort1 + " " + sensor.conTypePort2 + " " + sensor.conversionFactor +
-                        //    " " + sensor.port1 + " " + sensor.port2);
-                        //Debug.Log(b.wheelCounter);
-                        
-
-                        Debug.Log(b.wheelCounter);
-                    }
+                    a.encoderTickCount += (((b.transform.eulerAngles.x - a.previousEuler)/360.0) * a.RobotSensor.conversionFactor);
+                    
+                    Debug.Log(a.encoderTickCount);
+                    a.previousEuler = b.transform.eulerAngles.x;
                 }
             }
 
