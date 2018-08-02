@@ -22,6 +22,13 @@ namespace Synthesis.States
 {
     public class ReplayState : State
     {
+        #region help ui variables
+        GameObject ui;
+        GameObject helpMenu;
+        GameObject toolbar;
+        GameObject overlay;
+        #endregion
+
         private const float CircleRenderDistance = 10f;
         private const float ConsolidationEpsilon = 0.25f;
 
@@ -243,6 +250,13 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
+            #region init
+            ui = GameObject.Find("ReplayUI");
+            helpMenu = Auxiliary.FindObject(ui, "Help");
+            toolbar = Auxiliary.FindObject(ui, "Toolbar");
+            overlay = Auxiliary.FindObject(ui, "Overlay");
+            #endregion
+
             foreach (Tracker t in trackers)
             {
                 RigidBody r = (RigidBody)t.GetComponent<BRigidBody>().GetCollisionObject();
@@ -276,6 +290,10 @@ namespace Synthesis.States
             Button helpButton = GameObject.Find("HelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(HelpMenu);
+
+            Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            closeHelp.onClick.RemoveAllListeners();
+            closeHelp.onClick.AddListener(CloseHelpMenu);
         }
 
         /// <summary>
@@ -283,7 +301,7 @@ namespace Synthesis.States
         /// </summary>
         public override void OnGUI()
         {
-            Rect controlRect = new Rect(ControlButtonMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
+            Rect controlRect = new Rect(helpMenu.activeSelf ? ControlButtonMargin+200 : ControlButtonMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
                 ButtonSize, ButtonSize);
 
             if (UnityEngine.GUI.Button(controlRect, string.Empty, rewindStyle))
@@ -339,8 +357,8 @@ namespace Synthesis.States
                 UnityEngine.GUI.Label(new Rect(Screen.width - SliderLeftMargin, controlRect.y - InfoBoxHeight - CollisionSliderMargin,
                     Screen.width - SliderLeftMargin, InfoBoxHeight), "Select a collision to consolidate.", windowStyle);
 
-            Rect sliderRect = new Rect(SliderLeftMargin, Screen.height - (SliderBottomMargin + SliderThickness),
-                Screen.width - (SliderRightMargin + SliderLeftMargin), SliderThickness);
+            Rect sliderRect = new Rect(helpMenu.activeSelf ? SliderLeftMargin + 200 : SliderLeftMargin, Screen.height - (SliderBottomMargin + SliderThickness),
+                helpMenu.activeSelf ? Screen.width - (SliderRightMargin + SliderLeftMargin + 200) : Screen.width - (SliderRightMargin + SliderLeftMargin), SliderThickness);
 
             rewindTime = UnityEngine.GUI.HorizontalSlider(sliderRect, rewindTime, Tracker.Lifetime, 0.0f, windowStyle, thumbStyle);
 
@@ -458,6 +476,7 @@ namespace Synthesis.States
         /// </summary>
         private void ReturnToMainState()
         {
+            if (helpMenu.activeSelf) CloseHelpMenu();
             StateMachine.PopState();
         }
 
@@ -484,7 +503,7 @@ namespace Synthesis.States
         public override void Update()
         {
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab) || UnityEngine.Input.GetKeyDown(KeyCode.Escape))
-                StateMachine.PopState();
+                ReturnToMainState();
         }
 
         /// <summary>
@@ -716,7 +735,25 @@ namespace Synthesis.States
         }
         private void HelpMenu()
         {
-            
+            helpMenu.SetActive(true);
+            overlay.SetActive(true);
+            toolbar.transform.Translate(new Vector3(100, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
+                else t.gameObject.SetActive(false);
+            }
+        }
+        private void CloseHelpMenu()
+        {
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            toolbar.transform.Translate(new Vector3(-100, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
+                else t.gameObject.SetActive(true);
+            }
         }
     }
 }
