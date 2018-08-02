@@ -10655,8 +10655,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeOffsetX
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: ChangeCameraFOV
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -10672,25 +10672,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ReleaseConfigurationButton
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
-        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ReleaseConfigurationButton
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: StopChangingCameraFOV
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -22123,7 +22106,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &417021396
 RectTransform:
   m_ObjectHideFlags: 0
@@ -49505,7 +49488,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Range
+  m_Text: Field of View
 --- !u!222 &892226245
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -61708,7 +61691,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1176369965
 RectTransform:
   m_ObjectHideFlags: 0
@@ -61716,7 +61699,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1176369964}
   m_LocalRotation: {x: 0.000000007450581, y: -5.551115e-17, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.00010121}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 404385357}
@@ -61732,7 +61715,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -742, y: 31}
+  m_AnchoredPosition: {x: -841, y: 22}
   m_SizeDelta: {x: 146.2, y: 369.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1176369966
@@ -63920,8 +63903,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: ToggleCameraFOVPanel
+      - m_Target: {fileID: 1741231149}
+        m_MethodName: ToggleChangePosition
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -67522,8 +67505,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeOffsetX
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: ChangeCameraFOV
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -67539,25 +67522,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ReleaseConfigurationButton
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
-        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ReleaseConfigurationButton
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: StopChangingCameraFOV
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -68098,7 +68064,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231149}
-        m_MethodName: ToggleEditFOV
+        m_MethodName: ToggleCameraFOVPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -75086,7 +75052,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231149}
-        m_MethodName: ToggleEditFOV
+        m_MethodName: ToggleCameraFOVPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -78999,7 +78965,7 @@ GameObject:
   - component: {fileID: 1506561067}
   - component: {fileID: 1506561066}
   m_Layer: 5
-  m_Name: CameraFOVPanel
+  m_Name: CameraFOVPanel1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85528,7 +85494,7 @@ GameObject:
   - component: {fileID: 1651682279}
   - component: {fileID: 1651682278}
   m_Layer: 5
-  m_Name: FOVEntry
+  m_Name: FOVEntry1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -99653,7 +99619,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231149}
-        m_MethodName: ToggleEditFOV
+        m_MethodName: ToggleCameraFOVPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -103518,7 +103484,7 @@ GameObject:
   - component: {fileID: 2031237032}
   - component: {fileID: 2031237031}
   m_Layer: 5
-  m_Name: RangeEntry
+  m_Name: FOVEntry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
