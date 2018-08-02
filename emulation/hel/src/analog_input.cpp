@@ -8,19 +8,19 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
-    void AnalogInputs::setConfig(tAI::tConfig value){
+    void AnalogInputs::setConfig(tAI::tConfig value)noexcept{
         config = value;
     }
 
-    tAI::tConfig AnalogInputs::getConfig(){
+    tAI::tConfig AnalogInputs::getConfig()noexcept{
         return config;
     }
 
-    void AnalogInputs::setReadSelect(tAI::tReadSelect value){
+    void AnalogInputs::setReadSelect(tAI::tReadSelect value)noexcept{
         read_select = value;
     }
 
-    tAI::tReadSelect AnalogInputs::getReadSelect(){
+    tAI::tReadSelect AnalogInputs::getReadSelect()noexcept{
         return read_select;
     }
 
@@ -56,11 +56,11 @@ namespace hel {
         analog_inputs[channel].values = values;
     }
 
-    AnalogInputs::AnalogInputs():analog_inputs(),config(),read_select(){}
+    AnalogInputs::AnalogInputs()noexcept:analog_inputs(),config(),read_select(){}
 
     struct AnalogInputManager: public tAI{
         tSystemInterface* getSystemInterface(){
-            return new SystemInterface();
+            return nullptr;
         }
 
         int32_t readOutput(tRioStatusCode* /*status*/){
@@ -152,7 +152,7 @@ namespace hel {
 
         uint8_t readOversampleBits(uint8_t channel, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
-            instance.second.unlock();
+            instance.second.unlock(); //TODO unlock in poor position on many of these functions
             return instance.first->analog_inputs.getOversampleBits(channel);
         }
 
@@ -164,7 +164,7 @@ namespace hel {
 
         uint8_t readScanList(uint8_t channel, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
-            return instance.first->analog_inputs.getAverageBits(channel);
+            return instance.first->analog_inputs.getScanList(channel);
             instance.second.unlock();
         }
 

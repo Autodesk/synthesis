@@ -24,10 +24,10 @@ namespace hel{
         uint32_t trigger_time;
 
     public:
-        bool getEnabled()const;
-        void setEnabled(bool);
-        uint32_t getTriggerTime()const;
-        void setTriggerTime(uint32_t);
+        bool getEnabled()const noexcept;
+        void setEnabled(bool)noexcept;
+        uint32_t getTriggerTime()const noexcept;
+        void setTriggerTime(uint32_t)noexcept;
     };
 }
 

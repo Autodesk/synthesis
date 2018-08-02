@@ -124,12 +124,12 @@ namespace hel{
     public:
 
         /**
-         * \fn ControlMode getControlMode()const
+         * \fn ControlMode getControlMode()const noexcept
          * \brief Fetches the active control mode
          * \return The active control mode specifying the data for modification
          */
 
-        ControlMode getControlMode()const;
+        ControlMode getControlMode()const noexcept;
 
         /**
          * \fn void setControlMode(ControlMode control_mode)
@@ -137,15 +137,15 @@ namespace hel{
          * \param control_mode the data to specify for modification
          */
 
-        void setControlMode(ControlMode);
+        void setControlMode(ControlMode)noexcept;
 
         /**
-         * \fn uint8_t getCommTargetReg()const
+         * \fn uint8_t getCommTargetReg()const noexcept
          * \brief Get the current data target for communication
          * \return The data target for communication
          */
 
-        uint8_t getCommTargetReg()const;
+        uint8_t getCommTargetReg()const noexcept;
 
         /**
          * \fn void setCommTargetReg(uint8_t comm_target_reg)
@@ -153,15 +153,15 @@ namespace hel{
          * \param comm_target_reg the data target for communication
          */
 
-        void setCommTargetReg(uint8_t);
+        void setCommTargetReg(uint8_t)noexcept;
 
         /**
-         * \fn bool getActive()const
+         * \fn bool getActive()const noexcept
          * \brief Get if the accelerometer is active
          * \return true if the accelerometer is set to active
          */
 
-        bool getActive()const;
+        bool getActive()const noexcept;
 
         /**
          * \fn void setActive(bool active)
@@ -169,15 +169,15 @@ namespace hel{
          * \param active true to enable the accelerometer
          */
 
-        void setActive(bool);
+        void setActive(bool)noexcept;
 
         /**
-         * \fn uint8_t getRange()const
+         * \fn uint8_t getRange()const noexcept
          * \brief Get the operating range of the accelerometer
          * \return a byte representing the operating range of the accelerometer
          */
 
-        uint8_t getRange()const;
+        uint8_t getRange()const noexcept;
 
         /**
          * \fn void setRange(uint_t range)
@@ -185,15 +185,15 @@ namespace hel{
          * \param range the operating range of the accelerometer
          */
 
-        void setRange(uint8_t);
+        void setRange(uint8_t)noexcept;
 
         /**
-         * \fn float getXAccel()const
+         * \fn float getXAccel()const noexcept
          * \brief Get the acceleration in the x direction
          * \return a float representing the acceleration in the x direction
          */
 
-        float getXAccel()const;
+        float getXAccel()const noexcept;
 
         /**
          * \fn void setXAccel(float x_accel)
@@ -201,15 +201,15 @@ namespace hel{
          * \param x_accel a float to set the acceleration in the x direction
          */
 
-        void setXAccel(float);
+        void setXAccel(float)noexcept;
 
         /**
-         * \fn float getYAccel()const
+         * \fn float getYAccel()const noexcept
          * \brief Get the acceleration in the y direction
          * \return a float representing the acceleration in the y direction
          */
 
-        float getYAccel()const;
+        float getYAccel()const noexcept;
 
         /**
          * \fn void setYAccel(float y_accel)
@@ -217,15 +217,15 @@ namespace hel{
          * \param y_accel a float to set the acceleration in the y direction
          */
 
-        void setYAccel(float);
+        void setYAccel(float)noexcept;
 
         /**
-         * \fn float getZAccel()const
+         * \fn float getZAccel()const noexcept
          * \brief Get the acceleration in the z direction
          * \return a float representing the acceleration in the z direction
          */
 
-        float getZAccel()const;
+        float getZAccel()const noexcept;
 
         /**
          * \fn void setZAccel(float z_accel)
@@ -233,7 +233,7 @@ namespace hel{
          * \param z_accel a float to set the acceleration in the z direction
          */
 
-        void setZAccel(float);
+        void setZAccel(float)noexcept;
 
         /**
          * \fn
@@ -241,7 +241,7 @@ namespace hel{
          * \
          */
 
-        float convertAccel(std::pair<uint8_t,uint8_t>);
+        float convertAccel(std::pair<uint8_t,uint8_t>)noexcept;
 
         /**
          * \fn
@@ -249,9 +249,9 @@ namespace hel{
          * \
          */
 
-        std::pair<uint8_t, uint8_t> convertAccel(float);
+        std::pair<uint8_t, uint8_t> convertAccel(float)noexcept;
 
-        Accelerometer();
+        Accelerometer()noexcept;
     };
 
 }

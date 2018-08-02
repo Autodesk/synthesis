@@ -33,24 +33,26 @@ namespace hel{
 
         int32_t ticks;
 
-        bool checkDevice(uint8_t, bool, bool, uint8_t, bool, bool)const;
-
-        void findDevice();
+        int32_t zeroed_ticks;
 
     public:
-        Type getType()const;
-        uint8_t getIndex()const;
-        uint8_t getAChannel()const;
-        void setAChannel(uint8_t);
-        PortType getAType()const;
-        void setAType(PortType);
-        uint8_t getBChannel()const;
-        void setBChannel(uint8_t);
-        PortType getBType()const;
-        void setBType(PortType);
-        void setTicks(int32_t);
-        int32_t getTicks()const;
-        void update(); //TODO add reset capability
+        bool checkDevice(uint8_t, bool, bool, uint8_t, bool, bool)const noexcept;
+        void updateDevice();
+        Type getType()const noexcept;
+        uint8_t getIndex()const noexcept;
+        uint8_t getAChannel()const noexcept;
+        void setAChannel(uint8_t)noexcept;
+        PortType getAType()const noexcept;
+        void setAType(PortType)noexcept;
+        uint8_t getBChannel()const noexcept;
+        void setBChannel(uint8_t)noexcept;
+        PortType getBType()const noexcept;
+        void setBType(PortType)noexcept;
+        void setRawTicks(int32_t)noexcept;
+        int32_t getRawTicks()const noexcept;
+        int32_t getCurrentTicks()const noexcept;
+        void update();
+        void reset()noexcept;
 
         std::string serialize()const;
 
@@ -58,8 +60,8 @@ namespace hel{
 
         std::string toString()const;
 
-        EncoderManager();
-        EncoderManager(uint8_t,PortType,uint8_t,PortType);
+        EncoderManager()noexcept;
+        EncoderManager(uint8_t,PortType,uint8_t,PortType)noexcept;
     };
 
     std::string to_string(EncoderManager::Type);

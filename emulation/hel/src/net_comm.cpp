@@ -6,7 +6,7 @@
 std::thread ds_spoofer;
 
 namespace hel{
-    NetComm::NetComm():ref_num(),occurFunction(){}
+    NetComm::NetComm()noexcept:ref_num(),occurFunction(){}
 }
 
 extern "C" {

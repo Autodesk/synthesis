@@ -40,19 +40,19 @@ namespace hel{
     public:
         std::string toString()const;
 
-        CANDevice::Type getType()const;
+        CANDevice::Type getType()const noexcept;
 
-        uint8_t getID()const;
+        uint8_t getID()const noexcept;
 
-        void setSpeedData(BoundsCheckedArray<uint8_t,MessageData::SIZE>);
+        void setSpeedData(BoundsCheckedArray<uint8_t,MessageData::SIZE>)noexcept;
 
-        void setSpeed(double);
+        void setSpeed(double)noexcept;
 
-        double getSpeed()const;
+        double getSpeed()const noexcept;
 
-        BoundsCheckedArray<uint8_t,MessageData::SIZE> getSpeedData()const;
+        BoundsCheckedArray<uint8_t,MessageData::SIZE> getSpeedData()const noexcept;
 
-        void setInverted(bool);
+        void setInverted(bool)noexcept;
 
         /**
          * \fn std::string serialize()const
@@ -71,9 +71,9 @@ namespace hel{
 
         static CANMotorController deserialize(std::string);
 
-        CANMotorController();
+        CANMotorController()noexcept;
 
-        CANMotorController(uint32_t);
+        CANMotorController(uint32_t)noexcept;
     };
 }
 

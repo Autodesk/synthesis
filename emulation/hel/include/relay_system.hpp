@@ -32,7 +32,7 @@ namespace hel{
          * \return a nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue object representing the reverse and forward channel outputs.
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue getValue()const;
+        nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue getValue()const noexcept;
 
         /**
          * \fn void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value)
@@ -41,9 +41,9 @@ namespace hel{
          * \param value a nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue object representing the reverse and forward channel outputs.
          */
 
-        void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue);
+        void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue)noexcept;
 
-        RelaySystem();
+        RelaySystem()noexcept;
     };
 }
 

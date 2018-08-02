@@ -44,7 +44,7 @@ namespace hel{
          * \return the accumulated values of the accumulator
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput getOutput()const;
+        nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput getOutput()const noexcept;
 
         /**
          * \fn void setOutput(nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput output)
@@ -52,7 +52,7 @@ namespace hel{
          * \param output the accumulated values to set for the accumulator
          */
 
-        void setOutput(nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput);
+        void setOutput(nFPGA::nRoboRIO_FPGANamespace::tAccumulator::tOutput)noexcept;
 
         /**
          * \fn int32_t getCenter()const
@@ -60,7 +60,7 @@ namespace hel{
          * \return the active center of the accumulator
          */
 
-        int32_t getCenter()const;
+        int32_t getCenter()const noexcept;
 
         /**
          * \fn void setCenter(int32_t center)
@@ -68,7 +68,7 @@ namespace hel{
          * \param center the center to set for accumulator
          */
 
-        void setCenter(int32_t);
+        void setCenter(int32_t)noexcept;
 
         /**
          * \fn int32_t getDeadband()const
@@ -76,7 +76,7 @@ namespace hel{
          * \return the active deadband for the accumulator
          */
 
-        int32_t getDeadband()const;
+        int32_t getDeadband()const noexcept;
 
         /**
          * \fn void setDeadband(int32_t deadband)
@@ -84,8 +84,8 @@ namespace hel{
          * \param deadband the deadband to set for the accumulator
          */
 
-        void setDeadband(int32_t);
-        Accumulator();
+        void setDeadband(int32_t)noexcept;
+        Accumulator()noexcept;
     };
 }
 

@@ -45,7 +45,7 @@ namespace hel{
          * \return the count
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getOutput()const;
+        nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getOutput()const noexcept;
 
         /**
          * \fn void setOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput output)
@@ -53,7 +53,7 @@ namespace hel{
          * \param output the count to set the counter to
          */
 
-        void setOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput);
+        void setOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput)noexcept;
 
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig getConfig()const
@@ -61,7 +61,7 @@ namespace hel{
          * \return the counter's configuration
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig getConfig()const;
+        nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig getConfig()const noexcept;
 
         /**
          * \fn void setConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig config)
@@ -69,7 +69,7 @@ namespace hel{
          * \param config the configuration to set for the counter
          */
 
-        void setConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig);
+        void setConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tConfig)noexcept;
 
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput getTimerOutput()const
@@ -77,7 +77,7 @@ namespace hel{
          * \return the time count
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput getTimerOutput()const;
+        nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput getTimerOutput()const noexcept;
 
         /**
          * \fn void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput timer_output)
@@ -85,7 +85,7 @@ namespace hel{
          * \param timer)output the time count to set for the counter
          */
 
-        void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput);
+        void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerOutput)noexcept;
 
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig getTimerConfig()const
@@ -93,7 +93,7 @@ namespace hel{
          * \return the timer configuration of the counter
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig getTimerConfig()const;
+        nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig getTimerConfig()const noexcept;
 
         /**
          * \fn void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig timer_config)
@@ -101,9 +101,9 @@ namespace hel{
          * \param timer_config the timer configuration to set for the counter
          */
 
-        void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig);
+        void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tCounter::tTimerConfig)noexcept;
 
-        Counter();
+        Counter()noexcept;
     };
 }
 

@@ -26,15 +26,15 @@ namespace hel{
          * \brief Get the time in microseconds at which the emulated FPGA started
          */
 
-        uint64_t getFPGAStartTime()const;
+        uint64_t getFPGAStartTime()const noexcept;
 
         /**
          * \fn static uint64_t getCurrentTime()
          * \brief Get the time in microseconds for which the emulated FPGA has been running
          */
 
-        static uint64_t getCurrentTime();
-        Global();
+        static uint64_t getCurrentTime()noexcept;
+        Global()noexcept;
     };
 }
 

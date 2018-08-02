@@ -59,15 +59,15 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig timer_config;
 
     public:
-        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getOutput()const;
-        void setOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput);
-        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const;
-        void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig);
-        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const;
-        void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput);
-        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const;
-        void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig);
-        FPGAEncoder();
+        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getOutput()const noexcept;
+        void setOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput)noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const noexcept;
+        void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig)noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const noexcept;
+        void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput)noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const noexcept;
+        void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig)noexcept;
+        FPGAEncoder()noexcept;
     };
 }
 
