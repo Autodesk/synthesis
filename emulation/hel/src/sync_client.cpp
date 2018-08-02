@@ -45,7 +45,7 @@ namespace hel {
                             }
                             continue;
                         }
-                        unsigned int i = received_data.find("\x1B");
+                        std::size_t i = received_data.find("\x1B");
                         if(i == std::string::npos) {
                             rest = received_data;
                             continue;
