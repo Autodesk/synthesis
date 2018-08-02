@@ -100,7 +100,7 @@ namespace Synthesis.Camera
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
             //For robot camera view window
-            robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
+            robotCameraView = Resources.Load("Images/Old Assets/RobotCameraView") as RenderTexture;
             robotCameraViewWindow = Auxiliary.FindObject(canvas, "RobotCameraPanelBorder");
 
             //For robot camera manager

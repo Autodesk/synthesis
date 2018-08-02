@@ -11898,7 +11898,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1741231150}
         m_MethodName: ToggleSensorRangePanel
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -24018,7 +24018,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1741231150}
         m_MethodName: ToggleSensorRangePanel
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -61716,7 +61716,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1176369964}
   m_LocalRotation: {x: 0.000000007450581, y: -5.551115e-17, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000116467476}
+  m_LocalPosition: {x: 0, y: 0, z: -0.00010121}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 404385357}
@@ -61732,7 +61732,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -810.0972, y: 31.000046}
+  m_AnchoredPosition: {x: -742, y: 31}
   m_SizeDelta: {x: 146.2, y: 369.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1176369966
@@ -83620,8 +83620,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeOffsetX
+        - m_Target: {fileID: 1741231150}
+          m_MethodName: ChangeSensorRange
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -83637,25 +83637,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ReleaseConfigurationButton
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
-        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ReleaseConfigurationButton
+        - m_Target: {fileID: 1741231150}
+          m_MethodName: StopChangingSensorRange
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -101252,7 +101235,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1969182166}
   m_LocalRotation: {x: 0.000000007450581, y: -5.551115e-17, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.00029826}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0003033044}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 458071652}
@@ -101263,7 +101246,7 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: -27.299988, y: 53}
   m_SizeDelta: {x: 26, y: 26}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0.49999884}
 --- !u!114 &1969182168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101280,8 +101263,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeOffsetX
+        - m_Target: {fileID: 1741231150}
+          m_MethodName: ChangeSensorRange
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -101297,25 +101280,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ReleaseConfigurationButton
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
-        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ReleaseConfigurationButton
+        - m_Target: {fileID: 1741231150}
+          m_MethodName: StopChangingSensorRange
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -109229,7 +109195,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1741231150}
         m_MethodName: ToggleSensorRangePanel
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
