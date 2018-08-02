@@ -87,6 +87,69 @@ namespace BxDRobotExporter.Wizard
             DriverComboBox_SelectedIndexChanged(null, null);
         }
         /// <summary>
+        /// refills values from existing joint
+        /// </summary>
+        /// <param name="joint"></param>
+        public void refillValues(SkeletalJoint_Base joint)
+        {
+            JointDriverType[] typeOptions;
+            typeOptions = JointDriver.GetAllowedDrivers(joint);
+            DriverComboBox.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
+
+            if (joint.cDriver.portA < PortOneUpDown.Minimum)
+                PortOneUpDown.Value = PortOneUpDown.Minimum;
+            else if (joint.cDriver.portA > PortOneUpDown.Maximum)
+                PortOneUpDown.Value = PortOneUpDown.Maximum;
+            else
+                PortOneUpDown.Value = joint.cDriver.portA;
+
+            if (joint.cDriver.portB < PortTwoUpDown.Minimum)
+                PortTwoUpDown.Value = PortTwoUpDown.Minimum;
+            else if (joint.cDriver.portB > PortTwoUpDown.Maximum)
+                PortTwoUpDown.Value = PortTwoUpDown.Maximum;
+            else
+                PortTwoUpDown.Value = joint.cDriver.portB;
+            
+            rbCAN.Checked = joint.cDriver.isCan;
+            if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
+            {
+                joint.cDriver.OutputGear = 1;
+            }
+            if (joint.cDriver.InputGear == 0)// prevents input gear from being 0
+            {
+                joint.cDriver.InputGear = 1;
+            }
+            OutputGeartxt.Value = (decimal)joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+            InputGeartxt.Value = (decimal)joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+
+            #region Meta info recovery
+            {
+                PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+                if (pneumaticMeta != null)
+                {
+                    cmbPneumaticDiameter.SelectedIndex = (int)pneumaticMeta.widthEnum;
+                    cmbPneumaticPressure.SelectedIndex = (int)pneumaticMeta.pressureEnum;
+                }
+                else
+                {
+                    cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
+                    cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.HIGH;
+                }
+            }
+            {
+                ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+                if (elevatorMeta != null && (int)elevatorMeta.type < 7)
+                {
+                    cmbStages.SelectedIndex = (int)elevatorMeta.type;
+                }
+                else
+                {
+                    cmbStages.SelectedIndex = 0;
+                }
+            }
+            #endregion
+        }
+        /// <summary>
         /// Handles all of the different kinds of data that should be displayed when the SelectedIndex of the <see cref="ComboBox"/> is changed.
         /// </summary>
         /// <param name="sender"></param>
