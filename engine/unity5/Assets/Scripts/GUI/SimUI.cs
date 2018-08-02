@@ -77,14 +77,14 @@ namespace Synthesis.GUI
         GameObject scoringTab;
         GameObject sensorTab;
 
-        HashSet<GameObject> panels = new HashSet<GameObject>();
-
         private bool freeroamWindowClosed = false;
         private bool oppositeSide = false;
         public static bool inputPanelOn = false;
         public static bool changeAnalytics = true;
 
         private StateMachine tabStateMachine;
+
+        string currentTab;
 
         GameObject helpMenu;
         GameObject overlay;
@@ -109,32 +109,14 @@ namespace Synthesis.GUI
             {
                 UpdateWindows();
 
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && !InputControl.freeze)
                 {
                     if (!exitPanel.activeSelf)
                     {
-                        bool a = false;
-                        foreach (GameObject o in panels)
-                        {
-                            if (o.activeSelf)
-                            {
-                                a = true;
-                                break;
-                            }
-                        }
-                        if (a)
-                        {
-                            EndOtherProcesses();
-                        }
-                        else
-                        {
-                            MainMenuExit("open");
-                        }
+                        if (GameObject.Find("Dropdown List")) GameObject.Destroy(GameObject.Find("Dropdown List"));
+                        MainMenuExit("open");
                     }
-                    else
-                    {
-                        MainMenuExit("cancel");
-                    }
+                    else MainMenuExit("cancel");
                 }
 
                 if (UnityEngine.Input.GetKey(KeyCode.LeftControl) && UnityEngine.Input.GetKeyDown(KeyCode.H))
@@ -147,6 +129,7 @@ namespace Synthesis.GUI
                     ShowBindedInfoPanel();
                 }
             }
+            HighlightTabs();
         }
 
         private void OnGUI()
@@ -205,6 +188,7 @@ namespace Synthesis.GUI
 
             LinkToolbars();
             tabStateMachine.ChangeState(new MainToolbarState());
+            currentTab = "HomeTab";
 
             ButtonCallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
             ButtonCallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
@@ -222,27 +206,31 @@ namespace Synthesis.GUI
         }
 
         #region tab buttons
-        public void OnMainTab(string option)
+        public void OnMainTab()
         {
             if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
+            currentTab = "HomeTab";
             tabStateMachine.ChangeState(new MainToolbarState());
         }
 
-        public void OnDPMTab(string option)
+        public void OnDPMTab()
         {
             if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
+            currentTab = "DriverPracticeTab";
             tabStateMachine.ChangeState(new DPMToolbarState());
         }
 
-        public void OnScoringTab(string option)
+        public void OnScoringTab()
         {
             if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
+            currentTab = "ScoringTab";
             tabStateMachine.ChangeState(new ScoringToolbarState());
         }
 
-        public void OnSensorTab(string option)
+        public void OnSensorTab()
         {
             if (helpMenu.activeSelf) CloseHelpMenu("SensorToolbar");
+            currentTab = "SensorTab";
             tabStateMachine.ChangeState(new SensorToolbarState());
         }
         private void CloseHelpMenu(string currentID = " ")
@@ -256,6 +244,13 @@ namespace Synthesis.GUI
             {
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
                 else t.gameObject.SetActive(true);
+            }
+        }
+        private void HighlightTabs()
+        {
+            foreach(Transform t in tabs.transform)
+            {
+                if (t.gameObject.name.Equals(currentTab)) t.gameObject.GetComponent<Button>().Select();
             }
         }
         #endregion

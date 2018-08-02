@@ -502,7 +502,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab) || UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (InputControl.GetButtonDown(Controls.buttons[StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.ControlIndex].replayMode) || UnityEngine.Input.GetKeyDown(KeyCode.Escape))
                 ReturnToMainState();
         }
 

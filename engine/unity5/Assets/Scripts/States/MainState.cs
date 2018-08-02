@@ -161,12 +161,12 @@ namespace Synthesis.States
             IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
 
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
+            StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(1).gameObject, false);
             StateMachine.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
             StateMachine.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
             StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetGamepieceSpawnpointUI"));
             StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
             StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
-            
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Synthesis.States
             }
 
             //Spawn a new robot from the same path or switch active robot
-            if (!ActiveRobot.IsResetting)
+            if (!ActiveRobot.IsResetting && ActiveRobot.ControlIndex == 0)
             {
                 if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].duplicateRobot) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
                 if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].switchActiveRobot)) SwitchActiveRobot();
@@ -200,8 +200,7 @@ namespace Synthesis.States
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             // Switches to replay mode
-            if (!ActiveRobot.IsResetting && UnityEngine.Input.GetKeyDown(KeyCode.Tab))
-            //if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
+            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -645,7 +644,6 @@ namespace Synthesis.States
             foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             {
                 t.Clear();
-
                 CollisionTracker.Reset();
             }
         }
