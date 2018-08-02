@@ -72,6 +72,8 @@ namespace BxDRobotExporter.Wizard
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
             SetWeightBoxValue(Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f));
             WeightUnitSelector.SelectedIndex = Utilities.GUI.RMeta.PreferMetric ? 1 : 0;
+            
+            FillFromPreviousSetup(Utilities.GUI.SkeletonBase);
         }
 
         /// <summary>
@@ -275,8 +277,6 @@ namespace BxDRobotExporter.Wizard
 
             _initialized = true;
 
-            FillFromPreviousSetup(Utilities.GUI.SkeletonBase);
-
             UpdateUI();
             OnInvalidatePage(); // Reset the next page in the wizard
         }
@@ -312,6 +312,19 @@ namespace BxDRobotExporter.Wizard
                 if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
                         node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
                 {
+                    if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel)
+                    {// get the type of drive train and set fields to match so we can add nodes later
+                        this.DriveTrainDropdown.SelectedIndex = ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).driveTrainType;
+                    }
+                }
+            }
+            DriveTrainDropdown_SelectedIndexChanged(null, null);
+            foreach (RigidNode_Base node in baseNode.ListAllNodes())
+            {
+                //For the first filter, we take out any nodes that do not have parents and rotational joints.
+                if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
+                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
+                {
                     if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
                         this.DriveTrainDropdown.SelectedIndex = ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).driveTrainType;
                         switch (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).type)
@@ -330,9 +343,14 @@ namespace BxDRobotExporter.Wizard
                         if (node.GetSkeletalJoint().cDriver.portA == 0)
                         {
                             SetWheelSide(node, WheelSide.RIGHT, true);
-                        } else if (node.GetSkeletalJoint().cDriver.portA == 1)
+                        }
+                        else if (node.GetSkeletalJoint().cDriver.portA == 1)
                         {
                             SetWheelSide(node, WheelSide.LEFT, true);
+                        }
+                        else if (node.GetSkeletalJoint().cDriver.portA == 2 && this.DriveTrainDropdown.SelectedIndex == 2)
+                        {
+                            SetWheelSide(node, WheelSide.MIDDLE, true);
                         }
                         if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).forwardExtremeValue == 10)
                         {

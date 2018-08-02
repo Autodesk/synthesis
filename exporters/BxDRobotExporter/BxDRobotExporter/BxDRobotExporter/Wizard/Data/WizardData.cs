@@ -74,6 +74,7 @@ namespace BxDRobotExporter.Wizard
                 //    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort, 1);
                 //}
                 WheelDriverMeta wheelDriver = new WheelDriverMeta();
+                wheelDriver.driveTrainType = (int)WizardData.Instance.driveTrain;
                 switch (FrictionLevel)
                 {
                     case WizardFrictionLevel.HIGH:
