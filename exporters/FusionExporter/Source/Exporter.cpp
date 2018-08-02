@@ -39,7 +39,16 @@ std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
 {
 	// Create JSON object containing all joint info
-	rapidjson::Document jointsJSON;
+	rapidjson::Document configJSON;
+	configJSON.SetObject();
+
+	// Robot Name
+	rapidjson::Value name;
+	name.SetString("unnamed", configJSON.GetAllocator());
+	configJSON.AddMember("name", name, configJSON.GetAllocator());
+
+	// Joints
+	rapidjson::Value jointsJSON;
 	jointsJSON.SetArray();
 
 	for (Ptr<Joint> joint : joints)
@@ -49,8 +58,8 @@ std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
 
 		// Joint Name
 		rapidjson::Value name;
-		name.SetString(joint->name().c_str(), joint->name().length(), jointsJSON.GetAllocator());
-		jointJSON.AddMember("name", name, jointsJSON.GetAllocator());
+		name.SetString(joint->name().c_str(), joint->name().length(), configJSON.GetAllocator());
+		jointJSON.AddMember("name", name, configJSON.GetAllocator());
 
 		// Joint Motion (linear and/or angular)
 		JointTypes type = joint->jointMotion()->jointType();
@@ -69,21 +78,23 @@ std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
 		else
 			motionType.SetUint(NEITHER);
 
-		jointJSON.AddMember("type", motionType, jointsJSON.GetAllocator());
+		jointJSON.AddMember("type", motionType, configJSON.GetAllocator());
 
 		// Existing driver configuration
 		rapidjson::Value driver;
 		driver.SetNull();
-		jointJSON.AddMember("driver", driver, jointsJSON.GetAllocator());
+		jointJSON.AddMember("driver", driver, configJSON.GetAllocator());
 
 		// Add joint to JSON array
-		jointsJSON.PushBack(jointJSON, jointsJSON.GetAllocator());
+		jointsJSON.PushBack(jointJSON, configJSON.GetAllocator());
 	}
+
+	configJSON.AddMember("joints", jointsJSON, configJSON.GetAllocator());
 
 	// Copy JSON to string
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-	jointsJSON.Accept(writer);
+	configJSON.Accept(writer);
 
 	std::string jsonString(buffer.GetString());
 	return jsonString;

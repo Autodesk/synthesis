@@ -1,5 +1,3 @@
-var jointOptions = [];
-
 // Used for hiding/showing elements in the following function
 function setVisible(element, visible)
 {
@@ -75,8 +73,7 @@ window.fusionJavaScriptHandler =
                 {
                     console.log("Receiving joint info...");
                     console.log(data);
-                    jointOptions = JSON.parse(data);
-                    displayJointOptions(jointOptions);
+                    writeConfigData(JSON.parse(data));
                 }
                 else if (action == 'debugger')
                 {
@@ -97,8 +94,12 @@ window.fusionJavaScriptHandler =
     };
 
 // Populates the form with joints
-function displayJointOptions(joints)
+function writeConfigData(configData)
 {
+    document.getElementById('name').value = configData.name;
+
+    var joints = configData.joints;
+
     // Delete all existing slots
     var existing = document.getElementsByClassName('joint-config');
     while (existing.length > 0)
@@ -254,11 +255,17 @@ function updateFieldOptions(fieldset)
 }
 
 // Updates jointOptions with the currently entered data
-function readFormData()
+function readConfigData()
 {
+    var configData = { 'name': document.getElementById('name').value };
+    var joints = [];
+
+    var jointOptions = document.getElementsByClassName('joint-config');
+
     for (var i = 0; i < jointOptions.length; i++)
     {
-        var fieldset = document.getElementById('joint-config-' + String(i));
+        var joint = {'driver': null};
+        var fieldset = jointOptions[i];
 
         var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
 
@@ -268,10 +275,7 @@ function readFormData()
             var portA = parseInt(getElByClass(fieldset, 'port-number-a').value);
             var portB = parseInt(getElByClass(fieldset, 'port-number-b').value);
 
-            jointOptions[i].driver = createDriver(selectedDriver, signal, portA, portB);
-            jointOptions[i].driver.signal = signal;
-            jointOptions[i].driver.portA = portA;
-            jointOptions[i].driver.portB = portB;
+            joint.driver = createDriver(selectedDriver, signal, portA, portB);
 
             if ((jointOptions[i].type & JOINT_ANGULAR) == JOINT_ANGULAR)
             {
@@ -280,13 +284,13 @@ function readFormData()
                 if (selectedWheel > 0)
                 {
                     var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
-                    jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
+                    joint.driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
 
                     if (isDriveWheel)
                     {
-                        jointOptions[i].driver.signal = PWM;
-                        jointOptions[i].driver.portA = parseInt(getElByClass(fieldset, 'wheel-side').value);
-                        jointOptions[i].driver.portB = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        joint.driver.signal = PWM;
+                        joint.driver.portA = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        joint.driver.portB = parseInt(getElByClass(fieldset, 'wheel-side').value);
                     }
                 }
             }
@@ -299,24 +303,27 @@ function readFormData()
                     var width = parseInt(getElByClass(fieldset, 'pneumatic-width').value);
                     var pressure = parseInt(getElByClass(fieldset, 'pneumatic-pressure').value);
 
-                    jointOptions[i].driver.pneumatic = createPneumatic(width, pressure);
+                    joint.driver.pneumatic = createPneumatic(width, pressure);
                 }
             }
         }
+
+        joints.push(joint);
     }
+
+    configData.joints = joints;
+    console.log(configData);
+    return configData;
 }
 
 // Sends the data to the Fusion add-in
 function sendInfoToFusion()
 {
-    var name = document.getElementById('name').value;
-
-    if (name.length == 0)
+    if (document.getElementById('name').value.length == 0)
     {
         alert("Please enter a name.");
         return;
     }
-
-    readFormData();
-    adsk.fusionSendData('export', stringifyConfigData(name, jointOptions));
+    
+    adsk.fusionSendData('export', JSON.stringify(readConfigData()));
 }
