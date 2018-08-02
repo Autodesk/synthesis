@@ -309,10 +309,10 @@ namespace BxDRobotExporter.Wizard
             foreach (RigidNode_Base node in baseNode.ListAllNodes())
             {
                 //For the first filter, we take out any nodes that do not have parents and rotational joints.
-                if (node.GetParent() != null && node.GetSkeletalJoint() != null && 
+                if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
                         node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
                 {
-                    if( ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
+                    if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
                         switch (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).type)
                         {
                             case WheelType.NORMAL:
@@ -333,75 +333,24 @@ namespace BxDRobotExporter.Wizard
                         {
                             SetWheelSide(node, WheelSide.LEFT, true);
                         }
+                        if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).forwardExtremeValue == 10)
+                        {
+                            SetWheelFriction(node, WizardData.WizardFrictionLevel.HIGH);
+                        }
+                        else if ((((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).forwardExtremeValue == 7))
+                        {
+                            SetWheelFriction(node, WizardData.WizardFrictionLevel.MEDIUM);
+                        }
+                        else
+                        {
+                            SetWheelFriction(node, WizardData.WizardFrictionLevel.LOW);
+                        }
                     }
                 }
             }
-        }switch (level)
-        {
-            case FrictionLevel.HIGH:
-                forwardExtremeSlip = 1; //Speed of max static friction force.
-                forwardExtremeValue = 10; //Force of max static friction force.
-                forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
-                forwardAsympValue = 8; //Force of leveld off kinetic friction force.
-
-                if (type == WheelType.OMNI) //Set to relatively low friction, as omni wheels can move sidways.
-                {
-                    sideExtremeSlip = 1; //Same as above, but orthogonal to the movement of the wheel.
-                    sideExtremeValue = .01f;
-                    sideAsympSlip = 1.5f;
-                    sideAsympValue = .005f;
-                }
-                else
-                {
-                    sideExtremeSlip = 1;
-                    sideExtremeValue = 10;
-                    sideAsympSlip = 1.5f;
-                    sideAsympValue = 8;
-                }
-                break;
-            case FrictionLevel.MEDIUM:
-                forwardExtremeSlip = 1f;
-                forwardExtremeValue = 7;
-                forwardAsympSlip = 1.5f;
-                forwardAsympValue = 5;
-
-                if (type == WheelType.OMNI)
-                {
-                    sideExtremeSlip = 1;
-                    sideExtremeValue = .01f;
-                    sideAsympSlip = 1.5f;
-                    sideAsympValue = .005f;
-                }
-                else
-                {
-                    sideExtremeSlip = 1;
-                    sideExtremeValue = 7;
-                    sideAsympSlip = 1.5f;
-                    sideAsympValue = 5;
-                }
-                break;
-            case FrictionLevel.LOW:
-                forwardExtremeSlip = 1;
-                forwardExtremeValue = 5;
-                forwardAsympSlip = 1.5f;
-                forwardAsympValue = 3;
-
-                if (type == WheelType.OMNI)
-                {
-                    sideExtremeSlip = 1;
-                    sideExtremeValue = .01f;
-                    sideAsympSlip = 1.5f;
-                    sideAsympValue = .005f;
-                }
-                else
-                {
-                    sideExtremeSlip = 1;
-                    sideExtremeValue = 5;
-                    sideAsympSlip = 1.5f;
-                    sideAsympValue = 3;
-                }
-                break;
         }
+            
+        
 
         public event Action ActivateNext;
         private void OnActivateNext() => ActivateNext?.Invoke();
@@ -504,6 +453,26 @@ namespace BxDRobotExporter.Wizard
                 if (panel.Value.Node == node)
                 {
                     SetWheelSide(panel.Key, side, null, updateUI);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the type of a specific wheel. Used in Auto Fill.
+        /// </summary>
+        /// <param name="node">Wheel to set type of</param>
+        /// <param name="type">New wheel type</param>
+        public void SetWheelFriction(RigidNode_Base node, WizardData.WizardFrictionLevel level)
+        {
+            if (node == null)
+                return;
+
+            foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
+            {
+                if (panel.Value.Node == node)
+                {
+                    panel.Value.FrictionLevel = level;
                     return;
                 }
             }
