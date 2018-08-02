@@ -138,5 +138,11 @@ namespace Synthesis.BUExtensions
             transform.position = wheel.WorldTransform.Origin.ToUnity();
             transform.localRotation *= Quaternion.AngleAxis(-wheel.Speed, axis);
         }
+
+        public float GetWheelSpeed()
+        {
+            RobotWheelInfo wheel = robot.RaycastRobot.GetWheelInfo(wheelIndex);
+            return wheel.Speed;
+        }
     }
 }

@@ -201,7 +201,8 @@ namespace Synthesis.Robot
                 try
                 {
                     c = (RigidNode)(a.wheel);
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     Debug.Log(e.StackTrace);
                 }
@@ -213,8 +214,33 @@ namespace Synthesis.Robot
                     if (a.RobotSensor.conversionFactor == 0)
                         a.RobotSensor.conversionFactor = 1;
 
-                    a.encoderTickCount += (((b.transform.eulerAngles.x - a.previousEuler)/360.0) * a.RobotSensor.conversionFactor);
-                    
+                    b.GetWheelSpeed();
+
+                    double angleDifference = b.transform.eulerAngles.x - a.previousEuler;
+
+                    if (b.GetWheelSpeed() > 0)
+                    {
+                        if (angleDifference < 0)
+                        {
+                            a.encoderTickCount += (((360 - a.previousEuler + b.transform.eulerAngles.x) / 360.0) * a.RobotSensor.conversionFactor);
+                        }
+                        else
+                        {
+                            a.encoderTickCount += ((angleDifference / 360) * a.RobotSensor.conversionFactor);
+                        }   
+                    }
+                    else if (b.GetWheelSpeed() < 0)
+                    {
+                        if (angleDifference > 0)
+                        {
+                            a.encoderTickCount += (((((360 - b.transform.eulerAngles.x) + a.previousEuler) * (-1)) / 360.0) * a.RobotSensor.conversionFactor);
+                        }
+                        else
+                        {
+                            a.encoderTickCount += (((angleDifference) / 360.0) * a.RobotSensor.conversionFactor);
+                        }
+                    }
+
                     Debug.Log(a.encoderTickCount);
                     a.previousEuler = b.transform.eulerAngles.x;
                 }
