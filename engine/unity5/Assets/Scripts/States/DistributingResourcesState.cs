@@ -13,6 +13,7 @@ namespace Synthesis.States
     public class DistributingResourcesState : SyncState
     {
         private Text percentageText;
+        private PlayerIdentity[] identities;
 
         /// <summary>
         /// Starts the resource distribution process.
@@ -33,7 +34,9 @@ namespace Synthesis.States
         /// </summary>
         public override void OnGUI()
         {
-            percentageText.text = ((int)(MatchManager.Instance.distributionProgress * 100f)).ToString() + "%";
+            //percentageText.text = ((int)(MatchManager.Instance.distributionProgress * 100f)).ToString() + "%";
+            identities = UnityEngine.Object.FindObjectsOfType<PlayerIdentity>();
+            percentageText.text = ((int)(identities.Average(p => p.transferProgress) * 100f)).ToString() + "%";
         }
     }
 }
