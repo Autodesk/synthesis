@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Synthesis.Network
 {
     public class TcpFileTransfer
     {
-        const int BufferSize = 1024;
+        /// <summary>
+        /// The size of the buffer used to receive file data.
+        /// </summary>
+        private const int BufferSize = 1024;
 
         /// <summary>
         /// Returns the local IP address.
@@ -23,9 +23,9 @@ namespace Synthesis.Network
         /// <summary>
         /// Sends all given files to the network address and port provided.
         /// </summary>
-        /// <param name="networkAddress"></param>
-        /// <param name="port"></param>
-        /// <param name="sourceDirectory"></param>
+        /// <param name="networkAddress">The network address to send the files to.</param>
+        /// <param name="port">The network port to connect to.</param>
+        /// <param name="files">A list of file paths pointing to the files to send.</param>
         public static void SendFiles(string networkAddress, int port, string[] files)
         {
             SendFiles(new string[] { networkAddress }, port, files);
@@ -34,9 +34,9 @@ namespace Synthesis.Network
         /// <summary>
         /// Sends all given files to the network addresses and port provided.
         /// </summary>
-        /// <param name="networkAddresses"></param>
-        /// <param name="port"></param>
-        /// <param name="files"></param>
+        /// <param name="networkAddresses">A list of network addresses to send the files to.</param>
+        /// <param name="port">The network port to connect to.</param>
+        /// <param name="files">A list of file paths pointing to the files to send.</param>
         public static void SendFiles(string[] networkAddresses, int port, string[] files)
         {
             Socket[] sockets = new Socket[networkAddresses.Length];
@@ -46,6 +46,7 @@ namespace Synthesis.Network
             {
                 IPAddress address;
 
+                // If the address is not parseable (e.g. "localhost"), then use the local IP address as a fallback.
                 if (!IPAddress.TryParse(networkAddresses[i], out address))
                     address = LocalAddress;
 
@@ -55,6 +56,7 @@ namespace Synthesis.Network
                 tasks[i] = sockets[i].ConnectAsync(endPoint);
             }
 
+            // Wait for all sockets to connect before sending files.
             Task.WhenAll(tasks).ContinueWith(t => SendAllFiles(sockets, files)).ContinueWith(t =>
             {
                 foreach (Socket socket in sockets)
@@ -68,8 +70,8 @@ namespace Synthesis.Network
         /// <summary>
         /// Sends all given files through the provided sockets.
         /// </summary>
-        /// <param name="socket"></param>
-        /// <param name="sourceDirectory"></param>
+        /// <param name="socket">The sockets used to send the files.</param>
+        /// <param name="files">The paths of the files to send.</param>
         private static void SendAllFiles(Socket[] sockets, string[] files)
         {
             MemoryStream stream = new MemoryStream();
@@ -85,9 +87,11 @@ namespace Synthesis.Network
 
                 SendStream(sockets, stream);
 
+                // Reset the stream for the next iteration.
                 stream.SetLength(0);
             }
 
+            // Write -1L as the next file size to indicate the end of the stream.
             writer.Write(-1L);
 
             SendStream(sockets, stream);
@@ -108,8 +112,9 @@ namespace Synthesis.Network
         /// Receives all files received from the given port and saves them to the provided
         /// directory.
         /// </summary>
-        /// <param name="port"></param>
-        /// <param name="saveDirectory"></param>
+        /// <param name="port">The port to receive the files from.</param>
+        /// <param name="saveDirectory">The directory where the new files will be saved.</param>
+        /// <param name="fileReceived">An action called on the main thread when a file is done being received.</param>
         public static void ReceiveFiles(int port, string saveDirectory, Action<string> fileReceived = null)
         {
             TcpListener listener = new TcpListener(LocalAddress, port);
@@ -120,6 +125,7 @@ namespace Synthesis.Network
                 Directory.CreateDirectory(saveDirectory);
                 NetworkStream stream = t.Result.GetStream();
 
+                // Read all files from the stream, closing the stream and TcpClient when done.
                 ReadFiles(saveDirectory, new BinaryReader(stream), fileReceived, () =>
                 {
                     stream.Close();
@@ -129,11 +135,13 @@ namespace Synthesis.Network
         }
 
         /// <summary>
-        /// Recursively receives all files read from the given <see cref="BinaryReader"/>, saves them to the
-        /// provided directory, and executes the given action when completed.
+        /// Recursively receives all files read from the given <see cref="BinaryReader"/> and saves them to the
+        /// provided directory. Provided actions are called on the main thread.
         /// </summary>
-        /// <param name="listener"></param>
-        /// <param name="saveDirectory"></param>
+        /// <param name="saveDirectory">The directory where the new files will be saved.</param>
+        /// <param name="reader">The reader used to read each file.</param>
+        /// <param name="fileReceived">An action called on the main thread when a file is done being received.</param>
+        /// <param name="whenDone">An action called on the main thread when all files have been read.</param>
         private static void ReadFiles(string saveDirectory, BinaryReader reader, Action<string> fileReceived, Action whenDone)
         {
             Task.Run(() => ReadFile(saveDirectory, reader)).ContinueWith(t =>
@@ -154,13 +162,14 @@ namespace Synthesis.Network
         /// Reads a single file from the given <see cref="BinaryReader"/> and saves it to the
         /// provided directory.
         /// </summary>
-        /// <param name="saveDirectory"></param>
-        /// <param name="reader"></param>
-        /// <returns></returns>
+        /// <param name="saveDirectory">The directory where the new file will be saved.</param>
+        /// <param name="reader">The reader used to read the file.</param>
+        /// <returns>The name of the file read.</returns>
         private static string ReadFile(string saveDirectory, BinaryReader reader)
         {
             long bytesLeft = reader.ReadInt64();
 
+            // If the size of the file is -1L, the end of the stream has been reached.
             if (bytesLeft == -1L)
                 return null;
 
