@@ -84,10 +84,10 @@ namespace hel{
         inputs(),
         mxp_special_functions_enabled(0),
         pulse_length(0),
-        pwm()
+        pwm(0)
     {}
 
-    DigitalSystem::DigitalSystem(const DigitalSystem& source)noexcept{ //TODO because of bounds checked array not all of these will be noexcept
+    DigitalSystem::DigitalSystem(const DigitalSystem& source)noexcept:DigitalSystem(){ //TODO because of bounds checked array not all of these will be noexcept
 #define COPY(NAME) NAME = source.NAME
         COPY(outputs);
         COPY(enabled_outputs);

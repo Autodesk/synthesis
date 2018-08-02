@@ -103,11 +103,8 @@ namespace hel{
     }
 
     BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> CANMotorController::getSpeedData()const noexcept{
-        BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> data;
+        BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> data{0};
         uint32_t speed_int = std::fabs(speed) * 256 * 256 * 4;
-        for(uint8_t& a: data){
-            a = 0;
-        }
 
         data[1] = speed_int / (256*256);
         speed_int %= 256 * 256;
@@ -180,7 +177,7 @@ extern "C"{
 
             hel::CANMotorController can_device = {messageID};
 
-            hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array;
+            hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array{0};
             std::copy(data, data + dataSize, data_array.begin());
 
             uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];

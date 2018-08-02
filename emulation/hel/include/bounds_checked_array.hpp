@@ -6,6 +6,7 @@
 #include "util.hpp"
 
 namespace hel{
+
     /**
      * \struct BoundsCheckedArray
      * \brief Array type with bounds checking and helpful operators
@@ -249,8 +250,20 @@ namespace hel{
             return internal.end();
         }
 
-        BoundsCheckedArray()noexcept{}
+        BoundsCheckedArray(const T& default_data)noexcept{
+            internal.fill(default_data);
+        }
 
+        template<typename S, typename = std::enable_if<std::is_same<typename S::value_type,T>::value && !std::is_same<S,std::initializer_list<T>>::value>>
+        BoundsCheckedArray(const S& iterable)noexcept{
+            if(iterable.size() != LEN){
+                throw std::out_of_range("Exception: assignement to array of size " + std::to_string(LEN) + " to iterable of different size " + std::to_string(iterable.size()));
+            }
+            std::copy(iterable.begin(), iterable.end(), internal.begin());
+
+        }
+
+        template<typename S, typename = std::enable_if<!std::is_same<S,T>::value>>
         BoundsCheckedArray(std::initializer_list<T> list){
             if(list.size() != LEN){
                 throw std::out_of_range("Exception: assignement to array of size " + std::to_string(LEN) + " to brace-enclosed initializer list of different size " + std::to_string(list.size()));
@@ -258,16 +271,6 @@ namespace hel{
             std::copy(list.begin(), list.end(), internal.begin());
         }
 
-        template<typename S>
-        BoundsCheckedArray(S iterable){
-            if(iterable.size() != LEN){
-                throw std::out_of_range("Exception: assignement to array of size " + std::to_string(LEN) + " to iterable of different size " + std::to_string(iterable.size()));
-            }
-            if(iterable.size() > 0 && !std::is_same<typename decltype(iterable)::value_type, T>::value){
-                throw std::bad_cast();
-            }
-            std::copy(iterable.begin(), iterable.end(), internal.begin());
-        }
 
         ~BoundsCheckedArray() = default;
 
