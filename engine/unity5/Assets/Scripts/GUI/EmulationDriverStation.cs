@@ -1,4 +1,5 @@
 ﻿using Synthesis.FSM;
+using Synthesis.Input;
 using Synthesis.States;
 using Synthesis.Utils;
 using System;
@@ -47,12 +48,18 @@ namespace Synthesis.GUI
             GameData();
         }
 
+        private void Update()
+        {
+            
+        }
+
         public void RobotState(string theState)
         {
             switch (theState)
             {
                 case "teleop":
                     state = DriveState.Teleop;
+                    GameObject.Find("Teleop").GetComponent<Button>().Select();
                     break;
                 case "auto":
                     state = DriveState.Auto;

@@ -1,5 +1,6 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
+using Synthesis.Input;
 using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
@@ -32,10 +33,12 @@ namespace Assets.Scripts.GUI
             if (emuDriverStation.activeSelf == true)
             {
                 emuDriverStation.SetActive(false);
+                InputControl.freeze = false;
             }
             else
             {
                 emuDriverStation.SetActive(true);
+                InputControl.freeze = true;
             }
         }
 
