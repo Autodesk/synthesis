@@ -28,12 +28,22 @@
             {
                 background-color: #f29000;
                 border-radius: 2px;
-                transition: width 1.0s;
+            }
+
+            #progress[value].notransition::-webkit-progress-value
+            {
+                transition: none;
+            }
+
+            #progress[value]:not(.notransition)::-webkit-progress-value
+            {
+                transition: width 0.25s;
             }
         </style>
     </head>
     <body>
-        <p>Loading...</p>
+        <p>Exporting robot...<br />
+        Please do not leave the Synthesis workspace or close Fusion.</p>
         <progress id="progress" value="0" max="100">
         </progress>
     </body>
