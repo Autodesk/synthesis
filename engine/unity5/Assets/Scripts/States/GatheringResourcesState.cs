@@ -39,7 +39,7 @@ namespace Synthesis.States
         public override void OnGUI()
         {
             identities = UnityEngine.Object.FindObjectsOfType<PlayerIdentity>();
-            percentageText.text = ((int)(identities.Average(p => p.gatheringProgress) * 100f)).ToString() + "%";
+            percentageText.text = ((int)(identities.Average(p => p.transferProgress) * 100f)).ToString() + "%";
         }
     }
 }

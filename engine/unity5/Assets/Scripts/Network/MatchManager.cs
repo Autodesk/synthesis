@@ -242,7 +242,7 @@ namespace Synthesis.Network
             foreach (PlayerIdentity identity in remainingIdentities)
             {
                 identity.ready = true;
-                identity.gatheringProgress = 1f;
+                identity.transferProgress = 1f;
             }
         }
 
@@ -253,49 +253,49 @@ namespace Synthesis.Network
         public void DistributeResources()
         {
             //PlayerIdentity.LocalInstance.FileTransferer.StopAllCoroutines();
-            distributionProgress = 0f;
-            numTotalTransfers = 0;
-            numCompletedTransfers = 0;
+            //distributionProgress = 0f;
+            //numTotalTransfers = 0;
+            //numCompletedTransfers = 0;
 
-            pendingTransfers.Clear();
+            //pendingTransfers.Clear();
 
-            foreach (KeyValuePair<int, HashSet<int>> dependency in dependencyMap.Where(kvp => kvp.Key >= 0))
-            {
-                PlayerIdentity currentIdentity = PlayerIdentity.FindById(dependency.Key);
-                List<string> files = currentIdentity.ReceivedFiles.ToList();
+            //foreach (KeyValuePair<int, HashSet<int>> dependency in dependencyMap.Where(kvp => kvp.Key >= 0))
+            //{
+            //    PlayerIdentity currentIdentity = PlayerIdentity.FindById(dependency.Key);
+            //    List<string> files = currentIdentity.ReceivedFiles.ToList();
 
-                foreach (int dependant in dependency.Value)
-                {
-                    numTotalTransfers += files.Count;
+            //    foreach (int dependant in dependency.Value)
+            //    {
+            //        numTotalTransfers += files.Count;
 
-                    if (!pendingTransfers.ContainsKey(dependant))
-                        pendingTransfers[dependant] = new Dictionary<string, List<string>>();
+            //        if (!pendingTransfers.ContainsKey(dependant))
+            //            pendingTransfers[dependant] = new Dictionary<string, List<string>>();
 
-                    pendingTransfers[dependant].Add(currentIdentity.robotName, files);
-                }
-            }
+            //        pendingTransfers[dependant].Add(currentIdentity.robotName, files);
+            //    }
+            //}
 
-            foreach (PlayerIdentity p in FindObjectsOfType<PlayerIdentity>())
-                if (!pendingTransfers.ContainsKey(p.id))
-                    p.ready = true;
+            //foreach (PlayerIdentity p in FindObjectsOfType<PlayerIdentity>())
+            //    if (!pendingTransfers.ContainsKey(p.id))
+            //        p.ready = true;
 
-            Dictionary<string, List<byte>> fieldData;
+            //Dictionary<string, List<byte>> fieldData;
 
-            if (dependencyMap.ContainsKey(-1))
-            {
-                fieldData = LoadFieldData();
-                List<string> files = fieldData.Keys.ToList();
+            //if (dependencyMap.ContainsKey(-1))
+            //{
+            //    fieldData = LoadFieldData();
+            //    List<string> files = fieldData.Keys.ToList();
 
-                foreach (int dependant in dependencyMap[-1])
-                {
-                    numTotalTransfers += fieldData.Count;
-                    pendingTransfers[dependant].Add(fieldName, files);
-                }
-            }
-            else
-            {
-                fieldData = null;
-            }
+            //    foreach (int dependant in dependencyMap[-1])
+            //    {
+            //        numTotalTransfers += fieldData.Count;
+            //        pendingTransfers[dependant].Add(fieldName, files);
+            //    }
+            //}
+            //else
+            //{
+            //    fieldData = null;
+            //}
 
             foreach (KeyValuePair<int, HashSet<int>> entry in dependencyMap.Where(e => e.Key >= 0))
                 PlayerIdentity.FindById(entry.Key).DistributeResources(entry.Value);

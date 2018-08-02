@@ -77,7 +77,7 @@ namespace Synthesis.Network
         /// A percentage representing how much progress has been made gathering resources.
         /// </summary>
         [SyncVar]
-        public float gatheringProgress;
+        public float transferProgress;
 
         /// <summary>
         /// True if the scene has been generated on this local instance.
@@ -90,21 +90,22 @@ namespace Synthesis.Network
         #region ServerFields
 
         /// <summary>
-        /// A hash set containing the names of files received on the server from the client.
-        /// </summary>
-        public HashSet<string> ReceivedFiles { get; private set; }
-
-        /// <summary>
-        /// The number of files the server is expecting to receive from the client.
-        /// </summary>
-        private int numFilesToReceive;
-
-        /// <summary>
         /// Represents the next available <see cref="PlayerIdentity"/> ID.
         /// </summary>
         private static int nextId = 0;
 
         #endregion
+
+        /// <summary>
+        /// A hash set containing the names of files received on the server from the client.
+        /// </summary>
+        private HashSet<string> receivedFiles;
+
+        /// <summary>
+        /// The number of files the server is expecting to receive from the client,
+        /// or vice versa.
+        /// </summary>
+        private int numFilesToReceive;
 
         /// <summary>
         /// Returns the <see cref="PlayerIdentity"/> with the given ID.
@@ -135,7 +136,7 @@ namespace Synthesis.Network
 
             RobotFolder = string.Empty;
             UnresolvedDependencies = new List<int>();
-            ReceivedFiles = new HashSet<string>();
+            receivedFiles = new HashSet<string>();
             numFilesToReceive = -1;
 
             PlayerList.Instance.AddPlayerEntry(this);
@@ -197,6 +198,7 @@ namespace Synthesis.Network
         public void CheckDependencies()
         {
             UnresolvedDependencies.Clear();
+            receivedFiles.Clear();
 
             RobotFolder = PlayerPrefs.GetString("simSelectedRobot");
 
@@ -274,14 +276,14 @@ namespace Synthesis.Network
         [Server]
         public void TransferResources()
         {
-            ReceivedFiles.Clear();
+            receivedFiles.Clear();
             numFilesToReceive = -1;
-            gatheringProgress = 0f;
+            transferProgress = 0f;
 
             int port = FileTransferBasePort + id;
 
             TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + "\\" + robotName,
-                OnFileReceived);
+                OnServerFileReceived);
 
             TargetTransferResources(connectionToClient, port);
         }
@@ -303,13 +305,13 @@ namespace Synthesis.Network
         /// Updates the set of received files and the progress value.
         /// </summary>
         /// <param name="fileName"></param>
-        private void OnFileReceived(string fileName)
+        private void OnServerFileReceived(string fileName)
         {
-            ReceivedFiles.Add(fileName);
+            receivedFiles.Add(fileName);
 
-            gatheringProgress = numFilesToReceive > 0f ? ReceivedFiles.Count / (float)numFilesToReceive : 0f;
+            transferProgress = numFilesToReceive > 0f ? receivedFiles.Count / (float)numFilesToReceive : 0f;
 
-            if (ReceivedFiles.Count == numFilesToReceive)
+            if (receivedFiles.Count == numFilesToReceive)
                 ready = true;
         }
 
@@ -320,6 +322,7 @@ namespace Synthesis.Network
         [Server]
         public void DistributeResources(HashSet<int> destinationIds)
         {
+            transferProgress = 0f;
             List<string> networkAddresses = new List<string>();
             int port = FileTransferBasePort + id;
 
@@ -328,7 +331,7 @@ namespace Synthesis.Network
             {
                 string ipv6 = identity.connectionToClient.address;
                 networkAddresses.Add(ipv6.Substring(ipv6.LastIndexOf(':') + 1));
-                identity.TargetReceiveFiles(identity.connectionToClient, port, robotName);
+                identity.TargetReceiveFiles(identity.connectionToClient, port, robotName, identity.receivedFiles.Count);
             }
 
             if (networkAddresses.Any())
@@ -343,9 +346,25 @@ namespace Synthesis.Network
         /// <param name="port"></param>
         /// <param name="folderName"></param>
         [TargetRpc]
-        private void TargetReceiveFiles(NetworkConnection target, int port, string folderName)
+        private void TargetReceiveFiles(NetworkConnection target, int port, string folderName, int totalFilesToReceive)
         {
-            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + "\\" + folderName);
+            numFilesToReceive = totalFilesToReceive;
+            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + "\\" + folderName,
+                OnClientFileReceived);
+        }
+
+        /// <summary>
+        /// Updates the set of received files and the progress value.
+        /// </summary>
+        /// <param name="fileName"></param>
+        private void OnClientFileReceived(string fileName)
+        {
+            receivedFiles.Add(fileName);
+
+            CmdSetTransferProgress(numFilesToReceive > 0f ? receivedFiles.Count / (float)numFilesToReceive : 0f);
+
+            if (receivedFiles.Count == numFilesToReceive)
+                CmdSetReady(true);
         }
 
         /// <summary>
@@ -387,6 +406,16 @@ namespace Synthesis.Network
         public void CmdSetReady(bool playerReady)
         {
             ready = playerReady;
+        }
+
+        /// <summary>
+        /// Sets the progress value of this instance accross all clients.
+        /// </summary>
+        /// <param name="progress"></param>
+        [Command]
+        private void CmdSetTransferProgress(float progress)
+        {
+            transferProgress = progress;
         }
 
         /// <summary>

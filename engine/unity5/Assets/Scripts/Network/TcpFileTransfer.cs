@@ -115,50 +115,76 @@ namespace Synthesis.Network
             TcpListener listener = new TcpListener(LocalAddress, port);
             listener.Start();
 
-            Directory.CreateDirectory(saveDirectory);
+            Task.Run(() => listener.AcceptTcpClient()).ContinueWith(t =>
+            {
+                Directory.CreateDirectory(saveDirectory);
+                NetworkStream stream = t.Result.GetStream();
 
-            Task.Run(() => ReceiveAllFiles(listener, saveDirectory, fileReceived)).ContinueWith(t => listener.Stop());
+                ReadFiles(saveDirectory, new BinaryReader(stream), fileReceived, () =>
+                {
+                    stream.Close();
+                    t.Result.Close();
+                });
+            }, TaskScheduler.FromCurrentSynchronizationContext()).ContinueWith(t => listener.Stop());
         }
 
         /// <summary>
-        /// Receives all files through the given <see cref="TcpListener"/> and saves them to
-        /// the provided directory.
+        /// Recursively receives all files read from the given <see cref="BinaryReader"/>, saves them to the
+        /// provided directory, and executes the given action when completed.
         /// </summary>
         /// <param name="listener"></param>
         /// <param name="saveDirectory"></param>
-        private static void ReceiveAllFiles(TcpListener listener, string saveDirectory, Action<string> fileReceived)
+        private static void ReadFiles(string saveDirectory, BinaryReader reader, Action<string> fileReceived, Action whenDone)
         {
-            using (TcpClient client = listener.AcceptTcpClient())
-            using (NetworkStream stream = client.GetStream())
+            Task.Run(() => ReadFile(saveDirectory, reader)).ContinueWith(t =>
             {
-                BinaryReader reader = new BinaryReader(stream);
-                long bytesLeft;
-
-                while ((bytesLeft = reader.ReadInt64()) != -1)
+                if (t.Result == null)
                 {
-                    string fileName = reader.ReadString();
+                    whenDone();
+                }
+                else
+                {
+                    fileReceived?.Invoke(t.Result);
+                    ReadFiles(saveDirectory, reader, fileReceived, whenDone);
+                }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+        }
 
-                    using (FileStream file = File.Create(saveDirectory + "\\" + fileName))
+        /// <summary>
+        /// Reads a single file from the given <see cref="BinaryReader"/> and saves it to the
+        /// provided directory.
+        /// </summary>
+        /// <param name="saveDirectory"></param>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        private static string ReadFile(string saveDirectory, BinaryReader reader)
+        {
+            long bytesLeft = reader.ReadInt64();
+
+            if (bytesLeft == -1L)
+                return null;
+
+            string fileName = reader.ReadString();
+
+            using (FileStream file = File.Create(saveDirectory + "\\" + fileName))
+            {
+                while (true)
+                {
+                    if (bytesLeft < BufferSize)
                     {
-                        while (true)
-                        {
-                            if (bytesLeft < BufferSize)
-                            {
-                                int remaining = Convert.ToInt32(bytesLeft);
-                                file.Write(reader.ReadBytes(remaining), 0, remaining);
-                                break;
-                            }
-                            else
-                            {
-                                file.Write(reader.ReadBytes(BufferSize), 0, BufferSize);
-                                bytesLeft -= BufferSize;
-                            }
-                        }
+                        int remaining = Convert.ToInt32(bytesLeft);
+                        file.Write(reader.ReadBytes(remaining), 0, remaining);
+                        break;
                     }
-
-                    fileReceived?.Invoke(fileName);
+                    else
+                    {
+                        file.Write(reader.ReadBytes(BufferSize), 0, BufferSize);
+                        bytesLeft -= BufferSize;
+                    }
                 }
             }
+
+            return fileName;
         }
     }
 }
