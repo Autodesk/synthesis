@@ -139,6 +139,10 @@ namespace Synthesis.BUExtensions
             transform.localRotation *= Quaternion.AngleAxis(-wheel.Speed, axis);
         }
 
+        /// <summary>
+        /// Get the wheel speed to be used for encoder calculations
+        /// </summary>
+        /// <returns></returns>
         public float GetWheelSpeed()
         {
             RobotWheelInfo wheel = robot.RaycastRobot.GetWheelInfo(wheelIndex);
