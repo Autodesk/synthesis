@@ -41,7 +41,7 @@ bool EUI::createWorkspace()
 		workSpace = UI->workspaces()->itemById(K_WORKSPACE);
 		if (!workSpace)
 		{
-			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/Sample");
+			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/SynthesisIcons");
 			workSpace->tooltip("Export robot models to the Synthesis simulator");
 		}
 		
@@ -149,7 +149,7 @@ bool EUI::createExportButton()
 	exportButtonCommand = UI->commandDefinitions()->itemById(K_EXPORT_BUTTON);
 	if (!exportButtonCommand)
 	{
-		exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Export", "Setup your robot for exporting to Synthesis.", "Resources/Sample");
+		exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Export", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
 
 		// Add create and click events to button
 		Ptr<CommandCreatedEvent> commandCreatedEvent = exportButtonCommand->commandCreated();
