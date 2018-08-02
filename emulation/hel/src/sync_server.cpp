@@ -24,6 +24,8 @@ namespace hel {
 
                 auto instance = hel::SendDataManager::getInstance();
 
+                instance.first->update(); //TODO don't call update every time
+
                 auto data =  instance.first->serialize();
                 instance.second.unlock();
 
