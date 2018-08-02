@@ -8,15 +8,26 @@
         <style>
             #finished-button
             {
+                width: 100%;
                 left: 0;
                 bottom: 0;
-                width: 100%;
                 text-align: center;
             }
 
             #joint-config-template
             {
                 display: none;
+            }
+
+            #basic-info
+            {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            fieldset
+            {
+                padding-bottom: 0;
             }
 
             .field-label
@@ -28,20 +39,24 @@
             {
                 overflow: hidden;
                 display: block;
-                padding-left: 5px;
-                margin-bottom: 9px;
-                /*padding-right: 5px;*/
+                padding-left: 0.5rem;
+                margin-bottom: 1rem;
             }
 
-            .field-input input, .field-input select
+            #basic-info .field-input
+            {
+                padding-right: 0.5rem;
+            }
+
+            .field-input input, .field-input select, .field-input button
             {
                 width: 100%;
             }
         </style>
     </head>
     <body>
-        <div id='export-settings'>
-            <div class="text-inputs">
+        <div id="export-settings">
+            <div id="basic-info">
                 <span class="field-label">Robot Name: </span>
                 <span class="field-input"><input type="text" id="name" value="unnamed" onchange="updateSubmitButton()"></span>
             </div>
