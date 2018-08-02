@@ -24,6 +24,7 @@ public class WheelDriverMeta : JointDriverMeta
     public WheelType type;
     public float width;
     public BXDVector3 center;
+    public int driveTrainType;
 
     public float forwardExtremeSlip;
     public float forwardExtremeValue;
