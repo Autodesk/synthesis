@@ -257,8 +257,6 @@
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
-    <Compile Include="Assets\Scripts\Network\ClientToServerFileTransferer.cs" />
-    <Compile Include="Assets\Scripts\Network\FileTransferer.cs" />
     <Compile Include="Assets\Scripts\Network\IPCrypt.cs" />
     <Compile Include="Assets\Scripts\Network\MatchManager.cs" />
     <Compile Include="Assets\Scripts\Network\MultiplayerNetwork.cs" />
@@ -267,9 +265,6 @@
     <Compile Include="Assets\Scripts\Network\PlayerEntry.cs" />
     <Compile Include="Assets\Scripts\Network\PlayerIdentity.cs" />
     <Compile Include="Assets\Scripts\Network\PlayerList.cs" />
-    <Compile Include="Assets\Scripts\Network\ServerNetworkDiscovery.cs" />
-    <Compile Include="Assets\Scripts\Network\ServerStatus.cs" />
-    <Compile Include="Assets\Scripts\Network\ServerToClientFileTransferer.cs" />
     <Compile Include="Assets\Scripts\Network\TcpFileTransfer.cs" />
     <Compile Include="Assets\Scripts\RN\RNCommon.cs" />
     <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
