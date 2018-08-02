@@ -35,8 +35,8 @@
             this.SaveButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.button1 = new System.Windows.Forms.Button();
             this.Port1NumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.button1 = new System.Windows.Forms.Button();
             this.Port2Lbl = new System.Windows.Forms.Label();
             this.Port2NumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.ConversionLbl = new System.Windows.Forms.Label();
@@ -119,12 +119,12 @@
             this.tableLayoutPanel1.Controls.Add(this.CancelButton, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.SaveButton, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.typeBox, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.Port1NumericUpDown, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.button1, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.Port2Lbl, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.Port2NumericUpDown, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.ConversionLbl, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.ConversionNumericUpDown, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.Port1NumericUpDown, 1, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
@@ -137,6 +137,18 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(400, 165);
             this.tableLayoutPanel1.TabIndex = 13;
             // 
+            // Port1NumericUpDown
+            // 
+            this.Port1NumericUpDown.Location = new System.Drawing.Point(103, 45);
+            this.Port1NumericUpDown.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.Port1NumericUpDown.Name = "Port1NumericUpDown";
+            this.Port1NumericUpDown.Size = new System.Drawing.Size(94, 22);
+            this.Port1NumericUpDown.TabIndex = 14;
+            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(303, 3);
@@ -145,13 +157,6 @@
             this.button1.TabIndex = 13;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
-            // 
-            // Port1NumericUpDown
-            // 
-            this.Port1NumericUpDown.Location = new System.Drawing.Point(103, 45);
-            this.Port1NumericUpDown.Name = "Port1NumericUpDown";
-            this.Port1NumericUpDown.Size = new System.Drawing.Size(94, 22);
-            this.Port1NumericUpDown.TabIndex = 14;
             // 
             // Port2Lbl
             // 
@@ -165,6 +170,11 @@
             // Port2NumericUpDown
             // 
             this.Port2NumericUpDown.Location = new System.Drawing.Point(303, 45);
+            this.Port2NumericUpDown.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
             this.Port2NumericUpDown.Name = "Port2NumericUpDown";
             this.Port2NumericUpDown.Size = new System.Drawing.Size(94, 22);
             this.Port2NumericUpDown.TabIndex = 16;
@@ -180,7 +190,18 @@
             // 
             // ConversionNumericUpDown
             // 
+            this.ConversionNumericUpDown.DecimalPlaces = 3;
             this.ConversionNumericUpDown.Location = new System.Drawing.Point(103, 87);
+            this.ConversionNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.ConversionNumericUpDown.Minimum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            -2147483648});
             this.ConversionNumericUpDown.Name = "ConversionNumericUpDown";
             this.ConversionNumericUpDown.Size = new System.Drawing.Size(94, 22);
             this.ConversionNumericUpDown.TabIndex = 18;

@@ -17,19 +17,13 @@ EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 {
 	this->UI = UI;
 	this->app = app;
+	exportThread = nullptr;
 	createWorkspace();
 };
 
 EUI::~EUI()
 {
-	// Wait for all threads to finish
-	while (exportThreads.size() > 0)
-	{
-		exportThreads.front()->join();
-		delete exportThreads.front();
-		exportThreads.pop_front();
-	}
-
+	cancelExportThread();
 	deleteWorkspace();
 }
 
@@ -56,7 +50,7 @@ bool EUI::createWorkspace()
 		if (!workspaceDeactivatedEvent)
 			throw "Failed to create workspace events.";
 
-		workspaceDeactivatedEvent->add(new WorkspaceDeactivatedHandler(UI));
+		workspaceDeactivatedEvent->add(new WorkspaceDeactivatedHandler(this));
 
 		// Create panel
 		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
@@ -87,6 +81,7 @@ void EUI::deleteWorkspace()
 {
 	// Delete palettes
 	deleteExportPalette();
+	deleteProgressPalette();
 
 	// Delete buttons
 	deleteExportButton();
@@ -103,7 +98,7 @@ bool EUI::createExportPalette()
 	if (!exportPalette)
 	{
 		// Create palette
-		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/palette.html", false, true, true, 300, 200);
+		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/export.html", false, true, true, 300, 200);
 		if (!exportPalette)
 			return false;
 
@@ -141,6 +136,54 @@ void EUI::deleteExportPalette()
 		exportPalette->deleteMe();
 
 	exportPalette = nullptr;
+}
+
+void EUI::closeExportPalette()
+{
+	exportPalette->isVisible(false);
+}
+
+bool EUI::createProgressPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	progressPalette = palettes->itemById(K_PROGRESS_PALETTE);
+	if (!progressPalette)
+	{
+		// Create palette
+		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", false, false, false, 150, 150);
+		if (!progressPalette)
+			return false;
+
+		// Dock the palette to the right side of Fusion window.
+		progressPalette->dockingState(PaletteDockStateBottom);
+		progressPalette->dockingOption(PaletteDockOptionsToVerticalOnly);
+	}
+
+	return true;
+}
+
+void EUI::deleteProgressPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette already exists
+	progressPalette = palettes->itemById(K_PROGRESS_PALETTE);
+
+	if (progressPalette)
+		progressPalette->deleteMe();
+
+	progressPalette = nullptr;
+}
+
+void EUI::closeProgressPalette()
+{
+	progressPalette->isVisible(false);
 }
 
 bool EUI::createExportButton()
@@ -196,14 +239,59 @@ void EUI::deleteExportButton()
 void EUI::startExportThread(BXDJ::ConfigData & config)
 {
 #ifdef ALLOW_MULTITHREADING
-	exportThreads.push_back(new std::thread(&EUI::exportRobot, this, config));
+	// Wait for all threads to finish
+	if (exportThread != nullptr)
+	{
+		progressPalette->isVisible(true);
+		exportThread->join();
+		delete exportThread;
+	}
+
+	killExportThread = false;
+	exportThread = new std::thread(&EUI::exportRobot, this, config);
 #else
 	Exporter::exportMeshes(config, app->activeDocument());
 #endif
 }
 
+void EUI::cancelExportThread()
+{
+	if (exportThread != nullptr)
+	{
+		killExportThread = true;
+		exportThread->join();
+		delete exportThread;
+		exportThread = nullptr;
+		closeProgressPalette();
+	}
+}
+
+void EUI::updateProgress(double percent)
+{
+	if (percent < 0)
+		percent = 0;
+	
+	if (percent > 1)
+		percent = 1;
+
+	progressPalette->sendInfoToHTML("progress", std::to_string(percent));
+	progressPalette->isVisible(true);
+}
+
 void EUI::exportRobot(BXDJ::ConfigData config)
 {
-	Exporter::exportMeshes(config, app->activeDocument());
-	UI->messageBox(config.robotName + " has finished exporting.");
+	updateProgress(0);
+
+	// Add delay so that loading bar has time to animate
+	std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
+	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
+	{
+		updateProgress(percent);
+	}, &killExportThread);
+
+	// Add delay so that loading bar has time to animate
+	std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
+	closeProgressPalette();
 }

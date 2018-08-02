@@ -22,10 +22,10 @@ namespace Synthesis
 	class WorkspaceDeactivatedHandler : public WorkspaceEventHandler
 	{
 	public:
-		WorkspaceDeactivatedHandler(Ptr<UserInterface> UI) : UI(UI) {}
+		WorkspaceDeactivatedHandler(EUI * eui) : eui(eui) {}
 		void notify(const Ptr<WorkspaceEventArgs>& eventArgs) override;
 	private:
-		Ptr<UserInterface> UI;
+		EUI * eui;
 	};
 
 	// Button Events

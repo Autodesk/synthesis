@@ -223,16 +223,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="palette\palette.html">
-      <Filter>Source\AddIn\Palette</Filter>
-    </None>
     <None Include="Palette\js\fusionInterface.js">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
     <None Include="Palette\css\synthesisExporter.css">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
-    <None Include="Palette\js\palette.js">
+    <None Include="palette\export.html">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="Palette\js\export.js">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\progress.html">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\js\progress.js">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
   </ItemGroup>
