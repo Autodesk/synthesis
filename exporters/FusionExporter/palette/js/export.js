@@ -75,7 +75,7 @@ window.fusionJavaScriptHandler =
                 {
                     console.log("Receiving joint info...");
                     console.log(data);
-                    jointOptions = processJointDataString(data);
+                    jointOptions = JSON.parse(data);
                     displayJointOptions(jointOptions);
                 }
                 else if (action == 'debugger')
