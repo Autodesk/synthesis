@@ -7,12 +7,13 @@
 
 #include <WPILib.h>
 #include <iostream>
+#include "ctre/Phoenix.h"
 
 class Robot: public frc::IterativeRobot{
-    frc::Spark m_leftMotor{0};
-    frc::Spark m_rightMotor{1};
+    ctre::phoenix::motorcontrol::can::WPI_TalonSRX m_leftMotor{0};
+    ctre::phoenix::motorcontrol::can::WPI_TalonSRX m_rightMotor{1};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
-    frc::Joystick m_stick{0};
+    frc::Joystick m_stick{1};
     frc::Timer auto_timer;
     bool run_auto = true;
 
@@ -32,7 +33,7 @@ public:
     }
 
     void AutonomousPeriodic(){
-        std::cout<<"Remaining: "<<auto_timer.Get()<<"\n";
+        //std::cout<<"Remaining: "<<auto_timer.Get()<<"\n";
         if(!auto_timer.HasPeriodPassed(5) && run_auto){
             m_robotDrive.TankDrive(1.0,-1.0);
             run_auto = false;
@@ -43,6 +44,7 @@ public:
 
     void TeleopPeriodic(){
         double start = frc::Timer::GetFPGATimestamp();
+        std::cout << "1: "<< m_stick.GetRawAxis(1) << " 4: " << m_stick.GetRawAxis(4)<< "\n";
         if(!driveMode)
             m_robotDrive.ArcadeDrive(-m_stick.GetRawAxis(1), m_stick.GetRawAxis(4));
         else
@@ -51,7 +53,7 @@ public:
             driveMode = !driveMode;
         }
         frc::Wait(0.005);
-        std::cout<<"Loop time: "<<(frc::Timer::GetFPGATimestamp() - start)<<" s\n";
+        //std::cout<<"Loop time: "<<(frc::Timer::GetFPGATimestamp() - start)<<" s\n";
     }
 };
 

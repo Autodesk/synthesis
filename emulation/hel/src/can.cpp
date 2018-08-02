@@ -92,10 +92,16 @@ namespace hel{
           divide by (256*256*4) to scale from -256*256*4 to 256*256*4 to -1.0 to 1.0
         */
         speed = ((double)((data[1] - data[0])*256*256 + (data[2] - data[0])*256 + (data[3] - data[0])))/(256*256*4);
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     void CANMotorController::setSpeed(double s)noexcept{
         speed = s;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     double CANMotorController::getSpeed()const noexcept{
@@ -126,6 +132,9 @@ namespace hel{
 
     void CANMotorController::setInverted(bool i)noexcept{
         inverted = i;
+        auto instance = SendDataManager::getInstance();
+        instance.first->update();
+        instance.second.unlock();
     }
 
     uint8_t CANDevice::pullDeviceID(uint32_t message_id)noexcept{
@@ -151,7 +160,9 @@ namespace hel{
         type = CANDevice::pullDeviceType(message_id);
         assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
         id = CANDevice::pullDeviceID(message_id);
+        //
     }
+    
 }
 
 extern "C"{
@@ -167,8 +178,6 @@ extern "C"{
         case hel::CANDevice::Type::TALON_SRX:
         case hel::CANDevice::Type::VICTOR_SPX:
         {
-            auto instance = hel::RoboRIOManager::getInstance();
-
             hel::CANMotorController can_device = {messageID};
 
             hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array;
@@ -177,12 +186,12 @@ extern "C"{
             uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];
 
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT)){
+                //std::cout<<((unsigned)can_device.getID())<<" "<<hel::to_string(data_array,std::function<std::string(uint8_t)>([&](uint8_t a){ return std::to_string(a);}))<<"\n";
                 can_device.setSpeedData(data_array);
             }
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_INVERTED)){
                 can_device.setInverted(true);
             }
-            instance.first->can_motor_controllers[can_device.getID()] = can_device;
             {
                 for(unsigned i = 0; i < 8; i++){
                     if(hel::checkBitHigh(command_byte,i) &&
@@ -193,6 +202,8 @@ extern "C"{
                     }
                 }
             }
+            auto instance = hel::RoboRIOManager::getInstance();
+            instance.first->can_motor_controllers[can_device.getID()] = can_device;
             instance.second.unlock();
             break;
         }
