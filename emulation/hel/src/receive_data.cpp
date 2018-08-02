@@ -7,6 +7,24 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
+hel::ReceiveData::ReceiveData(){
+    last_received_data = "";
+    for(auto& a: digital_hdrs){
+        a = false;
+    }
+    for(auto& a: digital_mxp){
+        a = {};
+    }
+    for(auto& a: joysticks){
+        a = {};
+    }
+    match_info = {};
+    robot_mode = {};
+    for(auto& a: encoder_managers){
+        a = {};
+    }
+}
+
 void hel::ReceiveData::update()const{
     if(!hel::hal_is_initialized){
         return;
@@ -64,17 +82,12 @@ std::string hel::ReceiveData::toString()const{
     s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>([&](hel::MXPData mxp){ return mxp.serialize();})) + ", ";
     s += "match_info:" + match_info.toString() + ", ";
     s += "robot_mode:" + robot_mode.toString();
-    s += "encoder_managers:" + hel::to_string(encoder_managers, std::function<std::string(hel::EncoderManager)>([&](hel::EncoderManager a){ return a.serialize();})) + ", ";
+    s += "encoder_managers:" + hel::to_string(encoder_managers, std::function<std::string(hel::EncoderManager)>([&](hel::EncoderManager a){ return a.serialize();}));
     s += ")";
     return s;
 }
 
-void hel::ReceiveData::deserializeAndUpdate(std::string input){
-    if(input == last_received_data){
-        return;
-    }
-    std::string input_copy = input;
-
+void hel::ReceiveData::deserializeDigitalHdrs(std::string& input){
     if(input.find(quote("digital_hdrs")) != std::string::npos){
         try{
             digital_hdrs = hel::deserializeList(
@@ -85,6 +98,9 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             throw JSONParsingException("digital_hdrs");
         }
     }
+}
+
+void hel::ReceiveData::deserializeJoysticks(std::string& input){
     if(input.find(quote("joysticks")) != std::string::npos){
         try{
             joysticks = hel::deserializeList(
@@ -95,6 +111,9 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             throw JSONParsingException("joysticks");
         }
     }
+}
+
+void hel::ReceiveData::deserializeDigitalMXP(std::string& input){
     if(input.find(quote("digital_mxp")) != std::string::npos){
         try{
             digital_mxp = hel::deserializeList(
@@ -105,6 +124,9 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             throw JSONParsingException("digital_mxp");
         }
     }
+}
+
+void hel::ReceiveData::deserializeMatchInfo(std::string& input){
     if(input.find(quote("match_info")) != std::string::npos){
         try{
             match_info = MatchInfo::deserialize(hel::pullValue("\"match_info\"", input));
@@ -112,6 +134,9 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             throw JSONParsingException("match_info");
         }
     }
+}
+
+void hel::ReceiveData::deserializeRobotMode(std::string& input){
     if(input.find(quote("robot_mode")) != std::string::npos){
         try{
             robot_mode = RobotMode::deserialize(hel::pullValue("\"robot_mode\"", input));
@@ -119,6 +144,9 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             throw JSONParsingException("robot_mode");
         }
     }
+}
+
+void hel::ReceiveData::deserializeEncoders(std::string& input){
     if(input.find(quote("encoders")) != std::string::npos){
         try{
             encoder_managers = hel::deserializeList(
@@ -129,6 +157,36 @@ void hel::ReceiveData::deserializeAndUpdate(std::string input){
             throw JSONParsingException("encoders");
         }
     }
+}
+
+void hel::ReceiveData::deserializeShallow(std::string input){
+    if(input == last_received_data){
+        return;
+    }
+    last_received_data = input;
+
+    deserializeJoysticks(input);
+    deserializeMatchInfo(input);
+    deserializeRobotMode(input);
+    deserializeEncoders(input);
+}
+
+void hel::ReceiveData::deserializeDeep(std::string input){
+    if(input == last_received_data){
+        return;
+    }
+    last_received_data = input;
+
+    deserializeDigitalHdrs(input);
+    deserializeJoysticks(input);
+    deserializeDigitalMXP(input);
+    deserializeMatchInfo(input);
+    deserializeRobotMode(input);
+    deserializeEncoders(input);
+}
+
+void hel::ReceiveData::deserializeAndUpdate(std::string input){
+    deserializeDeep(input);
+
     update();
-    last_received_data = input_copy;
 }
