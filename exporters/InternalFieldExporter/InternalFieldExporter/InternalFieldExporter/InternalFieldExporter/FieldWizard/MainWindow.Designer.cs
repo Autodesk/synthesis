@@ -38,11 +38,11 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tutorialsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.propertiesTabPage = new System.Windows.Forms.TabPage();
             this.exportTabPage = new System.Windows.Forms.TabPage();
             this.menuStrip1.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            this.tabControl.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -119,15 +119,15 @@
             this.toolStripMenuItem1.Size = new System.Drawing.Size(25, 24);
             this.toolStripMenuItem1.Text = " ";
             // 
-            // tabControl1
+            // tabControl
             // 
-            this.tabControl1.Controls.Add(this.propertiesTabPage);
-            this.tabControl1.Controls.Add(this.exportTabPage);
-            this.tabControl1.Location = new System.Drawing.Point(12, 31);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(775, 415);
-            this.tabControl1.TabIndex = 1;
+            this.tabControl.Controls.Add(this.propertiesTabPage);
+            this.tabControl.Controls.Add(this.exportTabPage);
+            this.tabControl.Location = new System.Drawing.Point(12, 31);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(775, 415);
+            this.tabControl.TabIndex = 1;
             // 
             // propertiesTabPage
             // 
@@ -154,7 +154,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControl);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
@@ -163,7 +163,7 @@
             this.Text = "Synthesis Field Exporter";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
+            this.tabControl.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -180,7 +180,7 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tutorialsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage propertiesTabPage;
         private System.Windows.Forms.TabPage exportTabPage;
     }
