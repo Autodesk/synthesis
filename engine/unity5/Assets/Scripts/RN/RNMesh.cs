@@ -53,7 +53,6 @@ namespace Synthesis.RN
             }, true);
 
             Vector3 com = mesh.physics.centerOfMass.AsV3();
-            com.x *= -1;
             ComOffset = com;
 
             Mesh[] colliders = new Mesh[mesh.colliders.Count];

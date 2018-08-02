@@ -31,47 +31,6 @@ public class Exporter
         public NoGroundException() : base("Assembly has no ground.") { }
     }
 
-    public static void BringJointsToStart(ComponentOccurrence component)
-    {
-        Console.Write("Centering: " + component.Name);
-        foreach (AssemblyJoint joint in component.Joints)
-        {
-            //Takes the average of the linear or rotational limits and sets the joints position to it.
-            if (joint.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType || joint.Definition.JointType == AssemblyJointTypeEnum.kRotationalJointType)
-            {
-                if (joint.Definition.HasAngularPositionLimits)
-                {
-                    joint.Definition.AngularPosition = (joint.Definition.AngularPositionStartLimit.Value);
-                }
-            }
-
-            if (joint.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType || joint.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
-            {
-                if (joint.Definition.HasLinearPositionStartLimit && joint.Definition.HasLinearPositionEndLimit)
-                {
-                    joint.Definition.LinearPosition = (joint.Definition.LinearPositionStartLimit.Value);
-                }
-                else
-                {
-                    //No robot would have a piece that would just keep going.
-                    throw new InvalidJointException(String.Format("Please add limits to \"{0}\" before exporting your robot.", joint.Name), joint);
-                }
-            }
-        }
-
-        try
-        {
-            //Contiues down to subassemblies.
-            foreach (ComponentOccurrence subComponent in component.SubOccurrences)
-            {
-                 BringJointsToStart(subComponent);
-            }
-        }
-        catch
-        {
-        }
-    }
-
     public static RigidNode_Base ExportSkeleton(List<ComponentOccurrence> occurrences)
     {
         if (occurrences.Count == 0) throw new Exception("No components selected!");
@@ -84,18 +43,6 @@ public class Exporter
         SynthesisGUI.Instance.ExporterSetMeshes(2);
 
         int numOccurrences = occurrences.Count;
-        int current = 0;
-
-        //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
-        foreach (ComponentOccurrence component in occurrences)
-        {
-            BringJointsToStart(component);
-            double totalProgress = (((double) (current + 1) / (double) numOccurrences) * 100.0);
-            SynthesisGUI.Instance.ExporterSetSubText(String.Format("Centering {1} / {2}", Math.Round(totalProgress, 2), (current + 1), numOccurrences));
-            SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
-            current++;
-        }
-        Console.WriteLine();
 
         SynthesisGUI.Instance.ExporterStepOverall();
         SynthesisGUI.Instance.ExporterSetOverallText("Getting rigid info");
