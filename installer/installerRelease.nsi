@@ -3,15 +3,44 @@
 
 Name "Synthesis"
 
-Icon "logo-outline.ico"
+Icon "W16_SYN_launch.ico"
 
-OutFile "Synthesis Installer.exe"
+OutFile "SynthesisInstaller.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
 InstallDirRegKey HKLM "Software\Synthesis" "Install_Dir"
 
 RequestExecutionLevel admin
+
+;--------------------------------
+;Interface Settings
+
+  !define MUI_WELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
+  !define MUI_ICON "W16_SYN_launch.ico"
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_BITMAP "orange-r.bmp"
+  !define MUI_HEADERIMAGE_RIGHT
+  !define MUI_ABORTWARNING
+
+;--------------------------------
+;Pages
+
+  !insertmacro MUI_PAGE_WELCOME
+  !insertmacro MUI_PAGE_LICENSE "Apache2.txt"
+  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_PAGE_FINISH
+
+  !insertmacro MUI_UNPAGE_WELCOME
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
+  !insertmacro MUI_UNPAGE_FINISH
+
+;--------------------------------
+;Languages
+
+  !insertmacro MUI_LANGUAGE "English"
 
 Page components
 Page instfiles
@@ -62,13 +91,10 @@ IfFileExists "$INSTDIR" +1 +28
 
       next:
 
-
-
-
 # default section end
 SectionEnd
 
-Section "Synthesis (required)"
+Section "Synthesis (required)" SynthesisRequired
 
   SectionIn RO
 
@@ -105,10 +131,14 @@ Section "Synthesis (required)"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
+  
+	;Install Fields
+	SetOutPath $APPDATA\Synthesis\Fields
+	File /r "Fields\*"
 
 SectionEnd
 
-Section "MixAndMatch Files"
+Section "MixAndMatch Files" MixMatch
 
 SetOutPath $APPDATA\Synthesis\MixAndMatch
 
@@ -116,17 +146,7 @@ File /r "MixAndMatch\*"
 
 SectionEnd
 
-Section
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR
-
-  File "SynthesisLauncher.exe"
-  File "Apache2.rtf"
-
-SectionEnd
-
-Section /o "Standalone Robot Exporter (legacy)"
+Section /o "Standalone Robot Exporter (legacy)" LegacyExporter
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\RobotExporter
@@ -135,18 +155,7 @@ Section /o "Standalone Robot Exporter (legacy)"
 
 SectionEnd
 
-Section /o "Standalone Field Exporter (legacy)"
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\FieldExporter
-
-  File /r "FieldExporter\SimulatorAPI.dll"
-  File /r "FieldExporter\FieldExporter.exe"
-  File /r "FieldExporter\ConvexLibraryWrapper.dll"
-	
-SectionEnd
-
-Section "Robot Exporter Plugin (reccommended)"
+Section "Robot Exporter Plugin (reccommended)" PluginExporter
 
   ; Set output path to plugin directory
   SetOutPath "$INSTDIR"
@@ -166,34 +175,7 @@ Section "Robot Exporter Plugin (reccommended)"
 
 SectionEnd
 
-Section "Field Exporter Plugin (reccommended)"
-	
-  ; Set output path to plugin directory
-  SetOutPath "$INSTDIR"
-  File /r "FieldExporter\FieldDistrib.bat"
-  File /r "FieldExporter\autodesk.BxDFieldExporter.inventor.addin"
-  ExecShell open "$INSTDIR\FieldDistrib.bat" SW_HIDE
-
-  SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
-  File /r "FieldExporter\BxDFieldExporter.dll"
-
-SectionEnd
-
-Section "Code Emulator (optional)"
-
-  SetOutPath $INSTDIR\SynthesisDrive
-
-  File /r "SynthesisDrive\*"
-
-  SetOutPath $INSTDIR\cygscripts
-  File /r "cygscripts\*"
-
-  ; installs cygwin
-  ExecWait "$INSTDIR\cygscripts\cygpac.bat"
-  
-SectionEnd
-
-Section "Robot Files"
+Section "Robot Files" RoboFiles
 
 SetOutPath $APPDATA\Synthesis\Robots
 
@@ -201,14 +183,25 @@ File /r "Robots\*"
 
 SectionEnd
 
-Section "Field Files"
+;--------------------------------
+;Component Descriptions
 
-SetOutPath $APPDATA\Synthesis\Fields
+  LangString DESC_SynthesisRequired ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
+  LangString DESC_MixMatch ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
+  LangString DESC_LegacyExporter ${LANG_ENGLISH} "The Legacy Robot Exporter is a standalone application used to convert an Autodesk Inventor Assembly file into a format that can be read and loaded by the simulator"
+  LangString DESC_PluginExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor Addin used to import Autodesk Inventor Assemblies directly into the simulator"
+  LangString DESC_RoboFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
 
-File /r "Fields\*"
-
-SectionEnd
-
+  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
+  !insertmacro MUI_DESCRIPTION_TEXT ${MixMatch} $(DESC_MixMatch)
+  !insertmacro MUI_DESCRIPTION_TEXT ${LegacyExporter} $(DESC_LegacyExporter)
+  !insertmacro MUI_DESCRIPTION_TEXT ${PluginExporter} $(DESC_PluginExporter)
+  !insertmacro MUI_DESCRIPTION_TEXT ${RoboFiles} $(DESC_RoboFiles)
+  !insertmacro MUI_FUNCTION_DESCRIPTION_END
+  
+;--------------------------------
+  
 Section "Uninstall"
 
   ; Remove registry keys
@@ -216,9 +209,7 @@ Section "Uninstall"
 
   RMDir /r /REBOOTOK $INSTDIR
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
-  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
-  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
   ; Remove files and uninstaller
   Delete $INSTDIR\Synthesis.nsi
   Delete $INSTDIR\uninstall.exe
@@ -246,7 +237,7 @@ MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view 
     NoReadme:
 
 
-    Exec "$INSTDIR\SynthesisLauncher.exe"
+    Exec "$INSTDIR\Synthesis.exe"
 
     MessageBox MB_OK "Synthesis has been installed succsessfully!"
 

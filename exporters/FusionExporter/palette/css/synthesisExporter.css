@@ -1,0 +1,35 @@
+/* Fonts */
+@font-face
+{
+    font-family: 'Artifakt Element';
+    src: url('../resources/artifakt.ttf') format("truetype");
+}
+
+*
+{
+    font-family: 'Artifakt Element';
+    font-size: 12px;
+}
+
+/* Other Appearance */
+body
+{
+    background-color: rgb(242,242,242);
+    padding: 0.5rem;
+}
+
+fieldset
+{
+    margin: 1rem 0;
+}
+
+a
+{
+    text-decoration: underline;
+    color: #f29000;
+}
+
+a:hover
+{
+    color: #ffba56;
+}

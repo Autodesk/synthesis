@@ -39,6 +39,7 @@
             // MainLayout
             // 
             this.MainLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.MainLayout.BackColor = System.Drawing.Color.White;
             this.MainLayout.ColumnCount = 2;
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -47,8 +48,10 @@
             this.MainLayout.Controls.Add(this.exportRobotButton, 1, 1);
             this.MainLayout.Controls.Add(this.showAgainCheckBox, 0, 2);
             this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainLayout.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MainLayout.Location = new System.Drawing.Point(0, 0);
             this.MainLayout.Name = "MainLayout";
+            this.MainLayout.Padding = new System.Windows.Forms.Padding(8, 0, 8, 5);
             this.MainLayout.RowCount = 3;
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 60F));
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40F));
@@ -62,10 +65,11 @@
             this.MainLayout.SetColumnSpan(this.MainTextLbl, 2);
             this.MainTextLbl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainTextLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MainTextLbl.Location = new System.Drawing.Point(0, 0);
+            this.MainTextLbl.Location = new System.Drawing.Point(8, 0);
             this.MainTextLbl.Margin = new System.Windows.Forms.Padding(0);
             this.MainTextLbl.Name = "MainTextLbl";
-            this.MainTextLbl.Size = new System.Drawing.Size(461, 93);
+            this.MainTextLbl.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            this.MainTextLbl.Size = new System.Drawing.Size(445, 90);
             this.MainTextLbl.TabIndex = 0;
             this.MainTextLbl.Text = "You have now completed the initial setup for exporting your robot. Would you like" +
     " to configure advanced settings, or finish and export your robot to Synthesis?\r\n" +
@@ -75,7 +79,7 @@
             // AdvancedExportButton
             // 
             this.AdvancedExportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AdvancedExportButton.Location = new System.Drawing.Point(3, 102);
+            this.AdvancedExportButton.Location = new System.Drawing.Point(11, 97);
             this.AdvancedExportButton.Name = "AdvancedExportButton";
             this.AdvancedExportButton.Size = new System.Drawing.Size(210, 50);
             this.AdvancedExportButton.TabIndex = 1;
@@ -87,9 +91,9 @@
             // 
             this.exportRobotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.exportRobotButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.exportRobotButton.Location = new System.Drawing.Point(248, 102);
+            this.exportRobotButton.Location = new System.Drawing.Point(241, 97);
             this.exportRobotButton.Name = "exportRobotButton";
-            this.exportRobotButton.Size = new System.Drawing.Size(210, 50);
+            this.exportRobotButton.Size = new System.Drawing.Size(209, 50);
             this.exportRobotButton.TabIndex = 2;
             this.exportRobotButton.Text = "Export Robot";
             this.exportRobotButton.UseVisualStyleBackColor = true;
@@ -98,9 +102,10 @@
             // showAgainCheckBox
             // 
             this.showAgainCheckBox.AutoSize = true;
-            this.showAgainCheckBox.Location = new System.Drawing.Point(3, 158);
+            this.showAgainCheckBox.Location = new System.Drawing.Point(11, 153);
             this.showAgainCheckBox.Name = "showAgainCheckBox";
-            this.showAgainCheckBox.Size = new System.Drawing.Size(164, 21);
+            this.showAgainCheckBox.Padding = new System.Windows.Forms.Padding(5, 4, 0, 0);
+            this.showAgainCheckBox.Size = new System.Drawing.Size(160, 24);
             this.showAgainCheckBox.TabIndex = 3;
             this.showAgainCheckBox.Text = "Don\'t show this again";
             this.showAgainCheckBox.UseVisualStyleBackColor = true;
