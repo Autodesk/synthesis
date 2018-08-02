@@ -31,7 +31,7 @@ namespace EditorsLibrary
             foreach (RobotSensor sensor in joint.attachedSensors)
             {
                 System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                    sensor.type.ToString(), sensor.module.ToString(), sensor.port.ToString(), sensor.equation.ToString()});
+                    sensor.type.ToString(), sensor.port1.ToString(), sensor.port2.ToString(), sensor.conversionFactor.ToString()});
                 item.Tag = sensor;
                 sensorListView.Items.Add(item);
             }
