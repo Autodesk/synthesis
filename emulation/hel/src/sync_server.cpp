@@ -31,7 +31,7 @@ namespace hel {
                     asio::write(socket, asio::buffer(data), asio::transfer_all());
                 }
                 catch(...){
-                    std::cout << std::flush << "Socket disconnected\n";
+                    std::cout << std::flush << "Sender Socket disconnected\n";
                     break;
                 }
                 usleep(30000);

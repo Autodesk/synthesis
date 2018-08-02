@@ -36,12 +36,13 @@ extern "C" {
         auto instance = hel::RoboRIOManager::getInstance();
         if (controlWord != nullptr) {
             *controlWord = instance.first->robot_mode.toControlWord();
-            controlWord->enabled = 1;
-            controlWord->autonomous = 0;
-            controlWord->test = 0;
-            controlWord->dsAttached = 1;
-            controlWord->eStop = 0;
         }
+        controlWord->enabled = instance.first->robot_mode.getEnabled();
+        controlWord->autonomous = instance.first->robot_mode.getMode()==hel::RobotMode::Mode::AUTONOMOUS?1:0;
+        controlWord->test = instance.first->robot_mode.getMode()==hel::RobotMode::Mode::TEST?1:0;
+        std::cout<< controlWord->autonomous << controlWord->test << "\n";
+        controlWord->dsAttached = instance.first->robot_mode.getDSAttached();
+        controlWord->eStop = 0;
 
         instance.second.unlock();
         return 0; //HAL does not expect error status if parameters are nullptr

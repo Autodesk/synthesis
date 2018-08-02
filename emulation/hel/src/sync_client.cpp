@@ -54,16 +54,16 @@ namespace hel {
                         rest = received_data.substr(i+1);
                         finished_flag = true;
                     }
-                    //std::cout << json_string << "\n";
                     auto instance = hel::ReceiveDataManager::getInstance();
                     instance.first->deserializeAndUpdate(json_string); //
+                    //std::cout << json_string << "\n";
                     instance.second.unlock(); //
                     finished_flag = false;
                     usleep(5000); //
                 }
             }
-            catch(...) {
-                std::cout << std::flush << "Socket disconnected\n";
+            catch(std::system_error) {
+                std::cout << std::flush << "Receiver Socket disconnected\n";
             }
         }
     }

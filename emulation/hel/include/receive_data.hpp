@@ -30,6 +30,19 @@ namespace hel{
 
         std::string toString()const;
 
+        ReceiveData() {
+            for (auto &a : digital_hdrs)
+                a = false;
+            for (auto &a : digital_mxp)
+                a = MXPData();
+            for (auto &a : joysticks)
+                a = Joystick();
+            match_info = MatchInfo();
+            robot_mode = RobotMode();
+            for (auto &a : encoder_managers)
+                a = EncoderManager();
+        }
+
         void deserializeAndUpdate(std::string);
     };
 
