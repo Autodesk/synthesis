@@ -194,6 +194,8 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
+
+            #region Encoder Calculations
             foreach (EmuNetworkInfo a in emuList)
             {
                 RigidNode rigidNode = null;
@@ -211,16 +213,14 @@ namespace Synthesis.Robot
 
                 if (a.RobotSensor.type == RobotSensorType.ENCODER)
                 {
-                    if (a.RobotSensor.conversionFactor == 0)
-                        a.RobotSensor.conversionFactor = 1;
-
                     bRaycastWheel.GetWheelSpeed();
 
                     double angleDifference = bRaycastWheel.transform.eulerAngles.x - a.previousEuler;
 
-                    if (bRaycastWheel.GetWheelSpeed() > 0)
+                    // Checks to handle specific wheel rotational cases
+                    if (bRaycastWheel.GetWheelSpeed() > 0) // To handle positive wheel speeds
                     {
-                        if (angleDifference < 0)
+                        if (angleDifference < 0) // To handle special case (positive wheel speed, negative angleDifference)
                         {
                             a.encoderTickCount += (((360 - a.previousEuler + bRaycastWheel.transform.eulerAngles.x) / 360.0) * a.RobotSensor.conversionFactor);
                         }
@@ -245,6 +245,7 @@ namespace Synthesis.Robot
                     a.previousEuler = bRaycastWheel.transform.eulerAngles.x;
                 }
             }
+            #endregion
 
             if (IsResetting)
                 Resetting();
