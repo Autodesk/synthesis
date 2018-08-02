@@ -22,7 +22,10 @@ RequestExecutionLevel admin
   !define MUI_HEADERIMAGE_BITMAP "orange-r.bmp"
   !define MUI_HEADERIMAGE_RIGHT
   !define MUI_ABORTWARNING
-
+  !define MUI_FINISHPAGE_TEXT 'Synthesis has been successfully installed on your system. $\r$\n $\r$\nIn order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulator. $\r$\n $\r$\nBy clicking Finish, you agree that you have read the terms of service agreement and data collection statement above.'
+  !define MUI_FINISHPAGE_LINK "Synthesis GitHub Wiki"
+  !define MUI_FINISHPAGE_LINK_LOCATION "https://github.com/Autodesk/synthesis/wiki"
+  
 ;--------------------------------
 ;Pages
 
@@ -42,9 +45,6 @@ RequestExecutionLevel admin
 
   !insertmacro MUI_LANGUAGE "English"
 
-Page components
-Page instfiles
-
 UninstPage uninstConfirm
 UninstPage instfiles
 
@@ -63,6 +63,7 @@ IfFileExists "$INSTDIR" +1 +28
         Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
         RMDIR /r /REBOOTOK $APPDATA\RobotViewer
+		
         ; Remove files and uninstaller
         Delete $INSTDIR\Synthesis.nsi
         Delete $INSTDIR\uninstall.exe
@@ -79,6 +80,7 @@ IfFileExists "$INSTDIR" +1 +28
         Delete "$DESKTOP\Autodesk Synthesis.lnk"
         Delete "$DESKTOP\BXD Synthesis.lnk"
         Delete "$SMPROGRAMS\BXD Synthesis.lnk"
+		
         ; Remove directories used
         RMDir $INSTDIR
 
@@ -210,10 +212,12 @@ Section "Uninstall"
   RMDir /r /REBOOTOK $INSTDIR
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
+  
   ; Remove files and uninstaller
   Delete $INSTDIR\Synthesis.nsi
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\*
+  
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Synthesis.lnk"
   Delete "$DESKTOP\Synthesis.lnk"
@@ -223,25 +227,10 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   Delete "$SMPROGRAMS\BXD Synthesis.lnk"
+  
   ; Remove directories used
   RMDir $INSTDIR
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
-SectionEnd
-
-Section
-
-MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view our Readme?" IDNO NoReadme
-      ExecShell "open" "https://github.com/Autodesk/synthesis/blob/master/README.md"
-    NoReadme:
-
-
-    Exec "$INSTDIR\Synthesis.exe"
-
-    MessageBox MB_OK "Synthesis has been installed succsessfully!"
-
-    MessageBox MB_OK "In order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulation."
-
-    Quit
 SectionEnd
