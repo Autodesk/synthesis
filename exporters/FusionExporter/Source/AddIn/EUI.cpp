@@ -23,13 +23,7 @@ EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 
 EUI::~EUI()
 {
-	// Wait for all threads to finish
-	if (exportThread != nullptr)
-	{
-		exportThread->join();
-		delete exportThread;
-	}
-
+	cancelExportThread();
 	deleteWorkspace();
 }
 
@@ -56,7 +50,7 @@ bool EUI::createWorkspace()
 		if (!workspaceDeactivatedEvent)
 			throw "Failed to create workspace events.";
 
-		workspaceDeactivatedEvent->add(new WorkspaceDeactivatedHandler(UI));
+		workspaceDeactivatedEvent->add(new WorkspaceDeactivatedHandler(this));
 
 		// Create panel
 		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
@@ -144,6 +138,11 @@ void EUI::deleteExportPalette()
 	exportPalette = nullptr;
 }
 
+void EUI::closeExportPalette()
+{
+	exportPalette->isVisible(false);
+}
+
 bool EUI::createProgressPalette()
 {
 	Ptr<Palettes> palettes = UI->palettes();
@@ -180,6 +179,11 @@ void EUI::deleteProgressPalette()
 		progressPalette->deleteMe();
 
 	progressPalette = nullptr;
+}
+
+void EUI::closeProgressPalette()
+{
+	progressPalette->isVisible(false);
 }
 
 bool EUI::createExportButton()
@@ -243,11 +247,23 @@ void EUI::startExportThread(BXDJ::ConfigData & config)
 		delete exportThread;
 	}
 
-	progressPalette->isVisible(true);
+	killExportThread = false;
 	exportThread = new std::thread(&EUI::exportRobot, this, config);
 #else
 	Exporter::exportMeshes(config, app->activeDocument());
 #endif
+}
+
+void EUI::cancelExportThread()
+{
+	if (exportThread != nullptr)
+	{
+		killExportThread = true;
+		exportThread->join();
+		delete exportThread;
+		exportThread = nullptr;
+		closeProgressPalette();
+	}
 }
 
 void EUI::updateProgress(double percent)
@@ -255,16 +271,27 @@ void EUI::updateProgress(double percent)
 	if (percent < 0)
 		percent = 0;
 	
-	if (percent >= 1)
-		progressPalette->isVisible(false);
-	else
-		progressPalette->sendInfoToHTML("progress", std::to_string(percent));
+	if (percent > 1)
+		percent = 1;
+
+	progressPalette->sendInfoToHTML("progress", std::to_string(percent));
+	progressPalette->isVisible(true);
 }
 
 void EUI::exportRobot(BXDJ::ConfigData config)
 {
+	updateProgress(0);
+
+	// Add delay so that loading bar has time to animate
+	std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
 	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
 	{
 		updateProgress(percent);
-	});
+	}, &killExportThread);
+
+	// Add delay so that loading bar has time to animate
+	std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
+	closeProgressPalette();
 }

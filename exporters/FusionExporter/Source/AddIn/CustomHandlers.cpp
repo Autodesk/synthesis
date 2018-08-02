@@ -25,21 +25,8 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 {
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
 	{
-		Ptr<Palettes> palettes = UI->palettes();
-		if (!palettes)
-			return;
-
-		Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
-		if (!palette)
-			return;
-
-		palette->isVisible(false);
-
-		palette = palettes->itemById(K_PROGRESS_PALETTE);
-		if (!palette)
-			return;
-
-		palette->isVisible(false);
+		eui->closeExportPalette();
+		eui->cancelExportThread();
 	}
 }
 

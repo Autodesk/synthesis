@@ -18,6 +18,6 @@ namespace Synthesis
 
 		static void exportExample();
 		static void exportExampleXml();
-		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>, std::function<void(double)> progressCallback);
+		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>, std::function<void(double)> progressCallback = nullptr, bool * cancel = nullptr);
 	};
 }

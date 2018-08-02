@@ -25,6 +25,11 @@ void BXDJ::RigidNode::getChildren(std::vector<std::shared_ptr<RigidNode>> & chil
 	}
 }
 
+int BXDJ::RigidNode::getOccurrenceCount() const
+{
+	return fusionOccurrences.size();
+}
+
 void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
 {
 	// Add the occurence to this node
