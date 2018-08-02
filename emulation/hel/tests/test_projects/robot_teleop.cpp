@@ -14,6 +14,7 @@ class Robot: public frc::IterativeRobot{
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
     frc::Joystick m_stick{0};
     frc::Timer auto_timer;
+    bool run_auto = true;
 
     bool driveMode = false;
 
@@ -31,8 +32,12 @@ public:
     }
 
     void AutonomousPeriodic(){
-        if(!auto_timer.HasPeriodPassed(5)){
-            m_robotDrive.TankDrive(1.0,1.0);
+        std::cout<<"Remaining: "<<auto_timer.Get()<<"\n";
+        if(!auto_timer.HasPeriodPassed(5) && run_auto){
+            m_robotDrive.TankDrive(1.0,-1.0);
+            run_auto = false;
+        } else{
+            m_robotDrive.TankDrive(0,0);
         }
     }
 
