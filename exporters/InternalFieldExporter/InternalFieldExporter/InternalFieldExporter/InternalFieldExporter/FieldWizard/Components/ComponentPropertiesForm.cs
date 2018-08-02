@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
+using InternalFieldExporter.FieldWizard.Components;
 
 namespace InternalFieldExporter.FieldWizard
 {
@@ -60,14 +61,14 @@ namespace InternalFieldExporter.FieldWizard
 
             ParentTabPage = TabPage;
 
-            colliderTypecombobox.SelectedIndex = 0;
+            colliderTypeCombobox.SelectedIndex = 0;
 
             InteractionEnabled = false;
         }
 
         public PropertySet.PropertySetCollider GetSetCollider()
         {
-            return((colliderPropertiesForm)meshPropertiesTable.Controls[1]).GetCollider();
+            return((ColliderPropertiesForm)meshPropertiesTable.Controls[1]).GetCollider();
         }
 
         /// <summary>

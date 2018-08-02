@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace InternalFieldExporter.FieldWizard.Components
+namespace InternalFieldExporter.FieldWizard
 {
     public partial class MeshColliderPropertiesForm : UserControl
     {

@@ -270,8 +270,20 @@
     <EmbeddedResource Include="FieldWizard\Components\BoxColliderPropertiesForm.resx">
       <DependentUpon>BoxColliderPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\Components\ComponentPropertiesForm.resx">
+      <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FieldWizard\Components\CreatePropertySetForm.resx">
       <DependentUpon>CreatePropertySetForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\Components\InventorTreeView.resx">
+      <DependentUpon>InventorTreeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\Components\MeshColliderPropertiesForm.resx">
+      <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\Components\SphereColliderPropertiesForm.resx">
+      <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FieldWizard\EnterNameDialog.resx">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
