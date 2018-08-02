@@ -35,6 +35,7 @@ namespace hel{
 
         static uint64_t getCurrentTime()noexcept;
         Global()noexcept;
+        Global(const Global&)noexcept;
     };
 }
 

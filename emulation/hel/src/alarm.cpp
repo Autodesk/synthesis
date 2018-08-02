@@ -20,6 +20,15 @@ namespace hel{
         trigger_time = time;
     }
 
+    Alarm::Alarm()noexcept:enabled(false),trigger_time(0){}
+
+    Alarm::Alarm(const Alarm& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(enabled);
+        COPY(trigger_time);
+#undef COPY
+    }
+
     struct AlarmManager: public tAlarm{ //TODO implement full logic
         tSystemInterface* getSystemInterface(){
             return new SystemInterface();

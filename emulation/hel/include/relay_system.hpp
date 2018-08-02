@@ -44,6 +44,7 @@ namespace hel{
         void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue)noexcept;
 
         RelaySystem()noexcept;
+        RelaySystem(const RelaySystem&)noexcept;
     };
 }
 

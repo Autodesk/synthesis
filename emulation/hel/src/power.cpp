@@ -32,6 +32,13 @@ namespace hel{
     }
 
     Power::Power()noexcept:status(),fault_counts(),disabled(){}
+    Power::Power(const Power& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(status);
+        COPY(fault_counts);
+        COPY(disabled);
+#undef COPY
+    }
 
     struct PowerManager: public tPower{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation

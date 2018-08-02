@@ -56,7 +56,29 @@ namespace hel {
         analog_inputs[channel].values = values;
     }
 
-    AnalogInputs::AnalogInputs()noexcept:analog_inputs(),config(),read_select(){}
+    AnalogInputs::AnalogInput::AnalogInput()noexcept:oversample_bits(0),average_bits(0),scan_list(0),values({}){}
+
+    AnalogInputs::AnalogInput::AnalogInput(const AnalogInput& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(oversample_bits);
+        COPY(average_bits);
+        COPY(values);
+#undef COPY
+    }
+
+    AnalogInputs::AnalogInputs()noexcept:analog_inputs(),config(),read_select(){
+        for(auto& a: analog_inputs){
+            a = {};
+        }
+    }
+
+    AnalogInputs::AnalogInputs(const AnalogInputs& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(analog_inputs);
+        COPY(config);
+        COPY(read_select);
+#undef COPY
+    }
 
     struct AnalogInputManager: public tAI{
         tSystemInterface* getSystemInterface(){

@@ -199,4 +199,21 @@ namespace hel{
             a = -1;
         }
     }
+    Joystick::Joystick(const Joystick& source)noexcept{
+#define COPY(NAME) NAME = source.NAME
+        COPY(is_xbox);
+        COPY(type);
+        COPY(name);
+        COPY(buttons);
+        COPY(button_count);
+        COPY(axes);
+        COPY(axis_count);
+        COPY(axis_types);
+        COPY(povs);
+        COPY(pov_count);
+        COPY(outputs);
+        COPY(left_rumble);
+        COPY(right_rumble);
+#undef COPY
+    }
 }

@@ -31,7 +31,8 @@ namespace hel{
         void setAutoRate(uint32_t);
         uint8_t getEnabledDIO()const;
         void setEnabledDIO(uint8_t);
-        SPISystem();
+        SPISystem()noexcept;
+        SPISystem(const SPISystem&)noexcept;
     };
 }
 
