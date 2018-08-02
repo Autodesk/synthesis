@@ -73,7 +73,7 @@
             // LoadingAnimation
             // 
             this.LoadingAnimation.BackColor = System.Drawing.Color.Transparent;
-            this.LoadingAnimation.Image = global::JointResolver.Properties.Resources.SyntheMation350x350;
+            this.LoadingAnimation.Image = global::JointResolver.Properties.Resources.LoadAnimationNewLogo;
             this.LoadingAnimation.Location = new System.Drawing.Point(12, 12);
             this.LoadingAnimation.Name = "LoadingAnimation";
             this.LoadingAnimation.Size = new System.Drawing.Size(354, 354);
