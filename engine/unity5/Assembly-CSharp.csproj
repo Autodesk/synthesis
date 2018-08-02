@@ -211,29 +211,22 @@
     <Compile Include="Assets\Scripts\FSM\State.cs" />
     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
     <Compile Include="Assets\Scripts\GodMode.cs" />
-    <Compile Include="Assets\Scripts\GUI\ButtonCallbackManager.cs" />
-    <Compile Include="Assets\Scripts\GUI\DPMToolbarState.cs" />
-    <Compile Include="Assets\Scripts\GUI\EmulationDriverStation.cs" />
-    <Compile Include="Assets\Scripts\GUI\EmulationToolbarState.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
-    <Compile Include="Assets\Scripts\GUI\MainToolbarState.cs" />
+    <Compile Include="Assets\Scripts\GUI\NetworkMultiplayerUI.cs" />
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\ScoringToolbarState.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\SensorToolbarState.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
     <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-    <Compile Include="Assets\Scripts\GUI\Wizard.cs" />
     <Compile Include="Assets\Scripts\Input\Axis.cs" />
     <Compile Include="Assets\Scripts\Input\Controls.cs" />
     <Compile Include="Assets\Scripts\Input\CreateButton.cs" />
@@ -264,15 +257,22 @@
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\MultiplayerNetwork.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\NetworkElement.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\NetworkFileTransfer.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\ServerNetworkDiscovery.cs" />
-    <Compile Include="Assets\Scripts\NetworkMultiplayer\ServerStatus.cs" />
+    <Compile Include="Assets\Scripts\Network\FileTransferer.cs" />
+    <Compile Include="Assets\Scripts\Network\IPCrypt.cs" />
+    <Compile Include="Assets\Scripts\Network\MatchManager.cs" />
+    <Compile Include="Assets\Scripts\Network\MultiplayerNetwork.cs" />
+    <Compile Include="Assets\Scripts\Network\NetworkElement.cs" />
+    <Compile Include="Assets\Scripts\Network\NetworkFileTransfer.cs" />
+    <Compile Include="Assets\Scripts\Network\PlayerEntry.cs" />
+    <Compile Include="Assets\Scripts\Network\PlayerIdentity.cs" />
+    <Compile Include="Assets\Scripts\Network\PlayerList.cs" />
+    <Compile Include="Assets\Scripts\Network\ServerNetworkDiscovery.cs" />
+    <Compile Include="Assets\Scripts\Network\ServerStatus.cs" />
     <Compile Include="Assets\Scripts\RN\RNCommon.cs" />
     <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RN\RNWheel.cs" />
+    <Compile Include="Assets\Scripts\Robot\IRobotProvider.cs" />
     <Compile Include="Assets\Scripts\Robot\MaMRobot.cs" />
     <Compile Include="Assets\Scripts\Robot\NetworkMesh.cs" />
     <Compile Include="Assets\Scripts\Robot\NetworkRobot.cs" />
@@ -288,15 +288,22 @@
     <Compile Include="Assets\Scripts\SimStart.cs" />
     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
+    <Compile Include="Assets\Scripts\States\AnalyzingResourcesState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFieldState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
     <Compile Include="Assets\Scripts\States\DefaultSimulatorState.cs" />
+    <Compile Include="Assets\Scripts\States\EnterInfoState.cs" />
+    <Compile Include="Assets\Scripts\States\EnterTagState.cs" />
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
+    <Compile Include="Assets\Scripts\States\FetchingMetadataState.cs" />
+    <Compile Include="Assets\Scripts\States\GatheringResourcesState.cs" />
     <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
+    <Compile Include="Assets\Scripts\States\HostJoinState.cs" />
     <Compile Include="Assets\Scripts\States\LoadFieldState.cs" />
     <Compile Include="Assets\Scripts\States\LoadReplayState.cs" />
     <Compile Include="Assets\Scripts\States\LoadRobotState.cs" />
+    <Compile Include="Assets\Scripts\States\LobbyState.cs" />
     <Compile Include="Assets\Scripts\States\MainState.cs" />
     <Compile Include="Assets\Scripts\States\MixAndMatchState.cs" />
     <Compile Include="Assets\Scripts\States\MultiplayerState.cs" />
@@ -305,6 +312,7 @@
     <Compile Include="Assets\Scripts\States\SaveReplayState.cs" />
     <Compile Include="Assets\Scripts\States\SelectionState.cs" />
     <Compile Include="Assets\Scripts\States\SimTabState.cs" />
+    <Compile Include="Assets\Scripts\States\SyncState.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
     <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
     <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />
@@ -315,9 +323,7 @@
     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
-    <None Include="Assets\Packages\Newtonsoft.Json.11.0.2\lib\net35\Newtonsoft.Json.xml" />
     <None Include="Assets\BulletUnity\license.txt" />
-    <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
     <None Include="Assets\item_data.xml" />
     <Reference Include="UnityEditor.StandardEvents">
@@ -527,17 +533,11 @@
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
+    <Reference Include="Renci.SshNet">
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Renci.SshNet.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="CTCommon">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Plugins/crosstales/Common/Scripts/CTCommon.dll</HintPath>
-    </Reference>
-    <Reference Include="Ookii.Dialogs">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Plugins/crosstales/FileBrowser/Native/Windows/Ookii.Dialogs.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Plugins/crosstales/FileBrowser/Native/Windows/System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
@@ -547,9 +547,6 @@
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
       <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
-    </Reference>
-    <Reference Include="Renci.SshNet">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Renci.SshNet.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -901,6 +898,14 @@
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
       <Project>{7C14F5DB-B04B-B8EC-364F-14F17512EDE5}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Analytics.DataPrivacy.Editor.csproj">
+      <Project>{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}</Project>
+      <Name>Unity.Analytics.DataPrivacy.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Analytics.DataPrivacy.csproj">
+      <Project>{ACDD2F29-AC5D-76DD-A58C-30AA4D1B465F}</Project>
+      <Name>Unity.Analytics.DataPrivacy</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

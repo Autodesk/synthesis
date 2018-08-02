@@ -88,7 +88,6 @@ namespace Synthesis.BUExtensions
             }
 
             RotationalJoint_Base joint = (RotationalJoint_Base)node.GetSkeletalJoint();
-            joint.basePoint.x *= -1;
 
             node.OrientWheelNormals();
 
