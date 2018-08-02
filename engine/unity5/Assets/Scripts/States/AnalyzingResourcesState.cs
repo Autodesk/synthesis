@@ -15,9 +15,10 @@ namespace Synthesis.States
         public override void Start()
         {
             if (Host)
-                MatchManager.Instance.GenerateDependencyMap(() => MatchManager.Instance.AwaitChangeState<GatheringResourcesState>(false));
-
-            SendReadySignal();
+            {
+                MatchManager.Instance.AwaitChangeState<GatheringResourcesState>(false);
+                MatchManager.Instance.GenerateDependencyMap();
+            }
         }
     }
 }

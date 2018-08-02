@@ -15,7 +15,7 @@ namespace Synthesis.Network
     [NetworkSettings(channel = 0, sendInterval = 0f)]
     public class PlayerIdentity : NetworkBehaviour
     {
-        private const int FileTransferBasePort = 1234;
+        public const int FileTransferBasePort = 1234;
 
         #region ClientFields
 
@@ -28,11 +28,6 @@ namespace Synthesis.Network
         /// The player tag associated with new local <see cref="PlayerIdentity"/> instances.
         /// </summary>
         public static string DefaultLocalPlayerTag { get; set; }
-
-        /// <summary>
-        /// The list of unresolved dependencies associated with this instance.
-        /// </summary>
-        public List<int> UnresolvedDependencies { get; set; }
 
         /// <summary>
         /// The local directory of the robot to be loaded.
@@ -74,10 +69,16 @@ namespace Synthesis.Network
         public bool ready;
 
         /// <summary>
-        /// A percentage representing how much progress has been made gathering resources.
+        /// A percentage representing how much progress has been made gathering or distributing resources.
         /// </summary>
         [SyncVar]
         public float transferProgress;
+
+        /// <summary>
+        /// The number of files to receive to this instance from the server.
+        /// </summary>
+        [SyncVar]
+        public int dependencyCount;
 
         /// <summary>
         /// True if the scene has been generated on this local instance.
@@ -94,18 +95,19 @@ namespace Synthesis.Network
         /// </summary>
         private static int nextId = 0;
 
-        #endregion
-
-        /// <summary>
-        /// A hash set containing the names of files received on the server from the client.
-        /// </summary>
-        private HashSet<string> receivedFiles;
-
         /// <summary>
         /// The number of files the server is expecting to receive from the client,
         /// or vice versa.
         /// </summary>
-        private int numFilesToReceive;
+        public int LocalRobotFileCount { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// A hash set containing the names of files received on the server from the client,
+        /// or vice versa.
+        /// </summary>
+        public HashSet<string> ReceivedFiles { get; private set; }
 
         /// <summary>
         /// Returns the <see cref="PlayerIdentity"/> with the given ID.
@@ -135,9 +137,8 @@ namespace Synthesis.Network
             }
 
             RobotFolder = string.Empty;
-            UnresolvedDependencies = new List<int>();
-            receivedFiles = new HashSet<string>();
-            numFilesToReceive = -1;
+            ReceivedFiles = new HashSet<string>();
+            LocalRobotFileCount = 0;
 
             PlayerList.Instance.AddPlayerEntry(this);
         }
@@ -197,8 +198,10 @@ namespace Synthesis.Network
         /// </summary>
         public void CheckDependencies()
         {
-            UnresolvedDependencies.Clear();
-            receivedFiles.Clear();
+            ReceivedFiles.Clear();
+            dependencyCount = 0;
+
+            List<int> unresolvedDependencies = new List<int>();
 
             RobotFolder = PlayerPrefs.GetString("simSelectedRobot");
 
@@ -220,7 +223,7 @@ namespace Synthesis.Network
 
                 if (otherIdentity.RobotFolder.Length == 0)
                 {
-                    UnresolvedDependencies.Add(otherIdentity.id);
+                    unresolvedDependencies.Add(otherIdentity.id);
                     otherIdentity.RobotFolder = robotsDirectory + "\\" + otherIdentity.robotName;
                 }
             }
@@ -241,11 +244,11 @@ namespace Synthesis.Network
 
             if (MatchManager.Instance.FieldFolder.Length == 0)
             {
-                UnresolvedDependencies.Add(-1);
+                unresolvedDependencies.Add(-1);
                 MatchManager.Instance.FieldFolder = fieldsDirectory + "\\" + MatchManager.Instance.FieldName;
             }
 
-            CmdAddDependencies(UnresolvedDependencies.ToArray());
+            CmdAddDependencies(unresolvedDependencies.ToArray());
         }
 
         /// <summary>
@@ -256,18 +259,10 @@ namespace Synthesis.Network
         [Command]
         private void CmdAddDependencies(int[] unresolvedDependencies)
         {
-            MatchManager.Instance.AddDependencies(id, unresolvedDependencies);
-        }
+            if (unresolvedDependencies.Length > 0)
+                MatchManager.Instance.AddDependencies(id, unresolvedDependencies);
 
-        /// <summary>
-        /// Tells the server that this instance properly received the given file.
-        /// </summary>
-        /// <param name="folderName"></param>
-        /// <param name="fileName"></param>
-        [Command]
-        public void CmdConfirmFileTransferred(string folderName, string fileName)
-        {
-            MatchManager.Instance.ConfirmFileTransferred(id, folderName, fileName);
+            ready = true;
         }
 
         /// <summary>
@@ -276,8 +271,8 @@ namespace Synthesis.Network
         [Server]
         public void TransferResources()
         {
-            receivedFiles.Clear();
-            numFilesToReceive = -1;
+            ReceivedFiles.Clear();
+            LocalRobotFileCount = -1;
             transferProgress = 0f;
 
             int port = FileTransferBasePort + id;
@@ -296,7 +291,7 @@ namespace Synthesis.Network
         {
             string[] files = Directory.GetFiles(PlayerPrefs.GetString("simSelectedRobot"));
 
-            CmdSetNumFilesToReceive(files.Length);
+            CmdSetNumRobotFiles(files.Length);
 
             TcpFileTransfer.SendFiles(MultiplayerNetwork.Instance.networkAddress, port, files);
         }
@@ -307,11 +302,11 @@ namespace Synthesis.Network
         /// <param name="fileName"></param>
         private void OnServerFileReceived(string fileName)
         {
-            receivedFiles.Add(fileName);
+            ReceivedFiles.Add(fileName);
 
-            transferProgress = numFilesToReceive > 0f ? receivedFiles.Count / (float)numFilesToReceive : 0f;
+            transferProgress = LocalRobotFileCount > 0 ? ReceivedFiles.Count / (float)LocalRobotFileCount : 0f;
 
-            if (receivedFiles.Count == numFilesToReceive)
+            if (ReceivedFiles.Count == LocalRobotFileCount)
                 ready = true;
         }
 
@@ -322,7 +317,6 @@ namespace Synthesis.Network
         [Server]
         public void DistributeResources(HashSet<int> destinationIds)
         {
-            transferProgress = 0f;
             List<string> networkAddresses = new List<string>();
             int port = FileTransferBasePort + id;
 
@@ -331,7 +325,7 @@ namespace Synthesis.Network
             {
                 string ipv6 = identity.connectionToClient.address;
                 networkAddresses.Add(ipv6.Substring(ipv6.LastIndexOf(':') + 1));
-                identity.TargetReceiveFiles(identity.connectionToClient, port, robotName, identity.receivedFiles.Count);
+                identity.TargetReceiveFiles(identity.connectionToClient, port, "RobotDirectory", robotName);
             }
 
             if (networkAddresses.Any())
@@ -346,10 +340,9 @@ namespace Synthesis.Network
         /// <param name="port"></param>
         /// <param name="folderName"></param>
         [TargetRpc]
-        private void TargetReceiveFiles(NetworkConnection target, int port, string folderName, int totalFilesToReceive)
+        public void TargetReceiveFiles(NetworkConnection target, int port, string playerPrefsDirectory, string folderName)
         {
-            numFilesToReceive = totalFilesToReceive;
-            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + "\\" + folderName,
+            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString(playerPrefsDirectory) + "\\" + folderName,
                 OnClientFileReceived);
         }
 
@@ -359,11 +352,11 @@ namespace Synthesis.Network
         /// <param name="fileName"></param>
         private void OnClientFileReceived(string fileName)
         {
-            receivedFiles.Add(fileName);
+            ReceivedFiles.Add(fileName);
 
-            CmdSetTransferProgress(numFilesToReceive > 0f ? receivedFiles.Count / (float)numFilesToReceive : 0f);
+            CmdSetTransferProgress(dependencyCount > 0 ? ReceivedFiles.Count / (float)dependencyCount : 0f);
 
-            if (receivedFiles.Count == numFilesToReceive)
+            if (ReceivedFiles.Count == dependencyCount)
                 CmdSetReady(true);
         }
 
@@ -433,9 +426,9 @@ namespace Synthesis.Network
         /// </summary>
         /// <param name="numFiles"></param>
         [Command]
-        private void CmdSetNumFilesToReceive(int numFiles)
+        private void CmdSetNumRobotFiles(int numFiles)
         {
-            numFilesToReceive = numFiles;
+            LocalRobotFileCount = numFiles;
         }
     }
 }

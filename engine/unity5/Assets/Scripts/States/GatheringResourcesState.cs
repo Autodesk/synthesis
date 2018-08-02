@@ -26,11 +26,11 @@ namespace Synthesis.States
         {
             percentageText = GameObject.Find("GatheringPercentageText").GetComponent<Text>();
 
-            if (!Host)
-                return;
-
-            MatchManager.Instance.AwaitChangeState<DistributingResourcesState>(false);
-            MatchManager.Instance.GatherResources();
+            if (Host)
+            {
+                MatchManager.Instance.AwaitChangeState<DistributingResourcesState>(false);
+                MatchManager.Instance.GatherResources();
+            }
         }
 
         /// <summary>

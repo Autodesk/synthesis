@@ -12,6 +12,16 @@ namespace Synthesis.States
 {
     public class FetchingMetadataState : SyncState
     {
+        private bool guidsFetched;
+
+        /// <summary>
+        /// Initailizes all fields for this instance.
+        /// </summary>
+        public override void Awake()
+        {
+            guidsFetched = false;
+        }
+
         /// <summary>
         /// Loads the selected robot skeleton and retrieves its GUID.
         /// </summary>
@@ -31,10 +41,13 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
-            if (!PlayerIdentity.LocalInstance.ready &&
+            if (!guidsFetched &&
                 MatchManager.Instance.FieldGuid.Length > 0 &&
                 UnityEngine.Object.FindObjectsOfType<PlayerIdentity>().All(p => p.robotGuid.Length > 0))
-                SendReadySignal();
+            {
+                guidsFetched = true;
+                PlayerIdentity.LocalInstance.CmdSetReady(true);
+            }
         }
     }
 }

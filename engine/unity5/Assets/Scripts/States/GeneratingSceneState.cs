@@ -8,51 +8,47 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Synthesis.GUI;
+using System.Collections;
 
 namespace Synthesis.States
 {
     public class GeneratingSceneState : SyncState
     {
-        private bool sceneGenerated;
-        private bool renderingStarted;
-
         /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        public override void Awake()
-        {
-            sceneGenerated = false;
-            renderingStarted = false;
-        }
-
-        /// <summary>
-        /// Starts scene generation on the host.
+        /// Starts scene generation.
         /// </summary>
         public override void Start()
         {
-            if (Host)
-            {
-                GenerateScene();
-                PlayerIdentity.LocalInstance.sceneGenerated = true;
-                PlayerIdentity.LocalInstance.ready = true;
-                MatchManager.Instance.serverSceneGenerated = true;
-            }
+            MatchManager.Instance.StartCoroutine(Host ? ServerGenerateScene() : ClientGenerateScene());
         }
 
         /// <summary>
-        /// Updates this instance.
+        /// Generates the scene on the server.
         /// </summary>
-        public override void Update()
+        /// <returns></returns>
+        private IEnumerator ServerGenerateScene()
         {
-            if (Host)
-            {
-                if (!renderingStarted && UnityEngine.Object.FindObjectsOfType<PlayerIdentity>().All(p => p.ready))
-                    StartSceneRendering();
-            }
-            else if (!sceneGenerated && MatchManager.Instance.serverSceneGenerated)
-            {
-                GenerateScene();
-            }
+            yield return new WaitForFixedUpdate();
+
+            GenerateScene();
+            MatchManager.Instance.serverSceneGenerated = true;
+
+            yield return new WaitUntil(() => UnityEngine.Object.FindObjectsOfType<PlayerIdentity>().All(p => p.ready));
+
+            StartSceneRendering();
+            MatchManager.Instance.syncing = false;
+        }
+
+        /// <summary>
+        /// Generates the scene on the client.
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator ClientGenerateScene()
+        {
+            yield return new WaitUntil(() => MatchManager.Instance.serverSceneGenerated);
+
+            GenerateScene();
+            StartSceneRendering();
         }
 
         /// <summary>
@@ -60,19 +56,12 @@ namespace Synthesis.States
         /// </summary>
         private void GenerateScene()
         {
-            sceneGenerated = true;
-
             StateMachine.SceneGlobal.FindState<MultiplayerState>().LoadField(MatchManager.Instance.FieldFolder, Host);
 
             foreach (PlayerIdentity p in UnityEngine.Object.FindObjectsOfType<PlayerIdentity>())
                 p.GetComponent<NetworkRobot>().enabled = true;
 
-            if (!Host)
-            {
-                PlayerIdentity.LocalInstance.CmdSetSceneGenerated(true);
-                PlayerIdentity.LocalInstance.CmdSetReady(true);
-                StartSceneRendering();
-            }
+            PlayerIdentity.LocalInstance.CmdSetReady(true);
         }
 
         /// <summary>
@@ -80,13 +69,7 @@ namespace Synthesis.States
         /// </summary>
         private void StartSceneRendering()
         {
-            renderingStarted = true;
-
             NetworkMultiplayerUI.Instance.Visible = false;
-
-            if (Host)
-                MatchManager.Instance.syncing = false;
-
             StateMachine.PopState();
         }
     }
