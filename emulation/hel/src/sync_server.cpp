@@ -24,19 +24,20 @@ namespace hel {
 
                 auto instance = hel::SendDataManager::getInstance();
 
-                //instance.first->update(); //TODO don't call update every time
-
-                auto data =  instance.first->serialize();
-                instance.second.unlock();
-
-                std::cout << data << "\n";
-                try {
-                    asio::write(socket, asio::buffer(data), asio::transfer_all());
-                }
-                catch(std::system_error){
-                    std::cout << std::flush << "Sender Socket disconnected\n";
-                    break;
-                }
+                //if(instance.first->hasNewData()){//TODO
+                    auto data =  instance.first->serialize();
+                    instance.second.unlock();
+                    std::cout << instance.first->toString() << "\n";
+                    try {
+                        asio::write(socket, asio::buffer(data), asio::transfer_all());
+                    }
+                    catch(std::system_error){
+                        std::cout << std::flush << "Sender Socket disconnected\n";
+                        break;
+                    }
+                //} else {
+                    //instance.second.unlock();
+                //}
                 usleep(30000);
             }
         }

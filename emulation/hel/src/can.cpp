@@ -184,33 +184,32 @@ extern "C"{
         case hel::CANDevice::Type::TALON_SRX:
         case hel::CANDevice::Type::VICTOR_SPX:
         {
-            hel::CANMotorController can_device = {messageID};
+            uint8_t controller_id = hel::CANDevice::pullDeviceID(messageID);
 
             hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array{0};
             std::copy(data, data + dataSize, data_array.begin());
 
             uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];
+            auto instance = hel::RoboRIOManager::getInstance();
 
+            instance.first->can_motor_controllers[controller_id] = {messageID};
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT)){
-                //std::cout<<((unsigned)can_device.getID())<<" "<<hel::to_string(data_array,std::function<std::string(uint8_t)>([&](uint8_t a){ return std::to_string(a);}))<<"\n";
-                can_device.setSpeedData(data_array);
+                instance.first->can_motor_controllers[controller_id].setSpeedData(data_array);
             }
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_INVERTED)){
-                can_device.setInverted(true);
+                instance.first->can_motor_controllers[controller_id].setInverted(true);
             }
+            instance.second.unlock();
             {
                 for(unsigned i = 0; i < 8; i++){
                     if(hel::checkBitHigh(command_byte,i) &&
                        i != hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT &&
                        i != hel::CANMotorController::SendCommandByteMask::SET_INVERTED
                     ){
-                        std::cerr<<"Synthesis warning: Writing to CAN motor controller with device ID "<<can_device.getID()<<" using command data byte "<<command_byte<<"\n";
+                        std::cerr<<"Synthesis warning: Writing to CAN motor controller with device ID "<<controller_id<<" using command data byte "<<command_byte<<"\n";
                     }
                 }
             }
-            auto instance = hel::RoboRIOManager::getInstance();
-            instance.first->can_motor_controllers[can_device.getID()] = can_device;
-            instance.second.unlock();
             break;
         }
         case hel::CANDevice::Type::UNKNOWN:

@@ -34,17 +34,17 @@ public:
 
     void AutonomousPeriodic(){
         //std::cout<<"Remaining: "<<auto_timer.Get()<<"\n";
-        if(!auto_timer.HasPeriodPassed(5) && run_auto){
+        /*if(!auto_timer.HasPeriodPassed(5) && run_auto){
             m_robotDrive.TankDrive(1.0,-1.0);
             run_auto = false;
         } else{
             m_robotDrive.TankDrive(0,0);
-        }
+            }*/
     }
 
     void TeleopPeriodic(){
         double start = frc::Timer::GetFPGATimestamp();
-        std::cout << "1: "<< m_stick.GetRawAxis(1) << " 4: " << m_stick.GetRawAxis(4)<< "\n";
+        //std::cout << "1: "<< m_stick.GetRawAxis(1) << " 4: " << m_stick.GetRawAxis(4)<< "\n";
         if(!driveMode)
             m_robotDrive.ArcadeDrive(-m_stick.GetRawAxis(1), m_stick.GetRawAxis(4));
         else
