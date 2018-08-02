@@ -112,7 +112,7 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
             angularLimitLow = (float) wrapped.asmJoint.AngularPositionStartLimit.Value;
             angularLimitHigh = (float) wrapped.asmJoint.AngularPositionEndLimit.Value;
         }
-        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
+        currentAngularPosition = (wrapped.asmJoint.AngularPosition != null) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
     }
 
     protected override string ToString_Internal()

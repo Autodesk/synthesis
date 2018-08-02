@@ -304,9 +304,14 @@ public partial class SynthesisGUI : Form
         }
         return false;
     }
-    public void writeLimits(RigidNode_Base skeleton)// generally, this class iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
-        //needed because we want to be able to pull the limits into the joint as the exporter exports, but where the joint is actually written to the .bxdj (the SimulatorAPI) is unable
-        //to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue
+    
+    /// <summary>
+    /// Iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
+    /// Necessary to pull the limits into the joint as the exporter exports. Where the joint is actually written to the .bxdj,
+    /// we are unable to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue.
+    /// </summary>
+    /// <param name="skeleton">Skeleton to write limits to</param>
+    public void WriteLimits(RigidNode_Base skeleton)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         skeleton.ListAllNodes(nodes);
@@ -325,6 +330,7 @@ public partial class SynthesisGUI : Form
                 parentID[i] = -1;
             }
         }
+
         for (int i = 0; i < nodes.Count; i++)
         {
             if (parentID[i] >= 0)
@@ -380,10 +386,6 @@ public partial class SynthesisGUI : Form
                 }
             }
         }
-        foreach (ComponentOccurrence component in InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList())
-        {
-            Exporter.BringJointsToStart(component);
-        }
     }
     /// <summary>
     /// Saves the robot to the directory it was loaded from or the default directory
@@ -393,7 +395,7 @@ public partial class SynthesisGUI : Form
     {
         try
         {
-            writeLimits(SkeletonBase);// write the limits from Inventor to the skeleton
+            WriteLimits(SkeletonBase);// write the limits from Inventor to the skeleton
             // If robot has not been named, prompt user for information
             if (RMeta.ActiveRobotName == null)
                 if (!PromptExportSettings())

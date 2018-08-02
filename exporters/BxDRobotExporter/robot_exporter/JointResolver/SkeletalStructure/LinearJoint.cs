@@ -113,7 +113,7 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         {
             throw new Exception("Joints with linear motion need two limits.");
         }
-        currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
+        currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
 
     }
 
