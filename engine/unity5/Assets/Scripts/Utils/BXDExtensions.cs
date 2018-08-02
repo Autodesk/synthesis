@@ -16,7 +16,7 @@ namespace Synthesis.Utils
 
         public static Vector3 AsV3(this BXDVector3 v)
         {
-            return new Vector3(v.x * 0.01f, v.y * 0.01f, v.z * 0.01f);
+            return new Vector3(v.x * -0.01f, v.y * 0.01f, v.z * 0.01f);
         }
 
         public static Material AsMaterial(this BXDAMesh.BXDASurface surf, bool emissive = false)
