@@ -395,7 +395,7 @@ public static partial class BXDJSkeleton
         writer.WriteElementString("SensorSignalType1", sensor.conTypePort1.ToString());
         writer.WriteElementString("SensorPortNumber2", sensor.port2.ToString());
         writer.WriteElementString("SensorSignalType2", sensor.conTypePort2.ToString());
-        writer.WriteElementString("SensorConversionFactor", sensor.conversionFactor.ToString(   ));
+        writer.WriteElementString("SensorConversionFactor", sensor.conversionFactor.ToString());
 
         writer.WriteEndElement();
     }

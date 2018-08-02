@@ -535,6 +535,17 @@ public partial class SynthesisGUI : Form
 
                     elevator.type = (ElevatorType)Utilities.GetProperty(propertySet, "elevator-type", (int)ElevatorType.NOT_MULTI);
                 }
+                for(int i = 0; i < Utilities.GetProperty(propertySet, "num-sensors", 0); i++)
+                {
+                    RobotSensor addedSensor;
+                    addedSensor = new RobotSensor((RobotSensorType)Utilities.GetProperty(propertySet, "sensorType" + i, (int)RobotSensorType.ENCODER));
+                    addedSensor.port1 = ((int)Utilities.GetProperty(propertySet, "sensorPort1" + i, 0));
+                    addedSensor.port2 = ((int)Utilities.GetProperty(propertySet, "sensorPort2" + i, 0));
+                    addedSensor.conTypePort1 = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortCon1" + i, (int)SensorConnectionType.DIO));
+                    addedSensor.conTypePort2 = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortCon2" + i, (int)SensorConnectionType.DIO));
+                    addedSensor.conversionFactor = Utilities.GetProperty(propertySet, "sensorConversion" + i, 0.0);
+                    joint.attachedSensors.Add(addedSensor);
+                }
             }
 
             // Recur along this child
@@ -640,12 +651,34 @@ public partial class SynthesisGUI : Form
 
                 // Elevator information
                 ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+
+
+
                 Utilities.SetProperty(propertySet, "has-elevator", elevator != null);
 
                 if (elevator != null)
                 {
                     Utilities.SetProperty(propertySet, "elevator-type", (int)elevator.type);
                 }
+            }
+            for (int i = 0; i < Utilities.GetProperty(propertySet, "num-sensors", 0); i++)// delete existing sensors
+            {
+                Utilities.RemoveProperty(propertySet, "sensorType" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPort1" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortCon1" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPort2" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortCon2" + i);
+                Utilities.RemoveProperty(propertySet, "sensorConversion" + i);
+            }
+            Utilities.SetProperty(propertySet, "num-sensors", joint.attachedSensors.Count);
+            for(int i = 0; i < joint.attachedSensors.Count; i++) {
+
+                Utilities.SetProperty(propertySet, "sensorType" + i, (int)joint.attachedSensors[i].type);
+                Utilities.SetProperty(propertySet, "sensorPort1" + i, joint.attachedSensors[i].port1);
+                Utilities.SetProperty(propertySet, "sensorPortCon1" + i, (int)joint.attachedSensors[i].conTypePort1);
+                Utilities.SetProperty(propertySet, "sensorPort2" + i, joint.attachedSensors[i].port2);
+                Utilities.SetProperty(propertySet, "sensorPortCon2" + i, (int)joint.attachedSensors[i].conTypePort2);
+                Utilities.SetProperty(propertySet, "sensorConversion" + i, joint.attachedSensors[i].conversionFactor);
             }
 
             // Recur along this child
