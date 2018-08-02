@@ -37,7 +37,7 @@ hel::MXPData::Config hel::s_to_mxp_config(std::string s){
     }
 }
 
-hel::MXPData::MXPData():config(hel::MXPData::Config::DI),value(0.0){}
+hel::MXPData::MXPData()noexcept:config(hel::MXPData::Config::DI),value(0.0){}
 
 std::string hel::MXPData::toString()const{
     std::string s = "(";

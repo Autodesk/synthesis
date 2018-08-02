@@ -48,7 +48,7 @@ namespace hel{
 
             uint16_t pulse_width;
 
-            PWM();
+            PWM()noexcept;
         };
 
         /**
@@ -76,7 +76,7 @@ namespace hel{
          * \return tConfig representing current PWM system configuration.
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig getConfig()const;
+        nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig getConfig()const noexcept;
 
         /**
          * \fn void setConfig(tConfig config)
@@ -85,7 +85,7 @@ namespace hel{
          * \param tConfig representing new PWM system configuration.
          */
 
-        void setConfig(nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig);
+        void setConfig(nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig)noexcept;
 
         /**
          * \fn uint32_t getHdrPeriodScale(uint8_t index)
@@ -95,7 +95,7 @@ namespace hel{
          * \return Unsigned 32-bit integer representing the PWM period scale.
          */
 
-        uint32_t getHdrPeriodScale(uint8_t)const;
+        uint32_t getHdrPeriodScale(uint8_t)const ;
 
         /**
          * \fn void setHdrPeriodScale(uint8_t index)
@@ -117,7 +117,7 @@ namespace hel{
          */
 
 
-        uint32_t getMXPPeriodScale(uint8_t)const;
+        uint32_t getMXPPeriodScale(uint8_t)const ;
 
         /**
          * \fn void setMXPPeriodScale(uint8_t index, uint32_t value)
@@ -138,8 +138,7 @@ namespace hel{
          * \return Unsigned 32-bit integer representing the PWM pulse width.
          */
 
-
-        uint32_t getHdrPulseWidth(uint8_t)const;
+        uint32_t getHdrPulseWidth(uint8_t)const ;
 
         /**
          * \fn void setHdrPulseWidth(uint8_t index, uint32_t value)
@@ -159,7 +158,7 @@ namespace hel{
          * \return Unsigned 32-bit integer representing the PWM pulse width.
          */
 
-        uint32_t getMXPPulseWidth(uint8_t)const;
+        uint32_t getMXPPulseWidth(uint8_t)const ;
 
         /**
          * \fn void setMXPPulseWidth(uint8_t index, uint32_t value)
@@ -168,15 +167,16 @@ namespace hel{
          * \param index the index of the PWM.
          * \param value the new pulse width to write to the PWM.
          */
+
         void setMXPPulseWidth(uint8_t, uint32_t);
 
         /**
          *
          */
 
-        static double getSpeed(uint32_t);
+        static double getSpeed(uint32_t)noexcept;
 
-        PWMSystem();
+        PWMSystem()noexcept;
     };
 
     namespace pwm_pulse_width{
