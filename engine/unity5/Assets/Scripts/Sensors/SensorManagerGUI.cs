@@ -51,6 +51,10 @@ namespace Synthesis.Sensors
         GameObject RangeEntry;
         Text rangeUnit;
 
+        bool changingRange = false;
+        float rangeIncrement = .01f;
+        int rangeSign;
+
         GameObject showSensorButton;
         GameObject sensorConfigurationModeButton;
         GameObject changeSensorNodeButton;
@@ -108,6 +112,13 @@ namespace Synthesis.Sensors
             //Allows users to save their configuration using enter
             if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
             if (isEditingRange && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditRange();
+
+            //If an increment button is held, increment sensor range
+            if (changingRange)
+            {
+                currentSensor.SetSensorRange(currentSensor.GetSensorRange() + rangeIncrement * rangeSign);
+                UpdateSensorRangePanel();
+            }
 
         }
 
@@ -677,8 +688,8 @@ namespace Synthesis.Sensors
         /// </summary>
         public void UpdateSensorRangePanel()
         {
-            if (State.IsMetric) rangeUnit.text = "Range (meters)";
-            else rangeUnit.text = "Range (feet)";
+            //if (State.IsMetric) rangeUnit.text = "Range (meters)";
+            //else rangeUnit.text = "Range (feet)";
             if (!isEditingRange)
             {
                 RangeEntry.GetComponent<InputField>().text = currentSensor.GetSensorRange().ToString();
@@ -695,6 +706,17 @@ namespace Synthesis.Sensors
             {
                 currentSensor.SetSensorRange(temp, true);
             }
+        }
+
+        public void ChangeSensorRange(int sign)
+        {
+            rangeSign = sign;
+            changingRange = true;
+        }
+
+        public void StopChangingSensorRange()
+        {
+            changingRange = false;
         }
 
         /// <summary>
