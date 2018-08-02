@@ -263,6 +263,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BXDJ File Format.txt" />
+    <None Include="Resources\SyntheMation350x350.gif" />
     <None Include="Resources\shader.frag" />
     <None Include="Resources\shader.vert" />
     <None Include="Resources\SmallIcon.png" />
