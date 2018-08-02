@@ -638,7 +638,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
-            positionVector = new Vector3(0f, 9f, 0f) + fieldVector;
+            positionVector = new Vector3(0f, 14f, 0f) + fieldVector;
             mono.transform.position = positionVector;
             rotationVector = new Vector3(90f, 90f, 0f);
             mono.transform.rotation = Quaternion.Euler(rotationVector);
@@ -648,8 +648,9 @@ public class DynamicCamera : MonoBehaviour
         {
             if (Input.GetMouseButton(1))
             {
-                magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 0.5f);
+                positionVector.y += Input.GetAxis("Mouse Y");
             }
+            mono.transform.position = positionVector;
         }
 
         public override void End()
