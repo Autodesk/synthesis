@@ -177,6 +177,7 @@ namespace Synthesis.States
         {
             RevertNodeColors(hoveredNode, hoveredColors);
             RevertHighlight();
+            if (helpMenu.activeSelf) CloseHelpMenu();
             StateMachine.PopState();
         }
         private void HelpMenu()

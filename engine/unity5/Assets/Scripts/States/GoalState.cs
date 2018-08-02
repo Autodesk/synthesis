@@ -91,9 +91,6 @@ namespace Synthesis.States
             Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             closeHelp.onClick.RemoveAllListeners();
             closeHelp.onClick.AddListener(CloseHelpMenu);
-
-            goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-            goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
         }
 
         // Update is called once per frame
@@ -101,10 +98,13 @@ namespace Synthesis.States
         {
             if (goalIndicator != null)
             {
-                if (UnityEngine.Input.GetKey(KeyCode.A)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.D)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.W)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.S)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                if (move)
+                {
+                    if (UnityEngine.Input.GetKey(KeyCode.A)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
+                    if (UnityEngine.Input.GetKey(KeyCode.D)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
+                    if (UnityEngine.Input.GetKey(KeyCode.W)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
+                    if (UnityEngine.Input.GetKey(KeyCode.S)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                }
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
                 {
                     UserMessageManager.Dispatch("New goal location has been set!", 3f);
@@ -141,6 +141,7 @@ namespace Synthesis.States
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             dynamicCamera.SwitchCameraState(lastCameraState);
             GameObject.Destroy(goalIndicator);
+            if (helpMenu.activeSelf) CloseHelpMenu();
             StateMachine.PopState();
         }
         private void Reset()

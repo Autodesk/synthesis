@@ -646,7 +646,10 @@ public class DynamicCamera : MonoBehaviour
         }
         public override void Update()
         {
-            
+            if (Input.GetMouseButton(1))
+            {
+                magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 0.5f);
+            }
         }
 
         public override void End()
@@ -753,7 +756,7 @@ public class DynamicCamera : MonoBehaviour
         Vector3 rotateVector;
         Vector3 lagVector;
         const float lagResponsiveness = 10f;
-        float magnification = 2.0f;
+        float magnification = 5.0f;
         float cameraAngle = 45f;
         float panValue = 0f;
         bool isRobotCamera;
@@ -765,6 +768,7 @@ public class DynamicCamera : MonoBehaviour
             if (robot == null) robot = GameObject.Find("Robot");
             this.target = targetObject;
             if (target == null) target = robot.transform.GetChild(0).gameObject;
+            target.transform.Translate(new Vector3(0.0001f, 0, 0));
         }
         public override void Init()
         {

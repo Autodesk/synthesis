@@ -36,6 +36,10 @@ namespace Assets.Scripts.GUI
         MainState mainState;
         DriverPracticeRobot dpmRobot;
 
+        GameObject helpMenu;
+        GameObject overlay;
+        GameObject tabs;
+
         public override void Start()
         {
             mainState = StateMachine.SceneGlobal.FindState<MainState>();
@@ -51,10 +55,18 @@ namespace Assets.Scripts.GUI
             gamepieceDropdownPrefab = Resources.Load("Prefabs/GamepieceDropdownElement") as GameObject;
             dropdownLocation = Auxiliary.FindObject(gamepieceDropdownButton, "DropdownLocation").transform;
 
+            tabs = Auxiliary.FindObject(canvas, "Tabs");
+            helpMenu = Auxiliary.FindObject(canvas, "Help");
+            overlay = Auxiliary.FindObject(canvas, "Overlay");
+
             trajectoryPanel = Auxiliary.FindObject(canvas, "TrajectoryPanel");
 
             gamepieceIndex = 0;
-            
+
+            Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            helpButton.onClick.RemoveAllListeners();
+            helpButton.onClick.AddListener(CloseHelpMenu);
+
             InitGamepieceDropdown();    
         }
         public override void Update()
@@ -154,6 +166,29 @@ namespace Assets.Scripts.GUI
             foreach (GameObject o in gameObjects.Where(o => o.name.Equals(g.name + "(Clone)")))
             {
                 GameObject.Destroy(o);
+            }
+        }
+        public void OnHelpButtonPressed()
+        {
+            helpMenu.SetActive(true);
+            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "DPMToolbar";
+            overlay.SetActive(true);
+            tabs.transform.Translate(new Vector3(200, 0, 0));
+            foreach (Transform t in dpmToolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(200, 0, 0));
+                else t.gameObject.SetActive(false);
+            }
+        }
+        private void CloseHelpMenu()
+        {
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            foreach (Transform t in dpmToolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                else t.gameObject.SetActive(true);
             }
         }
     }

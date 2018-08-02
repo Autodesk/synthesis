@@ -46,6 +46,10 @@ namespace Assets.Scripts.GUI
         GameObject inputManagerPanel;
         GameObject bindedKeyPanel;
         GameObject checkSavePanel;
+        GameObject helpMenu;
+        GameObject toolbar;
+        GameObject overlay;
+        GameObject tabs;
 
         public bool dpmWindowOn = false; //if the driver practice mode window is active
         public static bool inputPanelOn = false;
@@ -54,6 +58,11 @@ namespace Assets.Scripts.GUI
         {
             canvas = GameObject.Find("Canvas");
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+
+            tabs = Auxiliary.FindObject(canvas, "Tabs");
+            toolbar = Auxiliary.FindObject(canvas, "MainToolbar");
+            helpMenu = Auxiliary.FindObject(canvas, "Help");
+            overlay = Auxiliary.FindObject(canvas, "Overlay");
 
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
@@ -81,6 +90,10 @@ namespace Assets.Scripts.GUI
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
             State = StateMachine.SceneGlobal.CurrentState as MainState;
+
+            Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            helpButton.onClick.RemoveAllListeners();
+            helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
         public void OnChangeRobotButtonPressed()
@@ -246,6 +259,30 @@ namespace Assets.Scripts.GUI
         {
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
         }
+        public void OnHelpButtonPressed()
+        {
+            helpMenu.SetActive(true);
+            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
+            overlay.SetActive(true);
+            tabs.transform.Translate(new Vector3(200, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(200, 0, 0));
+                else t.gameObject.SetActive(false);
+            }
+        }
+        private void CloseHelpMenu()
+        {
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                else t.gameObject.SetActive(true);
+            }
+        }
+
 
         /// <summary>
         /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)

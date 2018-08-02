@@ -86,6 +86,9 @@ namespace Synthesis.GUI
 
         private StateMachine tabStateMachine;
 
+        GameObject helpMenu;
+        GameObject overlay;
+
         private void Update()
         {
             if (toolkit == null)
@@ -205,6 +208,9 @@ namespace Synthesis.GUI
 
             ButtonCallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
             ButtonCallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
+            
+            helpMenu = Auxiliary.FindObject(canvas, "Help");
+            overlay = Auxiliary.FindObject(canvas, "Overlay");
         }
 
         private void UpdateWindows()
@@ -218,22 +224,39 @@ namespace Synthesis.GUI
         #region tab buttons
         public void OnMainTab(string option)
         {
+            if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
             tabStateMachine.ChangeState(new MainToolbarState());
         }
 
         public void OnDPMTab(string option)
         {
+            if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
             tabStateMachine.ChangeState(new DPMToolbarState());
         }
 
         public void OnScoringTab(string option)
         {
+            if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
             tabStateMachine.ChangeState(new ScoringToolbarState());
         }
 
         public void OnSensorTab(string option)
         {
+            if (helpMenu.activeSelf) CloseHelpMenu("SensorToolbar");
             tabStateMachine.ChangeState(new SensorToolbarState());
+        }
+        private void CloseHelpMenu(string currentID = " ")
+        {
+            string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;
+            if (toolbarID.Equals(currentID)) return;
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            foreach (Transform t in Auxiliary.FindObject(toolbarID).transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                else t.gameObject.SetActive(true);
+            }
         }
         #endregion
         #region change robot/field functions
@@ -754,6 +777,7 @@ namespace Synthesis.GUI
         /// <param name="option"></param>
         public void MainMenuExit(string option)
         {
+            if (helpMenu.activeSelf) CloseHelpMenu();
             EndOtherProcesses();
             switch (option)
             {

@@ -707,8 +707,8 @@ namespace Synthesis.Input
             buttons[0].cameraToggle = InputControl.SetKey("1: Camera Toggle", PlayerOneIndex, KeyCode.C, true);
             buttons[0].scoreboard = InputControl.SetKey("1: Scoreboard", PlayerOneIndex, KeyCode.Q, true);
             buttons[0].trajectory = InputControl.SetKey("1: Toggle Trajectory", PlayerOneIndex, KeyCode.T, true);
-            buttons[0].duplicateRobot = InputControl.SetKey("1: Duplicate Robot", PlayerOneIndex, KeyCode.U, false);
-            buttons[0].switchActiveRobot = InputControl.SetKey("1: Switch Active Robot", PlayerOneIndex, KeyCode.Y, false);
+            buttons[0].duplicateRobot = InputControl.SetKey("1: Duplicate Robot", PlayerOneIndex, KeyCode.U, true);
+            buttons[0].switchActiveRobot = InputControl.SetKey("1: Switch Active Robot", PlayerOneIndex, KeyCode.Y, true);
             buttons[0].pickup = new List<KeyMapping>();
             buttons[0].release = new List<KeyMapping>();
             buttons[0].spawnPieces = new List<KeyMapping>();
