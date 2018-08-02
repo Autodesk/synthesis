@@ -854,19 +854,19 @@ public partial class BXDJSkeleton
                     break;
                 case "SensorModule":
                     // Assign a value to the module.
-                    robotSensor.module = (short)reader.ReadElementContentAsInt();
+                    short m = (short)reader.ReadElementContentAsInt();
                     break;
                 case "SensorPort":
                     // Assign a value to the port.
-                    robotSensor.port = (short)reader.ReadElementContentAsInt();
+                    short s = (short)reader.ReadElementContentAsInt();
                     break;
                 case "Polynomial":
                     // Create a polynomial and assign it to the equation.
-                    robotSensor.equation = ReadPolynomial_3_0(reader.ReadSubtree());
+                    Polynomial e  = ReadPolynomial_3_0(reader.ReadSubtree());
                     break;
                 case "UseSecondarySource":
                     // Assign a value to useSecondarySource.
-                    robotSensor.useSecondarySource = reader.ReadElementContentAsBoolean();
+                    reader.ReadElementContentAsBoolean();
                     break;
             }
         }
