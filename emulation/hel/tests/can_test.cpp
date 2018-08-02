@@ -11,6 +11,8 @@ using namespace nRoboRIO_FPGANamespace;
 TEST(CANTest, IDs){
     auto instance = hel::RoboRIOManager::getInstance();
     ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon = {1};
+    auto can_motor_controllers = instance.first->can_motor_controllers;
+    std::cout<<"can_motor_controllers:" + hel::to_string(can_motor_controllers, std::function<std::string(std::pair<uint32_t,hel::CANMotorController>)>([&](std::pair<uint32_t, hel::CANMotorController> a){ return "[" + std::to_string(a.first) + ", " + a.second.toString() + "]";}))<<"\n";
     EXPECT_EQ(1, 1); //TODO
     instance.second.unlock();
 }
