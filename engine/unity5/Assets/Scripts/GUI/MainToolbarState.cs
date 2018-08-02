@@ -119,12 +119,10 @@ namespace Assets.Scripts.GUI
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     break;
                 case 2:
+                    GameObject.Destroy(GameObject.Find("Dropdown List"));
                     EndOtherProcesses();
-                    //camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    //DynamicCamera.ControlEnabled = true;
-                    State.BeginRobotReset();
                     resetDropdown.GetComponent<Dropdown>().value = 0;
-                    GameObject.Destroy(Auxiliary.FindObject(resetDropdown, "Dropdown List"));
+                    State.BeginRobotReset();
                     break;
                 case 3:
                     Auxiliary.FindObject(canvas, "ResetRobotDropdown").SetActive(false);

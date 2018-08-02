@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Synthesis.Robot
 {
@@ -37,7 +38,7 @@ namespace Synthesis.Robot
 
         private DriverPracticeRobot dpmRobot;
 
-        private Vector3 nodeToRobotOffset;
+        public Vector3 nodeToRobotOffset;
 
         private float keyDownTime = 0f;
         private RobotCameraManager robotCameraManager;
@@ -47,6 +48,16 @@ namespace Synthesis.Robot
         private DynamicCamera.CameraState lastCameraState;
 
         private MainState state;
+
+        #region help ui variables
+        GameObject helpMenu;
+        GameObject toolbar;
+        GameObject overlay;
+        #endregion
+
+
+        GameObject canvas;
+        GameObject resetCanvas;
 
         /// <summary>
         /// Links this instance to the <see cref="MainState"/> state.
@@ -216,6 +227,31 @@ namespace Synthesis.Robot
         {
             //GetDriverPractice().DestroyAllGamepieces();
 
+            InputControl.freeze = true;
+            if(canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
+            if(resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
+            canvas.SetActive(false);
+            resetCanvas.SetActive(true);
+
+            #region init
+            if(helpMenu == null) helpMenu = Auxiliary.FindObject(resetCanvas, "Help");
+            if(toolbar == null) toolbar = Auxiliary.FindObject(resetCanvas, "ResetStateToolbar");
+            if(overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
+            #endregion
+
+            Button resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
+            resetButton.onClick.RemoveAllListeners();
+            resetButton.onClick.AddListener(BeginRevertSpawnpoint);
+            Button helpButton = GameObject.Find("HelpButton").GetComponent<Button>();
+            helpButton.onClick.RemoveAllListeners();
+            helpButton.onClick.AddListener(HelpMenu);
+            Button returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
+            returnButton.onClick.RemoveAllListeners();
+            returnButton.onClick.AddListener(EndReset);
+            Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            closeHelp.onClick.RemoveAllListeners();
+            closeHelp.onClick.AddListener(CloseHelpMenu);
+
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             lastCameraState = dynamicCamera.cameraState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
@@ -287,7 +323,7 @@ namespace Synthesis.Robot
             }
 
             //Update robotStartPosition when hit enter
-            if (UnityEngine.Input.GetKey(KeyCode.Return))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
             {
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
@@ -296,6 +332,7 @@ namespace Synthesis.Robot
 
                 EndReset();
             }
+            if (UnityEngine.Input.GetKeyUp(KeyCode.Escape)) EndReset();
         }
 
         /// <summary>
@@ -345,6 +382,11 @@ namespace Synthesis.Robot
 
             foreach (Tracker t in GetComponentsInChildren<Tracker>())
                 t.Clear();
+
+            if (helpMenu.activeSelf) CloseHelpMenu();
+            InputControl.freeze = false;
+            canvas.SetActive(true);
+            resetCanvas.SetActive(false);
         }
 
         /// <summary>
@@ -406,6 +448,29 @@ namespace Synthesis.Robot
                 RigidBody r = (RigidBody)br.GetCollisionObject();
 
                 r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+            }
+        }
+
+        private void HelpMenu()
+        {
+            helpMenu.SetActive(true);
+            overlay.SetActive(true);
+            toolbar.transform.Translate(new Vector3(100, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
+                else t.gameObject.SetActive(false);
+            }
+        }
+        private void CloseHelpMenu()
+        {
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            toolbar.transform.Translate(new Vector3(-100, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
+                else t.gameObject.SetActive(true);
             }
         }
 
