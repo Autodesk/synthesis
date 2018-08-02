@@ -35,12 +35,7 @@ extern "C" {
     int FRC_NetworkCommunication_getControlWord(struct ControlWord_t* controlWord){
         auto instance = hel::RoboRIOManager::getInstance();
         if (controlWord != nullptr) {
-            *controlWord = instance.first->robot_mode.toControlWord(); //TODO following is unnecessary
-            controlWord->enabled = 1;
-            controlWord->autonomous = 0;
-            controlWord->test = 0;
-            controlWord->dsAttached = 1;
-            controlWord->eStop = 0;
+            *controlWord = instance.first->robot_mode.toControlWord();
         }
 
         instance.second.unlock();

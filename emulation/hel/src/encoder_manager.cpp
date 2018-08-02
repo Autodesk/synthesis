@@ -71,7 +71,7 @@ namespace hel{
         return true;
     }
 
-    void EncoderManager::findDevice(){
+    void EncoderManager::updateDevice(){
         auto instance = RoboRIOManager::getInstance();
         for(unsigned i = 0; i < instance.first->fpga_encoders.size(); i++){
             tEncoder::tConfig config = instance.first->fpga_encoders[i].getConfig();
@@ -136,16 +136,24 @@ namespace hel{
         b_type = t;
     }
 
-    void EncoderManager::setTicks(int32_t t)noexcept{
+    void EncoderManager::setRawTicks(int32_t t)noexcept{
         ticks = t;
     }
 
-    int32_t EncoderManager::getTicks()const noexcept{
+    int32_t EncoderManager::getRawTicks()const noexcept{
         return ticks;
     }
 
+    int32_t EncoderManager::getCurrentTicks()const noexcept{
+        return ticks - zeroed_ticks;
+    }
+
+    void EncoderManager::reset()noexcept{
+        zeroed_ticks = ticks;
+    }
+
     void EncoderManager::update(){
-        findDevice();
+        updateDevice();
         auto instance = RoboRIOManager::getInstance();
         switch(type){
         case Type::UNKNOWN:
@@ -154,7 +162,7 @@ namespace hel{
         case Type::FPGA_ENCODER:
         {
             tEncoder::tOutput output;
-            output.Value = ticks;
+            output.Value = getCurrentTicks();
             output.Direction = ticks < 0;
             instance.first->fpga_encoders[index].setOutput(output);
             break;
@@ -162,7 +170,7 @@ namespace hel{
         case Type::COUNTER:
         {
             tCounter::tOutput output;
-            output.Value = ticks;
+            output.Value = getCurrentTicks();
             output.Direction = ticks < 0;
             instance.first->counters[index].setOutput(output);
             break;
@@ -208,5 +216,5 @@ namespace hel{
     }
 
     EncoderManager::EncoderManager()noexcept:EncoderManager(0,PortType::DI,0,PortType::DI){}
-    EncoderManager::EncoderManager(uint8_t a,PortType a_t,uint8_t b,PortType b_t)noexcept:type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0){}
+    EncoderManager::EncoderManager(uint8_t a,PortType a_t,uint8_t b,PortType b_t)noexcept:type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0),zeroed_ticks(0){}
 }

@@ -275,9 +275,18 @@ namespace hel{
 
         void strobeReset(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
-            instance.first->fpga_encoders[index].setOutput(*(new tOutput()));
-            instance.first->fpga_encoders[index].setTimerOutput(*(new tTimerOutput()));
+            tEncoder::tConfig config = instance.first->fpga_encoders[index].getConfig();
+            bool found = false;
+            for(hel::EncoderManager& manager: instance.first->encoder_managers){
+                if(manager.checkDevice(config.ASource_Channel,config.ASource_Module,config.ASource_AnalogTrigger,config.BSource_Channel,config.BSource_Module,config.BSource_AnalogTrigger)){
+                    manager.reset();
+                    found = true;
+                }
+            }
             instance.second.unlock();
+            if(!found){ //TODO will throw if encoder_manager isn't configured for an FPGAEncoder before the FPGAEncoder is initialized
+                throw hel::InputConfigurationException("FPGAEncoder with ASource_Channel=" + hel::to_string(config.ASource_Channel) + ", ASource_Module=" + hel::to_string(config.ASource_Module) + ",  and ASource_AnalogTrigger=" + hel::to_string(config.ASource_AnalogTrigger) + " with BSource_Channel=" + hel::to_string(config.BSource_Channel) + ", BSource_Module=" + hel::to_string(config.BSource_Module) + ",  and BSource_AnalogTrigger=" + hel::to_string(config.BSource_AnalogTrigger));
+            }
         }
 
         void writeTimerConfig(tTimerConfig value, tRioStatusCode* /*status*/){

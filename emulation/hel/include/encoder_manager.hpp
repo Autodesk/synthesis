@@ -33,11 +33,11 @@ namespace hel{
 
         int32_t ticks;
 
-        bool checkDevice(uint8_t, bool, bool, uint8_t, bool, bool)const noexcept;
-
-        void findDevice();
+        int32_t zeroed_ticks;
 
     public:
+        bool checkDevice(uint8_t, bool, bool, uint8_t, bool, bool)const noexcept;
+        void updateDevice();
         Type getType()const noexcept;
         uint8_t getIndex()const noexcept;
         uint8_t getAChannel()const noexcept;
@@ -48,9 +48,11 @@ namespace hel{
         void setBChannel(uint8_t)noexcept;
         PortType getBType()const noexcept;
         void setBType(PortType)noexcept;
-        void setTicks(int32_t)noexcept;
-        int32_t getTicks()const noexcept;
-        void update(); //TODO add reset capability
+        void setRawTicks(int32_t)noexcept;
+        int32_t getRawTicks()const noexcept;
+        int32_t getCurrentTicks()const noexcept;
+        void update();
+        void reset()noexcept;
 
         std::string serialize()const;
 
