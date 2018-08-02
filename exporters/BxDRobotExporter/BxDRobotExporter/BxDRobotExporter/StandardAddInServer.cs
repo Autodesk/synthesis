@@ -661,8 +661,12 @@ namespace BxDRobotExporter
             {
                 if (!jointedAssemblyOccurences.Contains(c) || c.Grounded)
                 {
-                    disabledAssemblyOccurences.Add(c);
-                    c.Enabled = false;
+                    try
+                    {//accounts for components that can't be disabled
+                        disabledAssemblyOccurences.Add(c);
+                        c.Enabled = false;
+                    }
+                    catch (Exception) { }
                 }
             }
 
@@ -677,7 +681,10 @@ namespace BxDRobotExporter
         {
             foreach (ComponentOccurrence c in components)
             {
-                c.Enabled = true;
+                try
+                {//accounts for components that can't be disabled
+                    c.Enabled = true;
+                } catch (Exception){ }
             }
         }
 
