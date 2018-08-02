@@ -4,11 +4,21 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tCounter::tOutput Counter::getOutput()const noexcept{
+    void Counter::reset()noexcept{
+        zeroed_output = output;
+    }
+
+    tCounter::tOutput Counter::getCurrentOutput()const noexcept{
+        tCounter::tOutput out = output;
+        out.Value -= zeroed_output.Value;
+        return out;
+    }
+
+    tCounter::tOutput Counter::getRawOutput()const noexcept{
         return output;
     }
 
-    void Counter::setOutput(tCounter::tOutput out)noexcept{
+    void Counter::setRawOutput(tCounter::tOutput out)noexcept{
         output = out;
     }
 
@@ -64,19 +74,19 @@ namespace hel{
         tOutput readOutput(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->counters[index].getOutput();
+            return instance.first->counters[index].getCurrentOutput();
         }
 
         bool readOutput_Direction(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->counters[index].getOutput().Direction;
+            return instance.first->counters[index].getCurrentOutput().Direction;
         }
 
         int32_t readOutput_Value(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->counters[index].getOutput().Value;
+            return instance.first->counters[index].getCurrentOutput().Value;
         }
 
         void writeConfig(tConfig value, tRioStatusCode* /*status*/){
@@ -353,12 +363,9 @@ namespace hel{
             return instance.first->counters[index].getTimerOutput().Stalled;
         }
 
-        void strobeReset(tRioStatusCode* /*status*/){ //TODO
-            //resets counter
-            auto instance = hel::RoboRIOManager::getInstance();
-            tOutput output = instance.first->counters[index].getOutput();
-            output.Value = 0;
-            instance.first->counters[index].setOutput(output);
+        void strobeReset(tRioStatusCode* /*status*/){
+            auto instance = RoboRIOManager::getInstance();
+            instance.first->counters[index].reset();
             instance.second.unlock();
         }
 

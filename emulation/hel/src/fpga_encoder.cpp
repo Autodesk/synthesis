@@ -4,11 +4,21 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tEncoder::tOutput FPGAEncoder::getOutput()const noexcept{
+    void FPGAEncoder::reset()noexcept{
+        zeroed_output = output;
+    }
+
+    tEncoder::tOutput FPGAEncoder::getRawOutput()const noexcept{
         return output;
     }
 
-    void FPGAEncoder::setOutput(tEncoder::tOutput out)noexcept{
+    tEncoder::tOutput FPGAEncoder::getCurrentOutput()const noexcept{
+        tEncoder::tOutput out = output;
+        out.Value -= zeroed_output.Value;
+        return out;
+    }
+
+    void FPGAEncoder::setRawOutput(tEncoder::tOutput out)noexcept{
         output = out;
     }
 
@@ -62,19 +72,19 @@ namespace hel{
         tOutput readOutput(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->fpga_encoders[index].getOutput();
+            return instance.first->fpga_encoders[index].getCurrentOutput();
         }
 
         bool readOutput_Direction(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->fpga_encoders[index].getOutput().Direction;
+            return instance.first->fpga_encoders[index].getCurrentOutput().Direction;
         }
 
         int32_t readOutput_Value(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->fpga_encoders[index].getOutput().Value;
+            return instance.first->fpga_encoders[index].getCurrentOutput().Value;
         }
 
         void writeConfig(tConfig value, tRioStatusCode* /*status*/){
@@ -283,18 +293,8 @@ namespace hel{
 
         void strobeReset(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
-            tEncoder::tConfig config = instance.first->fpga_encoders[index].getConfig();
-            bool found = false;
-            for(hel::EncoderManager& manager: instance.first->encoder_managers){
-                if(manager.checkDevice(config.ASource_Channel,config.ASource_Module,config.ASource_AnalogTrigger,config.BSource_Channel,config.BSource_Module,config.BSource_AnalogTrigger)){
-                    manager.reset();
-                    found = true;
-                }
-            }
+            instance.first->fpga_encoders[index].reset();
             instance.second.unlock();
-            if(!found){ //TODO will throw if encoder_manager isn't configured for an FPGAEncoder before the FPGAEncoder is initialized
-                throw hel::InputConfigurationException("FPGAEncoder with ASource_Channel=" + hel::to_string(config.ASource_Channel) + ", ASource_Module=" + hel::to_string(config.ASource_Module) + ",  and ASource_AnalogTrigger=" + hel::to_string(config.ASource_AnalogTrigger) + " with BSource_Channel=" + hel::to_string(config.BSource_Channel) + ", BSource_Module=" + hel::to_string(config.BSource_Module) + ",  and BSource_AnalogTrigger=" + hel::to_string(config.BSource_AnalogTrigger));
-            }
         }
 
         void writeTimerConfig(tTimerConfig value, tRioStatusCode* /*status*/){

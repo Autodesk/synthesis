@@ -62,21 +62,21 @@ namespace hel{
         return integer;
     }
     /*
-        _   _         _            _             _                _            _        
-       /\_\/\_\ _    /\ \         /\ \     _    / /\             /\ \         / /\      
-      / / / / //\_\ /  \ \       /  \ \   /\_\ / /  \           /  \ \____   / /  \     
-     /\ \/ \ \/ / // /\ \ \     / /\ \ \_/ / // / /\ \         / /\ \_____\ / / /\ \__  
-    /  \____\__/ // / /\ \ \   / / /\ \___/ // / /\ \ \       / / /\/___  // / /\ \___\ 
-   / /\/________// / /  \ \_\ / / /  \/____// / /  \ \ \     / / /   / / / \ \ \ \/___/ 
-  / / /\/_// / // / /   / / // / /    / / // / /___/ /\ \   / / /   / / /   \ \ \       
- / / /    / / // / /   / / // / /    / / // / /_____/ /\ \ / / /   / / /_    \ \ \      
-/ / /    / / // / /___/ / // / /    / / // /_________/\ \ \\ \ \__/ / //_/\__/ / /      
-\/_/    / / // / /____\/ // / /    / / // / /_       __\ \_\\ \___\/ / \ \/___/ /       
-        \/_/ \/_________/ \/_/     \/_/ \_\___\     /____/_/ \/_____/   \_____\/        
-                                                                                        
+        _   _         _            _             _                _            __
+       /\_\/\_\ _    /\ \         /\ \     _    / /\             /\ \         / /\
+      / / / / //\_\ /  \ \       /  \ \   /\_\ / /  \           /  \ \____   / /  \
+     /\ \/ \ \/ / // /\ \ \     / /\ \ \_/ / // / /\ \         / /\ \_____\ / / /\ \__
+    /  \____\__/ // / /\ \ \   / / /\ \___/ // / /\ \ \       / / /\/___  // / /\ \___\
+   / /\/________// / /  \ \_\ / / /  \/____// / /  \ \ \     / / /   / / / \ \ \ \/___/
+  / / /\/_// / // / /   / / // / /    / / // / /___/ /\ \   / / /   / / /   \ \ \
+ / / /    / / // / /   / / // / /    / / // / /_____/ /\ \ / / /   / / /_    \ \ \
+/ / /    / / // / /___/ / // / /    / / // /_________/\ \ \\ \ \__/ / //_/\__/ / /
+\/_/    / / // / /____\/ // / /    / / // / /_       __\ \_\\ \___\/ / \ \/___/ /
+        \/_/ \/_________/ \/_/     \/_/ \_\___\     /____/_/ \/_____/   \_____\/
+
      */
     template<typename T>
-    struct Maybe {
+    struct Maybe { //TODO optimize
 
     private:
 
@@ -98,18 +98,19 @@ namespace hel{
         }
 
         template<typename R>
-        std::function<Maybe<R>(Maybe<T>)> liftM(std::function<R(T)> f) {
-            return [f](Maybe<T> arg) {
-                return Maybe(f(arg._data));
+        constexpr static std::function<Maybe<R>(Maybe<T>)> lift(std::function<R(T)> f){
+            return (std::function<Maybe<R>(Maybe<T>)>)[f](Maybe<T> arg) {
+                return Maybe<R>(f(arg._data));
             };
         }
 
         template<typename R>
-        Maybe<R> fmap(std::function<Maybe<R>(Maybe<T>)> f) {
+        Maybe<R> fmap(std::function<Maybe<R>(Maybe<T>)> f)const {
             if(!_is_valid) {
                 return Maybe<R>();
             }
-            return f(this);
+            Maybe<R> out = f(*this);
+			return out;
         }
 
         T get() {return _data;}
@@ -118,13 +119,6 @@ namespace hel{
         operator bool()const{return _is_valid;}
 
         Maybe& operator=(const Maybe& m) {_data = m._data; _is_valid = m._is_valid;}
-
-        T operator*() {
-            if (!_is_valid) {
-                throw "Bad Access";
-            }
-            return _data;
-        }
 
         Maybe(T data) : _data(data), _is_valid(true) {};
         Maybe() : _is_valid(false) {};
