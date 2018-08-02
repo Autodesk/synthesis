@@ -161,8 +161,10 @@
   <ItemGroup>
     <None Include="Palette\css\synthesisExporter.css" />
     <None Include="Palette\js\fusionInterface.js" />
-    <None Include="Palette\js\palette.js" />
-    <None Include="palette\palette.html" />
+    <None Include="Palette\js\export.js" />
+    <None Include="palette\export.html" />
+    <None Include="palette\js\progress.js" />
+    <None Include="palette\progress.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

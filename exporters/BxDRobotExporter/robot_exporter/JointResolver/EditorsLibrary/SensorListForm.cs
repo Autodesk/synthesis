@@ -30,10 +30,22 @@ namespace EditorsLibrary
 
             foreach (RobotSensor sensor in joint.attachedSensors)
             {
-                System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                    sensor.type.ToString(), sensor.port1.ToString(), sensor.port2.ToString(), sensor.conversionFactor.ToString()});
-                item.Tag = sensor;
-                sensorListView.Items.Add(item);
+                if (sensor.type.Equals(RobotSensorType.ENCODER))
+                {// if the sensor is an encoder show both ports
+                    System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {
+                    char.ToUpper(sensor.type.ToString()[0]) + sensor.type.ToString().Substring(1).ToLower(),
+                        sensor.port1.ToString(), sensor.port2.ToString()});
+                    item.Tag = sensor;
+                    sensorListView.Items.Add(item);
+                } else
+                {
+                    System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {
+                    char.ToUpper(sensor.type.ToString()[0]) + sensor.type.ToString().Substring(1).ToLower(),
+                        sensor.port1.ToString()});
+                    item.Tag = sensor;
+                    sensorListView.Items.Add(item);
+
+                }
             }
         }
 
@@ -70,12 +82,6 @@ namespace EditorsLibrary
             sensorListView.Height = newListHeight;
             sensorListView.Width = newListWidth;
         }
-
-        private void SensorListForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void sensorListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             addSensorButton.Text = joint.attachedSensors.IndexOf(
@@ -83,10 +89,22 @@ namespace EditorsLibrary
                 sensorListView.SelectedItems[0].Tag is RobotSensor ?
                 (RobotSensor) sensorListView.SelectedItems[0].Tag : null) >= 0 ? "Edit Sensor" : "Add Sensor";
         }
-
         private void closeButton_Click(object sender, EventArgs e)
         {
             Close();
         }
+        private void sensorListView_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = this.sensorListView.Columns[e.ColumnIndex].Width;
+        }
+        private void sensorListView_SelectedIndexChanged(object sender, MouseEventArgs e)
+        {
+            addSensorButton.Text = joint.attachedSensors.IndexOf(
+                sensorListView.SelectedItems.Count > 0 &&
+                sensorListView.SelectedItems[0].Tag is RobotSensor ?
+                (RobotSensor)sensorListView.SelectedItems[0].Tag : null) >= 0 ? "Edit Sensor" : "Add Sensor";
+        }
+        
     }
 }

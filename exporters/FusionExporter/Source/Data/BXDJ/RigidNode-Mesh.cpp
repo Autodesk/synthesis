@@ -14,11 +14,15 @@
 
 using namespace BXDJ;
 
-void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics) const
+void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics, std::function<void(double)> progressCallback, bool * cancel) const
 {
+	if (progressCallback)
+		progressCallback(0);
+
 	// Each occurrence is a submesh
-	for (core::Ptr<fusion::Occurrence> occurrence : fusionOccurrences)
+	for (int occ = 0; occ < fusionOccurrences.size(); occ++)
 	{
+		core::Ptr<fusion::Occurrence> occurrence = fusionOccurrences[occ];
 		std::shared_ptr<BXDA::SubMesh> subMesh = std::make_shared<BXDA::SubMesh>();
 
 		// Each body of the mesh is a sub-mesh
@@ -66,5 +70,17 @@ void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics) const
 
 			mesh.addSubMesh(subMesh);
 		}
+
+		// Check if thread is being canceled
+		if (cancel != nullptr)
+			if (*cancel)
+				return;
+
+		// Update progress
+		if (progressCallback)
+			progressCallback((double)(occ + 1) / fusionOccurrences.size());
 	}
+
+	// Close progress bar
+	progressCallback(1);
 }
