@@ -40,7 +40,7 @@ namespace hel{
         }
     }
 
-    uint8_t getChannel(uint8_t channel, bool module,EncoderManager::PortType type){
+    uint8_t getChannel(uint8_t channel, bool module,EncoderManager::PortType type)noexcept{
         if(module){
             switch(type){
             case EncoderManager::PortType::AI:
@@ -56,7 +56,7 @@ namespace hel{
         return channel;
     }
 
-    bool EncoderManager::checkDevice(uint8_t a, bool a_module, bool a_analog, uint8_t b, bool b_module, bool b_analog)const{
+    bool EncoderManager::checkDevice(uint8_t a, bool a_module, bool a_analog, uint8_t b, bool b_module, bool b_analog)const noexcept{
         if(
             (a_analog && a_type != PortType::AI) ||
             (b_analog && b_type != PortType::AI)
@@ -96,51 +96,51 @@ namespace hel{
         instance.second.unlock();
     }
 
-    EncoderManager::Type EncoderManager::getType()const{
+    EncoderManager::Type EncoderManager::getType()const noexcept{
         return type;
     }
 
-    uint8_t EncoderManager::getIndex()const{
+    uint8_t EncoderManager::getIndex()const noexcept{
         return index;
     }
 
-    uint8_t EncoderManager::getAChannel()const{
+    uint8_t EncoderManager::getAChannel()const noexcept{
         return a_channel;
     }
 
-    void EncoderManager::setAChannel(uint8_t a){
+    void EncoderManager::setAChannel(uint8_t a)noexcept{
         a_channel = a;
     }
 
-    EncoderManager::PortType EncoderManager::getAType()const{
+    EncoderManager::PortType EncoderManager::getAType()const noexcept{
         return a_type;
     }
 
-    void EncoderManager::setAType(PortType t){
+    void EncoderManager::setAType(PortType t)noexcept{
         a_type = t;
     }
 
-    uint8_t EncoderManager::getBChannel()const{
+    uint8_t EncoderManager::getBChannel()const noexcept{
         return b_channel;
     }
 
-    void EncoderManager::setBChannel(uint8_t b){
+    void EncoderManager::setBChannel(uint8_t b)noexcept{
         b_channel = b;
     }
 
-    EncoderManager::PortType EncoderManager::getBType()const{
+    EncoderManager::PortType EncoderManager::getBType()const noexcept{
         return b_type;
     }
 
-    void EncoderManager::setBType(PortType t){
+    void EncoderManager::setBType(PortType t)noexcept{
         b_type = t;
     }
 
-    void EncoderManager::setTicks(int32_t t){
+    void EncoderManager::setTicks(int32_t t)noexcept{
         ticks = t;
     }
 
-    int32_t EncoderManager::getTicks()const{
+    int32_t EncoderManager::getTicks()const noexcept{
         return ticks;
     }
 
@@ -207,6 +207,6 @@ namespace hel{
         return s;
     }
 
-    EncoderManager::EncoderManager():EncoderManager(0,PortType::DI,0,PortType::DI){}
-    EncoderManager::EncoderManager(uint8_t a,PortType a_t,uint8_t b,PortType b_t):type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0){}
+    EncoderManager::EncoderManager()noexcept:EncoderManager(0,PortType::DI,0,PortType::DI){}
+    EncoderManager::EncoderManager(uint8_t a,PortType a_t,uint8_t b,PortType b_t)noexcept:type(Type::UNKNOWN),index(0),a_channel(a),a_type(a_t),b_channel(b),b_type(b_t),ticks(0){}
 }

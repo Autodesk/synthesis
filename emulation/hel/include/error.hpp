@@ -77,7 +77,7 @@ namespace hel{
          * \brief Constructs new DSError given values from NI FPGA's sendError function
          */
 
-        DSError(bool, int32_t, const char*, const char*, const char*);
+        DSError(bool, int32_t, const char*, const char*, const char*)noexcept;
     };
 
     std::string to_string(DSError::Type);
@@ -97,7 +97,7 @@ namespace hel{
         std::string enum_type;
 
     public:
-        UnhandledEnumConstantException(std::string);
+        UnhandledEnumConstantException(std::string)noexcept;
 
         const char* what()const throw();
     };
@@ -118,8 +118,8 @@ namespace hel{
     public:
         const char* what()const throw();
 
-        UnsupportedFeature();
-        UnsupportedFeature(std::string);
+        UnsupportedFeature()noexcept;
+        UnsupportedFeature(std::string)noexcept;
     };
 
 
@@ -130,7 +130,7 @@ namespace hel{
     public:
         const char* what()const throw();
 
-        InputConfigurationException(std::string);
+        InputConfigurationException(std::string)noexcept;
     };
 }
 

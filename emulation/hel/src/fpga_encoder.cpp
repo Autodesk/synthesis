@@ -4,39 +4,39 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tEncoder::tOutput FPGAEncoder::getOutput()const{
+    tEncoder::tOutput FPGAEncoder::getOutput()const noexcept{
         return output;
     }
 
-    void FPGAEncoder::setOutput(tEncoder::tOutput out){
+    void FPGAEncoder::setOutput(tEncoder::tOutput out)noexcept{
         output = out;
     }
 
-    tEncoder::tConfig FPGAEncoder::getConfig()const{
+    tEncoder::tConfig FPGAEncoder::getConfig()const noexcept{
         return config;
     }
 
-    void FPGAEncoder::setConfig(tEncoder::tConfig c){
+    void FPGAEncoder::setConfig(tEncoder::tConfig c)noexcept{
         config = c;
     }
 
-    tEncoder::tTimerOutput FPGAEncoder::getTimerOutput()const{
+    tEncoder::tTimerOutput FPGAEncoder::getTimerOutput()const noexcept{
         return timer_output;
     }
 
-    void FPGAEncoder::setTimerOutput(tEncoder::tTimerOutput output){
+    void FPGAEncoder::setTimerOutput(tEncoder::tTimerOutput output)noexcept{
         timer_output = output;
     }
 
-    tEncoder::tTimerConfig FPGAEncoder::getTimerConfig()const{
+    tEncoder::tTimerConfig FPGAEncoder::getTimerConfig()const noexcept{
         return timer_config;
     }
 
-    void FPGAEncoder::setTimerConfig(tEncoder::tTimerConfig c){
+    void FPGAEncoder::setTimerConfig(tEncoder::tTimerConfig c)noexcept{
         timer_config = c;
     }
 
-    FPGAEncoder::FPGAEncoder():output(),config(),timer_output(),timer_config(){}
+    FPGAEncoder::FPGAEncoder()noexcept:output(),config(),timer_output(),timer_config(){}
 
     struct FPGAEncoderManager: public tEncoder{
     private:

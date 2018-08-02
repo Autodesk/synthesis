@@ -5,47 +5,47 @@
 #include "util.hpp"
 
 namespace hel{
-    RobotMode::Mode RobotMode::getMode()const{
+    RobotMode::Mode RobotMode::getMode()const noexcept{
         return mode;
     }
 
-    void RobotMode::setMode(RobotMode::Mode m){
+    void RobotMode::setMode(RobotMode::Mode m)noexcept{
         mode = m;
     }
 
-    bool RobotMode::getEnabled()const{
+    bool RobotMode::getEnabled()const noexcept{
         return enabled;
     }
 
-    void RobotMode::setEnabled(bool e){
+    void RobotMode::setEnabled(bool e)noexcept{
         enabled = e;
     }
 
-    bool RobotMode::getEmergencyStopped()const{
+    bool RobotMode::getEmergencyStopped()const noexcept{
         return emergency_stopped;
     }
 
-    void RobotMode::setEmergencyStopped(bool e){
+    void RobotMode::setEmergencyStopped(bool e)noexcept{
         emergency_stopped = e;
     }
 
-    bool RobotMode::getFMSAttached()const{
+    bool RobotMode::getFMSAttached()const noexcept{
         return fms_attached;
     }
 
-    void RobotMode::setFMSAttached(bool attached){
+    void RobotMode::setFMSAttached(bool attached)noexcept{
         fms_attached = attached;
     }
 
-    bool RobotMode::getDSAttached()const{
+    bool RobotMode::getDSAttached()const noexcept{
         return ds_attached;
     }
 
-    void RobotMode::setDSAttached(bool attached){
+    void RobotMode::setDSAttached(bool attached)noexcept{
         ds_attached = attached;
     }
 
-    ControlWord_t RobotMode::toControlWord()const{
+    ControlWord_t RobotMode::toControlWord()const noexcept{
         ControlWord_t control_word;
         control_word.enabled = enabled;
         control_word.autonomous = mode == Mode::AUTONOMOUS;
@@ -114,5 +114,5 @@ namespace hel{
         return s;
     }
 
-    RobotMode::RobotMode():mode(RobotMode::Mode::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){}
+    RobotMode::RobotMode()noexcept:mode(RobotMode::Mode::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){}
 }

@@ -109,7 +109,7 @@ namespace hel{
 
             const char* what()const throw();
 
-            DIOConfigurationException(Config, Config, uint8_t);
+            DIOConfigurationException(Config, Config, uint8_t)noexcept;
         };
 
         /**
@@ -118,7 +118,7 @@ namespace hel{
          * \return The active digital outputs
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO getOutputs()const;
+        nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO getOutputs()const noexcept;
 
         /**
          * \fn void setOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO outputs)
@@ -126,7 +126,7 @@ namespace hel{
          * \param outputs the outputs to set to
          */
 
-        void setOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO);
+        void setOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDO)noexcept;
 
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable getEnabledOutputs()const
@@ -134,15 +134,15 @@ namespace hel{
          * \return a bit mask representing digital ports in output mode
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable getEnabledOutputs()const;
+        nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable getEnabledOutputs()const noexcept;
 
         /**
-         * \fn void setEnabledOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable);
+         * \fn void setEnabledOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable)noexcept;
          * \brief Set the digital ports to output mode
          * \param enabled_outputs a bit mask of digital ports to set to output
          */
 
-        void setEnabledOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable);
+        void setEnabledOutputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tOutputEnable)noexcept;
 
         /**
          * \fn uint16_t getMXPSpecialFunctionsEnabled()const
@@ -150,7 +150,7 @@ namespace hel{
          * \return the bit mask for enabled mxp special functions
          */
 
-        uint16_t getMXPSpecialFunctionsEnabled()const;
+        uint16_t getMXPSpecialFunctionsEnabled()const noexcept;
 
         /**
          * \fn void setMXPSpecialFunctionsEnabled(uint16_t mxp_special_functions_enabled)
@@ -158,7 +158,7 @@ namespace hel{
          * \param mxp_special_functions_enabled the bit mask to use
          */
 
-        void setMXPSpecialFunctionsEnabled(uint16_t);
+        void setMXPSpecialFunctionsEnabled(uint16_t)noexcept;
 
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse getPulses()const
@@ -166,7 +166,7 @@ namespace hel{
          * \return a bit mask representing the active digital pulses
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse getPulses()const;
+        nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse getPulses()const noexcept;
 
         /**
          * \fn void setPulses(nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse pulses)
@@ -174,7 +174,7 @@ namespace hel{
          * \param pulses the active pulses
          */
 
-        void setPulses(nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse);
+        void setPulses(nFPGA::nRoboRIO_FPGANamespace::tDIO::tPulse)noexcept;
 
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI getInputs()const
@@ -182,7 +182,7 @@ namespace hel{
          * \return a bit mask representing the digital input states
          */
 
-        nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI getInputs()const;
+        nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI getInputs()const noexcept;
 
         /**
          * \fn void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI inputs)
@@ -190,7 +190,7 @@ namespace hel{
          * \param inputs a bit mask representing the digital input states to set to
          */
 
-        void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI);
+        void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI)noexcept;
 
         /**
          * \fn uint8_t getPulseLength()const
@@ -198,7 +198,7 @@ namespace hel{
          * \return the length to pulse for
          */
 
-        uint8_t getPulseLength()const;
+        uint8_t getPulseLength()const noexcept;
 
         /**
          * \fn void setPulseLength(uint8_t pulse_length)
@@ -206,7 +206,7 @@ namespace hel{
          * \param pulse_length the length to pulse for
          */
 
-        void setPulseLength(uint8_t);
+        void setPulseLength(uint8_t)noexcept;
 
         /**
          * \fn uint8_t getPWMPulseWidth(uint8_t index)const
@@ -220,7 +220,7 @@ namespace hel{
 
         void setPWMPulseWidth(uint8_t, uint8_t);
 
-        DigitalSystem();
+        DigitalSystem()noexcept;
     };
 
     std::string to_string(DigitalSystem::DIOConfigurationException::Config);

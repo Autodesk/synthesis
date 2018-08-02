@@ -36,13 +36,13 @@ namespace hel{
             nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled;
 
         public:
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus getStatus()const;
-            void setStatus(nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus);
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts getFaultCounts()const;
-            void setFaultCounts(nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts);
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable getDisabled()const;
-            void setDisabled(nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable);
-            Power();
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus getStatus()const noexcept;
+            void setStatus(nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus)noexcept;
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts getFaultCounts()const noexcept;
+            void setFaultCounts(nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts)noexcept;
+            nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable getDisabled()const noexcept;
+            void setDisabled(nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable)noexcept;
+            Power()noexcept;
         };
 }
 

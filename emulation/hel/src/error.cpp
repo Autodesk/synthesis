@@ -10,7 +10,7 @@ std::string hel::DSError::toString()const{
     return s;
 }
 
-hel::DSError::DSError(bool is_error, int32_t ec, const char* det, const char* loc, const char* cs){
+hel::DSError::DSError(bool is_error, int32_t ec, const char* det, const char* loc, const char* cs)noexcept{
     type = is_error ? Type::ERROR : Type::WARNING;
     error_code = ec;
     details = det;
@@ -29,7 +29,7 @@ std::string hel::to_string(hel::DSError::Type t){
     }
 }
 
-hel::UnhandledEnumConstantException::UnhandledEnumConstantException(std::string s):enum_type(s){}
+hel::UnhandledEnumConstantException::UnhandledEnumConstantException(std::string s)noexcept:enum_type(s){}
 
 const char* hel::UnhandledEnumConstantException::what()const throw(){
     std::string s = "Synthesis exception: Unhandled enum constant for " + enum_type;
@@ -40,8 +40,8 @@ const char* hel::UnhandledCase::what()const throw(){
     return "Synthesis exception: Unhandled case";
 }
 
-hel::UnsupportedFeature::UnsupportedFeature(std::string s):details(s){}
-hel::UnsupportedFeature::UnsupportedFeature():UnsupportedFeature(""){}
+hel::UnsupportedFeature::UnsupportedFeature(std::string s)noexcept:details(s){}
+hel::UnsupportedFeature::UnsupportedFeature()noexcept:UnsupportedFeature(""){}
 
 const char* hel::UnsupportedFeature::what()const throw(){
     std::string s = "Synthesis exception: Feature unsupported by Synthesis";
@@ -53,7 +53,7 @@ const char* hel::UnsupportedFeature::what()const throw(){
 }
 
 
-hel::InputConfigurationException::InputConfigurationException(std::string s):details(s){}
+hel::InputConfigurationException::InputConfigurationException(std::string s)noexcept:details(s){}
 
 const char* hel::InputConfigurationException::what()const throw(){
     std::string s = "Synthesis exception: No matching input found in user code for input configured in robot model (" + details + ")\n";

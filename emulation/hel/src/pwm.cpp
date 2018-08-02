@@ -5,11 +5,11 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    tPWM::tConfig PWMSystem::getConfig()const{
+    tPWM::tConfig PWMSystem::getConfig()const noexcept{
         return config;
     }
 
-    void PWMSystem::setConfig(tPWM::tConfig value){
+    void PWMSystem::setConfig(tPWM::tConfig value)noexcept{
         config = value;
         auto instance = SendDataManager::getInstance();
         instance.first->update();
@@ -60,7 +60,7 @@ namespace hel{
         instance.second.unlock();
     }
 
-    double PWMSystem::getSpeed(uint32_t pulse_width) {
+    double PWMSystem::getSpeed(uint32_t pulse_width)noexcept{
         // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
         if (pulse_width == 0) {
             return 0.0;
@@ -72,14 +72,13 @@ namespace hel{
             return static_cast<double>((int32_t) pulse_width - pwm_pulse_width::DEADBAND_MAX) / static_cast<double>(pwm_pulse_width::POSITIVE_SCALE_FACTOR);
         } else if (pulse_width < pwm_pulse_width::DEADBAND_MIN) {
             return static_cast<double>((int32_t) pulse_width - pwm_pulse_width::DEADBAND_MIN) / static_cast<double>(pwm_pulse_width::NEGATIVE_SCALE_FACTOR);
-        } else {
-            return 0.0;
         }
+        return 0.0;
     }
 
-    PWMSystem::PWM::PWM():period_scale(0), pulse_width(0){}
+    PWMSystem::PWM::PWM()noexcept:period_scale(0), pulse_width(0){}
 
-    PWMSystem::PWMSystem():hdr(),mxp(){}
+    PWMSystem::PWMSystem()noexcept:hdr(),mxp(){}
 
     struct PWMManager: public tPWM{
         tSystemInterface* getSystemInterface(){
