@@ -11,7 +11,7 @@ public static partial class BXDJSkeleton
     /// <summary>
     /// Represents the current version of the BXDA file.
     /// </summary>
-    public const string BXDJ_CURRENT_VERSION = "3.0.0";
+    public const string BXDJ_CURRENT_VERSION = "4.0.0";
 
     /// <summary>
     /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name.
@@ -391,27 +391,11 @@ public static partial class BXDJSkeleton
         writer.WriteStartElement("RobotSensor");
 
         writer.WriteElementString("SensorType", sensor.type.ToString());
-        writer.WriteElementString("SensorModule", sensor.module.ToString());
-        writer.WriteElementString("SensorPort", sensor.port.ToString());
-        WritePolynomial(sensor.equation, writer);
-        writer.WriteElementString("UseSecondarySource", sensor.useSecondarySource.ToString().ToLower());
-
-        writer.WriteEndElement();
-    }
-
-    /// <summary>
-    /// Used for writing a Polynomial's data.
-    /// </summary>
-    /// <param name="poly"></param>
-    /// <param name="writer"></param>
-    public static void WritePolynomial(Polynomial poly, XmlWriter writer)
-    {
-        writer.WriteStartElement("Polynomial");
-
-        for (int i = 0; i < poly.coeff.Length; i++)
-        {
-            writer.WriteElementString("Coefficient", poly.coeff[i].ToString("F4"));
-        }
+        writer.WriteElementString("SensorPortNumber1", sensor.port1.ToString());
+        writer.WriteElementString("SensorSignalType1", sensor.conTypePort1.ToString());
+        writer.WriteElementString("SensorPortNumber2", sensor.port2.ToString());
+        writer.WriteElementString("SensorSignalType2", sensor.conTypePort2.ToString());
+        writer.WriteElementString("SensorConversionFactor", sensor.conversionFactor.ToString(   ));
 
         writer.WriteEndElement();
     }
@@ -431,13 +415,15 @@ public static partial class BXDJSkeleton
 
             switch (version.Substring(0, version.LastIndexOf('.')))
             {
+                case "4.0":
+                    return ReadSkeleton_4_0(path);
                 case "3.0":
                     return ReadSkeleton_3_0(path);
                 case "2.0":
                     return ReadSkeleton_2_0(path);
                 default: // If version is unknown.
                     // Attempt to read with the most recent version (but without validation).
-                    return ReadSkeleton_2_0(path, false);
+                    return ReadSkeleton_4_0(path, false);
             }
         }
         else

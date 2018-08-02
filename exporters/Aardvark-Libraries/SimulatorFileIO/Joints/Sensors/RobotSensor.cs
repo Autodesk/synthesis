@@ -2,25 +2,30 @@
 
 public enum RobotSensorType : byte
 {
-    LIMIT = 0,
-    ENCODER = 1,
+    ENCODER = 0,
+    LIMIT = 1,
     POTENTIOMETER = 2,
     LIMIT_HALL = 3,
     ACCELEROMETER = 4,
     MAGNETOMETER = 5,
     GYRO = 6
 }
+public enum SensorConnectionType : byte
+{
+    DIO = 0,
+    ANALOG = 1,
+    SPI = 2,
+    I2C = 3,
+}
 
 public class RobotSensor : BinaryRWObject
 {
-    public short module, port;
+    public float port1;
+    public float port2;
     public RobotSensorType type;
-    public Polynomial equation;
-    /// <summary>
-    /// If this is true source the secondary value from the joint.  (Rotational instead of linear for cylindrical)
-    /// </summary>
-    public bool useSecondarySource = false;
-
+    public SensorConnectionType conTypePort1;
+    public SensorConnectionType conTypePort2;
+    public double conversionFactor;
     public RobotSensor()
     {
     }
@@ -28,6 +33,22 @@ public class RobotSensor : BinaryRWObject
     public RobotSensor(RobotSensorType type)
     {
         this.type = type;
+
+        switch (type)
+        {
+            case RobotSensorType.ENCODER:
+                conTypePort1 = SensorConnectionType.DIO;
+                conTypePort2 = SensorConnectionType.DIO;
+                break;
+            case RobotSensorType.LIMIT:
+                conTypePort1 = SensorConnectionType.DIO;
+                conTypePort2 = SensorConnectionType.DIO;
+                break;
+            case RobotSensorType.POTENTIOMETER:
+                conTypePort1 = SensorConnectionType.ANALOG;
+                conTypePort2 = SensorConnectionType.ANALOG;
+                break;
+        }
     }
 
     public static RobotSensorType[] GetAllowedSensors(SkeletalJoint_Base joint)
@@ -52,19 +73,19 @@ public class RobotSensor : BinaryRWObject
     public void WriteBinaryData(BinaryWriter writer)
     {
         writer.Write((byte) type);
-        writer.Write(module);
-        writer.Write(port);
-        writer.Write(equation);
-        writer.Write(useSecondarySource);
+        writer.Write(port1);
+        writer.Write((byte)conTypePort1);
+        writer.Write(port2);
+        writer.Write((byte)conTypePort2);
+        writer.Write(conversionFactor);
     }
 
     public void ReadBinaryData(BinaryReader reader)
     {
         type = (RobotSensorType) reader.ReadByte();
-        module = reader.ReadInt16();
-        port = reader.ReadInt16();
-        equation = reader.ReadRWObject<Polynomial>();
-        useSecondarySource = reader.ReadBoolean();
+        port1 = reader.ReadInt16();
+        port2 = reader.ReadInt16();
+        conversionFactor = reader.ReadDouble();
     }
 
     public static RobotSensor ReadSensorFully(BinaryReader reader)
@@ -80,6 +101,6 @@ public class RobotSensor : BinaryRWObject
     /// <param name="otherSensor"></param>
     public bool Equals(RobotSensor otherSensor)
     {
-        return module == otherSensor.module && port == otherSensor.port;    // Other fields are not important for equivalancy
+        return port1 == otherSensor.port1 && port2 == otherSensor.port2 && conversionFactor == otherSensor.conversionFactor;    // Other fields are not important for equivalancy
     }
 }
