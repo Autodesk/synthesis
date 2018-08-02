@@ -114,5 +114,5 @@ namespace hel{
         return s;
     }
 
-    RobotMode::RobotMode()noexcept:mode(RobotMode::Mode::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){}
+    RobotMode::RobotMode()noexcept:mode(RobotMode::Mode::TELEOPERATED),enabled(true),emergency_stopped(false),fms_attached(false),ds_attached(true){}
 }

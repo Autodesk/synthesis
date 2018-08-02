@@ -5,7 +5,7 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-hel::SendData::SendData():serialized_data(""),gen_serialization(true){
+hel::SendData::SendData():serialized_data(""),new_data(true){
     for(auto& a: pwm_hdrs){
         a = 0.0;
     }
@@ -25,22 +25,25 @@ hel::SendData::SendData():serialized_data(""),gen_serialization(true){
     can_motor_controllers = {};
 }
 
+bool hel::SendData::hasNewData()const{
+    return new_data;
+}
+
 void hel::SendData::update(){
     if(!hel::hal_is_initialized){
         return;
     }
 
-    //RoboRIO roborio(RoboRIOManager::getCopy());
-    auto instance = RoboRIOManager::getInstance();
+    RoboRIO roborio = RoboRIOManager::getCopy();
 
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
-        pwm_hdrs[i] = PWMSystem::getSpeed(instance.first->pwm_system.getHdrPulseWidth(i));
+        pwm_hdrs[i] = PWMSystem::getSpeed(roborio.pwm_system.getHdrPulseWidth(i));
     }
 
     for(unsigned i = 0; i < relays.size(); i++){
         relays[i] = [&](){
-            bool forward = checkBitHigh(instance.first->relay_system.getValue().Forward, i);
-            bool reverse  = checkBitHigh(instance.first->relay_system.getValue().Reverse, i);
+            bool forward = checkBitHigh(roborio.relay_system.getValue().Forward, i);
+            bool reverse  = checkBitHigh(roborio.relay_system.getValue().Reverse, i);
             if(forward){
                 if(reverse){
                     return RelayState::ERROR;
@@ -55,12 +58,12 @@ void hel::SendData::update(){
     }
 
     for(unsigned i = 0; i < analog_outputs.size(); i++){
-        analog_outputs[i] = (instance.first->analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
+        analog_outputs[i] = (roborio.analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
     }
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){
         digital_mxp[i].config = [&](){
-            if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){
+            if(checkBitHigh(roborio.digital_system.getMXPSpecialFunctionsEnabled(), i)){
                 if(
                     i == 0  || i == 1  ||
                     i == 2  || i == 3  ||
@@ -80,7 +83,7 @@ void hel::SendData::update(){
                     return hel::MXPData::Config::I2C;
                 }
             }
-            tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+            tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();
             if(checkBitHigh(output_mode.MXP,i)){
                 return hel::MXPData::Config::DO;
             }
@@ -89,7 +92,7 @@ void hel::SendData::update(){
 
         switch(digital_mxp[i].config){
         case hel::MXPData::Config::DO:
-            digital_mxp[i].value = (checkBitHigh(instance.first->digital_system.getOutputs().MXP, i) | checkBitHigh(instance.first->digital_system.getPulses().MXP, i));
+            digital_mxp[i].value = (checkBitHigh(roborio.digital_system.getOutputs().MXP, i) | checkBitHigh(roborio.digital_system.getPulses().MXP, i));
             break;
         case hel::MXPData::Config::PWM:
             {
@@ -97,7 +100,7 @@ void hel::SendData::update(){
                 if(remapped_i >= 4){ //digital ports 0-3 line up with mxp pwm ports 0-3, the rest are offset by 4
                     remapped_i -= 4;
                 }
-                digital_mxp[i].value = PWMSystem::getSpeed(instance.first->pwm_system.getMXPPulseWidth(remapped_i));
+                digital_mxp[i].value = PWMSystem::getSpeed(roborio.pwm_system.getMXPPulseWidth(remapped_i));
             }
             break;
         case hel::MXPData::Config::SPI:
@@ -111,18 +114,17 @@ void hel::SendData::update(){
         }
     }
     {
-        tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
-        auto values = instance.first->digital_system.getOutputs().Headers;
-        auto pulses = instance.first->digital_system.getPulses().Headers;
+        tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();
+        auto values = roborio.digital_system.getOutputs().Headers;
+        auto pulses = roborio.digital_system.getPulses().Headers;
         for(unsigned i = 0; i < digital_hdrs.size(); i++){
             if(checkBitHigh(output_mode.Headers, i)){
                 digital_hdrs[i] = (checkBitHigh(values, i) | checkBitHigh(pulses, i));
             }
         }
     }
-    can_motor_controllers = instance.first->can_motor_controllers;
-    gen_serialization = true;
-    instance.second.unlock();
+    can_motor_controllers = roborio.can_motor_controllers;
+    new_data = true;
 }
 
 std::string hel::to_string(hel::SendData::RelayState r){
@@ -153,7 +155,7 @@ std::string hel::SendData::toString()const{
 }
 
 std::string hel::SendData::serialize(){
-    if(!gen_serialization){
+    if(!new_data){
         return serialized_data;
     }
 
@@ -198,6 +200,6 @@ std::string hel::SendData::serialize(){
 
     serialized_data += "}}";
     serialized_data += JSON_PACKET_SUFFIX;
-    gen_serialization = false;
+    new_data = false;
     return serialized_data;
 }
