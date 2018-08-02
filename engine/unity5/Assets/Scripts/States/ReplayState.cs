@@ -181,30 +181,30 @@ namespace Synthesis.States
 
             DynamicCamera.ControlEnabled = true;
 
-            Texture2D thumbTexture = (Texture2D)Resources.Load("Images/thumb");
+            Texture2D thumbTexture = (Texture2D)Resources.Load("Images/ReplayMode/thumb");
 
-            Texture2D rewindTexture = (Texture2D)Resources.Load("Images/rewind");
-            Texture2D rewindHoverTexture = (Texture2D)Resources.Load("Images/rewindHover");
-            Texture2D rewindPressedTexture = (Texture2D)Resources.Load("Images/rewindPressed");
+            Texture2D rewindTexture = (Texture2D)Resources.Load("Images/ReplayMode/rewind");
+            Texture2D rewindHoverTexture = (Texture2D)Resources.Load("Images/ReplayMode/ReplayMode/rewindHover");
+            Texture2D rewindPressedTexture = (Texture2D)Resources.Load("Images/ReplayMode/rewindPressed");
 
-            Texture2D stopTexture = (Texture2D)Resources.Load("Images/stop");
-            Texture2D stopHoverTexture = (Texture2D)Resources.Load("Images/stopHover");
-            Texture2D stopPressedTexture = (Texture2D)Resources.Load("Images/stopPressed");
+            Texture2D stopTexture = (Texture2D)Resources.Load("Images/ReplayMode/stop");
+            Texture2D stopHoverTexture = (Texture2D)Resources.Load("Images/ReplayMode/stopHover");
+            Texture2D stopPressedTexture = (Texture2D)Resources.Load("Images/ReplayMode/stopPressed");
 
-            Texture2D playTexture = (Texture2D)Resources.Load("Images/play");
-            Texture2D playHoverTexture = (Texture2D)Resources.Load("Images/playHover");
-            Texture2D playPressedTexture = (Texture2D)Resources.Load("Images/playPressed");
+            Texture2D playTexture = (Texture2D)Resources.Load("Images/ReplayMode/play");
+            Texture2D playHoverTexture = (Texture2D)Resources.Load("Images/ReplayMode/playHover");
+            Texture2D playPressedTexture = (Texture2D)Resources.Load("Images/ReplayMode/playPressed");
 
-            Texture2D collisionTexture = (Texture2D)Resources.Load("Images/collision");
-            Texture2D collisionHoverTexture = (Texture2D)Resources.Load("Images/collisionHover");
-            Texture2D collisionPressedTexture = (Texture2D)Resources.Load("Images/collisionPressed");
+            Texture2D collisionTexture = (Texture2D)Resources.Load("Images/ReplayMode/collision");
+            Texture2D collisionHoverTexture = (Texture2D)Resources.Load("Images/ReplayMode/collisionHover");
+            Texture2D collisionPressedTexture = (Texture2D)Resources.Load("Images/ReplayMode/collisionPressed");
 
-            Texture2D consolidateTexture = (Texture2D)Resources.Load("Images/consolidate");
-            Texture2D consolidateHoverTexture = (Texture2D)Resources.Load("Images/consolidateHover");
-            Texture2D consolidatePressedTexture = (Texture2D)Resources.Load("Images/consolidatePressed");
+            Texture2D consolidateTexture = (Texture2D)Resources.Load("Images/ReplayMode/consolidate");
+            Texture2D consolidateHoverTexture = (Texture2D)Resources.Load("Images/ReplayMode/consolidateHover");
+            Texture2D consolidatePressedTexture = (Texture2D)Resources.Load("Images/ReplayMode/consolidatePressed");
 
-            circleTexture = (Texture)Resources.Load("Images/circle");
-            keyframeTexture = (Texture)Resources.Load("Images/keyframe");
+            circleTexture = (Texture)Resources.Load("Images/ReplayMode/circle");
+            keyframeTexture = (Texture)Resources.Load("Images/ReplayMode/keyframe");
 
             Texture2D sliderBackground = new Texture2D(1, 1);
             sliderBackground.SetPixel(0, 0, new Color(0.1f, 0.15f, 0.15f, 0.75f));
@@ -698,9 +698,9 @@ namespace Synthesis.States
         /// <returns></returns>
         private GUIStyle CreateButtonStyle(string textureName)
         {
-            Texture2D normalTexture = (Texture2D)Resources.Load("Images/" + textureName);
-            Texture2D hoverTexture = (Texture2D)Resources.Load("Images/" + textureName + "Hover");
-            Texture2D pressedTexture = (Texture2D)Resources.Load("Images/" + textureName + "Pressed");
+            Texture2D normalTexture = (Texture2D)Resources.Load("Images/ReplayMode/" + textureName);
+            Texture2D hoverTexture = (Texture2D)Resources.Load("Images/ReplayMode/" + textureName + "Hover");
+            Texture2D pressedTexture = (Texture2D)Resources.Load("Images/ReplayMode/" + textureName + "Pressed");
 
             return new GUIStyle
             {
