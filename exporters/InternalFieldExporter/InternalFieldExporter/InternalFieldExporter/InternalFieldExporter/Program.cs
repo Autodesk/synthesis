@@ -53,7 +53,7 @@ namespace InternalFieldExporter
         /// <summary>
         /// The global MainWindow instance.
         /// </summary>
-        public static FieldExportForm MAINWINDOW;
+        public static MainWindow MAINWINDOW;
 
         /// <summary>
         /// Used for distinguishing between the first assembly document open and another one opened later.
