@@ -1,4 +1,5 @@
 #include "Exporter.h"
+#include <vector>
 #include "Data/Filesystem.h"
 #include "Data/BXDA/Mesh.h"
 #include "Data/BXDA/SubMesh.h"
@@ -108,19 +109,68 @@ void Exporter::exportExampleXml()
 	xml.writeElement("ModelID", "Part2:1");
 }
 
-void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document)
+void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document, std::function<void(double)> progressCallback, bool * cancel)
 {	
+	if (progressCallback)
+		progressCallback(0);
+
 	// Generate tree
 	Guid::resetAutomaticSeed();
-	BXDJ::RigidNode rootNode(document->design()->rootComponent(), config);
+	std::shared_ptr<BXDJ::RigidNode> rootNode = std::make_shared<BXDJ::RigidNode>(document->design()->rootComponent(), config);
+
+	// List all rigid-nodes in tree
+	std::vector<std::shared_ptr<BXDJ::RigidNode>> allNodes;
+	allNodes.push_back(rootNode);
+	rootNode->getChildren(allNodes, true);
+
+	int totalOccurrences = 0; // Used for scaling the progress bar contribution of each node
+	for (std::shared_ptr<BXDJ::RigidNode> node : allNodes)
+		totalOccurrences += node->getOccurrenceCount();
 
 	// Write robot to file
 	Filesystem::createDirectory(Filesystem::getCurrentRobotDirectory(config.robotName));
-	std::string filename = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.bxdj";
-	BXDJ::XmlWriter xml(filename, false);
+
+	// Write BXDJ file
+	std::string filenameBXDJ = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.bxdj";
+	BXDJ::XmlWriter xml(filenameBXDJ, false);
 
 	xml.startElement("BXDJ");
 	xml.writeAttribute("Version", "3.0.0");
-	xml.write(rootNode);
+	xml.write(*rootNode);
 	xml.endElement();
+
+	// Write BXDA files
+	int completedOccurrences = 0;
+	for (int i = 0; i < allNodes.size(); i++)
+	{
+		// Prepare binary writer for writing mesh
+		std::string filenameBXDA = "node_" + std::to_string(allNodes[i]->getGUID().getSeed()) + ".bxda";
+		BXDA::BinaryWriter binary(Filesystem::getCurrentRobotDirectory(config.robotName) + filenameBXDA);
+
+		// Generate mesh
+		BXDA::Mesh mesh(allNodes[i]->getGUID());
+		int occurrencesInNode = allNodes[i]->getOccurrenceCount();
+		allNodes[i]->getMesh(mesh, false, [progressCallback, completedOccurrences, occurrencesInNode, totalOccurrences](double percent)
+		{
+			if (progressCallback)
+				progressCallback((completedOccurrences + percent * occurrencesInNode) / totalOccurrences); // Scale percent of each node by the number of occurrences in that node
+		}, cancel);
+		completedOccurrences += occurrencesInNode;
+
+		// Check if thread is being canceled
+		if (cancel != nullptr)
+			if (*cancel)
+				break;
+
+		// Write mesh
+		binary.write(mesh);
+	}
+
+	// If canceled, delete the created robot folder
+	if (cancel != nullptr)
+		if (*cancel)
+			return; // TODO: Delete the create robot directory to prevent corrupted robots from being available
+
+	if (progressCallback)
+		progressCallback(1);
 }

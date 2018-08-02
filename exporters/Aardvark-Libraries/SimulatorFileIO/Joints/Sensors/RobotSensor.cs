@@ -56,11 +56,11 @@ public class RobotSensor : BinaryRWObject
         switch (joint.GetJointType())
         {
             case SkeletalJointType.ROTATIONAL:
-                return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
+                return new RobotSensorType[] {RobotSensorType.ENCODER/*, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT*/};
             case SkeletalJointType.LINEAR:
                 return new RobotSensorType[] {RobotSensorType.LIMIT };
             case SkeletalJointType.CYLINDRICAL:
-                return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
+                return new RobotSensorType[] {RobotSensorType.ENCODER/*, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT*/};
             case SkeletalJointType.PLANAR:
                 return new RobotSensorType[] { };
             case SkeletalJointType.BALL:

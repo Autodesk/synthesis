@@ -30,11 +30,18 @@ namespace Synthesis
 
 		bool createExportPalette();
 		void deleteExportPalette();
+		void closeExportPalette();
+
+		bool createProgressPalette();
+		void deleteProgressPalette();
+		void closeProgressPalette();
 
 		bool createExportButton();
 		void deleteExportButton();
 		
 		void startExportThread(BXDJ::ConfigData &);
+		void cancelExportThread();
+		void updateProgress(double percent);
 
 	private:
 		Ptr<Application> app;
@@ -44,10 +51,13 @@ namespace Synthesis
 		Ptr<ToolbarPanel> panel;
 		Ptr<ToolbarControls> panelControls;
 
-		Ptr<CommandDefinition> exportButtonCommand;
 		Ptr<Palette> exportPalette;
+		Ptr<Palette> progressPalette;
 
-		std::list<std::thread *> exportThreads;
+		Ptr<CommandDefinition> exportButtonCommand;
+
+		std::thread * exportThread;
+		bool killExportThread;
 		void exportRobot(BXDJ::ConfigData);
 	};
 }

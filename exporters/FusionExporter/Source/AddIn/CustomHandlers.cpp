@@ -14,7 +14,10 @@ using namespace Synthesis;
 void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
+	{
 		eui->createExportPalette();
+		eui->createProgressPalette();
+	}
 }
 
 // Deactivate Workspace Event
@@ -22,15 +25,8 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 {
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
 	{
-		Ptr<Palettes> palettes = UI->palettes();
-		if (!palettes)
-			return;
-
-		Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
-		if (!palette)
-			return;
-
-		palette->isVisible(false);
+		eui->closeExportPalette();
+		eui->cancelExportThread();
 	}
 }
 
