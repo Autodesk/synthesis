@@ -25,12 +25,24 @@ namespace hel{
         MatchInfo match_info;
         RobotMode robot_mode;
         BoundsCheckedArray<EncoderManager, FPGAEncoder::NUM_ENCODERS> encoder_managers;
+
+        void deserializeDigitalHdrs(std::string&);
+        void deserializeJoysticks(std::string&);
+        void deserializeDigitalMXP(std::string&);
+        void deserializeMatchInfo(std::string&);
+        void deserializeRobotMode(std::string&);
+        void deserializeEncoders(std::string&);
+
     public:
         void update()const;
 
         std::string toString()const;
 
-        void deserializeAndUpdate(std::string);
+        void deserializeShallow(std::string);
+        void deserializeDeep(std::string);
+        void deserializeAndUpdate(std::string);//TODO remove
+
+        ReceiveData();
     };
 
     class ReceiveDataManager{
