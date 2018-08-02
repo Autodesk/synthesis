@@ -1014,8 +1014,7 @@ namespace Synthesis.DriverPractice
             else
             {
                 if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupSecondary)))
-                {
-
+                { 
                     Intake(1);
                 }
                 if ((Input.InputControl.GetButton(Controls.buttons[controlIndex].pickupPrimary)))

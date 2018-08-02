@@ -76,7 +76,7 @@ namespace Synthesis.Input
             public KeyMapping resetRobot;
             public KeyMapping resetField;
             public KeyMapping cameraToggle;
-            //public KeyMapping replayMode;
+            public KeyMapping replayMode;
             public KeyMapping pickupPrimary;
             public KeyMapping releasePrimary;
             public KeyMapping spawnPrimary;
@@ -350,6 +350,7 @@ namespace Synthesis.Input
             //Other Controls
             buttons[0].resetRobot = InputControl.SetKey("1: Reset Robot", PlayerOneIndex, KeyCode.R, false);
             buttons[0].resetField = InputControl.SetKey("1: Reset Field", PlayerOneIndex, KeyCode.F, false);
+            buttons[0].replayMode = InputControl.SetKey("1: Replay Mode", PlayerOneIndex, KeyCode.Tab, false);
             buttons[0].cameraToggle = InputControl.SetKey("1: Camera Toggle", PlayerOneIndex, KeyCode.C, false);
             buttons[0].pickupPrimary = InputControl.SetKey("1: Pick Up Primary Gamepiece", PlayerOneIndex, KeyCode.LeftControl, false);
             buttons[0].releasePrimary = InputControl.SetKey("1: Release Primary Gamepiece", PlayerOneIndex, KeyCode.LeftShift, false);
@@ -816,7 +817,6 @@ namespace Synthesis.Input
             //Other Controls
             buttons[3].resetRobot = InputControl.SetKey("4: Reset Robot", PlayerFourIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick4), true);
             buttons[3].resetField = InputControl.SetKey("4: Reset Field", PlayerFourIndex, new JoystickInput(JoystickButton.Button9, Joystick.Joystick4), true);
-            //buttons[3].replayMode = InputControl.setKey("4: Replay Mode", PlayerFourIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
             buttons[3].pickupPrimary = InputControl.SetKey("4: Pick Up Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick4), true);
             buttons[3].releasePrimary = InputControl.SetKey("4: Release Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick4), true);
             buttons[3].spawnPrimary = InputControl.SetKey("4: Spawn Primary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick4), true);
@@ -867,7 +867,6 @@ namespace Synthesis.Input
             //Other Controls
             buttons[4].resetRobot = InputControl.SetKey("5: Reset Robot", PlayerFiveIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick5), true);
             buttons[4].resetField = InputControl.SetKey("5: Reset Field", PlayerFiveIndex, new JoystickInput(JoystickButton.Button9, Joystick.Joystick5), true);
-            //buttons[4].replayMode = InputControl.setKey("5: Replay Mode", PlayerFiveIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
             buttons[4].pickupPrimary = InputControl.SetKey("5: Pick Up Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick5), true);
             buttons[4].releasePrimary = InputControl.SetKey("5: Release Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick5), true);
             buttons[4].spawnPrimary = InputControl.SetKey("5: Spawn Primary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick5), true);
@@ -918,7 +917,6 @@ namespace Synthesis.Input
             //Other Controls
             buttons[5].resetRobot = InputControl.SetKey("6: Reset Robot", PlayerSixIndex, new JoystickInput(JoystickButton.Button8, Joystick.Joystick6), true);
             buttons[5].resetField = InputControl.SetKey("6: Reset Field", PlayerSixIndex, new JoystickInput(JoystickButton.Button9, Joystick.Joystick6), true);
-            //buttons[5].replayMode = InputControl.setKey("6: Replay Mode", PlayerSixIndex, KeyCode.Tab, new JoystickInput(JoystickButton.Button6, Joystick.Joystick1), true);
             buttons[5].pickupPrimary = InputControl.SetKey("6: Pick Up Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick6), true);
             buttons[5].releasePrimary = InputControl.SetKey("6: Release Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick6), true);
             buttons[5].spawnPrimary = InputControl.SetKey("6: Spawn Primary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), true);
@@ -942,75 +940,4 @@ namespace Synthesis.Input
             #endregion
         }
     }
-
-
-    #region Old Controls: 2016 and Older
-    //public static void ResetDefaults()
-    //{
-    //    ControlKey[(int)Control.Forward] = KeyCode.UpArrow;
-    //    ControlKey[(int)Control.Backward] = KeyCode.DownArrow;
-    //    ControlKey[(int)Control.Right] = KeyCode.RightArrow;
-    //    ControlKey[(int)Control.Left] = KeyCode.LeftArrow;
-    //    ControlKey[(int)Control.ResetRobot] = KeyCode.R;
-    //    ControlKey[(int)Control.CameraToggle] = KeyCode.C;
-    //    ControlKey[(int)Control.pwm2Plus] = KeyCode.Alpha1;
-    //    ControlKey[(int)Control.pwm2Neg] = KeyCode.Alpha2;
-    //    ControlKey[(int)Control.pwm3Plus] = KeyCode.Alpha3;
-    //    ControlKey[(int)Control.pwm3Neg] = KeyCode.Alpha4;
-    //    ControlKey[(int)Control.pwm4Plus] = KeyCode.Alpha5;
-    //    ControlKey[(int)Control.pwm4Neg] = KeyCode.Alpha6;
-    //    ControlKey[(int)Control.pwm5Plus] = KeyCode.Alpha7;
-    //    ControlKey[(int)Control.pwm5Neg] = KeyCode.Alpha8;
-    //    ControlKey[(int)Control.pwm6Plus] = KeyCode.Alpha9;
-    //    ControlKey[(int)Control.pwm6Neg] = KeyCode.Alpha0;
-    //    ControlKey[(int)Control.PickupPrimary] = KeyCode.X;
-    //    ControlKey[(int)Control.ReleasePrimary] = KeyCode.E;
-    //    ControlKey[(int)Control.SpawnPrimary] = KeyCode.Q;
-    //    ControlKey[(int)Control.PickupSecondary] = KeyCode.X;
-    //    ControlKey[(int)Control.ReleaseSecondary] = KeyCode.E;
-    //    ControlKey[(int)Control.SpawnSecondary] = KeyCode.Q;
-    //}
-
-    //public static void LoadControls()
-    //{
-    //    for (int i = 0; i < ControlKey.Length; i++)
-    //    {
-    //        if (PlayerPrefs.HasKey("ControlKey" + i.ToString())) ControlKey[i] = (KeyCode)PlayerPrefs.GetInt("ControlKey" + i.ToString());
-    //    }
-    //}
-
-    //public static void SaveControls()
-    //{
-    //    for (int i = 0; i < ControlKey.Length; i++)
-    //    {
-    //        PlayerPrefs.SetInt("ControlKey" + i.ToString(), (int)ControlKey[i]);
-    //    }
-    //    PlayerPrefs.Save();
-    //}
-
-    //public static bool SetControl(int control, KeyCode key)
-    //{
-    //    ControlKey[control] = key;
-    //    for (int i = 0; i < ControlKey.Length; i++)
-    //    {
-    //        if (i != control && ControlKey[i] == key)
-    //        {
-    //            return false;
-    //        }
-    //    }
-    //    return true;
-    //}
-
-    //public static bool CheckConflict()
-    //{
-    //    for (int i = 0; i < ControlKey.Length; i++)
-    //    {
-    //        for (int j = 1; j < ControlKey.Length; j++)
-    //        {
-    //            if (j != i && ControlKey[i] == ControlKey[j]) return true;
-    //        }
-    //    }
-    //    return false;
-    //}
-    #endregion
 }

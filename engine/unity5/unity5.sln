@@ -9,11 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Unity.Analytics.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Assembly-CSharp-Editor.csproj", "{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}"
 EndProject
-<<<<<<< HEAD
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Assembly-CSharp-Editor-firstpass.csproj", "{D7EA2244-5AE6-25C1-0BE2-8D3F9524DDDF}"
-=======
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Unity.Analytics.DataPrivacy.Editor.csproj", "{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}"
->>>>>>> master
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,17 +33,10 @@ Global
 		{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}.Release|Any CPU.Build.0 = Release|Any CPU
-<<<<<<< HEAD
-		{D7EA2244-5AE6-25C1-0BE2-8D3F9524DDDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7EA2244-5AE6-25C1-0BE2-8D3F9524DDDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7EA2244-5AE6-25C1-0BE2-8D3F9524DDDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7EA2244-5AE6-25C1-0BE2-8D3F9524DDDF}.Release|Any CPU.Build.0 = Release|Any CPU
-=======
 		{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}.Release|Any CPU.Build.0 = Release|Any CPU
->>>>>>> master
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

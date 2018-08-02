@@ -170,9 +170,8 @@ namespace Synthesis.States
             //Spawn a new robot from the same path or switch active robot
             if (!ActiveRobot.IsResetting)
             {
-                if (UnityEngine.Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
-
+                //if (InputControl.GetButtonDown(Controls.buttons[0].duplicateRobot) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
+                //if (InputControl.GetButtonDown(Controls.buttons[0].switchActiveRobot)) SwitchActiveRobot();
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
@@ -181,12 +180,11 @@ namespace Synthesis.States
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             // Switches to replay mode
-            if (!ActiveRobot.IsResetting && UnityEngine.Input.GetKeyDown(KeyCode.Tab))
-            //if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[controlIndex].replayMode))
-            {
-                CollisionTracker.ContactPoints.Add(null);
-                StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
-            }
+            //if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].replayMode));
+            //{
+            //    CollisionTracker.ContactPoints.Add(null);
+            //    StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
+            //}
         }
 
         /// <summary>

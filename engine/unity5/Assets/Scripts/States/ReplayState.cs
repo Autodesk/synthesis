@@ -478,6 +478,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
+            //if (InputControl.GetButton(Controls.buttons[StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.ControlIndex].replayMode))
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
                 StateMachine.PopState();
         }
