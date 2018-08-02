@@ -1,5 +1,8 @@
 #include "Exporter.h"
 #include <vector>
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
 #include "Data/Filesystem.h"
 #include "Data/BXDA/Mesh.h"
 #include "Data/BXDA/SubMesh.h"
@@ -35,36 +38,55 @@ std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 
 std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
 {
-	std::string stringifiedJoints = "";
+	// Create JSON object containing all joint info
+	rapidjson::Document jointsJSON;
+	jointsJSON.SetArray();
 
 	for (Ptr<Joint> joint : joints)
 	{
-		stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + " ";
+		rapidjson::Value jointJSON;
+		jointJSON.SetObject();
 
+		// Joint Name
+		rapidjson::Value name;
+		name.SetString(joint->name().c_str(), joint->name().length(), jointsJSON.GetAllocator());
+		jointJSON.AddMember("name", name, jointsJSON.GetAllocator());
+
+		// Joint Motion (linear and/or angular)
 		JointTypes type = joint->jointMotion()->jointType();
+		rapidjson::Value motionType;
 
-		// Specify if joint supports linear and/or angular motion
-		// Angular motion only
-		if (type == JointTypes::RevoluteJointType)         
-			stringifiedJoints += 5;
+		if (type == JointTypes::RevoluteJointType)
+			motionType.SetUint(ANGULAR);
 
-		// Linear motion only
 		else if (type == JointTypes::SliderJointType ||
-				 type == JointTypes::CylindricalJointType)      
-			stringifiedJoints += 6;
+				 type == JointTypes::CylindricalJointType)
+			motionType.SetUint(LINEAR);
 
-		// Both angular and linear motion
 		else if (false)
-			stringifiedJoints += 7;
+			motionType.SetUint(BOTH);
 
-		// Neither angular nor linear motion
-		else                                                                            
-			stringifiedJoints += 4;
+		else
+			motionType.SetUint(NEITHER);
 
-		stringifiedJoints += " ";
+		jointJSON.AddMember("type", motionType, jointsJSON.GetAllocator());
+
+		// Existing driver configuration
+		rapidjson::Value driver;
+		driver.SetNull();
+		jointJSON.AddMember("driver", driver, jointsJSON.GetAllocator());
+
+		// Add joint to JSON array
+		jointsJSON.PushBack(jointJSON, jointsJSON.GetAllocator());
 	}
 
-	return stringifiedJoints;
+	// Copy JSON to string
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+	jointsJSON.Accept(writer);
+
+	std::string jsonString(buffer.GetString());
+	return jsonString;
 }
 
 void Exporter::exportExample()

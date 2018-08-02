@@ -19,5 +19,13 @@ namespace Synthesis
 		static void exportExample();
 		static void exportExampleXml();
 		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>, std::function<void(double)> progressCallback = nullptr, bool * cancel = nullptr);
+
+	private:
+		// Constants used for communicating joint motion type
+		enum JointMotionType : int
+		{
+			ANGULAR = 1, LINEAR = 2, BOTH = 3, NEITHER = 0
+		};
+
 	};
 }
