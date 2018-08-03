@@ -75,6 +75,21 @@ public class Utilities
             return null;
     }
 
+    public static bool HasProperty(Inventor.PropertySet set, string name)
+    {
+        // Inventor API provides no easy way to check if a property already exists. This try-catch is necessary.
+        try
+        {
+            // Try to add new property. This will result in an exception if the property already exists.
+            set[name].Value = 0;
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
     public static void SetProperty<T>(Inventor.PropertySet set, string name, T value)
     {
         // Inventor API provides no easy way to check if a property already exists. This try-catch is necessary.
@@ -87,6 +102,19 @@ public class Utilities
         {
             // Property already exists, update value
             set[name].Value = value;
+        }
+    }
+
+    public static void RemoveProperty(Inventor.PropertySet set, string name)
+    {
+        // Inventor API provides no easy way to check if a property already exists. This try-catch is necessary.
+        try
+        {
+            // Try to add new property. This will result in an exception if the property already exists.
+            set[name].Delete();
+        }
+        catch (Exception)
+        {
         }
     }
 

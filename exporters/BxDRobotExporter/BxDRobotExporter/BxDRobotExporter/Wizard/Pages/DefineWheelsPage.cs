@@ -44,9 +44,10 @@ namespace BxDRobotExporter.Wizard
         public DefineWheelsPage()
         {
             InitializeComponent();
+
             AutoFillToolTip.SetToolTip(AutoFillButton, "Attempt to detect left and right wheels automatically. Remember to double check your configuration after using this tool.");
 
-            // Hide `rizontal scroll bars
+            // Hide horizontal scroll bars
             LeftWheelsPanel.AutoScroll = false;
             LeftWheelsPanel.HorizontalScroll.Maximum = 0;
             LeftWheelsPanel.AutoScroll = true;
@@ -71,6 +72,8 @@ namespace BxDRobotExporter.Wizard
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
             SetWeightBoxValue(Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f));
             WeightUnitSelector.SelectedIndex = Utilities.GUI.RMeta.PreferMetric ? 1 : 0;
+            
+            FillFromPreviousSetup(Utilities.GUI.SkeletonBase);
         }
 
         /// <summary>
@@ -324,6 +327,73 @@ namespace BxDRobotExporter.Wizard
             }
         }
 
+        public void FillFromPreviousSetup(RigidNode_Base baseNode)
+        {
+            foreach (RigidNode_Base node in baseNode.ListAllNodes())
+            {
+                //For the first filter, we take out any nodes that do not have parents and rotational joints.
+                if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
+                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
+                {
+                    if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel)
+                    {// get the type of drive train and set fields to match so we can add nodes later
+                        this.DriveTrainDropdown.SelectedIndex = ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).driveTrainType;
+                    }
+                }
+            }
+            DriveTrainDropdown_SelectedIndexChanged(null, null);
+            foreach (RigidNode_Base node in baseNode.ListAllNodes())
+            {
+                //For the first filter, we take out any nodes that do not have parents and rotational joints.
+                if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
+                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
+                {
+                    if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
+                        this.DriveTrainDropdown.SelectedIndex = ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).driveTrainType;
+                        switch (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).type)
+                        {
+                            case WheelType.NORMAL:
+                                SetWheelType(node, WizardData.WizardWheelType.NORMAL);
+                                break;
+                            case WheelType.MECANUM:
+                                SetWheelType(node, WizardData.WizardWheelType.MECANUM);
+                                break;
+                            case WheelType.OMNI:
+                                SetWheelType(node, WizardData.WizardWheelType.OMNI);
+                                break;
+
+                        }
+                        if (node.GetSkeletalJoint().cDriver.portA == 0)
+                        {
+                            SetWheelSide(node, WheelSide.RIGHT, true);
+                        }
+                        else if (node.GetSkeletalJoint().cDriver.portA == 1)
+                        {
+                            SetWheelSide(node, WheelSide.LEFT, true);
+                        }
+                        else if (node.GetSkeletalJoint().cDriver.portA == 2 && this.DriveTrainDropdown.SelectedIndex == 2)
+                        {
+                            SetWheelSide(node, WheelSide.MIDDLE, true);
+                        }
+                        if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).forwardExtremeValue == 10)
+                        {
+                            SetWheelFriction(node, WizardData.WizardFrictionLevel.HIGH);
+                        }
+                        else if ((((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).forwardExtremeValue == 7))
+                        {
+                            SetWheelFriction(node, WizardData.WizardFrictionLevel.MEDIUM);
+                        }
+                        else
+                        {
+                            SetWheelFriction(node, WizardData.WizardFrictionLevel.LOW);
+                        }
+                    }
+                }
+            }
+        }
+            
+        
+
         public event Action ActivateNext;
         private void OnActivateNext() => ActivateNext?.Invoke();
 
@@ -425,6 +495,26 @@ namespace BxDRobotExporter.Wizard
                 if (panel.Value.Node == node)
                 {
                     SetWheelSide(panel.Key, side, null, updateUI);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the type of a specific wheel. Used in Auto Fill.
+        /// </summary>
+        /// <param name="node">Wheel to set type of</param>
+        /// <param name="type">New wheel type</param>
+        public void SetWheelFriction(RigidNode_Base node, WizardData.WizardFrictionLevel level)
+        {
+            if (node == null)
+                return;
+
+            foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
+            {
+                if (panel.Value.Node == node)
+                {
+                    panel.Value.FrictionLevel = level;
                     return;
                 }
             }
@@ -908,6 +998,25 @@ namespace BxDRobotExporter.Wizard
 
             // Refresh the UI with new wheel information
             UpdateUI();
+        }
+
+        private void RemoveWheelsButton_Click(object sender, EventArgs e)
+        {
+            foreach (string name in leftOrder.ToList())
+                RemoveNodeFromPanel(name);
+            
+            foreach (string name in rightOrder.ToList())
+                RemoveNodeFromPanel(name);
+
+            foreach (string name in middleOrder.ToList())
+                RemoveNodeFromPanel(name);
+
+            foreach (string name in rightBackOrder.ToList())
+                RemoveNodeFromPanel(name);
+
+            foreach (string name in leftBackOrder.ToList())
+                RemoveNodeFromPanel(name);
+                
         }
     }
 }

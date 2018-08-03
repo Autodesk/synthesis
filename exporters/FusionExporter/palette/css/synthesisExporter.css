@@ -14,22 +14,40 @@
 /* Other Appearance */
 body
 {
-    background-color: rgb(242,242,242);
+    background-color: rgb(242, 242, 242);
     padding: 0.5rem;
 }
 
 fieldset
 {
     margin: 1rem 0;
+    padding: 1rem;
+}
+
+input, select, button
+{
+    transition: border 0.25s;
+    border: 1px solid rgb(185, 185, 185);
+}
+
+input:focus, select:focus, button:focus
+{
+    outline: none;
+    border: 1px solid rgb(255, 186, 86);
+}
+
+button
+{
+    background: rgb(233, 233, 233)
 }
 
 a
 {
     text-decoration: underline;
-    color: #f29000;
+    color: rgb(242, 144, 0);
 }
 
 a:hover
 {
-    color: #ffba56;
+    color: rgb(255, 186, 86);
 }

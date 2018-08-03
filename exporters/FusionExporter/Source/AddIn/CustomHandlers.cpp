@@ -14,7 +14,10 @@ using namespace Synthesis;
 void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
+	{
 		eui->createExportPalette();
+		eui->createProgressPalette();
+	}
 }
 
 // Deactivate Workspace Event
@@ -22,15 +25,8 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 {
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
 	{
-		Ptr<Palettes> palettes = UI->palettes();
-		if (!palettes)
-			return;
-
-		Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
-		if (!palette)
-			return;
-
-		palette->isVisible(false);
+		eui->closeExportPalette();
+		eui->cancelExportThread();
 	}
 }
 
@@ -47,27 +43,13 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 		return;
 
 	// Add click command to button
-	exec->add(new ShowPaletteCommandExecuteHandler(app));
+	exec->add(new ShowPaletteCommandExecuteHandler(eui));
 }
 
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	Ptr<UserInterface> UI = app->userInterface();
-	if (!UI)
-		return;
-
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return;
-
-	Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
-	if (!palette)
-		return;
-
-	palette->sendInfoToHTML("joints", Exporter::stringifyJoints(Exporter::collectJoints(app->activeDocument())));
-
-	palette->isVisible(true);
+	eui->openExportPalette();
 }
 
 /// Palette Events
@@ -183,4 +165,10 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 // Close Exporter Form Event
 void CloseFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
-{}
+{
+	Ptr<CommandDefinition> exportButtonCommand = app->userInterface()->commandDefinitions()->itemById(K_EXPORT_BUTTON);
+	if (!exportButtonCommand)
+		return;
+
+	exportButtonCommand->controlDefinition()->isEnabled(true);
+}

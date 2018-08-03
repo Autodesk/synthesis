@@ -118,7 +118,9 @@ namespace BxDRobotExporter
             {
                 InventorChildColor = Properties.Settings.Default.ChildColor,
                 GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
-                GeneralUseFancyColors = Properties.Settings.Default.FancyColors
+                GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
+                openSynthesis = Properties.Settings.Default.ExportToField,
+                fieldName = Properties.Settings.Default.SelectedField
             };
         }
     }
