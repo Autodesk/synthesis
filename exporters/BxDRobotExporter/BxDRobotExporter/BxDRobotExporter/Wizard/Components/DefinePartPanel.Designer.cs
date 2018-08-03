@@ -648,10 +648,10 @@
         private System.Windows.Forms.Label SelectDriverLabel;
         private System.Windows.Forms.ComboBox DriverComboBox;
         private System.Windows.Forms.GroupBox PortsGroupBox;
-        private System.Windows.Forms.NumericUpDown PortTwoUpDown;
         private System.Windows.Forms.Label PortTwoLabel;
         private System.Windows.Forms.Label PortOneLabel;
         private System.Windows.Forms.NumericUpDown PortOneUpDown;
+        private System.Windows.Forms.NumericUpDown PortTwoUpDown;
         private System.Windows.Forms.TableLayoutPanel MainTableLayout;
         private System.Windows.Forms.TableLayoutPanel DriverLayout;
         private System.Windows.Forms.TableLayoutPanel PortLayout;
