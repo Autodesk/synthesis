@@ -54,6 +54,35 @@ void ConfigData::setNoDriver(core::Ptr<fusion::Joint> joint)
 	joints[id].driver = nullptr;
 }
 
+void ConfigData::filterJoints(std::vector<core::Ptr<fusion::Joint>> filterJoints)
+{
+	// Make list of IDs in filter while adding joints not yet present
+	std::vector<std::string> filterJointIDs;
+	for (core::Ptr<fusion::Joint> joint : filterJoints)
+	{
+		std::string id = Utility::getUniqueJointID(joint);
+		filterJointIDs.push_back(id);
+
+		if (joints.find(id) == joints.end())
+			setNoDriver(joint);
+	}
+
+	// Find all joints not present in filter
+	std::vector<std::string> jointsToErase;
+	for (auto i = joints.begin(); i != joints.end(); i++)
+	{
+		int j = 0;
+		while (j < filterJointIDs.size() && filterJointIDs[j] != i->first) { j++; }
+
+		if (j >= filterJointIDs.size())
+			jointsToErase.push_back(i->first);
+	}
+
+	// Erase joints
+	for (std::string jointToErase : jointsToErase)
+		joints.erase(jointToErase);
+}
+
 void ConfigData::loadFromJSON(std::string configStr)
 {
 	rapidjson::Document configJSON;
@@ -140,8 +169,7 @@ std::string ConfigData::toString() const
 		jointJSON.SetObject();
 
 		// Joint ID
-		std::string jointName = jointID;
-		jointJSON.AddMember("id", rapidjson::Value(jointName.c_str(), jointName.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
+		jointJSON.AddMember("id", rapidjson::Value(jointID.c_str(), jointID.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
 
 		// Joint Name
 		jointJSON.AddMember("name", rapidjson::Value(jointConfig.name.c_str(), jointConfig.name.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
