@@ -46,6 +46,7 @@
 #include "robot_mode.hpp"
 #include "send_data.hpp"
 #include "pcm.hpp"
+#include "pdp.hpp"
 #include "spi_system.hpp"
 #include "sync_server.hpp"
 #include "sys_watchdog.hpp"
@@ -91,6 +92,7 @@ namespace hel{
         RelaySystem relay_system;
         RobotMode robot_mode;
 		PCM pcm;
+		PDP pdp;
 		SPISystem spi_system;
         SysWatchdog watchdog;
 

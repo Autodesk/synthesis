@@ -14,15 +14,15 @@ namespace hel{
             SIZE = 8
         };
 
-        enum SendCommandByteMask: uint8_t{
-        };
+		enum SendCommandByteMask: uint8_t{};
 
-        enum ReceiveCommandIDMask: uint32_t{
-        };
+        enum ReceiveCommandIDMask: uint32_t{};
+
 	private:
 		BoundsCheckedArray<bool,NUM_SOLENOIDS> solenoids;
 
 	public:
+		BoundsCheckedArray<bool, NUM_SOLENOIDS> getSolenoid()const noexcept;
 		void setSolenoid(uint8_t,bool);
 		void setSolenoids(uint8_t);
 		void setSolenoids(const BoundsCheckedArray<bool,NUM_SOLENOIDS>&);

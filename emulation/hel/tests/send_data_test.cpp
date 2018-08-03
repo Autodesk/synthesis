@@ -22,6 +22,7 @@ TEST(SendDataTest, Update){
     hel::hal_is_initialized.store(true);
     a.update();
     std::cout<<"Serializaton: "<<a.serialize()<<"\n";
+    std::cout<<"SendData::toString: "<<a.toString()<<"\n";
 
     auto instance = hel::RoboRIOManager::getInstance();
     std::cout<<"RoboRIO:"<<hel::checkBitHigh(instance.first->digital_system.getOutputs().Headers,3)<<"\n";

@@ -1,6 +1,10 @@
 #include "roborio_manager.hpp"
 
 namespace hel{
+	BoundsCheckedArray<bool, PCM::NUM_SOLENOIDS> PCM::getSolenoid()const noexcept{
+		return solenoids;
+	}
+
 	void PCM::setSolenoid(uint8_t index, bool value){
 		solenoids[index] = value;
 	}
