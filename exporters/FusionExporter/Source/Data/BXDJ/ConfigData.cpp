@@ -135,9 +135,7 @@ std::string ConfigData::toString()
 		jointJSON.SetObject();
 
 		// Joint Name
-		rapidjson::Value name;
-		name.SetString(joint->name().c_str(), joint->name().length(), configJSON.GetAllocator());
-		jointJSON.AddMember("name", name, configJSON.GetAllocator());
+		jointJSON.AddMember("name", rapidjson::Value(joint->name().c_str(), joint->name().length()), configJSON.GetAllocator());
 
 		// Joint Motion (linear and/or angular)
 		fusion::JointTypes type = joint->jointMotion()->jointType();
@@ -159,14 +157,28 @@ std::string ConfigData::toString()
 		jointJSON.AddMember("type", motionType, configJSON.GetAllocator());
 
 		// Driver Information
-		if (i->second != nullptr)
+		rapidjson::Value driverJSON;
+
+		if (i->second == nullptr)
+			driverJSON.SetNull();
+		else
 		{
+			driverJSON.SetObject();
 			Driver driver(*i->second);
 
-			rapidjson::Value driverJSON;
-			driverJSON.SetNull();
-			jointJSON.AddMember("driver", driverJSON, configJSON.GetAllocator());
+			driverJSON.AddMember("type", rapidjson::Value((int)driver.type), configJSON.GetAllocator());
+			driverJSON.AddMember("signal", rapidjson::Value((int)driver.portSignal), configJSON.GetAllocator());
+			driverJSON.AddMember("portA", rapidjson::Value((int)driver.portA), configJSON.GetAllocator());
+			driverJSON.AddMember("portB", rapidjson::Value((int)driver.portB), configJSON.GetAllocator());
+
+			// Wheel Information
+			driverJSON.AddMember("wheel", rapidjson::Value(), configJSON.GetAllocator());
+			
+			// Pneumatic Information
+			driverJSON.AddMember("pneumatic", rapidjson::Value(), configJSON.GetAllocator());
 		}
+
+		jointJSON.AddMember("driver", driverJSON, configJSON.GetAllocator());
 
 		// Add joint to JSON array
 		jointsJSON.PushBack(jointJSON, configJSON.GetAllocator());

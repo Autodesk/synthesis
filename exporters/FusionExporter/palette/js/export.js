@@ -73,7 +73,7 @@ window.fusionJavaScriptHandler =
                 {
                     console.log("Receiving joint info...");
                     console.log(data);
-                    writeConfigData(JSON.parse(data));
+                    applyConfigData(JSON.parse(data));
                 }
                 else if (action == 'debugger')
                 {
@@ -94,7 +94,7 @@ window.fusionJavaScriptHandler =
     };
 
 // Populates the form with joints
-function writeConfigData(configData)
+function applyConfigData(configData)
 {
     document.getElementById('name').value = configData.name;
 
@@ -142,12 +142,24 @@ function writeConfigData(configData)
         // Set joint type
         fieldset.dataset.joint_type = joints[i].type;
 
+        // Apply any existing configuration
+        applyDriverData(joints[i].driver, fieldset);
+
         // Show or hide other elements
         updateFieldOptions(fieldset);
 
         // Add field to form
         exportForm.appendChild(fieldset);
     }
+}
+
+// Applies existing driver configuration to a field
+function applyDriverData(driver, fieldset)
+{
+    if (driver == null)
+        return;
+
+    getElByClass(fieldset, 'driver-type').value = driver.type;
 }
 
 // Disable submit button if no name entered
@@ -254,7 +266,7 @@ function updateFieldOptions(fieldset)
     }
 }
 
-// Updates jointOptions with the currently entered data
+// Outputs currently entered data as a JSON object
 function readConfigData()
 {
     var configData = { 'name': document.getElementById('name').value };
