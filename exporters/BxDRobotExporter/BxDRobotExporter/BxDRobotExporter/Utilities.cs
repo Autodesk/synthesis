@@ -118,8 +118,19 @@ namespace BxDRobotExporter
             {
                 InventorChildColor = Properties.Settings.Default.ChildColor,
                 GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
-                GeneralUseFancyColors = Properties.Settings.Default.FancyColors
+                GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
+                openSynthesis = Properties.Settings.Default.ExportToField,
+                fieldName = Properties.Settings.Default.SelectedField
             };
+        }
+
+        /// <summary>
+        /// saves values to inventor
+        /// </summary>
+        public static void SaveSettings()
+        {
+            Properties.Settings.Default.ExportToField = SynthesisGUI.PluginSettings.openSynthesis;
+            Properties.Settings.Default.SelectedField = SynthesisGUI.PluginSettings.fieldName;
         }
     }
 }

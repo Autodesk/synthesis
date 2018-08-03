@@ -58,7 +58,37 @@ namespace BxDRobotExporter.Properties {
                 this["SaveLocation"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("firstRun")]
+        public string SelectedField
+        {
+            get
+            {
+                return ((string)(this["SelectedField"]));
+            }
+            set
+            {
+                this["SelectedField"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ExportToField
+        {
+            get
+            {
+                return ((bool)(this["ExportToField"]));
+            }
+            set
+            {
+                this["ExportToField"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
