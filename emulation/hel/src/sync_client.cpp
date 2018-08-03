@@ -56,7 +56,6 @@ namespace hel {
                     }
                     auto instance = hel::ReceiveDataManager::getInstance();
                     instance.first->deserializeAndUpdate(json_string); //
-                    //std::cout << json_string << "\n";
                     instance.second.unlock(); //
                     finished_flag = false;
                     usleep(5000); //
