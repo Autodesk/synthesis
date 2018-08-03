@@ -356,18 +356,19 @@ namespace Synthesis.Camera
         {
             robotCameraManager.IsShowingAngle = !robotCameraManager.IsShowingAngle;
             cameraAnglePanel.SetActive(robotCameraManager.IsShowingAngle);
+            isEditingAngle = robotCameraManager.IsShowingAngle;
 
             lockPositionButton.SetActive(robotCameraManager.IsShowingAngle);
             lockFOVButton.SetActive(robotCameraManager.IsShowingAngle);
 
-            if (robotCameraManager.IsShowingAngle)
-            {
-                showAngleButton.GetComponentInChildren<Text>().text = "Hide Camera Angle";
-            }
-            else
-            {
-                showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
-            }
+            //if (robotCameraManager.IsShowingAngle)
+            //{
+            //    showAngleButton.GetComponentInChildren<Text>().text = "Hide Camera Angle";
+            //}
+            //else
+            //{
+            //    showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
+            //}
         }
 
         /// <summary>
