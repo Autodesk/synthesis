@@ -233,6 +233,12 @@ namespace Synthesis.GUI
             currentTab = "SensorTab";
             tabStateMachine.ChangeState(new SensorToolbarState());
         }
+
+        public void OnEmulationTab()
+        {
+            tabStateMachine.ChangeState(new EmulationToolbarState());
+        }
+
         private void CloseHelpMenu(string currentID = " ")
         {
             string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;

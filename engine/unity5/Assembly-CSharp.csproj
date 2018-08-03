@@ -220,6 +220,8 @@
     <Compile Include="Assets\Scripts\GodMode.cs" />
     <Compile Include="Assets\Scripts\GUI\ButtonCallbackManager.cs" />
     <Compile Include="Assets\Scripts\GUI\DPMToolbarState.cs" />
+    <Compile Include="Assets\Scripts\GUI\EmulationDriverStation.cs" />
+    <Compile Include="Assets\Scripts\GUI\EmulationToolbarState.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
