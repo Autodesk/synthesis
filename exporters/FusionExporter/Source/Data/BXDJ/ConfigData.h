@@ -15,16 +15,15 @@ namespace BXDJ
 		std::string robotName;
 
 		ConfigData();
-		ConfigData(const std::vector<core::Ptr<fusion::Joint>> & joints);
-		ConfigData(std::string jsonConfig, const std::vector<core::Ptr<fusion::Joint>> & joints);
+		ConfigData(std::string jsonConfig);
 		ConfigData(const ConfigData & other);
 
 		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const;
-		void setDriver(core::Ptr<fusion::Joint>, Driver);
+		void setDriver(core::Ptr<fusion::Joint>, const Driver &);
 		void setNoDriver(core::Ptr<fusion::Joint>);
-		void setNoDrivers(const std::vector<core::Ptr<fusion::Joint>> &);
 
-		std::string toString();
+		void loadFromJSON(std::string);
+		std::string toString() const;
 
 	private:
 		// Constants used for communicating joint motion type
@@ -33,7 +32,33 @@ namespace BXDJ
 			ANGULAR = 1, LINEAR = 2, BOTH = 3, NEITHER = 0
 		};
 
-		std::map<adsk::core::Ptr<adsk::fusion::Joint>, std::unique_ptr<Driver>> joints;
+		struct JointConfig
+		{
+			std::string name;
+			JointMotionType motion;
+			std::unique_ptr<Driver> driver;
+
+			JointConfig() { name = ""; motion = NEITHER; driver = nullptr; }
+
+			JointConfig(const JointConfig & other)
+			{
+				name = other.name;
+				motion = other.motion;
+				driver = std::make_unique<Driver>(*other.driver);
+			}
+
+			JointConfig& JointConfig::operator=(const JointConfig &other)
+			{
+				name = other.name;
+				motion = other.motion;
+				driver = std::make_unique<Driver>(*other.driver);
+				return *this;
+			}
+		};
+
+		std::map<std::string, JointConfig> joints;
+
+		JointMotionType internalJointMotion(fusion::JointTypes) const;
 
 	};
 }

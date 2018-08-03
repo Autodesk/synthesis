@@ -14,6 +14,8 @@ namespace Synthesis
 	{
 	public:
 		static std::vector<Ptr<Joint>> collectJoints(Ptr<FusionDocument>);
+		static BXDJ::ConfigData loadConfiguration(Ptr<FusionDocument> document);
+		static void saveConfiguration(BXDJ::ConfigData config, Ptr<FusionDocument> document);
 
 		static void exportExample();
 		static void exportExampleXml();

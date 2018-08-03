@@ -4,6 +4,8 @@
 #include <rapidjson/stringbuffer.h>
 #include <Fusion/FusionTypeDefs.h>
 #include <Fusion/Components/JointMotion.h>
+#include <Fusion/Components/Occurrence.h>
+#include "Utility.h"
 
 using namespace adsk;
 using namespace BXDJ;
@@ -13,12 +15,46 @@ ConfigData::ConfigData()
 	robotName = "unnamed";
 }
 
-ConfigData::ConfigData(const std::vector<core::Ptr<fusion::Joint>> & joints) : ConfigData()
+ConfigData::ConfigData(std::string configStr)
 {
-	setNoDrivers(joints);
+	loadFromJSON(configStr);
 }
 
-ConfigData::ConfigData(std::string configStr, const std::vector<core::Ptr<fusion::Joint>> & joints)
+ConfigData::ConfigData(const ConfigData & other)
+{
+	robotName = other.robotName;
+
+	for (auto i = other.joints.begin(); i != other.joints.end(); i++)
+		joints[i->first] = i->second;
+}
+
+std::unique_ptr<Driver> ConfigData::getDriver(core::Ptr<fusion::Joint> joint) const
+{
+	std::string id = BXDJ::Utility::getUniqueJointID(joint);
+
+	if (joints.find(id) == joints.end() || joints.at(id).driver == nullptr)
+		return nullptr;
+
+	return std::make_unique<Driver>(*joints.at(id).driver);
+}
+
+void ConfigData::setDriver(core::Ptr<fusion::Joint> joint, const Driver & driver)
+{
+	std::string id = BXDJ::Utility::getUniqueJointID(joint);
+	joints[id].name = joint->name();
+	joints[id].motion = internalJointMotion(joint->jointMotion()->jointType());
+	joints[id].driver = std::make_unique<Driver>(driver);
+}
+
+void ConfigData::setNoDriver(core::Ptr<fusion::Joint> joint)
+{
+	std::string id = BXDJ::Utility::getUniqueJointID(joint);
+	joints[id].name = joint->name();
+	joints[id].motion = internalJointMotion(joint->jointMotion()->jointType());
+	joints[id].driver = nullptr;
+}
+
+void ConfigData::loadFromJSON(std::string configStr)
 {
 	rapidjson::Document configJSON;
 	configJSON.Parse(configStr.c_str());
@@ -31,6 +67,11 @@ ConfigData::ConfigData(std::string configStr, const std::vector<core::Ptr<fusion
 	// Read each joint configuration
 	for (rapidjson::SizeType i = 0; i < jointConfig.Size(); i++)
 	{
+		std::string jointID = jointConfig[i]["id"].GetString();
+
+		joints[jointID].name = jointConfig[i]["name"].GetString();
+		joints[jointID].motion = (JointMotionType)jointConfig[i]["type"].GetInt();
+
 		const rapidjson::Value& driverJSON = jointConfig[i]["driver"];
 
 		if (driverJSON.IsObject())
@@ -68,51 +109,16 @@ ConfigData::ConfigData(std::string configStr, const std::vector<core::Ptr<fusion
 				driver.setComponent(pneumatic);
 			}
 
-			setDriver(joints[i], driver);
+			joints[jointID].driver = std::make_unique<Driver>(driver);
 		}
 		else
 		{
-			setNoDriver(joints[i]);
+			joints[jointID].driver = nullptr;
 		}
 	}
 }
 
-ConfigData::ConfigData(const ConfigData & other)
-{
-	robotName = other.robotName;
-
-	for (auto i = other.joints.begin(); i != other.joints.end(); i++)
-		if (i->second != nullptr)
-			joints[i->first] = std::make_unique<Driver>(*i->second);
-		else
-			joints[i->first] = nullptr;
-}
-
-std::unique_ptr<Driver> ConfigData::getDriver(core::Ptr<fusion::Joint> joint) const
-{
-	if (joints.find(joint) == joints.end() || joints.at(joint) == nullptr)
-		return nullptr;
-
-	return std::make_unique<Driver>(*joints.at(joint));
-}
-
-void ConfigData::setDriver(core::Ptr<fusion::Joint> joint, Driver driver)
-{
-	joints[joint] = std::make_unique<Driver>(driver);
-}
-
-void BXDJ::ConfigData::setNoDriver(core::Ptr<fusion::Joint> joint)
-{
-	joints[joint] = nullptr;
-}
-
-void BXDJ::ConfigData::setNoDrivers(const std::vector<core::Ptr<fusion::Joint>>& newJoints)
-{
-	for (core::Ptr<fusion::Joint> joint : newJoints)
-		setNoDriver(joint);
-}
-
-std::string ConfigData::toString()
+std::string ConfigData::toString() const
 {
 	// Create JSON object containing all joint info
 	rapidjson::Document configJSON;
@@ -127,41 +133,29 @@ std::string ConfigData::toString()
 
 	for (auto i = joints.begin(); i != joints.end(); i++)
 	{
-		core::Ptr<fusion::Joint> joint = i->first;
+		std::string jointID = i->first;
+		JointConfig jointConfig = i->second;
 
 		rapidjson::Value jointJSON;
 		jointJSON.SetObject();
 
+		// Joint ID
+		std::string jointName = jointID;
+		jointJSON.AddMember("id", rapidjson::Value(jointName.c_str(), jointName.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
+
 		// Joint Name
-		std::string jointName = joint->name();
-		jointJSON.AddMember("name", rapidjson::Value(jointName.c_str(), jointName.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
+		jointJSON.AddMember("name", rapidjson::Value(jointConfig.name.c_str(), jointConfig.name.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
 
 		// Joint Motion (linear and/or angular)
-		fusion::JointTypes type = joint->jointMotion()->jointType();
-		rapidjson::Value motionType;
-
-		if (type == fusion::JointTypes::RevoluteJointType)
-			motionType.SetUint(ANGULAR);
-
-		else if (type == fusion::JointTypes::SliderJointType ||
-			type == fusion::JointTypes::CylindricalJointType)
-			motionType.SetUint(LINEAR);
-
-		else if (false)
-			motionType.SetUint(BOTH);
-
-		else
-			motionType.SetUint(NEITHER);
-
-		jointJSON.AddMember("type", motionType, configJSON.GetAllocator());
+		jointJSON.AddMember("type", rapidjson::Value((int)jointConfig.motion), configJSON.GetAllocator());
 
 		// Driver Information
 		rapidjson::Value driverJSON;
 
-		if (i->second != nullptr)
+		if (jointConfig.driver != nullptr)
 		{
 			driverJSON.SetObject();
-			Driver driver(*i->second);
+			Driver driver(*jointConfig.driver);
 
 			driverJSON.AddMember("type", rapidjson::Value((int)driver.type), configJSON.GetAllocator());
 			driverJSON.AddMember("signal", rapidjson::Value((int)driver.portSignal), configJSON.GetAllocator());
@@ -213,4 +207,20 @@ std::string ConfigData::toString()
 
 	std::string jsonString(buffer.GetString());
 	return jsonString;
+}
+
+ConfigData::JointMotionType ConfigData::internalJointMotion(fusion::JointTypes type) const
+{
+	if (type == fusion::JointTypes::RevoluteJointType)
+		return ANGULAR;
+
+	else if (type == fusion::JointTypes::SliderJointType ||
+		type == fusion::JointTypes::CylindricalJointType)
+		return LINEAR;
+
+	else if (false)
+		return BOTH;
+
+	else
+		return NEITHER;
 }
