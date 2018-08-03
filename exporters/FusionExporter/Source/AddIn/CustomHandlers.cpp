@@ -61,7 +61,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 	if (!palette)
 		return;
 
-	palette->sendInfoToHTML("joints", Exporter::stringifyJoints(Exporter::collectJoints(app->activeDocument())));
+	palette->sendInfoToHTML("joints", BXDJ::ConfigData(Exporter::collectJoints(app->activeDocument())).toString());
 
 	palette->isVisible(true);
 }
@@ -84,7 +84,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 	if (eventArgs->action() == "send_joints")
 	{
-		palette->sendInfoToHTML("joints", Exporter::stringifyJoints(Exporter::collectJoints(app->activeDocument())));
+		palette->sendInfoToHTML("joints", BXDJ::ConfigData(Exporter::collectJoints(app->activeDocument())).toString());
 	}
 	else if (eventArgs->action() == "highlight")
 	{
@@ -124,12 +124,8 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	}
 	else if (eventArgs->action() == "export")
 	{
-		// Export robot
-		std::string dataReceived = eventArgs->data();
-		std::vector<Ptr<Joint>> joints = Exporter::collectJoints(app->activeDocument());
-
 		palette->isVisible(false);
-		eui->startExportThread(BXDJ::ConfigData(dataReceived, joints));
+		eui->startExportThread(BXDJ::ConfigData(eventArgs->data(), Exporter::collectJoints(app->activeDocument())));
 	}
 }
 

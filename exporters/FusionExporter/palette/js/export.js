@@ -264,8 +264,9 @@ function readConfigData()
 
     for (var i = 0; i < jointOptions.length; i++)
     {
-        var joint = {'driver': null};
         var fieldset = jointOptions[i];
+
+        var joint = { 'driver': null, 'type': parseInt(fieldset.dataset.joint_type) };
 
         var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
 
@@ -276,8 +277,8 @@ function readConfigData()
             var portB = parseInt(getElByClass(fieldset, 'port-number-b').value);
 
             joint.driver = createDriver(selectedDriver, signal, portA, portB);
-
-            if ((jointOptions[i].type & JOINT_ANGULAR) == JOINT_ANGULAR)
+            
+            if ((joint.type & JOINT_ANGULAR) == JOINT_ANGULAR)
             {
                 var selectedWheel = parseInt(getElByClass(fieldset, 'wheel-type').value);
 
@@ -295,7 +296,7 @@ function readConfigData()
                 }
             }
 
-            if ((jointOptions[i].type & JOINT_LINEAR) == JOINT_LINEAR)
+            if ((joint.type & JOINT_LINEAR) == JOINT_LINEAR)
             {
                 if (selectedDriver == DRIVER_BUMPER_PNEUMATIC ||
                     selectedDriver == DRIVER_RELAY_PNEUMATIC)

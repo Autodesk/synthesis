@@ -280,18 +280,25 @@ void EUI::updateProgress(double percent)
 
 void EUI::exportRobot(BXDJ::ConfigData config)
 {
-	updateProgress(0);
-
-	// Add delay so that loading bar has time to animate
-	std::this_thread::sleep_for(std::chrono::milliseconds(250));
-
-	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
+	try
 	{
-		updateProgress(percent);
-	}, &killExportThread);
+		updateProgress(0);
 
-	// Add delay so that loading bar has time to animate
-	std::this_thread::sleep_for(std::chrono::milliseconds(250));
+		// Add delay so that loading bar has time to animate
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
+		Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
+		{
+			updateProgress(percent);
+		}, &killExportThread);
+
+		// Add delay so that loading bar has time to animate
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
+	}
+	catch (const std::exception& e)
+	{
+		UI->messageBox("An error occurred while exporting \"" + config.robotName + "\"\n" + std::string(e.what()));
+	}
+	
 	closeProgressPalette();
 }
