@@ -217,11 +217,32 @@ if(BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]")
     MESSAGE("Benchmark file discovered: ${benchmark_name}. Generating build target ${benchmark_name}_bench")
 
     ADD_EXECUTABLE( ${benchmark_name} ${file})
+    INCLUDE_DIRECTORIES(SYSTEM "lib/include")
+
+    TARGET_LINK_LIBRARIES(${test_name} gtest gtest_main pthread hel libCTRE_Phoenix.a libCTRE_PhoenixCCI.a libbenchmark libbenchmark_main)
+
+    ADD_DEPENDENCIES(${benchmark_name} hel)
+    ADD_DEPENDENCIES(${benchmark_name} GoogleTest)
+    ADD_DEPENDENCIES(${benchmark_name} asio)
+    ADD_DEPENDENCIES(${benchmark_name} wpilib)
+    ADD_DEPENDENCIES(${benchmark_name} ctre)
+
+
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${CMAKE_BINARY_DIR}/include")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/headers")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/hal/src/main/native/include")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${WPILIB_DIRECTORY}/ni-libraries/include")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${CTRE_DIRECTORY}/cpp/include/")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${CTRE_DIRECTORY}/libraries/driver/include")
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE "${ASIO_DIRECTORY}/include")
 
     ADD_DEPENDENCIES(${benchmark_name} GoogleBench)
     ADD_DEPENDENCIES(${benchmark_name} hel)
 
-    TARGET_LINK_LIBRARIES(${benchmark_name} benchmark pthread)
+    TARGET_LINK_LIBRARIES(${benchmark_name} benchmark pthread hel)
 
     SET_TARGET_PROPERTIES( ${benchmark_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/benchmarks")
 
