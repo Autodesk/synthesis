@@ -1,8 +1,5 @@
 #include "Exporter.h"
 #include <vector>
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
 #include "Data/Filesystem.h"
 #include "Data/BXDA/Mesh.h"
 #include "Data/BXDA/SubMesh.h"
@@ -34,70 +31,6 @@ std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 	}
 
 	return joints;
-}
-
-std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
-{
-	// Create JSON object containing all joint info
-	rapidjson::Document configJSON;
-	configJSON.SetObject();
-
-	// Robot Name
-	rapidjson::Value name;
-	name.SetString("unnamed", configJSON.GetAllocator());
-	configJSON.AddMember("name", name, configJSON.GetAllocator());
-
-	// Joints
-	rapidjson::Value jointsJSON;
-	jointsJSON.SetArray();
-
-	for (Ptr<Joint> joint : joints)
-	{
-		rapidjson::Value jointJSON;
-		jointJSON.SetObject();
-
-		// Joint Name
-		rapidjson::Value name;
-		name.SetString(joint->name().c_str(), joint->name().length(), configJSON.GetAllocator());
-		jointJSON.AddMember("name", name, configJSON.GetAllocator());
-
-		// Joint Motion (linear and/or angular)
-		JointTypes type = joint->jointMotion()->jointType();
-		rapidjson::Value motionType;
-
-		if (type == JointTypes::RevoluteJointType)
-			motionType.SetUint(ANGULAR);
-
-		else if (type == JointTypes::SliderJointType ||
-				 type == JointTypes::CylindricalJointType)
-			motionType.SetUint(LINEAR);
-
-		else if (false)
-			motionType.SetUint(BOTH);
-
-		else
-			motionType.SetUint(NEITHER);
-
-		jointJSON.AddMember("type", motionType, configJSON.GetAllocator());
-
-		// Existing driver configuration
-		rapidjson::Value driver;
-		driver.SetNull();
-		jointJSON.AddMember("driver", driver, configJSON.GetAllocator());
-
-		// Add joint to JSON array
-		jointsJSON.PushBack(jointJSON, configJSON.GetAllocator());
-	}
-
-	configJSON.AddMember("joints", jointsJSON, configJSON.GetAllocator());
-
-	// Copy JSON to string
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-	configJSON.Accept(writer);
-
-	std::string jsonString(buffer.GetString());
-	return jsonString;
 }
 
 void Exporter::exportExample()
