@@ -13,12 +13,32 @@ namespace {
 
 hel::ReceiveData::ReceiveData():last_received_data(""),digital_hdrs(false), digital_mxp({}), joysticks({}), match_info({}), robot_mode({}), encoder_managers({}){}
 
-void hel::ReceiveData::update()const{
+void hel::ReceiveData::updateShallow()const{
     if(!hel::hal_is_initialized){
         return;
     }
     auto instance = hel::RoboRIOManager::getInstance();
 
+    instance.first->joysticks = joysticks;
+    instance.first->match_info = match_info;
+    instance.first->robot_mode = robot_mode;
+    instance.first->encoder_managers = encoder_managers;
+    for(Maybe<EncoderManager>& a: instance.first->encoder_managers){
+        if(a){
+            a.get().update();
+        }
+    }
+    instance.first->engine_initialized = true;
+	instance.second.unlock();
+}
+
+void hel::ReceiveData::updateDeep()const{
+    if(!hel::hal_is_initialized){
+        return;
+    }
+    auto instance = hel::RoboRIOManager::getInstance();
+
+	updateShallow();
     /*
     for(unsigned i = 0; i < analog_inputs.size(); i++){
         instance.first->analog_inputs.setValues(i, analog_inputs[i]);
@@ -49,17 +69,12 @@ void hel::ReceiveData::update()const{
             ; //Do nothing
         }
     }
-    instance.first->joysticks = joysticks;
-    instance.first->match_info = match_info;
-    instance.first->robot_mode = robot_mode;
-    instance.first->encoder_managers = encoder_managers;
-    for(Maybe<EncoderManager>& a: instance.first->encoder_managers){
-        if(a){
-            a.get().update();
-        }
-    }
     instance.first->engine_initialized = true;
     instance.second.unlock();
+}
+
+void hel::ReceiveData::update()const{
+	updateDeep();
 }
 
 std::string hel::ReceiveData::toString()const{

@@ -11,7 +11,7 @@ bool hel::SendData::hasNewData()const{
     return new_data;
 }
 
-void hel::SendData::update(){
+void hel::SendData::updateShallow(){
     if(!hel::hal_is_initialized){
         return;
     }
@@ -21,6 +21,19 @@ void hel::SendData::update(){
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
         pwm_hdrs[i] = PWMSystem::getSpeed(roborio.pwm_system.getHdrPulseWidth(i));
     }
+
+    can_motor_controllers = roborio.can_motor_controllers;
+    new_data = true;
+}
+
+void hel::SendData::updateDeep(){
+    if(!hel::hal_is_initialized){
+        return;
+    }
+
+	updateShallow();
+
+    RoboRIO roborio = RoboRIOManager::getCopy();
 
     for(unsigned i = 0; i < relays.size(); i++){
         relays[i] = [&](){
@@ -79,6 +92,10 @@ void hel::SendData::update(){
     new_data = true;
 }
 
+void hel::SendData::update(){
+	updateDeep();
+}
+
 std::string hel::to_string(hel::SendData::RelayState r){
     switch(r){
     case hel::SendData::RelayState::OFF:
@@ -106,42 +123,45 @@ std::string hel::SendData::toString()const{
     return s;
 }
 
-std::string hel::SendData::serialize(){
-    if(!new_data){
-        return serialized_data;
-    }
-
-    serialized_data = "{\"roborio\":{";
-
+void hel::SendData::serializePWMHdrs(){
     serialized_data += serializeList("\"pwm_hdrs\"", pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
-    serialized_data += ",";
+}
+
+void hel::SendData::serializeRelays(){
     serialized_data += serializeList(
         "\"relays\"",
         relays,
         std::function<std::string(RelayState)>([&](RelayState r){
             return hel::quote(hel::to_string(r));
         })
-    );
-    serialized_data += ",";
+	);
+}
+
+void hel::SendData::serializeAnalogOutputs(){
     serialized_data += serializeList("\"analog_outputs\"", analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
-    serialized_data += ",";
+}
+
+void hel::SendData::serializeDigitalMXP(){
     serialized_data += serializeList(
         "\"digital_mxp\"",
         digital_mxp,
         std::function<std::string(hel::MXPData)>([&](MXPData data){
             return "{\"config\":" + hel::quote(hel::to_string(data.config)) + ",\"value\":" + std::to_string(data.value) + "}";
         })
-    );
-    serialized_data += ",";
+	);
+}
+
+void hel::SendData::serializeDigitalHdrs(){
     serialized_data += serializeList(
         "\"digital_hdrs\"",
         digital_hdrs,
         std::function<std::string(bool)>([&](bool b){
-            return b ? "1" : "0";
+			return b ? "1" : "0";
         })
     );
+}
 
-    serialized_data += ",";
+void hel::SendData::serializeCANMotorControllers(){
     serialized_data += serializeList(
         "\"can_motor_controllers\"",
         can_motor_controllers,
@@ -149,9 +169,46 @@ std::string hel::SendData::serialize(){
             return a.second.serialize();
         })
     );
+}
 
+std::string hel::SendData::serializeShallow(){
+    if(!new_data){
+        return serialized_data;
+    }
+
+    serialized_data = "{\"roborio\":{";
+	serializePWMHdrs();
+	serialized_data += ",";
+	serializeCANMotorControllers();
     serialized_data += "}}";
     serialized_data += JSON_PACKET_SUFFIX;
     new_data = false;
     return serialized_data;
+}
+
+std::string hel::SendData::serializeDeep(){
+    if(!new_data){
+        return serialized_data;
+    }
+
+    serialized_data = "{\"roborio\":{";
+	serializePWMHdrs();
+	serialized_data += ",";
+	serializeRelays();
+    serialized_data += ",";
+	serializeAnalogOutputs();
+    serialized_data += ",";
+	serializeDigitalMXP();
+    serialized_data += ",";
+	serializeDigitalHdrs();
+    serialized_data += ",";
+	serializeCANMotorControllers();
+    serialized_data += "}}";
+    serialized_data += JSON_PACKET_SUFFIX;
+    new_data = false;
+    return serialized_data;
+}
+
+std::string hel::SendData::serialize(){
+	return serializeDeep();
 }

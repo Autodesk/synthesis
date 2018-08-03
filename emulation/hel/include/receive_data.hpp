@@ -34,7 +34,9 @@ namespace hel{
         void deserializeEncoders(std::string&);
 
     public:
-        void update()const;
+        void updateShallow()const;
+        void updateDeep()const;
+        void update()const; //TODO remove
 
         std::string toString()const;
 
