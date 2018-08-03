@@ -83,19 +83,20 @@ namespace hel{
     }
 
     std::pair<uint8_t, uint8_t> Accelerometer::convertAccel(float accel)noexcept{
-        accel = [&]{
-            switch(range) {
-                case 0: //2G
-                    return accel * 1024.0f;
-                case 1: //4G
-                    return accel * 512.0f;
-                case 2: //8G
-                    return accel * 256.0f;
-                default:
-                    return 0.0f;
-            }
-        }();
-
+		switch(range) {
+		case 0: //2G
+			accel *= 1024.0f;
+			break;
+		case 1: //4G
+			accel *= 512.0f;
+			break;
+		case 2: //8G
+			accel *= 256.0f;
+			break;
+		default:
+			accel = 0.0f;
+			break;
+		}
         int16_t raw = (int16_t)accel;
 
         uint8_t first = raw >> 4;

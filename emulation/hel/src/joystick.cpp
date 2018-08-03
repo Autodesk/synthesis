@@ -90,9 +90,6 @@ namespace hel{
 
     void Joystick::setOutputs(uint32_t outs)noexcept{
         outputs = outs;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     uint16_t Joystick::getLeftRumble()const noexcept{
@@ -101,9 +98,6 @@ namespace hel{
 
     void Joystick::setLeftRumble(uint16_t rumble)noexcept{
         left_rumble = rumble;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     uint16_t Joystick::getRightRumble()const noexcept{
@@ -112,9 +106,6 @@ namespace hel{
 
     void Joystick::setRightRumble(uint16_t rumble)noexcept{
         right_rumble = rumble;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     std::string Joystick::toString()const{

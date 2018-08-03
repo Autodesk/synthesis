@@ -24,7 +24,9 @@ extern "C"{
             uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];
             auto instance = hel::RoboRIOManager::getInstance();
 
-            instance.first->can_motor_controllers[controller_id] = {messageID};
+			if(instance.first->can_motor_controllers.find(controller_id) == instance.first->can_motor_controllers.end()){
+				instance.first->can_motor_controllers[controller_id] = {messageID};
+			}
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT)){
                 instance.first->can_motor_controllers[controller_id].setSpeedData(data_array);
             }
@@ -92,7 +94,7 @@ extern "C"{
         case hel::CANDevice::Type::PCM:
         case hel::CANDevice::Type::UNKNOWN:
         case hel::CANDevice::Type::PDP:
-            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Attempting to read from unsupported CAN device (" + hel::to_string(target_type) + ") using message ID "<<*messageID<<"\n";
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Attempting to read from CAN device (" + hel::to_string(target_type) + ") using message ID "<<*messageID<<"\n";
             break;
         default:
             throw hel::UnhandledEnumConstantException("hel::CANDevice::Type");

@@ -26,9 +26,6 @@ namespace hel{
 
     void Power::setDisabled(tPower::tDisable d)noexcept{
         disabled = d;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     Power::Power()noexcept:status(),fault_counts(),disabled(){}

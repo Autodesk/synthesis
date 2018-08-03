@@ -10,9 +10,6 @@ namespace hel{
 
     void AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
     	mxp_outputs[index] = value;
-      auto instance = SendDataManager::getInstance();
-      instance.first->update();
-      instance.second.unlock();
     }
 
     AnalogOutputs::AnalogOutputs()noexcept:mxp_outputs(0){}

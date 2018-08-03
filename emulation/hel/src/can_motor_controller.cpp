@@ -55,14 +55,14 @@ namespace hel{
         */
         speed = ((double)((data[1] - data[0])*256*256 + (data[2] - data[0])*256 + (data[3] - data[0])))/(256*256*4);
         auto instance = SendDataManager::getInstance();
-        instance.first->update();
+        instance.first->updateShallow();
         instance.second.unlock();
     }
 
     void CANMotorController::setSpeed(double s)noexcept{
         speed = s;
         auto instance = SendDataManager::getInstance();
-        instance.first->update();
+        instance.first->updateShallow();
         instance.second.unlock();
     }
 
@@ -92,7 +92,7 @@ namespace hel{
     void CANMotorController::setInverted(bool i)noexcept{
         inverted = i;
         auto instance = SendDataManager::getInstance();
-        instance.first->update();
+        instance.first->updateShallow();
         instance.second.unlock();
     }
 
@@ -112,7 +112,7 @@ namespace hel{
         assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
         id = CANDevice::pullDeviceID(message_id);
 		auto instance = SendDataManager::getInstance();
-        instance.first->update();
+        instance.first->updateShallow();
         instance.second.unlock();
     }
 }

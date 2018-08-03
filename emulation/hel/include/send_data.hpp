@@ -17,6 +17,7 @@ namespace hel{
     struct SendData{
         enum class RelayState{OFF, REVERSE, FORWARD, ERROR};
 
+
     private:
         std::string serialized_data;
         bool new_data;
@@ -33,6 +34,8 @@ namespace hel{
 
         std::map<uint32_t, CANMotorController> can_motor_controllers;
 
+		static RelayState convertRelayValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue,uint8_t)noexcept;
+
 		void serializePWMHdrs();
         void serializeRelays();
         void serializeAnalogOutputs();
@@ -44,13 +47,11 @@ namespace hel{
 
         void updateShallow();
         void updateDeep();
-        void update(); //TODO remove
 
         std::string toString()const;
 
         std::string serializeShallow();
         std::string serializeDeep();
-        std::string serialize(); //TODO remove
 
         bool hasNewData()const;
     };

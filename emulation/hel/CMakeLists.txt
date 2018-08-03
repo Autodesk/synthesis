@@ -110,7 +110,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
 
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
     if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
-      ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_io.cpp)
+      ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_timing.cpp)
       ADD_DEPENDENCIES(FRCUserProgram wpilib ctre)
       TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include")
       TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers")

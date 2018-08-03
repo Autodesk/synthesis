@@ -1,6 +1,8 @@
 #include "roborio_manager.hpp"
 #include "util.hpp"
 
+//TODO rename file
+
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
@@ -11,9 +13,6 @@ namespace hel{
 
     void PWMSystem::setConfig(tPWM::tConfig value)noexcept{
         config = value;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     uint32_t PWMSystem::getHdrPeriodScale(uint8_t index)const{
@@ -22,9 +21,6 @@ namespace hel{
 
     void PWMSystem::setHdrPeriodScale(uint8_t index, uint32_t value){
         hdr[index].period_scale = value;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     uint32_t PWMSystem::getMXPPeriodScale(uint8_t index)const{
@@ -33,9 +29,6 @@ namespace hel{
 
     void PWMSystem::setMXPPeriodScale(uint8_t index, uint32_t value){
         mxp[index].period_scale = value;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     uint32_t PWMSystem::getHdrPulseWidth(uint8_t index)const{
@@ -45,7 +38,7 @@ namespace hel{
     void PWMSystem::setHdrPulseWidth(uint8_t index, uint32_t value){
         hdr[index].pulse_width = value;
         auto instance = SendDataManager::getInstance();
-        instance.first->update();
+        instance.first->updateShallow();
         instance.second.unlock();
     }
 
@@ -56,7 +49,7 @@ namespace hel{
     void PWMSystem::setMXPPulseWidth(uint8_t index, uint32_t value){
         mxp[index].pulse_width = value;
         auto instance = SendDataManager::getInstance();
-        instance.first->update();
+        instance.first->updateShallow();
         instance.second.unlock();
     }
 
@@ -202,13 +195,7 @@ namespace hel{
                 return;
             }
 
-            uint8_t DO_index = [&]{
-                                   if(reg_index < 4){
-                                       return reg_index;
-                                   }
-                                   uint8_t i = reg_index + 4;
-                                   return i;
-                               }();
+            uint8_t DO_index = (reg_index < 4) ? reg_index : reg_index + 4; //Digital MXP 0-3 line up between PWM and digital ports, but the others are offset by 4
 
             if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index)){ //Allow MXP outout if DO is using special function
                 instance.first->pwm_system.setMXPPulseWidth(reg_index, value);

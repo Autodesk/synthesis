@@ -11,9 +11,6 @@ namespace hel{
 
     void RelaySystem::setValue(tRelay::tValue v)noexcept{
         value = v;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     RelaySystem::RelaySystem()noexcept:value(){}
