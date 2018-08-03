@@ -61,7 +61,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 	if (!palette)
 		return;
 
-	palette->sendInfoToHTML("joints", BXDJ::ConfigData(Exporter::collectJoints(app->activeDocument())).toString());
+	palette->sendInfoToHTML("joints", Exporter::loadConfiguration(app->activeDocument()).toString());
 
 	palette->isVisible(true);
 }
@@ -84,7 +84,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 	if (eventArgs->action() == "send_joints")
 	{
-		palette->sendInfoToHTML("joints", BXDJ::ConfigData(Exporter::collectJoints(app->activeDocument())).toString());
+		palette->sendInfoToHTML("joints", Exporter::loadConfiguration(app->activeDocument()).toString());
 	}
 	else if (eventArgs->action() == "highlight")
 	{
@@ -125,7 +125,9 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	else if (eventArgs->action() == "export")
 	{
 		palette->isVisible(false);
-		eui->startExportThread(BXDJ::ConfigData(eventArgs->data(), Exporter::collectJoints(app->activeDocument())));
+		BXDJ::ConfigData config(eventArgs->data());
+		Exporter::saveConfiguration(config, app->activeDocument());
+		eui->startExportThread(config);
 	}
 }
 

@@ -33,6 +33,27 @@ std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 	return joints;
 }
 
+BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
+{
+	Ptr<Attribute> attr = document->attributes()->itemByName("Synthesis", "RobotConfigData.json");
+
+	BXDJ::ConfigData config;
+	if (attr != nullptr)
+		config.loadFromJSON(attr->value());
+
+	std::vector<Ptr<Joint>> joints = collectJoints(document);
+	for (Ptr<Joint> joint : joints)
+		if (config.getDriver(joint) == nullptr)
+			config.setNoDriver(joint);
+
+	return config;
+}
+
+void Exporter::saveConfiguration(BXDJ::ConfigData config, Ptr<FusionDocument> document)
+{
+	document->attributes()->add("Synthesis", "RobotConfigData.json", config.toString());
+}
+
 void Exporter::exportExample()
 {
 	BXDA::Mesh mesh = BXDA::Mesh(Guid());
