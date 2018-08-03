@@ -32,14 +32,25 @@ namespace hel{
         BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
 
         std::map<uint32_t, CANMotorController> can_motor_controllers;
+
+		void serializePWMHdrs();
+        void serializeRelays();
+        void serializeAnalogOutputs();
+        void serializeDigitalMXP();
+        void serializeDigitalHdrs();
+        void serializeCANMotorControllers();
     public:
         SendData();
 
-        void update();
+        void updateShallow();
+        void updateDeep();
+        void update(); //TODO remove
 
         std::string toString()const;
 
-        std::string serialize();
+        std::string serializeShallow();
+        std::string serializeDeep();
+        std::string serialize(); //TODO remove
 
         bool hasNewData()const;
     };
