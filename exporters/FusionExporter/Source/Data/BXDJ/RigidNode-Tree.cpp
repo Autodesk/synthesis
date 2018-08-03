@@ -1,6 +1,8 @@
 #include "RigidNode.h"
+#include <Fusion/Components/Occurrences.h>
 #include <Fusion/Components/OccurrenceList.h>
 #include "Utility.h"
+#include "ConfigData.h"
 #include "Joint.h"
 #include "Joints/RotationalJoint.h"
 #include "Joints/SliderJoint.h"
@@ -8,6 +10,27 @@
 #include "Joints/BallJoint.h"
 
 using namespace BXDJ;
+
+RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config) : RigidNode()
+{
+	configData = std::make_shared<ConfigData>(config);
+	jointSummary = std::make_shared<JointSummary>(getJointSummary(rootComponent));
+
+	for (core::Ptr<fusion::Occurrence> occurrence : rootComponent->occurrences()->asList())
+		if (std::find(jointSummary->children.begin(), jointSummary->children.end(), occurrence) == jointSummary->children.end())
+			buildTree(occurrence);
+}
+
+RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occ, Joint * parent)
+{
+	if (parent == NULL)
+		throw "Parent node cannot be NULL!";
+
+	this->parent = parent;
+	configData = parent->getParent()->configData;
+	jointSummary = parent->getParent()->jointSummary;
+	buildTree(occ);
+}
 
 Joint * RigidNode::getParent() const
 {
