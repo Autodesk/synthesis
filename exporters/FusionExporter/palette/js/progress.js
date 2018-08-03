@@ -38,11 +38,13 @@ window.fusionJavaScriptHandler =
                 }
                 else if (action == 'error')
                 {
+                    console.log("Error: " + data);
                     document.getElementById('error').innerHTML = data
                     document.getElementById('error').style.display = "";
                     document.getElementById('status').style.display = "none";
                     document.getElementById('progress').value = 100;
                     document.getElementById('progress').classList.add('error');
+                    lastProgress = 1;
                 }
                 else if (action == 'debugger')
                 {
