@@ -3,4 +3,7 @@
   <PropertyGroup>
     <ReferencePath>C:\Windows\Microsoft.NET\Framework\v2.0.50727\</ReferencePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartAction>Project</StartAction>
+  </PropertyGroup>
 </Project>
