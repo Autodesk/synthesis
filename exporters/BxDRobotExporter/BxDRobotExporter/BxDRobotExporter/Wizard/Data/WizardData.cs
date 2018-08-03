@@ -42,7 +42,8 @@ namespace BxDRobotExporter.Wizard
         public enum WizardWheelType
         {
             NORMAL = 1,
-            OMNI = 2
+            OMNI = 2,
+            MECANUM = 3
         }
         public enum WizardFrictionLevel
         {
@@ -73,6 +74,7 @@ namespace BxDRobotExporter.Wizard
                 //    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort, 1);
                 //}
                 WheelDriverMeta wheelDriver = new WheelDriverMeta();
+                wheelDriver.driveTrainType = (int)WizardData.Instance.driveTrain;
                 switch (FrictionLevel)
                 {
                     case WizardFrictionLevel.HIGH:
