@@ -75,9 +75,10 @@ public partial class DriveChooser : Form
 
             txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
-            
+
+            rbPWM.Checked = !joint.cDriver.isCan;
             rbCAN.Checked = joint.cDriver.isCan;
-            if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
+                if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
             {
                 joint.cDriver.OutputGear = 1;
             }
@@ -151,6 +152,8 @@ public partial class DriveChooser : Form
             InputGeartxt.Value = (decimal) 1.0;
             OutputGeartxt.Value = (decimal) 1.0;
 
+            rbPWM.Checked = true;
+
             cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
             cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
 
@@ -160,7 +163,7 @@ public partial class DriveChooser : Form
 
             cmbStages.SelectedIndex = (int)ElevatorType.NOT_MULTI;
         }
-        
+
         PrepLayout();
         base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
         this.ShowDialog(owner);
@@ -184,7 +187,8 @@ public partial class DriveChooser : Form
             txtPortB.Value != joint.cDriver.portB ||
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
             txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
-            inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear)
+            inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear || 
+            rbCAN.Checked != joint.cDriver.isCan)
             return true;
 
         if (pneumatic != null && 
@@ -227,7 +231,7 @@ public partial class DriveChooser : Form
         else
         {
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
-            lblPort.Text = cType.GetPortType() + " Port" + (cType.HasTwoPorts() ? "s" : "");
+            lblPort.Text = cType.GetPortType(rbCAN.Checked) + " Port" + (cType.HasTwoPorts() ? "s" : "");
             txtPortB.Visible = cType.HasTwoPorts();
             txtPortA.Maximum = txtPortB.Maximum = cType.GetPortMax();
             grpDriveOptions.Visible = true;

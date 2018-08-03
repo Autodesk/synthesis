@@ -553,7 +553,8 @@ namespace BxDRobotExporter
         private void ExportButton_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.PromptExportSettings())
-                if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null)
+                if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null) 
+
                     Utilities.GUI.OpenSynthesis();
         }
 
@@ -636,11 +637,13 @@ namespace BxDRobotExporter
         /// <param name="Child"></param>
         /// <param name="UseFancyColors"></param>
         /// <param name="SaveLocation"></param>
-        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation)
+        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation, bool openSynthesis, string fieldLocation)
         {
             ChildHighlight.Color = Utilities.GetInventorColor(Child);
 
             //Update Application
+            Properties.Settings.Default.ExportToField = openSynthesis;
+            Properties.Settings.Default.SelectedField = fieldLocation;
             Properties.Settings.Default.ChildColor = Child;
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
