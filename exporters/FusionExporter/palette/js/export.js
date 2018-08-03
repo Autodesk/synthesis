@@ -114,6 +114,7 @@ function applyConfigData(configData)
         var fieldset = template.cloneNode(true);
 
         fieldset.id = 'joint-config-' + String(i);
+        fieldset.dataset.jointId = joints[i].id;
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
@@ -296,7 +297,12 @@ function readConfigData()
     {
         var fieldset = jointOptions[i];
 
-        var joint = { 'driver': null, 'name': getElByClass(fieldset, 'joint-config-legend').innerHTML, 'type': parseInt(fieldset.dataset.joint_type) };
+        var joint = {
+            'driver': null,
+            'id': fieldset.dataset.jointId,
+            'name': getElByClass(fieldset, 'joint-config-legend').innerHTML,
+            'type': parseInt(fieldset.dataset.joint_type)
+        };
 
         var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
 
