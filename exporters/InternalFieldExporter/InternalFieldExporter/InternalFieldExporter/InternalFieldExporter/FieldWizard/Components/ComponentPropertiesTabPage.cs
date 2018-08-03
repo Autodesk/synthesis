@@ -48,7 +48,7 @@ namespace InternalFieldExporter.FieldWizard
 
             SetName(name);
 
-            ChildForm = new ComponentPropertiesTabPage(this);
+            ChildForm = new ComponentPropertiesForm(this);
             Controls.Add(ChildForm);
 
             rightClickMenu = new ContextMenu();

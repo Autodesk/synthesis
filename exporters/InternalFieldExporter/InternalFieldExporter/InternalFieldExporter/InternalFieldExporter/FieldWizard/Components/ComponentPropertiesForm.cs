@@ -53,20 +53,20 @@ namespace InternalFieldExporter.FieldWizard
         /// <summary>
         /// Initializes a new ComponentPropertiesForm classd
         /// </summary>
-        public ComponentPropertiesForm()
+        public ComponentPropertiesForm(ComponentPropertiesTabPage tabPage)
         {
             InitializeComponent();
 
             Dock = DockStyle.Fill; ;
 
-            ParentTabPage = TabPage;
-
+            ParentTabPage = tabPage;
+        
             colliderTypeCombobox.SelectedIndex = 0;
 
             InteractionEnabled = false;
         }
 
-        public PropertySet.PropertySetCollider GetSetCollider()
+        public PropertySet.PropertySetCollider GetCollider()
         {
             return((ColliderPropertiesForm)meshPropertiesTable.Controls[1]).GetCollider();
         }

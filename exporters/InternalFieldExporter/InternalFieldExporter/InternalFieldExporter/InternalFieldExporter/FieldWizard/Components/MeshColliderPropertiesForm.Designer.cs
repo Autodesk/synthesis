@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.convexCheckBox = new System.Windows.Forms.CheckBox();
             this.infoPictureBox = new System.Windows.Forms.PictureBox();
+            this.infoTooltip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.infoPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,6 +55,10 @@
             this.infoPictureBox.TabIndex = 1;
             this.infoPictureBox.TabStop = false;
             // 
+            // infoTooltip
+            // 
+            this.infoTooltip.IsBalloon = true;
+            // 
             // MeshColliderPropertiesForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -70,5 +76,6 @@
 
         private System.Windows.Forms.CheckBox convexCheckBox;
         private System.Windows.Forms.PictureBox infoPictureBox;
+        private System.Windows.Forms.ToolTip infoTooltip;
     }
 }

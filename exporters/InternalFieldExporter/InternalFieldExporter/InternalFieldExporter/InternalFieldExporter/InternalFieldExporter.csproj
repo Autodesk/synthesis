@@ -206,11 +206,11 @@
     <Compile Include="Wizard\Components\DefinePartPanel.Designer.cs">
       <DependentUpon>DefinePartPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="FieldWizard\FieldSelector.cs">
+    <Compile Include="FieldWizard\FieldSelectForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FieldWizard\FieldSelector.Designer.cs">
-      <DependentUpon>FieldSelector.cs</DependentUpon>
+    <Compile Include="FieldWizard\FieldSelectForm.Designer.cs">
+      <DependentUpon>FieldSelectForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Wizard\Pages\DefineMovingPartsPage.cs">
       <SubType>UserControl</SubType>
@@ -302,8 +302,8 @@
     <EmbeddedResource Include="FieldWizard\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FieldWizard\FieldSelector.resx">
-      <DependentUpon>FieldSelector.cs</DependentUpon>
+    <EmbeddedResource Include="FieldWizard\FieldSelectForm.resx">
+      <DependentUpon>FieldSelectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Pages\DefineMovingPartsPage.resx">
       <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
