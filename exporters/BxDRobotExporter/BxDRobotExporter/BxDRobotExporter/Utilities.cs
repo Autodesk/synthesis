@@ -123,14 +123,5 @@ namespace BxDRobotExporter
                 fieldName = Properties.Settings.Default.SelectedField
             };
         }
-
-        /// <summary>
-        /// saves values to inventor
-        /// </summary>
-        public static void SaveSettings()
-        {
-            Properties.Settings.Default.ExportToField = SynthesisGUI.PluginSettings.openSynthesis;
-            Properties.Settings.Default.SelectedField = SynthesisGUI.PluginSettings.fieldName;
-        }
     }
 }

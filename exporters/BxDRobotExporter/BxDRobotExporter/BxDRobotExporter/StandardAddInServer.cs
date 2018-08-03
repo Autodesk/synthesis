@@ -314,8 +314,6 @@ namespace BxDRobotExporter
                 EnableComponents(disabledAssemblyOccurences);
             disabledAssemblyOccurences = null;
 
-            Utilities.SaveSettings();
-
             // Close add-in
             Utilities.DisposeDockableWindows();
 
