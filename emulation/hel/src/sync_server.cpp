@@ -25,7 +25,7 @@ namespace hel {
                 auto instance = hel::SendDataManager::getInstance();
 
                 //if(instance.first->hasNewData()){//TODO
-                auto data =  instance.first->serialize();
+                auto data =  instance.first->serializeShallow();
                 instance.second.unlock();
                 try {
                     asio::write(socket, asio::buffer(data), asio::transfer_all());

@@ -55,7 +55,8 @@ namespace hel {
                         finished_flag = true;
                     }
                     auto instance = hel::ReceiveDataManager::getInstance();
-                    instance.first->deserializeAndUpdate(json_string); //
+                    instance.first->deserializeShallow(json_string);
+                    instance.first->updateShallow(); //
                     instance.second.unlock(); //
                     finished_flag = false;
                     usleep(5000); //
