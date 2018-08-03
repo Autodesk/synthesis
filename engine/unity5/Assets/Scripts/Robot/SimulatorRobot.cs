@@ -1,5 +1,6 @@
 ﻿using BulletSharp;
 using BulletUnity;
+using Synthesis.BUExtensions;
 using Synthesis.Camera;
 using Synthesis.Configuration;
 using Synthesis.DriverPractice;
@@ -203,6 +204,59 @@ namespace Synthesis.Robot
                 Acceleration = (float)Math.Round(Acceleration * 3.28084, 3);
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
+
+
+            #region Encoder Calculations
+            foreach (EmuNetworkInfo a in emuList)
+            {
+                RigidNode rigidNode = null;
+
+                try
+                {
+                    rigidNode = (RigidNode)(a.wheel);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.StackTrace);
+                }
+
+                BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+
+                if (a.RobotSensor.type == RobotSensorType.ENCODER)
+                {
+                    bRaycastWheel.GetWheelSpeed();
+
+                    double angleDifference = bRaycastWheel.transform.eulerAngles.x - a.previousEuler;
+
+                    // Checks to handle specific wheel rotational cases
+                    if (bRaycastWheel.GetWheelSpeed() > 0) // To handle positive wheel speeds
+                    {
+                        if (angleDifference < 0) // To handle special case (positive wheel speed, negative angleDifference)
+                        {
+                            a.encoderTickCount += (((360 - a.previousEuler + bRaycastWheel.transform.eulerAngles.x) / 360.0) * a.RobotSensor.conversionFactor);
+                        }
+                        else
+                        {
+                            a.encoderTickCount += ((angleDifference / 360) * a.RobotSensor.conversionFactor);
+                        }   
+                    }
+                    else if (bRaycastWheel.GetWheelSpeed() < 0)
+                    {
+                        if (angleDifference > 0)
+                        {
+                            a.encoderTickCount += (((((360 - bRaycastWheel.transform.eulerAngles.x) + a.previousEuler) * (-1)) / 360.0) * a.RobotSensor.conversionFactor);
+                        }
+                        else
+                        {
+                            a.encoderTickCount += (((angleDifference) / 360.0) * a.RobotSensor.conversionFactor);
+                        }
+                    }
+
+                    Debug.Log(a.encoderTickCount);
+                    a.previousEuler = bRaycastWheel.transform.eulerAngles.x;
+                }
+            }
+            #endregion
 
             if (IsResetting)
                 Resetting();

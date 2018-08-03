@@ -37,6 +37,25 @@ namespace Synthesis.Robot
         /// </summary>
         public UnityPacket.OutputStatePacket Packet { get; set; }
 
+
+        /// <summary>
+        /// Informational class for emulation to grab encoder tick count
+        /// </summary>
+        public sealed class EmuNetworkInfo
+        {
+            public RobotSensor RobotSensor;
+            public RigidNode_Base wheel;
+            public double previousEuler = 0;
+
+            // for emulation data
+            public double encoderTickCount;
+        }
+
+        /// <summary>
+        /// Generates list of attached encoder sensors on robot nodes
+        /// </summary>
+        public List<EmuNetworkInfo> emuList;
+
         /// <summary>
         /// Represents the index specifying what control scheme the robot should use.
         /// </summary>
@@ -141,6 +160,37 @@ namespace Synthesis.Robot
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
             RootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
             RootNode.ListAllNodes(nodes);
+
+            emuList = new List<EmuNetworkInfo>();
+
+            foreach (RigidNode_Base Base in RootNode.ListAllNodes())
+            {
+                try
+                {
+                    if (Base.GetSkeletalJoint().attachedSensors != null)
+                    {
+                        foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
+                        {
+                            Debug.Log(sensor.type.ToString() + " " + sensor.conTypePort1 + " " + sensor.conTypePort2 + " " + sensor.conversionFactor +
+                                " " + sensor.port1 + " " + sensor.port2);
+
+                            if(sensor.type == RobotSensorType.ENCODER)
+                            {
+                                EmuNetworkInfo emuStruct = new EmuNetworkInfo();
+                                emuStruct.encoderTickCount = 0;
+                                emuStruct.RobotSensor = sensor;
+                                emuStruct.wheel = Base;
+
+                                emuList.Add(emuStruct);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.ToString());
+                }
+            }
 
             //Initializes the wheel variables
             int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);

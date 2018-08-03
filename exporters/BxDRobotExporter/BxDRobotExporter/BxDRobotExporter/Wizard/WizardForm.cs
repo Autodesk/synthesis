@@ -18,8 +18,11 @@ namespace BxDRobotExporter.Wizard
         {
             InitializeComponent();
 
-            BXDJSkeleton.SetupFileNames(Utilities.GUI.SkeletonBase);
-            
+            if (Utilities.GUI.SkeletonBase == null)
+            {
+                BXDJSkeleton.SetupFileNames(Utilities.GUI.SkeletonBase);
+            }
+
             this.Resize += WizardForm_Resize;
 
             //Step 1: Define Wheels
@@ -41,6 +44,11 @@ namespace BxDRobotExporter.Wizard
                 WizardData.Instance.Apply();
                 StandardAddInServer.Instance.PendingChanges = true;
                 Close();
+                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+                {
+                    Form finishDialog = new ExportOrAdvancedForm();
+                    finishDialog.ShowDialog();
+                }
             };
         }
 
