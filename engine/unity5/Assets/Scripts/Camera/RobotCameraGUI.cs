@@ -35,6 +35,10 @@ namespace Synthesis.Camera
         GameObject showFOVButton;
         GameObject FOVEntry;
 
+        bool changingFOV = false;
+        float fovIncrement = .8f;
+        int fovSign;
+
         GameObject cameraNodePanel;
 
         GameObject robotCameraViewWindow;
@@ -87,6 +91,13 @@ namespace Synthesis.Camera
             //Allows users to save their configuration using enter
             if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
             if (isEditingFOV && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditFOV();
+
+            if (changingFOV)
+            {
+                FOVEntry.GetComponent<InputField>().text =
+                    (robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign).ToString();
+                SyncCameraFOV();
+            }
         }
 
         #region robot camera GUI functions
@@ -100,7 +111,7 @@ namespace Synthesis.Camera
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
             //For robot camera view window
-            robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
+            robotCameraView = Resources.Load("Images/Old Assets/RobotCameraView") as RenderTexture;
             robotCameraViewWindow = Auxiliary.FindObject(canvas, "RobotCameraPanelBorder");
 
             //For robot camera manager
@@ -238,7 +249,7 @@ namespace Synthesis.Camera
                 //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
                 //configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
 
-                robotCameraManager.ArrowsActive = true;
+                //robotCameraManager.ArrowsActive = true;
             }
             else
             {
@@ -246,8 +257,17 @@ namespace Synthesis.Camera
                 ResetConfigurationWindow();
                 dynamicCamera.SwitchToState(preConfigCamState);
 
-                robotCameraManager.ArrowsActive = false;
+                //robotCameraManager.ArrowsActive = false;
             }
+        }
+
+        /// <summary>
+        /// Toggle the state of changing the camera position with move arrows
+        /// </summary>
+        public void ToggleChangePosition()
+        {
+            robotCameraManager.CurrentCamera.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(
+                !robotCameraManager.CurrentCamera.GetComponentInChildren<MoveArrows>(true).gameObject.activeSelf);
         }
 
         /// <summary>
@@ -336,18 +356,19 @@ namespace Synthesis.Camera
         {
             robotCameraManager.IsShowingAngle = !robotCameraManager.IsShowingAngle;
             cameraAnglePanel.SetActive(robotCameraManager.IsShowingAngle);
+            isEditingAngle = robotCameraManager.IsShowingAngle;
 
             lockPositionButton.SetActive(robotCameraManager.IsShowingAngle);
             lockFOVButton.SetActive(robotCameraManager.IsShowingAngle);
 
-            if (robotCameraManager.IsShowingAngle)
-            {
-                showAngleButton.GetComponentInChildren<Text>().text = "Hide Camera Angle";
-            }
-            else
-            {
-                showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
-            }
+            //if (robotCameraManager.IsShowingAngle)
+            //{
+            //    showAngleButton.GetComponentInChildren<Text>().text = "Hide Camera Angle";
+            //}
+            //else
+            //{
+            //    showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
+            //}
         }
 
         /// <summary>
@@ -402,18 +423,30 @@ namespace Synthesis.Camera
         {
             robotCameraManager.IsChangingFOV = !robotCameraManager.IsChangingFOV;
             cameraFOVPanel.SetActive(robotCameraManager.IsChangingFOV);
+            isEditingFOV = robotCameraManager.IsChangingFOV;
 
-            lockPositionButton.SetActive(robotCameraManager.IsChangingFOV);
-            lockAngleButton.SetActive(robotCameraManager.IsChangingFOV);
+            //lockPositionButton.SetActive(robotCameraManager.IsChangingFOV);
+            //lockAngleButton.SetActive(robotCameraManager.IsChangingFOV);
 
-            if (robotCameraManager.IsChangingFOV)
-            {
-                showFOVButton.GetComponentInChildren<Text>().text = "Hide Camera FOV";
-            }
-            else
-            {
-                showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera FOV";
-            }
+            //if (robotCameraManager.IsChangingFOV)
+            //{
+            //    showFOVButton.GetComponentInChildren<Text>().text = "Hide Camera FOV";
+            //}
+            //else
+            //{
+            //    showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera FOV";
+            //}
+        }
+
+        public void ChangeCameraFOV(int sign)
+        {
+            fovSign = sign;
+            changingFOV = true;
+        }
+
+        public void StopChangingCameraFOV()
+        {
+            changingFOV = false;
         }
 
         /// <summary>

@@ -7,5 +7,6 @@ namespace Synthesis
 	const std::string K_WORKSPACE = "SynthesisExporterWorkspace";
 	const std::string K_PANEL = "SynthesisExporterPanel";
 	const std::string K_EXPORT_PALETTE = "ExporterFormPalette";
+	const std::string K_PROGRESS_PALETTE = "ProcessFormPalette";
 	const std::string K_EXPORT_BUTTON = "ExportRobotButton";
 }
