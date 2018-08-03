@@ -296,7 +296,7 @@ public partial class SynthesisGUI : Form
             RMeta.ActiveDir = null;
             RMeta.ActiveRobotName = robotName;
             RMeta.FieldName = field;
-
+            
             PluginSettings.GeneralUseFancyColors = colors;
             PluginSettings.OnSettingsChanged();
 

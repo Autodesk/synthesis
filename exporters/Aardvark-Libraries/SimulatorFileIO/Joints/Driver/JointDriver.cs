@@ -201,7 +201,7 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
         info += jointType.Substring(0, 1).ToUpper() + jointType.Substring(1); // Capitalize first letter
 
         // Port information
-        info += ", Ports: " + type.GetPortType() + " " + portA + (type.HasTwoPorts() ? " and " + portB : "");
+        info += ", Ports: " + type.GetPortType(isCan) + " " + portA + (type.HasTwoPorts() ? " and " + portB : "");
 
         return info;
     }

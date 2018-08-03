@@ -49,6 +49,30 @@ public static class JointDriverTypeExtensions
     }
 
     /// <summary>
+    /// Gets the string representation of the port for the given driver type.
+    /// </summary>
+    /// <param name="type">Driver type</param>
+    /// <returns>Name of port type</returns>
+    public static string GetPortType(this JointDriverType type, bool isCan)
+    {
+        switch (type)
+        {
+            case JointDriverType.MOTOR:
+            case JointDriverType.SERVO:
+            case JointDriverType.DUAL_MOTOR:
+            case JointDriverType.WORM_SCREW:
+            case JointDriverType.ELEVATOR:
+                return isCan ? "CAN" : "PWM";
+            case JointDriverType.BUMPER_PNEUMATIC:
+                return "Solenoid";
+            case JointDriverType.RELAY_PNEUMATIC:
+                return "Relay";
+            default:
+                return "Unknown";
+        }
+    }
+
+    /// <summary>
     /// Checks if the given driver type is a motor.
     /// </summary>
     /// <param name="type">Driver type</param>
