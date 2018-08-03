@@ -41,8 +41,11 @@ namespace Synthesis.GUI
         GameObject canvas;
         InputField gameDataInput;
 
-        public Sprite HighlightButton;
-        public Sprite DefaultButton;
+        public Sprite HighlightColor;
+        public Sprite DefaultColor;
+        public Sprite EnableColor;
+        public Sprite DisableColor;
+        public Sprite TopBarHighlight;
 
         private void Start()
         {
@@ -62,27 +65,27 @@ namespace Synthesis.GUI
             {
                 case "teleop":
                     state = DriveState.Teleop;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightButton;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultButton;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultButton;
+                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
+                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
+                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "auto":
                     state = DriveState.Auto;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultButton;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightButton;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultButton;
+                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
+                    GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightColor;
+                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "test":
                     state = DriveState.Test;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultButton;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultButton;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = HighlightButton;
+                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
+                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
+                    GameObject.Find("Test").GetComponent<Image>().sprite = HighlightColor;
                     break;
                 default:
                     state = DriveState.Teleop;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightButton;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultButton;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultButton;
+                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
+                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
+                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
             }
         }
@@ -90,11 +93,19 @@ namespace Synthesis.GUI
         public void RobotEnabled()
         {
             isRobotDisabled = false;
+            GameObject.Find("Enable").GetComponent<Image>().sprite = TopBarHighlight;
+            //GameObject.Find("Enable/EnableText").GetComponent<Image>().sprite = EnableColor;
+            GameObject.Find("Disable").GetComponent<Image>().sprite = DefaultColor;
+            //GameObject.Find("DisableText").GetComponent<Image>().sprite = DefaultColor;
         }
 
         public void RobotDisabled()
         {
             isRobotDisabled = true;
+            GameObject.Find("Enable").GetComponent<Image>().sprite = DefaultColor;
+            //GameObject.Find("EnableText").GetComponent<Image>().sprite = DefaultColor;
+            GameObject.Find("Disable").GetComponent<Image>().sprite = TopBarHighlight;
+            //GameObject.Find("DisableText").GetComponent<Image>().sprite = EnableColor;
         }
 
         public void TeamStation(int teamStation)

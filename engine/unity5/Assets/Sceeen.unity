@@ -18967,7 +18967,7 @@ GameObject:
   - component: {fileID: 377360741}
   - component: {fileID: 377360743}
   m_Layer: 5
-  m_Name: Text
+  m_Name: DisableText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38299,7 +38299,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &732915099
 RectTransform:
   m_ObjectHideFlags: 0
@@ -43417,7 +43417,7 @@ GameObject:
   - component: {fileID: 819194970}
   - component: {fileID: 819194969}
   m_Layer: 5
-  m_Name: Text
+  m_Name: EnableText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89302,8 +89302,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb785a0939d116b4398db5048b4d5f29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HighlightButton: {fileID: 21300000, guid: fb673c560cd7b084a9c918ac244dbca8, type: 3}
-  DefaultButton: {fileID: 21300000, guid: 2313355f62f221346b21d056601f1be3, type: 3}
+  HighlightColor: {fileID: 21300000, guid: fb673c560cd7b084a9c918ac244dbca8, type: 3}
+  DefaultColor: {fileID: 21300000, guid: 2313355f62f221346b21d056601f1be3, type: 3}
+  EnableColor: {fileID: 21300000, guid: 6e41bccdeed4fb141a2f3da65a76c0a4, type: 3}
+  DisableColor: {fileID: 21300000, guid: ca4e7be085c03f54193d4bd46547ee66, type: 3}
+  TopBarHighlight: {fileID: 21300000, guid: 25a9518ac00e7004da2b4a9d969874f9, type: 3}
 --- !u!1 &1743145125
 GameObject:
   m_ObjectHideFlags: 0
