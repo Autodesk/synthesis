@@ -7,7 +7,7 @@ const char* hel::JSONParsingException::what()const throw(){
     return s.c_str();
 }
 
-std::string hel::quote(std::string s){
+std::string hel::quote(const std::string& s){
     return "\"" + s + "\"";
 }
 
@@ -30,7 +30,7 @@ std::string hel::removeExtraneousSpaces(std::string input_str){
     return input_str;
 }
 
-std::string hel::excludeFromString(std::string input_str,std::vector<char> excluded_chars){
+std::string hel::excludeFromString(const std::string& input_str,const std::vector<char>& excluded_chars){
     std::string processed_str = "";
     for(char c: input_str){
         bool exclude = false;
@@ -102,8 +102,9 @@ std::string hel::pullObject(std::string& input){
     int bracket_count = 0;
     int curly_bracket_count = 0;
 
+	char c;
     for(; end < input.size(); end++){
-        char c = input[end];
+        c = input[end];
         if(c == '['){
             bracket_count++;
         } else if(c == ']'){

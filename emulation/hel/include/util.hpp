@@ -20,7 +20,7 @@ namespace hel{
      * \return the zero-indexed index of the most significant bit
      */
 
-    template<typename T>
+    template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
     unsigned findMostSignificantBit(T value){
     	unsigned most_significant_bit = 0;
 
@@ -41,18 +41,18 @@ namespace hel{
      * \return true if the bit is high
      */
 
-    template<typename T>
+    template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
     bool checkBitHigh(T value,unsigned index){
     	index = 1u << index; 
     	return value & index;
     }
 
-    template<typename T>
+    template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
     bool checkBitLow(T value,unsigned index){
         return !checkBitHigh(value, index);
     }
 
-    template<typename TInteger, typename TIndex>
+    template<typename TInteger, typename TIndex, typename = std::enable_if<std::is_integral<TInteger>::value && std::is_integral<TIndex>::value>>
     TInteger setBit(TInteger integer,bool bit, TIndex index){
         integer &= ~(1u << index);
         if(bit){
@@ -79,13 +79,12 @@ namespace hel{
     struct Maybe { //TODO optimize
 
     private:
-
         T _data;
         bool _is_valid;
 
     public:
         template<typename R>
-        Maybe<R> bind(std::function<Maybe<R>(T)> f) {
+        constexpr Maybe<R> bind(const std::function<Maybe<R>(T)>& f)const {
             if (!_is_valid) {
                 return Maybe<R>();
             }
@@ -93,19 +92,19 @@ namespace hel{
         }
 
         template<typename R>
-        Maybe<R> operator>>=(std::function<Maybe<R>(T)> f) {
+        constexpr Maybe<R> operator>>=(const std::function<Maybe<R>(T)>& f)const {
             bind(f);
         }
 
         template<typename R>
-        constexpr static std::function<Maybe<R>(Maybe<T>)> lift(std::function<R(T)> f){
+        constexpr static std::function<Maybe<R>(Maybe<T>)> lift(const std::function<R(T)>& f){
             return (std::function<Maybe<R>(Maybe<T>)>)[f](Maybe<T> arg) {
                 return Maybe<R>(f(arg._data));
             };
         }
 
         template<typename R>
-        Maybe<R> fmap(std::function<Maybe<R>(Maybe<T>)> f)const {
+        constexpr Maybe<R> fmap(const std::function<Maybe<R>(Maybe<T>)>& f)const {
             if(!_is_valid) {
                 return Maybe<R>();
             }
@@ -113,19 +112,19 @@ namespace hel{
 			return out;
         }
 
-        T get() {return _data;}
+        constexpr T get()const noexcept{return _data;}
         void set(T data) {_data=data;_is_valid=true;}
 
-        operator bool()const{return _is_valid;}
+        constexpr operator bool()const noexcept{return _is_valid;}
 
-        Maybe& operator=(const Maybe& m) {_data = m._data; _is_valid = m._is_valid;}
+        Maybe& operator=(const Maybe& m)noexcept {_data = m._data; _is_valid = m._is_valid;}
 
-        Maybe(T data) : _data(data), _is_valid(true) {};
-        Maybe() : _is_valid(false) {};
+        Maybe(T data)noexcept : _data(data), _is_valid(true) {};
+        Maybe()noexcept : _is_valid(false) {};
     };
 
     template<typename T>
-    std::string to_string(T iterable, std::function<std::string(typename T::value_type)> to_s, std::string delimiter = ",", bool include_brackets = true){
+    std::string to_string(const T& iterable, std::function<std::string(typename T::value_type)> to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
         std::string s = "";
         if(include_brackets){
             s += "[";
@@ -143,7 +142,7 @@ namespace hel{
     }
 
     template<typename FIRST, typename SECOND>
-    std::string to_string(std::pair<FIRST, SECOND> a, std::function<std::string(FIRST)> first_to_s, std::function<std::string(SECOND)> second_to_s, std::string delimiter = ",", bool include_brackets = true){
+    std::string to_string(const std::pair<FIRST, SECOND>& a, std::function<std::string(FIRST)> first_to_s, std::function<std::string(SECOND)> second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
         std::string s = "";
         if(include_brackets){
             s += "[";

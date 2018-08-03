@@ -221,13 +221,23 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const typename std::array<T, LEN>::iterator begin()const
+         * \fn constexpr const typename std::array<T, LEN>::const_iterator begin()const
          * \brief Returns an iterator to the first element in the container
          * \return Iterator to the first element
          */
 
-        constexpr const typename std::array<T, LEN>::iterator begin()const noexcept{
+        constexpr typename std::array<T, LEN>::const_iterator begin()const noexcept{
             return internal.begin();
+        }
+
+        /**
+         * \fn constexpr const typename std::array<T, LEN>::const_iterator begin()const
+         * \brief Returns an iterator to the first element in the container
+         * \return Iterator to the first element
+         */
+
+        constexpr typename std::array<T, LEN>::const_iterator cbegin()const noexcept{
+            return internal.cbegin();
         }
 
         /**
@@ -241,13 +251,22 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const typename std::array<T, LEN>::iterator end()const
+         * \fn constexpr typename std::array<T, LEN>::const_iterator end()const
          * \brief Returns an iterator to the last element in the container
          * \return Iterator to the last element
          */
 
-        constexpr const typename std::array<T, LEN>::iterator end()const noexcept{
+        constexpr typename std::array<T, LEN>::const_iterator end()const noexcept{
             return internal.end();
+        }
+        /**
+         * \fn constexpr typename std::array<T, LEN>::const_iterator cend()const
+         * \brief Returns an iterator to the last element in the container
+         * \return Iterator to the last element
+         */
+
+        constexpr typename std::array<T, LEN>::const_iterator cend()const noexcept{
+            return internal.cend();
         }
 
         BoundsCheckedArray(const T& default_data)noexcept{

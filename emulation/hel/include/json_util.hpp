@@ -25,7 +25,7 @@ namespace hel{
     };
 
     template<typename T>
-    std::string serializeList(std::string label, T iterable, std::function<std::string(typename T::value_type)> to_s){
+    std::string serializeList(const std::string& label, const T& iterable, std::function<std::string(typename T::value_type)> to_s){
         std::string s = label + ":[";
         for(auto i = iterable.begin(); i != iterable.end(); ++i){
             if(i != iterable.begin()){
@@ -53,7 +53,7 @@ namespace hel{
      * \return the input string excluding the specified characters
      */
 
-    std::string excludeFromString(std::string, std::vector<char>);
+    std::string excludeFromString(const std::string&, const std::vector<char>&);
 
     /**
      * \fn std::string trim(std::string input)
@@ -103,7 +103,7 @@ namespace hel{
     std::string pullValue(std::string,std::string&);
 
     template<typename T>
-    T pullValue(std::string label,std::string& input,std::function<T(std::string)> from_s){
+    T pullValue(std::string label,std::string& input,const std::function<T(std::string)>& from_s){
         return from_s(pullValue(label, input));
     }
 
@@ -117,7 +117,7 @@ namespace hel{
     std::string pullObject(std::string&);
 
     template<typename T>
-    std::vector<T> deserializeList(std::string input, std::function<T(std::string)> from_s, bool clip = false){
+    std::vector<T> deserializeList(std::string input, const std::function<T(std::string)>& from_s, bool clip = false){
         if(clip){
             input = clipList(input);
         }
@@ -135,7 +135,7 @@ namespace hel{
      * \return the string with outer quotation marks
      */
 
-    std::string quote(std::string);
+    std::string quote(const std::string&);
 
     /**
      * \fn std::string unquote(std::string input)

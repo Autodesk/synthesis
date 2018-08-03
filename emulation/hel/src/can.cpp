@@ -214,9 +214,7 @@ extern "C"{
         case hel::CANDevice::Type::PCM:
 		{
             auto instance = hel::RoboRIOManager::getInstance();
-			for(unsigned i = 0; i < 8; i++){
-				instance.first->solenoids[i] = hel::checkBitHigh(data_array[hel::Solenoid::MessageData::SOLENOIDS], i);
-			}
+			instance.first->pcm.setSolenoids(data_array[hel::PCM::MessageData::SOLENOIDS]);
 			instance.second.unlock();
 			break;
 		}
