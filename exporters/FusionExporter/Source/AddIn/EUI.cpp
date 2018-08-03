@@ -250,7 +250,10 @@ void EUI::startExportThread(BXDJ::ConfigData & config)
 	killExportThread = false;
 	exportThread = new std::thread(&EUI::exportRobot, this, config);
 #else
-	Exporter::exportMeshes(config, app->activeDocument());
+	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
+	{
+		//updateProgress(percent);
+	}, &killExportThread);
 #endif
 }
 
