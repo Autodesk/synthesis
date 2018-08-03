@@ -1,7 +1,7 @@
 #include "roborio.hpp"
 
 namespace hel{
-    RoboRIO::RoboRIO()noexcept:engine_initialized(false),user_button(true), accelerometer({}), accumulators({}), alarm({}), analog_inputs({}), analog_outputs({}), can_motor_controllers({}), counters({}), digital_system({}), ds_errors({}), match_info({}), encoder_managers({}), fpga_encoders({}), global({}), joysticks({}), net_comm({}), power({}), pwm_system({}), relay_system({}), robot_mode({}), pcm({}), spi_system({}), watchdog({}){}
+    RoboRIO::RoboRIO()noexcept:engine_initialized(false),user_button(true), accelerometer({}), accumulators({}), alarm({}), analog_inputs({}), analog_outputs({}), can_motor_controllers({}), counters({}), digital_system({}), ds_errors({}), match_info({}), encoder_managers({}), fpga_encoders({}), global({}), joysticks({}), net_comm({}), power({}), pwm_system({}), relay_system({}), robot_mode({}), pcm({}), pdp({}), spi_system({}), watchdog({}){}
 
     RoboRIO::RoboRIO(const RoboRIO& source)noexcept:RoboRIO(){
 #define COPY(NAME) NAME = source.NAME
@@ -26,6 +26,7 @@ namespace hel{
         COPY(relay_system);
         COPY(robot_mode);
         COPY(pcm);
+        COPY(pdp);
         COPY(spi_system);
         COPY(watchdog);
 #undef COPY
@@ -54,6 +55,7 @@ namespace hel{
             COPY(relay_system);
             COPY(robot_mode);
 			COPY(pcm);
+			COPY(pdp);
             COPY(spi_system);
             COPY(watchdog);
 #undef COPY
