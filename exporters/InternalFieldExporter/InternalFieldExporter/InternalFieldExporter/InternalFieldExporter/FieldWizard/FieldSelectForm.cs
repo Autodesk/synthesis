@@ -31,16 +31,7 @@ namespace InternalFieldExporter.FieldWizard
         {
             InitializeComponent();
         }
-
-        private void Ok_Button_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Cancel_Button_Click(object sender, EventArgs e)
-        {
-
-        }
+        
         /// <summary>
         /// Adds a list of visible Assemblies to the assemblyListBox
         /// </summary>

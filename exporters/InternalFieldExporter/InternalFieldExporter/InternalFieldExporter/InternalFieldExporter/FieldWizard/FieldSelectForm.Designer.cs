@@ -52,6 +52,7 @@
             this.AssemblyListBox.Name = "AssemblyListBox";
             this.AssemblyListBox.Size = new System.Drawing.Size(214, 132);
             this.AssemblyListBox.TabIndex = 1;
+            this.AssemblyListBox.SelectedIndexChanged += new System.EventHandler(this.assemblyListBox_SelectedIndexChanged);
             // 
             // Ok_Button
             // 
@@ -61,7 +62,6 @@
             this.Ok_Button.TabIndex = 2;
             this.Ok_Button.Text = "OK";
             this.Ok_Button.UseVisualStyleBackColor = true;
-            this.Ok_Button.Click += new System.EventHandler(this.Ok_Button_Click);
             // 
             // Cancel_Button
             // 
@@ -71,9 +71,8 @@
             this.Cancel_Button.TabIndex = 3;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
-            this.Cancel_Button.Click += new System.EventHandler(this.Cancel_Button_Click);
             // 
-            // FieldSelector
+            // FieldSelectForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -85,9 +84,10 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FieldSelector";
+            this.Name = "FieldSelectForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FieldSelector";
+            this.Load += new System.EventHandler(this.FieldSelectForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
