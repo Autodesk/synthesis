@@ -22,29 +22,29 @@ namespace Synthesis
 	class WorkspaceDeactivatedHandler : public WorkspaceEventHandler
 	{
 	public:
-		WorkspaceDeactivatedHandler(Ptr<UserInterface> UI) : UI(UI) {}
+		WorkspaceDeactivatedHandler(EUI * eui) : eui(eui) {}
 		void notify(const Ptr<WorkspaceEventArgs>& eventArgs) override;
 	private:
-		Ptr<UserInterface> UI;
+		EUI * eui;
 	};
 
 	// Button Events
 	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
 	{
 	public:
-		ShowPaletteCommandCreatedHandler(Ptr<Application> app) : app(app) {}
+		ShowPaletteCommandCreatedHandler(EUI * eui) : eui(eui) {}
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
 	private:
-		Ptr<Application> app;
+		EUI * eui;
 	};
 
 	class ShowPaletteCommandExecuteHandler : public CommandEventHandler
 	{
 	public:
-		ShowPaletteCommandExecuteHandler(Ptr<Application> app) : app(app) {}
+		ShowPaletteCommandExecuteHandler(EUI * eui) : eui(eui) {}
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
 	private:
-		Ptr<Application> app;
+		EUI * eui;
 	};
 
 	// Palette Events

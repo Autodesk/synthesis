@@ -18,6 +18,21 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
     {
         // TODO
     }
+
+    public void ReloadInventorJoint()
+    {
+        if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
+        {
+            normal = Utilities.ToBXDVector(wrapped.rigidJoint.geomTwo.Normal);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
+        }
+        else
+        {
+            normal = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.Normal);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
+        }
+    }
+
     public static bool IsPlanarJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
@@ -34,17 +49,7 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
             throw new Exception("Not a planar joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
-
-        if (wrapped.childGroup == rigidJoint.groupOne)
-        {
-            normal = Utilities.ToBXDVector(rigidJoint.geomTwo.Normal);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomTwo.RootPoint);
-        }
-        else
-        {
-            normal = Utilities.ToBXDVector(rigidJoint.geomOne.Normal);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
-        }
+        ReloadInventorJoint();
     }
 
     protected override string ToString_Internal()
