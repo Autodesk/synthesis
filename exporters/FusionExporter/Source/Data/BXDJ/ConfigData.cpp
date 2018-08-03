@@ -82,7 +82,10 @@ ConfigData::ConfigData(const ConfigData & other)
 	robotName = other.robotName;
 
 	for (auto i = other.joints.begin(); i != other.joints.end(); i++)
-		joints[i->first] = std::make_unique<Driver>(*i->second);
+		if (i->second != nullptr)
+			joints[i->first] = std::make_unique<Driver>(*i->second);
+		else
+			joints[i->first] = nullptr;
 }
 
 std::unique_ptr<Driver> ConfigData::getDriver(core::Ptr<fusion::Joint> joint) const
