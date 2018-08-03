@@ -7,6 +7,10 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
+namespace {
+    std::function<hel::Maybe<hel::EncoderManager>(hel::Maybe<std::string>)> liftedDeserialize = hel::Maybe<std::string>::lift<hel::EncoderManager>(hel::EncoderManager::deserialize);
+}
+
 hel::ReceiveData::ReceiveData():last_received_data(""),digital_hdrs(false), digital_mxp({}), joysticks({}), match_info({}), robot_mode({}), encoder_managers({}){}
 
 void hel::ReceiveData::update()const{
@@ -142,9 +146,9 @@ void hel::ReceiveData::deserializeEncoders(std::string& input){
                 std::function<Maybe<EncoderManager>(std::string)>([&](std::string str){
 																	  if(str == "null"){
 																			  return Maybe<EncoderManager>();
-																		  }                                                                      Maybe<std::string> a = Maybe<std::string>(str);
-																	  auto f = Maybe<std::string>::lift<EncoderManager>(std::function<EncoderManager(std::string)>(&EncoderManager::deserialize));
-                                       return a.fmap(f);
+																		  }
+                                    Maybe<std::string> a = Maybe<std::string>(str);
+                                       return a.fmap(liftedDeserialize);
 																  }),
                 true);
         } catch(const std::exception& ex){
