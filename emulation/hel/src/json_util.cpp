@@ -96,7 +96,7 @@ std::vector<std::string> hel::splitObject(std::string input){
     return v;
 }
 
-std::string hel::pullObject(std::string& input){ 
+std::string hel::pullObject(std::string& input){
     unsigned end = 0;
 
     int bracket_count = 0;
