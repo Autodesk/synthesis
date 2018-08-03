@@ -76,6 +76,7 @@ namespace hel{
         CANMotorController(const CANMotorController&)noexcept;
 
         CANMotorController(uint32_t)noexcept;
+        CANMotorController(uint8_t,CANDevice::Type)noexcept;
     };
 }
 

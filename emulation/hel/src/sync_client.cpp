@@ -56,10 +56,10 @@ namespace hel {
                     }
                     auto instance = hel::ReceiveDataManager::getInstance();
                     instance.first->deserializeShallow(json_string);
-                    instance.first->updateShallow(); //
-                    instance.second.unlock(); //
+                    instance.first->updateShallow();
+                    instance.second.unlock();
                     finished_flag = false;
-                    usleep(5000); //
+                    usleep(30000);
                 }
             }
             catch(std::system_error) {
