@@ -98,6 +98,10 @@ namespace hel{
 
 	CANMotorController::CANMotorController()noexcept:type(CANDevice::Type::UNKNOWN),id(0),speed(0.0),inverted(false){}
 
+	CANMotorController::CANMotorController(uint8_t i, CANDevice::Type t)noexcept:type(t),id(i),speed(0.0),inverted(false){
+        assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
+	}
+
     CANMotorController::CANMotorController(const CANMotorController& source)noexcept{
 #define COPY(NAME) NAME = source.NAME
         COPY(type);

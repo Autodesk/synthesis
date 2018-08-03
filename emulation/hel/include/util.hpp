@@ -42,9 +42,8 @@ namespace hel{
      */
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
-    bool checkBitHigh(T value,unsigned index){
-    	index = 1u << index; 
-    	return value & index;
+    bool checkBitHigh(const T& value,const unsigned& index){
+    	return value & (1u << index);
     }
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>

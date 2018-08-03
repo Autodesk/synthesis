@@ -20,12 +20,11 @@ extern "C"{
         case hel::CANDevice::Type::VICTOR_SPX:
         {
             uint8_t controller_id = hel::CANDevice::pullDeviceID(messageID);
-
             uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];
-            auto instance = hel::RoboRIOManager::getInstance();
 
+			auto instance = hel::RoboRIOManager::getInstance();
 			if(instance.first->can_motor_controllers.find(controller_id) == instance.first->can_motor_controllers.end()){
-				instance.first->can_motor_controllers[controller_id] = {messageID};
+				instance.first->can_motor_controllers[controller_id] = {controller_id,target_type};
 			}
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT)){
                 instance.first->can_motor_controllers[controller_id].setSpeedData(data_array);
@@ -34,16 +33,16 @@ extern "C"{
                 instance.first->can_motor_controllers[controller_id].setInverted(true);
             }
             instance.second.unlock();
-            {
-                for(unsigned i = 0; i < 8; i++){
-                    if(hel::checkBitHigh(command_byte,i) &&
-                       i != hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT &&
-                       i != hel::CANMotorController::SendCommandByteMask::SET_INVERTED
-                    ){
-                        std::cerr<<"Synthesis warning: Writing to CAN motor controller with device ID "<<controller_id<<" using command data byte "<<command_byte<<"\n";
-                    }
-                }
-            }
+
+			for(unsigned i = 0; i < 8; i++){
+				if(
+					i != hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT &&
+					i != hel::CANMotorController::SendCommandByteMask::SET_INVERTED &&
+					hel::checkBitHigh(command_byte,i)
+                ){
+					std::cerr<<"Synthesis warning: Writing to CAN motor controller with device ID "<<controller_id<<" using command data byte "<<command_byte<<"\n";
+				}
+			}
             break;
         }
         case hel::CANDevice::Type::PCM:
