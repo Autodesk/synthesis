@@ -16,12 +16,17 @@ namespace Assets.Scripts.GUI
     {
         GameObject canvas;
         GameObject emuDriverStation;
+        public GameObject stopButton;
+        public GameObject runButton;
 
         public override void Start()
         {
             canvas = GameObject.Find("Canvas");
             emuDriverStation = Auxiliary.FindObject(canvas, "EmulationDriverStation");
+            runButton = Auxiliary.FindObject(canvas, "RunRobotCodeButton");
+            stopButton = Auxiliary.FindObject(canvas, "StopCodeButton");
         }
+
 
         public void OnSelectRobotCodeButtonPressed()
         {
@@ -42,9 +47,19 @@ namespace Assets.Scripts.GUI
             }
         }
 
-        public void OnStartRobotCodeButtonPressed()
+        public void OnRunRobotCodeButtonPressed()
         {
-
+            if (stopButton.activeSelf)
+            {
+                stopButton.SetActive(false);
+                runButton.SetActive(true);
+            }
+            else
+            {
+                runButton.SetActive(false);
+                stopButton.SetActive(true);
+            }
         }
+
     }
 }
