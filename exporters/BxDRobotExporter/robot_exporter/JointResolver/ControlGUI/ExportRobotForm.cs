@@ -46,6 +46,8 @@ namespace JointResolver.ControlGUI
                     FieldSelectComboBox.Items.Add(pair.Key);
                 }
             }
+            this.FieldSelectComboBox.SelectedItem = SynthesisGUI.PluginSettings.fieldName;
+            this.OpenSynthesisBox.Checked = SynthesisGUI.PluginSettings.openSynthesis;
         }
 
         public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field)
@@ -57,6 +59,8 @@ namespace JointResolver.ControlGUI
                 robotName = form.RobotNameTextBox.Text;
                 colors = form.ColorBox.Checked;
                 openSynthesis = form.OpenSynthesisBox.Checked;
+                SynthesisGUI.PluginSettings.fieldName = (string)form.FieldSelectComboBox.SelectedItem;
+                SynthesisGUI.PluginSettings.openSynthesis = form.OpenSynthesisBox.Checked;
 
                 field = null;
                 
