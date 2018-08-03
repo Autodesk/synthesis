@@ -109,6 +109,21 @@ public static class JointDriverTypeExtensions
                 return false;
         }
     }
+    /// <summary>
+    /// Checks if the given driver type is a worm screw.
+    /// </summary>
+    /// <param name="type">Driver type</param>
+    /// <returns>Boolean</returns>
+    public static bool IsWormScrew(this JointDriverType type)
+    {
+        switch (type)
+        {
+            case JointDriverType.WORM_SCREW:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     /// <summary>
     /// Gets the maximum port number for the given driver type.
