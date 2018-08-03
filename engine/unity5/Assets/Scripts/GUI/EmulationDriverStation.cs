@@ -93,19 +93,15 @@ namespace Synthesis.GUI
         public void RobotEnabled()
         {
             isRobotDisabled = false;
-            GameObject.Find("Enable").GetComponent<Image>().sprite = TopBarHighlight;
-            //GameObject.Find("Enable/EnableText").GetComponent<Image>().sprite = EnableColor;
+            GameObject.Find("Enable").GetComponent<Image>().sprite = EnableColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DefaultColor;
-            //GameObject.Find("DisableText").GetComponent<Image>().sprite = DefaultColor;
         }
 
         public void RobotDisabled()
         {
             isRobotDisabled = true;
             GameObject.Find("Enable").GetComponent<Image>().sprite = DefaultColor;
-            //GameObject.Find("EnableText").GetComponent<Image>().sprite = DefaultColor;
-            GameObject.Find("Disable").GetComponent<Image>().sprite = TopBarHighlight;
-            //GameObject.Find("DisableText").GetComponent<Image>().sprite = EnableColor;
+            GameObject.Find("Disable").GetComponent<Image>().sprite = DisableColor;
         }
 
         public void TeamStation(int teamStation)
