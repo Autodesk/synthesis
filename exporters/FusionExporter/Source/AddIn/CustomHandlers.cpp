@@ -80,7 +80,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		Ptr<Joint> highlightedJoint = nullptr;
 		for (Ptr<Joint> joint : joints)
 		{
-			if (joint->name() == eventArgs->data())
+			if (BXDJ::Utility::getUniqueJointID(joint) == eventArgs->data())
 			{
 				highlightedJoint = joint;
 				break;
