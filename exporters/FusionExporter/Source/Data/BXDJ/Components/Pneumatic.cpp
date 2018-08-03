@@ -62,8 +62,10 @@ void BXDJ::Pneumatic::loadJSONObject(const rapidjson::Value & pneumaticJSON)
 {
 	if (pneumaticJSON.IsObject())
 	{
-		widthMillimeter = Pneumatic::COMMON_WIDTHS[pneumaticJSON["width"].GetInt()];
-		pressurePSI = Pneumatic::COMMON_PRESSURES[pneumaticJSON["pressure"].GetInt()];
+		if (pneumaticJSON["width"].IsNumber())
+			widthMillimeter = Pneumatic::COMMON_WIDTHS[pneumaticJSON["width"].GetInt()];
+		if (pneumaticJSON["pressure"].IsNumber())
+			pressurePSI = Pneumatic::COMMON_PRESSURES[pneumaticJSON["pressure"].GetInt()];
 	}
 }
 
