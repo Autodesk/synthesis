@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace InternalFieldExporter.Wizard
+namespace InternalFieldExporter.FieldWizard
 {
     public partial class FieldSelector : Form
     {

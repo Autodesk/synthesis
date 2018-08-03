@@ -1,4 +1,4 @@
-﻿namespace InternalFieldExporter.Wizard
+﻿namespace InternalFieldExporter.FieldWizard
 {
     partial class FieldSelector
     {
