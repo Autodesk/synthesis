@@ -159,11 +159,23 @@
     <Compile Include="FieldWizard\Components\SphereColliderPropertiesForm.Designer.cs">
       <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldWizard\ConfirmMoveDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FieldWizard\ConfirmMoveDialog.designer.cs">
+      <DependentUpon>ConfirmMoveDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="FieldWizard\CrashForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FieldWizard\CrashForm.Designer.cs">
       <DependentUpon>CrashForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FieldWizard\EnterFrictionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FieldWizard\EnterFrictionDialog.Designer.cs">
+      <DependentUpon>EnterFrictionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldWizard\EnterNameDialog.cs">
       <SubType>Form</SubType>
@@ -284,6 +296,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FieldWizard\Components\SphereColliderPropertiesForm.resx">
       <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\ConfirmMoveDialog.resx">
+      <DependentUpon>ConfirmMoveDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\EnterFrictionDialog.resx">
+      <DependentUpon>EnterFrictionDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FieldWizard\EnterNameDialog.resx">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>

@@ -1,4 +1,4 @@
-﻿namespace FieldExporter.Forms
+﻿namespace InternalFieldExporter.FieldWizard
 {
     partial class EnterFrictionDialog
     {

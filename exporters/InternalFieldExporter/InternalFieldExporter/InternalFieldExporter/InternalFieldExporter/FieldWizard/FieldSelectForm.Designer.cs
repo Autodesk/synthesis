@@ -1,6 +1,6 @@
 ﻿namespace InternalFieldExporter.FieldWizard
 {
-    partial class FieldSelector
+    partial class FieldSelectForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FieldSelector));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FieldSelectForm));
             this.label1 = new System.Windows.Forms.Label();
             this.AssemblyListBox = new System.Windows.Forms.ListBox();
             this.Ok_Button = new System.Windows.Forms.Button();
