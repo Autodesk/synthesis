@@ -119,9 +119,7 @@ std::string ConfigData::toString()
 	configJSON.SetObject();
 
 	// Robot Name
-	rapidjson::Value name;
-	name.SetString(robotName.c_str(), robotName.length(), configJSON.GetAllocator());
-	configJSON.AddMember("name", name, configJSON.GetAllocator());
+	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
 
 	// Joints
 	rapidjson::Value jointsJSON;
@@ -135,7 +133,8 @@ std::string ConfigData::toString()
 		jointJSON.SetObject();
 
 		// Joint Name
-		jointJSON.AddMember("name", rapidjson::Value(joint->name().c_str(), joint->name().length()), configJSON.GetAllocator());
+		std::string jointName = joint->name();
+		jointJSON.AddMember("name", rapidjson::Value(jointName.c_str(), jointName.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
 
 		// Joint Motion (linear and/or angular)
 		fusion::JointTypes type = joint->jointMotion()->jointType();
