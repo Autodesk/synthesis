@@ -14,17 +14,17 @@ namespace hel{
 
     struct CANMotorController{
 
-        enum MessageData{ //TODO move to CANDevice?
+        enum MessageData{
             COMMAND_BYTE = 7,
             SIZE = 8
         };
 
-        enum SendCommandByteMask: uint8_t{ //TODO move to CANDevice?
+        enum SendCommandByteMask: uint8_t{
             SET_POWER_PERCENT = 5,
             SET_INVERTED = 6
         };
 
-        enum ReceiveCommandIDMask: uint32_t{ //TODO move to CANDevice?
+        enum ReceiveCommandIDMask: uint32_t{
             GET_POWER_PERCENT = 0b1010000000000
         };
 
