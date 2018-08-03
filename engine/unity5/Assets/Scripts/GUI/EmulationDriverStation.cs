@@ -41,6 +41,9 @@ namespace Synthesis.GUI
         GameObject canvas;
         InputField gameDataInput;
 
+        public Sprite HighlightButton;
+        public Sprite DefaultButton;
+
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
@@ -59,16 +62,27 @@ namespace Synthesis.GUI
             {
                 case "teleop":
                     state = DriveState.Teleop;
-                    GameObject.Find("Teleop").GetComponent<Button>().Select();
+                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightButton;
+                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultButton;
+                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultButton;
                     break;
                 case "auto":
                     state = DriveState.Auto;
+                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultButton;
+                    GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightButton;
+                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultButton;
                     break;
                 case "test":
                     state = DriveState.Test;
+                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultButton;
+                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultButton;
+                    GameObject.Find("Test").GetComponent<Image>().sprite = HighlightButton;
                     break;
                 default:
                     state = DriveState.Teleop;
+                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightButton;
+                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultButton;
+                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultButton;
                     break;
             }
         }

@@ -20547,7 +20547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 0
+    m_Mode: 3
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -70337,7 +70337,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 0
+    m_Mode: 3
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -89302,6 +89302,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb785a0939d116b4398db5048b4d5f29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HighlightButton: {fileID: 21300000, guid: fb673c560cd7b084a9c918ac244dbca8, type: 3}
+  DefaultButton: {fileID: 21300000, guid: 2313355f62f221346b21d056601f1be3, type: 3}
 --- !u!1 &1743145125
 GameObject:
   m_ObjectHideFlags: 0
@@ -95137,7 +95139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 0
+    m_Mode: 3
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
