@@ -41,10 +41,7 @@ BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 	if (attr != nullptr)
 		config.loadFromJSON(attr->value());
 
-	std::vector<Ptr<Joint>> joints = collectJoints(document);
-	for (Ptr<Joint> joint : joints)
-		if (config.getDriver(joint) == nullptr)
-			config.setNoDriver(joint);
+	config.filterJoints(collectJoints(document));
 
 	return config;
 }

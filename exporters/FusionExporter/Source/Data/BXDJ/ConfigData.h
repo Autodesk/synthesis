@@ -22,6 +22,9 @@ namespace BXDJ
 		void setDriver(core::Ptr<fusion::Joint>, const Driver &);
 		void setNoDriver(core::Ptr<fusion::Joint>);
 
+		// Removes joint configurations that are not in a vector of joints, and adds empty configurations for those not present.
+		void filterJoints(std::vector<core::Ptr<fusion::Joint>>);
+
 		void loadFromJSON(std::string);
 		std::string toString() const;
 
