@@ -175,7 +175,7 @@ namespace hel{
          *
          */
 
-        static double getSpeed(uint32_t)noexcept;
+        static double getSpeed(uint32_t)noexcept; //TODO use period scale and config?
 
         PWMSystem()noexcept;
         PWMSystem(const PWMSystem&)noexcept;

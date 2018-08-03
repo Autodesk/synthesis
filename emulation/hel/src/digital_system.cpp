@@ -12,9 +12,6 @@ namespace hel{
 
     void DigitalSystem::setOutputs(tDIO::tDO value)noexcept{
         outputs = value;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const noexcept{
@@ -24,7 +21,7 @@ namespace hel{
     void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable value)noexcept{
         enabled_outputs = value;
         auto instance = SendDataManager::getInstance();
-        instance.first->update();
+        instance.first->updateShallow();
         instance.second.unlock();
     }
 
@@ -34,9 +31,6 @@ namespace hel{
 
     void DigitalSystem::setPulses(tDIO::tPulse value)noexcept{
         pulses = value;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
     tDIO::tDI DigitalSystem::getInputs()const noexcept{
@@ -54,7 +48,7 @@ namespace hel{
     void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t value)noexcept{
         mxp_special_functions_enabled = value;
         auto instance = SendDataManager::getInstance();
-        instance.first->update();
+        instance.first->updateShallow();
         instance.second.unlock();
     }
 
@@ -72,9 +66,6 @@ namespace hel{
 
     void DigitalSystem::setPWMPulseWidth(uint8_t index, uint8_t value){
         pwm[index] = value;
-        auto instance = SendDataManager::getInstance();
-        instance.first->update();
-        instance.second.unlock();
     }
 
 	MXPData::Config DigitalSystem::toMXPConfig(uint16_t output_mode, uint16_t special_func, uint8_t i){

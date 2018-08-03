@@ -54,34 +54,15 @@ void hel::ReceiveData::updateDeep()const{
         }
         instance.first->digital_system.setInputs(di);
     }
-    for(unsigned i = 0;i < digital_mxp.size(); i++){
-        switch(digital_mxp[i].config){
-        case MXPData::Config::DI:
-        {
-            tDIO::tDI di = instance.first->digital_system.getInputs();
-            di.MXP = setBit(di.MXP, digital_mxp[i].value, i);
-            instance.first->digital_system.setInputs(di);
-            break;
-        }
-        case MXPData::Config::I2C:
-        case MXPData::Config::SPI:
-        default:
-            ; //Do nothing
-        }
-    }
     instance.first->engine_initialized = true;
     instance.second.unlock();
-}
-
-void hel::ReceiveData::update()const{
-	updateDeep();
 }
 
 std::string hel::ReceiveData::toString()const{
     std::string s = "(";
     s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
-    s += "joysticks:" + hel::to_string(joysticks, std::function<std::string(hel::Joystick)>([&](hel::Joystick joy){ return joy.toString(); })) + ", ";
-    s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>([&](hel::MXPData mxp){ return mxp.serialize();})) + ", ";
+    s += "joysticks:" + hel::to_string(joysticks, std::function<std::string(hel::Joystick)>(&Joystick::toString)) + ", ";
+    s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>(&MXPData::serialize)) + ", ";
     s += "match_info:" + match_info.toString() + ", ";
     s += "robot_mode:" + robot_mode.toString();
     s += "encoder_managers:" + hel::to_string(encoder_managers, std::function<std::string(Maybe<EncoderManager>)>([&](Maybe<EncoderManager> a){
@@ -196,10 +177,4 @@ void hel::ReceiveData::deserializeDeep(std::string input){
     deserializeMatchInfo(input);
     deserializeRobotMode(input);
     deserializeEncoders(input);
-}
-
-void hel::ReceiveData::deserializeAndUpdate(std::string input){
-    deserializeDeep(input);
-
-    update();
 }

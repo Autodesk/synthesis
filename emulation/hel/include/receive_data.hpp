@@ -36,13 +36,11 @@ namespace hel{
     public:
         void updateShallow()const;
         void updateDeep()const;
-        void update()const; //TODO remove
 
         std::string toString()const;
 
         void deserializeShallow(std::string);
         void deserializeDeep(std::string);
-        void deserializeAndUpdate(std::string);//TODO remove
 
         ReceiveData();
     };

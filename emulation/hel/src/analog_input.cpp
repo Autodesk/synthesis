@@ -170,20 +170,20 @@ namespace hel {
 
         uint8_t readOversampleBits(uint8_t channel, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
-            instance.second.unlock(); //TODO unlock in poor position on many of these functions
+            instance.second.unlock();
             return instance.first->analog_inputs.getOversampleBits(channel);
         }
 
         uint8_t readAverageBits(uint8_t channel, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
-            return instance.first->analog_inputs.getAverageBits(channel);
             instance.second.unlock();
+            return instance.first->analog_inputs.getAverageBits(channel);
         }
 
         uint8_t readScanList(uint8_t channel, tRioStatusCode*) {
             auto instance = hel::RoboRIOManager::getInstance();
-            return instance.first->analog_inputs.getScanList(channel);
             instance.second.unlock();
+            return instance.first->analog_inputs.getScanList(channel);
         }
 
         void writeReadSelect(tAI::tReadSelect value, tRioStatusCode*) {

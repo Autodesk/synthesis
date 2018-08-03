@@ -7,6 +7,21 @@ using namespace nRoboRIO_FPGANamespace;
 
 hel::SendData::SendData():serialized_data(""),new_data(true),pwm_hdrs(0.0), relays(RelayState::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
 
+hel::SendData::RelayState hel::SendData::convertRelayValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value, uint8_t i)noexcept{
+	bool forward = checkBitHigh(value.Forward, i);
+	bool reverse  = checkBitHigh(value.Reverse, i);
+	if(forward){
+		if(reverse){
+			return RelayState::ERROR;
+		}
+		return RelayState::FORWARD;
+	}
+	if(reverse){
+		return RelayState::REVERSE;
+	}
+	return RelayState::OFF;
+}
+
 bool hel::SendData::hasNewData()const{
     return new_data;
 }
@@ -20,40 +35,6 @@ void hel::SendData::updateShallow(){
 
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
         pwm_hdrs[i] = PWMSystem::getSpeed(roborio.pwm_system.getHdrPulseWidth(i));
-    }
-
-    can_motor_controllers = roborio.can_motor_controllers;
-    new_data = true;
-}
-
-void hel::SendData::updateDeep(){
-    if(!hel::hal_is_initialized){
-        return;
-    }
-
-	updateShallow();
-
-    RoboRIO roborio = RoboRIOManager::getCopy();
-
-    for(unsigned i = 0; i < relays.size(); i++){
-        relays[i] = [&](){
-            bool forward = checkBitHigh(roborio.relay_system.getValue().Forward, i);
-            bool reverse  = checkBitHigh(roborio.relay_system.getValue().Reverse, i);
-            if(forward){
-                if(reverse){
-                    return RelayState::ERROR;
-                }
-                return RelayState::FORWARD;
-            }
-            if(reverse){
-                return RelayState::REVERSE;
-            }
-            return RelayState::OFF;
-        }();
-    }
-
-    for(unsigned i = 0; i < analog_outputs.size(); i++){
-        analog_outputs[i] = (roborio.analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
     }
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){
@@ -78,6 +59,25 @@ void hel::SendData::updateDeep(){
             break; //do nothing
         }
     }
+    can_motor_controllers = roborio.can_motor_controllers;
+    new_data = true;
+}
+
+void hel::SendData::updateDeep(){
+    if(!hel::hal_is_initialized){
+        return;
+    }
+
+	updateShallow();
+
+    RoboRIO roborio = RoboRIOManager::getCopy();
+
+    for(unsigned i = 0; i < relays.size(); i++){
+        relays[i] = convertRelayValue(roborio.relay_system.getValue(),i);
+    }
+    for(unsigned i = 0; i < analog_outputs.size(); i++){
+        analog_outputs[i] = (roborio.analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
+    }
     {
         tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();
         auto values = roborio.digital_system.getOutputs().Headers;
@@ -90,10 +90,6 @@ void hel::SendData::updateDeep(){
     }
     can_motor_controllers = roborio.can_motor_controllers;
     new_data = true;
-}
-
-void hel::SendData::update(){
-	updateDeep();
 }
 
 std::string hel::to_string(hel::SendData::RelayState r){
@@ -116,7 +112,7 @@ std::string hel::SendData::toString()const{
     s += "pwm_hdrs:" + hel::to_string(pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
     s += "relays:" + hel::to_string(relays, std::function<std::string(hel::SendData::RelayState)>(static_cast<std::string(*)(hel::SendData::RelayState)>(hel::to_string)));
     s += "analog_outputs:" + hel::to_string(analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string)));
-    s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(MXPData)>([&](MXPData a){ return a.toString();})) + ", ";
+    s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(MXPData)>(&MXPData::toString)) + ", ";
     s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
     s += "can_motor_controllers:" + hel::to_string(can_motor_controllers, std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){ return "[" + std::to_string(a.first) + ", " + a.second.toString() + "]";}));
     s += ")";
@@ -145,9 +141,7 @@ void hel::SendData::serializeDigitalMXP(){
     serialized_data += serializeList(
         "\"digital_mxp\"",
         digital_mxp,
-        std::function<std::string(hel::MXPData)>([&](MXPData data){
-            return "{\"config\":" + hel::quote(hel::to_string(data.config)) + ",\"value\":" + std::to_string(data.value) + "}";
-        })
+        std::function<std::string(hel::MXPData)>(&MXPData::serialize)
 	);
 }
 
@@ -155,9 +149,7 @@ void hel::SendData::serializeDigitalHdrs(){
     serialized_data += serializeList(
         "\"digital_hdrs\"",
         digital_hdrs,
-        std::function<std::string(bool)>([&](bool b){
-			return b ? "1" : "0";
-        })
+        std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(hel::to_string))
     );
 }
 
@@ -207,8 +199,4 @@ std::string hel::SendData::serializeDeep(){
     serialized_data += JSON_PACKET_SUFFIX;
     new_data = false;
     return serialized_data;
-}
-
-std::string hel::SendData::serialize(){
-	return serializeDeep();
 }

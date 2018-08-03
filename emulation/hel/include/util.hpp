@@ -61,21 +61,8 @@ namespace hel{
 
         return integer;
     }
-    /*
-        _   _         _            _             _                _            __
-       /\_\/\_\ _    /\ \         /\ \     _    / /\             /\ \         / /\
-      / / / / //\_\ /  \ \       /  \ \   /\_\ / /  \           /  \ \____   / /  \
-     /\ \/ \ \/ / // /\ \ \     / /\ \ \_/ / // / /\ \         / /\ \_____\ / / /\ \__
-    /  \____\__/ // / /\ \ \   / / /\ \___/ // / /\ \ \       / / /\/___  // / /\ \___\
-   / /\/________// / /  \ \_\ / / /  \/____// / /  \ \ \     / / /   / / / \ \ \ \/___/
-  / / /\/_// / // / /   / / // / /    / / // / /___/ /\ \   / / /   / / /   \ \ \
- / / /    / / // / /   / / // / /    / / // / /_____/ /\ \ / / /   / / /_    \ \ \
-/ / /    / / // / /___/ / // / /    / / // /_________/\ \ \\ \ \__/ / //_/\__/ / /
-\/_/    / / // / /____\/ // / /    / / // / /_       __\ \_\\ \___\/ / \ \/___/ /
-        \/_/ \/_________/ \/_/     \/_/ \_\___\     /____/_/ \/_____/   \_____\/
 
-     */
-    template<typename T>
+	template<typename T>
     struct Maybe { //TODO optimize
 
     private:
@@ -97,7 +84,7 @@ namespace hel{
         }
 
         template<typename R>
-        constexpr static std::function<Maybe<R>(Maybe<T>)> lift(const std::function<R(T)>& f){
+        inline static std::function<Maybe<R>(Maybe<T>)> lift(const std::function<R(T)>& f){
             return (std::function<Maybe<R>(Maybe<T>)>)[f](Maybe<T> arg) {
                 return Maybe<R>(f(arg._data));
             };
@@ -124,7 +111,7 @@ namespace hel{
     };
 
     template<typename T>
-    std::string to_string(const T& iterable, std::function<std::string(typename T::value_type)> to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
+    std::string to_string(const T& iterable, const std::function<std::string(typename T::value_type)>& to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
         std::string s = "";
         if(include_brackets){
             s += "[";
@@ -142,7 +129,7 @@ namespace hel{
     }
 
     template<typename FIRST, typename SECOND>
-    std::string to_string(const std::pair<FIRST, SECOND>& a, std::function<std::string(FIRST)> first_to_s, std::function<std::string(SECOND)> second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
+    std::string to_string(const std::pair<FIRST, SECOND>& a, const std::function<std::string(FIRST)>& first_to_s, const std::function<std::string(SECOND)>& second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
         std::string s = "";
         if(include_brackets){
             s += "[";

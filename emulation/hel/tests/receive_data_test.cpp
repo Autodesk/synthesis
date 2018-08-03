@@ -7,7 +7,8 @@ TEST(ReceiveDataTest, Deserialize){
     std::cout<<"Input: "<<in<<"\n\n";
 
     hel::ReceiveData receiver;
-    receiver.deserializeAndUpdate(in);
+    receiver.deserializeDeep(in);
+	receiver.updateDeep();
     std::cout<<"Receiver value: "<<receiver.toString()<<"\n";
 
     EXPECT_EQ(0, 0); //TODO

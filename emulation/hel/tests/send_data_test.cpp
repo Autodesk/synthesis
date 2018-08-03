@@ -8,7 +8,7 @@ using namespace nRoboRIO_FPGANamespace;
 
 TEST(SendDataTest, Serialize){
     hel::SendData a = {};
-    std::cout<<"Serializaton: "<<a.serialize()<<"\n";
+    std::cout<<"Serializaton: "<<a.serializeDeep()<<"\n";
 
     EXPECT_EQ(true, true); //TODO
 }
@@ -20,8 +20,8 @@ TEST(SendDataTest, Update){
 
     hel::SendData a = {};
     hel::hal_is_initialized.store(true);
-    a.update();
-    std::cout<<"Serializaton: "<<a.serialize()<<"\n";
+    a.updateDeep();
+    std::cout<<"Serializaton: "<<a.serializeDeep()<<"\n";
     std::cout<<"SendData::toString: "<<a.toString()<<"\n";
 
     auto instance = hel::RoboRIOManager::getInstance();
