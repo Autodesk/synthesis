@@ -170,9 +170,9 @@ std::string ConfigData::toString() const
 			{
 				wheelJSON.SetObject();
 
-				driverJSON.AddMember("type", rapidjson::Value((int)wheel->type), configJSON.GetAllocator());
-				driverJSON.AddMember("frictionLevel", rapidjson::Value((int)wheel->frictionLevel), configJSON.GetAllocator());
-				driverJSON.AddMember("isDriveWheel", rapidjson::Value(wheel->isDriveWheel), configJSON.GetAllocator());
+				wheelJSON.AddMember("type", rapidjson::Value((int)wheel->type), configJSON.GetAllocator());
+				wheelJSON.AddMember("frictionLevel", rapidjson::Value((int)wheel->frictionLevel), configJSON.GetAllocator());
+				wheelJSON.AddMember("isDriveWheel", rapidjson::Value(wheel->isDriveWheel), configJSON.GetAllocator());
 			}
 
 			driverJSON.AddMember("wheel", wheelJSON, configJSON.GetAllocator());
@@ -185,8 +185,8 @@ std::string ConfigData::toString() const
 			{
 				pneumaticJSON.SetObject();
 
-				driverJSON.AddMember("width", rapidjson::Value(pneumatic->getCommonWidth()), configJSON.GetAllocator());
-				driverJSON.AddMember("pressure", rapidjson::Value(pneumatic->getCommonPressure()), configJSON.GetAllocator());
+				pneumaticJSON.AddMember("width", rapidjson::Value(pneumatic->getCommonWidth()), configJSON.GetAllocator());
+				pneumaticJSON.AddMember("pressure", rapidjson::Value(pneumatic->getCommonPressure()), configJSON.GetAllocator());
 			}
 
 			driverJSON.AddMember("pneumatic", pneumaticJSON, configJSON.GetAllocator());
