@@ -44,11 +44,6 @@ namespace BxDRobotExporter.Wizard
                 WizardData.Instance.Apply();
                 StandardAddInServer.Instance.PendingChanges = true;
                 Close();
-                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
-                {
-                    Form finishDialog = new ExportOrAdvancedForm();
-                    finishDialog.ShowDialog();
-                }
             };
         }
 
