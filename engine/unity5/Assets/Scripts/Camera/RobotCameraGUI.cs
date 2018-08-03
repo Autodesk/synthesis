@@ -36,7 +36,7 @@ namespace Synthesis.Camera
         GameObject FOVEntry;
 
         bool changingFOV = false;
-        float fovIncrement = .8f;
+        float fovIncrement = .01f;
         int fovSign;
 
         GameObject cameraNodePanel;
@@ -92,11 +92,17 @@ namespace Synthesis.Camera
             if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
             if (isEditingFOV && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditFOV();
 
+            //if (changingFOV)
+            //{
+            //    FOVEntry.GetComponent<InputField>().text =
+            //        (robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign).ToString();
+            //    SyncCameraFOV();
+
+            //If an increment button is held, increment fov
             if (changingFOV)
             {
-                FOVEntry.GetComponent<InputField>().text =
-                    (robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign).ToString();
-                SyncCameraFOV();
+                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView =
+                    robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign;
             }
         }
 
@@ -142,7 +148,7 @@ namespace Synthesis.Camera
             editAngleButton = Auxiliary.FindObject(cameraAnglePanel, "EditButton");
 
             //For field of view configuration
-            cameraFOVPanel = Auxiliary.FindObject(canvas, "CameraFOVPanel");
+            cameraFOVPanel = Auxiliary.FindObject(configureCameraPanel, "CameraFOVPanel");
             FOVEntry = Auxiliary.FindObject(cameraFOVPanel, "FOVEntry");
             showFOVButton = Auxiliary.FindObject(configureCameraPanel, "ShowCameraFOVButton");
             editFOVButton = Auxiliary.FindObject(cameraFOVPanel, "EditButton");
@@ -394,7 +400,7 @@ namespace Synthesis.Camera
         /// </summary>
         public void UpdateCameraFOVPanel()
         {
-            if (!isEditingFOV && robotCameraManager.CurrentCamera != null)
+            if (robotCameraManager.CurrentCamera != null)
             {
                 FOVEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView.ToString();
             }
@@ -414,6 +420,17 @@ namespace Synthesis.Camera
             {
                 robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
             }
+        }
+
+        public void ChangeFOV(int sign)
+        {
+            fovSign = sign;
+            changingFOV = true;
+        }
+
+        public void StopChangingFOV()
+        {
+            changingFOV = false;
         }
 
         /// <summary>
