@@ -296,7 +296,7 @@ function readConfigData()
     {
         var fieldset = jointOptions[i];
 
-        var joint = { 'driver': null, 'type': parseInt(fieldset.dataset.joint_type) };
+        var joint = { 'driver': null, 'name': getElByClass(fieldset, 'joint-config-legend').innerHTML, 'type': parseInt(fieldset.dataset.joint_type) };
 
         var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
 
