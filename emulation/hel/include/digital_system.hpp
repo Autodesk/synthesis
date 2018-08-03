@@ -6,7 +6,9 @@
 
 #include <string>
 #include <exception>
+
 #include "bounds_checked_array.hpp"
+#include "mxp_data.hpp"
 
 namespace hel{
     struct DigitalSystem{
@@ -220,6 +222,8 @@ namespace hel{
          */
 
         void setPWMPulseWidth(uint8_t, uint8_t);
+
+		static MXPData::Config toMXPConfig(uint16_t, uint16_t,uint8_t);
 
         DigitalSystem()noexcept;
         DigitalSystem(const DigitalSystem&)noexcept;

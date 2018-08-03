@@ -12,7 +12,7 @@ namespace hel{
 
     RoboRIO RoboRIOManager::getCopy() {
         auto instance = RoboRIOManager::getInstance();
-        auto roborio_copy = RoboRIO(*instance.first);
+        auto roborio_copy{*instance.first};
         instance.second.unlock();
         return roborio_copy;
     }

@@ -44,33 +44,7 @@ void hel::SendData::update(){
     }
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){
-        digital_mxp[i].config = [&](){
-            if(checkBitHigh(roborio.digital_system.getMXPSpecialFunctionsEnabled(), i)){
-                if(
-                    i == 0  || i == 1  ||
-                    i == 2  || i == 3  ||
-                    i == 8  || i == 9  ||
-                    i == 10 || i == 11 ||
-                    i == 12 || i == 13
-                ){
-                    return hel::MXPData::Config::PWM;
-                }
-                if(
-                    i == 4 || i == 5 ||
-                    i == 6 || i == 7
-                ){
-                    return hel::MXPData::Config::SPI;
-                }
-                if(i == 14 || i == 15){
-                    return hel::MXPData::Config::I2C;
-                }
-            }
-            tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();
-            if(checkBitHigh(output_mode.MXP,i)){
-                return hel::MXPData::Config::DO;
-            }
-            return hel::MXPData::Config::DI;
-        }();
+        digital_mxp[i].config = DigitalSystem::toMXPConfig(roborio.digital_system.getEnabledOutputs().MXP, roborio.digital_system.getMXPSpecialFunctionsEnabled(), i);
 
         switch(digital_mxp[i].config){
         case hel::MXPData::Config::DO:
@@ -86,11 +60,7 @@ void hel::SendData::update(){
             }
             break;
         case hel::MXPData::Config::SPI:
-            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Digital MXP input "<<i<<" configured for SPI during data send phase to engine\n"; //TODO move these warnings elsewhere?
-            break;
         case hel::MXPData::Config::I2C:
-            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Digital MXP input "<<i<<" configured for I2C during data send phase to engine\n";
-            break;
         default:
             break; //do nothing
         }

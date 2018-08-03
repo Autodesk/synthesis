@@ -45,7 +45,7 @@
 #include "receive_data.hpp"
 #include "robot_mode.hpp"
 #include "send_data.hpp"
-#include "solenoid.hpp"
+#include "pcm.hpp"
 #include "spi_system.hpp"
 #include "sync_server.hpp"
 #include "sys_watchdog.hpp"
@@ -90,7 +90,7 @@ namespace hel{
         PWMSystem pwm_system;
         RelaySystem relay_system;
         RobotMode robot_mode;
-		BoundsCheckedArray<bool,Solenoid::NUM_SOLENOIDS> solenoids;
+		PCM pcm;
 		SPISystem spi_system;
         SysWatchdog watchdog;
 

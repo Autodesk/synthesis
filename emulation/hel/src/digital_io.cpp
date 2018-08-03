@@ -77,6 +77,35 @@ namespace hel{
         instance.second.unlock();
     }
 
+	MXPData::Config DigitalSystem::toMXPConfig(uint16_t output_mode, uint16_t special_func, uint8_t i){
+		if(i >= NUM_DIGITAL_MXP_CHANNELS){
+			throw std::out_of_range("Synthesis exception: attempting to check configuration for digital MXP port at digital index " + std::to_string(i));
+		}
+		if(checkBitHigh(special_func, i)){
+			if(
+				i == 4 || i == 5 ||
+				i == 6 || i == 7
+            ){
+				return hel::MXPData::Config::SPI;
+			}
+			if(i == 14 || i == 15){
+				return hel::MXPData::Config::I2C;
+			}
+			/* must be true
+			i == 0  || i == 1  ||
+			i == 2  || i == 3  ||
+			i == 8  || i == 9  ||
+			i == 10 || i == 11 ||
+			i == 12 || i == 13
+			*/
+			return hel::MXPData::Config::PWM;
+		}
+		if(checkBitHigh(output_mode,i)){
+			return hel::MXPData::Config::DO;
+		}
+		return hel::MXPData::Config::DI;
+	}
+
     DigitalSystem::DigitalSystem()noexcept:
         outputs(),
         enabled_outputs(),
@@ -454,6 +483,13 @@ namespace hel{
         void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.first->digital_system.setMXPSpecialFunctionsEnabled(value);
+			for(unsigned i = 0; i < hel::findMostSignificantBit(value); i++){
+				hel::MXPData::Config mxp_config = hel::DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
+				if(mxp_config == hel::MXPData::Config::I2C || mxp_config == hel::MXPData::Config::SPI){
+					std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Configuring digital MXP input "<<i<<" for "<<hel::to_string(mxp_config)<<"\n";
+				}
+			}
+
             instance.second.unlock();
         }
 
