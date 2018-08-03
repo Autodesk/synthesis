@@ -11338,9 +11338,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231142}
-        m_MethodName: 
-        m_Mode: 5
+      - m_Target: {fileID: 1741231145}
+        m_MethodName: OnEmulationTab
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -28761,7 +28761,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 461592954}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741231156}
+        m_MethodName: RobotEnabled
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &461592954
@@ -40306,7 +40317,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 631828461}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741231156}
+        m_MethodName: RobotState
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: auto
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &631828461
@@ -68001,7 +68023,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1098919608}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741231156}
+        m_MethodName: RobotState
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: teleop
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1098919608
@@ -69773,7 +69806,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1138281654}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741231156}
+        m_MethodName: RobotState
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: test
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1138281654
@@ -87588,7 +87632,18 @@ MonoBehaviour:
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Dropdown+DropdownEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1431038465
@@ -98157,7 +98212,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1631643196
 RectTransform:
   m_ObjectHideFlags: 0
@@ -105329,6 +105384,7 @@ GameObject:
   - component: {fileID: 1741231152}
   - component: {fileID: 1741231154}
   - component: {fileID: 1741231155}
+  - component: {fileID: 1741231156}
   m_Layer: 0
   m_Name: Simulator
   m_TagString: Untagged
@@ -105487,6 +105543,22 @@ MonoBehaviour:
     type: 2}
   tabButtonPrefab: {fileID: 1191304908332060, guid: 8e1f30443806d314ca1afefa977199ab,
     type: 2}
+--- !u!114 &1741231156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1741231142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb785a0939d116b4398db5048b4d5f29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HighlightColor: {fileID: 21300000, guid: fb673c560cd7b084a9c918ac244dbca8, type: 3}
+  DefaultColor: {fileID: 21300000, guid: 2313355f62f221346b21d056601f1be3, type: 3}
+  EnableColor: {fileID: 21300000, guid: 92bc3e38b05d3f94bb655136bdbce040, type: 3}
+  DisableColor: {fileID: 21300000, guid: ca4e7be085c03f54193d4bd46547ee66, type: 3}
+  TopBarHighlight: {fileID: 21300000, guid: 25a9518ac00e7004da2b4a9d969874f9, type: 3}
 --- !u!1 &1744877097
 GameObject:
   m_ObjectHideFlags: 0
@@ -116094,7 +116166,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1926947692}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741231156}
+        m_MethodName: RobotDisabled
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1926947692

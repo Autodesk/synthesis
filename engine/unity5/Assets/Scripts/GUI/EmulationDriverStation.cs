@@ -106,7 +106,6 @@ namespace Synthesis.GUI
 
         public void TeamStation(int teamStation)
         {
-
             switch (teamStation)
             {
                 case 0:
