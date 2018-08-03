@@ -28,8 +28,8 @@ Driver::Driver(Type type)
 {
 	this->type = type;
 	portSignal = PWM;
-	portA = -1;
-	portB = -1;
+	portA = 0;
+	portB = 0;
 	inputGear = 1;
 	outputGear = 1;
 

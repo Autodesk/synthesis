@@ -158,9 +158,7 @@ std::string ConfigData::toString()
 		// Driver Information
 		rapidjson::Value driverJSON;
 
-		if (i->second == nullptr)
-			driverJSON.SetNull();
-		else
+		if (i->second != nullptr)
 		{
 			driverJSON.SetObject();
 			Driver driver(*i->second);
@@ -171,10 +169,33 @@ std::string ConfigData::toString()
 			driverJSON.AddMember("portB", rapidjson::Value((int)driver.portB), configJSON.GetAllocator());
 
 			// Wheel Information
-			driverJSON.AddMember("wheel", rapidjson::Value(), configJSON.GetAllocator());
+			rapidjson::Value wheelJSON;
+			std::unique_ptr<Wheel> wheel = driver.getWheel();
+
+			if (wheel != nullptr)
+			{
+				wheelJSON.SetObject();
+
+				driverJSON.AddMember("type", rapidjson::Value((int)wheel->type), configJSON.GetAllocator());
+				driverJSON.AddMember("frictionLevel", rapidjson::Value((int)wheel->frictionLevel), configJSON.GetAllocator());
+				driverJSON.AddMember("isDriveWheel", rapidjson::Value(wheel->isDriveWheel), configJSON.GetAllocator());
+			}
+
+			driverJSON.AddMember("wheel", wheelJSON, configJSON.GetAllocator());
 			
 			// Pneumatic Information
-			driverJSON.AddMember("pneumatic", rapidjson::Value(), configJSON.GetAllocator());
+			rapidjson::Value pneumaticJSON;
+			std::unique_ptr<Pneumatic> pneumatic = driver.getPneumatic();
+
+			if (pneumatic != nullptr)
+			{
+				pneumaticJSON.SetObject();
+
+				driverJSON.AddMember("width", rapidjson::Value(pneumatic->getCommonWidth()), configJSON.GetAllocator());
+				driverJSON.AddMember("pressure", rapidjson::Value(pneumatic->getCommonPressure()), configJSON.GetAllocator());
+			}
+
+			driverJSON.AddMember("pneumatic", pneumaticJSON, configJSON.GetAllocator());
 		}
 
 		jointJSON.AddMember("driver", driverJSON, configJSON.GetAllocator());

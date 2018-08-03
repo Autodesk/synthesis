@@ -160,6 +160,24 @@ function applyDriverData(driver, fieldset)
         return;
 
     getElByClass(fieldset, 'driver-type').value = driver.type;
+    getElByClass(fieldset, 'port-signal').value = driver.signal;
+    getElByClass(fieldset, 'port-number-a').value = driver.portA;
+    getElByClass(fieldset, 'port-number-b').value = driver.portB;
+
+    if (driver.wheel != null)
+    {
+        getElByClass(fieldset, 'wheel-type').value = driver.wheel.type;
+        getElByClass(fieldset, 'is-drive-wheel').checked = driver.wheel.isDriveWheel;
+
+        if (driver.wheel.isDriveWheel)
+            getElByClass(fieldset, 'wheel-side').value = driver.portA;
+    }
+
+    if (driver.pneumatic != null)
+    {
+        getElByClass(fieldset, 'pneumatic-width').value = driver.pneumatic.width;
+        getElByClass(fieldset, 'pneumatic-pressure').value = driver.pneumatic.pressure;
+    }
 }
 
 // Disable submit button if no name entered
