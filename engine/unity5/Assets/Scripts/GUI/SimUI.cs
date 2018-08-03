@@ -836,6 +836,7 @@ namespace Synthesis.GUI
             LinkToolbar<DPMToolbarState>("DPMToolbar");
             LinkToolbar<ScoringToolbarState>("ScoringToolbar");
             LinkToolbar<SensorToolbarState>("SensorToolbar");
+            LinkToolbar<EmulationToolbarState>("EmulationToolbar");
         }
 
         /// <summary>
