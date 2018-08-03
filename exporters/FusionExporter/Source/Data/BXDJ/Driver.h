@@ -2,11 +2,12 @@
 
 #include <string>
 #include "XmlWriter.h"
+#include "CustomJSONObject.h"
 #include "Components.h"
 
 namespace BXDJ
 {
-	class Driver : public XmlWritable
+	class Driver : public XmlWritable, public CustomJSONObject
 	{
 	public:
 		enum Type : char
@@ -38,8 +39,6 @@ namespace BXDJ
 		Driver(const Driver &);
 		Driver(Type type = UNKNOWN);
 
-		void write(XmlWriter &) const;
-
 		// Component Functions
 		void removeComponents();
 		void setComponent(Wheel);
@@ -47,12 +46,17 @@ namespace BXDJ
 		std::unique_ptr<Wheel> getWheel();
 		std::unique_ptr<Pneumatic> getPneumatic();
 
+		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
+		void loadJSONObject(const rapidjson::Value&);
+
 	private:
 		std::unique_ptr<Wheel> wheel;
 		std::unique_ptr<Pneumatic> pneumatic;
 
 		static std::string toString(Type);
 		static std::string toString(Signal);
+
+		void write(XmlWriter &) const;
 
 	};
 }

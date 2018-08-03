@@ -66,6 +66,62 @@ void Driver::write(XmlWriter & output) const
 	output.endElement();
 }
 
+rapidjson::Value Driver::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+{
+	rapidjson::Value driverJSON;
+	driverJSON.SetObject();
+
+	driverJSON.AddMember("type", rapidjson::Value((int)type), allocator);
+	driverJSON.AddMember("signal", rapidjson::Value((int)portSignal), allocator);
+	driverJSON.AddMember("portA", rapidjson::Value((int)portA), allocator);
+	driverJSON.AddMember("portB", rapidjson::Value((int)portB), allocator);
+
+	// Components
+	// Wheel Information
+	rapidjson::Value wheelJSON;
+	if (wheel != nullptr)
+		wheelJSON = wheel->getJSONObject(allocator);
+
+	// Pneumatic Information
+	rapidjson::Value pneumaticJSON;
+	if (pneumatic != nullptr)
+		pneumaticJSON = pneumatic->getJSONObject(allocator);
+
+	driverJSON.AddMember("wheel", wheelJSON, allocator);
+	driverJSON.AddMember("pneumatic", pneumaticJSON, allocator);
+
+	return driverJSON;
+}
+
+void Driver::loadJSONObject(const rapidjson::Value & driverJSON)
+{
+	if (driverJSON.IsObject())
+	{
+		// Driver Properties
+		type = (Driver::Type)driverJSON["type"].GetInt();
+		portSignal = (Driver::Signal)driverJSON["signal"].GetInt();
+		portA = driverJSON["portA"].GetInt();
+		portB = driverJSON["portB"].GetInt();
+
+		// Components
+		const rapidjson::Value& wheelJSON = driverJSON["wheel"];
+		const rapidjson::Value& pneumaticJSON = driverJSON["pneumatic"];
+
+		if (wheelJSON.IsObject())
+		{
+			Wheel wheel;
+			wheel.loadJSONObject(wheelJSON);
+			setComponent(wheel);
+		}
+		else if (wheelJSON.IsObject())
+		{
+			Pneumatic pneumatic;
+			pneumatic.loadJSONObject(pneumaticJSON);
+			setComponent(pneumatic);
+		}
+	}
+}
+
 // Component Functions
 void Driver::removeComponents()
 {

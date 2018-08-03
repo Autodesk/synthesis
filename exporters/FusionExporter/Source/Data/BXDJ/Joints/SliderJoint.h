@@ -20,10 +20,11 @@ namespace BXDJ
 		float getMaxTranslation() const;
 
 		void applyConfig(const ConfigData &);
-		void write(XmlWriter &) const;
 
 	private:
 		core::Ptr<fusion::SliderJointMotion> fusionJointMotion;
+
+		void write(XmlWriter &) const;
 
 	};
 }

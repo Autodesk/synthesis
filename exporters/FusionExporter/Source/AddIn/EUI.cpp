@@ -126,7 +126,7 @@ bool EUI::createExportPalette()
 void Synthesis::EUI::openExportPalette()
 {
 	exportButtonCommand->controlDefinition()->isEnabled(false);
-	exportPalette->sendInfoToHTML("joints", Exporter::loadConfiguration(app->activeDocument()).toString());
+	exportPalette->sendInfoToHTML("joints", Exporter::loadConfiguration(app->activeDocument()).toJSONString());
 	exportPalette->isVisible(true);
 }
 
