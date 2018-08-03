@@ -135,7 +135,7 @@ rapidjson::Value Wheel::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocato
 
 	wheelJSON.AddMember("type", rapidjson::Value((int)type), allocator);
 	wheelJSON.AddMember("frictionLevel", rapidjson::Value((int)frictionLevel), allocator);
-	wheelJSON.AddMember("isDriveWheel", rapidjson::Value((int)isDriveWheel), allocator);
+	wheelJSON.AddMember("isDriveWheel", rapidjson::Value(isDriveWheel), allocator);
 
 	return wheelJSON;
 }
