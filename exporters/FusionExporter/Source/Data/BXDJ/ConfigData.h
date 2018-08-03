@@ -44,14 +44,14 @@ namespace BXDJ
 			{
 				name = other.name;
 				motion = other.motion;
-				driver = std::make_unique<Driver>(*other.driver);
+				driver = (other.driver == nullptr) ? nullptr : std::make_unique<Driver>(*other.driver);
 			}
 
 			JointConfig& JointConfig::operator=(const JointConfig &other)
 			{
 				name = other.name;
 				motion = other.motion;
-				driver = std::make_unique<Driver>(*other.driver);
+				driver = (other.driver == nullptr) ? nullptr : std::make_unique<Driver>(*other.driver);
 				return *this;
 			}
 		};
