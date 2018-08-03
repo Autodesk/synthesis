@@ -178,6 +178,8 @@ extern "C"{
         if(messageID == SILENT_UNKNOWN_DEVICE_ID){
             return;
         }
+		hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array{0};
+		std::copy(data, data + dataSize, data_array.begin());
 
         hel::CANDevice::Type target_type = hel::CANDevice::pullDeviceType(messageID);
         switch(target_type){
@@ -185,9 +187,6 @@ extern "C"{
         case hel::CANDevice::Type::VICTOR_SPX:
         {
             uint8_t controller_id = hel::CANDevice::pullDeviceID(messageID);
-
-            hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array{0};
-            std::copy(data, data + dataSize, data_array.begin());
 
             uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];
             auto instance = hel::RoboRIOManager::getInstance();
@@ -212,8 +211,16 @@ extern "C"{
             }
             break;
         }
-        case hel::CANDevice::Type::UNKNOWN:
         case hel::CANDevice::Type::PCM:
+		{
+            auto instance = hel::RoboRIOManager::getInstance();
+			for(unsigned i = 0; i < 8; i++){
+				instance.first->solenoids[i] = hel::checkBitHigh(data_array[hel::Solenoid::MessageData::SOLENOIDS], i);
+			}
+			instance.second.unlock();
+			break;
+		}
+        case hel::CANDevice::Type::UNKNOWN:
         case hel::CANDevice::Type::PDP:
             std::cerr<<"Synthesis warning: Attempting to write to unsupported CAN device (" + hel::to_string(target_type) + ") using message ID "<<messageID<<"\n";
             break;
@@ -251,8 +258,8 @@ extern "C"{
             instance.second.unlock();
             break;
         }
-        case hel::CANDevice::Type::UNKNOWN:
         case hel::CANDevice::Type::PCM:
+        case hel::CANDevice::Type::UNKNOWN:
         case hel::CANDevice::Type::PDP:
             std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Attempting to read from CAN device (" + hel::to_string(target_type) + ") using message ID "<<*messageID<<"\n";
             break;

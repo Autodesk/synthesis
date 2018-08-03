@@ -86,7 +86,7 @@ void hel::SendData::update(){
             }
             break;
         case hel::MXPData::Config::SPI:
-            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Digital MXP input "<<i<<" configured for SPI during data send phase to engine\n";
+            std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Digital MXP input "<<i<<" configured for SPI during data send phase to engine\n"; //TODO move these warnings elsewhere?
             break;
         case hel::MXPData::Config::I2C:
             std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Digital MXP input "<<i<<" configured for I2C during data send phase to engine\n";

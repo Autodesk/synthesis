@@ -45,6 +45,7 @@
 #include "receive_data.hpp"
 #include "robot_mode.hpp"
 #include "send_data.hpp"
+#include "solenoid.hpp"
 #include "spi_system.hpp"
 #include "sync_server.hpp"
 #include "sys_watchdog.hpp"
@@ -89,7 +90,8 @@ namespace hel{
         PWMSystem pwm_system;
         RelaySystem relay_system;
         RobotMode robot_mode;
-        SPISystem spi_system;
+		BoundsCheckedArray<bool,Solenoid::NUM_SOLENOIDS> solenoids;
+		SPISystem spi_system;
         SysWatchdog watchdog;
 
         explicit RoboRIO()noexcept;

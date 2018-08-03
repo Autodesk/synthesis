@@ -23,6 +23,8 @@ class Robot : public frc::IterativeRobot {
     frc::AnalogInput ai{0};
     frc::Encoder encoder{0,1};
     frc::Solenoid solenoid{0};
+    frc::Solenoid solenoid1{1};
+    frc::Solenoid solenoid7{7};
     ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
 
     bool current_state = false;
@@ -47,7 +49,10 @@ public:
         r.Set(frc::Relay::Value::kForward);
         double d = (std::rand() % 5001) / 1000.0;
         ao.SetVoltage(d);
+		std::cout<<"Setting pneumatics to "<<current_state<<" and "<<(!current_state)<<"\n";
         solenoid.Set(current_state);
+        solenoid1.Set(!current_state);
+        solenoid7.Set(current_state);
         talon.Set(0.3);
 
         std::cout<<"Setting left to "<<left<<" - Set to "<< m_leftMotor.GetSpeed()<<"\nSetting right to "<<right<<" - Set to "<<m_rightMotor.GetSpeed()<<"\n\n";
