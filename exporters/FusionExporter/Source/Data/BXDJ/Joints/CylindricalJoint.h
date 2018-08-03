@@ -29,10 +29,11 @@ namespace BXDJ
 		float getMaxTranslation() const;
 
 		void applyConfig(const ConfigData &);
-		void write(XmlWriter &) const;
 
 	private:
 		core::Ptr<fusion::CylindricalJointMotion> fusionJointMotion;
+
+		void write(XmlWriter &) const;
 
 	};
 }

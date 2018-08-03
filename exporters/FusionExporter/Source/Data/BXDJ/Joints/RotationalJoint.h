@@ -21,10 +21,11 @@ namespace BXDJ
 		float getMaxAngle() const;
 
 		void applyConfig(const ConfigData &);
-		void write(XmlWriter &) const;
 
 	private:
 		core::Ptr<fusion::RevoluteJointMotion> fusionJointMotion;
+
+		void write(XmlWriter &) const;
 
 	};
 }

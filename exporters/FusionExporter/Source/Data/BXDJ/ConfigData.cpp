@@ -1,10 +1,8 @@
 #include "ConfigData.h"
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
 #include <Fusion/FusionTypeDefs.h>
 #include <Fusion/Components/JointMotion.h>
 #include <Fusion/Components/Occurrence.h>
+#include <rapidjson/document.h>
 #include "Utility.h"
 
 using namespace adsk;
@@ -13,11 +11,6 @@ using namespace BXDJ;
 ConfigData::ConfigData()
 {
 	robotName = "unnamed";
-}
-
-ConfigData::ConfigData(std::string configStr)
-{
-	loadFromJSON(configStr);
 }
 
 ConfigData::ConfigData(const ConfigData & other)
@@ -83,78 +76,13 @@ void ConfigData::filterJoints(std::vector<core::Ptr<fusion::Joint>> filterJoints
 		joints.erase(jointToErase);
 }
 
-void ConfigData::loadFromJSON(std::string configStr)
+rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
 {
-	rapidjson::Document configJSON;
-	configJSON.Parse(configStr.c_str());
-
-	// Get robot name
-	robotName = configJSON["name"].GetString();
-
-	const rapidjson::Value& jointConfig = configJSON["joints"].GetArray();
-
-	// Read each joint configuration
-	for (rapidjson::SizeType i = 0; i < jointConfig.Size(); i++)
-	{
-		std::string jointID = jointConfig[i]["id"].GetString();
-
-		joints[jointID].name = jointConfig[i]["name"].GetString();
-		joints[jointID].motion = (JointMotionType)jointConfig[i]["type"].GetInt();
-
-		const rapidjson::Value& driverJSON = jointConfig[i]["driver"];
-
-		if (driverJSON.IsObject())
-		{
-			Driver driver;
-
-			// Driver Properties
-			driver.type = (Driver::Type)driverJSON["type"].GetInt();
-			driver.portSignal = (Driver::Signal)driverJSON["signal"].GetInt();
-			driver.portA = driverJSON["portA"].GetInt();
-			driver.portB = driverJSON["portB"].GetInt();
-
-			// Wheel Properties
-			const rapidjson::Value& wheelJSON = driverJSON["wheel"];
-			if (wheelJSON.IsObject())
-			{
-				Wheel wheel;
-
-				wheel.type = (Wheel::Type)wheelJSON["type"].GetInt();
-				wheel.frictionLevel = (Wheel::FrictionLevel)wheelJSON["frictionLevel"].GetInt();
-				wheel.isDriveWheel = wheelJSON["isDriveWheel"].GetBool();
-
-				driver.setComponent(wheel);
-			}
-
-			// Pneumatic Properties
-			const rapidjson::Value& pneumaticJSON = driverJSON["pneumatic"];
-			if (pneumaticJSON.IsObject())
-			{
-				Pneumatic pneumatic;
-
-				pneumatic.widthMillimeter = Pneumatic::COMMON_WIDTHS[wheelJSON["width"].GetInt()];
-				pneumatic.pressurePSI = Pneumatic::COMMON_PRESSURES[wheelJSON["pressure"].GetInt()];
-
-				driver.setComponent(pneumatic);
-			}
-
-			joints[jointID].driver = std::make_unique<Driver>(driver);
-		}
-		else
-		{
-			joints[jointID].driver = nullptr;
-		}
-	}
-}
-
-std::string ConfigData::toString() const
-{
-	// Create JSON object containing all joint info
-	rapidjson::Document configJSON;
+	rapidjson::Value configJSON;
 	configJSON.SetObject();
 
 	// Robot Name
-	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
+	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), allocator), allocator);
 
 	// Joints
 	rapidjson::Value jointsJSON;
@@ -168,73 +96,50 @@ std::string ConfigData::toString() const
 		rapidjson::Value jointJSON;
 		jointJSON.SetObject();
 
-		// Joint ID
-		jointJSON.AddMember("id", rapidjson::Value(jointID.c_str(), jointID.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
-
-		// Joint Name
-		jointJSON.AddMember("name", rapidjson::Value(jointConfig.name.c_str(), jointConfig.name.length(), configJSON.GetAllocator()), configJSON.GetAllocator());
-
-		// Joint Motion (linear and/or angular)
-		jointJSON.AddMember("type", rapidjson::Value((int)jointConfig.motion), configJSON.GetAllocator());
+		// Joint Info
+		jointJSON.AddMember("id", rapidjson::Value(jointID.c_str(), jointID.length(), allocator), allocator);
+		jointJSON.AddMember("name", rapidjson::Value(jointConfig.name.c_str(), jointConfig.name.length(), allocator), allocator);
+		jointJSON.AddMember("type", rapidjson::Value((int)jointConfig.motion), allocator);
 
 		// Driver Information
 		rapidjson::Value driverJSON;
-
 		if (jointConfig.driver != nullptr)
-		{
-			driverJSON.SetObject();
-			Driver driver(*jointConfig.driver);
+			driverJSON = jointConfig.driver->getJSONObject(allocator);
 
-			driverJSON.AddMember("type", rapidjson::Value((int)driver.type), configJSON.GetAllocator());
-			driverJSON.AddMember("signal", rapidjson::Value((int)driver.portSignal), configJSON.GetAllocator());
-			driverJSON.AddMember("portA", rapidjson::Value((int)driver.portA), configJSON.GetAllocator());
-			driverJSON.AddMember("portB", rapidjson::Value((int)driver.portB), configJSON.GetAllocator());
-
-			// Wheel Information
-			rapidjson::Value wheelJSON;
-			std::unique_ptr<Wheel> wheel = driver.getWheel();
-
-			if (wheel != nullptr)
-			{
-				wheelJSON.SetObject();
-
-				wheelJSON.AddMember("type", rapidjson::Value((int)wheel->type), configJSON.GetAllocator());
-				wheelJSON.AddMember("frictionLevel", rapidjson::Value((int)wheel->frictionLevel), configJSON.GetAllocator());
-				wheelJSON.AddMember("isDriveWheel", rapidjson::Value(wheel->isDriveWheel), configJSON.GetAllocator());
-			}
-
-			driverJSON.AddMember("wheel", wheelJSON, configJSON.GetAllocator());
-			
-			// Pneumatic Information
-			rapidjson::Value pneumaticJSON;
-			std::unique_ptr<Pneumatic> pneumatic = driver.getPneumatic();
-
-			if (pneumatic != nullptr)
-			{
-				pneumaticJSON.SetObject();
-
-				pneumaticJSON.AddMember("width", rapidjson::Value(pneumatic->getCommonWidth()), configJSON.GetAllocator());
-				pneumaticJSON.AddMember("pressure", rapidjson::Value(pneumatic->getCommonPressure()), configJSON.GetAllocator());
-			}
-
-			driverJSON.AddMember("pneumatic", pneumaticJSON, configJSON.GetAllocator());
-		}
-
-		jointJSON.AddMember("driver", driverJSON, configJSON.GetAllocator());
+		jointJSON.AddMember("driver", driverJSON, allocator);
 
 		// Add joint to JSON array
-		jointsJSON.PushBack(jointJSON, configJSON.GetAllocator());
+		jointsJSON.PushBack(jointJSON, allocator);
 	}
 
-	configJSON.AddMember("joints", jointsJSON, configJSON.GetAllocator());
+	configJSON.AddMember("joints", jointsJSON, allocator);
+	return configJSON;
+}
 
-	// Copy JSON to string
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-	configJSON.Accept(writer);
+void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
+{
+	// Get robot name
+	robotName = configJSON["name"].GetString();
 
-	std::string jsonString(buffer.GetString());
-	return jsonString;
+	// Read each joint configuration
+	auto jointsJSON = configJSON["joints"].GetArray();
+	for (rapidjson::SizeType i = 0; i < jointsJSON.Size(); i++)
+	{
+		std::string jointID = jointsJSON[i]["id"].GetString();
+
+		joints[jointID].name = jointsJSON[i]["name"].GetString();
+		joints[jointID].motion = (JointMotionType)jointsJSON[i]["type"].GetInt();
+
+		const rapidjson::Value& driverJSON = jointsJSON[i]["driver"];
+		if (driverJSON.IsObject())
+		{
+			Driver driver;
+			driver.loadJSONObject(driverJSON);
+			joints[jointID].driver = std::make_unique<Driver>(driver);
+		}
+		else
+			joints[jointID].driver = nullptr;
+	}
 }
 
 ConfigData::JointMotionType ConfigData::internalJointMotion(fusion::JointTypes type) const
