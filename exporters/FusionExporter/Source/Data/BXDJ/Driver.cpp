@@ -73,8 +73,8 @@ rapidjson::Value Driver::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocat
 
 	driverJSON.AddMember("type", rapidjson::Value((int)type), allocator);
 	driverJSON.AddMember("signal", rapidjson::Value((int)portSignal), allocator);
-	driverJSON.AddMember("portA", rapidjson::Value((int)portA), allocator);
-	driverJSON.AddMember("portB", rapidjson::Value((int)portB), allocator);
+	driverJSON.AddMember("portA", rapidjson::Value(portA), allocator);
+	driverJSON.AddMember("portB", rapidjson::Value(portB), allocator);
 
 	// Components
 	// Wheel Information
