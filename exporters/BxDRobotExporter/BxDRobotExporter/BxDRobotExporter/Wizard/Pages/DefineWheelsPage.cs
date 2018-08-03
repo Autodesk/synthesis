@@ -333,20 +333,22 @@ namespace BxDRobotExporter.Wizard
             {
                 //For the first filter, we take out any nodes that do not have parents and rotational joints.
                 if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
-                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
+                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && node.GetSkeletalJoint().cDriver != null
+                        && (node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))) != null)
                 {
                     if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel)
                     {// get the type of drive train and set fields to match so we can add nodes later
                         this.DriveTrainDropdown.SelectedIndex = ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).driveTrainType;
+                        break;
                     }
                 }
             }
-            DriveTrainDropdown_SelectedIndexChanged(null, null);
             foreach (RigidNode_Base node in baseNode.ListAllNodes())
             {
                 //For the first filter, we take out any nodes that do not have parents and rotational joints.
                 if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
-                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
+                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && node.GetSkeletalJoint().cDriver != null
+                        && (node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))) != null)
                 {
                     if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
                         this.DriveTrainDropdown.SelectedIndex = ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).driveTrainType;
