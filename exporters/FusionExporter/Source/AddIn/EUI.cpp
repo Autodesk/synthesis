@@ -300,7 +300,8 @@ void EUI::exportRobot(BXDJ::ConfigData config)
 	}
 	catch (const std::exception& e)
 	{
-		UI->messageBox("An error occurred while exporting \"" + config.robotName + "\"\n" + std::string(e.what()));
+		progressPalette->sendInfoToHTML("error", "An error occurred while exporting \"" + config.robotName + "\"\n" + std::string(e.what()));
+		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
 	
 	closeProgressPalette();
