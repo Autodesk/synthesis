@@ -163,7 +163,7 @@ public partial class DriveChooser : Form
 
             cmbStages.SelectedIndex = (int)ElevatorType.NOT_MULTI;
         }
-        
+
         PrepLayout();
         base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
         this.ShowDialog(owner);
@@ -231,7 +231,7 @@ public partial class DriveChooser : Form
         else
         {
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
-            lblPort.Text = cType.GetPortType() + " Port" + (cType.HasTwoPorts() ? "s" : "");
+            lblPort.Text = cType.GetPortType(rbCAN.Checked) + " Port" + (cType.HasTwoPorts() ? "s" : "");
             txtPortB.Visible = cType.HasTwoPorts();
             txtPortA.Maximum = txtPortB.Maximum = cType.GetPortMax();
             grpDriveOptions.Visible = true;
