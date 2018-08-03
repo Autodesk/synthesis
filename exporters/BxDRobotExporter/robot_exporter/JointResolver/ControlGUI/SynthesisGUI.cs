@@ -469,6 +469,7 @@ public partial class SynthesisGUI : Form
                     wheel.type = (WheelType)Utilities.GetProperty(propertySet, "wheel-type", (int)WheelType.NORMAL);
                     wheel.isDriveWheel = Utilities.GetProperty(propertySet, "wheel-isDriveWheel", false);
                     wheel.SetFrictionLevel((FrictionLevel)Utilities.GetProperty(propertySet, "wheel-frictionLevel", (int)FrictionLevel.MEDIUM));
+                    wheel.driveTrainType = Utilities.GetProperty(propertySet, "wheel-drivetype", 0);
                 }
 
                 // Pneumatic information
@@ -593,6 +594,7 @@ public partial class SynthesisGUI : Form
                     Utilities.SetProperty(propertySet, "wheel-type", (int)wheel.type);
                     Utilities.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
                     Utilities.SetProperty(propertySet, "wheel-frictionLevel", (int)wheel.GetFrictionLevel());
+                    Utilities.SetProperty(propertySet, "wheel-drivetype", wheel.driveTrainType);
                 }
 
                 // Pneumatic information
