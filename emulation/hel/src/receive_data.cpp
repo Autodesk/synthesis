@@ -64,13 +64,13 @@ std::string hel::ReceiveData::toString()const{
     s += "joysticks:" + hel::to_string(joysticks, std::function<std::string(hel::Joystick)>(&Joystick::toString)) + ", ";
     s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>(&MXPData::serialize)) + ", ";
     s += "match_info:" + match_info.toString() + ", ";
-    s += "robot_mode:" + robot_mode.toString();
+    s += "robot_mode:" + robot_mode.toString() + ", ";
     s += "encoder_managers:" + hel::to_string(encoder_managers, std::function<std::string(Maybe<EncoderManager>)>([&](Maybe<EncoderManager> a){
-                                                                                                                    if(a){
-                                                                                                                        return a.get().serialize();
-                                                                                                                    }
-                                                                                                                    return std::string("null");
-                                                                                                                }));
+        if(a){
+            return a.get().toString();
+        }
+        return std::string("null");
+    }));
     s += ")";
     return s;
 }
@@ -138,14 +138,14 @@ void hel::ReceiveData::deserializeEncoders(std::string& input){
     if(input.find(quote("encoders")) != std::string::npos){
         try{
             encoder_managers = hel::deserializeList(
-                hel::pullValue("\"encoders\"", input),
+				hel::pullValue("\"encoders\"", input),
                 std::function<Maybe<EncoderManager>(std::string)>([&](std::string str){
-																	  if(str == "null"){
-																			  return Maybe<EncoderManager>();
-																		  }
-                                    Maybe<std::string> a = Maybe<std::string>(str);
-                                    return a.fmap(liftedDeserialize);
-																  }),
+                    if(trim(str) == "null"){
+                        return Maybe<EncoderManager>();
+                    }
+                    Maybe<std::string> a = Maybe<std::string>(str);
+                    return a.fmap(liftedDeserialize);
+                }),
                 true);
         } catch(const std::exception& ex){
             throw JSONParsingException("encoders");

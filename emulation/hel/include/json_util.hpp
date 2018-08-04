@@ -118,12 +118,13 @@ namespace hel{
 
     template<typename T>
     std::vector<T> deserializeList(std::string input, const std::function<T(std::string)>& from_s, bool clip = false){
+		input = removeExtraneousSpaces(input);
         if(clip){
             input = clipList(input);
         }
         std::vector<T> v;
         for(std::string i: splitObject(input)){
-            v.push_back(from_s(removeExtraneousSpaces(i)));
+            v.push_back(from_s(i));
         }
         return v;
     }
