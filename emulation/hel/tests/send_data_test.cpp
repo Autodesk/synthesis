@@ -25,7 +25,7 @@ TEST(SendDataTest, Update){
     std::cout<<"SendData::toString: "<<a.toString()<<"\n";
 
     auto instance = hel::RoboRIOManager::getInstance();
-    std::cout<<"RoboRIO:"<<hel::checkBitHigh(instance.first->digital_system.getOutputs().Headers,3)<<"\n";
+    std::cout<<"RoboRIO digital_hrds[3]="<<hel::checkBitHigh(instance.first->digital_system.getOutputs().Headers,3)<<"\n";
     instance.second.unlock();
 
     EXPECT_EQ(true, true); //TODO

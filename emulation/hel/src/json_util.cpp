@@ -114,8 +114,15 @@ std::string hel::pullObject(std::string& input){
         } else if(c == '}'){
             curly_bracket_count--;
         }
-        if(c == ',' && bracket_count == 0 && curly_bracket_count == 0){
-            break;
+        if(bracket_count <= 0 && curly_bracket_count <= 0){
+			if(c == ','){ //capture element of list
+				break;
+			} else if(c == '}' || c == ']'){
+				if(bracket_count == 0 && curly_bracket_count == 0){ //if the brackets close at this character, then the object should begin and end with the bracket, so capture the bracket character too
+					end++;
+				}
+				break;
+			}
         }
     }
 
@@ -148,10 +155,5 @@ std::string hel::pullValue(std::string label, std::string& input){ //returns the
     }
 
     input = input.substr(0, start) + search; //remove object from input
-    if(start < input.size() && input[start] == ','){ //when removing object, remove comma if necessary
-        input.erase(start, 1);
-    } else if(((signed int)start - 1) >= 0 && input[start - 1] == ','){
-        input.erase(start - 1, 1);
-    }
     return trim(value);
 }
