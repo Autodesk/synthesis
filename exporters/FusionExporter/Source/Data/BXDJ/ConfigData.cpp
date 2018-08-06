@@ -56,7 +56,7 @@ void ConfigData::filterJoints(std::vector<core::Ptr<fusion::Joint>> filterJoints
 		std::string id = Utility::getUniqueJointID(joint);
 		filterJointIDs.push_back(id);
 
-		if (joints.find(id) == joints.end())
+		if (joints.find(id) == joints.end() || joints[id].motion != internalJointMotion(joint->jointMotion()->jointType()))
 			setNoDriver(joint);
 	}
 
