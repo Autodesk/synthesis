@@ -35,13 +35,12 @@ namespace BXDJ
 		void addSensor(JointSensor);
 		void clearSensors();
 
-		virtual void write(XmlWriter &) const;
-
 	protected:
 		enum OneTwo : bool { ONE = true, TWO = false };
 
 		core::Ptr<fusion::Joint> getFusionJoint() { return fusionJoint; }
 		OneTwo getParentOccNum() { return parentOcc; }
+		virtual void write(XmlWriter &) const;
 
 	private:
 		OneTwo parentOcc;

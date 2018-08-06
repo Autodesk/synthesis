@@ -70,7 +70,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 	if (eventArgs->action() == "send_joints")
 	{
-		palette->sendInfoToHTML("joints", Exporter::loadConfiguration(app->activeDocument()).toString());
+		palette->sendInfoToHTML("joints", Exporter::loadConfiguration(app->activeDocument()).toJSONString());
 	}
 	else if (eventArgs->action() == "highlight")
 	{
@@ -127,7 +127,8 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	else if (eventArgs->action() == "export")
 	{
 		palette->isVisible(false);
-		BXDJ::ConfigData config(eventArgs->data());
+		BXDJ::ConfigData config;
+		config.fromJSONString(eventArgs->data());
 		Exporter::saveConfiguration(config, app->activeDocument());
 		eui->startExportThread(config);
 	}

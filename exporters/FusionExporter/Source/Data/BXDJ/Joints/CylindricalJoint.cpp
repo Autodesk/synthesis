@@ -16,7 +16,7 @@ CylindricalJoint::CylindricalJoint(RigidNode * parent, core::Ptr<fusion::Joint> 
 	this->fusionJointMotion = getFusionJoint()->jointMotion();
 }
 
-Vector3<> CylindricalJoint::getAxisOfRotation() const
+Vector3<> CylindricalJoint::getAxis() const
 {
 	core::Ptr<core::Vector3D> axis = fusionJointMotion->rotationAxisVector();
 	return Vector3<>(axis->x(), axis->y(), axis->z());
@@ -46,12 +46,6 @@ float CylindricalJoint::getMaxAngle() const
 		return (float)fusionJointMotion->rotationLimits()->maximumValue();
 	else
 		return std::numeric_limits<float>::max();
-}
-
-Vector3<> CylindricalJoint::getAxisOfTranslation() const
-{
-	core::Ptr<core::Vector3D> axis = fusionJointMotion->rotationAxisVector();
-	return Vector3<>(axis->x(), axis->y(), axis->z());
 }
 
 float CylindricalJoint::getCurrentTranslation() const
@@ -101,7 +95,7 @@ void CylindricalJoint::write(XmlWriter & output) const
 	// Axis
 	output.startElement("BXDVector3");
 	output.writeAttribute("VectorID", "Axis");
-	output.write(getAxisOfTranslation());
+	output.write(getAxis());
 	output.endElement();
 
 	// Limits

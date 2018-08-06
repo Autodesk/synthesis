@@ -16,10 +16,11 @@ namespace BXDJ
 		BallJoint(RigidNode *, core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
 
 		void applyConfig(const ConfigData &);
-		void write(XmlWriter &) const;
 
 	private:
 		core::Ptr<fusion::BallJointMotion> fusionJointMotion;
+
+		void write(XmlWriter &) const;
 
 	};
 }
