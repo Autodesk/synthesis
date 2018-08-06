@@ -8,7 +8,7 @@ if [ ! -f vm-package.tar.gz ] ; then
 fi
 mkdir vm-package -p;
 
-if [ ! -d ./vm-package ] || [ ! -f vm-package/zImage ] [ ! -f vm-package/rootfs.ext4 ] || [ ! -f vm-package/zynq-zed.dtb ]; then
+if [ ! -d ./vm-package ] || [ ! -f vm-package/zImage ] || [ ! -f vm-package/rootfs.ext4 ] || [ ! -f vm-package/zynq-zed.dtb ]; then
 
 	tar -xvzf vm-package.tar.gz --directory vm-package;
 	cd vm-package;
