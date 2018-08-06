@@ -19,6 +19,8 @@ namespace BXDJ
 
 		float getWidth() const;
 		float getPressure() const;
+		int getCommonWidth() const;
+		int getCommonPressure() const;
 
 		void write(XmlWriter &) const;
 

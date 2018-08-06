@@ -20,7 +20,7 @@ int Utility::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
 	return count;
 }
 
-adsk::core::Ptr<adsk::fusion::Occurrence> Utility::lowerOccurrence(adsk::core::Ptr<adsk::fusion::Joint> joint)
+core::Ptr<adsk::fusion::Occurrence> Utility::lowerOccurrence(core::Ptr<fusion::Joint> joint)
 {
 	if (levelOfOccurrence(joint->occurrenceOne()) >= levelOfOccurrence(joint->occurrenceTwo()))
 		return joint->occurrenceOne();
@@ -28,10 +28,15 @@ adsk::core::Ptr<adsk::fusion::Occurrence> Utility::lowerOccurrence(adsk::core::P
 		return joint->occurrenceTwo();
 }
 
-adsk::core::Ptr<adsk::fusion::Occurrence> Utility::upperOccurrence(adsk::core::Ptr<adsk::fusion::Joint> joint)
+core::Ptr<adsk::fusion::Occurrence> Utility::upperOccurrence(core::Ptr<fusion::Joint> joint)
 {
 	if (levelOfOccurrence(joint->occurrenceOne()) < levelOfOccurrence(joint->occurrenceTwo()))
 		return joint->occurrenceOne();
 	else
 		return joint->occurrenceTwo();
+}
+
+std::string Utility::getUniqueJointID(core::Ptr<adsk::fusion::Joint> joint)
+{
+	return upperOccurrence(joint)->fullPathName() + joint->name();
 }
