@@ -29,7 +29,7 @@ extern "C"{
 				instance.first->can_motor_controllers[controller_id] = {controller_id,target_type};
 			}
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT)){
-                instance.first->can_motor_controllers[controller_id].setSpeedData(data_array);
+                instance.first->can_motor_controllers[controller_id].setPercentOutputData(data_array);
             }
             if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_INVERTED)){
                 instance.first->can_motor_controllers[controller_id].setInverted(true);

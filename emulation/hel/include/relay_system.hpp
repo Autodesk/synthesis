@@ -4,6 +4,8 @@
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tRelay.h"
 
+#include <string>
+
 namespace hel{
     /**
      * \struct RelaySystem
@@ -13,6 +15,8 @@ namespace hel{
 
     struct RelaySystem{
 		static constexpr int32_t NUM_RELAY_HEADERS = 4; //hal::kNumRelayHeaders
+
+		enum class State{OFF, REVERSE, FORWARD, ERROR};
 
 	private:
 
@@ -43,9 +47,13 @@ namespace hel{
 
         void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue)noexcept;
 
-        RelaySystem()noexcept;
+		State getState(uint8_t)noexcept;
+
+		RelaySystem()noexcept;
         RelaySystem(const RelaySystem&)noexcept;
     };
+
+	std::string as_string(RelaySystem::State);
 }
 
 #endif
