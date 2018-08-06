@@ -110,11 +110,12 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	}
 	else if (eventArgs->action() == "edit_sensors")
 	{
-		//palette->isVisible(false);
-		//eui->openSensorsEditor(eventArgs->data());
+		palette->isVisible(false);
+		eui->openSensorsPalette(eventArgs->data());
 	}
 	else if (eventArgs->action() == "save_sensors")
 	{
+		BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
 		palette->sendInfoToHTML("sensors", eventArgs->data());
 		palette->isVisible(true);
 	}

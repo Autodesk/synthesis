@@ -33,6 +33,11 @@ namespace Synthesis
 		void deleteExportPalette();
 		void closeExportPalette();
 
+		bool createSensorsPalette();
+		void openSensorsPalette(std::string jointID);
+		void deleteSensorsPalette();
+		void closeSensorsPalette();
+
 		bool createProgressPalette();
 		void openProgressPalette();
 		void deleteProgressPalette();
@@ -54,6 +59,7 @@ namespace Synthesis
 		Ptr<ToolbarControls> panelControls;
 
 		Ptr<Palette> exportPalette;
+		Ptr<Palette> sensorsPalette;
 		Ptr<Palette> progressPalette;
 
 		Ptr<CommandDefinition> exportButtonCommand;

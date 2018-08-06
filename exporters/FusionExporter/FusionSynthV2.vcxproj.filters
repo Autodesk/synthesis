@@ -247,5 +247,8 @@
     <None Include="palette\js\progress.js">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
+    <None Include="palette\sensors.html">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
   </ItemGroup>
 </Project>
