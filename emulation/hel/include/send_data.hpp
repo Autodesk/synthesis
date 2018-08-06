@@ -56,7 +56,7 @@ namespace hel{
     class SendDataManager {
     public:
         static std::pair<std::shared_ptr<SendData>, std::unique_lock<std::recursive_mutex>> getInstance() {
-            std::unique_lock<std::recursive_mutex> lock(m);
+            std::unique_lock<std::recursive_mutex> lock(send_data_mutex);
             if (instance == nullptr) {
                 instance = std::make_shared<SendData>();
             }
@@ -65,7 +65,7 @@ namespace hel{
 
     private:
         static std::shared_ptr<SendData> instance;
-        static std::recursive_mutex m;
+        static std::recursive_mutex send_data_mutex;
 
     };
 }
