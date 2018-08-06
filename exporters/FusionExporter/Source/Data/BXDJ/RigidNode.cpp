@@ -2,6 +2,7 @@
 #include <Fusion/Components/Occurrences.h>
 #include <Fusion/Components/OccurrenceList.h>
 #include "Joint.h"
+#include "Sensor.h"
 #include "../Filesystem.h"
 #include "../BXDA/Mesh.h"
 
@@ -41,6 +42,11 @@ std::string RigidNode::getModelId() const
 		return "empty";
 }
 
+void RigidNode::addSensor(const Sensor & sensor)
+{
+	sensors.push_back(std::make_shared<Sensor>(sensor));
+}
+
 void RigidNode::write(XmlWriter & output) const
 {
 	// Generate filename
@@ -56,6 +62,9 @@ void RigidNode::write(XmlWriter & output) const
 
 	if (parent != NULL)
 		output.write(*parent);
+
+	for (std::shared_ptr<Sensor> sensor : sensors)
+		output.write(*sensor);
 
 	output.endElement();
 
