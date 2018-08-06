@@ -81,6 +81,11 @@ window.fusionJavaScriptHandler =
                     console.log(data);
                     applyConfigData(JSON.parse(data));
                 }
+                else if (action == 'sensors')
+                {
+                    console.log("Receiving sensor info...");
+                    console.log(data);
+                }
                 else if (action == 'debugger')
                 {
                     debugger;
