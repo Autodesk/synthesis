@@ -41,8 +41,10 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.propertiesTabPage = new System.Windows.Forms.TabPage();
             this.exportTabPage = new System.Windows.Forms.TabPage();
+            this.propertySetsTabControl = new InternalFieldExporter.FieldWizard.PropertySetsTabControl();
             this.menuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
+            this.propertiesTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -132,6 +134,7 @@
             // 
             // propertiesTabPage
             // 
+            this.propertiesTabPage.Controls.Add(this.propertySetsTabControl);
             this.propertiesTabPage.Location = new System.Drawing.Point(4, 25);
             this.propertiesTabPage.Name = "propertiesTabPage";
             this.propertiesTabPage.Padding = new System.Windows.Forms.Padding(3);
@@ -150,6 +153,15 @@
             this.exportTabPage.Text = "Export";
             this.exportTabPage.UseVisualStyleBackColor = true;
             // 
+            // propertySetsTabControl
+            // 
+            this.propertySetsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertySetsTabControl.Location = new System.Drawing.Point(3, 3);
+            this.propertySetsTabControl.Name = "propertySetsTabControl";
+            this.propertySetsTabControl.SelectedIndex = 0;
+            this.propertySetsTabControl.Size = new System.Drawing.Size(761, 380);
+            this.propertySetsTabControl.TabIndex = 0;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -166,6 +178,7 @@
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.tabControl.ResumeLayout(false);
+            this.propertiesTabPage.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -185,5 +198,6 @@
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage propertiesTabPage;
         private System.Windows.Forms.TabPage exportTabPage;
+        private FieldWizard.PropertySetsTabControl propertySetsTabControl;
     }
 }
