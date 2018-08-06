@@ -55,7 +55,7 @@ namespace Synthesis.States
             if (fileBrowser == null)
             {
                 StateMachine.CurrentState.Pause();
-                //filePath = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+                // Standalone plugin adaptions from: https://github.com/gkngkc/UnityStandaloneFileBrowser
                 filePath = SFB.StandaloneFileBrowser.OpenFolderPanel(prefsKey, directory, false);
                 StateMachine.CurrentState.Resume();
 
