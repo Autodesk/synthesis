@@ -55,30 +55,3 @@ bool EUI::clearEventFromPalette<CloseExporterFormEventHandler>(Ptr<Palette> pale
 
 	return true;
 }
-
-// Close Sensor Form Handler
-template<>
-bool EUI::addEventToPalette<CloseSensorFormEventHandler>(Ptr<Palette> palette)
-{
-	if (closeSensorsHandler == nullptr)
-		closeSensorsHandler = new CloseSensorFormEventHandler(app);
-
-	Ptr<UserInterfaceGeneralEvent> closeEvent = palette->closed();
-	if (closeEvent)
-		closeEvent->add(closeExporterHandler);
-
-	return true;
-}
-
-template<>
-bool EUI::clearEventFromPalette<CloseSensorFormEventHandler>(Ptr<Palette> palette)
-{
-	if (formDataHandler != nullptr)
-		return false;
-
-	Ptr<UserInterfaceGeneralEvent> closeEvent = palette->closed();
-	if (closeEvent)
-		closeEvent->remove(closeExporterHandler);
-
-	return true;
-}

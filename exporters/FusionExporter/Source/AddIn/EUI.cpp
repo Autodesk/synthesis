@@ -79,7 +79,6 @@ void EUI::deleteWorkspace()
 	// Delete event handlers
 	delete formDataHandler;
 	delete closeExporterHandler;
-	delete closeSensorsHandler;
 }
 
 // EXPORT PALETTE
@@ -160,7 +159,6 @@ bool EUI::createSensorsPalette()
 		sensorsPalette->dockingState(PaletteDockStateRight);
 
 		addEventToPalette<ReceiveFormDataHandler>(sensorsPalette);
-		addEventToPalette<CloseSensorFormEventHandler>(sensorsPalette);
 	}
 
 	return true;
@@ -185,7 +183,6 @@ void EUI::deleteSensorsPalette()
 		return;
 
 	clearEventFromPalette<ReceiveFormDataHandler>(sensorsPalette);
-	clearEventFromPalette<CloseSensorFormEventHandler>(sensorsPalette);
 
 	sensorsPalette->deleteMe();
 	sensorsPalette = nullptr;

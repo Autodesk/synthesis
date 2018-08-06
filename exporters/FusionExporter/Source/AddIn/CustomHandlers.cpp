@@ -112,14 +112,30 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	}
 	else if (eventArgs->action() == "edit_sensors")
 	{
-		palette->isVisible(false);
-		eui->openSensorsPalette(eventArgs->data());
+		if (thread != nullptr)
+		{
+			thread->join();
+			delete thread;
+		}
+
+		thread = new std::thread([](std::string data, EUI * eui)
+		{
+			eui->openSensorsPalette(data);
+		}, eventArgs->data(), eui);
 	}
 	else if (eventArgs->action() == "save_sensors")
 	{
-		eui->closeSensorsPalette();
-		palette->sendInfoToHTML("sensors", eventArgs->data());
-		palette->isVisible(true);
+		if (thread != nullptr)
+		{
+			thread->join();
+			delete thread;
+		}
+
+		thread = new std::thread([](std::string data, Ptr<Palette> palette, EUI * eui)
+		{
+			eui->closeSensorsPalette();
+			palette->sendInfoToHTML("sensors", data);
+		}, eventArgs->data(), palette, eui);
 	}
 	else if (eventArgs->action() == "save")
 	{
@@ -145,22 +161,4 @@ void CloseExporterFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventAr
 		return;
 
 	exportButtonCommand->controlDefinition()->isEnabled(true);
-}
-
-// Close Sensor Form Event
-void CloseSensorFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
-{
-	Ptr<UserInterface> UI = app->userInterface();
-	if (!UI)
-		return;
-
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return;
-
-	Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
-	if (!palette)
-		return;
-
-	palette->isVisible(true);
 }
