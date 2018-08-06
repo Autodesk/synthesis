@@ -16,13 +16,13 @@ namespace Assets.Scripts.GUI
     {
         GameObject canvas;
         GameObject emuDriverStation;
+
         public GameObject stopButton;
         public GameObject runButton;
 
         public override void Start()
         {
             canvas = GameObject.Find("Canvas");
-            emuDriverStation = Auxiliary.FindObject(canvas, "EmulationDriverStation");
             runButton = Auxiliary.FindObject(canvas, "RunRobotCodeButton");
             stopButton = Auxiliary.FindObject(canvas, "StopCodeButton");
         }
@@ -31,20 +31,6 @@ namespace Assets.Scripts.GUI
         public void OnSelectRobotCodeButtonPressed()
         {
 
-        }
-
-        public void OnDriverStationButtonPressed()
-        {
-            if (emuDriverStation.activeSelf == true)
-            {
-                emuDriverStation.SetActive(false);
-                InputControl.freeze = false;
-            }
-            else
-            {
-                emuDriverStation.SetActive(true);
-                InputControl.freeze = true;
-            }
         }
 
         public void OnRunRobotCodeButtonPressed()
