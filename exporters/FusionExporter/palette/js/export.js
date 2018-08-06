@@ -1,5 +1,3 @@
-var jointOptions = [];
-
 // Used for hiding/showing elements in the following function
 function setVisible(element, visible)
 {
@@ -75,8 +73,7 @@ window.fusionJavaScriptHandler =
                 {
                     console.log("Receiving joint info...");
                     console.log(data);
-                    jointOptions = processJointDataString(data);
-                    displayJointOptions(jointOptions);
+                    applyConfigData(JSON.parse(data));
                 }
                 else if (action == 'debugger')
                 {
@@ -97,8 +94,12 @@ window.fusionJavaScriptHandler =
     };
 
 // Populates the form with joints
-function displayJointOptions(joints)
+function applyConfigData(configData)
 {
+    document.getElementById('name').value = configData.name;
+
+    var joints = configData.joints;
+
     // Delete all existing slots
     var existing = document.getElementsByClassName('joint-config');
     while (existing.length > 0)
@@ -113,10 +114,12 @@ function displayJointOptions(joints)
         var fieldset = template.cloneNode(true);
 
         fieldset.id = 'joint-config-' + String(i);
+        fieldset.dataset.jointId = joints[i].id;
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
-        jointTitle.onclick = function () { highlightJoint(this.innerHTML); };
+        jointTitle.dataset.jointId = joints[i].id;
+        jointTitle.onclick = function () { highlightJoint(this.dataset.jointId); };
 
         // Filter for angular or linear joints
         var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');
@@ -141,11 +144,41 @@ function displayJointOptions(joints)
         // Set joint type
         fieldset.dataset.joint_type = joints[i].type;
 
+        // Apply any existing configuration
+        applyDriverData(joints[i].driver, fieldset);
+
         // Show or hide other elements
         updateFieldOptions(fieldset);
 
         // Add field to form
         exportForm.appendChild(fieldset);
+    }
+}
+
+// Applies existing driver configuration to a field
+function applyDriverData(driver, fieldset)
+{
+    if (driver == null)
+        return;
+
+    getElByClass(fieldset, 'driver-type').value = driver.type;
+    getElByClass(fieldset, 'port-signal').value = driver.signal;
+    getElByClass(fieldset, 'port-number-a').value = driver.portA;
+    getElByClass(fieldset, 'port-number-b').value = driver.portB;
+
+    if (driver.wheel != null)
+    {
+        getElByClass(fieldset, 'wheel-type').value = driver.wheel.type;
+        getElByClass(fieldset, 'is-drive-wheel').checked = driver.wheel.isDriveWheel;
+
+        if (driver.wheel.isDriveWheel)
+            getElByClass(fieldset, 'wheel-side').value = driver.portA;
+    }
+
+    if (driver.pneumatic != null)
+    {
+        getElByClass(fieldset, 'pneumatic-width').value = driver.pneumatic.width;
+        getElByClass(fieldset, 'pneumatic-pressure').value = driver.pneumatic.pressure;
     }
 }
 
@@ -253,12 +286,24 @@ function updateFieldOptions(fieldset)
     }
 }
 
-// Updates jointOptions with the currently entered data
-function readFormData()
+// Outputs currently entered data as a JSON object
+function readConfigData()
 {
+    var configData = { 'name': document.getElementById('name').value };
+    var joints = [];
+
+    var jointOptions = document.getElementsByClassName('joint-config');
+
     for (var i = 0; i < jointOptions.length; i++)
     {
-        var fieldset = document.getElementById('joint-config-' + String(i));
+        var fieldset = jointOptions[i];
+
+        var joint = {
+            'driver': null,
+            'id': fieldset.dataset.jointId,
+            'name': getElByClass(fieldset, 'joint-config-legend').innerHTML,
+            'type': parseInt(fieldset.dataset.joint_type)
+        };
 
         var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
 
@@ -268,30 +313,27 @@ function readFormData()
             var portA = parseInt(getElByClass(fieldset, 'port-number-a').value);
             var portB = parseInt(getElByClass(fieldset, 'port-number-b').value);
 
-            jointOptions[i].driver = createDriver(selectedDriver, signal, portA, portB);
-            jointOptions[i].driver.signal = signal;
-            jointOptions[i].driver.portA = portA;
-            jointOptions[i].driver.portB = portB;
-
-            if ((jointOptions[i].type & JOINT_ANGULAR) == JOINT_ANGULAR)
+            joint.driver = createDriver(selectedDriver, signal, portA, portB);
+            
+            if ((joint.type & JOINT_ANGULAR) == JOINT_ANGULAR)
             {
                 var selectedWheel = parseInt(getElByClass(fieldset, 'wheel-type').value);
 
                 if (selectedWheel > 0)
                 {
                     var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
-                    jointOptions[i].driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
+                    joint.driver.wheel = createWheel(selectedWheel, FRICTION_MEDIUM, isDriveWheel);
 
                     if (isDriveWheel)
                     {
-                        jointOptions[i].driver.signal = PWM;
-                        jointOptions[i].driver.portA = parseInt(getElByClass(fieldset, 'wheel-side').value);
-                        jointOptions[i].driver.portB = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        joint.driver.signal = PWM;
+                        joint.driver.portA = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        joint.driver.portB = parseInt(getElByClass(fieldset, 'wheel-side').value);
                     }
                 }
             }
 
-            if ((jointOptions[i].type & JOINT_LINEAR) == JOINT_LINEAR)
+            if ((joint.type & JOINT_LINEAR) == JOINT_LINEAR)
             {
                 if (selectedDriver == DRIVER_BUMPER_PNEUMATIC ||
                     selectedDriver == DRIVER_RELAY_PNEUMATIC)
@@ -299,39 +341,39 @@ function readFormData()
                     var width = parseInt(getElByClass(fieldset, 'pneumatic-width').value);
                     var pressure = parseInt(getElByClass(fieldset, 'pneumatic-pressure').value);
 
-                    jointOptions[i].driver.pneumatic = createPneumatic(width, pressure);
+                    joint.driver.pneumatic = createPneumatic(width, pressure);
                 }
             }
         }
+
+        joints.push(joint);
     }
+
+    configData.joints = joints;
+    console.log(configData);
+    return configData;
 }
 
 // Sends the data to the Fusion add-in
 function sendInfoToFusion()
 {
-    var name = document.getElementById('name').value;
-
-    if (name.length == 0)
+    if (document.getElementById('name').value.length == 0)
     {
         alert("Please enter a name.");
         return;
     }
-
-    readFormData();
-    adsk.fusionSendData('save', stringifyConfigData(name, jointOptions));
+    
+    adsk.fusionSendData('save', JSON.stringify(readConfigData()));
 }
 
-// Sends the data to the Fusion add-in and exports the robot
+// Sends the data to the Fusion add-in
 function exportRobot()
 {
-    var name = document.getElementById('name').value;
-
-    if (name.length == 0)
+    if (document.getElementById('name').value.length == 0)
     {
         alert("Please enter a name.");
         return;
     }
 
-    readFormData();
-    adsk.fusionSendData('export', stringifyConfigData(name, jointOptions));
+    adsk.fusionSendData('export', JSON.stringify(readConfigData()));
 }

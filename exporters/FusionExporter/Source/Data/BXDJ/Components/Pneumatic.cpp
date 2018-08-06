@@ -27,6 +27,26 @@ float Pneumatic::getPressure() const
 	return pressurePSI;
 }
 
+int Pneumatic::getCommonWidth() const
+{
+	if (widthMillimeter <= 2.5f)
+		return 0;
+	else if (widthMillimeter <= 5.0f)
+		return 1;
+	else
+		return 2;
+}
+
+int Pneumatic::getCommonPressure() const
+{
+	if (pressurePSI <= 10.0f)
+		return 0;
+	else if (pressurePSI <= 20.0f)
+		return 1;
+	else
+		return 2;
+}
+
 void Pneumatic::write(XmlWriter & output) const
 {
 	output.startElement("PneumaticDriverMeta");

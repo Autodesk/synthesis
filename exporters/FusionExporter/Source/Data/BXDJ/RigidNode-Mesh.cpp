@@ -82,5 +82,6 @@ void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics, std::function<voi
 	}
 
 	// Close progress bar
-	progressCallback(1);
+	if (progressCallback)
+		progressCallback(1);
 }
