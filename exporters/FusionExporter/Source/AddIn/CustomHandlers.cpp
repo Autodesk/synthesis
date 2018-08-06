@@ -115,13 +115,14 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	}
 	else if (eventArgs->action() == "save_sensors")
 	{
-		BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
+		eui->closeSensorsPalette();
 		palette->sendInfoToHTML("sensors", eventArgs->data());
 		palette->isVisible(true);
 	}
 	else if (eventArgs->action() == "save")
 	{
-		BXDJ::ConfigData config(eventArgs->data());
+		BXDJ::ConfigData config;
+		config.fromJSONString(eventArgs->data());
 		Exporter::saveConfiguration(config, app->activeDocument());
 	}
 	else if (eventArgs->action() == "export")

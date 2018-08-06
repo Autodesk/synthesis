@@ -63,10 +63,9 @@ function highlightJoint(jointID)
 }
 
 // Open a menu for editing joint sensors
-function editSensors(jointID)
+function editSensors(sensors)
 {
-    console.log('Opening edit sensors menu for ' + jointID);
-    adsk.fusionSendData('edit_sensors', jointID);
+    adsk.fusionSendData('edit_sensors', sensors);
 }
 
 // Handles the receiving of data from Fusion
@@ -122,6 +121,7 @@ function applyConfigData(configData)
 
         fieldset.id = 'joint-config-' + String(i);
         fieldset.dataset.jointId = joints[i].id;
+        fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
