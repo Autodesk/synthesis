@@ -2,12 +2,12 @@
 
 #include <string>
 #include "XmlWriter.h"
-//#include "CustomJSONObject.h"
+#include "CustomJSONObject.h"
 #include "Components.h"
 
 namespace BXDJ
 {
-	class JointSensor : public XmlWritable
+	class JointSensor : public XmlWritable, public CustomJSONObject
 	{
 	public:
 		enum Type : char
@@ -32,11 +32,14 @@ namespace BXDJ
 		JointSensor(const JointSensor &);
 		JointSensor(Type type = UNKNOWN);
 
-		void write(XmlWriter &) const;
+		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
+		void loadJSONObject(const rapidjson::Value&);
 
 	private:
 		static std::string toString(Type);
 		static std::string toString(Signal);
+
+		void write(XmlWriter &) const;
 
 	};
 }
