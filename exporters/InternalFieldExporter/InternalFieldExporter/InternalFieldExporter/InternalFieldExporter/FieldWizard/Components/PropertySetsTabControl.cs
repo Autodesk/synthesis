@@ -98,7 +98,7 @@ namespace InternalFieldExporter.FieldWizard
                     {
                         //if (tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
                         //{
-                         //   return true;
+                        //    return true;
                         //}
                     }
                 }

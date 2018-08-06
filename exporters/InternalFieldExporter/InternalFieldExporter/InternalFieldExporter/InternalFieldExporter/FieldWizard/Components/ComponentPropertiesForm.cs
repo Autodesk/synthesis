@@ -228,6 +228,7 @@ namespace InternalFieldExporter.FieldWizard
                             {
                                 ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
                                 //Check your references to ensure that you are using the correct version of the common language runtime.inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
+                                //inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
                             }
 
                             if (confirmDialog.IsChecked())

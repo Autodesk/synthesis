@@ -15,6 +15,8 @@ namespace InternalFieldExporter
         public MainWindow()
         {
             InitializeComponent();
+
+            Text = "Synthesis Field Exporter - " + Program.ASSEMBLY_DOCUMENT.DisplayName;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
