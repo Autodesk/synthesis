@@ -361,6 +361,7 @@ namespace Synthesis.GUI
                     });
                 FieldDataHandler.Load();
                 DPMDataHandler.Load();
+                Controls.Load();
                 SceneManager.LoadScene("Scene");
             }
             else
