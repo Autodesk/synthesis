@@ -229,7 +229,7 @@ namespace hel{
         DigitalSystem(const DigitalSystem&)noexcept;
     };
 
-    std::string to_string(DigitalSystem::DIOConfigurationException::Config);
+    std::string as_string(DigitalSystem::DIOConfigurationException::Config);
 }
 
 #endif

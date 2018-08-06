@@ -6,7 +6,7 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    std::string to_string(EncoderManager::Type type){
+    std::string as_string(EncoderManager::Type type){
         switch(type){
         case EncoderManager::Type::UNKNOWN:
             return "UNKNOWN";
@@ -18,7 +18,7 @@ namespace hel{
             throw UnhandledEnumConstantException("hel::EncoderManager::Type");
         }
     }
-    std::string to_string(EncoderManager::PortType type){
+    std::string as_string(EncoderManager::PortType type){
         switch(type){
         case EncoderManager::PortType::DI:
             return "DI";
@@ -150,7 +150,7 @@ namespace hel{
         switch(type){
         case Type::UNKNOWN:
             instance.second.unlock();
-            throw InputConfigurationException("EncoderManager with a channel on " + hel::to_string(a_type) + " port " + std::to_string(a_channel) + " and b channel on " + hel::to_string(b_type) + " port " + std::to_string(b_channel));
+            throw InputConfigurationException("EncoderManager with a channel on " + as_string(a_type) + " port " + std::to_string(a_channel) + " and b channel on " + as_string(b_type) + " port " + std::to_string(b_channel));
         case Type::FPGA_ENCODER:
         {
             tEncoder::tOutput output;
@@ -176,9 +176,9 @@ namespace hel{
     std::string EncoderManager::serialize()const{
         std::string s = "{";
         s += "\"a_channel\":" + std::to_string(a_channel) + ", ";
-        s += "\"a_type\":" + quote(hel::to_string(a_type)) + ", ";
+        s += "\"a_type\":" + quote(as_string(a_type)) + ", ";
         s += "\"b_channel\":" + std::to_string(b_channel) + ", ";
-        s += "\"b_type\":" + quote(hel::to_string(b_type)) + ", ";
+        s += "\"b_type\":" + quote(as_string(b_type)) + ", ";
         s += "\"ticks\":" + std::to_string(ticks);
         s += "}";
         return s;
@@ -196,12 +196,12 @@ namespace hel{
 
     std::string EncoderManager::toString()const{
         std::string s = "(";
-        s += "type:" + hel::to_string(type) + ", ";
+        s += "type:" + as_string(type) + ", ";
         s += "index:" + std::to_string(index) + ", ";
         s += "a_channel:" + std::to_string(a_channel) + ", ";
-        s += "a_type:" + hel::to_string(a_type) + ", ";
+        s += "a_type:" + as_string(a_type) + ", ";
         s += "b_channel:" + std::to_string(b_channel) + ", ";
-        s += "b_type:" + hel::to_string(b_type) + ", ";
+        s += "b_type:" + as_string(b_type) + ", ";
         s += "ticks:" + std::to_string(ticks);
         s += "}";
         return s;

@@ -61,8 +61,8 @@ namespace hel{
         EncoderManager(uint8_t,PortType,uint8_t,PortType)noexcept;
     };
 
-    std::string to_string(EncoderManager::Type);
-    std::string to_string(EncoderManager::PortType);
+    std::string as_string(EncoderManager::Type);
+    std::string as_string(EncoderManager::PortType);
 }
 
 #endif

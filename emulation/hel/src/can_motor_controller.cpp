@@ -7,11 +7,11 @@ namespace hel{
 
 	std::string CANMotorController::toString()const {
         std::string s = "(";
-        s += "type:" + hel::to_string(type) + ", ";
+        s += "type:" + as_string(type) + ", ";
         s += "id:" + std::to_string(id);
         if(type != CANDevice::Type::UNKNOWN){
             s += ", speed:" + std::to_string(speed);
-            s += ", inverted:" + hel::to_string(inverted);
+            s += ", inverted:" + as_string(inverted);
         }
         s += ")";
         return s;
@@ -19,7 +19,7 @@ namespace hel{
 
     std::string CANMotorController::serialize()const {
         std::string s = "{";
-        s += "\"type\":" + hel::quote(hel::to_string(type)) + ", ";
+        s += "\"type\":" + hel::quote(as_string(type)) + ", ";
         s += "\"id\":" + std::to_string(id) + ", ";
         s += "\"speed\":" + std::to_string(speed) + ", ";
         s += "\"inverted\":" + std::to_string(inverted);

@@ -34,7 +34,7 @@ namespace hel{
 
         std::map<uint32_t, CANMotorController> can_motor_controllers;
 
-		static RelayState convertRelayValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue,uint8_t)noexcept;
+		static RelayState convertRelayValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue,uint8_t)noexcept; //TODO move to relay_system
 
 		void serializePWMHdrs();
         void serializeRelays();
@@ -55,7 +55,7 @@ namespace hel{
 
         bool hasNewData()const;
     };
-    std::string to_string(SendData::RelayState);
+    std::string as_string(SendData::RelayState);
 
     class SendDataManager {
     public:

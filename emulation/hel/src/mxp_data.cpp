@@ -3,7 +3,7 @@
 #include "json_util.hpp"
 #include "error.hpp"
 
-std::string hel::to_string(hel::MXPData::Config config){
+std::string hel::as_string(hel::MXPData::Config config){
     switch(config){
     case hel::MXPData::Config::DI:
         return "DI";
@@ -48,14 +48,14 @@ hel::MXPData::MXPData(const MXPData& source)noexcept{
 
 std::string hel::MXPData::toString()const{
     std::string s = "(";
-    s += "config:" + hel::to_string(config) + ", ";
+    s += "config:" + as_string(config) + ", ";
     s += "value:" + std::to_string(value) + ")";
     return s;
 }
 
 std::string hel::MXPData::serialize()const{
     std::string s = "{";
-    s += "\"config\":" + hel::quote(hel::to_string(config)) + ", ";
+    s += "\"config\":" + hel::quote(as_string(config)) + ", ";
     s += "\"value\":" + std::to_string(value);
     s += "}";
     return s;

@@ -145,10 +145,10 @@ namespace hel{
         std::string s = "{";
         s += "\"event_name\":" + quote(event_name) + ", ";
         s += "\"game_specific_message\":" + quote(game_specific_message) + ", ";
-        s += "\"match_type\":" + quote(hel::to_string(match_type)) + ", ";
+        s += "\"match_type\":" + quote(as_string(match_type)) + ", ";
         s += "\"match_number\":" + std::to_string(match_number) + ", ";
         s += "\"replay_number\":" + std::to_string(replay_number) + ", ";
-        s += "\"alliance_station_id\":" + quote(hel::to_string(alliance_station_id)) + ", ";
+        s += "\"alliance_station_id\":" + quote(as_string(alliance_station_id)) + ", ";
         s += "\"match_time\":" + std::to_string(match_time);
         s += "}";
         return s;
@@ -158,10 +158,10 @@ namespace hel{
         std::string s = "{";
         s += "event_name:" + event_name + ", ";
         s += "game_specific_message:" + game_specific_message + ", ";
-        s += "match_type:" + hel::to_string(match_type) + ", ";
+        s += "match_type:" + as_string(match_type) + ", ";
         s += "match_number:" + std::to_string(match_number) + ", ";
         s += "replay_number:" + std::to_string(replay_number) + ", ";
-        s += "alliance_station_id:" + hel::to_string(alliance_station_id) + ", ";
+        s += "alliance_station_id:" + as_string(alliance_station_id) + ", ";
         s += "match_time:" + std::to_string(match_time);
         s += "}";
         return s;

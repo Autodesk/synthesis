@@ -1,10 +1,14 @@
 #include "util.hpp"
 
 bool hel::stob(std::string a){
-    return (bool)std::stoi(a);
+    try{
+		return (bool)std::stoi(a);
+	} catch(...){
+		throw;
+	}
 }
 
-std::string hel::to_string(bool a){
+std::string hel::as_string(bool a){
     return a ? "1" : "0";
 }
 
