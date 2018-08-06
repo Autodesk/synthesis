@@ -59,7 +59,7 @@ void Joint::setDriver(Driver driver)
 	this->driver = std::make_unique<Driver>(driver);
 }
 
-void Joint::removeDriver()
+void Joint::setNoDriver()
 {
 	this->driver = nullptr;
 }
