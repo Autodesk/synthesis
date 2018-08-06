@@ -151,25 +151,27 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 		joints[jointID].motion = (JointMotionType)jointsJSON[i]["type"].GetInt();
 
 		// Driver Information
-		const rapidjson::Value& driverJSON = jointsJSON[i]["driver"];
-		if (driverJSON.IsObject())
+		if (jointsJSON[i].HasMember("driver") && jointsJSON[i]["driver"].IsObject())
 		{
 			Driver driver;
-			driver.loadJSONObject(driverJSON);
+			driver.loadJSONObject(jointsJSON[i]["driver"]);
 			joints[jointID].driver = std::make_unique<Driver>(driver);
 		}
 		else
 			joints[jointID].driver = nullptr;
 
 		// Sensor Information
-		auto sensorsJSON = jointsJSON[i]["sensors"].GetArray();
-		for (rapidjson::SizeType j = 0; j < sensorsJSON.Size(); j++)
+		if (jointsJSON[i].HasMember("sensors") && jointsJSON[i]["sensors"].IsArray())
 		{
-			if (sensorsJSON[j].IsObject())
+			auto sensorsJSONArray = jointsJSON[i]["sensors"].GetArray();
+			for (rapidjson::SizeType j = 0; j < sensorsJSONArray.Size(); j++)
 			{
-				std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
-				sensor->loadJSONObject(jointsJSON[j]);
-				joints[jointID].sensors.push_back(sensor);
+				if (sensorsJSONArray[j].IsObject())
+				{
+					std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
+					sensor->loadJSONObject(sensorsJSONArray[j]);
+					joints[jointID].sensors.push_back(sensor);
+				}
 			}
 		}
 	}

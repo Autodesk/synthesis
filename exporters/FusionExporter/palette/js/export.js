@@ -309,7 +309,8 @@ function readConfigData()
             'driver': null,
             'id': fieldset.dataset.jointId,
             'name': getElByClass(fieldset, 'joint-config-legend').innerHTML,
-            'type': parseInt(fieldset.dataset.joint_type)
+            'type': parseInt(fieldset.dataset.joint_type),
+            'sensors': JSON.parse(fieldset.dataset.sensors)
         };
 
         var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
