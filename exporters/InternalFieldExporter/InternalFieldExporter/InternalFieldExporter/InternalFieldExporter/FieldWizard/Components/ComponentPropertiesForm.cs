@@ -227,7 +227,7 @@ namespace InternalFieldExporter.FieldWizard
                             if (result == DialogResult.OK)
                             {
                                 ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
-                                inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
+                                //Check your references to ensure that you are using the correct version of the common language runtime.inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
                             }
 
                             if (confirmDialog.IsChecked())
@@ -237,13 +237,13 @@ namespace InternalFieldExporter.FieldWizard
                             break;
                         case DialogResult.OK:
                             ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
-                            inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
+                            //inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
                             break;
                     }
                 }
                 else
                 {
-                    inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
+                    //inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
                 }
             }
 
