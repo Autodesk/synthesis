@@ -2,13 +2,12 @@
 
 #include <Fusion/Components/SliderJointMotion.h>
 #include "../Joint.h"
-#include "LinearJoint.h"
 
 using namespace adsk;
 
 namespace BXDJ
 {
-	class SliderJoint : public Joint, public LinearJoint
+	class SliderJoint : public Joint
 	{
 	public:
 		SliderJoint(const SliderJoint &);

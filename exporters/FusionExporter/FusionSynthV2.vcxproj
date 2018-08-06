@@ -116,11 +116,9 @@
     <ClInclude Include="Source\Data\BXDJ\ConfigData.h" />
     <ClInclude Include="Source\Data\BXDJ\Driver.h" />
     <ClInclude Include="Source\Data\BXDJ\Joint.h" />
-    <ClInclude Include="Source\Data\BXDJ\Joints\AngularJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\BallJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\CylindricalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\SliderJoint.h" />
-    <ClInclude Include="Source\Data\BXDJ\Joints\LinearJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\RotationalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\CustomJSONObject.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
