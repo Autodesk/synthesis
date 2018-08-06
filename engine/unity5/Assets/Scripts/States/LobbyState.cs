@@ -184,7 +184,7 @@ namespace Synthesis.States
                     break;
                 case MultiplayerNetwork.ConnectionStatus.Disconnected:
                     UserMessageManager.Dispatch("Lost connection to the lobby!", 5f);
-
+                    
                     MultiplayerNetwork network = MultiplayerNetwork.Instance;
                     network.ClientConnectionChanged -= OnClientConnectionChanged;
                     network.StopClient();

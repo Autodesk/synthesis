@@ -139,7 +139,7 @@ namespace Synthesis.Network
             RobotFolder = string.Empty;
             ReceivedFiles = new HashSet<string>();
             LocalRobotFileCount = 0;
-
+            
             PlayerList.Instance.AddPlayerEntry(this);
         }
 
@@ -303,7 +303,7 @@ namespace Synthesis.Network
         private void OnServerFileReceived(string fileName)
         {
             ReceivedFiles.Add(fileName);
-
+            
             transferProgress = LocalRobotFileCount > 0 ? ReceivedFiles.Count / (float)LocalRobotFileCount : 0f;
 
             if (ReceivedFiles.Count == LocalRobotFileCount)
