@@ -169,13 +169,6 @@ Section "Robot Exporter Plugin (reccommended)" PluginExporter
 
   SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
   File /r "RobotExporter\BxDRobotExporter.dll"
- 
-  SetOutPath "$APPDATA\RobotViewer"
-  File /r "RobotExporter\Viewer\RobotViewer.exe"
-  File /r "RobotExporter\Viewer\OpenTK.dll"
-  File /r "RobotExporter\Viewer\OpenTK.GLControl.dll"
-  File /r "RobotExporter\Viewer\OGLViewer.dll"
-  File /r "RobotExporter\Viewer\SimulatorAPI.dll"
 
 SectionEnd
 
