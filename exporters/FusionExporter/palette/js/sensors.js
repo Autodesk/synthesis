@@ -8,7 +8,7 @@ window.fusionJavaScriptHandler =
                 if (action == 'sensors')
                 {
                     console.log("Receiving sensor info...");
-                    //console.log(data);
+                    console.log(data);
                     //applyConfigData(JSON.parse(data));
                 }
                 else if (action == 'debugger')

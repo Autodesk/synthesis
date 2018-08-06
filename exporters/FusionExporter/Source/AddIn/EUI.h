@@ -67,7 +67,6 @@ namespace Synthesis
 		// Event Handlers
 		ReceiveFormDataHandler * formDataHandler = nullptr;
 		CloseExporterFormEventHandler * closeExporterHandler = nullptr;
-		CloseSensorFormEventHandler * closeSensorsHandler = nullptr;
 
 		template<typename T>
 		bool addEventToPalette(Ptr<Palette>);
