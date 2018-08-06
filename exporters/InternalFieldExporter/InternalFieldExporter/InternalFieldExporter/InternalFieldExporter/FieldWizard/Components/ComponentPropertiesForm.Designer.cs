@@ -413,6 +413,6 @@
         private System.Windows.Forms.NumericUpDown massNumericUpDown;
         private System.Windows.Forms.Label massLabel;
         private System.Windows.Forms.Button Joint_Button;
-        private InventorTreeView inventorTreeView;
+        public InventorTreeView inventorTreeView;
     }
 }

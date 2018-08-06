@@ -96,10 +96,10 @@ namespace InternalFieldExporter.FieldWizard
                     ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
                     if (!excludedPages.Contains<ComponentPropertiesTabPage>(tabPage))
                     {
-                        //if (tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
-                        //{
-                        //    return true;
-                        //}
+                        if (tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -117,10 +117,10 @@ namespace InternalFieldExporter.FieldWizard
                 if (t is ComponentPropertiesTabPage)
                 {
                     ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
-                    //if (tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
-                    //{
-                    //    return tabPage;
-                    //}
+                    if (tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
+                    {
+                        return tabPage;
+                    }
                 }
             }
             return null;
@@ -139,11 +139,11 @@ namespace InternalFieldExporter.FieldWizard
                     ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
                     if (!excludedPages.Contains<ComponentPropertiesTabPage>(tabPage))
                     {
-                        //TreeNode[] nodeCollection = tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true);
-                        //for (int i = 0; i < nodeCollection.Length; i++)
-                        //{
-                        //    nodeCollection[i].Remove();
-                        //}
+                        TreeNode[] nodeCollection = tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true);
+                        for (int i = 0; i < nodeCollection.Length; i++)
+                        {
+                            nodeCollection[i].Remove();
+                        }
                     }
                 }
             }
