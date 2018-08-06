@@ -11,6 +11,11 @@ namespace Synthesis.Utils
     /// </summary>
     public static class AppModel
     {
+        /// <summary>
+        /// The version number of this build.
+        /// </summary>
+        public const string VersionNumber = "4.2.0.0";
+
         private static bool errorDefined;
 
         /// <summary>

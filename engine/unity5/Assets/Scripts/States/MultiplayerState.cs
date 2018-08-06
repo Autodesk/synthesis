@@ -134,29 +134,8 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
-            if (clientNetworkMode == NetworkMode.Disconnected)
-            {
-                //if (UnityEngine.Input.GetKey(KeyCode.G))
-                //{
-                //    clientNetworkMode = NetworkMode.Client;
-                //    Network.StartClient();
-                //    //GameObject.Find("Network Manager").AddComponent<ServerNetworkDiscovery>();
-                //}
-                //else if (UnityEngine.Input.GetKey(KeyCode.H))
-                //{
-                //    clientNetworkMode = NetworkMode.Host;
-                //    Network.StartHost();
-                //}
-            }
-
             if (ActiveRobot == null)
-            {
-                //AppModel.ErrorToMenu("Robot instance not valid.");
                 return;
-            }
-
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
-                NetworkMultiplayerUI.Instance.Visible = !NetworkMultiplayerUI.Instance.Visible;
 
             // Toggles between the different camera states if the camera toggle button is pressed
             if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)))
@@ -176,10 +155,7 @@ namespace Synthesis.States
             //This line is essential for the reset to work accurately
             //robotCameraObject.transform.position = activeRobot.transform.GetChild(0).transform.position;
             if (ActiveRobot == null)
-            {
-                //AppModel.ErrorToMenu("Robot instance not valid.");
                 return;
-            }
 
             SendRobotPackets();
         }
@@ -235,20 +211,6 @@ namespace Synthesis.States
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Resumes the normal simulation and exits the replay mode, showing all UI elements again
-        /// </summary>
-        public override void Resume()
-        {
-        }
-
-        /// <summary>
-        /// Pauses the normal simulation for rpelay mode by disabling tracking of physics objects and disabling UI elements
-        /// </summary>
-        public override void Pause()
-        {
         }
 
         /// <summary>

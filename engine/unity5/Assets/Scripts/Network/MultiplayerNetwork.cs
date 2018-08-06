@@ -1,43 +1,68 @@
-﻿using Synthesis.States;
+﻿using Synthesis.GUI;
+using Synthesis.States;
 using System;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 namespace Synthesis.Network
 {
     public class MultiplayerNetwork : NetworkManager
     {
-        public const int ReliableSequencedChannel = 0;
-
+        /// <summary>
+        /// Indicates the status of a connection.
+        /// </summary>
         public enum ConnectionStatus
         {
             Connected,
             Disconnected,
         }
 
+        /// <summary>
+        /// The global instance of this class.
+        /// </summary>
         public static MultiplayerNetwork Instance => singleton as MultiplayerNetwork;
         
+        /// <summary>
+        /// The active <see cref="MultiplayerState"/>.
+        /// </summary>
         public MultiplayerState State { get; set; }
 
+        /// <summary>
+        /// The ID of this connection.
+        /// </summary>
         public int ConnectionID { get; private set; }
 
+        /// <summary>
+        /// If true, this instance is the host.
+        /// </summary>
         public bool Host { get; private set; }
 
+        /// <summary>
+        /// Called on the client when the connection status has changed.
+        /// </summary>
         public event EventHandler<ConnectionStatus> ClientConnectionChanged;
 
-        //bool awaitingFieldLoad;
-
+        /// <summary>
+        /// Initializes the properties of this instance.
+        /// </summary>
         private void Start()
         {
             Host = false;
-            //awaitingFieldLoad = false;
         }
 
+        /// <summary>
+        /// Starts the host instance.
+        /// </summary>
         public override void OnStartHost()
         {
             base.OnStartHost();
             Host = true;
         }
 
+        /// <summary>
+        /// Called when a client connects to the match.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
@@ -48,52 +73,42 @@ namespace Synthesis.Network
             ClientScene.AddPlayer(0);
         }
 
+        /// <summary>
+        /// Called when a client disconnects from a match.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnClientDisconnect(NetworkConnection conn)
         {
             base.OnClientDisconnect(conn);
 
-            ClientConnectionChanged?.Invoke(this, ConnectionStatus.Disconnected);
+            if (!NetworkMultiplayerUI.Instance.Visible)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                UserMessageManager.Dispatch("Lost connection to the match!", 8f);
+            }
+            else
+            {
+                ClientConnectionChanged?.Invoke(this, ConnectionStatus.Disconnected);
+            }
         }
 
+        /// <summary>
+        /// Called on the server when a new client connects.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnServerConnect(NetworkConnection conn)
         {
             base.OnServerConnect(conn);
         }
 
+        /// <summary>
+        /// Called on the server when a client disconnects.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnServerDisconnect(NetworkConnection conn)
         {
             NetworkServer.DestroyPlayersForConnection(conn);
             MatchManager.Instance.CancelSync();
-        }
-
-        public override void OnStartClient(NetworkClient client)
-        {
-            //if (host)
-            //{
-            //    if (!State.LoadField(PlayerPrefs.GetString("simSelectedField"), host))
-            //    {
-            //        AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
-            //        return;
-            //    }
-            //}
-            //else
-            //{
-            //    awaitingFieldLoad = true;
-            //}
-        }
-
-        private void Update()
-        {
-            //if (awaitingFieldLoad && Resources.FindObjectsOfTypeAll<NetworkElement>().Length > 1)
-            //{
-            //    awaitingFieldLoad = false;
-
-            //    if (!State.LoadField(PlayerPrefs.GetString("simSelectedField"), host))
-            //    {
-            //        AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
-            //        return;
-            //    }
-            //}
         }
     }
 }
