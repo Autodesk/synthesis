@@ -40,19 +40,6 @@ bool EUI::createWorkspace()
 			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/SynthesisIcons");
 			workSpace->tooltip("Export robot models to the Synthesis simulator");
 		}
-		
-		// Create workspace events
-		Ptr<WorkspaceEvent> workspaceActivatedEvent = UI->workspaceActivated();
-		if (!workspaceActivatedEvent)
-			throw "Failed to create workspace events.";
-
-		workspaceActivatedEvent->add(new WorkspaceActivatedHandler(this));
-
-		Ptr<WorkspaceEvent> workspaceDeactivatedEvent = UI->workspaceDeactivated();
-		if (!workspaceDeactivatedEvent)
-			throw "Failed to create workspace events.";
-
-		workspaceDeactivatedEvent->add(new WorkspaceDeactivatedHandler(this));
 
 		// Create panel
 		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
@@ -158,7 +145,7 @@ void EUI::closeExportPalette()
 
 // SENSORS PALETTE
 
-bool Synthesis::EUI::createSensorsPalette()
+bool EUI::createSensorsPalette()
 {
 	Ptr<Palettes> palettes = UI->palettes();
 	if (!palettes)
@@ -187,13 +174,13 @@ bool Synthesis::EUI::createSensorsPalette()
 	return true;
 }
 
-void Synthesis::EUI::openSensorsPalette(std::string sensors)
+void EUI::openSensorsPalette(std::string sensors)
 {
 	sensorsPalette->sendInfoToHTML("sensors", sensors);
 	sensorsPalette->isVisible(true);
 }
 
-void Synthesis::EUI::deleteSensorsPalette()
+void EUI::deleteSensorsPalette()
 {
 	Ptr<Palettes> palettes = UI->palettes();
 	if (!palettes)
@@ -208,7 +195,7 @@ void Synthesis::EUI::deleteSensorsPalette()
 	sensorsPalette = nullptr;
 }
 
-void Synthesis::EUI::closeSensorsPalette()
+void EUI::closeSensorsPalette()
 {
 	sensorsPalette->isVisible(false);
 }
