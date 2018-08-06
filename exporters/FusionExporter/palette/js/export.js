@@ -318,5 +318,20 @@ function sendInfoToFusion()
     }
 
     readFormData();
+    adsk.fusionSendData('save', stringifyConfigData(name, jointOptions));
+}
+
+// Sends the data to the Fusion add-in and exports the robot
+function exportRobot()
+{
+    var name = document.getElementById('name').value;
+
+    if (name.length == 0)
+    {
+        alert("Please enter a name.");
+        return;
+    }
+
+    readFormData();
     adsk.fusionSendData('export', stringifyConfigData(name, jointOptions));
 }

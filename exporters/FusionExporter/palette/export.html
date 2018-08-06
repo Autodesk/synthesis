@@ -6,7 +6,7 @@
         <script src="js/export.js"></script>
 
         <style>
-            #finished-button
+            button
             {
                 width: 100%;
                 left: 0;
@@ -149,8 +149,9 @@
                 </div>
             </fieldset>
         </div>
-
-        <button id='finished-button' type='button' onclick='sendInfoToFusion()'>Export Robot</button>
+        
+        <button id='save-button' type='button' onclick='sendInfoToFusion()'>Save Configuration</button>
+        <button id='finished-button' type='button' onclick='exportRobot()'>Export Robot</button>
 
         <script>
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
