@@ -9,7 +9,7 @@ window.fusionJavaScriptHandler =
                 {
                     console.log("Receiving sensor info...");
                     console.log(data);
-                    //applyConfigData(JSON.parse(data));
+                    applyConfigData(JSON.parse(data));
                 }
                 else if (action == 'debugger')
                 {
@@ -39,6 +39,11 @@ function newSensor()
     document.getElementById('sensor-settings').appendChild(fieldset);
 }
 
+function deleteSensor(fieldset)
+{
+    fieldset.parentNode.removeChild(fieldset);
+}
+
 // Populates the form with sensors
 function applyConfigData(sensors)
 {
@@ -55,11 +60,23 @@ function applyConfigData(sensors)
     {
         var fieldset = template.cloneNode(true);
 
-        fieldset.id = 'sensor-config-' + String(i);
+        getElByClass(fieldset, 'sensor-type').value = sensors[i].type;
+        getElByClass(fieldset, 'port-signal').value = sensors[i].signal;
+        getElByClass(fieldset, 'port-number-a').value = sensors[i].portA;
+        getElByClass(fieldset, 'port-number-b').value = sensors[i].portB;
+        getElByClass(fieldset, 'conversion-factor').value = sensors[i].conversionFactor;
 
         // Add field to form
         sensorForm.appendChild(fieldset);
     }
+}
+
+// Change the conversion factor name based on the selected sensor
+function updateFieldOptions(fieldset)
+{
+    var type = parseInt(getElByClass(fieldset, 'sensor-type').value);
+
+    getElByClass(fieldset, 'conversion-factor-label').innerHTML = CONVERSION_FACTOR_NAMES[type];
 }
 
 // Outputs currently entered data as a JSON object
@@ -67,13 +84,19 @@ function readConfigData()
 {
     var configData = [];
 
-    var jointOptions = document.getElementsByClassName('joint-config');
+    var sensorOptions = document.getElementsByClassName('sensor-config');
 
-    for (var i = 0; i < jointOptions.length; i++)
+    for (var i = 0; i < sensorOptions.length; i++)
     {
-        var fieldset = jointOptions[i];
+        var fieldset = sensorOptions[i];
 
-        var sensor = {};
+        var type = parseInt(getElByClass(fieldset, 'sensor-type').value);
+        var portSignal = parseInt(getElByClass(fieldset, 'port-signal').value);
+        var portA = parseInt(getElByClass(fieldset, 'port-number-a').value);
+        var portB = parseInt(getElByClass(fieldset, 'port-number-b').value);
+        var conversionFactor = parseFloat(getElByClass(fieldset, 'conversion-factor').value);
+
+        var sensor = createSensor(type, portSignal, portA, portB, conversionFactor);
 
         configData.push(sensor);
     }
