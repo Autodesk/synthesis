@@ -64,9 +64,12 @@ namespace Synthesis.GUI
             canvas = GetComponent<Canvas>();
 
             LinkPanels();
-            RegisterButtonCallbacks();
+            RegisterCallbacks();
 
-            uiStateMachine.PushState(new HostJoinState());
+            if (PlayerPrefs.GetInt("ShowDisclaimer", 1) == 1)
+                uiStateMachine.PushState(new DisclaimerState(true));
+            else
+                uiStateMachine.PushState(new HostJoinState());
         }
 
         /// <summary>
@@ -89,6 +92,16 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
+        /// Registers a value changed callback from the given <see cref="Toggle"/> to the active
+        /// <see cref="State"/>.
+        /// </summary>
+        /// <param name="toggle"></param>
+        public void RegisterToggleCallback(Toggle toggle)
+        {
+            toggle.onValueChanged.AddListener(v => InvokeCallback("On" + toggle.name + "ValueChanged", v));
+        }
+
+        /// <summary>
         /// Pops the active UI <see cref="State"/>.
         /// </summary>
         public void OnBackButtonPressed()
@@ -107,6 +120,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void LinkPanels()
         {
+            LinkPanel<DisclaimerState>("DisclaimerPanel");
             LinkPanel<HostJoinState>("HostJoinPanel");
             LinkPanel<EnterTagState>("EnterTagPanel");
             LinkPanel<EnterInfoState>("EnterInfoPanel");
@@ -137,18 +151,22 @@ namespace Synthesis.GUI
         /// Finds each Button component in the main menu that doesn't already have a
         /// listener and registers it with a callback.
         /// </summary>
-        private void RegisterButtonCallbacks()
+        private void RegisterCallbacks()
         {
             foreach (Button b in GetComponentsInChildren<Button>(true))
                 if (b.onClick.GetPersistentEventCount() == 0)
                     RegisterButtonCallback(b);
+
+            foreach (Toggle t in GetComponentsInChildren<Toggle>(true))
+                if (t.onValueChanged.GetPersistentEventCount() == 0)
+                    RegisterToggleCallback(t);
         }
 
         /// <summary>
         /// Invokes a method in the active <see cref="State"/> by the given method name.
         /// </summary>
         /// <param name="methodName"></param>
-        private void InvokeCallback(string methodName)
+        private void InvokeCallback(string methodName, params object[] args)
         {
             State currentState = uiStateMachine.CurrentState;
             MethodInfo info = currentState.GetType().GetMethod(methodName);
@@ -156,7 +174,7 @@ namespace Synthesis.GUI
             if (info == null)
                 Debug.LogWarning("Method " + methodName + " does not have a listener in " + currentState.GetType().ToString());
             else
-                info.Invoke(currentState, null);
+                info.Invoke(currentState, args);
         }
     }
 }

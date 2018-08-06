@@ -33,6 +33,14 @@ namespace Synthesis.States
         }
 
         /// <summary>
+        /// Displays the disclaimer when the disclaimer button is pressed.
+        /// </summary>
+        public void OnDisclaimerButtonPressed()
+        {
+            StateMachine.PushState(new DisclaimerState(false));
+        }
+
+        /// <summary>
         /// Returns to the main menu when the back button is pressed.
         /// </summary>
         public void OnBackButtonPressed()
