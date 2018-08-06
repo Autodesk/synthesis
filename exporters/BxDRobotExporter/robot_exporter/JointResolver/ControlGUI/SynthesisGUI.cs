@@ -296,7 +296,7 @@ public partial class SynthesisGUI : Form
             RMeta.ActiveDir = null;
             RMeta.ActiveRobotName = robotName;
             RMeta.FieldName = field;
-
+            
             PluginSettings.GeneralUseFancyColors = colors;
             PluginSettings.OnSettingsChanged();
 
@@ -304,9 +304,14 @@ public partial class SynthesisGUI : Form
         }
         return false;
     }
-    public void writeLimits(RigidNode_Base skeleton)// generally, this class iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
-        //needed because we want to be able to pull the limits into the joint as the exporter exports, but where the joint is actually written to the .bxdj (the SimulatorAPI) is unable
-        //to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue
+    
+    /// <summary>
+    /// Iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
+    /// Necessary to pull the limits into the joint as the exporter exports. Where the joint is actually written to the .bxdj,
+    /// we are unable to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue.
+    /// </summary>
+    /// <param name="skeleton">Skeleton to write limits to</param>
+    public void WriteLimits(RigidNode_Base skeleton)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         skeleton.ListAllNodes(nodes);
@@ -325,64 +330,15 @@ public partial class SynthesisGUI : Form
                 parentID[i] = -1;
             }
         }
+
         for (int i = 0; i < nodes.Count; i++)
         {
             if (parentID[i] >= 0)
             {
-                switch (nodes[i].GetSkeletalJoint().GetJointType())
-                {
-                    case SkeletalJointType.BALL:
-                        break;
-                    case SkeletalJointType.CYLINDRICAL:
-                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasAngularPositionLimits;//sets whether or not the joint has angular limits based off whether or not the joint has limist
-                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit)// if there are limits, write them to the file
-                        {
-                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);// get the JointDef from the joint and write the limits to the internal datatype
-                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);// see above
-                        }
-                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearStartLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionStartLimit;// see above
-                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearStartLimit)// see above
-                        {
-                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitStart = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);// see above
-                        }
-                        ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearEndLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;// see above
-                        if (((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).hasLinearEndLimit)// see above
-                        {
-                            ((CylindricalJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitEnd = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue);// see above
-                        }
-                        break;
-                    case SkeletalJointType.LINEAR:
-                        ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionStartLimit;// see cylindrical joint above
-                        if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasLowerLimit)// see cylindrical joint above
-                        {
-                            ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue);// see cylindrical joint above
-                            ((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPosition).Value = ((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue;
-                            
-                        }
-                        ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasLinearPositionEndLimit;// see cylindrical joint above
-                        if (((LinearJoint_Base)nodes[i].GetSkeletalJoint()).hasUpperLimit)// see cylindrical joint above
-                        {
-                            ((LinearJoint_Base)nodes[i].GetSkeletalJoint()).linearLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue);// see cylindrical joint above
-                        }
-                        break;
-                    case SkeletalJointType.PLANAR:
-                        break;
-                    case SkeletalJointType.ROTATIONAL:
-                        ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit = ((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.HasAngularPositionLimits;// see cylindrical joint above
-                        if (((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).hasAngularLimit)// see cylindrical joint above
-                        {
-                            ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitLow = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);// see cylindrical joint above
-                            ((RotationalJoint_Base)nodes[i].GetSkeletalJoint()).angularLimitHigh = (float)(((ModelParameter)((InventorSkeletalJoint)nodes[i].GetSkeletalJoint()).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);// see cylindrical joint above
-                        }
-                        break;
-                    default:
-                        throw new Exception("Could not determine type of joint");
-                }
+                InventorSkeletalJoint inventorJoint = nodes[i].GetSkeletalJoint() as InventorSkeletalJoint;
+                if (inventorJoint != null)
+                    inventorJoint.ReloadInventorJoint();
             }
-        }
-        foreach (ComponentOccurrence component in InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList())
-        {
-            Exporter.BringJointsToStart(component);
         }
     }
     /// <summary>
@@ -393,7 +349,7 @@ public partial class SynthesisGUI : Form
     {
         try
         {
-            writeLimits(SkeletonBase);// write the limits from Inventor to the skeleton
+            WriteLimits(SkeletonBase);// write the limits from Inventor to the skeleton
             // If robot has not been named, prompt user for information
             if (RMeta.ActiveRobotName == null)
                 if (!PromptExportSettings())
@@ -513,6 +469,7 @@ public partial class SynthesisGUI : Form
                     wheel.type = (WheelType)Utilities.GetProperty(propertySet, "wheel-type", (int)WheelType.NORMAL);
                     wheel.isDriveWheel = Utilities.GetProperty(propertySet, "wheel-isDriveWheel", false);
                     wheel.SetFrictionLevel((FrictionLevel)Utilities.GetProperty(propertySet, "wheel-frictionLevel", (int)FrictionLevel.MEDIUM));
+                    wheel.driveTrainType = Utilities.GetProperty(propertySet, "wheel-drivetype", 0);
                 }
 
                 // Pneumatic information
@@ -534,6 +491,17 @@ public partial class SynthesisGUI : Form
                     ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
                     elevator.type = (ElevatorType)Utilities.GetProperty(propertySet, "elevator-type", (int)ElevatorType.NOT_MULTI);
+                }
+                for(int i = 0; i < Utilities.GetProperty(propertySet, "num-sensors", 0); i++)
+                {
+                    RobotSensor addedSensor;
+                    addedSensor = new RobotSensor((RobotSensorType)Utilities.GetProperty(propertySet, "sensorType" + i, (int)RobotSensorType.ENCODER));
+                    addedSensor.port1 = ((int)Utilities.GetProperty(propertySet, "sensorPort1" + i, 0));
+                    addedSensor.port2 = ((int)Utilities.GetProperty(propertySet, "sensorPort2" + i, 0));
+                    addedSensor.conTypePort1 = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortCon1" + i, (int)SensorConnectionType.DIO));
+                    addedSensor.conTypePort2 = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortCon2" + i, (int)SensorConnectionType.DIO));
+                    addedSensor.conversionFactor = Utilities.GetProperty(propertySet, "sensorConversion" + i, 0.0);
+                    joint.attachedSensors.Add(addedSensor);
                 }
             }
 
@@ -626,6 +594,7 @@ public partial class SynthesisGUI : Form
                     Utilities.SetProperty(propertySet, "wheel-type", (int)wheel.type);
                     Utilities.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
                     Utilities.SetProperty(propertySet, "wheel-frictionLevel", (int)wheel.GetFrictionLevel());
+                    Utilities.SetProperty(propertySet, "wheel-drivetype", wheel.driveTrainType);
                 }
 
                 // Pneumatic information
@@ -640,12 +609,34 @@ public partial class SynthesisGUI : Form
 
                 // Elevator information
                 ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+
+
+
                 Utilities.SetProperty(propertySet, "has-elevator", elevator != null);
 
                 if (elevator != null)
                 {
                     Utilities.SetProperty(propertySet, "elevator-type", (int)elevator.type);
                 }
+            }
+            for (int i = 0; i < Utilities.GetProperty(propertySet, "num-sensors", 0); i++)// delete existing sensors
+            {
+                Utilities.RemoveProperty(propertySet, "sensorType" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPort1" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortCon1" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPort2" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortCon2" + i);
+                Utilities.RemoveProperty(propertySet, "sensorConversion" + i);
+            }
+            Utilities.SetProperty(propertySet, "num-sensors", joint.attachedSensors.Count);
+            for(int i = 0; i < joint.attachedSensors.Count; i++) {
+
+                Utilities.SetProperty(propertySet, "sensorType" + i, (int)joint.attachedSensors[i].type);
+                Utilities.SetProperty(propertySet, "sensorPort1" + i, joint.attachedSensors[i].port1);
+                Utilities.SetProperty(propertySet, "sensorPortCon1" + i, (int)joint.attachedSensors[i].conTypePort1);
+                Utilities.SetProperty(propertySet, "sensorPort2" + i, joint.attachedSensors[i].port2);
+                Utilities.SetProperty(propertySet, "sensorPortCon2" + i, (int)joint.attachedSensors[i].conTypePort2);
+                Utilities.SetProperty(propertySet, "sensorConversion" + i, joint.attachedSensors[i].conversionFactor);
             }
 
             // Recur along this child
