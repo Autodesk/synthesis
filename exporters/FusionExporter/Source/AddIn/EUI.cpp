@@ -27,6 +27,8 @@ EUI::~EUI()
 	deleteWorkspace();
 }
 
+// WORKSPACE
+
 bool EUI::createWorkspace()
 {
 	try
@@ -81,11 +83,14 @@ void EUI::deleteWorkspace()
 {
 	// Delete palettes
 	deleteExportPalette();
+	deleteSensorsPalette();
 	deleteProgressPalette();
 
 	// Delete buttons
 	deleteExportButton();
 }
+
+// EXPORT PALETTE
 
 bool EUI::createExportPalette()
 {
@@ -151,6 +156,66 @@ void EUI::closeExportPalette()
 	exportButtonCommand->controlDefinition()->isEnabled(true);
 }
 
+// SENSORS PALETTE
+
+bool Synthesis::EUI::createSensorsPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	sensorsPalette = palettes->itemById(K_SENSORS_PALETTE);
+	if (!sensorsPalette)
+	{
+		// Create palette
+		sensorsPalette = palettes->add(K_SENSORS_PALETTE, "Sensors", "Palette/sensors.html", false, true, true, 300, 200);
+		if (!sensorsPalette)
+			return false;
+
+		// Dock the palette to the right side of Fusion window.
+		sensorsPalette->dockingState(PaletteDockStateRight);
+
+		// Add handler to HTMLEvent of the palette
+		Ptr<HTMLEvent> htmlEvent = sensorsPalette->incomingFromHTML();
+		if (!htmlEvent)
+			return false;
+
+		htmlEvent->add(new ReceiveFormDataHandler(app, this));
+	}
+
+	return true;
+}
+
+void Synthesis::EUI::openSensorsPalette(std::string jointID)
+{
+	sensorsPalette->sendInfoToHTML("sensorID", jointID);
+	sensorsPalette->sendInfoToHTML("sensors", Exporter::loadConfiguration(app->activeDocument()).toString());
+	sensorsPalette->isVisible(true);
+}
+
+void Synthesis::EUI::deleteSensorsPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette already exists
+	sensorsPalette = palettes->itemById(K_SENSORS_PALETTE);
+
+	if (sensorsPalette)
+		sensorsPalette->deleteMe();
+
+	sensorsPalette = nullptr;
+}
+
+void Synthesis::EUI::closeSensorsPalette()
+{
+	sensorsPalette->isVisible(false);
+}
+
+// PROGRESS PALETTE
+
 bool EUI::createProgressPalette()
 {
 	Ptr<Palettes> palettes = UI->palettes();
@@ -200,6 +265,8 @@ void EUI::closeProgressPalette()
 	progressPalette->isVisible(false);
 	exportButtonCommand->controlDefinition()->isEnabled(true);
 }
+
+// BUTTONS
 
 bool EUI::createExportButton()
 {

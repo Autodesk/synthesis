@@ -168,6 +168,7 @@
     <None Include="palette\export.html" />
     <None Include="palette\js\progress.js" />
     <None Include="palette\progress.html" />
+    <None Include="palette\sensors.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
