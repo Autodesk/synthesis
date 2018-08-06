@@ -266,6 +266,13 @@ public partial class DriveChooser : Form
 
                 if(cmbStages.SelectedIndex == -1)
                     cmbStages.SelectedIndex = 0;
+                rbCAN.Show();
+                rbPWM.Show();
+            }
+            else if (cType.IsWormScrew())
+            {
+                rbCAN.Show();
+                rbPWM.Show();
             }
             else
             {
