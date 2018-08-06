@@ -10,7 +10,7 @@ public class Exporter
 {
 
     private const int MAX_VERTICIES = 8192;
-    
+
     public class EmptyAssemblyException : ApplicationException
     {
         public EmptyAssemblyException() : base("No parts in assembly.") { }
@@ -78,7 +78,7 @@ public class Exporter
 
         return baseNode;
     }
-    
+
     public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode, bool useOCL = false)
     {
         SurfaceExporter surfs = new SurfaceExporter();

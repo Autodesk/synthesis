@@ -35,7 +35,7 @@ public partial class DriveChooser : Form
             foreach (RigidNode_Base node in nodes)
             {
                 JointDriver driver = node.GetSkeletalJoint().cDriver;
-                if (driver == null || driver.CompareTo(baseJoint.cDriver) != 0) 
+                if (driver == null || driver.CompareTo(baseJoint.cDriver) != 0)
                     same = false;
             }
 
@@ -78,7 +78,7 @@ public partial class DriveChooser : Form
 
             rbPWM.Checked = !joint.cDriver.isCan;
             rbCAN.Checked = joint.cDriver.isCan;
-                if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
+            if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
             {
                 joint.cDriver.OutputGear = 1;
             }
@@ -86,8 +86,8 @@ public partial class DriveChooser : Form
             {
                 joint.cDriver.InputGear = 1;
             }
-            OutputGeartxt.Value = (decimal) joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
-            InputGeartxt.Value = (decimal) joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+            OutputGeartxt.Value = (decimal)joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+            InputGeartxt.Value = (decimal)joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
 
             #region Meta info recovery
             {
@@ -135,7 +135,8 @@ public partial class DriveChooser : Form
                 if (elevatorMeta != null && (int)elevatorMeta.type < 7)
                 {
                     cmbStages.SelectedIndex = (int)elevatorMeta.type;
-                } else
+                }
+                else
                 {
                     cmbStages.SelectedIndex = 0;
                 }
@@ -149,8 +150,8 @@ public partial class DriveChooser : Form
             txtPortB.Value = txtPortB.Minimum;
             txtLowLimit.Value = txtLowLimit.Minimum;
             txtHighLimit.Value = txtHighLimit.Minimum;
-            InputGeartxt.Value = (decimal) 1.0;
-            OutputGeartxt.Value = (decimal) 1.0;
+            InputGeartxt.Value = (decimal)1.0;
+            OutputGeartxt.Value = (decimal)1.0;
 
             rbPWM.Checked = true;
 
@@ -174,10 +175,10 @@ public partial class DriveChooser : Form
         if (joint.cDriver == null) return true;
 
         double inputGear = 1, outputGear = 1;
-        
-        inputGear = (double) InputGeartxt.Value;
+
+        inputGear = (double)InputGeartxt.Value;
         outputGear = (double)OutputGeartxt.Value;
-                
+
         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
         WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
@@ -185,13 +186,13 @@ public partial class DriveChooser : Form
         if (cmbJointDriver.SelectedIndex != typeOptions.ToList().IndexOf(joint.cDriver.GetDriveType()) + 1 ||
             txtPortA.Value != joint.cDriver.portA ||
             txtPortB.Value != joint.cDriver.portB ||
-            txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
-            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
-            inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear || 
+            txtLowLimit.Value != (decimal)joint.cDriver.lowerLimit ||
+            txtHighLimit.Value != (decimal)joint.cDriver.upperLimit ||
+            inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear ||
             rbCAN.Checked != joint.cDriver.isCan)
             return true;
 
-        if (pneumatic != null && 
+        if (pneumatic != null &&
             (cmbPneumaticDiameter.SelectedIndex != (int)pneumatic.widthEnum ||
             cmbPneumaticPressure.SelectedIndex != (int)pneumatic.pressureEnum))
             return true;
@@ -264,7 +265,7 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Add(metaElevatorStages);
                 tabsMeta.TabPages.Add(metaGearing);
 
-                if(cmbStages.SelectedIndex == -1)
+                if (cmbStages.SelectedIndex == -1)
                     cmbStages.SelectedIndex = 0;
                 rbCAN.Show();
                 rbPWM.Show();

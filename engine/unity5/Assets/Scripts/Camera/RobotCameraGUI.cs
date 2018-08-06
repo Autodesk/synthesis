@@ -205,14 +205,14 @@ namespace Synthesis.Camera
             if (indicatorActive)
             {
                 //Only allow the camera configuration when the indicator is active
-                showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
+                //showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
             }
             else
             {
-                showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
+                //showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
                 //Close the panel when indicator is not active and stop all configuration
                 ResetConfigurationWindow();
-                configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
+                //configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
                 configureRobotCameraButton.SetActive(false);
 
                 robotCameraManager.ArrowsActive = false;
@@ -229,11 +229,11 @@ namespace Synthesis.Camera
             configureCameraPanel.SetActive(robotCameraManager.ChangingCameraPosition);
             if (robotCameraManager.ChangingCameraPosition)
             {
-                preConfigCamState = dynamicCamera.ActiveState;
+                preConfigCamState = dynamicCamera.cameraState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, robotCameraManager.CurrentCamera));
                 //Update the node where current camera is attached to
-                cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
-                configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
+                //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
+                //configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
 
                 robotCameraManager.ArrowsActive = true;
             }
@@ -277,8 +277,8 @@ namespace Synthesis.Camera
             robotCameraManager.ResetNodeColors();
             robotCameraManager.SelectedNode = null;
             robotCameraManager.SelectingNode = false;
-            cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
-            changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+            //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
+            //changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
             cancelNodeSelectionButton.SetActive(false);
         }
 
@@ -422,8 +422,8 @@ namespace Synthesis.Camera
         /// </summary>
         public void UpdateNodeAttachment()
         {
-            if (robotCameraManager.CurrentCamera != null)
-                cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
+            //if (robotCameraManager.CurrentCamera != null)
+                //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
         }
 
         /// <summary>
@@ -453,8 +453,8 @@ namespace Synthesis.Camera
             lockAngleButton.SetActive(false);
             lockFOVButton.SetActive(false);
 
-            showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
-            showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Range";
+            //showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
+            //showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Range";
 
             cameraAnglePanel.SetActive(false);
             cameraFOVPanel.SetActive(false);

@@ -40,6 +40,8 @@ namespace Synthesis.Robot
 
         private bool robotIsMecanum;
 
+        // TODO: Something weird is going on with the spawn, at least with robots with manipulators. Reset is fine.
+
         /// <summary>
         /// Loads and initializes the physical manipulator object (used in Mix and Match mode)
         /// </summary>
@@ -300,7 +302,7 @@ namespace Synthesis.Robot
                 newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
                 newTransform.Basis = BulletSharp.Math.Matrix.Identity;
                 r.WorldTransform = newTransform;
-                
+
                 if (i == 0)
                     Debug.Log("Transform Origin" + newTransform.Origin);
 
@@ -337,7 +339,7 @@ namespace Synthesis.Robot
         {
             if (!RobotHasManipulator)
                 return;
-        
+
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
                 BRigidBody br = n.MainObject.GetComponent<BRigidBody>();

@@ -170,6 +170,12 @@ namespace Synthesis.Configuration
             Plane plane = new Plane(UnityEngine.Camera.main.transform.forward, UnityEngine.Camera.main.transform.position);
             float dist = plane.GetDistanceToPoint(transform.position);
             transform.localScale = initialScale * Scale * dist;
+            Vector3 scaleTmp = gameObject.transform.localScale;
+            scaleTmp.x /= gameObject.transform.parent.localScale.x;
+            scaleTmp.y /= gameObject.transform.parent.localScale.y;
+            scaleTmp.z /= gameObject.transform.parent.localScale.z;
+            gameObject.transform.parent = gameObject.transform.parent;
+            gameObject.transform.localScale = scaleTmp;
         }
 
         /// <summary>

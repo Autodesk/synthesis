@@ -5,7 +5,6 @@ using Synthesis.FSM;
 using Synthesis.Input;
 using Synthesis.Camera;
 using Synthesis.States;
-using Synthesis.Robot;
 
 public class DynamicCamera : MonoBehaviour
 {
@@ -20,35 +19,29 @@ public class DynamicCamera : MonoBehaviour
     public static bool MovementEnabled { get; set; }
 
     /// <summary>
+    /// The state of the camera.
+    /// </summary>
+    CameraState _cameraState;
+
+    /// <summary>
     /// Gets the state of the camera.
     /// </summary>
     /// <value>The state of the camera.</value>
-    public CameraState ActiveState { get; private set; }
+    public CameraState cameraState
+    {
+        get
+        {
+            return _cameraState;
+        }
+    }
 
     /// <summary>
     /// Abstract class for defining various states of the camera.
     /// </summary>
     public abstract class CameraState
     {
-        /// <summary>
-        /// The attached camera instance.
-        /// </summary>
-        protected MonoBehaviour Mono { get; private set; }
-
-        /// <summary>
-        /// The state's <see cref="IRobotProvider"/> instance for accessing robot information.
-        /// </summary>
-        protected IRobotProvider RobotProvider { get; private set; }
-
-        /// <summary>
-        /// Initialzes a new <see cref="CameraState"/> instance.
-        /// </summary>
-        /// <param name="mono"></param>
-        public CameraState(MonoBehaviour mono)
-        {
-            Mono = mono;
-            RobotProvider = StateMachine.SceneGlobal.FindState<IRobotProvider>();
-        }
+        public GameObject robot;
+        protected MonoBehaviour mono;
 
         /// <summary>
         /// Init this instance (will be called in SwitchCameraMode()).
@@ -74,22 +67,20 @@ public class DynamicCamera : MonoBehaviour
         Quaternion startRotation;
         Quaternion lookingRotation;
         Quaternion currentRotation;
-
         //The default starting position of the camera
         static Vector3 position1Vector = new Vector3(0f, 1.5f, -9.5f);
-
         //The opposite default starting position of the camera
         static Vector3 position2Vector = new Vector3(0f, 1.5f, 9.5f);
-
         Vector3 currentPosition;
 
         float transformSpeed;
+        bool opposite;
+        private MainState main;
 
-        readonly bool opposite;
-
-        public DriverStationState(MonoBehaviour mono, bool oppositeSide = false) : base(mono)
+        public DriverStationState(MonoBehaviour mono, bool oppositeSide = false)
         {
-            opposite = oppositeSide;
+            this.mono = mono;
+            this.opposite = oppositeSide;
         }
 
         public override void Init()
@@ -97,23 +88,28 @@ public class DynamicCamera : MonoBehaviour
             //Decide which side the camera should be placed depending on whether it is opposite of default position
             if (opposite) currentPosition = position2Vector;
             else currentPosition = position1Vector;
-            Mono.transform.position = currentPosition;
+            mono.transform.position = currentPosition;
 
-            startRotation = Quaternion.LookRotation(Vector3.zero - Mono.transform.position);
+            startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
             currentRotation = startRotation;
             transformSpeed = 2.5f;
+            main = StateMachine.SceneGlobal.FindState<MainState>();
         }
 
         public override void Update()
         {
             //Look towards the robot
-            if (RobotProvider.Robot.transform.childCount > 0)
+            if (robot != null && robot.transform.childCount > 0)
             {
-                lookingRotation = Quaternion.LookRotation(RobotProvider.Robot.transform.GetChild(0).transform.position - Mono.transform.position);
+                lookingRotation = Quaternion.LookRotation(robot.transform.GetChild(0).transform.position - mono.transform.position);
                 currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
             }
-
-            if (ControlEnabled && RobotProvider.RobotActive)
+            else
+            {
+                robot = main.ActiveRobot.gameObject;
+            }
+            //Move left/right using A/D, freeze camera movement when the robot is resetting
+            if (ControlEnabled && !main.ActiveRobot.IsResetting)
             {
                 if (!opposite)
                 {
@@ -124,9 +120,10 @@ public class DynamicCamera : MonoBehaviour
                     currentPosition -= Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
                 }
             }
-            Mono.transform.rotation = currentRotation;
-            Mono.transform.position = currentPosition;
+            mono.transform.rotation = currentRotation;
+            mono.transform.position = currentPosition;
         }
+
 
         public override void End()
         {
@@ -138,19 +135,306 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class OrbitState : CameraState
     {
-        const float lagResponsiveness = 10f;
-        
-        float magnification = 5.0f;
-        float cameraAngle = 45f;
-        float panValue = 0f;
+        //The old orbit state won't lock its angle relative to the robot
+        #region old orbit state
+        //Vector3 targetVector;
+        //Vector3 rotateVector;
+        //Vector3 lagVector;
+        //const float lagResponsiveness = 10f;
+        //float magnification = 5.0f;
+        //float cameraAngle = 45f;
+        //float panValue = 0f;
+
+        //public OrbitState(MonoBehaviour mono)
+        //{
+        //    this.mono = mono;
+        //}
+
+        //public override void Init()
+        //{
+        //    rotateVector = new Vector3(0f, 1f, 0f);
+        //    lagVector = rotateVector;
+        //}
+
+        //public override void Update()
+        //{
+        //    if (robot != null && robot.transform.childCount > 0)
+        //    {
+        //        targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
+
+        //        if (MovingEnabled)
+        //        {
+        //            if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+        //            {
+        //                cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
+        //                panValue = -Input.GetAxis("Mouse X") / 5f;
+        //            }
+        //            else
+        //            {
+        //                panValue = 0f;
+
+        //                if (Input.GetMouseButton(1))
+        //                {
+        //                    magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
+
+        //                }
+
+        //            }
+        //        }
+        //        else
+        //        {
+        //            panValue = 0f;
+        //        }
+
+        //        rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
+        //        rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+
+        //        lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
+
+        //        mono.transform.position = lagVector;
+        //        mono.transform.LookAt(targetVector);
+
+        //    }
+        //    else
+        //    {
+        //        robot = GameObject.Find("Robot");
+        //    }
+        //}
+
+        //public override void End()
+        //{
+        //}
+
+        //Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
+        //{
+        //    vector -= origin;
+        //    Vector3 output = vector;
+        //    output.x = Mathf.Cos(theta) * (vector.x) - Mathf.Sin(theta) * (vector.z);
+        //    output.z = Mathf.Sin(theta) * (vector.x) + Mathf.Cos(theta) * (vector.z);
+
+        //    return output.normalized * mag + origin;
+        //}
+        #endregion
+        //The other version orbit state locks the angle, but when it doesn't change the vertical angle and instead changes the height
+        #region another version of orbit state
+        //private Transform target;
+        //// The distance in the x-z plane to the target
+        //private float distance = 5f;
+        //// the height we want the camera to be above the target
+        //private float height = 1.5f;
+        //private float angleOffset;
+        //private float heightDamping = 5f;
+        //private float rotationDamping = 5f;
+
+
+        //public OrbitState(MonoBehaviour mono)
+        //{
+        //    this.mono = mono;
+        //}
+        //public override void Init()
+        //{
+
+        //}
+
+
+        //public override void Update()
+        //{
+        //    //Focus on the node 0
+        //    if (!robot) robot = StateMachine.Instance.FindState<MainState>().ActiveRobot.gameObject;
+        //    target = robot.transform.GetChild(0);
+
+        //    // Early out if we don't have a target
+        //    if (!target)
+        //        return;
+
+        //    // Calculate the current rotation angles (+90 actually makes it follows from behind)
+        //    float wantedRotationAngle = target.eulerAngles.y + angleOffset;
+        //    float wantedHeight = target.position.y + height;
+        //    float currentRotationAngle = mono.transform.eulerAngles.y;
+        //    float currentHeight = mono.transform.position.y;
+
+        //    if (MovingEnabled)
+        //    {
+        //        //Use right mouse to adjust the distance of camera from the robot
+        //        if (Input.GetMouseButton(1))
+        //        {
+        //            distance = Mathf.Max(Mathf.Min(distance - ((Input.GetAxis("Mouse Y") / 5f) * distance), 12f), 1.5f);
+        //        }
+        //        //Use left mouse to adjust the angle the camera is pointing from and the height of camera
+        //        else if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+        //        {
+        //            angleOffset += Input.GetAxis("Mouse X") * 5;
+        //            height -= Input.GetAxis("Mouse Y") / 2;
+        //        }
+        //    }
+
+        //    // Damp the rotation around the y-axis
+        //    currentRotationAngle = Mathf.LerpAngle(currentRotationAngle, wantedRotationAngle, rotationDamping * Time.deltaTime);
+
+        //    // Damp the height
+        //    currentHeight = Mathf.Lerp(currentHeight, wantedHeight, heightDamping * Time.deltaTime);
+
+        //    // Convert the angle into a rotation
+        //    Quaternion currentRotation = Quaternion.Euler(0, currentRotationAngle, 0);
+
+        //    // Set the position of the camera on the x-z plane to:
+        //    // distance meters behind the target
+        //    mono.transform.position = target.position;
+        //    mono.transform.position -= currentRotation * Vector3.forward * distance;
+
+        //    // Set the height of the camera
+        //    mono.transform.position = new Vector3(mono.transform.position.x, currentHeight, mono.transform.position.z);
+
+        //    // Always look at the target
+        //    mono.transform.LookAt(target);
+        //}
+
+        //public override void End()
+        //{
+
+        //}
+        #endregion
+
+        #region a less smooth version of the current robot state
+        ////This version can change both horizontal & vertical angle like the old orbit and lock the angle by setting the main camera as the
+        ////child of the robot
+        //private Transform target;
+        //private float angleOffset;
+        //private float magnification = 3f;
+        //Vector3 targetVector;
+        //Vector3 currentPosition;
+        //Vector3 targetPosition;
+        //float cameraAngle = 25f;
+        //float panValue = 0f;
+        //const float lagResponsiveness = 10f;
+
+        //public OrbitState(MonoBehaviour mono)
+        //{
+        //    this.mono = mono;
+        //}
+        //public override void Init()
+        //{
+        //    if (!robot) robot = StateMachine.Instance.FindState<MainState>().ActiveRobot.gameObject;
+        //    //This position makes it less weird when the camera first zoom in to the camera
+        //    if (!robot)
+        //    {
+        //        //Before robot is loaded
+        //        mono.transform.position = new Vector3(-2, 2, -2);
+        //    }
+        //    else
+        //    {
+        //        //After robot is loaded, find its drive base
+        //        mono.transform.position = robot.transform.GetChild(0).position + new Vector3(-2, 2, -2);
+        //    }
+        //    currentPosition = mono.transform.position;
+        //    targetPosition = mono.transform.position;
+        //}
+
+
+        //public override void Update()
+        //{
+        //    //Focus on the node 0
+        //    if (!robot) robot = StateMachine.Instance.FindState<MainState>().ActiveRobot.gameObject;
+        //    //Error handling when changing robot and nodes get destroyed
+        //    try
+        //    {
+        //        target = robot.transform.GetChild(0);
+        //        targetVector = robot.transform.GetChild(0).position;
+        //    }
+        //    catch
+        //    {
+        //        return;
+        //    }
+
+        //    // Early out if we don't have a target
+        //    if (!target)
+        //        return;
+
+        //    if (MovingEnabled)
+        //    {   
+        //        //Force the camera to stay above the field if the robot is flipped over at spawn
+        //        if(mono.transform.position.y < 0) mono.transform.position = new Vector3(-2, 2, -2);
+        //        //Enable position and angle transform
+        //        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+        //        {
+        //            //Avoid interference with God Mode
+        //            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+        //            {
+        //                currentPosition = mono.transform.position;
+        //                targetPosition = currentPosition;
+        //            }
+
+        //            //Unbond the main camera from the robot
+        //            mono.transform.parent = null;
+
+        //            //Change rotation angle using left mouse
+        //            if (Input.GetMouseButton(0))
+        //            {
+        //                cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f) + angleOffset;
+        //                panValue = -Input.GetAxis("Mouse X") / 5f;
+        //            }
+        //            //Change magnification using right mouse
+        //            else
+        //            {
+        //                magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
+        //            }
+
+        //            //Calculate the current position
+        //            currentPosition = RotateXZ(currentPosition, targetVector, panValue, magnification);
+        //            //Elevate the height offset of the camera according to camera angle
+        //            currentPosition.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+        //            //Calculate target position
+        //            targetPosition = CalculateLagVector(targetPosition, currentPosition, lagResponsiveness);
+        //            mono.transform.position = targetPosition;                    
+        //        }
+        //        //Make robot drive base as the parent of the main camera so it moves along with it
+        //        else
+        //        {
+        //            mono.transform.parent = target;
+        //        }
+
+        //        // Always look at the target
+        //        mono.transform.LookAt(target);
+        //    }
+        //}
+
+        //public override void End()
+        //{
+        //    //Unparent the main camera when switch to other camera state
+        //    mono.transform.parent = null;
+        //}
+
+        ///// <summary>
+        ///// Calculate rotation on the xz plane
+        ///// </summary>
+        ///// <param name="vector"></param>
+        ///// <param name="origin"></param>
+        ///// <param name="theta"></param>
+        ///// <param name="mag"></param>
+        ///// <returns></returns>
+        //Vector3 RotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
+        //{
+        //    vector -= origin;
+        //    Vector3 output = vector;
+        //    output.x = Mathf.Cos(theta) * (vector.x) - Mathf.Sin(theta) * (vector.z);
+        //    output.z = Mathf.Sin(theta) * (vector.x) + Mathf.Cos(theta) * (vector.z);
+
+        //    return output.normalized * mag + origin;
+        //}
+        #endregion
 
         Vector3 targetVector;
         Vector3 rotateVector;
         Vector3 lagVector;
         Vector3 lockedVector;
+        const float lagResponsiveness = 10f;
+        float magnification = 5.0f;
+        float cameraAngle = 45f;
+        float panValue = 0f;
 
-        public OrbitState(MonoBehaviour mono) : base(mono)
+        public OrbitState(MonoBehaviour mono)
         {
+            this.mono = mono;
         }
 
         public override void Init()
@@ -163,58 +447,62 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            if (RobotProvider.Robot == null || RobotProvider.Robot.transform.childCount == 0)
-                return;
-
-            // Focus on node 0 of the robot
-            targetVector = RobotProvider.Robot.transform.GetChild(0).transform.position;
-
-            bool adjusting = false;
-
-            if (ControlEnabled && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+            if (robot != null && robot.transform.childCount > 0)
             {
-                if (Input.GetMouseButton(0))
+                // Focus on node 0 of the robot
+                targetVector = robot.transform.GetChild(0).transform.position;
+
+                bool adjusting = false;
+
+                if (ControlEnabled && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
                 {
-                    // Pan around the robot
-                    adjusting = true;
-                    cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
-                    panValue = -Input.GetAxis("Mouse X") / 5f;
+                    if (Input.GetMouseButton(0))
+                    {
+                        // Pan around the robot
+                        adjusting = true;
+                        cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
+                        panValue = -Input.GetAxis("Mouse X") / 5f;
+                    }
+                    else
+                    {
+                        panValue = 0f;
+
+                        if (Input.GetMouseButton(1))
+                        {
+                            // Zoom in and out
+                            adjusting = true;
+                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
+                        }
+                    }
                 }
                 else
                 {
                     panValue = 0f;
-
-                    if (Input.GetMouseButton(1))
-                    {
-                        // Zoom in and out
-                        adjusting = true;
-                        magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
-                    }
                 }
+
+                if (adjusting)
+                {
+                    // Unlocks the camera position for adjustment
+                    rotateVector = RotateXZ(rotateVector, targetVector, panValue, magnification);
+                    rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+                    lockedVector = robot.transform.GetChild(0).InverseTransformPoint(rotateVector);
+                }
+                else
+                {
+                    rotateVector = robot.transform.GetChild(0).TransformPoint(lockedVector);
+                    rotateVector.y = targetVector.y + Mathf.Abs(rotateVector.y - targetVector.y);
+                }
+
+                // Calculate smooth camera movement
+                lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
+
+                mono.transform.position = lagVector;
+                mono.transform.LookAt(targetVector);
             }
             else
             {
-                panValue = 0f;
+                robot = GameObject.Find("Robot");
             }
-
-            if (adjusting)
-            {
-                // Unlocks the camera position for adjustment
-                rotateVector = RotateXZ(rotateVector, targetVector, panValue, magnification);
-                rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
-                lockedVector = RobotProvider.Robot.transform.GetChild(0).InverseTransformPoint(rotateVector);
-            }
-            else
-            {
-                rotateVector = RobotProvider.Robot.transform.GetChild(0).TransformPoint(lockedVector);
-                rotateVector.y = targetVector.y + Mathf.Abs(rotateVector.y - targetVector.y);
-            }
-
-            // Calculate smooth camera movement
-            lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
-
-            Mono.transform.position = lagVector;
-            Mono.transform.LookAt(targetVector);
         }
 
         public override void End()
@@ -256,14 +544,16 @@ public class DynamicCamera : MonoBehaviour
         float rotationSpeed;
         float transformSpeed;
         float scrollWheelSensitivity;
+        MainState main;
 
-        public FreeroamState(MonoBehaviour mono) : base(mono)
+        public FreeroamState(MonoBehaviour mono)
         {
+            this.mono = mono;
         }
 
         public override void Init()
         {
-            Mono.transform.position = new Vector3(0f, 1f, 0f);
+            mono.transform.position = new Vector3(0f, 1f, 0f);
             positionVector = new Vector3(0f, 1f, 0f);
             lagPosVector = positionVector;
             rotationVector = Vector3.zero;
@@ -273,12 +563,21 @@ public class DynamicCamera : MonoBehaviour
             rotationSpeed = 3f;
             transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
+            if (robot == null) robot = GameObject.Find("robot");
+            main = StateMachine.SceneGlobal.FindState<MainState>();
         }
 
         public override void Update()
         {
-            if (ControlEnabled && RobotProvider.RobotActive && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+            if (ControlEnabled && !main.ActiveRobot.IsResetting && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
             {
+                //Rotate camera when holding left mouse
+                //if (InputControl.GetMouseButton(0))
+                //{
+                //    rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
+                //    rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
+                //}
+
                 if (InputControl.GetMouseButton(0))
                 {
                     if (GameObject.Find("ChangeRobotPanel") || GameObject.Find("ChangeFieldPanel"))
@@ -294,25 +593,26 @@ public class DynamicCamera : MonoBehaviour
                 }
 
                 //Use WASD to move camera position
-                positionVector += Input.GetAxis("CameraHorizontal") * Mono.transform.right * transformSpeed * Time.deltaTime;
-                positionVector += Input.GetAxis("CameraVertical") * Mono.transform.forward * transformSpeed * Time.deltaTime;
+                positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
+                positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
 
                 zoomValue = Mathf.Max(Mathf.Min(zoomValue - InputControl.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 
                 lagRotVector = CalculateLagVector(lagRotVector, rotationVector, lagResponsiveness);
                 lagZoom = CalculateLagScalar(lagZoom, zoomValue, lagResponsiveness);
 
-                Mono.transform.position += positionVector;
+                mono.transform.position += positionVector;
                 positionVector = Vector3.zero;
-                Mono.transform.eulerAngles = lagRotVector;
-                Mono.GetComponent<Camera>().fieldOfView = lagZoom;
+                mono.transform.eulerAngles = lagRotVector;
+                mono.GetComponent<Camera>().fieldOfView = lagZoom;
             }
         }
 
         public override void End()
         {
-            Mono.GetComponent<Camera>().fieldOfView = 60.0f;
+            mono.GetComponent<Camera>().fieldOfView = 60.0f;
         }
+
     }
 
 
@@ -322,26 +622,35 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class OverviewState : CameraState
     {
+        Vector3 lagVector;
         Vector3 positionVector;
         Vector3 rotationVector;
         Vector3 fieldVector;
         GameObject field;
+        float magnification = 5.0f;
 
-        public OverviewState(MonoBehaviour mono) : base(mono)
+        public OverviewState(MonoBehaviour mono)
         {
+            this.mono = mono;
             field = GameObject.Find("Field");
             fieldVector = field.transform.position;
         }
 
         public override void Init()
         {
-            positionVector = new Vector3(0f, 9f, 0f) + fieldVector;
-            Mono.transform.position = positionVector;
+            positionVector = new Vector3(0f, 14f, 0f) + fieldVector;
+            mono.transform.position = positionVector;
             rotationVector = new Vector3(90f, 90f, 0f);
-            Mono.transform.rotation = Quaternion.Euler(rotationVector);
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+            if (robot == null) robot = GameObject.Find("robot");
         }
         public override void Update()
         {
+            if (Input.GetMouseButton(1))
+            {
+                positionVector.y += Input.GetAxis("Mouse Y");
+            }
+            mono.transform.position = positionVector;
         }
 
         public override void End()
@@ -354,29 +663,87 @@ public class DynamicCamera : MonoBehaviour
     public class SateliteState : CameraState
     {
         Vector3 targetPosition;
-        Vector3 rotationVector;
+        public GameObject target = GameObject.Find("Robot");
+        public Vector3 targetOffset = new Vector3(0f, 6f, 0f);
+        public Vector3 rotationVector = new Vector3(90f, 90f, 0f);
 
-        public SateliteState(MonoBehaviour mono) : base(mono)
+        public SateliteState(MonoBehaviour mono)
         {
+            this.mono = mono;
         }
 
         public override void Init()
         {
-            targetPosition = RobotProvider.Robot.transform.position;
-            rotationVector = new Vector3(90f, 90f, 0f);
-            Mono.transform.rotation = Quaternion.Euler(rotationVector);
+            targetPosition = target.transform.position;
+            mono.transform.position = targetPosition + targetOffset;
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
         }
 
         public override void Update()
         {
-            if (RobotProvider.Robot != null && RobotProvider.Robot.transform.childCount > 0)
-                targetPosition = RobotProvider.Robot.transform.GetChild(0).transform.position;
+            if (target != null && target.transform.childCount > 0)
+            {
+                targetPosition = target.transform.GetChild(0).transform.position;
+            }
+            else if (target != null)
+            {
+                targetPosition = target.transform.position;
+            }
 
-            Mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
+            mono.transform.position = targetPosition + targetOffset;
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
         }
 
         public override void End()
         {
+
+        }
+    }
+    public class OrthographicSateliteState : CameraState
+    {
+        Vector3 targetPosition;
+        public GameObject target = GameObject.Find("Robot");
+        public Vector3 targetOffset = new Vector3(0f, 6f, 0f);
+        public Vector3 rotationVector = new Vector3(90f, 90f, 0f);
+        public float orthoSize = 5;
+
+        public OrthographicSateliteState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+        }
+
+        public override void Init()
+        {
+            targetPosition = target.transform.position;
+
+            mono.transform.position = targetPosition + targetOffset;
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+
+            mono.GetComponent<Camera>().orthographic = true;
+            mono.GetComponent<Camera>().orthographicSize = orthoSize;
+        }
+
+        public override void Update()
+        {
+            if (target != null && target.transform.childCount > 0)
+            {
+                targetPosition = target.transform.GetChild(0).transform.position;
+            }
+            else if (target != null)
+            {
+                targetPosition = target.transform.position;
+            }
+
+            mono.transform.position = targetPosition + targetOffset;
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+
+            mono.GetComponent<Camera>().orthographic = true;
+            mono.GetComponent<Camera>().orthographicSize = orthoSize;
+        }
+
+        public override void End()
+        {
+            mono.GetComponent<Camera>().orthographic = false;
         }
     }
 
@@ -390,17 +757,20 @@ public class DynamicCamera : MonoBehaviour
         Vector3 rotateVector;
         Vector3 lagVector;
         const float lagResponsiveness = 10f;
-        float magnification = 2.0f;
+        float magnification = 5.0f;
         float cameraAngle = 45f;
         float panValue = 0f;
         bool isRobotCamera;
         GameObject target;
 
-        public ConfigurationState(MonoBehaviour mono, GameObject targetObject = null) : base(mono)
+        public ConfigurationState(MonoBehaviour mono, GameObject targetObject = null)
         {
-            target = targetObject ?? RobotProvider.Robot.transform.GetChild(0).gameObject;
+            this.mono = mono;
+            if (robot == null) robot = GameObject.Find("Robot");
+            this.target = targetObject;
+            if (target == null) target = robot.transform.GetChild(0).gameObject;
+            target.transform.Translate(new Vector3(0.0001f, 0, 0));
         }
-
         public override void Init()
         {
         }
@@ -434,25 +804,26 @@ public class DynamicCamera : MonoBehaviour
                     panValue = 0f;
                 }
 
-                rotateVector = RotateXZ(rotateVector, targetVector, panValue, magnification);
+                rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
                 rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
 
                 lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
 
-                Mono.transform.position = lagVector;
-                Mono.transform.LookAt(targetVector);
+                mono.transform.position = lagVector;
+                mono.transform.LookAt(targetVector);
             }
             else
             {
                 target = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>().CurrentCamera;
             }
+
         }
 
         public override void End()
         {
         }
 
-        Vector3 RotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
+        Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
         {
             vector -= origin;
             Vector3 output = vector;
@@ -474,7 +845,7 @@ public class DynamicCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        if (ActiveState != null && MovementEnabled) ActiveState.Update();
+        if (_cameraState != null && MovementEnabled) _cameraState.Update();
     }
 
     /// <summary>
@@ -490,7 +861,7 @@ public class DynamicCamera : MonoBehaviour
             else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
             else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this));
         }
-        if (ActiveState != null) ActiveState.Update();
+        if (_cameraState != null) _cameraState.Update();
     }
 
     /// <summary>
@@ -499,9 +870,9 @@ public class DynamicCamera : MonoBehaviour
     /// <param name="state">State</param>
     public void SwitchCameraState(CameraState state)
     {
-        if (ActiveState != null) ActiveState.End();
-        ActiveState = state;
-        ActiveState.Init();
+        if (_cameraState != null) _cameraState.End();
+        _cameraState = state;
+        _cameraState.Init();
     }
 
     /// Calculates the appropriate lag vector from the given current vector, target vector, and responsiveness constant.

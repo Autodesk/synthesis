@@ -177,7 +177,7 @@ namespace Synthesis.GUI
         {
             usingRuler = true;
             rulerStartPoint.SetActive(true);
-            Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(false);
+            Auxiliary.FindObject(canvas, "RulerPanelExtension").SetActive(false);
             Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(true);
             if (PlayerPrefs.GetInt("analytics") == 1)
             {
@@ -259,7 +259,7 @@ namespace Synthesis.GUI
             rulerStartPoint.GetComponent<LineRenderer>().enabled = false;
             rulerStartPoint.SetActive(false);
             rulerEndPoint.SetActive(false);
-            Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(true);
+            Auxiliary.FindObject(canvas, "RulerPanelExtension").SetActive(true);
             Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(false);
         }
         #endregion
@@ -299,17 +299,17 @@ namespace Synthesis.GUI
                 stopwatchTime = 0f;
                 stopwatchStartButtonText.text = "Stop";
                 stopwatchOn = true;
+            }
+            else
+            {
+                stopwatchStartButtonText.text = "Start";
+                stopwatchOn = false;
                 if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Used Stopwatch", new Dictionary<string, object> //for analytics tracking
                     {
                     });
                 }
-            }
-            else
-            {
-                stopwatchStartButtonText.text = "Start";
-                stopwatchOn = false;
             }
             stopwatchPauseButtonText.text = "Pause";
             stopwatchPaused = false;
@@ -359,6 +359,14 @@ namespace Synthesis.GUI
             if (show) EndProcesses(true);
             statsOn = show;
             statsWindow.SetActive(show);
+
+            if (PlayerPrefs.GetInt("analytics") == 1)
+            {
+                Analytics.CustomEvent("Viewed Statistics", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
+
         }
 
         /// <summary>

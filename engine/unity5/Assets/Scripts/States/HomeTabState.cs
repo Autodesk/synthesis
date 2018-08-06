@@ -14,6 +14,14 @@ namespace Synthesis.States
         }
 
         /// <summary>
+        /// Switches to the options tab and its respective UI elements.
+        /// </summary>
+        public void OnSettingsButtonPressed()
+        {
+            StateMachine.SceneGlobal.ChangeState(new OptionsTabState());
+        }
+
+        /// <summary>
         /// Opens the tutorials webpage in the browser when the tutorials button is presssed.
         /// </summary>
         public void OnTutorialsButtonPressed()

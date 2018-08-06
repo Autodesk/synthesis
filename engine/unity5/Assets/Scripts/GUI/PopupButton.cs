@@ -60,7 +60,7 @@ namespace Synthesis.GUI
             buttonStyle = new GUIStyle("button");
             buttonBackground = Resources.Load("Images/normalbuttontexture") as Texture2D;
             buttonStyle.normal.background = buttonBackground;
-            buttonStyle.font = Resources.Load("Fonts/Russo_One") as Font;
+            buttonStyle.font = Resources.Load("Fonts/Artifakt Element Bold") as Font;
             buttonStyle.normal.textColor = Color.white;
             buttonStyle.alignment = TextAnchor.MiddleCenter;
 

@@ -12,7 +12,7 @@ using Synthesis.Configuration;
 namespace Synthesis.Sensors
 {
     /// <summary>
-    /// This class handles every sensor-related GUI elements in Unity
+    /// This class handles every sensor-related GUI element in Unity
     /// </summary>
     class SensorManagerGUI : LinkedMonoBehaviour<MainState>
     {
@@ -181,7 +181,7 @@ namespace Synthesis.Sensors
             sensorOptionPanel.SetActive(isChoosingOption);
             if (isChoosingOption)
             {
-                preConfigState = dynamicCamera.ActiveState;
+                preConfigState = dynamicCamera.cameraState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera));
                 ShowAllSensors();
             }
@@ -512,7 +512,7 @@ namespace Synthesis.Sensors
             SyncHideSensorButton();
             currentSensor.IsChangingPosition = true;
             configureSensorPanel.SetActive(true);
-            sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
+            //sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
             currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(true);
         }
@@ -560,7 +560,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public void CancelNodeSelection()
         {
-            changeSensorNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+            //changeSensorNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
             cancelNodeSelectionButton.SetActive(false);
             deleteSensorButton.SetActive(true);
             hideSensorButton.SetActive(true);
@@ -709,9 +709,9 @@ namespace Synthesis.Sensors
             lockAngleButton.SetActive(false);
             lockRangeButton.SetActive(false);
 
-            showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
-            showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
-            sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+            //showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
+            //showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
+            //sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
 
             sensorAnglePanel.SetActive(false);
             sensorRangePanel.SetActive(false);
@@ -766,11 +766,11 @@ namespace Synthesis.Sensors
         {
             if (currentSensor.IsVisible)
             {
-                hideSensorButton.GetComponentInChildren<Text>().text = "Hide Sensor";
+                //hideSensorButton.GetComponentInChildren<Text>().text = "Hide Sensor";
             }
             else
             {
-                hideSensorButton.GetComponentInChildren<Text>().text = "Show Sensor";
+                //hideSensorButton.GetComponentInChildren<Text>().text = "Show Sensor";
             }
         }
         #endregion
@@ -843,10 +843,20 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ShowSensorOutput()
         {
-            sensorOutputPanel.SetActive(true);
-            isHidingOutput = false;
-            showSensorButton.SetActive(false);
-            sensorOutputPanel.transform.position = showSensorButton.transform.position;
+            if (sensorOutputPanel.activeSelf)
+            {
+                sensorOutputPanel.SetActive(false);
+                //isHidingOutput = true;
+                //showSensorButton.SetActive(true);
+                //showSensorButton.transform.position = sensorOutputPanel.transform.position;
+            }
+            else
+            {
+                sensorOutputPanel.SetActive(true);
+                //isHidingOutput = false;
+                //showSensorButton.SetActive(false);
+                //sensorOutputPanel.transform.position = showSensorButton.transform.position;
+            }
         }
 
         /// <summary>
@@ -855,9 +865,9 @@ namespace Synthesis.Sensors
         public void HideSensorOutput()
         {
             sensorOutputPanel.SetActive(false);
-            isHidingOutput = true;
-            showSensorButton.SetActive(true);
-            showSensorButton.transform.position = sensorOutputPanel.transform.position;
+            //isHidingOutput = true;
+            //showSensorButton.SetActive(true);
+            //showSensorButton.transform.position = sensorOutputPanel.transform.position;
         }
         #endregion
 
