@@ -2,15 +2,17 @@
 #include "send_data.hpp"
 #include "receive_data.hpp"
 
-std::atomic<bool> hel::hal_is_initialized{false};
+namespace hel{
+	std::atomic<bool> hal_is_initialized{false};
 
-std::shared_ptr<hel::RoboRIO> hel::RoboRIOManager::instance = nullptr;
-std::shared_ptr<hel::SendData> hel::SendDataManager::instance = nullptr;
-std::shared_ptr<hel::ReceiveData> hel::ReceiveDataManager::instance = nullptr;
+	std::shared_ptr<RoboRIO> RoboRIOManager::instance = nullptr;
+	std::shared_ptr<SendData> SendDataManager::instance = nullptr;
+	std::shared_ptr<ReceiveData> ReceiveDataManager::instance = nullptr;
 
-std::recursive_mutex hel::RoboRIOManager::m;
-std::recursive_mutex hel::SendDataManager::m;
-std::recursive_mutex hel::ReceiveDataManager::m;
+	std::recursive_mutex RoboRIOManager::roborio_mutex;
+	std::recursive_mutex SendDataManager::send_data_mutex;
+	std::recursive_mutex ReceiveDataManager::receive_data_mutex;
+}
 namespace nFPGA {
     namespace nRoboRIO_FPGANamespace {
         unsigned int g_currentTargetClass;

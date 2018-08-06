@@ -27,7 +27,7 @@ namespace hel{
         RoboRIOManager() {}
         static std::shared_ptr<RoboRIO> instance;
 
-        static std::recursive_mutex m;
+        static std::recursive_mutex roborio_mutex;
 
     public:
         RoboRIOManager(RoboRIOManager const&) = delete;
