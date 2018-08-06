@@ -1,14 +1,4 @@
-// Used for hiding/showing elements in the following function
-function setVisible(element, visible)
-{
-    element.style.visibility = visible ? '' : 'hidden';
-}
-
-// Gets an a single child element that has the class specified
-function getElByClass(fieldset, className)
-{
-    return fieldset.getElementsByClassName(className)[0]
-}
+var openFieldsetSensors = null;
 
 // Used for hiding/showing elements in the following function
 function setPortView(fieldset, portView)
@@ -63,9 +53,10 @@ function highlightJoint(jointID)
 }
 
 // Open a menu for editing joint sensors
-function editSensors(sensors)
+function editSensors(fieldset)
 {
-    adsk.fusionSendData('edit_sensors', sensors);
+    openFieldsetSensors = fieldset;
+    adsk.fusionSendData('edit_sensors', fieldset.dataset.sensors);
 }
 
 // Handles the receiving of data from Fusion
@@ -85,6 +76,8 @@ window.fusionJavaScriptHandler =
                 {
                     console.log("Receiving sensor info...");
                     console.log(data);
+                    if (openFieldsetSensors != null)
+                        openFieldsetSensors.dataset.sensors = data;
                 }
                 else if (action == 'debugger')
                 {
