@@ -59,10 +59,19 @@ namespace Synthesis
 		EUI * eui;
 	};
 
-	class CloseFormEventHandler : public UserInterfaceGeneralEventHandler
+	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:
-		CloseFormEventHandler(Ptr<Application> app) : app(app) {}
+		CloseExporterFormEventHandler(Ptr<Application> app) : app(app) {}
+		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
+	private:
+		Ptr<Application> app;
+	};
+
+	class CloseSensorFormEventHandler : public UserInterfaceGeneralEventHandler
+	{
+	public:
+		CloseSensorFormEventHandler(Ptr<Application> app) : app(app) {}
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
 	private:
 		Ptr<Application> app;

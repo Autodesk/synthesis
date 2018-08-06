@@ -227,6 +227,9 @@
     <ClCompile Include="Source\Data\BXDJ\CustomJSONObject.cpp">
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AddIn\EUI-EventHandling.cpp">
+      <Filter>Source\AddIn</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Palette\js\fusionInterface.js">
