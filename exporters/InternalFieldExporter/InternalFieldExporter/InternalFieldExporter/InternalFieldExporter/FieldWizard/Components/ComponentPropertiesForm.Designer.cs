@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.inventorActionsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.inventorSelectButton = new System.Windows.Forms.Button();
             this.addSelectionButton = new System.Windows.Forms.Button();
@@ -53,6 +54,7 @@
             this.changeNameButton = new System.Windows.Forms.Button();
             this.meshPropertiesTable = new System.Windows.Forms.TableLayoutPanel();
             this.Joint_Button = new System.Windows.Forms.Button();
+            this.inventorTreeView = new InternalFieldExporter.InventorTreeView(this.components);
             this.inventorActionsPanel.SuspendLayout();
             this.propertiesScrollablePanel.SuspendLayout();
             this.physicalPropertiesGroupBox.SuspendLayout();
@@ -349,9 +351,17 @@
             this.Joint_Button.UseVisualStyleBackColor = true;
             this.Joint_Button.Click += new System.EventHandler(this.Joint_Button_Click);
             // 
+            // inventorTreeView
+            // 
+            this.inventorTreeView.Location = new System.Drawing.Point(3, 3);
+            this.inventorTreeView.Name = "inventorTreeView";
+            this.inventorTreeView.Size = new System.Drawing.Size(295, 354);
+            this.inventorTreeView.TabIndex = 3;
+            // 
             // ComponentPropertiesForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.Controls.Add(this.inventorTreeView);
             this.Controls.Add(this.inventorActionsPanel);
             this.Controls.Add(this.propertiesScrollablePanel);
             this.Name = "ComponentPropertiesForm";
@@ -403,5 +413,6 @@
         private System.Windows.Forms.NumericUpDown massNumericUpDown;
         private System.Windows.Forms.Label massLabel;
         private System.Windows.Forms.Button Joint_Button;
+        private InventorTreeView inventorTreeView;
     }
 }
