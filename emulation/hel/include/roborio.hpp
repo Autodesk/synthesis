@@ -70,7 +70,7 @@ namespace hel{
          * \represents the state of the user button on the roborio
          */
 
-        bool user_button;
+        bool user_button; //TODO
 
         Accelerometer accelerometer;
         BoundsCheckedArray<Accumulator, AnalogInputs::NUM_ANALOG_INPUTS> accumulators;
@@ -91,12 +91,14 @@ namespace hel{
         PWMSystem pwm_system;
         RelaySystem relay_system;
         RobotMode robot_mode;
-		PCM pcm;
-		PDP pdp;
-		SPISystem spi_system;
+        PCM pcm;
+        PDP pdp;
+        SPISystem spi_system;
         SysWatchdog watchdog;
 
         explicit RoboRIO()noexcept;
+
+        ~RoboRIO(){}
 
         friend class RoboRIOManager;
         RoboRIO(RoboRIO const&)noexcept;

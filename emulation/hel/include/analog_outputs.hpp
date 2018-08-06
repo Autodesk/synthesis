@@ -3,7 +3,6 @@
 
 #include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
 #include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAO.h"
-#include "bounds_checked_array.hpp"
 
 #include "bounds_checked_array.hpp"
 

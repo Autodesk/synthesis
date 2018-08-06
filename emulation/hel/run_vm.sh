@@ -1,11 +1,11 @@
 #!/bin/bash
 SSH_COMMAND="ssh -p 10022 -t synthesis@localhost rm -rf /home/synthesis/FRCUserProgram"
-SCP_COMMAND="scp -P 10022 ./user_code/FRCUserProgram synthesis@localhost:/home/synthesis"
+SCP_COMMAND="scp -P 10022 ./user-code/FRCUserProgram synthesis@localhost:/home/synthesis"
 PASSWORD="adskbxd"
 
 ./scripts/download_vm.sh
 printf "Starting VM\n"
-if ! mkdir ./vm_lock > /dev/null ; then 
+if ! mkdir ./vm_lock 2&> /dev/null ; then 
 	printf "VM already running; vm_lock folder was found.\nChecking VM status:"
 	expect -c "spawn $SSH_COMMAND; expect \"assword:\"; send \"$PASSWORD\r\"; interact" > /dev/null
 	printf "VM Initialized\nCopying files.\n"

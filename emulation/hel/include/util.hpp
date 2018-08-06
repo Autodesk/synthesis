@@ -5,8 +5,8 @@
 #include <vector>
 
 #define NYI {\
-        printf("NYI:" + __FILE__ + ":" __LINE__ + "\n");\
-        exit(1);\
+    printf("NYI:" + __FILE__ + ":" __LINE__ + "\n"); \
+    exit(1); \
 }
 
 namespace hel{
@@ -21,11 +21,11 @@ namespace hel{
      */
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
-    unsigned findMostSignificantBit(T value){
+    constexpr unsigned findMostSignificantBit(T value){
     	unsigned most_significant_bit = 0;
 
     	while(value != 0){
-    		value /= 2;
+    		value >>= 1;
     		most_significant_bit++;
     	}
 
@@ -42,17 +42,17 @@ namespace hel{
      */
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
-    bool checkBitHigh(const T& value,const unsigned& index){
+    constexpr bool checkBitHigh(const T& value,const unsigned& index){
     	return value & (1u << index);
     }
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
-    bool checkBitLow(T value,unsigned index){
+    constexpr bool checkBitLow(T value,unsigned index){
         return !checkBitHigh(value, index);
     }
 
     template<typename TInteger, typename TIndex, typename = std::enable_if<std::is_integral<TInteger>::value && std::is_integral<TIndex>::value>>
-    TInteger setBit(TInteger integer,bool bit, TIndex index){
+    constexpr TInteger setBit(TInteger integer,bool bit, TIndex index){
         integer &= ~(1u << index);
         if(bit){
             integer |= 1u << index;
@@ -142,7 +142,7 @@ namespace hel{
         return s;
     }
 
-    bool stob(std::string);
+	bool stob(std::string);
     std::string as_string(bool);
 
     constexpr std::size_t hasher(const char* input){
@@ -151,7 +151,17 @@ namespace hel{
 
     void copystr(const std::string&, char*);
 
-    bool compareBits(uint32_t, uint32_t, uint32_t);
+	constexpr bool compareBits(uint32_t a, uint32_t b, uint32_t comparison_mask){
+		unsigned msb = std::max(findMostSignificantBit(a), findMostSignificantBit(b));
+		for(unsigned i = 0 ; i < msb; i++){
+			if(checkBitHigh(comparison_mask,i)){
+				if(checkBitHigh(a,i) != checkBitHigh(b,i)){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }
 
 #endif
