@@ -36,6 +36,12 @@ namespace Synthesis.GUI
 
         public SynthesisFileBrowser(string windowTitle, string defaultDirectory, bool allowEsc = true)
         {
+
+            //if (defaultDirectoryarray[0] != null)
+            //{
+            //    defaultDirectory = defaultDirectoryarray[0];
+            //}
+
             DirectoryInfo directorySelection;
 
             if (Directory.Exists(defaultDirectory)) directoryPath = defaultDirectory;

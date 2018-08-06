@@ -1,6 +1,7 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,8 +13,9 @@ namespace Synthesis.States
         private readonly string prefsKey;
         private readonly string directory;
 
-        private SynthesisFileBrowser fileBrowser;
         public string filePath;
+
+        private SynthesisFileBrowser fileBrowser;
         Text pathLabel = GameObject.Find("PathLabel").GetComponent<Text>();
 
         /// <summary>
@@ -53,20 +55,23 @@ namespace Synthesis.States
             if (fileBrowser == null)
             {
                 StateMachine.CurrentState.Pause();
-                filePath = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+                //filePath = Crosstales.FB.FileBrowser.OpenSingleFolder(prefsKey, directory);
+                filePath = SFB.StandaloneFileBrowser.OpenFolderPanel(prefsKey, directory, false);
                 StateMachine.CurrentState.Resume();
 
-                // check for empty string (if native file browser is closed without selection) and default to Fields directory
+                //check for empty string(if native file browser is closed without selection) and default to Fields directory
                 if (string.IsNullOrEmpty(filePath))
                 {
                     filePath = PlayerPrefs.GetString(prefsKey, directory);
                 }
 
-                fileBrowser = new GUI.SynthesisFileBrowser("Choose Directory", filePath, true);
-
-                fileBrowser.OnComplete += OnBrowserComplete;
-                fileBrowser.CompleteDirectorySelection();
-                pathLabel.text = filePath;
+                if (filePath.Length != 0)
+                {
+                    fileBrowser = new GUI.SynthesisFileBrowser("Choose Directory", filePath, true);
+                    fileBrowser.OnComplete += OnBrowserComplete;
+                    fileBrowser.CompleteDirectorySelection();
+                    pathLabel.text = filePath;
+                }
             }
         }
 

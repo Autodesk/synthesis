@@ -1,6 +1,4 @@
-﻿using Crosstales.FB;
-using Crosstales.FB.Demo;
-using Synthesis.FSM;
+﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;
 using Synthesis.MixAndMatch;
