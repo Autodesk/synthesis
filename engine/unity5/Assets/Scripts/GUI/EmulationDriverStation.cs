@@ -40,6 +40,7 @@ namespace Synthesis.GUI
 
         GameObject canvas;
         InputField gameDataInput;
+        GameObject emuDriverStationPanel;
 
         public Sprite HighlightColor;
         public Sprite DefaultColor;
@@ -50,6 +51,7 @@ namespace Synthesis.GUI
         {
             canvas = GameObject.Find("Canvas");
             gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
+            emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
             GameData();
         }
 
@@ -58,30 +60,50 @@ namespace Synthesis.GUI
 
         }
 
+        public void OnDriverStationButtonPressed()
+        {
+            if (emuDriverStationPanel.activeSelf == true)
+            {
+                emuDriverStationPanel.SetActive(false);
+                InputControl.freeze = false;
+            }
+            else
+            {
+                emuDriverStationPanel.SetActive(true);
+                InputControl.freeze = true;
+                RobotState("teleop");
+                RobotDisabled();
+            }
+        }
+
         public void RobotState(string theState)
         {
             switch (theState)
             {
                 case "teleop":
                     state = DriveState.Teleop;
+                    Debug.Log(state);
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "auto":
                     state = DriveState.Auto;
+                    Debug.Log(state);
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "test":
                     state = DriveState.Test;
+                    Debug.Log(state);
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = HighlightColor;
                     break;
                 default:
                     state = DriveState.Teleop;
+                    Debug.Log(state);
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
@@ -92,6 +114,7 @@ namespace Synthesis.GUI
         public void RobotEnabled()
         {
             isRobotDisabled = false;
+            Debug.Log(isRobotDisabled);
             GameObject.Find("Enable").GetComponent<Image>().sprite = EnableColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DefaultColor;
         }
@@ -99,6 +122,7 @@ namespace Synthesis.GUI
         public void RobotDisabled()
         {
             isRobotDisabled = true;
+            Debug.Log(isRobotDisabled);
             GameObject.Find("Enable").GetComponent<Image>().sprite = DefaultColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DisableColor;
         }
