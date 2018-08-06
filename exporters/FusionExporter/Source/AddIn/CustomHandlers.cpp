@@ -16,6 +16,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
 	{
 		eui->createExportPalette();
+		eui->createSensorsPalette();
 		eui->createProgressPalette();
 	}
 }
@@ -26,6 +27,7 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
 	{
 		eui->closeExportPalette();
+		eui->closeSensorsPalette();
 		eui->cancelExportThread();
 	}
 }
