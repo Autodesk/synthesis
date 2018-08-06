@@ -173,13 +173,16 @@ namespace Synthesis.GUI
         /// <summary>
         /// Initiate ruler
         /// </summary>
+        /// <summary>
+        /// Initiate ruler
+        /// </summary>
         public void StartRuler()
         {
             usingRuler = true;
             rulerStartPoint.SetActive(true);
             Auxiliary.FindObject(canvas, "RulerPanelExtension").SetActive(false);
             Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(true);
-            if (PlayerPrefs.GetInt("analytics") == 1)
+            if (SimUI.changeAnalytics)
             {
                 Analytics.CustomEvent("Used Ruler", new Dictionary<string, object> //for analytics tracking
                 {
@@ -227,7 +230,7 @@ namespace Synthesis.GUI
                     rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
                 }
                 //Display different values based on the measure system it's currently using
-                else if (!State.IsMetric)
+                else if (State.IsMetric)
                 {
                     rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f) / 100 + "ft";
                     rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f) / 100 + "ft";
