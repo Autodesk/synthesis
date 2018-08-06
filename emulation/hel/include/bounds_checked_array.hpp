@@ -299,9 +299,6 @@ namespace hel{
 
         template<typename S, std::size_t L>
         friend bool operator!=(const BoundsCheckedArray<S, L>&, const BoundsCheckedArray<S, L>&);
-
-        template<typename S, std::size_t L>
-        friend std::string to_string(const BoundsCheckedArray<S, L>&, std::function<std::string(S)>);
     };
 
     template<typename T, std::size_t LEN>

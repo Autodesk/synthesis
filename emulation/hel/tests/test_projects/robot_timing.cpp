@@ -18,7 +18,7 @@
 #define TIME_IT(X) \
 	start = NOW;\
 	X;\
-	printf("%s took:%f ms\n",#X,((NOW - start)/1.0E6))
+	printf("\"%s\" took:%f milliseconds\n",#X,(NOW - start)/1E6)
 
 
 class Robot : public frc::IterativeRobot {
@@ -40,6 +40,7 @@ public:
     void TeleopInit(){}
 
     void TeleopPeriodic() {
+		TIME_IT();
         TIME_IT(dio.Set(true));
 		TIME_IT(spark.Set(0.56));
 		TIME_IT(relay.Set(frc::Relay::Value::kForward));
@@ -47,8 +48,8 @@ public:
 		TIME_IT(solenoid.Set(true));
         TIME_IT(talon.Set(0.3));
 
+        TIME_IT(usleep(45000));
 		printf("\n");
-        usleep(45000);
     }
 };
 

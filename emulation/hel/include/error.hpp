@@ -82,7 +82,7 @@ namespace hel{
         DSError(const DSError&)noexcept;
     };
 
-    std::string to_string(DSError::Type);
+    std::string as_string(DSError::Type);
 
     /**
      * \struct UnhandledEnumConstantException: public std::exception

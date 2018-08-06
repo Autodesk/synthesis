@@ -38,7 +38,7 @@ namespace hel{
         static Type pullDeviceType(uint32_t)noexcept;
     };
 
-    std::string to_string(CANDevice::Type);
+    std::string as_string(CANDevice::Type);
 
     CANDevice::Type s_to_can_device_type(std::string);
 }

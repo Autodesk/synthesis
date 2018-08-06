@@ -60,12 +60,12 @@ void hel::ReceiveData::updateDeep()const{
 
 std::string hel::ReceiveData::toString()const{
     std::string s = "(";
-    s += "digital_hdrs:" + hel::to_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
-    s += "joysticks:" + hel::to_string(joysticks, std::function<std::string(hel::Joystick)>(&Joystick::toString)) + ", ";
-    s += "digital_mxp:" + hel::to_string(digital_mxp, std::function<std::string(hel::MXPData)>(&MXPData::serialize)) + ", ";
+    s += "digital_hdrs:" + as_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(as_string))) + ", ";
+    s += "joysticks:" + as_string(joysticks, std::function<std::string(hel::Joystick)>(&Joystick::toString)) + ", ";
+    s += "digital_mxp:" + as_string(digital_mxp, std::function<std::string(hel::MXPData)>(&MXPData::serialize)) + ", ";
     s += "match_info:" + match_info.toString() + ", ";
     s += "robot_mode:" + robot_mode.toString() + ", ";
-    s += "encoder_managers:" + hel::to_string(encoder_managers, std::function<std::string(Maybe<EncoderManager>)>([&](Maybe<EncoderManager> a){
+    s += "encoder_managers:" + as_string(encoder_managers, std::function<std::string(Maybe<EncoderManager>)>([&](Maybe<EncoderManager> a){
         if(a){
             return a.get().toString();
         }

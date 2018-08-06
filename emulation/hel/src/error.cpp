@@ -2,7 +2,7 @@
 
 std::string hel::DSError::toString()const{
     std::string s = "(";
-    s += "type:" + hel::to_string(type) + ", ";
+    s += "type:" + as_string(type) + ", ";
     s += "error_code:" + std::to_string(error_code) + ", ";
     s += "details:" + details + ", ";
     s += "location:" + location + ", ";
@@ -28,7 +28,7 @@ hel::DSError::DSError(const DSError& source)noexcept{
 #undef COPY
 }
 
-std::string hel::to_string(hel::DSError::Type t){
+std::string hel::as_string(hel::DSError::Type t){
     switch(t){
     case hel::DSError::Type::WARNING:
         return "WARNING";

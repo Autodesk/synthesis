@@ -5,7 +5,7 @@
 
 namespace hel{
 
-    struct PDP{ //TODO add implement data
+    struct PDP{ //TODO handle emulated data
 
         enum MessageData{
             SIZE = 8

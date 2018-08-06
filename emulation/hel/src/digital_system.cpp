@@ -107,7 +107,7 @@ namespace hel{
         pwm(0)
     {}
 
-    DigitalSystem::DigitalSystem(const DigitalSystem& source)noexcept:DigitalSystem(){ //TODO because of bounds checked array not all of these will be noexcept
+    DigitalSystem::DigitalSystem(const DigitalSystem& source)noexcept:DigitalSystem(){
 #define COPY(NAME) NAME = source.NAME
         COPY(outputs);
         COPY(enabled_outputs);
@@ -119,7 +119,7 @@ namespace hel{
 #undef COPY
     }
 
-    std::string to_string(DigitalSystem::DIOConfigurationException::Config c){
+    std::string as_string(DigitalSystem::DIOConfigurationException::Config c){
         switch(c){
         case DigitalSystem::DIOConfigurationException::Config::DI:
             return "digital input";
@@ -133,7 +133,7 @@ namespace hel{
     }
 
     const char* DigitalSystem::DIOConfigurationException::what()const throw(){
-        std::string s = "Synthesis exception: digital IO failed attempting " + to_string(expected_configuration) + " but configured for " + to_string(configuration) + " on digital port " + std::to_string(port);
+        std::string s = "Synthesis exception: digital IO failed attempting " + hel::as_string(expected_configuration) + " but configured for " + hel::as_string(configuration) + " on digital port " + std::to_string(port);
         return s.c_str();
     }
 
@@ -477,7 +477,7 @@ namespace hel{
 			for(unsigned i = 0; i < hel::findMostSignificantBit(value); i++){
 				hel::MXPData::Config mxp_config = hel::DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
 				if(mxp_config == hel::MXPData::Config::I2C || mxp_config == hel::MXPData::Config::SPI){
-					std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Configuring digital MXP input "<<i<<" for "<<hel::to_string(mxp_config)<<"\n";
+					std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Configuring digital MXP input "<<i<<" for "<<as_string(mxp_config)<<"\n";
 				}
 			}
 

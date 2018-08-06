@@ -1,8 +1,6 @@
 #include "roborio_manager.hpp"
 #include "util.hpp"
 
-//TODO rename file
-
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 

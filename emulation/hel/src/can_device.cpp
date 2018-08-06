@@ -2,7 +2,7 @@
 
 namespace hel{
 
-    std::string to_string(CANDevice::Type type){
+    std::string as_string(CANDevice::Type type){
         switch(type){
         case CANDevice::Type::TALON_SRX:
             return "TALON_SRX";

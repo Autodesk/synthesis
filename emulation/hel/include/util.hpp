@@ -110,7 +110,7 @@ namespace hel{
     };
 
     template<typename T>
-    std::string to_string(const T& iterable, const std::function<std::string(typename T::value_type)>& to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
+    std::string as_string(const T& iterable, const std::function<std::string(typename T::value_type)>& to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
         std::string s = "";
         if(include_brackets){
             s += "[";
@@ -128,7 +128,7 @@ namespace hel{
     }
 
     template<typename FIRST, typename SECOND>
-    std::string to_string(const std::pair<FIRST, SECOND>& a, const std::function<std::string(FIRST)>& first_to_s, const std::function<std::string(SECOND)>& second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
+    std::string as_string(const std::pair<FIRST, SECOND>& a, const std::function<std::string(FIRST)>& first_to_s, const std::function<std::string(SECOND)>& second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
         std::string s = "";
         if(include_brackets){
             s += "[";
@@ -143,7 +143,7 @@ namespace hel{
     }
 
     bool stob(std::string);
-    std::string to_string(bool);//TODO maybe rename these? namespace helps prevent accidental type cast and wrong call, but still happens
+    std::string as_string(bool);
 
     constexpr std::size_t hasher(const char* input){
         return *input ? static_cast<unsigned>(*input) + 33 * hasher(input + 1) : 5381;
