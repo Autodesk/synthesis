@@ -235,6 +235,13 @@ namespace Synthesis.GUI
             tabStateMachine.ChangeState(new SensorToolbarState());
         }
 
+        public void OnEmulationTab()
+        {
+            if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
+            currentTab = "EmulationTab";
+            tabStateMachine.ChangeState(new EmulationToolbarState());
+        }
+
         private void CloseHelpMenu(string currentID = " ")
         {
             string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;
@@ -836,6 +843,7 @@ namespace Synthesis.GUI
             LinkToolbar<DPMToolbarState>("DPMToolbar");
             LinkToolbar<ScoringToolbarState>("ScoringToolbar");
             LinkToolbar<SensorToolbarState>("SensorToolbar");
+            LinkToolbar<EmulationToolbarState>("EmulationToolbar");
         }
 
         /// <summary>
