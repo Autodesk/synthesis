@@ -2,8 +2,10 @@
 using Synthesis.GUI;
 using Synthesis.Network;
 using Synthesis.Utils;
+using System;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -12,12 +14,13 @@ namespace Synthesis.States
 {
     public class LobbyState : State
     {
-        private readonly string lobbyCode;
         private readonly bool host;
+        private string lobbyCode;
 
         private GameObject connectingPanel;
         private GameObject startButton;
         private Button fieldButton;
+        private Text lobbyCodeText;
         private Text fieldText;
         private Text readyText;
 
@@ -28,8 +31,8 @@ namespace Synthesis.States
         /// the host.</param>
         public LobbyState(string lobbyCode)
         {
-            this.lobbyCode = lobbyCode;
             host = string.IsNullOrEmpty(lobbyCode);
+            this.lobbyCode = lobbyCode;
         }
 
         /// <summary>
@@ -40,6 +43,7 @@ namespace Synthesis.States
             connectingPanel = Auxiliary.FindGameObject("ConnectingPanel");
             startButton = Auxiliary.FindGameObject("StartButton");
             fieldButton = GameObject.Find("FieldButton").GetComponent<Button>();
+            lobbyCodeText = GameObject.Find("LobbyCodeText").GetComponent<Text>();
             fieldText = GameObject.Find("FieldButton").GetComponent<Text>();
             readyText = GameObject.Find("ReadyText").GetComponent<Text>();
 
@@ -47,11 +51,10 @@ namespace Synthesis.States
             startButton.SetActive(false);
 
             MultiplayerNetwork network = MultiplayerNetwork.Instance;
-            Text lobbyCodeText = GameObject.Find("LobbyCodeText").GetComponent<Text>();
 
             if (host)
             {
-                lobbyCodeText.text = "Lobby Code: " + IPCrypt.Encrypt(network.networkAddress = GetLocalIP());
+                lobbyCodeText.text = "Lobby Code: " + (lobbyCode = IPCrypt.Encrypt(network.networkAddress = GetLocalIP()));
 
                 if (network.StartHost() == null)
                 {
@@ -60,7 +63,7 @@ namespace Synthesis.States
                     return;
                 }
 
-                GameObject matchManager = (GameObject)Object.Instantiate(Resources.Load("Prefabs/MatchManager"));
+                GameObject matchManager = (GameObject)UnityEngine.Object.Instantiate(Resources.Load("Prefabs/MatchManager"));
                 NetworkServer.Spawn(matchManager);
             }
             else
@@ -96,11 +99,20 @@ namespace Synthesis.States
                 fieldText.text = "Field: " + MatchManager.Instance.FieldName;
 
             if (host)
-                startButton.SetActive(Object.FindObjectsOfType<PlayerIdentity>().All(p => p.ready));
+                startButton.SetActive(UnityEngine.Object.FindObjectsOfType<PlayerIdentity>().All(p => p.ready));
 
             if (PlayerIdentity.LocalInstance != null)
                 readyText.text = PlayerIdentity.LocalInstance.ready ?
                     "UNREADY" : "READY!";
+        }
+
+        /// <summary>
+        /// Copies the lobby code to the clipboard when the lobby code text is pressed.
+        /// </summary>
+        public void OnLobbyCodeTextPressed()
+        {
+            GUIUtility.systemCopyBuffer = lobbyCode;
+            UserMessageManager.Dispatch("Lobby code copied to clipboard!", 8f);
         }
 
         /// <summary>
