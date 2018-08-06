@@ -17,6 +17,13 @@ window.fusionJavaScriptHandler =
 
                     document.getElementById('progress').value = percent * 100;
 
+                    // Remove error message if present
+                    document.getElementById('error').style.display = "none";
+                    document.getElementById('status').style.display = "";
+
+                    if (document.getElementById('progress').classList.contains('error'))
+                        document.getElementById('progress').classList.remove('error');
+
                     // Add back the transition a moment later so that the view has time to reset
                     if (percent < lastProgress)
                         setTimeout(function ()
@@ -28,6 +35,16 @@ window.fusionJavaScriptHandler =
                     lastProgress = percent;
 
                     console.log(data);
+                }
+                else if (action == 'error')
+                {
+                    console.log("Error: " + data);
+                    document.getElementById('error').innerHTML = data
+                    document.getElementById('error').style.display = "";
+                    document.getElementById('status').style.display = "none";
+                    document.getElementById('progress').value = 100;
+                    document.getElementById('progress').classList.add('error');
+                    lastProgress = 1;
                 }
                 else if (action == 'debugger')
                 {
