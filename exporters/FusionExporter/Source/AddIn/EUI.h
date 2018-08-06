@@ -64,6 +64,17 @@ namespace Synthesis
 
 		Ptr<CommandDefinition> exportButtonCommand;
 
+		// Event Handlers
+		ReceiveFormDataHandler * formDataHandler = nullptr;
+		CloseExporterFormEventHandler * closeExporterHandler = nullptr;
+		CloseSensorFormEventHandler * closeSensorsHandler = nullptr;
+
+		template<typename T>
+		bool addEventToPalette(Ptr<Palette>);
+		template<typename T>
+		bool clearEventFromPalette(Ptr<Palette>);
+
+		// Thread Information
 		std::thread * exportThread;
 		bool killExportThread;
 		void exportRobot(BXDJ::ConfigData);

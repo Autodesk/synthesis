@@ -138,11 +138,29 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 }
 
 // Close Exporter Form Event
-void CloseFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+void CloseExporterFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
 	Ptr<CommandDefinition> exportButtonCommand = app->userInterface()->commandDefinitions()->itemById(K_EXPORT_BUTTON);
 	if (!exportButtonCommand)
 		return;
 
 	exportButtonCommand->controlDefinition()->isEnabled(true);
+}
+
+// Close Sensor Form Event
+void CloseSensorFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+{
+	Ptr<UserInterface> UI = app->userInterface();
+	if (!UI)
+		return;
+
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	Ptr<Palette> palette = palettes->itemById(K_EXPORT_PALETTE);
+	if (!palette)
+		return;
+
+	palette->isVisible(true);
 }
