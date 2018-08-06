@@ -354,5 +354,10 @@ namespace InternalFieldExporter.FieldWizard
                 UpdateFrictionLabel();
             }
         }
+
+        private void Joint_Button_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -33,7 +33,10 @@
             this.addSelectionButton = new System.Windows.Forms.Button();
             this.propertiesScrollablePanel = new System.Windows.Forms.Panel();
             this.physicalPropertiesGroupBox = new System.Windows.Forms.GroupBox();
+            this.dynamicCheckBox = new System.Windows.Forms.CheckBox();
             this.dynamicGroupBox = new System.Windows.Forms.GroupBox();
+            this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.massLabel = new System.Windows.Forms.Label();
             this.frictionLabelsLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.iceLabel = new System.Windows.Forms.Label();
             this.carpetLabel = new System.Windows.Forms.Label();
@@ -49,20 +52,18 @@
             this.removeButton = new System.Windows.Forms.Button();
             this.changeNameButton = new System.Windows.Forms.Button();
             this.meshPropertiesTable = new System.Windows.Forms.TableLayoutPanel();
-            this.dynamicCheckBox = new System.Windows.Forms.CheckBox();
-            this.massLabel = new System.Windows.Forms.Label();
-            this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.Joint_Button = new System.Windows.Forms.Button();
             this.inventorActionsPanel.SuspendLayout();
             this.propertiesScrollablePanel.SuspendLayout();
             this.physicalPropertiesGroupBox.SuspendLayout();
             this.dynamicGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).BeginInit();
             this.frictionLabelsLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.frictionTrackBar)).BeginInit();
             this.meshPropertiesGroupBox.SuspendLayout();
             this.colliderTypePanel.SuspendLayout();
             this.propertySetOptionsBox.SuspendLayout();
             this.propertyOptionsLayoutPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // inventorActionsPanel
@@ -110,6 +111,7 @@
             this.propertiesScrollablePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertiesScrollablePanel.AutoScroll = true;
+            this.propertiesScrollablePanel.Controls.Add(this.Joint_Button);
             this.propertiesScrollablePanel.Controls.Add(this.physicalPropertiesGroupBox);
             this.propertiesScrollablePanel.Controls.Add(this.meshPropertiesGroupBox);
             this.propertiesScrollablePanel.Controls.Add(this.propertySetOptionsBox);
@@ -132,15 +134,47 @@
             this.physicalPropertiesGroupBox.TabStop = false;
             this.physicalPropertiesGroupBox.Text = "Physical Properties";
             // 
+            // dynamicCheckBox
+            // 
+            this.dynamicCheckBox.AutoSize = true;
+            this.dynamicCheckBox.Location = new System.Drawing.Point(12, 82);
+            this.dynamicCheckBox.Name = "dynamicCheckBox";
+            this.dynamicCheckBox.Size = new System.Drawing.Size(84, 21);
+            this.dynamicCheckBox.TabIndex = 4;
+            this.dynamicCheckBox.Text = "Dynamic";
+            this.dynamicCheckBox.UseVisualStyleBackColor = true;
+            this.dynamicCheckBox.CheckedChanged += new System.EventHandler(this.dynamicCheckBox_CheckedChanged);
+            // 
             // dynamicGroupBox
             // 
             this.dynamicGroupBox.Controls.Add(this.massNumericUpDown);
             this.dynamicGroupBox.Controls.Add(this.massLabel);
             this.dynamicGroupBox.Location = new System.Drawing.Point(6, 83);
             this.dynamicGroupBox.Name = "dynamicGroupBox";
-            this.dynamicGroupBox.Size = new System.Drawing.Size(278, 50);
+            this.dynamicGroupBox.Size = new System.Drawing.Size(278, 81);
             this.dynamicGroupBox.TabIndex = 3;
             this.dynamicGroupBox.TabStop = false;
+            // 
+            // massNumericUpDown
+            // 
+            this.massNumericUpDown.DecimalPlaces = 2;
+            this.massNumericUpDown.Location = new System.Drawing.Point(89, 21);
+            this.massNumericUpDown.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.massNumericUpDown.Name = "massNumericUpDown";
+            this.massNumericUpDown.Size = new System.Drawing.Size(183, 22);
+            this.massNumericUpDown.TabIndex = 1;
+            // 
+            // massLabel
+            // 
+            this.massLabel.Location = new System.Drawing.Point(6, 24);
+            this.massLabel.Name = "massLabel";
+            this.massLabel.Size = new System.Drawing.Size(77, 17);
+            this.massLabel.TabIndex = 0;
+            this.massLabel.Text = "Mass (lbs)";
             // 
             // frictionLabelsLayoutPanel
             // 
@@ -305,37 +339,15 @@
             this.meshPropertiesTable.Size = new System.Drawing.Size(200, 100);
             this.meshPropertiesTable.TabIndex = 0;
             // 
-            // dynamicCheckBox
+            // Joint_Button
             // 
-            this.dynamicCheckBox.AutoSize = true;
-            this.dynamicCheckBox.Location = new System.Drawing.Point(12, 82);
-            this.dynamicCheckBox.Name = "dynamicCheckBox";
-            this.dynamicCheckBox.Size = new System.Drawing.Size(84, 21);
-            this.dynamicCheckBox.TabIndex = 4;
-            this.dynamicCheckBox.Text = "Dynamic";
-            this.dynamicCheckBox.UseVisualStyleBackColor = true;
-            this.dynamicCheckBox.CheckedChanged += new System.EventHandler(this.dynamicCheckBox_CheckedChanged);
-            // 
-            // massLabel
-            // 
-            this.massLabel.Location = new System.Drawing.Point(6, 24);
-            this.massLabel.Name = "massLabel";
-            this.massLabel.Size = new System.Drawing.Size(77, 17);
-            this.massLabel.TabIndex = 0;
-            this.massLabel.Text = "Mass (lbs)";
-            // 
-            // massNumericUpDown
-            // 
-            this.massNumericUpDown.DecimalPlaces = 2;
-            this.massNumericUpDown.Location = new System.Drawing.Point(89, 21);
-            this.massNumericUpDown.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.massNumericUpDown.Name = "massNumericUpDown";
-            this.massNumericUpDown.Size = new System.Drawing.Size(183, 22);
-            this.massNumericUpDown.TabIndex = 1;
+            this.Joint_Button.Location = new System.Drawing.Point(18, 257);
+            this.Joint_Button.Name = "Joint_Button";
+            this.Joint_Button.Size = new System.Drawing.Size(263, 35);
+            this.Joint_Button.TabIndex = 3;
+            this.Joint_Button.Text = "Joint";
+            this.Joint_Button.UseVisualStyleBackColor = true;
+            this.Joint_Button.Click += new System.EventHandler(this.Joint_Button_Click);
             // 
             // ComponentPropertiesForm
             // 
@@ -350,6 +362,7 @@
             this.physicalPropertiesGroupBox.ResumeLayout(false);
             this.physicalPropertiesGroupBox.PerformLayout();
             this.dynamicGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).EndInit();
             this.frictionLabelsLayoutPanel.ResumeLayout(false);
             this.frictionLabelsLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.frictionTrackBar)).EndInit();
@@ -358,7 +371,6 @@
             this.colliderTypePanel.PerformLayout();
             this.propertySetOptionsBox.ResumeLayout(false);
             this.propertyOptionsLayoutPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -390,5 +402,6 @@
         private System.Windows.Forms.CheckBox dynamicCheckBox;
         private System.Windows.Forms.NumericUpDown massNumericUpDown;
         private System.Windows.Forms.Label massLabel;
+        private System.Windows.Forms.Button Joint_Button;
     }
 }
