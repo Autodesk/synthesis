@@ -303,11 +303,13 @@ namespace BxDRobotExporter.Wizard
         {
             this.DriveTrainDropdown.SelectedIndex = (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType;
             DriveTrainDropdown_SelectedIndexChanged(null, null);
+
             foreach (RigidNode_Base node in baseNode.ListAllNodes())
             {
                 //For the first filter, we take out any nodes that do not have parents and rotational joints.
                 if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
-                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && (!(node.GetSkeletalJoint().cDriver == null)))
+                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && node.GetSkeletalJoint().cDriver != null
+                        && (node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))) != null)
                 {
                     if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
                         this.DriveTrainDropdown.SelectedIndex = (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType;

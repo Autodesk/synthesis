@@ -1,7 +1,6 @@
 #include "RigidNode.h"
 #include <Fusion/Components/Occurrences.h>
 #include <Fusion/Components/OccurrenceList.h>
-#include "ConfigData.h"
 #include "Joint.h"
 #include "../Filesystem.h"
 #include "../BXDA/Mesh.h"
@@ -27,27 +26,6 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 	parent = nodeToCopy.parent;
 
 	log = nodeToCopy.log;
-}
-
-RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config) : RigidNode()
-{
-	configData = std::make_shared<ConfigData>(config);
-	jointSummary = std::make_shared<JointSummary>(getJointSummary(rootComponent));
-
-	for (core::Ptr<fusion::Occurrence> occurrence : rootComponent->occurrences()->asList())
-		if (std::find(jointSummary->children.begin(), jointSummary->children.end(), occurrence) == jointSummary->children.end())
-			buildTree(occurrence);
-}
-
-RigidNode::RigidNode(core::Ptr<fusion::Occurrence> occ, Joint * parent)
-{
-	if (parent == NULL)
-		throw "Parent node cannot be NULL!";
-
-	this->parent = parent;
-	configData = parent->getParent()->configData;
-	jointSummary = parent->getParent()->jointSummary;
-	buildTree(occ);
 }
 
 Guid BXDJ::RigidNode::getGUID() const
