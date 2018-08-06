@@ -108,6 +108,16 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		cam->isSmoothTransition(true);
 		app->activeViewport()->camera(cam);
 	}
+	else if (eventArgs->action() == "edit_sensors")
+	{
+		//palette->isVisible(false);
+		//eui->openSensorsEditor(eventArgs->data());
+	}
+	else if (eventArgs->action() == "save_sensors")
+	{
+		palette->sendInfoToHTML("sensors", eventArgs->data());
+		palette->isVisible(true);
+	}
 	else if (eventArgs->action() == "save")
 	{
 		BXDJ::ConfigData config(eventArgs->data());

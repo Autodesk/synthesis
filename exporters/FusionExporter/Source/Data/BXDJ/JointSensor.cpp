@@ -1,8 +1,8 @@
-#include "Sensor.h"
+#include "JointSensor.h"
 
 using namespace BXDJ;
 
-Sensor::Sensor(const Sensor & sensorToCopy)
+JointSensor::JointSensor(const JointSensor & sensorToCopy)
 {
 	type = sensorToCopy.type;
 	portSignal = sensorToCopy.portSignal;
@@ -11,7 +11,7 @@ Sensor::Sensor(const Sensor & sensorToCopy)
 	conversionFactor = sensorToCopy.conversionFactor;
 }
 
-Sensor::Sensor(Type type)
+JointSensor::JointSensor(Type type)
 {
 	this->type = type;
 	portSignal = PWM;
@@ -20,7 +20,7 @@ Sensor::Sensor(Type type)
 	conversionFactor = 1;
 }
 
-void Sensor::write(XmlWriter & output) const
+void JointSensor::write(XmlWriter & output) const
 {
 	output.startElement("RobotSensor");
 
@@ -34,7 +34,7 @@ void Sensor::write(XmlWriter & output) const
 	output.endElement();
 }
 
-std::string Sensor::toString(Type type)
+std::string JointSensor::toString(Type type)
 {
 	switch (type)
 	{
@@ -44,7 +44,7 @@ std::string Sensor::toString(Type type)
 	return "UNKNOWN";
 }
 
-std::string Sensor::toString(Signal type)
+std::string JointSensor::toString(Signal type)
 {
 	switch (type)
 	{

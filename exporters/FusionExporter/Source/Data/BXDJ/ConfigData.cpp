@@ -54,6 +54,16 @@ void ConfigData::setNoDriver(core::Ptr<fusion::Joint> joint)
 	joints[id].driver = nullptr;
 }
 
+std::vector<std::shared_ptr<JointSensor>> ConfigData::getSensors(core::Ptr<fusion::Joint> joint) const
+{
+	std::string id = BXDJ::Utility::getUniqueJointID(joint);
+
+	if (joints.find(id) == joints.end() || joints.at(id).driver == nullptr)
+		return std::vector<std::shared_ptr<JointSensor>>();
+
+	return joints.at(id).sensors;
+}
+
 void ConfigData::filterJoints(std::vector<core::Ptr<fusion::Joint>> filterJoints)
 {
 	// Make list of IDs in filter while adding joints not yet present

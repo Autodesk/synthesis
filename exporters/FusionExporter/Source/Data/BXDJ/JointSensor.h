@@ -2,12 +2,12 @@
 
 #include <string>
 #include "XmlWriter.h"
-#include "CustomJSONObject.h"
+//#include "CustomJSONObject.h"
 #include "Components.h"
 
 namespace BXDJ
 {
-	class Sensor : public XmlWritable
+	class JointSensor : public XmlWritable
 	{
 	public:
 		enum Type : char
@@ -29,8 +29,8 @@ namespace BXDJ
 		int portB;
 		double conversionFactor;
 		
-		Sensor(const Sensor &);
-		Sensor(Type type = UNKNOWN);
+		JointSensor(const JointSensor &);
+		JointSensor(Type type = UNKNOWN);
 
 		void write(XmlWriter &) const;
 

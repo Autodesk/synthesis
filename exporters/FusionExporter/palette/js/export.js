@@ -56,10 +56,17 @@ function requestInfoFromFusion()
 }
 
 // Highlight a joint in Fusion
-function highlightJoint(jointName)
+function highlightJoint(jointID)
 {
-    console.log('Highlighting ' + jointName);
-    adsk.fusionSendData('highlight', jointName);
+    console.log('Highlighting ' + jointID);
+    adsk.fusionSendData('highlight', jointID);
+}
+
+// Open a menu for editing joint sensors
+function editSensors(jointID)
+{
+    console.log('Opening edit sensors menu for ' + jointID);
+    adsk.fusionSendData('edit_sensors', jointID);
 }
 
 // Handles the receiving of data from Fusion
