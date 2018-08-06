@@ -43,7 +43,7 @@ namespace Synthesis.GUI
 
         GameObject freeroamCameraWindow;
         GameObject spawnpointPanel;
-        
+
         GameObject changeRobotPanel;
         GameObject robotListPanel;
         GameObject changeFieldPanel;
@@ -83,8 +83,9 @@ namespace Synthesis.GUI
         public static bool changeAnalytics = true;
 
         private StateMachine tabStateMachine;
-
         string currentTab;
+        public Sprite normalButton;
+        public Sprite highlightButton;
 
         GameObject helpMenu;
         GameObject overlay;
@@ -183,7 +184,7 @@ namespace Synthesis.GUI
             sensorTab = Auxiliary.FindObject(tabs, "SensorTab");
 
             tabStateMachine = tabs.GetComponent<StateMachine>();
-            
+
             CheckControlPanel();
 
             LinkToolbars();
@@ -192,7 +193,7 @@ namespace Synthesis.GUI
 
             ButtonCallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
             ButtonCallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
-            
+
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
         }
@@ -233,6 +234,7 @@ namespace Synthesis.GUI
             currentTab = "SensorTab";
             tabStateMachine.ChangeState(new SensorToolbarState());
         }
+
         private void CloseHelpMenu(string currentID = " ")
         {
             string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;
@@ -246,11 +248,16 @@ namespace Synthesis.GUI
                 else t.gameObject.SetActive(true);
             }
         }
+
         private void HighlightTabs()
         {
-            foreach(Transform t in tabs.transform)
+            foreach (Transform t in tabs.transform)
             {
-                if (t.gameObject.name.Equals(currentTab)) t.gameObject.GetComponent<Button>().Select();
+                if (t.gameObject.name.Equals(currentTab))
+                {
+                    t.gameObject.GetComponent<Image>().sprite = highlightButton;
+                }
+                else t.gameObject.GetComponent<Image>().sprite = normalButton;
             }
         }
         #endregion
@@ -780,9 +787,8 @@ namespace Synthesis.GUI
                     exitPanel.SetActive(true);
                     break;
                 case "exit":
-                    Application.LoadLevel("MainMenu");
+                    SceneManager.LoadScene("MainMenu");
                     break;
-
                 case "cancel":
                     exitPanel.SetActive(false);
                     break;
@@ -805,7 +811,7 @@ namespace Synthesis.GUI
             ToggleHotKeys(false);
 
             CancelOrientation();
-            
+
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();
