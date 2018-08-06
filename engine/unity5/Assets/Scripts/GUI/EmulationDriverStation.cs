@@ -60,7 +60,7 @@ namespace Synthesis.GUI
 
         }
 
-        public void OnDriverStationButtonPressed()
+        public void OpenDriverStation()
         {
             if (emuDriverStationPanel.activeSelf == true)
             {
