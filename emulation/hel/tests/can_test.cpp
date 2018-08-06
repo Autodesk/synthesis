@@ -31,27 +31,27 @@ TEST(CANTest, checkBits){
     EXPECT_EQ(true, hel::compareBits(send_talon,base_talon,comparison_mask_2));
 }
 
-TEST(CANTest, speedData){
+TEST(CANTest, convertPercentOutputData){
     hel::CANMotorController a = {33816705};
-    double speed = 1.0;
+    double percent_output = 1.0;
     {
-        a.setSpeed(speed);
-        a.setSpeedData(a.getSpeedData());
+        a.setPercentOutput(percent_output);
+        a.setPercentOutputData(a.getPercentOutputData());
 
-        EXPECT_DOUBLE_EQ(std::round(a.getSpeed() * 1000) / 1000, std::round(speed * 1000) / 1000);
+        EXPECT_DOUBLE_EQ(std::round(a.getPercentOutput() * 1000) / 1000, std::round(percent_output * 1000) / 1000);
     }
     {
-        speed = -0.5;
-        a.setSpeed(speed);
-        a.setSpeedData(a.getSpeedData());
+        percent_output = -0.5;
+        a.setPercentOutput(percent_output);
+        a.setPercentOutputData(a.getPercentOutputData());
 
-        EXPECT_DOUBLE_EQ(std::round(a.getSpeed() * 1000) / 1000, std::round(speed * 1000) / 1000);
+        EXPECT_DOUBLE_EQ(std::round(a.getPercentOutput() * 1000) / 1000, std::round(percent_output * 1000) / 1000);
     }
     {
-        speed = 0.726132;
-        a.setSpeed(speed);
-        a.setSpeedData(a.getSpeedData());
+        percent_output = 0.726132;
+        a.setPercentOutput(percent_output);
+        a.setPercentOutputData(a.getPercentOutputData());
 
-        EXPECT_DOUBLE_EQ(std::round(a.getSpeed() * 1000) / 1000, std::round(speed * 1000) / 1000);
+        EXPECT_DOUBLE_EQ(std::round(a.getPercentOutput() * 1000) / 1000, std::round(percent_output * 1000) / 1000);
     }
 }

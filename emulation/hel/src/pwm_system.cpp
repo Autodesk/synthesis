@@ -51,7 +51,7 @@ namespace hel{
         instance.second.unlock();
     }
 
-    double PWMSystem::getSpeed(uint32_t pulse_width)noexcept{
+    double PWMSystem::getPercentOutput(uint32_t pulse_width)noexcept{
         // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
         if (pulse_width == 0) {
             return 0.0;

@@ -33,7 +33,7 @@ namespace hel{
 
         uint8_t id;
 
-        double speed;
+        double percent_output;
 
         bool inverted;
 
@@ -44,13 +44,13 @@ namespace hel{
 
         uint8_t getID()const noexcept;
 
-        void setSpeedData(BoundsCheckedArray<uint8_t,MessageData::SIZE>)noexcept;
+        void setPercentOutputData(BoundsCheckedArray<uint8_t,MessageData::SIZE>)noexcept;
 
-        void setSpeed(double)noexcept;
+        void setPercentOutput(double)noexcept;
 
-        double getSpeed()const noexcept;
+        double getPercentOutput()const noexcept;
 
-        BoundsCheckedArray<uint8_t,MessageData::SIZE> getSpeedData()const noexcept;
+        BoundsCheckedArray<uint8_t,MessageData::SIZE> getPercentOutputData()const noexcept;
 
         void setInverted(bool)noexcept;
 

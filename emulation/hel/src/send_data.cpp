@@ -5,22 +5,8 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-hel::SendData::SendData():serialized_data(""),new_data(true),pwm_hdrs(0.0), relays(RelayState::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
+hel::SendData::SendData():serialized_data(""),new_data(true),pwm_hdrs(0.0), relays(RelaySystem::State::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
 
-hel::SendData::RelayState hel::SendData::convertRelayValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value, uint8_t i)noexcept{
-	bool forward = checkBitHigh(value.Forward, i);
-	bool reverse  = checkBitHigh(value.Reverse, i);
-	if(forward){
-		if(reverse){
-			return RelayState::ERROR;
-		}
-		return RelayState::FORWARD;
-	}
-	if(reverse){
-		return RelayState::REVERSE;
-	}
-	return RelayState::OFF;
-}
 
 bool hel::SendData::hasNewData()const{
     return new_data;
@@ -34,7 +20,7 @@ void hel::SendData::updateShallow(){
     RoboRIO roborio = RoboRIOManager::getCopy();
 
     for(unsigned i = 0; i < pwm_hdrs.size(); i++){
-        pwm_hdrs[i] = PWMSystem::getSpeed(roborio.pwm_system.getHdrPulseWidth(i));
+        pwm_hdrs[i] = PWMSystem::getPercentOutput(roborio.pwm_system.getHdrPulseWidth(i));
     }
 
     for(unsigned i = 0; i < digital_mxp.size(); i++){
@@ -50,7 +36,7 @@ void hel::SendData::updateShallow(){
                 if(remapped_i >= 4){ //digital ports 0-3 line up with mxp pwm ports 0-3, the rest are offset by 4
                     remapped_i -= 4;
                 }
-                digital_mxp[i].value = PWMSystem::getSpeed(roborio.pwm_system.getMXPPulseWidth(remapped_i));
+                digital_mxp[i].value = PWMSystem::getPercentOutput(roborio.pwm_system.getMXPPulseWidth(remapped_i));
             }
             break;
         case hel::MXPData::Config::SPI:
@@ -73,7 +59,7 @@ void hel::SendData::updateDeep(){
     RoboRIO roborio = RoboRIOManager::getCopy();
 
     for(unsigned i = 0; i < relays.size(); i++){
-        relays[i] = convertRelayValue(roborio.relay_system.getValue(),i);
+        relays[i] = roborio.relay_system.getState(i);
     }
     for(unsigned i = 0; i < analog_outputs.size(); i++){
         analog_outputs[i] = (roborio.analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
@@ -92,25 +78,10 @@ void hel::SendData::updateDeep(){
     new_data = true;
 }
 
-std::string hel::as_string(hel::SendData::RelayState r){
-    switch(r){
-    case hel::SendData::RelayState::OFF:
-        return "OFF";
-    case hel::SendData::RelayState::REVERSE:
-        return "REVERSE";
-    case hel::SendData::RelayState::FORWARD:
-        return "FORWARD";
-    case hel::SendData::RelayState::ERROR:
-        return "ERROR";
-    default:
-        throw UnhandledEnumConstantException("hel::SendData::RelayState");
-    }
-}
-
 std::string hel::SendData::toString()const{
     std::string s = "(";
     s += "pwm_hdrs:" + as_string(pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
-    s += "relays:" + as_string(relays, std::function<std::string(hel::SendData::RelayState)>(static_cast<std::string(*)(hel::SendData::RelayState)>(as_string))) + ", ";
+    s += "relays:" + as_string(relays, std::function<std::string(RelaySystem::State)>(static_cast<std::string(*)(RelaySystem::State)>(as_string))) + ", ";
     s += "analog_outputs:" + as_string(analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
     s += "digital_mxp:" + as_string(digital_mxp, std::function<std::string(MXPData)>(&MXPData::toString)) + ", ";
     s += "digital_hdrs:" + as_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(as_string))) + ", ";
@@ -127,7 +98,7 @@ void hel::SendData::serializeRelays(){
     serialized_data += serializeList(
         "\"relays\"",
         relays,
-        std::function<std::string(RelayState)>([&](RelayState r){
+        std::function<std::string(RelaySystem::State)>([&](RelaySystem::State r){
             return hel::quote(as_string(r));
         })
 	);

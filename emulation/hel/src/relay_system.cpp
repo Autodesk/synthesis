@@ -20,6 +20,37 @@ namespace hel{
 #undef COPY
     }
 
+	RelaySystem::State RelaySystem::getState(uint8_t i)noexcept{
+		bool forward = checkBitHigh(value.Forward, i);
+		bool reverse  = checkBitHigh(value.Reverse, i);
+		if(forward){
+			if(reverse){
+				return State::ERROR;
+			}
+			return State::FORWARD;
+		}
+		if(reverse){
+			return State::REVERSE;
+		}
+		return State::OFF;
+	}
+
+	std::string as_string(RelaySystem::State r){
+		switch(r){
+		case RelaySystem::State::OFF:
+			return "OFF";
+		case RelaySystem::State::REVERSE:
+			return "REVERSE";
+		case RelaySystem::State::FORWARD:
+			return "FORWARD";
+		case RelaySystem::State::ERROR:
+			return "ERROR";
+		default:
+			throw UnhandledEnumConstantException("hel::SendData::RelayState");
+		}
+	}
+
+
     struct RelayManager: public tRelay{
         tSystemInterface* getSystemInterface(){
             return new SystemInterface();
