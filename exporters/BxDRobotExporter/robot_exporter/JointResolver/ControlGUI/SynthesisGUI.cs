@@ -451,8 +451,8 @@ public partial class SynthesisGUI : Form
                     joint.cDriver = new JointDriver((JointDriverType)Utilities.GetProperty(propertySet, "driver-type", (int)JointDriverType.MOTOR));
                 JointDriver driver = joint.cDriver;
 
-                joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portA", 0);
-                joint.cDriver.portB = Utilities.GetProperty(propertySet, "driver-portB", -1);
+                joint.cDriver.port1 = Utilities.GetProperty(propertySet, "driver-port1", 0);
+                joint.cDriver.port2 = Utilities.GetProperty(propertySet, "driver-port2", -1);
                 joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
                 joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
                 joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
@@ -496,10 +496,10 @@ public partial class SynthesisGUI : Form
                 {
                     RobotSensor addedSensor;
                     addedSensor = new RobotSensor((RobotSensorType)Utilities.GetProperty(propertySet, "sensorType" + i, (int)RobotSensorType.ENCODER));
-                    addedSensor.port1 = ((int)Utilities.GetProperty(propertySet, "sensorPort1" + i, 0));
-                    addedSensor.port2 = ((int)Utilities.GetProperty(propertySet, "sensorPort2" + i, 0));
-                    addedSensor.conTypePort1 = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortCon1" + i, (int)SensorConnectionType.DIO));
-                    addedSensor.conTypePort2 = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortCon2" + i, (int)SensorConnectionType.DIO));
+                    addedSensor.portA = ((int)Utilities.GetProperty(propertySet, "sensorPortA" + i, 0));
+                    addedSensor.portB = ((int)Utilities.GetProperty(propertySet, "sensorPortB" + i, 0));
+                    addedSensor.conTypePortA = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortConA" + i, (int)SensorConnectionType.DIO));
+                    addedSensor.conTypePortB = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortConB" + i, (int)SensorConnectionType.DIO));
                     addedSensor.conversionFactor = Utilities.GetProperty(propertySet, "sensorConversion" + i, 0.0);
                     joint.attachedSensors.Add(addedSensor);
                 }
@@ -576,8 +576,8 @@ public partial class SynthesisGUI : Form
             if (driver != null)
             {
                 Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());
-                Utilities.SetProperty(propertySet, "driver-portA", driver.portA);
-                Utilities.SetProperty(propertySet, "driver-portB", driver.portB);
+                Utilities.SetProperty(propertySet, "driver-port1", driver.port1);
+                Utilities.SetProperty(propertySet, "driver-port2", driver.port2);
                 Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
                 Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
                 Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
@@ -622,20 +622,20 @@ public partial class SynthesisGUI : Form
             for (int i = 0; i < Utilities.GetProperty(propertySet, "num-sensors", 0); i++)// delete existing sensors
             {
                 Utilities.RemoveProperty(propertySet, "sensorType" + i);
-                Utilities.RemoveProperty(propertySet, "sensorPort1" + i);
-                Utilities.RemoveProperty(propertySet, "sensorPortCon1" + i);
-                Utilities.RemoveProperty(propertySet, "sensorPort2" + i);
-                Utilities.RemoveProperty(propertySet, "sensorPortCon2" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortA" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortConA" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortB" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortConB" + i);
                 Utilities.RemoveProperty(propertySet, "sensorConversion" + i);
             }
             Utilities.SetProperty(propertySet, "num-sensors", joint.attachedSensors.Count);
             for(int i = 0; i < joint.attachedSensors.Count; i++) {
 
                 Utilities.SetProperty(propertySet, "sensorType" + i, (int)joint.attachedSensors[i].type);
-                Utilities.SetProperty(propertySet, "sensorPort1" + i, joint.attachedSensors[i].port1);
-                Utilities.SetProperty(propertySet, "sensorPortCon1" + i, (int)joint.attachedSensors[i].conTypePort1);
-                Utilities.SetProperty(propertySet, "sensorPort2" + i, joint.attachedSensors[i].port2);
-                Utilities.SetProperty(propertySet, "sensorPortCon2" + i, (int)joint.attachedSensors[i].conTypePort2);
+                Utilities.SetProperty(propertySet, "sensorPortA" + i, joint.attachedSensors[i].portA);
+                Utilities.SetProperty(propertySet, "sensorPortConA" + i, (int)joint.attachedSensors[i].conTypePortA);
+                Utilities.SetProperty(propertySet, "sensorPortB" + i, joint.attachedSensors[i].portB);
+                Utilities.SetProperty(propertySet, "sensorPortConB" + i, (int)joint.attachedSensors[i].conTypePortB);
                 Utilities.SetProperty(propertySet, "sensorConversion" + i, joint.attachedSensors[i].conversionFactor);
             }
 

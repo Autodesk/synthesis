@@ -169,8 +169,8 @@ namespace Synthesis.Robot
                     {
                         foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
                         {
-                            Debug.Log(sensor.type.ToString() + " " + sensor.conTypePort1 + " " + sensor.conTypePort2 + " " + sensor.conversionFactor +
-                                " " + sensor.port1 + " " + sensor.port2);
+                            Debug.Log(sensor.type.ToString() + " " + sensor.conTypePortA + " " + sensor.conTypePortB + " " + sensor.conversionFactor +
+                                " " + sensor.portA + " " + sensor.portB);
 
                             if(sensor.type == RobotSensorType.ENCODER)
                             {
