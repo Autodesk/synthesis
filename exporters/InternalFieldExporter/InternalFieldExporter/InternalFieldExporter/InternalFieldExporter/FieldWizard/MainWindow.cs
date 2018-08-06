@@ -19,6 +19,16 @@ namespace InternalFieldExporter
             Text = "Synthesis Field Exporter - " + Program.ASSEMBLY_DOCUMENT.DisplayName;
         }
 
+        /// <summary>
+        /// Prepares the window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_Load(object sender, EventArgs e)
+        {
+            menuStrip.Renderer = new ToolStripProfessionalRenderer(new SynthesisColorTable());
+        }
+
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
 

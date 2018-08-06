@@ -159,6 +159,7 @@
     <Compile Include="FieldWizard\Components\SphereColliderPropertiesForm.Designer.cs">
       <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldWizard\Components\SynthesisColorTable.cs" />
     <Compile Include="FieldWizard\ConfirmMoveDialog.cs">
       <SubType>Form</SubType>
     </Compile>
