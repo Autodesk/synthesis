@@ -187,10 +187,9 @@ bool Synthesis::EUI::createSensorsPalette()
 	return true;
 }
 
-void Synthesis::EUI::openSensorsPalette(std::string jointID)
+void Synthesis::EUI::openSensorsPalette(std::string sensors)
 {
-	sensorsPalette->sendInfoToHTML("sensorID", jointID);
-	sensorsPalette->sendInfoToHTML("sensors", Exporter::loadConfiguration(app->activeDocument()).toString());
+	sensorsPalette->sendInfoToHTML("sensors", sensors);
 	sensorsPalette->isVisible(true);
 }
 

@@ -34,7 +34,7 @@ namespace Synthesis
 		void closeExportPalette();
 
 		bool createSensorsPalette();
-		void openSensorsPalette(std::string jointID);
+		void openSensorsPalette(std::string sensors);
 		void deleteSensorsPalette();
 		void closeSensorsPalette();
 
