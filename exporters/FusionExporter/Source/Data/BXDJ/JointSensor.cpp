@@ -20,6 +20,37 @@ JointSensor::JointSensor(Type type)
 	conversionFactor = 1;
 }
 
+rapidjson::Value JointSensor::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+{
+	rapidjson::Value sensorJSON;
+	sensorJSON.SetObject();
+
+	sensorJSON.AddMember("type", rapidjson::Value((int)type), allocator);
+	sensorJSON.AddMember("signal", rapidjson::Value((int)portSignal), allocator);
+	sensorJSON.AddMember("portA", rapidjson::Value(portA), allocator);
+	sensorJSON.AddMember("portB", rapidjson::Value(portB), allocator);
+	sensorJSON.AddMember("conversionFactor", rapidjson::Value(conversionFactor), allocator);
+
+	return sensorJSON;
+}
+
+void JointSensor::loadJSONObject(const rapidjson::Value & sensorJSON)
+{
+	if (sensorJSON.IsObject())
+	{
+		if (sensorJSON["type"].IsNumber())
+			type = (Type)sensorJSON["type"].GetInt();
+		if (sensorJSON["signal"].IsNumber())
+			portSignal = (Signal)sensorJSON["signal"].GetInt();
+		if (sensorJSON["portA"].IsNumber())
+			portA = sensorJSON["portA"].GetInt();
+		if (sensorJSON["portB"].IsNumber())
+			portB = sensorJSON["portB"].GetInt();
+		if (sensorJSON["conversionFactor"].IsNumber())
+			conversionFactor = sensorJSON["conversionFactor"].GetDouble();
+	}
+}
+
 void JointSensor::write(XmlWriter & output) const
 {
 	output.startElement("RobotSensor");
