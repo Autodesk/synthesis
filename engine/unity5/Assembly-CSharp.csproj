@@ -290,6 +290,7 @@
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
     <Compile Include="Assets\Scripts\States\DefaultSimulatorState.cs" />
+    <Compile Include="Assets\Scripts\States\DisclaimerState.cs" />
     <Compile Include="Assets\Scripts\States\DistributingResourcesState.cs" />
     <Compile Include="Assets\Scripts\States\EnterInfoState.cs" />
     <Compile Include="Assets\Scripts\States\EnterTagState.cs" />
