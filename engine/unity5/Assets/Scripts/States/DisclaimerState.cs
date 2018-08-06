@@ -51,7 +51,7 @@ namespace Synthesis.States
                 Auxiliary.FindGameObject("ExitingPanel").SetActive(true);
                 SceneManager.LoadScene("MainMenu");
             }
-
+            
             StateMachine.PopState();
         }
 
