@@ -108,6 +108,11 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		cam->isSmoothTransition(true);
 		app->activeViewport()->camera(cam);
 	}
+	else if (eventArgs->action() == "save")
+	{
+		BXDJ::ConfigData config(eventArgs->data());
+		Exporter::saveConfiguration(config, app->activeDocument());
+	}
 	else if (eventArgs->action() == "export")
 	{
 		palette->isVisible(false);
