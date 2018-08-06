@@ -2,13 +2,12 @@
 
 #include <Fusion/Components/SliderJointMotion.h>
 #include "../Joint.h"
-#include "LinearJoint.h"
 
 using namespace adsk;
 
 namespace BXDJ
 {
-	class SliderJoint : public Joint, public LinearJoint
+	class SliderJoint : public Joint
 	{
 	public:
 		SliderJoint(const SliderJoint &);
@@ -20,10 +19,11 @@ namespace BXDJ
 		float getMaxTranslation() const;
 
 		void applyConfig(const ConfigData &);
-		void write(XmlWriter &) const;
 
 	private:
 		core::Ptr<fusion::SliderJointMotion> fusionJointMotion;
+
+		void write(XmlWriter &) const;
 
 	};
 }

@@ -128,6 +128,31 @@ float BXDJ::Wheel::getSideExtremeValue() const
 	return 0.0f;
 }
 
+rapidjson::Value Wheel::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+{
+	rapidjson::Value wheelJSON;
+	wheelJSON.SetObject();
+
+	wheelJSON.AddMember("type", rapidjson::Value((int)type), allocator);
+	wheelJSON.AddMember("frictionLevel", rapidjson::Value((int)frictionLevel), allocator);
+	wheelJSON.AddMember("isDriveWheel", rapidjson::Value(isDriveWheel), allocator);
+
+	return wheelJSON;
+}
+
+void BXDJ::Wheel::loadJSONObject(const rapidjson::Value & wheelJSON)
+{
+	if (wheelJSON.IsObject())
+	{
+		if (wheelJSON["isDriveWheel"].IsNumber())
+			type = (Wheel::Type)wheelJSON["type"].GetInt();
+		if (wheelJSON["isDriveWheel"].IsNumber())
+			frictionLevel = (Wheel::FrictionLevel)wheelJSON["frictionLevel"].GetInt();
+		if (wheelJSON["isDriveWheel"].IsBool())
+			isDriveWheel = wheelJSON["isDriveWheel"].GetBool();
+	}
+}
+
 #pragma endregion
 
 void Wheel::write(XmlWriter & output) const

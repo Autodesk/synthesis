@@ -87,9 +87,6 @@
     <ClInclude Include="Source\Data\Vector3.h">
       <Filter>Headers\Data</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Data\BXDJ\Joints\AngularJoint.h">
-      <Filter>Headers\Data\BXDJ\Joints</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Data\BXDJ\Joint.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
@@ -120,9 +117,6 @@
     <ClInclude Include="Source\Data\BXDJ\Joints\SliderJoint.h">
       <Filter>Headers\Data\BXDJ\Joints</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Data\BXDJ\Joints\LinearJoint.h">
-      <Filter>Headers\Data\BXDJ\Joints</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Data\BXDJ\Components\Pneumatic.h">
       <Filter>Headers\Data\BXDJ\Components</Filter>
     </ClInclude>
@@ -139,6 +133,9 @@
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
     <ClInclude Include="Source\Data\BXDJ\JointSensor.h">
+      <Filter>Headers\Data\BXDJ</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\CustomJSONObject.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
   </ItemGroup>
@@ -225,6 +222,9 @@
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data\BXDJ\JointSensor.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\CustomJSONObject.cpp">
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
   </ItemGroup>
