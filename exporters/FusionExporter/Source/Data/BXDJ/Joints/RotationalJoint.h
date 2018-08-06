@@ -2,13 +2,12 @@
 
 #include <Fusion/Components/RevoluteJointMotion.h>
 #include "../Joint.h"
-#include "AngularJoint.h"
 
 using namespace adsk;
 
 namespace BXDJ
 {
-	class RotationalJoint : public Joint, public AngularJoint
+	class RotationalJoint : public Joint
 	{
 	public:
 		RotationalJoint(const RotationalJoint &);
