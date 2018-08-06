@@ -123,6 +123,7 @@
     <ClInclude Include="Source\Data\BXDJ\Joints\LinearJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\RotationalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
+    <ClInclude Include="Source\Data\BXDJ\JointSensor.h" />
     <ClInclude Include="Source\Data\BXDJ\Utility.h" />
     <ClInclude Include="Source\Data\BXDJ\XmlWriter.h" />
     <ClInclude Include="Source\Data\Filesystem.h" />
@@ -153,6 +154,7 @@
     <ClCompile Include="Source\Data\BXDJ\RigidNode-Tree.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode-Mesh.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode.cpp" />
+    <ClCompile Include="Source\Data\BXDJ\JointSensor.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Utility.cpp" />
     <ClCompile Include="Source\Data\BXDJ\XmlWriter.cpp" />
     <ClCompile Include="Source\Data\Filesystem.cpp" />

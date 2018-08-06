@@ -64,6 +64,8 @@
             <fieldset id="joint-config-template" class="joint-config">
                 <legend><a class="joint-config-legend">Joint</a></legend>
 
+                <button class="edit-sensors-button" onclick="editSensors(this.parent.dataset.jointId)">Edit Sensors</button>
+
                 <div class="driver-div">
                     <span class="field-label">Driver Type: </span>
                     <span class="field-input"><select class="driver-type" onchange="updateFieldOptions(this)">

@@ -4,6 +4,7 @@
 #include <vector>
 #include <Fusion/Components/Joint.h>
 #include "Driver.h"
+#include "JointSensor.h"
 
 using namespace adsk;
 
@@ -21,6 +22,8 @@ namespace BXDJ
 		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const;
 		void setDriver(core::Ptr<fusion::Joint>, const Driver &);
 		void setNoDriver(core::Ptr<fusion::Joint>);
+
+		std::vector<std::shared_ptr<JointSensor>> getSensors(core::Ptr<fusion::Joint>) const;
 
 		// Removes joint configurations that are not in a vector of joints, and adds empty configurations for those not present.
 		void filterJoints(std::vector<core::Ptr<fusion::Joint>>);
@@ -40,6 +43,7 @@ namespace BXDJ
 			std::string name;
 			JointMotionType motion;
 			std::unique_ptr<Driver> driver;
+			std::vector<std::shared_ptr<JointSensor>> sensors;
 
 			JointConfig() { name = ""; motion = NEITHER; driver = nullptr; }
 

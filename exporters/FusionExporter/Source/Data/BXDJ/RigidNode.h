@@ -19,7 +19,6 @@ namespace BXDJ
 {
 	class ConfigData;
 	class Joint;
-	class Sensor;
 
 	// Stores the collection of component occurences that act as a single rigidbody in Synthesis
 	class RigidNode : public XmlWritable
@@ -38,7 +37,6 @@ namespace BXDJ
 		void getMesh(BXDA::Mesh &, bool ignorePhysics = false, std::function<void(double)> progressCallback = nullptr, bool * cancel = nullptr) const;
 
 		void addJoint(std::shared_ptr<Joint>);
-		void addSensor(const Sensor &);
 		
 		std::string log = "";
 
@@ -60,8 +58,6 @@ namespace BXDJ
 		std::vector<std::shared_ptr<Joint>> childrenJoints;
 		// Stores a reference to the node's parent
 		Joint * parent;
-		// All sensors connected to this node, relative to the parent joint
-		std::vector<std::shared_ptr<Sensor>> sensors;
 		// Stores all component occurences that are grouped into this node
 		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurrences;
 
