@@ -3,19 +3,19 @@
 #include <map>
 #include <vector>
 #include <Fusion/Components/Joint.h>
+#include "CustomJSONObject.h"
 #include "Driver.h"
 
 using namespace adsk;
 
 namespace BXDJ
 {
-	class ConfigData
+	class ConfigData : public CustomJSONObject
 	{
 	public:
 		std::string robotName;
 
 		ConfigData();
-		ConfigData(std::string jsonConfig);
 		ConfigData(const ConfigData & other);
 
 		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const;
@@ -25,8 +25,8 @@ namespace BXDJ
 		// Removes joint configurations that are not in a vector of joints, and adds empty configurations for those not present.
 		void filterJoints(std::vector<core::Ptr<fusion::Joint>>);
 
-		void loadFromJSON(std::string);
-		std::string toString() const;
+		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
+		void loadJSONObject(const rapidjson::Value&);
 
 	private:
 		// Constants used for communicating joint motion type
