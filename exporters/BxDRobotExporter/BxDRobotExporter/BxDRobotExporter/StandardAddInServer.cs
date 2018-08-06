@@ -98,8 +98,8 @@ namespace BxDRobotExporter
 
             #region Load Images
       
-            stdole.IPictureDisp ExportRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Export16));
-            stdole.IPictureDisp ExportRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Export32));
+            stdole.IPictureDisp ExportRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
+            stdole.IPictureDisp ExportRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
 
             stdole.IPictureDisp SaveRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save16));
             stdole.IPictureDisp SaveRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save32));
@@ -195,6 +195,11 @@ namespace BxDRobotExporter
                     Wizard.WizardForm wizard = new Wizard.WizardForm();
 
                     wizard.ShowDialog();
+                    if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+                    {
+                        Form finishDialog = new Wizard.ExportOrAdvancedForm();
+                        finishDialog.ShowDialog();
+                    }
             };
             DebugPanel.CommandControls.AddButton(UITestButton, true);
 #endif
@@ -283,19 +288,24 @@ namespace BxDRobotExporter
                 return;
             }
 
+            disabledAssemblyOccurences = new List<ComponentOccurrence>();
+            disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
             if (!Utilities.GUI.LoadRobotData(AsmDocument))
             {
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
                 wizard.ShowDialog();
+                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+                {
+                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
+                    finishDialog.ShowDialog();
+                }
                 PendingChanges = true; // Force save button on since no data has been saved to this file
             }
             else
                 PendingChanges = false; // No changes are pending if data has been loaded
 
-            // Hide non-jointed components
-            disabledAssemblyOccurences = new List<ComponentOccurrence>();
-            disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
+            // Hide non-jointed components;
             
             // Reload panels in UI
             Utilities.GUI.ReloadPanels();
@@ -516,7 +526,11 @@ namespace BxDRobotExporter
                 Utilities.HideDockableWindows();
 
                 wizard.ShowDialog();
-                    
+                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+                {
+                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
+                    finishDialog.ShowDialog();
+                }
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
             }
@@ -539,7 +553,8 @@ namespace BxDRobotExporter
         private void ExportButton_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.PromptExportSettings())
-                if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null)
+                if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null) 
+
                     Utilities.GUI.OpenSynthesis();
         }
 
@@ -622,11 +637,13 @@ namespace BxDRobotExporter
         /// <param name="Child"></param>
         /// <param name="UseFancyColors"></param>
         /// <param name="SaveLocation"></param>
-        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation)
+        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation, bool openSynthesis, string fieldLocation)
         {
             ChildHighlight.Color = Utilities.GetInventorColor(Child);
 
             //Update Application
+            Properties.Settings.Default.ExportToField = openSynthesis;
+            Properties.Settings.Default.SelectedField = fieldLocation;
             Properties.Settings.Default.ChildColor = Child;
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
@@ -661,8 +678,12 @@ namespace BxDRobotExporter
             {
                 if (!jointedAssemblyOccurences.Contains(c) || c.Grounded)
                 {
-                    disabledAssemblyOccurences.Add(c);
-                    c.Enabled = false;
+                    try
+                    {//accounts for components that can't be disabled
+                        disabledAssemblyOccurences.Add(c);
+                        c.Enabled = false;
+                    }
+                    catch (Exception) { }
                 }
             }
 
@@ -677,7 +698,10 @@ namespace BxDRobotExporter
         {
             foreach (ComponentOccurrence c in components)
             {
-                c.Enabled = true;
+                try
+                {//accounts for components that can't be disabled
+                    c.Enabled = true;
+                } catch (Exception){ }
             }
         }
 

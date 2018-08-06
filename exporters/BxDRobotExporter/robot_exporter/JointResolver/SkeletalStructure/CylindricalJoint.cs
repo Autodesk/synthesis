@@ -128,6 +128,45 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         }
     }
 
+    public void ReloadInventorJoint()
+    {
+        if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
+        {
+            axis = Utilities.ToBXDVector(wrapped.rigidJoint.geomTwo.Direction);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
+        }
+        else
+        {
+            axis = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
+        }
+
+        currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
+
+        hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
+        if (hasAngularLimit)
+        {
+            angularLimitLow = (float)wrapped.asmJoint.AngularPositionStartLimit.Value;
+            angularLimitHigh = (float)wrapped.asmJoint.AngularPositionEndLimit.Value;
+        }
+        currentAngularPosition = (wrapped.asmJoint.AngularPosition != null) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
+
+        hasLinearStartLimit = wrapped.asmJoint.HasLinearPositionStartLimit;
+        hasLinearEndLimit = wrapped.asmJoint.HasLinearPositionEndLimit;
+
+        if (hasLinearStartLimit && hasLinearEndLimit)
+        {
+            linearLimitStart = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
+            linearLimitEnd = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
+
+        }
+        else
+        {
+            throw new Exception("Joints with linear motion need two limits.");
+        }
+        wrapped.asmJoint.LinearPosition = wrapped.asmJoint.LinearPosition;
+    }
+
     public static bool IsCylindricalJoint(CustomRigidJoint jointI)
     {
         // kMateLineLineJoint
@@ -145,41 +184,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
             throw new Exception("Not a Cylindrical joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
-        if (wrapped.childGroup == rigidJoint.groupOne)
-        {
-            axis = Utilities.ToBXDVector(rigidJoint.geomTwo.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomTwo.RootPoint);
-        }
-        else
-        {
-            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
-        }
-
-        currentLinearPosition = wrapped.asmJoint.LinearPosition != null ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
-
-        hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
-        if (hasAngularLimit)
-        {
-            angularLimitLow = (float)wrapped.asmJoint.AngularPositionStartLimit.Value;
-            angularLimitHigh = (float)wrapped.asmJoint.AngularPositionEndLimit.Value;
-        }
-        currentAngularPosition = wrapped.asmJoint.AngularPosition != null ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
-
-        hasLinearStartLimit = wrapped.asmJoint.HasLinearPositionStartLimit;
-        hasLinearEndLimit = wrapped.asmJoint.HasLinearPositionEndLimit;
-
-        if (hasLinearStartLimit && hasLinearEndLimit)
-        {
-            linearLimitStart = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
-            linearLimitEnd = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
-
-        }
-        else
-        {
-            throw new Exception("Joints with linear motion need two limits.");
-        }
-        wrapped.asmJoint.LinearPosition = wrapped.asmJoint.LinearPosition;
+        ReloadInventorJoint();
     }
 
     protected override string ToString_Internal()
