@@ -33,38 +33,22 @@ std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 	return joints;
 }
 
-std::string Exporter::stringifyJoints(std::vector<Ptr<Joint>> joints)
+BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 {
-	std::string stringifiedJoints = "";
+	Ptr<Attribute> attr = document->attributes()->itemByName("Synthesis", "RobotConfigData.json");
 
-	for (Ptr<Joint> joint : joints)
-	{
-		stringifiedJoints += std::to_string(joint->name().length()) + " " + joint->name() + " ";
+	BXDJ::ConfigData config;
+	if (attr != nullptr)
+		config.fromJSONString(attr->value());
 
-		JointTypes type = joint->jointMotion()->jointType();
+	config.filterJoints(collectJoints(document));
 
-		// Specify if joint supports linear and/or angular motion
-		// Angular motion only
-		if (type == JointTypes::RevoluteJointType)         
-			stringifiedJoints += 5;
+	return config;
+}
 
-		// Linear motion only
-		else if (type == JointTypes::SliderJointType ||
-				 type == JointTypes::CylindricalJointType)      
-			stringifiedJoints += 6;
-
-		// Both angular and linear motion
-		else if (false)
-			stringifiedJoints += 7;
-
-		// Neither angular nor linear motion
-		else                                                                            
-			stringifiedJoints += 4;
-
-		stringifiedJoints += " ";
-	}
-
-	return stringifiedJoints;
+void Exporter::saveConfiguration(BXDJ::ConfigData config, Ptr<FusionDocument> document)
+{
+	document->attributes()->add("Synthesis", "RobotConfigData.json", config.toJSONString());
 }
 
 void Exporter::exportExample()

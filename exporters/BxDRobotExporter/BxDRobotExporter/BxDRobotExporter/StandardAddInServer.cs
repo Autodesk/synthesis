@@ -192,6 +192,11 @@ namespace BxDRobotExporter
                     Wizard.WizardForm wizard = new Wizard.WizardForm();
 
                     wizard.ShowDialog();
+                    if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+                    {
+                        Form finishDialog = new Wizard.ExportOrAdvancedForm();
+                        finishDialog.ShowDialog();
+                    }
             };
             DebugPanel.CommandControls.AddButton(UITestButton, true);
 #endif
@@ -287,6 +292,11 @@ namespace BxDRobotExporter
             {
                 Wizard.WizardForm wizard = new Wizard.WizardForm();
                 wizard.ShowDialog();
+                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+                {
+                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
+                    finishDialog.ShowDialog();
+                }
                 PendingChanges = true; // Force save button on since no data has been saved to this file
             }
             else
@@ -503,9 +513,6 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if (WarnIfUnsaved())
-            {
-
                 if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                     return;
 
@@ -513,10 +520,14 @@ namespace BxDRobotExporter
                 Utilities.HideDockableWindows();
 
                 wizard.ShowDialog();
-                    
+                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+                {
+                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
+                    finishDialog.ShowDialog();
+                }
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
-            }
+           
         }
 
         /// <summary>

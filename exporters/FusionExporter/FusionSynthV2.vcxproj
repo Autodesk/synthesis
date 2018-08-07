@@ -45,6 +45,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>C:\Users\t_walkn\Documents\GitHub\synthesis\exporters\FusionExporter\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -115,12 +116,11 @@
     <ClInclude Include="Source\Data\BXDJ\ConfigData.h" />
     <ClInclude Include="Source\Data\BXDJ\Driver.h" />
     <ClInclude Include="Source\Data\BXDJ\Joint.h" />
-    <ClInclude Include="Source\Data\BXDJ\Joints\AngularJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\BallJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\CylindricalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\SliderJoint.h" />
-    <ClInclude Include="Source\Data\BXDJ\Joints\LinearJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\RotationalJoint.h" />
+    <ClInclude Include="Source\Data\BXDJ\CustomJSONObject.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
     <ClInclude Include="Source\Data\BXDJ\Utility.h" />
     <ClInclude Include="Source\Data\BXDJ\XmlWriter.h" />
@@ -143,6 +143,7 @@
     <ClCompile Include="Source\Data\BXDJ\Components\Pneumatic.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Components\Wheel.cpp" />
     <ClCompile Include="Source\Data\BXDJ\ConfigData.cpp" />
+    <ClCompile Include="Source\Data\BXDJ\CustomJSONObject.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Driver.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joint.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joints\BallJoint.cpp" />

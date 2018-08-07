@@ -126,7 +126,7 @@ bool EUI::createExportPalette()
 void Synthesis::EUI::openExportPalette()
 {
 	exportButtonCommand->controlDefinition()->isEnabled(false);
-	exportPalette->sendInfoToHTML("joints", Exporter::stringifyJoints(Exporter::collectJoints(app->activeDocument())));
+	exportPalette->sendInfoToHTML("joints", Exporter::loadConfiguration(app->activeDocument()).toJSONString());
 	exportPalette->isVisible(true);
 }
 
@@ -265,7 +265,10 @@ void EUI::startExportThread(BXDJ::ConfigData & config)
 	killExportThread = false;
 	exportThread = new std::thread(&EUI::exportRobot, this, config);
 #else
-	Exporter::exportMeshes(config, app->activeDocument());
+	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
+	{
+		//updateProgress(percent);
+	}, &killExportThread);
 #endif
 }
 
@@ -296,15 +299,22 @@ void EUI::exportRobot(BXDJ::ConfigData config)
 {
 	openProgressPalette();
 
-	// Export meshes
-	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
+	try
 	{
-		updateProgress(percent);
-	}, &killExportThread);
+		Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
+		{
+			updateProgress(percent);
+		}, &killExportThread);
 
-	// Add delay before closing so that loading bar has time to animate
-	if (!killExportThread)
-		std::this_thread::sleep_for(std::chrono::milliseconds(250));
-
+		// Add delay before closing so that loading bar has time to animate
+		if (!killExportThread)
+			std::this_thread::sleep_for(std::chrono::milliseconds(250));
+	}
+	catch (const std::exception& e)
+	{
+		progressPalette->sendInfoToHTML("error", "An error occurred while exporting \"" + config.robotName + "\":<br>" + std::string(e.what()));
+		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+	}
+	
 	closeProgressPalette();
 }

@@ -27,16 +27,15 @@ namespace BXDJ
 
 		virtual void applyConfig(const ConfigData &) = 0;
 		void setDriver(Driver);
-		void removeDriver();
+		void setNoDriver();
 		std::unique_ptr<Driver> getDriver() const;
-
-		virtual void write(XmlWriter &) const;
 
 	protected:
 		enum OneTwo : bool { ONE = true, TWO = false };
 
 		core::Ptr<fusion::Joint> getFusionJoint() { return fusionJoint; }
 		OneTwo getParentOccNum() { return parentOcc; }
+		virtual void write(XmlWriter &) const;
 
 	private:
 		OneTwo parentOcc;

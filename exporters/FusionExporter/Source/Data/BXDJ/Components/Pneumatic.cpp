@@ -27,6 +27,48 @@ float Pneumatic::getPressure() const
 	return pressurePSI;
 }
 
+int Pneumatic::getCommonWidth() const
+{
+	if (widthMillimeter <= 2.5f)
+		return 0;
+	else if (widthMillimeter <= 5.0f)
+		return 1;
+	else
+		return 2;
+}
+
+int Pneumatic::getCommonPressure() const
+{
+	if (pressurePSI <= 10.0f)
+		return 0;
+	else if (pressurePSI <= 20.0f)
+		return 1;
+	else
+		return 2;
+}
+
+rapidjson::Value Pneumatic::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+{
+	rapidjson::Value pneumaticJSON;
+	pneumaticJSON.SetObject();
+
+	pneumaticJSON.AddMember("width", rapidjson::Value(getCommonWidth()), allocator);
+	pneumaticJSON.AddMember("pressure", rapidjson::Value(getCommonPressure()), allocator);
+
+	return pneumaticJSON;
+}
+
+void BXDJ::Pneumatic::loadJSONObject(const rapidjson::Value & pneumaticJSON)
+{
+	if (pneumaticJSON.IsObject())
+	{
+		if (pneumaticJSON["width"].IsNumber())
+			widthMillimeter = Pneumatic::COMMON_WIDTHS[pneumaticJSON["width"].GetInt()];
+		if (pneumaticJSON["pressure"].IsNumber())
+			pressurePSI = Pneumatic::COMMON_PRESSURES[pneumaticJSON["pressure"].GetInt()];
+	}
+}
+
 void Pneumatic::write(XmlWriter & output) const
 {
 	output.startElement("PneumaticDriverMeta");
