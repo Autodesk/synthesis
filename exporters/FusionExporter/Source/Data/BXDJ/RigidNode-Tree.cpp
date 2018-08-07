@@ -131,15 +131,6 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 			jointSummary.children[lowerOccurrence] = upperOccurrence;
 			jointSummary.parents[upperOccurrence].push_back(joint);
 		}
-		else if (joint->occurrenceOne() != nullptr || joint->occurrenceTwo() != nullptr)
-		{
-			core::Ptr<fusion::Occurrence> lowerOccurrence = (joint->occurrenceOne() != nullptr) ? joint->occurrenceOne() : joint->occurrenceTwo();
-			core::Ptr<fusion::OccurrenceList> upperOccurrences = rootComponent->allOccurrencesByComponent(joint->parentComponent());
-
-			jointSummary.children[lowerOccurrence] = nullptr;
-			for (core::Ptr<fusion::Occurrence> upperOccurrence : upperOccurrences)
-				jointSummary.parents[upperOccurrence].push_back(joint);
-		}
 	}
 
 	// Find all rigid groups in the design
@@ -152,9 +143,15 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 		//  - It is the child of a joint
 		// If multiple occurrences are the children of joints, then Houston we have a problem
 		for (core::Ptr<fusion::Occurrence> occurrence : rgdGroup->occurrences())
-			if (topOccurrence == nullptr || Utility::levelOfOccurrence(topOccurrence) > Utility::levelOfOccurrence(occurrence) ||
-				jointSummary.children.find(occurrence) != jointSummary.children.end())
+		{
+			if (topOccurrence == nullptr || Utility::levelOfOccurrence(topOccurrence) > Utility::levelOfOccurrence(occurrence))
 				topOccurrence = occurrence;
+			else if (jointSummary.children.find(occurrence) != jointSummary.children.end())
+			{
+				topOccurrence = occurrence; // If occurrence is the child of a joint, it must be the parent of the rigid group to maintain jointing
+				break;
+			}
+		}
 
 		// All occurrences that are not the top are now children, while the top stores references to all of them
 		for (core::Ptr<fusion::Occurrence> occurrence : rgdGroup->occurrences())
