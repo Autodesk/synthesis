@@ -93,18 +93,18 @@ namespace hel{
     std::string clipList(std::string);
 
     /**
-     * \fn std::string pullValue(std::string label, std::string& input)
+     * \fn std::string pullObject(std::string label, std::string& input)
      * \brief Removes a string representing the value part of the first JSON object of the given label from the input
      * \param label the target object
      * \param input the string to parse
      * \return a string containing the value pulled from the input string
      */
 
-    std::string pullValue(std::string,std::string&);
+    std::string pullObject(std::string,std::string&);
 
     template<typename T>
-    T pullValue(std::string label,std::string& input,const std::function<T(std::string)>& from_s){
-        return from_s(pullValue(label, input));
+    T pullObject(std::string label,std::string& input,const std::function<T(std::string)>& from_s){
+        return from_s(pullObject(label, input));
     }
 
     /**
@@ -114,7 +114,7 @@ namespace hel{
      * \return a string containing the first JSON object in the input
      */
 
-    std::string pullObject(std::string&);
+    std::string pullObject(std::string&,unsigned start = 0);
 
     template<typename T>
     std::vector<T> deserializeList(std::string input, const std::function<T(std::string)>& from_s, bool clip = false){

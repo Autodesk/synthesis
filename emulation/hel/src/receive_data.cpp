@@ -80,7 +80,7 @@ namespace hel{
 		if(input.find(quote("digital_hdrs")) != std::string::npos){
 			try{
 				digital_hdrs = hel::deserializeList(
-					hel::pullValue("\"digital_hdrs\"", input),
+					hel::pullObject("\"digital_hdrs\"", input),
 					std::function<bool(std::string)>(hel::stob),
 					true);
 			} catch(const std::exception& ex){
@@ -93,7 +93,7 @@ namespace hel{
 		if(input.find(quote("joysticks")) != std::string::npos){
 			try{
 				joysticks = hel::deserializeList(
-					hel::pullValue("\"joysticks\"", input),
+					hel::pullObject("\"joysticks\"", input),
 					std::function<Joystick(std::string)>(Joystick::deserialize),
 					true);
 			} catch(const std::exception& ex){
@@ -106,7 +106,7 @@ namespace hel{
 		if(input.find(quote("digital_mxp")) != std::string::npos){
 			try{
 				digital_mxp = hel::deserializeList(
-					hel::pullValue("\"digital_mxp\"", input),
+					hel::pullObject("\"digital_mxp\"", input),
 					std::function<MXPData(std::string)>(MXPData::deserialize),
 					true);
 			} catch(const std::exception& ex){
@@ -118,7 +118,7 @@ namespace hel{
 	void hel::ReceiveData::deserializeMatchInfo(std::string& input){
 		if(input.find(quote("match_info")) != std::string::npos){
 			try{
-				match_info = MatchInfo::deserialize(hel::pullValue("\"match_info\"", input));
+				match_info = MatchInfo::deserialize(hel::pullObject("\"match_info\"", input));
 			} catch(const std::exception& ex){
 				throw JSONParsingException("match_info");
 			}
@@ -128,7 +128,7 @@ namespace hel{
 	void hel::ReceiveData::deserializeRobotMode(std::string& input){
 		if(input.find(quote("robot_mode")) != std::string::npos){
 			try{
-				robot_mode = RobotMode::deserialize(hel::pullValue("\"robot_mode\"", input));
+				robot_mode = RobotMode::deserialize(hel::pullObject("\"robot_mode\"", input));
 			} catch(const std::exception& ex){
 				throw JSONParsingException("robot_mode");
 			}
@@ -139,7 +139,7 @@ namespace hel{
 		if(input.find(quote("encoders")) != std::string::npos){
 			try{
 				encoder_managers = hel::deserializeList(
-					hel::pullValue("\"encoders\"", input),
+					hel::pullObject("\"encoders\"", input),
 					std::function<Maybe<EncoderManager>(std::string)>([&](std::string str){
                         if(trim(str) == "null"){
                             return Maybe<EncoderManager>();

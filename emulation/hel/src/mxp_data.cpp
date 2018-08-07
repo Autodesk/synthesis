@@ -64,8 +64,8 @@ namespace hel{
 
 	MXPData MXPData::deserialize(std::string s){
 		MXPData m;
-		m.config = s_to_mxp_config(unquote(pullValue("\"config\"",s)));
-		m.value = std::stod(pullValue("\"value\"",s));
+		m.config = s_to_mxp_config(unquote(pullObject("\"config\"",s)));
+		m.value = std::stod(pullObject("\"value\"",s));
 		return m;
 	}
 }

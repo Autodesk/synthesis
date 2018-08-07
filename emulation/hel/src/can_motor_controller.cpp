@@ -29,10 +29,10 @@ namespace hel{
 
     CANMotorController CANMotorController::deserialize(std::string s){
         CANMotorController a;
-        a.type = s_to_can_device_type(hel::unquote(hel::pullValue("\"type\"",s)));
-        a.id = std::stod(hel::pullValue("\"id\"",s));
-        a.percent_output = std::stod(hel::pullValue("\"percent_output\"",s));
-        a.inverted = hel::stob(hel::pullValue("\"inverted\"",s));
+        a.type = s_to_can_device_type(hel::unquote(hel::pullObject("\"type\"",s)));
+        a.id = std::stod(hel::pullObject("\"id\"",s));
+        a.percent_output = std::stod(hel::pullObject("\"percent_output\"",s));
+        a.inverted = hel::stob(hel::pullObject("\"inverted\"",s));
         return a;
     }
 
