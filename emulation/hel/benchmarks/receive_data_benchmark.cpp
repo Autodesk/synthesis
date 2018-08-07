@@ -8,9 +8,9 @@ static void BM_ReceiveData(benchmark::State& state) {
         std::cout<<"Input: "<<in<<"\n\n";
 
         auto instance = hel::ReceiveDataManager::getInstance();
-        receiver.deserializeShallow(in);
-        receiver.updateShallow();
-        std::cout<<"Receiver value: "<<receiver.toString()<<"\n";
+        instance.first->deserializeShallow(in);
+        instance.first->updateShallow();
+        std::cout<<"Receiver value: "<<instance.first->toString()<<"\n";
         instance.second.unlock();
     }
 }

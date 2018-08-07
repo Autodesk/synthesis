@@ -29,12 +29,13 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 
 SET(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
-if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1 -g") #TODO optimization break things
+if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Werror -Wno-ignored-qualifiers")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
 else()
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+  MESSAGE(WARNING "No build type specified; defaulting to debug.")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
 if(ARCH MATCHES "[Aa][Rr][Mm]")
@@ -60,6 +61,7 @@ elseif(ARCH MATCHES "([Xx]86([-_]64)?)")
 
   LINK_DIRECTORIES(
     ${CMAKE_BINARY_DIR}/lib
+    ${CMAKE_BINARY_DIR}/lib/lib
     ${CMAKE_BINARY_DIR}/lib/lib64
     ${WPILIB_DIRECTORY}/ni-libraries/lib
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64
@@ -76,6 +78,7 @@ else()
 
   LINK_DIRECTORIES(
     ${CMAKE_BINARY_DIR}/lib
+    ${CMAKE_BINARY_DIR}/lib/lib
     ${CMAKE_BINARY_DIR}/lib/lib64
     ${WPILIB_DIRECTORY}/ni-libraries/lib
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64
@@ -204,6 +207,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
         GIT_REPOSITORY https://www.github.com/google/googletest
         CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}) #TODO changing architecture requires full clean
     else()
+      MESSAGE(WARNING "HAL- and CTRE-based tests are not supported with the x86_64 architecture compiler flag.")
       EXTERNALPROJECT_ADD(GoogleTest
         PREFIX lib/google_test
         DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
@@ -262,6 +266,7 @@ if(BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]")
     MESSAGE(WARNING "Benchmarks not supported in ARM mode. If you wish to run benchmarks, please append -DARCH=x86_64 to cmake command")
     return()
   else()
+    MESSAGE(WARNING "HAL- and CTRE-based benchmarks are not supported with the x86_64 architecture compiler flag.")
     EXTERNALPROJECT_ADD(GoogleBench
       PREFIX lib/GoogleBench
       GIT_REPOSITORY https://github.com/google/benchmark
