@@ -20,8 +20,8 @@ namespace BXDJ
 
 		enum Signal : char
 		{
-			PWM = 1,
-			CAN = 2
+			DIO = 1,
+			ANALOG = 2
 		};
 
 		Signal portSignal;
