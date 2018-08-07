@@ -555,6 +555,8 @@ namespace Synthesis.GUI
         {
             if (show)
             {
+                DynamicCamera.ControlEnabled = false;
+                InputControl.freeze = true;
                 EndOtherProcesses();
                 inputManagerPanel.SetActive(true);
                 inputPanelOn = true;
@@ -564,6 +566,8 @@ namespace Synthesis.GUI
             }
             else
             {
+                DynamicCamera.ControlEnabled = true;
+                InputControl.freeze = false;
                 inputManagerPanel.SetActive(false);
                 bindedKeyPanel.SetActive(false);
                 inputPanelOn = false;
