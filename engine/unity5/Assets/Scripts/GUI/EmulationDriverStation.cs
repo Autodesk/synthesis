@@ -84,7 +84,7 @@ namespace Synthesis.GUI
             }
         }
 
-        public void OnStartRobotCodeButtonPressed()
+        public void ToggleRobotCodeButton()
         {
             if (!isRunCode)
             {
