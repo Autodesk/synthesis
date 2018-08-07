@@ -68,6 +68,7 @@ namespace Synthesis.States
                 if (filePath.Length != 0)
                 {
                     fileBrowser = new GUI.SynthesisFileBrowser("Choose Directory", filePath, true);
+                    filePath = fileBrowser.directoryLocation;
                     fileBrowser.OnComplete += OnBrowserComplete;
                     fileBrowser.CompleteDirectorySelection();
                     pathLabel.text = filePath;
