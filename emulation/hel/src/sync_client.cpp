@@ -5,6 +5,7 @@
 #include <iostream>
 #include "util.hpp"
 #include "global.hpp"
+#include "json_util.hpp"
 
 using asio::ip::tcp;
 
@@ -17,6 +18,31 @@ namespace hel {
         startSync(io);
     }
 
+    std::string readJSONPacket(asio::ip::tcp::socket& socket, std::string& rest){
+        std::array<char, ETHERNET_MTU+1> data;
+        std::fill(data.begin(), data.end(), '\0');
+        int bytes_received = socket.receive(asio::buffer(data));
+        std::string received_data = rest;
+        received_data += std::string(data.begin(), data.begin()+bytes_received);
+        rest = "";
+        const std::string PREAMBLE = "{\"roborio";
+        if(received_data.substr(0, PREAMBLE.length()) != PREAMBLE) {
+            if (received_data.find(JSON_PACKET_SUFFIX) == std::string::npos) {
+                rest = received_data;
+            } else {
+                rest = received_data.substr(received_data.find(JSON_PACKET_SUFFIX)+1);
+            }
+            return readJSONPacket(socket,rest);
+        }
+        std::size_t i = received_data.find(JSON_PACKET_SUFFIX);
+        if(i == std::string::npos) {
+            rest = received_data;
+            return readJSONPacket(socket,rest);
+        }
+        rest = received_data.substr(i+1);
+        return received_data.substr(0,i);
+    }
+
     void SyncClient::startSync(asio::io_service& io) {
         while(1) {
             asio::ip::tcp::socket socket(io);
@@ -24,41 +50,14 @@ namespace hel {
             acceptor.accept(socket);
             std::string rest = "";
             std::string json_string = "";
-            bool finished_flag = false;
             try {
                 while(1) {
-
-                    while(!finished_flag) {
-
-                        std::array<char, ETHERNET_MTU+1> data;
-                        std::fill(data.begin(), data.end(), '\0');
-                        int bytes_received = socket.receive(asio::buffer(data));
-                        std::string received_data = rest;
-                        received_data += std::string(data.begin(), data.begin()+bytes_received);
-                        rest = "";
-                        const std::string PREAMBLE = "{\"roborio";
-                        if(received_data.substr(0, PREAMBLE.length()) != PREAMBLE) {
-                            if (received_data.find("\x1B") == std::string::npos) {
-                                rest = received_data;
-                            } else {
-                                rest = received_data.substr(received_data.find("\x1B")+1);
-                            }
-                            continue;
-                        }
-                        std::size_t i = received_data.find("\x1B");
-                        if(i == std::string::npos) {
-                            rest = received_data;
-                            continue;
-                        }
-                        json_string = received_data.substr(0,i);
-                        rest = received_data.substr(i+1);
-                        finished_flag = true;
-                    }
+                    json_string = readJSONPacket(socket,rest);
+                    //std::cout<<json_string<<"\n";
                     auto instance = hel::ReceiveDataManager::getInstance();
                     instance.first->deserializeShallow(json_string);
                     instance.first->updateShallow();
                     instance.second.unlock();
-                    finished_flag = false;
                     usleep(30000); //
                 }
             }

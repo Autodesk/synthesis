@@ -10,10 +10,10 @@
 #include "ctre/Phoenix.h"
 
 class Robot: public frc::IterativeRobot{
-    ctre::phoenix::motorcontrol::can::WPI_TalonSRX m_leftMotor{0};
-    ctre::phoenix::motorcontrol::can::WPI_TalonSRX m_rightMotor{1};
+    frc::Spark m_leftMotor{0};
+    frc::Spark m_rightMotor{1};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
-    frc::Joystick m_stick{1};
+    frc::Joystick m_stick{0};
     frc::Timer auto_timer;
     bool run_auto = true;
 
