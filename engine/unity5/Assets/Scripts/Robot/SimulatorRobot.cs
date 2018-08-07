@@ -230,7 +230,7 @@ namespace Synthesis.Robot
             InputControl.freeze = true;
             if(canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
             if(resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
-            canvas.SetActive(false);
+            canvas.GetComponent<Canvas>().enabled = false;
             resetCanvas.SetActive(true);
 
             #region init
@@ -385,7 +385,7 @@ namespace Synthesis.Robot
 
             if (helpMenu.activeSelf) CloseHelpMenu();
             InputControl.freeze = false;
-            canvas.SetActive(true);
+            canvas.GetComponent<Canvas>().enabled = true;
             resetCanvas.SetActive(false);
         }
 

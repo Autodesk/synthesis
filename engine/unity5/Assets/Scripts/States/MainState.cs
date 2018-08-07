@@ -125,14 +125,16 @@ namespace Synthesis.States
                     return;
                 }
 
+                FieldDataHandler.Load();
+
                 if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                 {
                     AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                     return;
                 }
 
-                FieldDataHandler.Load();
                 DPMDataHandler.Load();
+
                 Controls.Init();
                 Controls.Load();
 
