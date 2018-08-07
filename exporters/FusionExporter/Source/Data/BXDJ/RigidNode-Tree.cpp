@@ -1,6 +1,7 @@
 #include "RigidNode.h"
 #include <Fusion/Components/Occurrences.h>
 #include <Fusion/Components/OccurrenceList.h>
+#include <Fusion/Components/RigidGroup.h>
 #include "Utility.h"
 #include "ConfigData.h"
 #include "Joint.h"
@@ -59,15 +60,20 @@ void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
 	log += "Adding occurence \"" + rootOccurrence->fullPathName() + "\"\n";
 	fusionOccurrences.push_back(rootOccurrence);
 
-	// Create a joint from this occurence if it is the parent of a joint
+	// Create a joint from this occurrence if it is the parent of any joints
 	if (jointSummary->parents.find(rootOccurrence) != jointSummary->parents.end())
 		for (core::Ptr<fusion::Joint> joint : jointSummary->parents[rootOccurrence])
 			addJoint(joint, rootOccurrence);
 
+	// Merge this occurrence with any occurrences rigidgrouped to it
+	if (jointSummary->rigidgroups.find(rootOccurrence) != jointSummary->rigidgroups.end())
+		for (core::Ptr<fusion::Occurrence> occurrence : jointSummary->rigidgroups[rootOccurrence])
+			buildTree(occurrence);
+
 	// Add all occurrences without joints or that are only parents in joints to the root node
 	for (core::Ptr<fusion::Occurrence> occurrence : rootOccurrence->childOccurrences())
 		// Add the occurence to this node if it is not the child of a joint
-		if (std::find(jointSummary->children.begin(), jointSummary->children.end(), occurrence) == jointSummary->children.end())
+		if (jointSummary->children.find(occurrence) == jointSummary->children.end())
 			buildTree(occurrence);
 
 	log += "\n";
@@ -77,7 +83,7 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 {
 	JointSummary jointSummary;
 
-	// Find all jointed occurrences in the structure
+	// Find all jointed occurrences in the design
 	for (core::Ptr<fusion::Joint> joint : rootComponent->allJoints())
 	{
 		if (joint->occurrenceOne() != nullptr && joint->occurrenceTwo() != nullptr)
@@ -85,7 +91,7 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 			core::Ptr<fusion::Occurrence> lowerOccurrence = Utility::lowerOccurrence(joint);
 			core::Ptr<fusion::Occurrence> upperOccurrence = Utility::upperOccurrence(joint);
 
-			jointSummary.children.push_back(lowerOccurrence);
+			jointSummary.children[lowerOccurrence] = upperOccurrence;
 			jointSummary.parents[upperOccurrence].push_back(joint);
 		}
 		else if (joint->occurrenceOne() != nullptr || joint->occurrenceTwo() != nullptr)
@@ -93,18 +99,48 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 			core::Ptr<fusion::Occurrence> lowerOccurrence = (joint->occurrenceOne() != nullptr) ? joint->occurrenceOne() : joint->occurrenceTwo();
 			core::Ptr<fusion::OccurrenceList> upperOccurrences = rootComponent->allOccurrencesByComponent(joint->parentComponent());
 
-			jointSummary.children.push_back(lowerOccurrence);
+			jointSummary.children[lowerOccurrence] = nullptr;
 			for (core::Ptr<fusion::Occurrence> upperOccurrence : upperOccurrences)
 				jointSummary.parents[upperOccurrence].push_back(joint);
+		}
+	}
+
+	// Find all rigid groups in the design
+	for (core::Ptr<fusion::RigidGroup> rgdGroup : rootComponent->allRigidGroups())
+	{
+		core::Ptr<fusion::Occurrence> topOccurrence = nullptr;
+
+		// An occurrence in the rigid group will be marked as the top occurrence if:
+		//  - It is the highest in the heirarchy, or
+		//  - It is the child of a joint
+		// If multiple occurrences are the children of joints, then Houston we have a problem
+		for (core::Ptr<fusion::Occurrence> occurrence : rgdGroup->occurrences())
+			if (topOccurrence == nullptr || Utility::levelOfOccurrence(topOccurrence) > Utility::levelOfOccurrence(occurrence) ||
+				std::find(jointSummary.children.begin(), jointSummary.children.end(), occurrence) != jointSummary.children.end())
+				topOccurrence = occurrence;
+
+		// All occurrences that are not the top are now children, while the top stores references to all of them
+		for (core::Ptr<fusion::Occurrence> occurrence : rgdGroup->occurrences())
+		{
+			if (occurrence != topOccurrence)
+			{
+				jointSummary.children[occurrence] = topOccurrence;
+				jointSummary.rigidgroups[topOccurrence].push_back(occurrence);
+			}
 		}
 	}
 
 	return jointSummary;
 }
 
-void BXDJ::RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent)
+void RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent)
 {
 	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
+	
+	// Do not add joint if child has changed parents
+	if (jointSummary->children[child] != parent)
+		return;
+	
 	log += "Jointing occurence \"" + child->fullPathName() + "\"\n";
 
 	std::shared_ptr<Joint> newJoint = nullptr;

@@ -44,8 +44,9 @@ namespace BXDJ
 		// Used for storing information about which occurences are parents or children in joints
 		struct JointSummary
 		{
-			std::vector<core::Ptr<fusion::Occurrence>> children;
+			std::map<core::Ptr<fusion::Occurrence>, core::Ptr<fusion::Occurrence>> children;
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> parents;
+			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Occurrence>>> rigidgroups;
 		};
 
 		// Globally Unique Identifier
