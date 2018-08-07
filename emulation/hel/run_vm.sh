@@ -5,7 +5,7 @@ PASSWORD="adskbxd"
 
 ./scripts/download_vm.sh
 printf "Starting VM\n"
-if ! mkdir ./vm_lock 2&> /dev/null ; then 
+if ! mkdir ./vm_lock &> /dev/null ; then
 	printf "VM already running; vm_lock folder was found.\nChecking VM status:"
 	expect -c "spawn $SSH_COMMAND; expect \"assword:\"; send \"$PASSWORD\r\"; interact" > /dev/null
 	printf "VM Initialized\nCopying files.\n"
