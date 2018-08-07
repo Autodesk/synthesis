@@ -125,7 +125,6 @@
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
     <ClInclude Include="Source\Data\BXDJ\JointSensor.h" />
     <ClInclude Include="Source\Data\BXDJ\Utility.h" />
-    <ClInclude Include="Source\Data\BXDJ\Version.h" />
     <ClInclude Include="Source\Data\BXDJ\XmlWriter.h" />
     <ClInclude Include="Source\Data\Filesystem.h" />
     <ClInclude Include="Source\Data\Guid.h" />

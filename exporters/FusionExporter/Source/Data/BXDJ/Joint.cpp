@@ -3,7 +3,6 @@
 #include <Core/Geometry/Point3D.h>
 #include "RigidNode.h"
 #include "JointSensor.h"
-#include "Version.h"
 
 using namespace BXDJ;
 
@@ -89,8 +88,6 @@ void Joint::write(XmlWriter & output) const
 	if (driver != nullptr)
 		output.write(*driver);
 
-#ifdef BXDJ_4
 	for (std::shared_ptr<JointSensor> sensor : sensors)
 		output.write(*sensor);
-#endif
 }
