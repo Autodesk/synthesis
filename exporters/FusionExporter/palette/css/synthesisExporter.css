@@ -39,7 +39,7 @@ input:focus, select:focus, button:focus
 button
 {
     background: rgb(233, 233, 233);
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 button:hover
@@ -80,11 +80,20 @@ fieldset
     overflow: hidden;
     display: block;
     padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-right: 2px;
     margin-bottom: 1rem;
 }
 
-.field-input input, .field-input select, .field-input button
+.field-select
+{
+    overflow: hidden;
+    display: block;
+    padding-left: 0.5rem;
+    padding-right: 0;
+    margin-bottom: 1rem;
+}
+
+.field-input *, .field-select *
 {
     width: 100%;
 }
