@@ -124,18 +124,19 @@ namespace Synthesis.States
                     AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
                     return;
                 }
-                else FieldDataHandler.Load();
 
                 if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                 {
                     AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                     return;
                 }
-                else DPMDataHandler.Load();
+
+                FieldDataHandler.Load();
+                DPMDataHandler.Load();
+                Controls.Init();
+                Controls.Load();
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
-
-                Controls.Load();
                 
                 if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
                 {

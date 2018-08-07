@@ -19,5 +19,9 @@ namespace Synthesis.States
         {
             StateMachine.PushState(new MixAndMatchState());
         }
+        public void OnBackButtonPressed()
+        {
+            StateMachine.ChangeState(new HomeTabState());
+        }
     }
 }
