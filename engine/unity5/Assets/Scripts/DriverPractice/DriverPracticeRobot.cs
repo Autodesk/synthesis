@@ -47,7 +47,7 @@ namespace Synthesis.DriverPractice
             {
                 if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
                 {
-                    if (InputControl.GetButton(Controls.buttons[controlIndex].pickup[i])) { Debug.Log(Controls.buttons[controlIndex].pickup[i].primaryInput.ToString());  Intake(i); }
+                    if (InputControl.GetButton(Controls.buttons[controlIndex].pickup[i])) { Intake(i); }
                     else HoldGamepiece(i);
                 }
             }
