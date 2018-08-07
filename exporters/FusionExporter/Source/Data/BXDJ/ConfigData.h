@@ -14,7 +14,15 @@ namespace BXDJ
 	class ConfigData : public CustomJSONObject
 	{
 	public:
+		enum DriveTrainType : int
+		{
+			TANK = 1,
+			H_DRIVE = 2,
+			CUSTOM = 3
+		};
+
 		std::string robotName;
+		DriveTrainType driveTrainType;
 
 		ConfigData();
 		ConfigData(const ConfigData & other);
@@ -70,7 +78,8 @@ namespace BXDJ
 
 		std::map<std::string, JointConfig> joints;
 
-		JointMotionType internalJointMotion(fusion::JointTypes) const;
+		static std::string toString(DriveTrainType);
+		static JointMotionType internalJointMotion(fusion::JointTypes);
 
 	};
 }
