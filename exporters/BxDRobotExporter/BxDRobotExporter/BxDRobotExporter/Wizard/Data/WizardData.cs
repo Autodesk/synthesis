@@ -33,12 +33,6 @@ namespace BxDRobotExporter.Wizard
 
 
         #region Nested enums and classes
-        public enum WizardDriveTrain
-        {
-            TANK = 1,
-            H_DRIVE,
-            CUSTOM
-        }
         public enum WizardWheelType
         {
             NORMAL = 1,
@@ -74,7 +68,6 @@ namespace BxDRobotExporter.Wizard
                 //    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort, 1);
                 //}
                 WheelDriverMeta wheelDriver = new WheelDriverMeta();
-                wheelDriver.driveTrainType = (int)WizardData.Instance.driveTrain;
                 switch (FrictionLevel)
                 {
                     case WizardFrictionLevel.HIGH:
@@ -163,12 +156,7 @@ namespace BxDRobotExporter.Wizard
         /// The name of the robot. Does not do anything now.
         /// </summary>
         public string robotName;
-    
-        //Drive Information
-        /// <summary>
-        /// Drive train set in <see cref="BasicRobotInfoPage"/>
-        /// </summary>
-        public WizardDriveTrain driveTrain;
+
         /// <summary>
         /// Number of wheels on the robot. TODO: Use this alongside the wheel detection algorithm to add an "Autodetect Wheels" button on <see cref="DefineWheelsPage"/>
         /// </summary>
