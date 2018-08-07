@@ -34,25 +34,25 @@ namespace EditorsLibrary
             {
                 RobotSensor sensor = joint.attachedSensors[sourceIndex];
                 typeBox.SelectedIndex = Array.IndexOf(sensorTypeOptions, sensor.type);
-                Port1NumericUpDown.Value = (decimal)sensor.port1;
-                Port2NumericUpDown.Value = (decimal)sensor.port2;
+                PortANumericUpDown.Value = (decimal)sensor.portA;
+                PortBNumericUpDown.Value = (decimal)sensor.portB;
                 ConversionNumericUpDown.Value = (decimal)sensor.conversionFactor;
             }
             if (typeBox.SelectedIndex == 0)
             {
-                this.port1Lbl.Enabled = true;
-                this.Port1NumericUpDown.Enabled = true;
-                this.Port2Lbl.Visible = true;
-                this.Port2NumericUpDown.Visible = true;
+                this.PortALbl.Enabled = true;
+                this.PortANumericUpDown.Enabled = true;
+                this.PortBLbl.Visible = true;
+                this.PortBNumericUpDown.Visible = true;
                 this.ConversionLbl.Visible = true;
                 this.ConversionNumericUpDown.Visible = true;
             }
             else
             {
-                this.port1Lbl.Enabled = false;
-                this.Port1NumericUpDown.Enabled = false;
-                this.Port2Lbl.Visible = false;
-                this.Port2NumericUpDown.Visible = false;
+                this.PortALbl.Enabled = false;
+                this.PortANumericUpDown.Enabled = false;
+                this.PortBLbl.Visible = false;
+                this.PortBNumericUpDown.Visible = false;
                 this.ConversionLbl.Visible = false;
                 this.ConversionNumericUpDown.Visible = false;
             }
@@ -73,8 +73,8 @@ namespace EditorsLibrary
             }
 
             //Doesn't save if numbers aren't entered correctly.
-            addedSensor.port1 = (int)this.Port1NumericUpDown.Value;
-            addedSensor.port2 = (int)this.Port2NumericUpDown.Value;
+            addedSensor.portA = (int)this.PortANumericUpDown.Value;
+            addedSensor.portB = (int)this.PortBNumericUpDown.Value;
             addedSensor.conversionFactor = (double)this.ConversionNumericUpDown.Value;
             
             if (sourceIndex >= 0 && sourceIndex < joint.attachedSensors.Count)
@@ -92,16 +92,16 @@ namespace EditorsLibrary
         
         public void ShowEncoderFields()
         {
-            this.Port2Lbl.Visible = true;
-            this.Port2NumericUpDown.Visible = true;
+            this.PortBLbl.Visible = true;
+            this.PortBNumericUpDown.Visible = true;
             this.ConversionLbl.Visible = true;
             this.ConversionNumericUpDown.Visible = true;
             this.ConversionLbl.Text = "Counts per Rev";
         }
         public void HideSecondFields()
         {
-            this.Port2Lbl.Visible = false;
-            this.Port2NumericUpDown.Visible = false;
+            this.PortBLbl.Visible = false;
+            this.PortBNumericUpDown.Visible = false;
             this.ConversionLbl.Visible = false;
             this.ConversionNumericUpDown.Visible = false;
         }
@@ -112,22 +112,22 @@ namespace EditorsLibrary
             {
                 case RobotSensorType.ENCODER:
                     ShowEncoderFields();
-                    this.Port1NumericUpDown.Enabled = true;
-                    this.port1Lbl.Enabled = true;
+                    this.PortANumericUpDown.Enabled = true;
+                    this.PortALbl.Enabled = true;
                     break;
                 case RobotSensorType.LIMIT:
                     HideSecondFields();
-                    this.Port1NumericUpDown.Enabled = true;
+                    this.PortANumericUpDown.Enabled = true;
                     this.ConversionLbl.Enabled = true;
                     break;
                 case RobotSensorType.POTENTIOMETER:
                     HideSecondFields();
-                    this.Port1NumericUpDown.Enabled = true;
+                    this.PortANumericUpDown.Enabled = true;
                     this.ConversionLbl.Enabled = true;
                     break;
                 default:
                     HideSecondFields();
-                    this.Port1NumericUpDown.Enabled = false;
+                    this.PortANumericUpDown.Enabled = false;
                     this.ConversionLbl.Enabled = false;
                     break;
             }
