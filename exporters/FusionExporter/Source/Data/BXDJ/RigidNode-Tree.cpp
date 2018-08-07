@@ -12,13 +12,21 @@
 
 using namespace BXDJ;
 
+std::string RigidNode::log = "";
+int RigidNode::depth = 0;
+
 RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config) : RigidNode()
 {
+#if _DEBUG
+	log = "";
+	depth = 0;
+#endif
+
 	configData = std::make_shared<ConfigData>(config);
 	jointSummary = std::make_shared<JointSummary>(getJointSummary(rootComponent));
 
 	for (core::Ptr<fusion::Occurrence> occurrence : rootComponent->occurrences()->asList())
-		if (std::find(jointSummary->children.begin(), jointSummary->children.end(), occurrence) == jointSummary->children.end())
+		if (jointSummary->children.find(occurrence) == jointSummary->children.end())
 			buildTree(occurrence);
 }
 
@@ -56,27 +64,51 @@ int BXDJ::RigidNode::getOccurrenceCount() const
 
 void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
 {
+#if _DEBUG
+	log += std::string(depth, '\t') + "Adding occurence \"" + rootOccurrence->fullPathName() + "\"\n";
+	depth++;
+#endif
+
 	// Add the occurence to this node
-	log += "Adding occurence \"" + rootOccurrence->fullPathName() + "\"\n";
 	fusionOccurrences.push_back(rootOccurrence);
 
 	// Create a joint from this occurrence if it is the parent of any joints
 	if (jointSummary->parents.find(rootOccurrence) != jointSummary->parents.end())
+	{
+#if _DEBUG
+		log += std::string(depth - 1, '\t') + "Joints:\n";
+#endif
+
 		for (core::Ptr<fusion::Joint> joint : jointSummary->parents[rootOccurrence])
 			addJoint(joint, rootOccurrence);
+	}
 
 	// Merge this occurrence with any occurrences rigidgrouped to it
 	if (jointSummary->rigidgroups.find(rootOccurrence) != jointSummary->rigidgroups.end())
+	{
+#if _DEBUG
+		log += std::string(depth - 1, '\t') + "Rigidgroups:\n";
+#endif
+
 		for (core::Ptr<fusion::Occurrence> occurrence : jointSummary->rigidgroups[rootOccurrence])
 			buildTree(occurrence);
+	}
 
 	// Add all occurrences without joints or that are only parents in joints to the root node
+#if _DEBUG
+	if (rootOccurrence->childOccurrences()->count() > 0)
+	log += std::string(depth - 1, '\t') + "Children:\n";
+#endif
+
 	for (core::Ptr<fusion::Occurrence> occurrence : rootOccurrence->childOccurrences())
 		// Add the occurence to this node if it is not the child of a joint
 		if (jointSummary->children.find(occurrence) == jointSummary->children.end())
 			buildTree(occurrence);
 
-	log += "\n";
+#if _DEBUG
+	log += '\n';
+	depth--;
+#endif
 }
 
 RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> rootComponent)
@@ -116,7 +148,7 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 		// If multiple occurrences are the children of joints, then Houston we have a problem
 		for (core::Ptr<fusion::Occurrence> occurrence : rgdGroup->occurrences())
 			if (topOccurrence == nullptr || Utility::levelOfOccurrence(topOccurrence) > Utility::levelOfOccurrence(occurrence) ||
-				std::find(jointSummary.children.begin(), jointSummary.children.end(), occurrence) != jointSummary.children.end())
+				jointSummary.children.find(occurrence) != jointSummary.children.end())
 				topOccurrence = occurrence;
 
 		// All occurrences that are not the top are now children, while the top stores references to all of them
@@ -140,8 +172,6 @@ void RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occur
 	// Do not add joint if child has changed parents
 	if (jointSummary->children[child] != parent)
 		return;
-	
-	log += "Jointing occurence \"" + child->fullPathName() + "\"\n";
 
 	std::shared_ptr<Joint> newJoint = nullptr;
 
@@ -158,7 +188,7 @@ void RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occur
 		newJoint = std::make_shared<BallJoint>(this, joint, parent);
 	else 
 	{
-		// If joint type is unsupported, add as if occurence is attached by rigid joint (same rigid node)
+		// If joint type is unsupported, add as if occurence is attached by rigid joint (same rigidNode)
 		buildTree(child);
 		return;
 	}
@@ -172,3 +202,10 @@ void RigidNode::addJoint(std::shared_ptr<Joint> joint)
 {
 	childrenJoints.push_back(joint);
 }
+
+#if _DEBUG
+std::string RigidNode::getLog() const
+{
+	return log;
+}
+#endif

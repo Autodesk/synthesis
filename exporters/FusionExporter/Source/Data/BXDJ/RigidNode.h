@@ -37,8 +37,10 @@ namespace BXDJ
 		void getMesh(BXDA::Mesh &, bool ignorePhysics = false, std::function<void(double)> progressCallback = nullptr, bool * cancel = nullptr) const;
 
 		void addJoint(std::shared_ptr<Joint>);
-		
-		std::string log = "";
+
+#if _DEBUG
+		std::string getLog() const;
+#endif
 
 	private:
 		// Used for storing information about which occurences are parents or children in joints
@@ -61,6 +63,11 @@ namespace BXDJ
 		Joint * parent;
 		// Stores all component occurences that are grouped into this node
 		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurrences;
+
+#if _DEBUG
+		static std::string log;
+		static int depth;
+#endif
 
 		JointSummary getJointSummary(core::Ptr<fusion::Component>);
 		void buildTree(core::Ptr<fusion::Occurrence>);
