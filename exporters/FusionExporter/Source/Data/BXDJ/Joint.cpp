@@ -88,6 +88,8 @@ void Joint::write(XmlWriter & output) const
 	if (driver != nullptr)
 		output.write(*driver);
 
+#ifdef BXDJ_4
 	for (std::shared_ptr<JointSensor> sensor : sensors)
 		output.write(*sensor);
+#endif
 }
