@@ -171,7 +171,6 @@ namespace Synthesis.Input
             {
                 mPlayerList[i] = new Player();
             }
-            Controls.Init();
         }
 
         #region Synthesis Setup Keys
