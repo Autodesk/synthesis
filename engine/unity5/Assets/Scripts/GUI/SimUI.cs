@@ -359,9 +359,10 @@ namespace Synthesis.GUI
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
                     });
-                FieldDataHandler.Load();
-                DPMDataHandler.Load();
-                Controls.Load();
+                //FieldDataHandler.Load();
+                //DPMDataHandler.Load();
+                //Controls.Init();
+                //Controls.Load();
                 SceneManager.LoadScene("Scene");
             }
             else

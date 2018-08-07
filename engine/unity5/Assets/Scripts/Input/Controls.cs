@@ -130,12 +130,13 @@ namespace Synthesis.Input
         /// </summary>
         static Controls()
         {
-            TankControls();
-            ArcadeControls();
+            
         }
 
         public static void Init()
         {
+            TankControls();
+            ArcadeControls();
             // Nothing. It just call static constructor if needed
         }
 
@@ -234,56 +235,7 @@ namespace Synthesis.Input
                 GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
             }
         }
-
-        /// <summary>
-        /// Resets ALL player controls to default arcade drive controls.
-        /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
-        /// </summary>
-        public static void ResetArcadeDrive()
-        {
-            ArcadeControls();
-            TankDriveEnabled = false;
-
-            if (GameObject.Find("SettingsMode") != null)
-            {
-                //Updates the controls text (keybuttons)
-                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-            }
-        }
-
-        /// <summary>
-        /// Sets controls to Tank Drive.
-        /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
-        /// </summary>
-        public static void TankDrive()
-        {
-            TankControls();
-            TankDriveEnabled = true;
-
-            if (GameObject.Find("SettingsMode") != null)
-            {
-                //Loads initialized keys then defaults to PlayerOne's list on the landing page
-                Load();
-                GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
-                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-            }
-        }
-
-        /// <summary>
-        /// Resets ALL player controls to default tank drive controls.
-        /// 2017: NOT IN USE; Reserve for possible use (see ArcadeDrive())
-        /// </summary>
-        public static void ResetTankDrive()
-        {
-            TankControls();
-            TankDriveEnabled = true;
-
-            if (GameObject.Find("SettingsMode") != null)
-            {
-                //Updates the controls text (keybuttons)
-                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-            }
-        }
+        
 
         /// <summary>
         /// Converts string representation of CustomInput to CustomInput.
