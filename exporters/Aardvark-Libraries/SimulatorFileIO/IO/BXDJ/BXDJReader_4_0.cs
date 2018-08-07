@@ -20,6 +20,7 @@ public partial class BXDJSkeleton
         <xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
         
         <!-- definition of simple elements -->
+        <xs:element name='DriveTrainTypeNumber' type='xs:integer'/>
         <xs:element name='ParentID' type='xs:integer'/>
         <xs:element name='ModelFileName' type='xs:string'/>
         <xs:element name='ModelID' type='xs:string'/>
@@ -299,14 +300,23 @@ public partial class BXDJSkeleton
                 <xs:attribute ref='GUID' use='required'/>
             </xs:complexType>
         </xs:element>
+        <xs:element name='DriveTrainType'>
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref='DriveTrainTypeNumber' minOccurs='0' maxOccurs='1'/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
         <xs:element name='BXDJ'>
             <xs:complexType>
                 <xs:sequence>
                     <xs:element ref='Node' minOccurs='0' maxOccurs='unbounded'/>
+                    <xs:element ref='DriveTrainType' minOccurs='1' maxOccurs='1'/>
                 </xs:sequence>
                 <xs:attribute ref='Version' use='required'/>
             </xs:complexType>
         </xs:element>
+
         
         </xs:schema>";
 
@@ -343,6 +353,9 @@ public partial class BXDJSkeleton
             {
                 switch (name)
                 {
+                    case "DriveTrainType":
+                        ReadNode_4_0(reader.ReadSubtree(), nodes, ref root);
+                        break;
                     case "Node":
                         // Reads the current element as a node.
                         ReadNode_4_0(reader.ReadSubtree(), nodes, ref root);
@@ -388,6 +401,9 @@ public partial class BXDJSkeleton
 
                     if (parentID == -1) // If this is the root...
                         root = nodes[nodes.Count - 1];
+                    break;
+                case "DriveTrainTypeNumber":
+                    root.driveTrainType = (RigidNode_Base.DriveTrainType) reader.ReadElementContentAsInt();
                     break;
                 case "ModelFileName":
                     // Assigns the ModelFileName property to the ModelFileName element value.
