@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
 {
@@ -20,10 +21,12 @@ namespace Assets.Scripts.GUI
         public GameObject stopButton;
         public GameObject runButton;
 
+        bool isRunCode = false;
+
         public override void Start()
         {
             canvas = GameObject.Find("Canvas");
-            runButton = Auxiliary.FindObject(canvas, "RunRobotCodeButton");
+            runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
             stopButton = Auxiliary.FindObject(canvas, "StopCodeButton");
         }
 
@@ -32,20 +35,5 @@ namespace Assets.Scripts.GUI
         {
 
         }
-
-        public void OnRunRobotCodeButtonPressed()
-        {
-            if (stopButton.activeSelf)
-            {
-                stopButton.SetActive(false);
-                runButton.SetActive(true);
-            }
-            else
-            {
-                runButton.SetActive(false);
-                stopButton.SetActive(true);
-            }
-        }
-
     }
 }

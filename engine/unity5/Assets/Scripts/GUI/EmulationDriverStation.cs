@@ -36,22 +36,30 @@ namespace Synthesis.GUI
 
         bool isRobotDisabled = false;
         bool isActiveState;
+        bool isRunCode = false;
         int teamStation;
 
         GameObject canvas;
         InputField gameDataInput;
         GameObject emuDriverStationPanel;
+        GameObject runButton;
 
         public Sprite HighlightColor;
         public Sprite DefaultColor;
         public Sprite EnableColor;
         public Sprite DisableColor;
+        public Sprite StartCode;
+        public Sprite StopCode;
+
+        Image startImage;
+        Image stopImage;
 
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
             gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
+            runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
             GameData();
         }
 
@@ -73,6 +81,22 @@ namespace Synthesis.GUI
                 InputControl.freeze = true;
                 RobotState("teleop");
                 RobotDisabled();
+            }
+        }
+
+        public void OnStartRobotCodeButtonPressed()
+        {
+            if (!isRunCode)
+            {
+                runButton.GetComponentInChildren<Text>().text = "Stop Code";
+                GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StopCode;
+                isRunCode = true;
+            }
+            else
+            {
+                runButton.GetComponentInChildren<Text>().text = "Run Code";
+                GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StartCode;
+                isRunCode = false;
             }
         }
 
