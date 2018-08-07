@@ -39,7 +39,7 @@ BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 
 	BXDJ::ConfigData config;
 	if (attr != nullptr)
-		config.loadFromJSON(attr->value());
+		config.fromJSONString(attr->value());
 
 	config.filterJoints(collectJoints(document));
 
@@ -48,7 +48,7 @@ BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 
 void Exporter::saveConfiguration(BXDJ::ConfigData config, Ptr<FusionDocument> document)
 {
-	document->attributes()->add("Synthesis", "RobotConfigData.json", config.toString());
+	document->attributes()->add("Synthesis", "RobotConfigData.json", config.toJSONString());
 }
 
 void Exporter::exportExample()

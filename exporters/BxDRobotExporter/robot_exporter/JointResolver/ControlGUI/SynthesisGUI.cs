@@ -406,6 +406,7 @@ public partial class SynthesisGUI : Form
                 RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
                 RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
                 RMeta.PreferMetric = Utilities.GetProperty(propertySet, "robot-prefer-metric", false);
+                SynthesisGUI.Instance.SkeletonBase.driveTrainType = (RigidNode_Base.DriveTrainType)Utilities.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
             }
 
             // Load joint data
@@ -469,7 +470,6 @@ public partial class SynthesisGUI : Form
                     wheel.type = (WheelType)Utilities.GetProperty(propertySet, "wheel-type", (int)WheelType.NORMAL);
                     wheel.isDriveWheel = Utilities.GetProperty(propertySet, "wheel-isDriveWheel", false);
                     wheel.SetFrictionLevel((FrictionLevel)Utilities.GetProperty(propertySet, "wheel-frictionLevel", (int)FrictionLevel.MEDIUM));
-                    wheel.driveTrainType = Utilities.GetProperty(propertySet, "wheel-drivetype", 0);
                 }
 
                 // Pneumatic information
@@ -538,6 +538,7 @@ public partial class SynthesisGUI : Form
                 Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
             Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
             Utilities.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
+            Utilities.SetProperty(propertySet, "robot-driveTrainType", (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType);
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
@@ -594,7 +595,6 @@ public partial class SynthesisGUI : Form
                     Utilities.SetProperty(propertySet, "wheel-type", (int)wheel.type);
                     Utilities.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
                     Utilities.SetProperty(propertySet, "wheel-frictionLevel", (int)wheel.GetFrictionLevel());
-                    Utilities.SetProperty(propertySet, "wheel-drivetype", wheel.driveTrainType);
                 }
 
                 // Pneumatic information
