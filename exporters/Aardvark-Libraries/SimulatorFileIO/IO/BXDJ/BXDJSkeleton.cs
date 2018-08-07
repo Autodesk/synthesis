@@ -85,6 +85,9 @@ public static partial class BXDJSkeleton
             writer.WriteEndElement();
         }
 
+        writer.WriteStartElement("DriveTrainType");
+        writer.WriteElementString("DriveTrainTypeNumber", ((int)baseNode.driveTrainType).ToString());
+        writer.WriteEndElement();
         writer.WriteEndDocument();
 
         writer.Close();
