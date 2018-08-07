@@ -146,6 +146,10 @@ function applyConfigData(configData)
         for (var j = 0; j < elsToHide.length; j++)
             elsToHide[j].style.display = 'none';
 
+        // Hide sensors button if joint is not angular
+        if ((joints[i].type & JOINT_LINEAR) == JOINT_LINEAR)
+            setVisible(getElByClass(fieldset, 'edit-sensors-button'), false);
+
         // Set joint type
         fieldset.dataset.joint_type = joints[i].type;
 
