@@ -66,9 +66,9 @@ namespace Synthesis
 	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:
-		CloseExporterFormEventHandler(Ptr<Application> app) : app(app) {}
+		CloseExporterFormEventHandler(EUI * eui) : eui(eui) {}
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
 	private:
-		Ptr<Application> app;
+		EUI * eui;
 	};
 }

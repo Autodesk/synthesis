@@ -34,7 +34,7 @@ template<>
 bool EUI::addEventToPalette<CloseExporterFormEventHandler>(Ptr<Palette> palette)
 {
 	if (closeExporterHandler == nullptr)
-		closeExporterHandler = new CloseExporterFormEventHandler(app);
+		closeExporterHandler = new CloseExporterFormEventHandler(this);
 
 	Ptr<UserInterfaceGeneralEvent> closeEvent = palette->closed();
 	if (closeEvent)
