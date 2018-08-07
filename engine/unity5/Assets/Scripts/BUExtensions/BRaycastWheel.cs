@@ -17,6 +17,7 @@ namespace Synthesis.BUExtensions
         private BulletSharp.Math.Vector3 basePoint;
         private float radius;
         private int wheelIndex;
+        private bool updatePosition;
 
         private const float VerticalOffset = 0.1f;
         private const float SimTorque = 2.42f;
@@ -74,9 +75,10 @@ namespace Synthesis.BUExtensions
         /// Creates a wheel and attaches it to the parent BRaycastVehicle.
         /// </summary>
         /// <param name="node"></param>
-        public void CreateWheel(RN.RigidNode node)
+        public void CreateWheel(RN.RigidNode node, bool updatePosition = false)
         {
             this.node = node;
+            this.updatePosition = updatePosition;
 
             RN.RigidNode parent = (RN.RigidNode)node.GetParent();
             robot = parent.MainObject.GetComponent<BRaycastRobot>();
@@ -135,7 +137,9 @@ namespace Synthesis.BUExtensions
             if (wheel.Brake == 0f)
                 wheel.Brake = (RollingFriction / radius) * robot.RaycastRobot.OverrideMass * MassTorqueScalar;
 
-            transform.position = wheel.WorldTransform.Origin.ToUnity();
+            if (updatePosition)
+                transform.position = wheel.WorldTransform.Origin.ToUnity();
+
             transform.localRotation *= Quaternion.AngleAxis(-wheel.Speed, axis);
         }
     }
