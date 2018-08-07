@@ -12,7 +12,6 @@
 #include "Data/BXDA/Surface.h"
 #include "Data/BXDA/Triangle.h"
 #include "Data/BXDJ/RigidNode.h"
-#include "Data/BXDJ/Version.h"
 
 using namespace Synthesis;
 
@@ -125,12 +124,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 	BXDJ::XmlWriter xml(filenameBXDJ, false);
 
 	xml.startElement("BXDJ");
-
-#ifdef BXDJ_4
 	xml.writeAttribute("Version", "4.0.0");
-#else
-	xml.writeAttribute("Version", "3.0.0");
-#endif
 
 	xml.write(*rootNode);
 
