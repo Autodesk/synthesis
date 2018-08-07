@@ -15,25 +15,26 @@ namespace Assets.Scripts.GUI
 {
     public class EmulationToolbarState : State
     {
-        GameObject canvas;
-        GameObject emuDriverStation;
-
-        public GameObject stopButton;
-        public GameObject runButton;
-
-        bool isRunCode = false;
+        EmulationDriverStation emulationDriverStation;
 
         public override void Start()
         {
-            canvas = GameObject.Find("Canvas");
-            runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
-            stopButton = Auxiliary.FindObject(canvas, "StopCodeButton");
+            emulationDriverStation = StateMachine.SceneGlobal.GetComponent<EmulationDriverStation>();
         }
-
 
         public void OnSelectRobotCodeButtonPressed()
         {
 
+        }
+
+        public void OnDriverStationButtonPressed()
+        {
+            emulationDriverStation.OpenDriverStation();
+        }
+
+        public void OnStartRobotCodeButtonPressed()
+        {
+            emulationDriverStation.ToggleRobotCodeButton();
         }
     }
 }
