@@ -65,8 +65,7 @@ namespace InternalFieldExporter.FieldWizard
 
         private void Ok_Button_Click(object sender, EventArgs e)
         {
-            Program.StartMainWindow();
-            this.Visible = false;
+            //Program.StartMainWindow();
         }
 
     }

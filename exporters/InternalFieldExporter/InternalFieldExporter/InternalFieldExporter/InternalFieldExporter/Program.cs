@@ -122,6 +122,7 @@ namespace InternalFieldExporter
 
                         fullDocumentName = ASSEMBLY_DOCUMENT.FullDocumentName;
 
+                        Application.Run(new MainWindow());
                     }
                     else
                     {
@@ -146,24 +147,6 @@ namespace InternalFieldExporter
             }
 
             return true;
-        }
-
-        public static void StartMainWindow()
-        {
-           if (Connect() == true)
-           {
-                
-                FieldSelectForm fieldSelectForm = new FieldSelectForm();
-                fieldSelectForm.Close();
-                MainWindow mainWindow = new MainWindow();
-                mainWindow.Show();
-               
-            }
-           else
-           {
-                
-                
-           }
         }
 
         /// <summary>
