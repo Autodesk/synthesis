@@ -8,8 +8,6 @@
 #include "Data/BXDA/Triangle.h"
 #include "Data/BXDJ/RigidNode.h"
 
-#define BXDJ_VERSION "3.0.0"
-
 using namespace Synthesis;
 
 std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
@@ -121,7 +119,13 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 	BXDJ::XmlWriter xml(filenameBXDJ, false);
 
 	xml.startElement("BXDJ");
-	xml.writeAttribute("Version", BXDJ_VERSION);
+
+#ifdef BXDJ_4
+	xml.writeAttribute("Version", "4.0.0");
+#else
+	xml.writeAttribute("Version", "3.0.0");
+#endif
+
 	xml.write(*rootNode);
 	xml.endElement();
 
