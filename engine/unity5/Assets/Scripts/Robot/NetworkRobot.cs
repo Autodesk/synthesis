@@ -102,12 +102,8 @@ namespace Synthesis.Network
             {
                 float[] pwm = DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, false);
 
-                //UpdateMotors(pwm);
-
                 if (correctionEnabled)
                 {
-                    //if (!isServer)
-                    //    CmdUpdateRobotInfo(pwm);
                     if (isServer)
                         RpcUpdateRobotInfo(pwm);
                     else

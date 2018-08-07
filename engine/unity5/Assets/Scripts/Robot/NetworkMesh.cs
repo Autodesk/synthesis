@@ -7,7 +7,12 @@ using UnityEngine;
 
 public class NetworkMesh : MonoBehaviour
 {
-    private const float CorrectionFactor = 20f;
+    private const float LinearAcceleration = 10000f;
+    private const float LinearDamping = 1000f;
+
+    private const float RotationCorrectionScalar = 10f;
+
+    private Vector3 linearVelocity;
 
     public GameObject MeshObject { get; private set; }
 
@@ -34,8 +39,11 @@ public class NetworkMesh : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        MeshObject.transform.position = Vector3.Lerp(MeshObject.transform.position, transform.position, Time.deltaTime * CorrectionFactor);
-        MeshObject.transform.rotation = Quaternion.Lerp(MeshObject.transform.rotation, transform.rotation, Time.deltaTime * CorrectionFactor);
+        linearVelocity += (transform.position - MeshObject.transform.position) * LinearAcceleration * Time.deltaTime;
+        linearVelocity /= 1f + LinearDamping * Time.deltaTime;
+        MeshObject.transform.position += linearVelocity * Time.deltaTime;
+
+        MeshObject.transform.rotation = Quaternion.Lerp(MeshObject.transform.rotation, transform.rotation, Time.deltaTime * RotationCorrectionScalar);
     }
 
     private void OnDestroy()
