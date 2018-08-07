@@ -61,5 +61,13 @@ namespace InternalFieldExporter.FieldWizard
                 Ok_Button.Enabled = true;
             }
         }
+
+
+        private void Ok_Button_Click(object sender, EventArgs e)
+        {
+            Program.StartMainWindow();
+            this.Visible = false;
+        }
+
     }
 }

@@ -121,6 +121,7 @@ namespace InternalFieldExporter
                             return false;
 
                         fullDocumentName = ASSEMBLY_DOCUMENT.FullDocumentName;
+
                     }
                     else
                     {
@@ -145,6 +146,24 @@ namespace InternalFieldExporter
             }
 
             return true;
+        }
+
+        public static void StartMainWindow()
+        {
+           if (Connect() == true)
+           {
+                
+                FieldSelectForm fieldSelectForm = new FieldSelectForm();
+                fieldSelectForm.Close();
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+               
+            }
+           else
+           {
+                
+                
+           }
         }
 
         /// <summary>
