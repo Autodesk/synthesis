@@ -59,7 +59,7 @@ namespace hel {
                     instance.first->updateShallow();
                     instance.second.unlock();
                     finished_flag = false;
-                    usleep(30000);
+                    usleep(30000); //
                 }
             }
             catch(std::system_error) {
