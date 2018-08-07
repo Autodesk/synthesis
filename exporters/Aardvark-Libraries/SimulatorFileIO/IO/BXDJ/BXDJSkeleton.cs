@@ -11,7 +11,7 @@ public static partial class BXDJSkeleton
     /// <summary>
     /// Represents the current version of the BXDA file.
     /// </summary>
-    public const string BXDJ_CURRENT_VERSION = "4.0.0";
+    public const string BXDJ_CURRENT_VERSION = "5.0.0";
 
     /// <summary>
     /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name.
@@ -85,6 +85,9 @@ public static partial class BXDJSkeleton
             writer.WriteEndElement();
         }
 
+        writer.WriteStartElement("DriveTrainType");
+        writer.WriteElementString("DriveTrainTypeNumber", ((int)baseNode.driveTrainType).ToString());
+        writer.WriteEndElement();
         writer.WriteEndDocument();
 
         writer.Close();
@@ -415,6 +418,8 @@ public static partial class BXDJSkeleton
 
             switch (version.Substring(0, version.LastIndexOf('.')))
             {
+                case "5.0":
+                    return ReadSkeleton_5_0(path);
                 case "4.0":
                     return ReadSkeleton_4_0(path);
                 case "3.0":

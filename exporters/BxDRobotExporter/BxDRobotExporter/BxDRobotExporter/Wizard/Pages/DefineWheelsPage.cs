@@ -64,10 +64,6 @@ namespace BxDRobotExporter.Wizard
             LeftBackWheelsPanel.HorizontalScroll.Maximum = 0;
             LeftBackWheelsPanel.AutoScroll = true;
 
-            // Prepare drivetrain dropdown menu
-            DriveTrainDropdown.SelectedIndex = 0;
-            DriveTrainDropdown_SelectedIndexChanged(null, null);
-
             // Load weight information
             preferMetric = Utilities.GUI.RMeta.PreferMetric;
             SetWeightBoxValue(Utilities.GUI.RMeta.TotalWeightKg * (preferMetric ? 1 : 2.20462f));
@@ -98,7 +94,7 @@ namespace BxDRobotExporter.Wizard
                     this.RightBackWheelsPanel.Visible = false;
                     this.RightBackWheelsGroup.Visible = false;
 
-                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
+                    SynthesisGUI.Instance.SkeletonBase.driveTrainType = RigidNode_Base.DriveTrainType.NONE;
                     break;
                 case 1: //Tank
                     this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
@@ -112,7 +108,7 @@ namespace BxDRobotExporter.Wizard
                     this.LeftBackWheelsGroup.Visible = false;
                     this.RightBackWheelsPanel.Visible = false;
                     this.RightBackWheelsGroup.Visible = false;
-                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.TANK;
+                    SynthesisGUI.Instance.SkeletonBase.driveTrainType = RigidNode_Base.DriveTrainType.TANK;
                     break;
                 case 2: //H-Drive
                     this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 374);
@@ -128,7 +124,7 @@ namespace BxDRobotExporter.Wizard
                     this.LeftBackWheelsGroup.Visible = false;
                     this.RightBackWheelsPanel.Visible = false;
                     this.RightBackWheelsGroup.Visible = false;
-                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.H_DRIVE;
+                    SynthesisGUI.Instance.SkeletonBase.driveTrainType = RigidNode_Base.DriveTrainType.H_DRIVE;
                     break;
                 case 3: //Custom
                     this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
@@ -142,7 +138,7 @@ namespace BxDRobotExporter.Wizard
                     this.LeftBackWheelsGroup.Visible = false;
                     this.RightBackWheelsPanel.Visible = false;
                     this.RightBackWheelsGroup.Visible = false;
-                    WizardData.Instance.driveTrain = WizardData.WizardDriveTrain.CUSTOM;
+                    SynthesisGUI.Instance.SkeletonBase.driveTrainType = RigidNode_Base.DriveTrainType.CUSTOM;
                     break;
             }
 
@@ -177,8 +173,7 @@ namespace BxDRobotExporter.Wizard
             WizardData.Instance.weightKg = totalWeightKg;
             WizardData.Instance.preferMetric = preferMetric;
             WizardData.Instance.wheels = new List<WizardData.WheelSetupData>();
-
-            foreach(KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
+            foreach (KeyValuePair<string, WheelSetupPanel> panel in setupPanels)
             {
                 if (panel.Value.Side != WheelSide.UNASSIGNED)
                     WizardData.Instance.wheels.Add(panel.Value.GetWheelData());
@@ -262,7 +257,7 @@ namespace BxDRobotExporter.Wizard
 
                 // Get default wheel type based on drive train
                 WizardData.WizardWheelType type;
-                if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
+                if (SynthesisGUI.Instance.SkeletonBase.driveTrainType == RigidNode_Base.DriveTrainType.H_DRIVE)
                     type = WizardData.WizardWheelType.OMNI;
                 else
                     type = WizardData.WizardWheelType.NORMAL;
@@ -306,20 +301,9 @@ namespace BxDRobotExporter.Wizard
 
         public void FillFromPreviousSetup(RigidNode_Base baseNode)
         {
-            foreach (RigidNode_Base node in baseNode.ListAllNodes())
-            {
-                //For the first filter, we take out any nodes that do not have parents and rotational joints.
-                if (node.GetParent() != null && node.GetSkeletalJoint() != null &&
-                        node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && node.GetSkeletalJoint().cDriver != null
-                        && (node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))) != null)
-                {
-                    if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel)
-                    {// get the type of drive train and set fields to match so we can add nodes later
-                        this.DriveTrainDropdown.SelectedIndex = ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).driveTrainType;
-                        break;
-                    }
-                }
-            }
+            this.DriveTrainDropdown.SelectedIndex = (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType;
+            DriveTrainDropdown_SelectedIndexChanged(null, null);
+
             foreach (RigidNode_Base node in baseNode.ListAllNodes())
             {
                 //For the first filter, we take out any nodes that do not have parents and rotational joints.
@@ -328,7 +312,7 @@ namespace BxDRobotExporter.Wizard
                         && (node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))) != null)
                 {
                     if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
-                        this.DriveTrainDropdown.SelectedIndex = ((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).driveTrainType;
+                        this.DriveTrainDropdown.SelectedIndex = (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType;
                         switch (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).type)
                         {
                             case WheelType.NORMAL:
@@ -949,7 +933,7 @@ namespace BxDRobotExporter.Wizard
         {
             if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton()) // Load the robot skeleton
             {
-                if (WizardData.Instance.driveTrain == WizardData.WizardDriveTrain.H_DRIVE)
+                if (SynthesisGUI.Instance.SkeletonBase.driveTrainType == RigidNode_Base.DriveTrainType.H_DRIVE)
                 {
                     if (WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels, out List<RigidNode_Base> middleWheels)) //finds wheels
                     {
