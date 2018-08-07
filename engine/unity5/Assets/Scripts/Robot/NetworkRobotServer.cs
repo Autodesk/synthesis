@@ -22,6 +22,9 @@ namespace Synthesis.Network
 
         private bool serverCanSendUpdate = true;
 
+        /// <summary>
+        /// Sends a transform update to all clients.
+        /// </summary>
         private void RemoteUpdateTransforms()
         {
             float[] transforms = new float[rigidBodies.Length * 13];
