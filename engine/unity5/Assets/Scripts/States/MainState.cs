@@ -50,7 +50,7 @@ namespace Synthesis.States
         /// Used for accessing the active robot in this state.
         /// </summary>
         /// <returns></returns>
-        public RobotBase Robot => ActiveRobot;
+        public GameObject Robot => ActiveRobot.transform.GetChild(0).gameObject ?? ActiveRobot.gameObject;
 
         /// <summary>
         /// True if the robot is not resetting.

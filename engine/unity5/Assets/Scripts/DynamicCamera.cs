@@ -107,11 +107,11 @@ public class DynamicCamera : MonoBehaviour
         public override void Update()
         {
             //Look towards the robot
-            if (RobotProvider.Robot.transform.childCount > 0)
-            {
-                lookingRotation = Quaternion.LookRotation(RobotProvider.Robot.transform.GetChild(0).transform.position - Mono.transform.position);
+            //if (RobotProvider.Robot.transform.childCount > 0)
+            //{
+                lookingRotation = Quaternion.LookRotation(RobotProvider.Robot.transform.position - Mono.transform.position);
                 currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
-            }
+            //}
 
             if (ControlEnabled && RobotProvider.RobotActive)
             {
@@ -163,11 +163,11 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            if (RobotProvider.Robot == null || RobotProvider.Robot.transform.childCount == 0)
+            if (RobotProvider.Robot == null/* || RobotProvider.Robot.transform.childCount == 0*/)
                 return;
 
             // Focus on node 0 of the robot
-            targetVector = RobotProvider.Robot.transform.GetChild(0).transform.position;
+            targetVector = RobotProvider.Robot.transform.position;
 
             bool adjusting = false;
 
@@ -202,11 +202,11 @@ public class DynamicCamera : MonoBehaviour
                 // Unlocks the camera position for adjustment
                 rotateVector = RotateXZ(rotateVector, targetVector, panValue, magnification);
                 rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
-                lockedVector = RobotProvider.Robot.transform.GetChild(0).InverseTransformPoint(rotateVector);
+                lockedVector = RobotProvider.Robot.transform.InverseTransformPoint(rotateVector);
             }
             else
             {
-                rotateVector = RobotProvider.Robot.transform.GetChild(0).TransformPoint(lockedVector);
+                rotateVector = RobotProvider.Robot.transform.TransformPoint(lockedVector);
                 rotateVector.y = targetVector.y + Mathf.Abs(rotateVector.y - targetVector.y);
             }
 
@@ -370,7 +370,7 @@ public class DynamicCamera : MonoBehaviour
         public override void Update()
         {
             if (RobotProvider.Robot != null && RobotProvider.Robot.transform.childCount > 0)
-                targetPosition = RobotProvider.Robot.transform.GetChild(0).transform.position;
+                targetPosition = RobotProvider.Robot.transform.position;
 
             Mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
         }
@@ -398,7 +398,7 @@ public class DynamicCamera : MonoBehaviour
 
         public ConfigurationState(MonoBehaviour mono, GameObject targetObject = null) : base(mono)
         {
-            target = targetObject ?? RobotProvider.Robot.transform.GetChild(0).gameObject;
+            target = targetObject ?? RobotProvider.Robot;
         }
 
         public override void Init()

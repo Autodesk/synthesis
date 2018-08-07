@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Synthesis.Robot
 {
@@ -15,7 +16,7 @@ namespace Synthesis.Robot
         /// Used for accessing the robot provided by this instance.
         /// </summary>
         /// <returns>The robot provided by this instance.</returns>
-        RobotBase Robot { get; }
+        GameObject Robot { get; }
 
         /// <summary>
         /// If true, the active robot is in its active state.

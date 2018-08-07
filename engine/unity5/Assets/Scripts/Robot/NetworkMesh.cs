@@ -7,47 +7,26 @@ using UnityEngine;
 
 public class NetworkMesh : MonoBehaviour
 {
-    private const float CorrectionThreshold = 0.9f;
+    private const float CorrectionFactor = 20f;
 
-    private BRigidBody bRigidBody;
-
-    private Vector3 deltaPosition;
-    private Quaternion deltaRotation;
-
-    private float interpolationFactor;
-
-    /// <summary>
-    /// Updates the NetworkMesh offset from the given new position and rotations.
-    /// </summary>
-    /// <param name="newPosition"></param>
-    /// <param name="newRotation"></param>
-    public void UpdateMeshTransform(Vector3 newPosition, Quaternion newRotation)
-    {
-        deltaPosition = newPosition - transform.position;
-        deltaRotation = newRotation * transform.rotation;
-
-        interpolationFactor = 1.0f;
-
-        // TODO: Try storing the new rotation but interpolate using a delta (e.g. new rotation will change as transform does).
-    }
+    public GameObject MeshObject { get; private set; }
 
     /// <summary>
     /// Initializes the NetworkMesh
     /// </summary>
     private void Start()
     {
-        deltaPosition = Vector3.zero;
-        deltaRotation = Quaternion.identity;
+        MeshObject = new GameObject(transform.name + "_network_mesh");
+        MeshObject.transform.position = transform.position;
+        MeshObject.transform.rotation = transform.rotation;
 
-        interpolationFactor = 0.0f;
-    }
+        Transform[] childTransforms = new Transform[transform.childCount];
 
-    /// <summary>
-    /// Updates the interpolation factor, which slowly moves the visible mesh to the position of the robot.
-    /// </summary>
-    private void FixedUpdate()
-    {
-        interpolationFactor *= CorrectionThreshold;
+        for (int i = 0; i < childTransforms.Length; i++)
+            childTransforms[i] = transform.GetChild(i);
+
+        for (int i = 0; i < childTransforms.Length; i++)
+            childTransforms[i].parent = MeshObject.transform;
     }
 
     /// <summary>
@@ -55,12 +34,12 @@ public class NetworkMesh : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if ((bRigidBody == null && (bRigidBody = GetComponent<BRigidBody>()) == null) || interpolationFactor < 0.01f)
-            return;
+        MeshObject.transform.position = Vector3.Lerp(MeshObject.transform.position, transform.position, Time.deltaTime * CorrectionFactor);
+        MeshObject.transform.rotation = Quaternion.Lerp(MeshObject.transform.rotation, transform.rotation, Time.deltaTime * CorrectionFactor);
+    }
 
-        transform.position = bRigidBody.GetCollisionObject().WorldTransform.Origin.ToUnity() - deltaPosition * interpolationFactor;
-
-        Quaternion currentRotation = bRigidBody.GetCollisionObject().WorldTransform.Orientation.ToUnity();
-        transform.rotation = Quaternion.Inverse(Quaternion.Slerp(currentRotation, currentRotation * Quaternion.Inverse(deltaRotation), interpolationFactor));
+    private void OnDestroy()
+    {
+        Destroy(MeshObject);
     }
 }

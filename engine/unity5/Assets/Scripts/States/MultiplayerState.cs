@@ -46,7 +46,8 @@ namespace Synthesis.States
         /// Used for accessing the active robot in this state.
         /// </summary>
         /// <returns></returns
-        public RobotBase Robot => ActiveRobot;
+        public GameObject Robot => ActiveRobot?.GetComponentInChildren<NetworkMesh>()?.MeshObject ??
+            ActiveRobot?.transform.GetChild(0).gameObject;
 
         /// <summary>
         /// True if the scene's active robot is driveable by the user.

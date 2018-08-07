@@ -131,18 +131,18 @@ namespace Synthesis.Network
             BulletSharp.Math.Matrix bmTransform = BulletExtensions.DeserializeTransform(transform.Take(7).ToArray());
             BulletSharp.Math.Matrix rbTransform = rigidBody.WorldTransform;
 
-            if ((bmTransform.Origin - rbTransform.Origin).Length > CorrectionPositionThreshold ||
-                Math.Abs(Quaternion.Angle(bmTransform.Orientation.ToUnity(), rbTransform.Orientation.ToUnity())) > CorrectionRotationThreshold)
-            {
+            //if ((bmTransform.Origin - rbTransform.Origin).Length > CorrectionPositionThreshold ||
+            //    Math.Abs(Quaternion.Angle(bmTransform.Orientation.ToUnity(), rbTransform.Orientation.ToUnity())) > CorrectionRotationThreshold)
+            //{
                 BulletSharp.Math.Vector3 linearVelocity = new BulletSharp.Math.Vector3(transform.Skip(7).Take(3).ToArray());
                 BulletSharp.Math.Vector3 angularVelocity = new BulletSharp.Math.Vector3(transform.Skip(10).Take(3).ToArray());
 
-                networkMesh.UpdateMeshTransform(bmTransform.Origin.ToUnity(), bmTransform.Orientation.ToUnity());
+                //networkMesh.UpdateMeshTransform(bmTransform.Origin.ToUnity(), bmTransform.Orientation.ToUnity());
 
                 rigidBody.WorldTransform = bmTransform;
                 rigidBody.LinearVelocity = linearVelocity;
                 rigidBody.AngularVelocity = angularVelocity;
-            }
+            //}
         }
 
         public void BOnCollisionEnter(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
