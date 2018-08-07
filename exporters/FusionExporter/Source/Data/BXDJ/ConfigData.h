@@ -52,6 +52,8 @@ namespace BXDJ
 				name = other.name;
 				motion = other.motion;
 				driver = (other.driver == nullptr) ? nullptr : std::make_unique<Driver>(*other.driver);
+				for (std::shared_ptr<JointSensor> sensor : other.sensors)
+					sensors.push_back(std::make_shared<JointSensor>(*sensor));
 			}
 
 			JointConfig& JointConfig::operator=(const JointConfig &other)
@@ -59,6 +61,9 @@ namespace BXDJ
 				name = other.name;
 				motion = other.motion;
 				driver = (other.driver == nullptr) ? nullptr : std::make_unique<Driver>(*other.driver);
+				sensors.clear();
+				for (std::shared_ptr<JointSensor> sensor : other.sensors)
+					sensors.push_back(std::make_shared<JointSensor>(*sensor));
 				return *this;
 			}
 		};
