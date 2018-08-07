@@ -6,7 +6,7 @@ const std::string PULL_VALUE_INPUT ="{\"roborio\":{\"digital_hdrs\":[0,1,0,0,1,0
 
 const std::string PULL_OBJECT_INPUT ="\"digital_mxp\":[{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0},{\"config\":\"DI\",\"value\":0.0}],\"match_info\":{\"event_name\":\"\",\"game_specific_message\":\"LLL\",\"match_type\":\"NONE\",\"match_number\":0,\"replay_number\":0,\"alliance_station_id\":\"RED1\",\"match_time\":0.0},\"robot_mode\":{\"mode\":\"TELEOPERATED\",\"enabled\":1,\"emergency_stopped\":0,\"fms_attached\":1,\"ds_attached\":1}}}";
 
-static void BM_PullObject(benchmark::State& state) {
+static void BM_PullFirstObject(benchmark::State& state) {
     std::cout<<"Input: "<<PULL_OBJECT_INPUT<<"\n";
     std::string in;
     std::string object;
@@ -17,17 +17,17 @@ static void BM_PullObject(benchmark::State& state) {
     std::cout<<"Pulled object: "<<object<<"\n\n";
 }
 
-static void BM_PullValue(benchmark::State& state) {
+static void BM_PullObjectByLabel(benchmark::State& state) {
     std::cout<<"Input: "<<PULL_VALUE_INPUT<<"\n";
     std::string in;
     std::string value;
     for(auto _ : state){
         in = PULL_VALUE_INPUT;
-        value = hel::pullValue("\"joysticks\"",in);
+        value = hel::pullObject("\"joysticks\"",in);
     }
-    std::cout<<"Pulled value: "<<value<<"\n\n";
+    std::cout<<"Pulled object: "<<value<<"\n\n";
 }
 
-BENCHMARK(BM_PullObject);
-BENCHMARK(BM_PullValue);
+BENCHMARK(BM_PullFirstObject);
+BENCHMARK(BM_PullObjectByLabel);
 BENCHMARK_MAIN();

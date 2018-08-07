@@ -84,11 +84,11 @@ namespace hel{
 
     RobotMode RobotMode::deserialize(std::string s){
         RobotMode a;
-        a.mode = s_to_robot_mode(unquote(hel::pullValue("\"mode\"",s)));
-        a.enabled = hel::stob(hel::pullValue("\"enabled\"",s));
-        a.emergency_stopped = hel::stob(hel::pullValue("\"emergency_stopped\"",s));
-        a.fms_attached = hel::stob(hel::pullValue("\"fms_attached\"",s));
-        a.ds_attached = hel::stob(hel::pullValue("\"ds_attached\"",s));
+        a.mode = s_to_robot_mode(unquote(hel::pullObject("\"mode\"",s)));
+        a.enabled = hel::stob(hel::pullObject("\"enabled\"",s));
+        a.emergency_stopped = hel::stob(hel::pullObject("\"emergency_stopped\"",s));
+        a.fms_attached = hel::stob(hel::pullObject("\"fms_attached\"",s));
+        a.ds_attached = hel::stob(hel::pullObject("\"ds_attached\"",s));
         return a;
     }
 

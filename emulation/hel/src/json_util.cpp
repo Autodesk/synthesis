@@ -1,4 +1,5 @@
 #include "json_util.hpp"
+#include <cassert>
 
 namespace hel{
     JSONParsingException::JSONParsingException(std::string s):details(s){}
@@ -97,9 +98,9 @@ namespace hel{
         return v;
     }
 
-    std::string pullObject(std::string& input){
-        unsigned end = 0;
-
+    std::string pullObject(std::string& input, unsigned start){
+        assert(start < input.size());
+        unsigned end = start;
         int bracket_count = 0;
         int curly_bracket_count = 0;
 
@@ -127,18 +128,17 @@ namespace hel{
             }
         }
 
-        std::string item = input.substr(0, end);
+        std::string item = input.substr(start, end - start);
+        input.erase(start, end - start);
 
-        input = input.substr(end);
-
-        if(input.size() > 0 && input[0] == ','){ //When removing object from string, remove comma if necessary
-            input.erase(0,1);
+        if(input[start] == ','){ //When removing object from string, remove remaining, extraneous comma if necessary
+            input.erase(start,1);
         }
 
         return trim(item);
     }
 
-    std::string pullValue(std::string label, std::string& input){ //returns the first item that matches label
+    std::string pullObject(std::string label, std::string& input){ //returns the first item that matches label
         const std::string OBJECT_START_SYM = ":";
         label += OBJECT_START_SYM;
 
@@ -148,14 +148,7 @@ namespace hel{
             return "";
         }
 
-        std::string search = input.substr(start + label.size()); //create string without data before label
-        std::string value = pullObject(search);
-
-        //if(value.size() > 0 && (value[value.size() - 1] == '}' || value[value.size() - 1] == ']')){ //remove closing bracket from value if it falls at the end of the object
-        //  value.erase(value.size() - 1, 1);
-        //}
-
-        input = input.substr(0, start) + search; //remove object from input
-        return trim(value);
+        input.erase(start, label.size());
+        return pullObject(input,start);
     }
 }

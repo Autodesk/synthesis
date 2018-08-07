@@ -131,13 +131,13 @@ namespace hel{
 
     MatchInfo MatchInfo::deserialize(std::string s){
         MatchInfo a;
-        a.event_name = unquote(hel::pullValue("\"event_name\"",s));
-        a.game_specific_message = unquote(hel::pullValue("\"game_specific_message\"",s));
-        a.match_type = hel::s_to_match_type(unquote(hel::pullValue("\"match_type\"",s)));
-        a.match_number = std::stoi(hel::pullValue("\"match_number\"",s));
-        a.replay_number = std::stoi(hel::pullValue("\"replay_number\"",s));
-        a.alliance_station_id = hel::s_to_alliance_station_id(unquote(hel::pullValue("\"alliance_station_id\"",s)));
-        a.match_time = std::stod(hel::pullValue("\"match_time\"",s));
+        a.event_name = unquote(hel::pullObject("\"event_name\"",s));
+        a.game_specific_message = unquote(hel::pullObject("\"game_specific_message\"",s));
+        a.match_type = hel::s_to_match_type(unquote(hel::pullObject("\"match_type\"",s)));
+        a.match_number = std::stoi(hel::pullObject("\"match_number\"",s));
+        a.replay_number = std::stoi(hel::pullObject("\"replay_number\"",s));
+        a.alliance_station_id = hel::s_to_alliance_station_id(unquote(hel::pullObject("\"alliance_station_id\"",s)));
+        a.match_time = std::stod(hel::pullObject("\"match_time\"",s));
         return a;
     }
 

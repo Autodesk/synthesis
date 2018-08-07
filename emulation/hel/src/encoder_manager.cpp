@@ -186,11 +186,11 @@ namespace hel{
 
     EncoderManager EncoderManager::deserialize(std::string s){
         EncoderManager a;
-        a.a_channel = std::stoi(hel::pullValue("\"a_channel\"",s));
-        a.b_channel = std::stoi(hel::pullValue("\"b_channel\"",s));
-        a.a_type = hel::s_to_encoder_port_type(unquote(hel::pullValue("\"a_type\"",s)));
-        a.b_type = hel::s_to_encoder_port_type(unquote(hel::pullValue("\"b_type\"",s)));
-        a.ticks = std::stoi(hel::pullValue("\"ticks\"",s));
+        a.a_channel = std::stoi(hel::pullObject("\"a_channel\"",s));
+        a.b_channel = std::stoi(hel::pullObject("\"b_channel\"",s));
+        a.a_type = hel::s_to_encoder_port_type(unquote(hel::pullObject("\"a_type\"",s)));
+        a.b_type = hel::s_to_encoder_port_type(unquote(hel::pullObject("\"b_type\"",s)));
+        a.ticks = std::stoi(hel::pullObject("\"ticks\"",s));
         return a;
     }
 
