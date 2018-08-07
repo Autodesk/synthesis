@@ -627,7 +627,6 @@ public class DynamicCamera : MonoBehaviour
         Vector3 rotationVector;
         Vector3 fieldVector;
         GameObject field;
-        float magnification = 5.0f;
 
         public OverviewState(MonoBehaviour mono)
         {
@@ -650,7 +649,8 @@ public class DynamicCamera : MonoBehaviour
             {
                 positionVector.y += Input.GetAxis("Mouse Y");
             }
-            mono.transform.position = positionVector;
+            if (positionVector.y > fieldVector.y+1) mono.transform.position = positionVector;
+            
         }
 
         public override void End()
