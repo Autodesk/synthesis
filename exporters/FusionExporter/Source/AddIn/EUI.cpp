@@ -135,6 +135,7 @@ void EUI::deleteExportPalette()
 void EUI::closeExportPalette()
 {
 	exportPalette->isVisible(false);
+	sensorsPalette->isVisible(false);
 	exportButtonCommand->controlDefinition()->isEnabled(true);
 }
 

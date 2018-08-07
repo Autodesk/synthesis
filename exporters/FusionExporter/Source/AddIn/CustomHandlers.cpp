@@ -156,9 +156,5 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 // Close Exporter Form Event
 void CloseExporterFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
-	Ptr<CommandDefinition> exportButtonCommand = app->userInterface()->commandDefinitions()->itemById(K_EXPORT_BUTTON);
-	if (!exportButtonCommand)
-		return;
-
-	exportButtonCommand->controlDefinition()->isEnabled(true);
+	eui->closeExportPalette();
 }
