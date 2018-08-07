@@ -132,7 +132,7 @@ public class DriveJoints
 
                 if (raycastWheel != null)
                 {
-                    if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                    if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
                     {
                         float force = pwm[i];
                         if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
@@ -145,7 +145,7 @@ public class DriveJoints
                 {
                     if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
                     {
-                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                        if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
                         {
                             float maxSpeed = 0f;
                             float impulse = 0f;
@@ -174,7 +174,7 @@ public class DriveJoints
                     }
                     else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
                     {
-                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
+                        if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
                         {
                             BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
                             SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
@@ -369,7 +369,7 @@ public class DriveJoints
 
                 if (raycastWheel != null)
                 {
-                    if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                    if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
                     {
                         float force = pwm[i];
                         if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
@@ -385,7 +385,7 @@ public class DriveJoints
                     if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
                     {
 
-                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                        if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
                         {
                             float maxSpeed = 0f;
                             float impulse = 0f;
@@ -414,7 +414,7 @@ public class DriveJoints
                     }
                     else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
                     {
-                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
+                        if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
                         {
                             BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
                             SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();

@@ -58,9 +58,9 @@
             this.PortOneUpDown = new System.Windows.Forms.NumericUpDown();
             this.metaElevatorBrake = new System.Windows.Forms.TabPage();
             this.BreakLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.brakePortB = new System.Windows.Forms.NumericUpDown();
+            this.brakePort2 = new System.Windows.Forms.NumericUpDown();
             this.lblBrakePort = new System.Windows.Forms.Label();
-            this.brakePortA = new System.Windows.Forms.NumericUpDown();
+            this.brakePort1 = new System.Windows.Forms.NumericUpDown();
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
             this.NodeGroupBox.SuspendLayout();
             this.MainTableLayout.SuspendLayout();
@@ -79,8 +79,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.PortOneUpDown)).BeginInit();
             this.metaElevatorBrake.SuspendLayout();
             this.BreakLayout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePort2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePort1)).BeginInit();
             this.SuspendLayout();
             // 
             // NodeGroupBox
@@ -543,9 +543,9 @@
             this.BreakLayout.ColumnCount = 2;
             this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.BreakLayout.Controls.Add(this.brakePortB, 1, 1);
+            this.BreakLayout.Controls.Add(this.brakePort2, 1, 1);
             this.BreakLayout.Controls.Add(this.lblBrakePort, 0, 0);
-            this.BreakLayout.Controls.Add(this.brakePortA, 0, 1);
+            this.BreakLayout.Controls.Add(this.brakePort1, 0, 1);
             this.BreakLayout.Controls.Add(this.chkBoxHasBrake, 1, 0);
             this.BreakLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.BreakLayout.Location = new System.Drawing.Point(0, 0);
@@ -557,14 +557,14 @@
             this.BreakLayout.Size = new System.Drawing.Size(514, 55);
             this.BreakLayout.TabIndex = 13;
             // 
-            // brakePortB
+            // brakePort2
             // 
-            this.brakePortB.Dock = System.Windows.Forms.DockStyle.Top;
-            this.brakePortB.Location = new System.Drawing.Point(260, 31);
-            this.brakePortB.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.brakePortB.Name = "brakePortB";
-            this.brakePortB.Size = new System.Drawing.Size(251, 22);
-            this.brakePortB.TabIndex = 3;
+            this.brakePort2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.brakePort2.Location = new System.Drawing.Point(260, 31);
+            this.brakePort2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.brakePort2.Name = "brakePort2";
+            this.brakePort2.Size = new System.Drawing.Size(251, 22);
+            this.brakePort2.TabIndex = 3;
             // 
             // lblBrakePort
             // 
@@ -576,14 +576,14 @@
             this.lblBrakePort.TabIndex = 1;
             this.lblBrakePort.Text = "Brake Port";
             // 
-            // brakePortA
+            // brakePort1
             // 
-            this.brakePortA.Dock = System.Windows.Forms.DockStyle.Top;
-            this.brakePortA.Location = new System.Drawing.Point(3, 31);
-            this.brakePortA.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.brakePortA.Name = "brakePortA";
-            this.brakePortA.Size = new System.Drawing.Size(251, 22);
-            this.brakePortA.TabIndex = 2;
+            this.brakePort1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.brakePort1.Location = new System.Drawing.Point(3, 31);
+            this.brakePort1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.brakePort1.Name = "brakePort1";
+            this.brakePort1.Size = new System.Drawing.Size(251, 22);
+            this.brakePort1.TabIndex = 2;
             // 
             // chkBoxHasBrake
             // 
@@ -635,8 +635,8 @@
             this.metaElevatorBrake.PerformLayout();
             this.BreakLayout.ResumeLayout(false);
             this.BreakLayout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePort2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePort1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -668,9 +668,9 @@
         private System.Windows.Forms.Label lblInputGear;
         private System.Windows.Forms.TabPage metaElevatorBrake;
         private System.Windows.Forms.TableLayoutPanel BreakLayout;
-        private System.Windows.Forms.NumericUpDown brakePortB;
+        private System.Windows.Forms.NumericUpDown brakePort2;
         private System.Windows.Forms.Label lblBrakePort;
-        private System.Windows.Forms.NumericUpDown brakePortA;
+        private System.Windows.Forms.NumericUpDown brakePort1;
         private System.Windows.Forms.CheckBox chkBoxHasBrake;
         private System.Windows.Forms.TabPage metaElevatorStages;
         private System.Windows.Forms.ComboBox cmbStages;
