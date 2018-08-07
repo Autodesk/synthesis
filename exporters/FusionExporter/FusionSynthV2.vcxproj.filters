@@ -138,6 +138,9 @@
     <ClInclude Include="Source\Data\BXDJ\CustomJSONObject.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Version.h">
+      <Filter>Headers\Data\BXDJ</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">

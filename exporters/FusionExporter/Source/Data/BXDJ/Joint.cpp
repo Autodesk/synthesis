@@ -3,6 +3,7 @@
 #include <Core/Geometry/Point3D.h>
 #include "RigidNode.h"
 #include "JointSensor.h"
+#include "Version.h"
 
 using namespace BXDJ;
 
