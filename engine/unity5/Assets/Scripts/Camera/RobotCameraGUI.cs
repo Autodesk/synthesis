@@ -141,9 +141,9 @@ namespace Synthesis.Camera
 
             //For camera angle configuration
             cameraAnglePanel = Auxiliary.FindObject(canvas, "CameraAnglePanel");
-            xAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "xAngleEntry");
-            yAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "yAngleEntry");
-            zAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "zAngleEntry");
+            xAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "xAngleEntry1");
+            yAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "yAngleEntry1");
+            zAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "zAngleEntry1");
             showAngleButton = Auxiliary.FindObject(configureCameraPanel, "ShowCameraAngleButton");
             editAngleButton = Auxiliary.FindObject(cameraAnglePanel, "EditButton");
 
