@@ -7,7 +7,7 @@ namespace Synthesis.GUI
 {
     class SynthesisFileBrowser
     {
-        private string directoryLocation;
+        public string directoryLocation;
 
         private string tempSelection;
 
@@ -22,8 +22,6 @@ namespace Synthesis.GUI
 
         public event Action<object> OnComplete;
 
-        private bool directorySearched;
-
         /// <summary>
         /// Default Directory Path
         /// </summary>
@@ -36,12 +34,6 @@ namespace Synthesis.GUI
 
         public SynthesisFileBrowser(string windowTitle, string defaultDirectory, bool allowEsc = true)
         {
-
-            //if (defaultDirectoryarray[0] != null)
-            //{
-            //    defaultDirectory = defaultDirectoryarray[0];
-            //}
-
             DirectoryInfo directorySelection;
 
             if (Directory.Exists(defaultDirectory)) directoryPath = defaultDirectory;
@@ -61,9 +53,13 @@ namespace Synthesis.GUI
                                                                       || directorySelection.GetFiles("*.bxdj").Length != 0)
                     {
                         UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
-                        defaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//");
+                        //defaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//");
+                        directorySelection = directorySelection.Parent;
+                        directoryPath = directorySelection.FullName;
+                        directoryLocation = directorySelection.FullName;
+                        defaultDirectory = directorySelection.FullName;
+                        defaultDirectory = directoryLocation;
                     }
-                    tempSelection = null;
                 }
                 catch (UnauthorizedAccessException e)
                 {
