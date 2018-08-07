@@ -57,9 +57,9 @@ void JointSensor::write(XmlWriter & output) const
 
 	output.writeElement("SensorType", toString(type));
 	output.writeElement("SensorPortNumber1", std::to_string(portA));
-	output.writeElement("SensorSignalType1", std::to_string(portSignal));
+	output.writeElement("SensorSignalType1", toString(portSignal));
 	output.writeElement("SensorPortNumber2", std::to_string(portB));
-	output.writeElement("SensorSignalType2", std::to_string(portSignal));
+	output.writeElement("SensorSignalType2", toString(portSignal));
 	output.writeElement("SensorConversionFactor", std::to_string(conversionFactor));
 
 	output.endElement();
@@ -79,8 +79,8 @@ std::string JointSensor::toString(Signal type)
 {
 	switch (type)
 	{
-	case PWM: return "PWM";
-	case CAN: return "CAN";
+	case DIO: return "DIO";
+	case ANALOG: return "ANALOG";
 	}
 
 	return "UNKNOWN";

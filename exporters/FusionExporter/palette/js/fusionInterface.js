@@ -38,6 +38,10 @@ var PRESSURE_10PSI = 0;
 var PRESSURE_20PSI = 1;
 var PRESSURE_60PSI = 2;
 
+// Sensor Port Types
+var DIO = 1;
+var ANALOG = 2;
+
 // Joint Sensor Types
 var SENSOR_ENCODER = 1;
 var CONVERSION_FACTOR_NAMES = { 1: "Ticks per Revolution" };
@@ -57,7 +61,7 @@ function createPneumatic(_width = 5.0, _pressure = 40.0)
     return { width: _width, pressure: _pressure };
 }
 
-function createSensor(_type = SENSOR_ENCODER, _signal = PWM, _portA = 0, _portB = 1, _conversionFactor = 1)
+function createSensor(_type = SENSOR_ENCODER, _signal = DIO, _portA = 0, _portB = 1, _conversionFactor = 1)
 {
     return { type: _type, signal: _signal, portA: _portA, portB: _portB, conversionFactor: _conversionFactor };
 }
