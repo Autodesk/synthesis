@@ -80,6 +80,17 @@ public partial class BXDJSkeleton
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
+        <xs:element name='DriveTrainType'>
+            <xs:simpleType>
+                <xs:restriction base='xs:string'>
+                    <xs:enumeration value='TANK'/>
+                    <xs:enumeration value='HDRIVE'/>
+                    <xs:enumeration value='MECANUM'/>
+                    <xs:enumeration value='SWERVE'/>
+                    <xs:enumeration value='CUSTOM'/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:element>
         <xs:element name='SignalType'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
@@ -303,6 +314,7 @@ public partial class BXDJSkeleton
             <xs:complexType>
                 <xs:sequence>
                     <xs:element ref='Node' minOccurs='0' maxOccurs='unbounded'/>
+                    <xs:element ref='DriveTrainType' minOccurs='1' maxOccurs='1'/>
                 </xs:sequence>
                 <xs:attribute ref='Version' use='required'/>
             </xs:complexType>
@@ -343,6 +355,9 @@ public partial class BXDJSkeleton
             {
                 switch (name)
                 {
+                    case "DriveTrainType":
+                        root.driveTrainType = (RigidNode_Base.DriveTrainType)Enum.Parse(typeof(RigidNode_Base.DriveTrainType), reader.ReadElementContentAsString());
+                        break;
                     case "Node":
                         // Reads the current element as a node.
                         ReadNode_4_0(reader.ReadSubtree(), nodes, ref root);

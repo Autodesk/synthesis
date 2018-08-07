@@ -159,6 +159,8 @@ namespace Synthesis.Robot
             RootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
             RootNode.ListAllNodes(nodes);
 
+            Debug.Log(RootNode.driveTrainType.ToString());
+
             emuList = new List<EmuNetworkInfo>();
 
             foreach (RigidNode_Base Base in RootNode.ListAllNodes())
