@@ -20,7 +20,7 @@
 
             #basic-info
             {
-                padding-right: 0.5rem;
+                padding-right: 1.5rem;
             }
 
             .joint-config
@@ -32,7 +32,7 @@
             {
                 position: absolute;
                 top: -3px;
-                right: 1.5rem;
+                right: 2.5rem;
                 width: auto;
             }
         </style>
@@ -51,7 +51,7 @@
 
                 <div class="driver-div">
                     <span class="field-label">Driver Type: </span>
-                    <span class="field-input"><select class="driver-type" onchange="updateFieldOptions(this)">
+                    <span class="field-select"><select class="driver-type" onchange="updateFieldOptions(this)">
                         <option value="0">None</option>
                         <option value="1" class="angular-driver">Motor</option>
                         <option value="2" class="angular-driver">Servo</option>
@@ -65,7 +65,7 @@
                     <div class="has-driver-div">
                         <div class="angular-joint-div">
                             <span class="field-label">Wheel Type: </span>
-                            <span class="field-input"><select class="wheel-type" onchange="updateFieldOptions(this)">
+                            <span class="field-select"><select class="wheel-type" onchange="updateFieldOptions(this)">
                                 <option value="0">None</option>
                                 <option value="1">Normal</option>
                                 <option value="2">Omni</option>
@@ -76,7 +76,7 @@
                                 <span class="field-label">Is Drive Wheel: </span>
                                 <input type="checkbox" class="field-label is-drive-wheel" onchange="updateFieldOptions(this)" /></span>
 
-                                <span class="field-input drive-wheel-ports-div"><select class="wheel-side">
+                                <span class="field-select drive-wheel-ports-div"><select class="wheel-side">
                                     <option value="1">Left Wheel</option>
                                     <option value="0">Right Wheel</option>
                                 </select></span>
@@ -86,13 +86,13 @@
                         <div class="linear-joint-div">
                             <div class="pneumatic-div">
                                 <span class="field-label">Width: </span>
-                                <span class="field-input"><select class="pneumatic-width">
+                                <span class="field-select"><select class="pneumatic-width">
                                     <option value="0">2.5 mm</option>
                                     <option value="1" selected>5 mm</option>
                                     <option value="2">10 mm</option>
                                 </select></span>
                                 <span class="field-label">Pressure: </span>
-                                <span class="field-input"><select class="pneumatic-pressure">
+                                <span class="field-select"><select class="pneumatic-pressure">
                                     <option value="0">10 PSI</option>
                                     <option value="1" selected>20 PSI</option>
                                     <option value="2">60 PSI</option>
@@ -107,7 +107,7 @@
                                 <option value="3" data-port-value="1" class="pneumatic-port">Solenoid</option>
                                 <option value="4" data-port-value="1" class="relay-port">Relay</option>
                             </select>
-                            <span class="field-input"><select class="port-number-a">
+                            <span class="field-select"><select class="port-number-a">
                                 <option value="0">0</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>

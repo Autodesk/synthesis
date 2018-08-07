@@ -1,2 +1,2 @@
 #pragma once
-#define BXDJ_3
+#define BXDJ_4
