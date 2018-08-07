@@ -40,7 +40,7 @@ namespace hel{
         }
     }
 
-    uint8_t getChannel(uint8_t channel, bool module,EncoderManager::PortType type)noexcept{
+    uint8_t getChannel(uint8_t channel, bool module,EncoderManager::PortType type){
         if(module){
             switch(type){
             case EncoderManager::PortType::AI:

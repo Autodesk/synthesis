@@ -3,7 +3,6 @@
 
 #include <array>
 #include <functional>
-#include "util.hpp"
 
 namespace hel{
 
