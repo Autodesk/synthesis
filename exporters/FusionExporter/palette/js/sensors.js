@@ -36,6 +36,7 @@ function newSensor()
     fieldset.id = 'sensor-config-' + String(document.getElementsByClassName('sensor-config').length);
 
     // Add field to form
+    updateFieldOptions(fieldset);
     document.getElementById('sensor-settings').appendChild(fieldset);
 }
 
@@ -65,8 +66,9 @@ function applyConfigData(sensors)
         getElByClass(fieldset, 'port-number-a').value = sensors[i].portA;
         getElByClass(fieldset, 'port-number-b').value = sensors[i].portB;
         getElByClass(fieldset, 'conversion-factor').value = sensors[i].conversionFactor;
-
+        
         // Add field to form
+        updateFieldOptions(fieldset);
         sensorForm.appendChild(fieldset);
     }
 }
