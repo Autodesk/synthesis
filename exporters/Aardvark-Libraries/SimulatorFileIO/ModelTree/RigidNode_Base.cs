@@ -50,6 +50,19 @@ public class RigidNode_Base
     }
 
     /// <summary>
+    /// Contains the drivetrain type for the model, only implemented at the top node
+    /// </summary>
+    public enum DriveTrainType
+    {
+        NONE = 0,
+        TANK = 1,
+        H_DRIVE = 2,
+        CUSTOM = 3
+    }
+
+    public DriveTrainType driveTrainType;
+
+    /// <summary>
     /// A very verbose identifier that represents the element this node is in the overall structure.
     /// </summary>
     public string ModelFullID;

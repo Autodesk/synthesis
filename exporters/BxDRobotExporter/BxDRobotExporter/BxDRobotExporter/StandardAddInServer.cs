@@ -516,9 +516,6 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         public void BeginWizardExport_OnExecute(NameValueMap Context)
         {
-            if (WarnIfUnsaved())
-            {
-
                 if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                     return;
 
@@ -533,7 +530,7 @@ namespace BxDRobotExporter
                 }
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
-            }
+           
         }
 
         /// <summary>
