@@ -14,7 +14,7 @@ JointSensor::JointSensor(const JointSensor & sensorToCopy)
 JointSensor::JointSensor(Type type)
 {
 	this->type = type;
-	portSignal = PWM;
+	portSignal = DIO;
 	portA = 0;
 	portB = 1;
 	conversionFactor = 1;
