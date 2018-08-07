@@ -1,5 +1,10 @@
 #include "Exporter.h"
 #include <vector>
+#include <Fusion/Fusion/Design.h>
+#include <Fusion/Components/Component.h>
+#include <Fusion/Components/JointMotion.h>
+#include <Core/Application/Attributes.h>
+#include <Core/Application/Attribute.h>
 #include "Data/Filesystem.h"
 #include "Data/BXDA/Mesh.h"
 #include "Data/BXDA/SubMesh.h"
@@ -7,6 +12,7 @@
 #include "Data/BXDA/Surface.h"
 #include "Data/BXDA/Triangle.h"
 #include "Data/BXDJ/RigidNode.h"
+#include "Data/BXDJ/Version.h"
 
 using namespace Synthesis;
 
