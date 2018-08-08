@@ -15,11 +15,13 @@ namespace hel{
 
     std::string unquote(std::string s){
         s = trim(s);
-        if(s.size() > 0 && s[0] == '\"'){
+        if(!s.empty()){
+            if(s[0] == '\"'){
             s.erase(0,1);
-        }
-        if(s.size() > 0 && s[s.size() - 1] == '\"'){
-            s.erase(s.size() - 1, 1);
+            }
+            if(s[s.size() - 1] == '\"'){
+                s.erase(s.size() - 1, 1);
+            }
         }
         return s;
     }
@@ -76,11 +78,13 @@ namespace hel{
 
     std::string clipList(std::string input){
         input = trim(input);
-        if(input.size() > 0 && input[0] == '['){
-            input.erase(0,1);
-        }
-        if(input.size() > 0 && input[input.size() - 1] == ']'){
-            input.erase(input.size() - 1, 1);
+        if(!input.empty()){
+            if(input[0] == '['){
+                input.erase(0,1);
+            }
+            if(input[input.size() - 1] == ']'){
+                input.erase(input.size() - 1, 1);
+            }
         }
         return input;
     }

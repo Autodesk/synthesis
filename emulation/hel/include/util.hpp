@@ -62,7 +62,7 @@ namespace hel{
     }
 
 	template<typename T>
-    struct Maybe { //TODO optimize
+    struct Maybe {
 
     private:
         T _data;
@@ -95,7 +95,7 @@ namespace hel{
                 return Maybe<R>();
             }
             Maybe<R> out = f(*this);
-			return out;
+            return out;
         }
 
         constexpr T get()const noexcept{return _data;}

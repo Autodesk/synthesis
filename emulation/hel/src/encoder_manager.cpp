@@ -44,11 +44,9 @@ namespace hel{
         if(module){
             switch(type){
             case EncoderManager::PortType::AI:
-                channel += AnalogInputs::NUM_ANALOG_INPUTS_HDRS;
-                break;
+                return channel + AnalogInputs::NUM_ANALOG_INPUTS_HDRS;
             case EncoderManager::PortType::DI:
-                channel += DigitalSystem::NUM_DIGITAL_HEADERS;
-                break;
+                return channel + DigitalSystem::NUM_DIGITAL_HEADERS;
             default:
                 throw UnhandledEnumConstantException("hel::EncoderManager::PortType");
             }

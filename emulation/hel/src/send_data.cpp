@@ -63,7 +63,7 @@ namespace hel{
 			relays[i] = roborio.relay_system.getState(i);
 		}
 		for(unsigned i = 0; i < analog_outputs.size(); i++){
-			analog_outputs[i] = (roborio.analog_outputs.getMXPOutput(i)) * 5. / 0x1000;
+			analog_outputs[i] = (roborio.analog_outputs.getMXPOutput(i)) * 5.0 / 0x1000;
 		}
 		{
 			tDIO::tOutputEnable output_mode = roborio.digital_system.getEnabledOutputs();

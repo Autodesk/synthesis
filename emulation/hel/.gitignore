@@ -20,7 +20,6 @@
 # Specific Files
 
 # Output folders
-build/*
 lib/*
 bin/*
 user-code/*
