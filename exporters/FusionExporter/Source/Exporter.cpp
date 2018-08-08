@@ -136,10 +136,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 
 	xml.write(*rootNode);
 
-	xml.startElement("DriveTrainType");
-	xml.writeElement("DriveTrainTypeNumber", std::to_string((int)config.driveTrainType));
-	xml.endElement();
-
+	xml.writeElement("DriveTrainType", BXDJ::ConfigData::toString(config.driveTrainType));
 	xml.endElement();
 
 	// Write BXDA files
