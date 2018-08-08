@@ -181,7 +181,6 @@ namespace Synthesis.States
             {
                 directoryPath = defaultDirectory;
                 isEmulationDownloaded = true;
-                simUI.SetEmulationTabActive();
             }
         }
 
