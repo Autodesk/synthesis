@@ -297,6 +297,7 @@
     <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
     <Compile Include="Assets\Scripts\States\DefaultSimulatorState.cs" />
     <Compile Include="Assets\Scripts\States\DefineNodeState.cs" />
+    <Compile Include="Assets\Scripts\States\DefineSensorAttachmentState.cs" />
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
     <Compile Include="Assets\Scripts\States\GamepieceSpawnState.cs" />
     <Compile Include="Assets\Scripts\States\GoalState.cs" />
@@ -311,6 +312,7 @@
     <Compile Include="Assets\Scripts\States\ReplayState.cs" />
     <Compile Include="Assets\Scripts\States\SaveReplayState.cs" />
     <Compile Include="Assets\Scripts\States\SelectionState.cs" />
+    <Compile Include="Assets\Scripts\States\SensorSpawnState.cs" />
     <Compile Include="Assets\Scripts\States\SimTabState.cs" />
     <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
     <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />
