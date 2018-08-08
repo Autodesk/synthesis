@@ -47,8 +47,8 @@ public partial class BXDJSkeleton
         <xs:element name='SideExtremeSlip' type='xs:decimal'/>
         <xs:element name='SideExtremeValue' type='xs:decimal'/>
         <xs:element name='IsDriveWheel' type='xs:boolean'/>
-        <xs:element name='port1' type='xs:integer'/>
-        <xs:element name='port2' type='xs:integer'/>
+        <xs:element name='Port1' type='xs:integer'/>
+        <xs:element name='Port2' type='xs:integer'/>
         <xs:element name='InputGear' type='xs:double'/>
         <xs:element name='OutputGear' type='xs:double'/>
         <xs:element name='LowerLimit' type='xs:float'/>
@@ -264,8 +264,8 @@ public partial class BXDJSkeleton
             <xs:complexType>
                 <xs:sequence>
                     <xs:element ref='DriveType'/>
-                    <xs:element ref='port1'/>
-                    <xs:element ref='port2'/>
+                    <xs:element ref='Port1'/>
+                    <xs:element ref='Port2'/>
                     <xs:element ref='InputGear'/>
                     <xs:element ref='OutputGear'/>
                     <xs:element ref='LowerLimit'/>
@@ -701,11 +701,11 @@ public partial class BXDJSkeleton
                     // Initialize the driver.
                     driver = new JointDriver((JointDriverType)Enum.Parse(typeof(JointDriverType), reader.ReadElementContentAsString()));
                     break;
-                case "port1":
+                case "Port1":
                     // Assign a value to port1.
                     driver.port1 = reader.ReadElementContentAsInt();
                     break;
-                case "port2":
+                case "Port2":
                     // Assign a value to port2.
                     driver.port2 = reader.ReadElementContentAsInt();
                     break;
