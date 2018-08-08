@@ -53,8 +53,11 @@
             this.removeButton = new System.Windows.Forms.Button();
             this.changeNameButton = new System.Windows.Forms.Button();
             this.meshPropertiesTable = new System.Windows.Forms.TableLayoutPanel();
-            this.Joint_Button = new System.Windows.Forms.Button();
             this.inventorTreeView = new InternalFieldExporter.InventorTreeView(this.components);
+            this.jointsGroupBox = new System.Windows.Forms.GroupBox();
+            this.jointCheckBox = new System.Windows.Forms.CheckBox();
+            this.jointComboBox = new System.Windows.Forms.ComboBox();
+            this.jointTypeLabel = new System.Windows.Forms.Label();
             this.inventorActionsPanel.SuspendLayout();
             this.propertiesScrollablePanel.SuspendLayout();
             this.physicalPropertiesGroupBox.SuspendLayout();
@@ -66,6 +69,7 @@
             this.colliderTypePanel.SuspendLayout();
             this.propertySetOptionsBox.SuspendLayout();
             this.propertyOptionsLayoutPanel.SuspendLayout();
+            this.jointsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // inventorActionsPanel
@@ -113,7 +117,7 @@
             this.propertiesScrollablePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertiesScrollablePanel.AutoScroll = true;
-            this.propertiesScrollablePanel.Controls.Add(this.Joint_Button);
+            this.propertiesScrollablePanel.Controls.Add(this.jointsGroupBox);
             this.propertiesScrollablePanel.Controls.Add(this.physicalPropertiesGroupBox);
             this.propertiesScrollablePanel.Controls.Add(this.meshPropertiesGroupBox);
             this.propertiesScrollablePanel.Controls.Add(this.propertySetOptionsBox);
@@ -341,22 +345,53 @@
             this.meshPropertiesTable.Size = new System.Drawing.Size(200, 100);
             this.meshPropertiesTable.TabIndex = 0;
             // 
-            // Joint_Button
-            // 
-            this.Joint_Button.Location = new System.Drawing.Point(18, 257);
-            this.Joint_Button.Name = "Joint_Button";
-            this.Joint_Button.Size = new System.Drawing.Size(263, 35);
-            this.Joint_Button.TabIndex = 3;
-            this.Joint_Button.Text = "Joint";
-            this.Joint_Button.UseVisualStyleBackColor = true;
-            this.Joint_Button.Click += new System.EventHandler(this.Joint_Button_Click);
-            // 
             // inventorTreeView
             // 
             this.inventorTreeView.Location = new System.Drawing.Point(3, 3);
             this.inventorTreeView.Name = "inventorTreeView";
             this.inventorTreeView.Size = new System.Drawing.Size(295, 354);
             this.inventorTreeView.TabIndex = 3;
+            // 
+            // jointsGroupBox
+            // 
+            this.jointsGroupBox.Controls.Add(this.jointTypeLabel);
+            this.jointsGroupBox.Controls.Add(this.jointComboBox);
+            this.jointsGroupBox.Controls.Add(this.jointCheckBox);
+            this.jointsGroupBox.Location = new System.Drawing.Point(6, 270);
+            this.jointsGroupBox.Name = "jointsGroupBox";
+            this.jointsGroupBox.Size = new System.Drawing.Size(281, 122);
+            this.jointsGroupBox.TabIndex = 3;
+            this.jointsGroupBox.TabStop = false;
+            // 
+            // jointCheckBox
+            // 
+            this.jointCheckBox.AutoSize = true;
+            this.jointCheckBox.Location = new System.Drawing.Point(9, 0);
+            this.jointCheckBox.Name = "jointCheckBox";
+            this.jointCheckBox.Size = new System.Drawing.Size(60, 21);
+            this.jointCheckBox.TabIndex = 0;
+            this.jointCheckBox.Text = "Joint";
+            this.jointCheckBox.UseVisualStyleBackColor = true;
+            this.jointCheckBox.CheckedChanged += new System.EventHandler(this.jointCheckBox_CheckChanged);
+            // 
+            // jointComboBox
+            // 
+            this.jointComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.jointComboBox.FormattingEnabled = true;
+            this.jointComboBox.Location = new System.Drawing.Point(89, 21);
+            this.jointComboBox.Name = "jointComboBox";
+            this.jointComboBox.Size = new System.Drawing.Size(189, 24);
+            this.jointComboBox.TabIndex = 1;
+            this.jointComboBox.SelectedIndexChanged += new System.EventHandler(this.jointComboBox_SelectedIndexChanged);
+            // 
+            // jointTypeLabel
+            // 
+            this.jointTypeLabel.AutoSize = true;
+            this.jointTypeLabel.Location = new System.Drawing.Point(0, 24);
+            this.jointTypeLabel.Name = "jointTypeLabel";
+            this.jointTypeLabel.Size = new System.Drawing.Size(78, 17);
+            this.jointTypeLabel.TabIndex = 2;
+            this.jointTypeLabel.Text = "Joint Type:";
             // 
             // ComponentPropertiesForm
             // 
@@ -381,6 +416,8 @@
             this.colliderTypePanel.PerformLayout();
             this.propertySetOptionsBox.ResumeLayout(false);
             this.propertyOptionsLayoutPanel.ResumeLayout(false);
+            this.jointsGroupBox.ResumeLayout(false);
+            this.jointsGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -412,7 +449,10 @@
         private System.Windows.Forms.CheckBox dynamicCheckBox;
         private System.Windows.Forms.NumericUpDown massNumericUpDown;
         private System.Windows.Forms.Label massLabel;
-        private System.Windows.Forms.Button Joint_Button;
         public InventorTreeView inventorTreeView;
+        private System.Windows.Forms.GroupBox jointsGroupBox;
+        private System.Windows.Forms.CheckBox jointCheckBox;
+        private System.Windows.Forms.Label jointTypeLabel;
+        private System.Windows.Forms.ComboBox jointComboBox;
     }
 }

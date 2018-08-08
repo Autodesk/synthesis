@@ -359,5 +359,43 @@ namespace InternalFieldExporter.FieldWizard
         {
 
         }
+
+        /// <summary>
+        /// Enables or disables JointsGroupBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void jointCheckBox_CheckChanged(object sender, EventArgs e)
+        {
+            if (jointCheckBox.Checked)
+            {
+                jointsGroupBox.Enabled = true;
+            }
+            else
+            {
+                jointsGroupBox.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Updates the joint properties when the selected joint is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void jointComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Type selectedtype = null;
+
+            switch (jointComboBox.SelectedIndex)
+            {
+                case 0: //Rotational Joint
+                    selectedtype = typeof(RotationalJoint_Base);
+                    break;
+
+                case 1: //Linear Joint
+                    selectedtype = typeof(LinearJoint_Base);
+                    break;
+            }
+        }
     }
 }

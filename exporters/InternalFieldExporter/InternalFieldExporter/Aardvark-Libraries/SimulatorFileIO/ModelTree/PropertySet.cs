@@ -149,4 +149,67 @@ public struct PropertySet
         this.Friction = friction;
         this.Mass = mass;
     }
+
+    /// <summary>
+    /// Stores joint information for a PropertySet
+    /// </summary>
+    public class PropertySetJoint
+    {
+        /// <summary>
+        /// Used to define the joint type of the Property Set
+        /// </summary>
+        public enum PropertySetJointType
+        {
+            /// <summary>
+            /// Used to identify the joint as rotational - it will rotatate around an axis
+            /// </summary>
+            ROTATIONAL,
+
+            /// <summary>
+            /// Used to identify the joint as Linear - it will slide forward and back along an axis
+            /// </summary>
+            LINEAR
+
+            //TODO: Add Planar, Cylindrical and Ball joints
+        }
+
+        /// <summary>
+        /// Stores the Joint type for PropertySetJoint
+        /// </summary>
+        public PropertySetJointType JointType
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PropertySetJoint class
+        /// </summary>
+        /// <param name="jointType"></param>
+        public PropertySetJoint(PropertySetJointType jointType)
+        {
+            JointType = jointType;
+        }
+    }
+
+    public class Rotational_Joint : PropertySetJoint
+    {
+        /// <summary>
+        /// Initializes a new instance of the class Rotational_Joint
+        /// </summary>
+        public Rotational_Joint() : base(PropertySetJointType.ROTATIONAL)
+        {
+
+        }      
+    }
+
+    public class Linear_Joint : PropertySetJoint
+    {
+
+        public Linear_Joint() : base(PropertySetJointType.ROTATIONAL)
+        {
+
+        }
+
+    }
 }
