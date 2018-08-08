@@ -9724,27 +9724,9 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'CTRL + H: hide/show toolbar
 
-    TAB: Enter replay mode
-
-    C: Toggle main camera view
-
-    Z: Toggle robot camera view
-
     Long hold R or other RESET key: configure spawnpoint and robot orientation
 
-    F: reset field
-
     ALT + LEFT MOUSE: click and drag gamepieces around (God Mode)
-
-    U: Spawn a new robot
-
-    Y: Toggle active robot
-
-    P: Pause or resume stopwatch
-
-    [ : Spawn primary gamepiece
-
-    ] : Spawn secondary gamepiece
 
     ESCAPE: exit to main menu'
 --- !u!222 &236515205
@@ -54515,8 +54497,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 669249108}
   m_HandleRect: {fileID: 669249107}
   m_Direction: 2
-  m_Value: 0.9999999
-  m_Size: 0.416
+  m_Value: 1
+  m_Size: 0.41599998
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
