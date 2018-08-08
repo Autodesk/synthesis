@@ -29,6 +29,13 @@ namespace Synthesis.Camera
         GameObject showAngleButton;
         GameObject editAngleButton;
 
+        bool changingAngle = false;
+        bool changingAngleX = false;
+        bool changingAngleY = false;
+        bool changingAngleZ = false;
+        float angleIncrement = 1f;
+        int angleSign;
+
         //FOV panel
         GameObject cameraFOVPanel;
         GameObject editFOVButton;
@@ -103,6 +110,26 @@ namespace Synthesis.Camera
             {
                 robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView =
                     robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign;
+            }
+            else if (changingAngle)
+            {
+                if (changingAngleX)
+                {
+                    robotCameraManager.RotateTransform(angleIncrement * angleSign, 0, 0);
+                }
+                else if (changingAngleY)
+                {
+                    robotCameraManager.RotateTransform(0, angleIncrement * angleSign, 0);
+                }
+                else if (changingAngleZ)
+                {
+                    robotCameraManager.RotateTransform(0, 0, angleIncrement * angleSign);
+                }
+                UpdateCameraAnglePanel();
+            }
+            else if (robotCameraManager.IsShowingAngle)
+            {
+                SyncCameraAngle();
             }
         }
 
@@ -330,7 +357,7 @@ namespace Synthesis.Camera
         /// </summary>
         public void UpdateCameraAnglePanel()
         {
-            if (!isEditingAngle && robotCameraManager.CurrentCamera != null)
+            if (robotCameraManager.CurrentCamera != null)
             {
                 xAngleEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.transform.localEulerAngles.x.ToString();
                 yAngleEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.transform.localEulerAngles.y.ToString();
@@ -393,6 +420,35 @@ namespace Synthesis.Camera
                 SyncCameraAngle();
                 isEditingAngle = false;
             }
+        }
+
+        public void ChangeCameraAngleX(int sign)
+        {
+            angleSign = sign;
+            changingAngleX = true;
+            changingAngle = true;
+        }
+
+        public void ChangeCameraAngleY(int sign)
+        {
+            angleSign = sign;
+            changingAngleY = true;
+            changingAngle = true;
+        }
+
+        public void ChangeCameraAngleZ(int sign)
+        {
+            angleSign = sign;
+            changingAngleZ = true;
+            changingAngle = true;
+        }
+
+        public void StopChangingCameraAngle()
+        {
+            changingAngleX = false;
+            changingAngleY = false;
+            changingAngleZ = false;
+            changingAngle = false;
         }
 
         /// <summary>
