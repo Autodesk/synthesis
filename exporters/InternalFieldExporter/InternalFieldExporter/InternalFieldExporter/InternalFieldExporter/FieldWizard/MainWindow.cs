@@ -89,6 +89,16 @@ namespace InternalFieldExporter
         }
 
         /// <summary>
+        /// Opens the export form when users click the 'Export' menu item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>
         /// Prevents the user from switching tabs when the exporter is running.
         /// </summary>
         /// <param name="sender"></param>
@@ -97,11 +107,6 @@ namespace InternalFieldExporter
         {
             //if (ExportForm.IsExporting)
             //    e.Cancel = true;
-        }
-
-        private void propertySetsTabControl_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

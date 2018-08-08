@@ -37,11 +37,11 @@
             this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tutorialsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.propertiesTabPage = new System.Windows.Forms.TabPage();
-            this.exportTabPage = new System.Windows.Forms.TabPage();
             this.propertySetsTabControl = new InternalFieldExporter.FieldWizard.PropertySetsTabControl();
+            this.exportTabPage = new System.Windows.Forms.TabPage();
             this.menuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.propertiesTabPage.SuspendLayout();
@@ -55,7 +55,7 @@
             this.fileToolStripMenuItem,
             this.windowToolStripMenuItem,
             this.helpToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.exportToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
@@ -116,11 +116,12 @@
             this.tutorialsToolStripMenuItem.Text = "Tutorials";
             this.tutorialsToolStripMenuItem.Click += new System.EventHandler(this.tutorialsToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem1
+            // exportToolStripMenuItem
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(25, 24);
-            this.toolStripMenuItem1.Text = " ";
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(68, 24);
+            this.exportToolStripMenuItem.Text = " Export";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // tabControl
             // 
@@ -143,6 +144,15 @@
             this.propertiesTabPage.Text = "Property Sets";
             this.propertiesTabPage.UseVisualStyleBackColor = true;
             // 
+            // propertySetsTabControl
+            // 
+            this.propertySetsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertySetsTabControl.Location = new System.Drawing.Point(3, 3);
+            this.propertySetsTabControl.Name = "propertySetsTabControl";
+            this.propertySetsTabControl.SelectedIndex = 0;
+            this.propertySetsTabControl.Size = new System.Drawing.Size(761, 380);
+            this.propertySetsTabControl.TabIndex = 0;
+            // 
             // exportTabPage
             // 
             this.exportTabPage.Location = new System.Drawing.Point(4, 25);
@@ -152,15 +162,6 @@
             this.exportTabPage.TabIndex = 1;
             this.exportTabPage.Text = "Export";
             this.exportTabPage.UseVisualStyleBackColor = true;
-            // 
-            // propertySetsTabControl
-            // 
-            this.propertySetsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertySetsTabControl.Location = new System.Drawing.Point(3, 3);
-            this.propertySetsTabControl.Name = "propertySetsTabControl";
-            this.propertySetsTabControl.SelectedIndex = 0;
-            this.propertySetsTabControl.Size = new System.Drawing.Size(761, 380);
-            this.propertySetsTabControl.TabIndex = 0;
             // 
             // MainWindow
             // 
@@ -194,7 +195,7 @@
         private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tutorialsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage propertiesTabPage;
         private System.Windows.Forms.TabPage exportTabPage;
