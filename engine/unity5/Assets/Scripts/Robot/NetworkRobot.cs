@@ -22,6 +22,7 @@ namespace Synthesis.Network
         private const float CorrectionRotationThreshold = 15.0f;
 
         private BRigidBody[] rigidBodies;
+        private NetworkMesh[] networkMeshes;
         private bool correctionEnabled = true;
 
         private MultiplayerState state;
@@ -56,8 +57,12 @@ namespace Synthesis.Network
                 rigidBodies = GetComponentsInChildren<BRigidBody>();
 
                 if (!isServer)
+                {
+                    networkMeshes = new NetworkMesh[rigidBodies.Length];
+
                     for (int i = 0; i < rigidBodies.Length; i++)
-                        rigidBodies[i].gameObject.AddComponent<NetworkMesh>();
+                        networkMeshes[i] = rigidBodies[i].gameObject.AddComponent<NetworkMesh>();
+                }
 
                 if (isLocalPlayer)
                     CmdSetRobotID(state.Network.ConnectionID);

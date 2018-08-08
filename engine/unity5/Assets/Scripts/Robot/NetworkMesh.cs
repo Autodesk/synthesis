@@ -7,13 +7,24 @@ using UnityEngine;
 
 public class NetworkMesh : MonoBehaviour
 {
-    private const float LinearAcceleration = 10000f;
-    private const float LinearDamping = 1000f;
+    private const float AdaptiveLinearAcceleration = 0.01f;
+    private const float AdaptiveLinearDampingFactor = 8f;
+    private const float AdaptiveMaxLinearSpeed = 20f;
 
+    private const float VelocityCorrectionScalar = 100f;
     private const float RotationCorrectionScalar = 10f;
 
-    private Vector3 linearVelocity;
+    private Vector3 matchedLinearVelocity;
+    private Vector3 adaptiveLinearVelocity;
 
+    /// <summary>
+    /// The target linear velocity of the <see cref="NetworkMesh"/>.
+    /// </summary>
+    public Vector3 TargetLinearVelocity { get; set; }
+
+    /// <summary>
+    /// The mesh object associated with this instance.
+    /// </summary>
     public GameObject MeshObject { get; private set; }
 
     /// <summary>
@@ -39,13 +50,26 @@ public class NetworkMesh : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        linearVelocity += (transform.position - MeshObject.transform.position) * LinearAcceleration * Time.deltaTime;
-        linearVelocity /= 1f + LinearDamping * Time.deltaTime;
-        MeshObject.transform.position += linearVelocity * Time.deltaTime;
+        matchedLinearVelocity = Vector3.Lerp(matchedLinearVelocity, TargetLinearVelocity, Time.deltaTime * VelocityCorrectionScalar);
+
+        MeshObject.transform.position += matchedLinearVelocity * Time.deltaTime;
+
+        Vector3 offset = transform.position - MeshObject.transform.position;
+
+        adaptiveLinearVelocity += offset * AdaptiveLinearAcceleration / Time.deltaTime;
+        adaptiveLinearVelocity /= 1 + (AdaptiveLinearDampingFactor / offset.magnitude) * Time.deltaTime;
+
+        if (adaptiveLinearVelocity.magnitude > AdaptiveMaxLinearSpeed)
+            adaptiveLinearVelocity = adaptiveLinearVelocity.normalized * AdaptiveMaxLinearSpeed;
+
+        MeshObject.transform.position += adaptiveLinearVelocity * Time.deltaTime;
 
         MeshObject.transform.rotation = Quaternion.Lerp(MeshObject.transform.rotation, transform.rotation, Time.deltaTime * RotationCorrectionScalar);
     }
 
+    /// <summary>
+    /// Destroys the associated mesh object when this instance is destroyed.
+    /// </summary>
     private void OnDestroy()
     {
         Destroy(MeshObject);

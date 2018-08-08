@@ -69,6 +69,8 @@ namespace Synthesis.Network
                 BulletSharp.Math.Vector3 linearVelocity = new BulletSharp.Math.Vector3(rawLinearVelocity);
                 BulletSharp.Math.Vector3 angularVelocity = new BulletSharp.Math.Vector3(rawAngularVelocity);
 
+                networkMeshes[i].TargetLinearVelocity = linearVelocity.ToUnity();
+
                 RigidBody rbCo = (RigidBody)rigidBodies[i].GetCollisionObject();
 
                 rbCo.WorldTransform = bmTransforms[i];
