@@ -173,6 +173,8 @@ namespace Synthesis.States
             StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetGamepieceSpawnpointUI"));
             StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
             StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
+            StateMachine.Link<SensorSpawnState>(Auxiliary.FindGameObject("ResetSensorSpawnpointUI"));
+            StateMachine.Link<DefineSensorAttachmentState>(Auxiliary.FindGameObject("DefineSensorAttachmentUI"));
 
             string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Autodesk\Synthesis\Emulator");
             string directoryPath = "";
