@@ -8,7 +8,7 @@ namespace Synthesis.States
         /// Initializes a new <see cref="BrowseFileState"/> instance.
         /// </summary>
         public BrowseRobotState() : base("RobotDirectory",
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots")
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\synthesis\\Robots")
         {
         }
     }
