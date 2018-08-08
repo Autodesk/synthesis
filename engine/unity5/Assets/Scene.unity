@@ -17784,8 +17784,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: ChangeCameraAngleZ
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -17801,8 +17801,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: StopChangingCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: StopChangingCameraAngle
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -20271,8 +20271,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: ChangeCameraAngleZ
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -20288,8 +20288,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: StopChangingCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: StopChangingCameraAngle
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -20652,8 +20652,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: ChangeCameraAngleX
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -20669,8 +20669,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: StopChangingCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: StopChangingCameraAngle
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -30172,8 +30172,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: ChangeCameraAngleX
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -30189,8 +30189,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: StopChangingCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: StopChangingCameraAngle
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -34943,8 +34943,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: ChangeCameraAngleY
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -34960,8 +34960,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: StopChangingCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: StopChangingCameraAngle
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -58380,8 +58380,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: ChangeCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: ChangeCameraAngleY
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -58397,8 +58397,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_MethodName: StopChangingCameraFOV
+        - m_Target: {fileID: 1741231149}
+          m_MethodName: StopChangingCameraAngle
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
