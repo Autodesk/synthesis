@@ -13,12 +13,12 @@ namespace Synthesis
 	{
 	public:
 		static std::vector<Ptr<Joint>> collectJoints(Ptr<FusionDocument>);
-		static BXDJ::ConfigData loadConfiguration(Ptr<FusionDocument> document);
-		static void saveConfiguration(BXDJ::ConfigData config, Ptr<FusionDocument> document);
+		static BXDJ::ConfigData loadConfiguration(Ptr<FusionDocument>);
+		static void saveConfiguration(BXDJ::ConfigData, Ptr<FusionDocument>);
 
 		static void exportExample();
 		static void exportExampleXml();
-		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>, std::function<void(double)> progressCallback = nullptr, bool * cancel = nullptr);
+		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>, std::function<void(double)> progressCallback = nullptr, const bool * cancel = nullptr);
 
 	};
 }
