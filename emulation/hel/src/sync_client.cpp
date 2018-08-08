@@ -7,8 +7,6 @@
 #include "global.hpp"
 #include "json_util.hpp"
 
-using asio::ip::tcp;
-
 #define ETHERNET_MTU 1516
 
 namespace hel {
@@ -19,7 +17,7 @@ namespace hel {
     }
 
     std::string readJSONPacket(asio::ip::tcp::socket& socket, std::string& rest){
-        std::array<char, ETHERNET_MTU+1> data;
+        std::array<char, ETHERNET_MTU + 1> data;
         std::fill(data.begin(), data.end(), '\0');
         int bytes_received = socket.receive(asio::buffer(data));
         std::string received_data = rest;
@@ -30,7 +28,7 @@ namespace hel {
             if (received_data.find(JSON_PACKET_SUFFIX) == std::string::npos) {
                 rest = received_data;
             } else {
-                rest = received_data.substr(received_data.find(JSON_PACKET_SUFFIX)+1);
+                rest = received_data.substr(received_data.find(JSON_PACKET_SUFFIX) + 1);
             }
             return readJSONPacket(socket,rest);
         }
@@ -53,16 +51,14 @@ namespace hel {
             try {
                 while(1) {
                     json_string = readJSONPacket(socket,rest);
-                    //std::cout<<json_string<<"\n";
                     auto instance = hel::ReceiveDataManager::getInstance();
                     instance.first->deserializeShallow(json_string);
                     instance.first->updateShallow();
                     instance.second.unlock();
                     usleep(30000); //
                 }
-            }
-            catch(std::system_error) {
-                std::cout << std::flush << "Receiver Socket disconnected\n";
+            } catch(std::system_error) {
+                std::cerr << "Synthesis warning: Receiver socket disconnected. User code will continue to run, but inputs will be set to default.\n";
             }
         }
     }

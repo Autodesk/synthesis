@@ -18,7 +18,6 @@ namespace hel{
     private:
         std::string last_received_data;
 
-        //BoundsCheckedArray<std::vector<int32_t>, hal::kNumAnalogInputs> analog_inputs; //TODO
         BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
         BoundsCheckedArray<MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
         BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT>  joysticks;

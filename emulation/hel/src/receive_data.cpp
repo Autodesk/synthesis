@@ -29,7 +29,6 @@ namespace hel{
 				a.get().update();
 			}
 		}
-		instance.first->engine_initialized = true;
 		instance.second.unlock();
 	}
 
@@ -40,11 +39,6 @@ namespace hel{
 		auto instance = hel::RoboRIOManager::getInstance();
 
 		updateShallow();
-		/*
-		  for(unsigned i = 0; i < analog_inputs.size(); i++){
-		  instance.first->analog_inputs.setValues(i, analog_inputs[i]);
-		  }
-		*/
 		{
 			tDIO::tDI di = instance.first->digital_system.getInputs();
 			tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
@@ -55,7 +49,6 @@ namespace hel{
 			}
 			instance.first->digital_system.setInputs(di);
 		}
-		instance.first->engine_initialized = true;
 		instance.second.unlock();
 	}
 

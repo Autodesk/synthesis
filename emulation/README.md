@@ -1,15 +1,13 @@
-# Emulation
+# FRC Robot Code Emulation
+
 ## Overview
-Here you'll find things regarding emulating hardware, firmware, and/or software, usually related to the RoboRIO.
+The emulator is the Synthesis tool designed to help users test their FRC robot code. Users can upload their own user code as the FRCUserProgram they would normally deploy to the RoboRIO. Its communication with hardware will then be redirected to the engine for simulation and testing.
 
-### Hardware Emulation Layer
-`hel` is a reimplementation of the hardware abstraction layer that runs in an ARM virtual environment (configured akin to the RoboRIO), which allows your robot code communicate with Synthesis. By reimplementing a lower level of the robot code runtime, we can improve maintainability and portability of code across new releases of WPILib and other external solutions. This is new system has been integrated into Synthesis, replacing old version of the emulator (HELBuildTool and prior solutions).
+## Hardware Emulation Layer
+The core of Synthesis's emulator is HEL. HEL is a reimplementation of the RoboRIO's hardware abstraction layer (HAL) which runs in an ARM virtual environment rather than the RoboRIO. This allows robot code to run on users' computers and to communicate with Synthesis. This lower layer of robot code runtime was chosen for reimplementation to enable compatibilty across new releases of WPILib and other external solutions. This is a new system that has been integrated into Synthesis, replacing older versions of the emulator such as the HELBuildTool and prior solutions.
 
-# Building
-The implementation of HEL currently relies on emulating code that the robot code requires several levels down. For the easiest user experience, the code is all handled inside of a virtual machine running Linux that emulates an ARM proccessor. The problem there is that
-in the case of most users, this is neither the operating system you are running nor the processor your computer has. For ease of development, our system is built around Linux as the development environment. We recommend looking into a free virtual machine solution 
-(there are many good ones out there) and a linux operating system (Ubuntu is recommended). There are many tutorials on setting up virtual machines, so it is recommended to follow one of them. Once you have your virtual machine set up, you need to install several 
-pieces of software. The first of those is the build system CMake. On Ubuntu, the commands are as follows:
+## Building
+HEL is emulation of a layer of robot code several levels below that at which users develops. For the easiest user experience, the code is all handled inside of a Linux virtual machine emulating an ARM processor, much akin to the environment that runs on a RoboRIO. For ease of development, the development environment is built around the same operating system, Linux, as the emulator. It is recommended for those seeking to develop emulation to either install Linux or look into running Linux on a virtual machine solution with their current system (Ubuntu is recommended). Once the Linux environment is set up, there are a few pieces of software to install. The first of those is the build system CMake. To install on Ubuntu, the commands are as follows:
 
 ```shell
 sudo apt update && sudo apt-get install cmake;
