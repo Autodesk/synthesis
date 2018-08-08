@@ -50,7 +50,9 @@ namespace Synthesis.DriverPractice
         #endregion
 
         int gamepieceIndex;
-        
+
+        DriverPractice dp;
+
         void Update()
         {
             if (mainState == null)
@@ -124,8 +126,8 @@ namespace Synthesis.DriverPractice
         }
         private void UpdateTrajectoryValues()
         {
+            dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
             IncrementTrajectoryValues();
-            DriverPractice dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
             xOffsetEntry.GetComponent<InputField>().text = dp.releasePosition.x.ToString();
             yOffsetEntry.GetComponent<InputField>().text = dp.releasePosition.y.ToString();
             zOffsetEntry.GetComponent<InputField>().text = dp.releasePosition.z.ToString();
@@ -213,7 +215,6 @@ namespace Synthesis.DriverPractice
         }
         private void IncrementTrajectoryValues()
         {
-            DriverPractice dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
             if (position)
             {
                 switch (xyz)
@@ -316,7 +317,7 @@ namespace Synthesis.DriverPractice
         /// </summary>
         public void RefreshMoveArrows()
         {
-            DriverPractice dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
+            dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
             GameObject releaseNode = GameObject.Find(dp.releaseNode);
             moveArrows.transform.parent = releaseNode.transform;
             moveArrows.transform.localPosition = dp.releasePosition;
@@ -329,7 +330,7 @@ namespace Synthesis.DriverPractice
         /// <returns></returns>
         private GameObject CreateMoveArrows()
         {
-            DriverPractice dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
+            dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
             GameObject releaseNode = GameObject.Find(dp.releaseNode);
             GameObject arrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
             arrows.name = "ReleasePositionMoveArrows";
