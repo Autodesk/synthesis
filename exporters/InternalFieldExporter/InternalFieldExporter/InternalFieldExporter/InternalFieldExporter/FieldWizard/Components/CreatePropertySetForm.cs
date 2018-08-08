@@ -26,5 +26,15 @@ namespace InternalFieldExporter.FieldWizard
 
             parentTabPage = tabPage;
         }
+
+        /// <summary>
+        /// Adds a ComponentPropertiesTabPage when the "Create" button is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void newPhysicsButton_Click(object sender, EventArgs e)
+        {
+            parentTabPage.parentTabControl.AddComponentPropertiesTab();
+        }
     }
 }
