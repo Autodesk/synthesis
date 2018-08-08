@@ -168,7 +168,7 @@ namespace Synthesis.Robot
                 if (!rigidBody.GetCollisionObject().IsActive)
                     rigidBody.GetCollisionObject().Activate();
             }
-            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
+            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
             {
                 keyDownTime = Time.time;
             }
@@ -177,13 +177,13 @@ namespace Synthesis.Robot
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 SceneManager.LoadScene("Scene");
             }
-            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen &&
+            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
                 !state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HoldTime)
                     BeginReset();
             }
-            else if (InputControl.GetButtonUp(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
+            else if (InputControl.GetButtonUp(Controls.buttons[ControlIndex].resetRobot))
             {
                 BeginReset();
                 EndReset();

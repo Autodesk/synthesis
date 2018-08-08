@@ -22,10 +22,6 @@ namespace Synthesis.MixAndMatch
         private GameObject manipulatorLeftScroll;
         private List<GameObject> manipulators;
 
-        private GameObject presetRightScroll;
-        private GameObject presetLeftScroll;
-        private List<GameObject> presetClones;
-
         public void FindAllGameObjects()
         {
             mixAndMatchModeScript = GameObject.Find("MixAndMatchModeScript");
@@ -41,10 +37,6 @@ namespace Synthesis.MixAndMatch
             manipulatorRightScroll = GameObject.Find("ManipulatorRightScroll");
             manipulatorLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ManipulatorLeftScroll")).First();
             manipulators = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().Manipulators;
-
-            presetRightScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PresetRightScroll")).First();
-            presetLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PresetLeftScroll")).First();
-            presetClones = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().PresetClones;
         }
 
         public bool Scroll(bool right, List<GameObject> objectList, int firstObject, Vector2[] positions, GameObject rightScroll, GameObject leftScroll)
@@ -123,21 +115,11 @@ namespace Synthesis.MixAndMatch
             if (Scroll(right, manipulators, firstManipulator, positions, manipulatorRightScroll, manipulatorLeftScroll)) firstManipulator = (right) ? firstManipulator + 1 : firstManipulator - 1;
         }
 
-        public static int firstPreset = 0;
-        public void ScrollPreset(bool right)
-        {
-            presetClones = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().PresetClones;
-            Debug.Log("First Preset" + firstPreset);
-            Vector2[] positions = { new Vector2(-255, 0), new Vector2(-65, 0), new Vector2(125, 0), new Vector2(315, 0), new Vector2(505, 0), };
-            if (Scroll(right, presetClones, firstPreset, positions, presetRightScroll, presetLeftScroll)) firstPreset = (right) ? firstPreset + 1 : firstPreset - 1;
-        }
-
         public void ResetFirsts()
         {
             firstWheel = 0;
             firstDriveBase = 0;
             firstManipulator = 0;
-            firstPreset = 0;
         }
     }
 }
