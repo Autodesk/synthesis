@@ -140,7 +140,7 @@ namespace Synthesis.States
                 Controls.Load();
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
-                
+
                 if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
                 {
                     Debug.Log(LoadManipulator(RobotTypeManager.ManipulatorPath) ? "Load manipulator success" : "Load manipulator failed");
@@ -151,7 +151,7 @@ namespace Synthesis.States
                 awaitingReplay = true;
                 LoadReplay(selectedReplay);
             }
-            
+
             //initializes the dynamic camera
             DynamicCameraObject = GameObject.Find("Main Camera");
             dynamicCamera = DynamicCameraObject.AddComponent<DynamicCamera>();
@@ -174,7 +174,7 @@ namespace Synthesis.States
             StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
             StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
 
-            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "//Autodesk//Synthesis//Emulator");
+            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Autodesk\Synthesis\Emulator");
             string directoryPath = "";
 
             if (Directory.Exists(defaultDirectory))
@@ -370,7 +370,7 @@ namespace Synthesis.States
             MaMRobot mamRobot = ActiveRobot as MaMRobot;
             mamRobot?.DeleteManipulatorNodes();
         }
-        
+
         /// <summary>
         /// Changes the active robot from the current one to the next one in the list
         /// </summary>
