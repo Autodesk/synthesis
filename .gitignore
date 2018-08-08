@@ -1,4 +1,6 @@
 .vs
+.vs/
+.vs/*
 [Dd]ebug
 [Rr]elease
 engine/unity5/Build_Data
