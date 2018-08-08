@@ -184,6 +184,12 @@
     <Compile Include="FieldWizard\EnterNameDialog.Designer.cs">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldWizard\ExportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FieldWizard\ExportForm.Designer.cs">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FieldWizard\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -307,6 +313,9 @@
     <EmbeddedResource Include="FieldWizard\EnterNameDialog.resx">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\ExportForm.resx">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DebugHighlightForm.resx">
       <DependentUpon>DebugHighlightForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -347,6 +356,7 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\LogoButWhiteAndFaster.gif" />
     <None Include="Resources\SynButton32.bmp" />
     <None Include="Resources\SynButton16.bmp" />
     <None Include="Resources\Logo32.bmp" />

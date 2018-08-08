@@ -183,7 +183,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ExportField16 {
+        internal static System.Drawing.Bitmap ExportRobot16 {
             get {
                 object obj = ResourceManager.GetObject("ExportRobot16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -193,7 +193,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ExportField32 {
+        internal static System.Drawing.Bitmap ExportRobot32 {
             get {
                 object obj = ResourceManager.GetObject("ExportRobot32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -243,7 +243,17 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap LoadField16 {
+        internal static System.Drawing.Bitmap LoadingAnimation {
+            get {
+                object obj = ResourceManager.GetObject("LoadingAnimation", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LoadRobot16 {
             get {
                 object obj = ResourceManager.GetObject("LoadRobot16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -253,7 +263,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap LoadField32 {
+        internal static System.Drawing.Bitmap LoadRobot32 {
             get {
                 object obj = ResourceManager.GetObject("LoadRobot32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -263,7 +273,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FieldClick16 {
+        internal static System.Drawing.Bitmap RobotClick16 {
             get {
                 object obj = ResourceManager.GetObject("RobotClick16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -273,7 +283,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FieldClick32 {
+        internal static System.Drawing.Bitmap RobotClick32 {
             get {
                 object obj = ResourceManager.GetObject("RobotClick32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -283,7 +293,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FieldMagicWand16 {
+        internal static System.Drawing.Bitmap RobotMagicWand16 {
             get {
                 object obj = ResourceManager.GetObject("RobotMagicWand16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -293,7 +303,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FieldMagicWand32 {
+        internal static System.Drawing.Bitmap RobotMagicWand32 {
             get {
                 object obj = ResourceManager.GetObject("RobotMagicWand32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -323,7 +333,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap SaveField16 {
+        internal static System.Drawing.Bitmap SaveRobot16 {
             get {
                 object obj = ResourceManager.GetObject("SaveRobot16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -333,7 +343,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap SaveField32 {
+        internal static System.Drawing.Bitmap SaveRobot32 {
             get {
                 object obj = ResourceManager.GetObject("SaveRobot32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -343,7 +353,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap SaveFieldAs16 {
+        internal static System.Drawing.Bitmap SaveRobotAs16 {
             get {
                 object obj = ResourceManager.GetObject("SaveRobotAs16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -353,7 +363,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap SaveFieldAs32 {
+        internal static System.Drawing.Bitmap SaveRobotAs32 {
             get {
                 object obj = ResourceManager.GetObject("SaveRobotAs32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -383,7 +393,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap StartFieldExporter16 {
+        internal static System.Drawing.Bitmap StartRobotExporter16 {
             get {
                 object obj = ResourceManager.GetObject("StartRobotExporter16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -393,7 +403,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap StartFieldExporter32 {
+        internal static System.Drawing.Bitmap StartRobotExporter32 {
             get {
                 object obj = ResourceManager.GetObject("StartRobotExporter32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -453,7 +463,7 @@ namespace InternalFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap TTExportField {
+        internal static System.Drawing.Bitmap TTExportRobot {
             get {
                 object obj = ResourceManager.GetObject("TTExportRobot", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
