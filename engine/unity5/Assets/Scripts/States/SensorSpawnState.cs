@@ -17,6 +17,7 @@ namespace Synthesis.States
     {
         private GameObject sensor;
         private DynamicCamera.CameraState lastCameraState;
+        private GameObject moveArrows;
 
         #region help ui variables
         GameObject ui;
@@ -39,7 +40,7 @@ namespace Synthesis.States
             overlay = Auxiliary.FindObject(ui, "Overlay");
             #endregion
 
-            GameObject moveArrows = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+            moveArrows = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
             moveArrows.name = "IndicatorMoveArrows";
             moveArrows.transform.parent = sensor.transform;
             moveArrows.transform.rotation = sensor.transform.rotation;
@@ -87,11 +88,12 @@ namespace Synthesis.States
             if (helpMenu.activeSelf) CloseHelpMenu();
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             dynamicCamera.SwitchCameraState(lastCameraState);
+            GameObject.Destroy(moveArrows);
             StateMachine.PopState();
         }
         private void ResetSpawn()
         {
-            sensor.transform.position = new Vector3(0f, 0.2f, 0f);
+            sensor.transform.localPosition = sensor.name.Contains("Camera") ? new Vector3(0f, 0.5f, 0f) : new Vector3(0f, 0.2f, 0f);
         }
         private void HelpMenu()
         {

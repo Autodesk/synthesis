@@ -479,12 +479,13 @@ namespace Synthesis.Camera
         public void ResetAngle()
         {
             robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            UpdateCameraAnglePanel();
         }
 
         public void ResetFOV()
         {
             robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = 60;
-            FOVEntry.GetComponent<InputField>().text = "60";
+            UpdateCameraFOVPanel();
         }
         #endregion
     }

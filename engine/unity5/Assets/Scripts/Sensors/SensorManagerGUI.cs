@@ -198,11 +198,7 @@ namespace Synthesis.Sensors
             showRangeButton = Auxiliary.FindObject(configureSensorPanel, "ShowSensorRangeButton");
             editRangeButton = Auxiliary.FindObject(sensorRangePanel, "EditButton");
             rangeUnit = Auxiliary.FindObject(sensorRangePanel, "RangeUnit").GetComponent<Text>();
-
-            lockPositionButton = Auxiliary.FindObject(configureSensorPanel, "LockPositionButton");
-            lockAngleButton = Auxiliary.FindObject(configureSensorPanel, "LockAngleButton");
-            lockRangeButton = Auxiliary.FindObject(configureSensorPanel, "LockRangeButton");
-
+            
             showSensorButton = Auxiliary.FindObject(canvas, "ShowOutputButton");
             sensorOutputPanel = Auxiliary.FindObject(canvas, "SensorOutputBorder");
             robotCameraGUI = GetComponent<RobotCameraGUI>();
@@ -535,10 +531,25 @@ namespace Synthesis.Sensors
         /// </summary>
         public void StartConfiguration()
         {
+            if (currentSensor.sensorType.Equals("Gyro"))
+            {
+                configureSensorPanel = Auxiliary.FindObject(canvas, "GyroConfigurationPanel");
+                sensorConfigurationModeButton = Auxiliary.FindObject(configureSensorPanel, "ConfigurationMode");
+                deleteSensorButton = Auxiliary.FindObject(configureSensorPanel, "DeleteSensorButton");
+                hideSensorButton = Auxiliary.FindObject(configureSensorPanel, "HideSensorButton");
+                sensorConfigHeader = Auxiliary.FindObject(configureSensorPanel, "SensorConfigHeader");
+            }
+            else if (configureSensorPanel.name.Equals("GyroConfigurationPanel"))
+            {
+                configureSensorPanel = Auxiliary.FindObject(canvas, "SensorConfigurationPanel");
+                sensorConfigurationModeButton = Auxiliary.FindObject(configureSensorPanel, "ConfigurationMode");
+                deleteSensorButton = Auxiliary.FindObject(configureSensorPanel, "DeleteSensorButton");
+                hideSensorButton = Auxiliary.FindObject(configureSensorPanel, "HideSensorButton");
+                sensorConfigHeader = Auxiliary.FindObject(configureSensorPanel, "SensorConfigHeader");
+            }
             HideInvisibleSensors();
             currentSensor.ChangeVisibility(true);
             SyncHideSensorButton();
-            //currentSensor.IsChangingPosition = true;
             configureSensorPanel.SetActive(true);
             sensorConfigHeader.GetComponentInChildren<Text>().text = currentSensor.name;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
@@ -754,10 +765,6 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ResetConfigurationWindow()
         {
-            lockPositionButton.SetActive(false);
-            lockAngleButton.SetActive(false);
-            lockRangeButton.SetActive(false);
-
             //showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
             //showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
             //sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
@@ -897,7 +904,8 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ToggleSensorOutput()
         {
-            sensorOutputPanel.SetActive(!sensorOutputPanel.activeSelf);
+            if(sensorManager.GetActiveSensors().Count > 0) sensorOutputPanel.SetActive(!sensorOutputPanel.activeSelf);
+            Auxiliary.FindObject(Auxiliary.FindObject(canvas, "SensorToolbar"), "ShowOutputsButton").GetComponentInChildren<Text>().text = sensorOutputPanel.activeSelf ? "Hide Outputs" : "Show Outputs";
         }
         #endregion
 
@@ -956,10 +964,12 @@ namespace Synthesis.Sensors
         public void ResetAngle()
         {
             currentSensor.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            UpdateSensorAnglePanel();
         }
         public void ResetRange()
         {
             currentSensor.SetSensorRange(currentSensor.sensorType.Equals("Ultrasonic") ? 10f : currentSensor.sensorType.Equals("Beam Break") ? 0.4f : 0);
+            UpdateSensorRangePanel();
         }
     }
 }

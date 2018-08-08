@@ -44,6 +44,14 @@ namespace Assets.Scripts.GUI
             UpdateSensorDropdown(ultrasonicDropdown, sensorManagerGUI.sensorManager.ultrasonicList);
             UpdateSensorDropdown(beamBreakerDropdown, sensorManagerGUI.sensorManager.beamBreakerList);
             UpdateSensorDropdown(gyroDropdown, sensorManagerGUI.sensorManager.gyroList);
+
+            UpdateOutputButton();            
+        }
+
+        private void UpdateOutputButton()
+        {
+            if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() == 0) Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(false);
+            else Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(true);
         }
 
         /// <summary>
@@ -66,6 +74,8 @@ namespace Assets.Scripts.GUI
                 Sprite.Create(Resources.Load("Images/New Icons/Add") as Texture2D, new Rect(0, 0, 24, 24), Vector2.zero)) });
 
             ultrasonicDropdown.RefreshShownValue();
+
+            UpdateOutputButton();
         }
 
         /// <summary>
