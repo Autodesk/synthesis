@@ -46,7 +46,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>C:\Users\t_walkn\Documents\GitHub\synthesis\exporters\FusionExporter\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
