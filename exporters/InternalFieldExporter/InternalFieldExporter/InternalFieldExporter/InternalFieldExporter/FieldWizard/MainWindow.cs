@@ -95,7 +95,10 @@ namespace InternalFieldExporter
         /// <param name="e"></param>
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+            //Application.Exit();
+
+            new ExportForm().Show();
+            //ExportForm.Show();
         }
 
         /// <summary>
