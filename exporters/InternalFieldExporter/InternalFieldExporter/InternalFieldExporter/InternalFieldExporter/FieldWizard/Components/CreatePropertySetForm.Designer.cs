@@ -34,7 +34,7 @@
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(-3, 221);
+            this.label1.Location = new System.Drawing.Point(4, 259);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(784, 27);
@@ -45,7 +45,7 @@
             // createButton
             // 
             this.createButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.createButton.Location = new System.Drawing.Point(347, 178);
+            this.createButton.Location = new System.Drawing.Point(307, 152);
             this.createButton.Margin = new System.Windows.Forms.Padding(4);
             this.createButton.Name = "createButton";
             this.createButton.Size = new System.Drawing.Size(85, 39);

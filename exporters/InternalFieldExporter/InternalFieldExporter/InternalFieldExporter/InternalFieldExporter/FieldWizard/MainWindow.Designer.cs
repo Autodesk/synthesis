@@ -55,7 +55,7 @@
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip.Size = new System.Drawing.Size(912, 28);
+            this.menuStrip.Size = new System.Drawing.Size(830, 28);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "Menu";
             // 
@@ -133,14 +133,14 @@
             this.propertySetsTabControl.Location = new System.Drawing.Point(0, 31);
             this.propertySetsTabControl.Name = "propertySetsTabControl";
             this.propertySetsTabControl.SelectedIndex = 0;
-            this.propertySetsTabControl.Size = new System.Drawing.Size(912, 517);
+            this.propertySetsTabControl.Size = new System.Drawing.Size(832, 530);
             this.propertySetsTabControl.TabIndex = 1;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(912, 549);
+            this.ClientSize = new System.Drawing.Size(830, 559);
             this.Controls.Add(this.propertySetsTabControl);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
