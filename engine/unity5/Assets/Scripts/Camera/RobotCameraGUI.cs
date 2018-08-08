@@ -96,10 +96,16 @@ namespace Synthesis.Camera
             //Allows users to save their configuration using enter
             if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
             if (isEditingFOV && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditFOV();
-            
+
             //If an increment button is held, increment fov or angle
-            if (changingFOV) robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign;
-            else if (changingAngle)
+            if (changingFOV)
+            {
+                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView =
+                    robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign;
+                UpdateCameraFOVPanel();
+            }
+            else if (robotCameraManager.IsChangingFOV) SyncCameraFOV();
+            if (changingAngle)
             {
                 if (changingAngleX) robotCameraManager.RotateTransform(angleIncrement * angleSign, 0, 0);
                 else if (changingAngleY) robotCameraManager.RotateTransform(0, angleIncrement * angleSign, 0);
