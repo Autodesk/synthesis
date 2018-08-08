@@ -24,8 +24,6 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 		childrenJoints.push_back(joint);
 
 	parent = nodeToCopy.parent;
-
-	log = nodeToCopy.log;
 }
 
 Guid BXDJ::RigidNode::getGUID() const

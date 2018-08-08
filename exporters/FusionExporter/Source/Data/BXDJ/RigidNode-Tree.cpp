@@ -12,8 +12,10 @@
 
 using namespace BXDJ;
 
+#if _DEBUG
 std::string RigidNode::log = "";
 int RigidNode::depth = 0;
+#endif
 
 RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config) : RigidNode()
 {

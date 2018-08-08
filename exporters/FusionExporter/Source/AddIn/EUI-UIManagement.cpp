@@ -87,7 +87,7 @@ bool EUI::createExportPalette()
 	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
 	if (!exportPalette)
 	{
-		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/export.html", true, true, true, 300, 200);
+		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/export.html", false, true, true, 300, 200);
 		if (!exportPalette)
 			return false;
 
@@ -95,8 +95,6 @@ bool EUI::createExportPalette()
 
 		addHandler<ReceiveFormDataHandler>(exportPalette);
 		addHandler<CloseExporterFormEventHandler>(exportPalette);
-
-		exportPalette->isVisible(false);
 	}
 
 	return true;
@@ -133,6 +131,7 @@ void EUI::openExportPalette()
 	{
 		exportPalette->sendInfoToHTML("joints", configJSON);
 		exportPalette->isVisible(true);
+		exportPalette->sendInfoToHTML("joints", configJSON);
 	}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
 }
 
@@ -156,7 +155,7 @@ bool EUI::createSensorsPalette()
 	if (!sensorsPalette)
 	{
 		// Create palette
-		sensorsPalette = palettes->add(K_SENSORS_PALETTE, "Sensors", "Palette/sensors.html", true, true, true, 300, 200);
+		sensorsPalette = palettes->add(K_SENSORS_PALETTE, "Sensors", "Palette/sensors.html", false, true, true, 300, 200);
 		if (!sensorsPalette)
 			return false;
 
@@ -164,8 +163,6 @@ bool EUI::createSensorsPalette()
 		sensorsPalette->dockingState(PaletteDockStateRight);
 
 		addHandler<ReceiveFormDataHandler>(sensorsPalette);
-
-		sensorsPalette->isVisible(false);
 	}
 
 	return true;
@@ -198,6 +195,7 @@ void EUI::openSensorsPalette(std::string sensors)
 	{
 		sensorsPalette->sendInfoToHTML("sensors", sensors);
 		sensorsPalette->isVisible(true);
+		sensorsPalette->sendInfoToHTML("sensors", sensors);
 	}, sensors);
 }
 
@@ -227,15 +225,13 @@ bool EUI::createProgressPalette()
 	if (!progressPalette)
 	{
 		// Create palette
-		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", true, false, false, 150, 150);
+		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", false, false, false, 150, 150);
 		if (!progressPalette)
 			return false;
 
 		// Dock the palette to the right side of Fusion window.
 		progressPalette->dockingState(PaletteDockStateBottom);
 		progressPalette->dockingOption(PaletteDockOptionsToVerticalOnly);
-
-		progressPalette->isVisible(false);
 	}
 
 	return true;
@@ -265,6 +261,7 @@ void EUI::openProgressPalette()
 	{
 		progressPalette->sendInfoToHTML("progress", "0");
 		progressPalette->isVisible(true);
+		progressPalette->sendInfoToHTML("progress", "0");
 	});
 }
 
