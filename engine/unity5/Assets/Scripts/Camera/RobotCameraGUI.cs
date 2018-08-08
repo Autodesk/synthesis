@@ -36,7 +36,7 @@ namespace Synthesis.Camera
         GameObject FOVEntry;
 
         bool changingFOV = false;
-        float fovIncrement = .01f;
+        float fovIncrement = 1f;
         int fovSign;
 
         GameObject cameraNodePanel;
@@ -98,7 +98,7 @@ namespace Synthesis.Camera
             //        (robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign).ToString();
             //    SyncCameraFOV();
 
-            //If an increment button is held, increment fov
+            //If an increment button is held, increment fov or angle
             if (changingFOV)
             {
                 robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView =
