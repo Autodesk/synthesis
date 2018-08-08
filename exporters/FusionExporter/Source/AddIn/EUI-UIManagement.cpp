@@ -127,8 +127,7 @@ void EUI::openExportPalette()
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
-	if (uiThread != nullptr)
-		uiThread->join(); delete uiThread;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
 	uiThread = new std::thread([this](std::string configJSON)
 	{
@@ -193,8 +192,7 @@ void EUI::deleteSensorsPalette()
 void EUI::openSensorsPalette(std::string sensors)
 {
 	static std::thread * uiThread = nullptr;
-	if (uiThread != nullptr)
-		uiThread->join(); delete uiThread;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
 	uiThread = new std::thread([this](std::string sensors)
 	{
@@ -210,8 +208,7 @@ void EUI::closeSensorsPalette(std::string sensorsToSave)
 	if (sensorsToSave.length() > 0)
 	{
 		static std::thread * uiThread = nullptr;
-		if (uiThread != nullptr)
-			uiThread->join(); delete uiThread;
+		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
 		uiThread = new std::thread([this](std::string sensors) { exportPalette->sendInfoToHTML("sensors", sensors); }, sensorsToSave);
 	}
@@ -262,8 +259,7 @@ void EUI::deleteProgressPalette()
 void EUI::openProgressPalette()
 {
 	static std::thread * uiThread = nullptr;
-	if (uiThread != nullptr)
-		uiThread->join(); delete uiThread;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
 	uiThread = new std::thread([this]()
 	{
