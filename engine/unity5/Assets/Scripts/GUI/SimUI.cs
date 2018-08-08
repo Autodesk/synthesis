@@ -188,25 +188,6 @@ namespace Synthesis.GUI
             toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
             driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
-            //Fix this - temporary workaround
-            panels.Add(freeroamCameraWindow);
-            panels.Add(spawnPointPanel);
-            panels.Add(multiplayerPanel);
-            panels.Add(driverStationPanel);
-            panels.Add(changeRobotPanel);
-            panels.Add(changeFieldPanel);
-            panels.Add(inputManagerPanel);
-            panels.Add(checkSavePanel);
-            panels.Add(hotKeyPanel);
-            panels.Add(orientWindow);
-            panels.Add(analyticsPanel);
-            panels.Add(mixAndMatchPanel);
-            panels.Add(changePanel);
-            panels.Add(addPanel);
-            panels.Add(toolkitPanel);
-            panels.Add(driverStationSettingsPanel);
-            //Fix this - temporary workaround
-
             CheckControlPanel();
         }
 
