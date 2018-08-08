@@ -23,7 +23,7 @@ sudo apt install frc-toolchain
 
 ```
 
-After all of the utilities are installed, all thats left to do is build. To build HEL, execute the following code in a terminal on the virtual machine:
+After the utilities have been installed, all that is left to do is build. To build HEL, navigate to the `hel` directory in a terminal and execute the following command:
 
 ```shell
 cmake . -DCMAKE_BUILD_TYPE=RELEASE \

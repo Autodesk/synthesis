@@ -4,6 +4,8 @@
 #include "roborio.hpp"
 #include <asio.hpp>
 
+#define SEND_PORT 11001
+
 namespace hel {
     class SyncServer {
     public:
@@ -12,7 +14,6 @@ namespace hel {
 
     private:
         asio::ip::tcp::endpoint endpoint;
-        int packet_number = 0;
     };
 }
 
