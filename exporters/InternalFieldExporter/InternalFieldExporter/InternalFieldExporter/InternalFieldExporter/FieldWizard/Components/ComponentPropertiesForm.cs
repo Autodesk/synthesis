@@ -61,7 +61,7 @@ namespace InternalFieldExporter.FieldWizard
 
             ParentTabPage = tabPage;
         
-            colliderTypeCombobox.SelectedIndex = 0;
+            colliderTypeCombobox.SelectedIndex = -1;
 
             InteractionEnabled = false;
         }
