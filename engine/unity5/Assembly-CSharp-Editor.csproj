@@ -741,6 +741,14 @@
       <Project>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</Project>
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.Analytics.DataPrivacy.Editor.csproj">
+      <Project>{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}</Project>
+      <Name>Unity.Analytics.DataPrivacy.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Analytics.DataPrivacy.csproj">
+      <Project>{ACDD2F29-AC5D-76DD-A58C-30AA4D1B465F}</Project>
+      <Name>Unity.Analytics.DataPrivacy</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
