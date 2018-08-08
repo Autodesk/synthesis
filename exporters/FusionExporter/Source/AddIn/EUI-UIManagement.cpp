@@ -3,6 +3,11 @@
 
 using namespace Synthesis;
 
+// Developer Note: When sending data to HTML pages, data is sent twice. Sometimes pages do not receive/process the
+//                 first set of data in time, so sending it a second time ensures the data is received. Additionally,
+//                 sending data before displaying the page improves the chances that the data will already be rendering
+//                 by the time the window is made visible.
+
 // WORKSPACE
 
 bool EUI::createWorkspace()
