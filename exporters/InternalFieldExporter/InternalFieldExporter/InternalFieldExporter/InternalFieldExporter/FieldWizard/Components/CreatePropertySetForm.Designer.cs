@@ -34,9 +34,10 @@
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(6, 165);
+            this.label1.Location = new System.Drawing.Point(-3, 221);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(588, 22);
+            this.label1.Size = new System.Drawing.Size(784, 27);
             this.label1.TabIndex = 0;
             this.label1.Text = "You have not yet created any Property Sets.";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -44,21 +45,23 @@
             // createButton
             // 
             this.createButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.createButton.Location = new System.Drawing.Point(268, 190);
+            this.createButton.Location = new System.Drawing.Point(347, 178);
+            this.createButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.createButton.Name = "createButton";
-            this.createButton.Size = new System.Drawing.Size(64, 32);
+            this.createButton.Size = new System.Drawing.Size(85, 39);
             this.createButton.TabIndex = 1;
             this.createButton.Text = "Create";
             this.createButton.UseVisualStyleBackColor = true;
             // 
             // CreatePropertySetForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.createButton);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "CreatePropertySetForm";
-            this.Size = new System.Drawing.Size(600, 400);
+            this.Size = new System.Drawing.Size(800, 492);
             this.ResumeLayout(false);
 
         }
