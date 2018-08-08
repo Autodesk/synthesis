@@ -41,9 +41,9 @@ namespace Assets.Scripts.GUI
             gyroDropdown = Auxiliary.FindObject(sensorToolbar, "GyroDropdown").GetComponent<Dropdown>();
 
             //initialize dropdowns
-            UpdateSensorDropdown(ultrasonicDropdown, null);
-            UpdateSensorDropdown(beamBreakerDropdown, null);
-            UpdateSensorDropdown(gyroDropdown, null);
+            UpdateSensorDropdown(ultrasonicDropdown, sensorManagerGUI.sensorManager.ultrasonicList);
+            UpdateSensorDropdown(beamBreakerDropdown, sensorManagerGUI.sensorManager.beamBreakerList);
+            UpdateSensorDropdown(gyroDropdown, sensorManagerGUI.sensorManager.gyroList);
         }
 
         /// <summary>

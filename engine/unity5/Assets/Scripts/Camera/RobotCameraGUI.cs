@@ -45,8 +45,7 @@ namespace Synthesis.Camera
         bool changingFOV = false;
         float fovIncrement = 1f;
         int fovSign;
-
-        GameObject cameraNodePanel;
+        
 
         GameObject robotCameraViewWindow;
         RenderTexture robotCameraView;
@@ -58,10 +57,6 @@ namespace Synthesis.Camera
         //Camera configuration
         GameObject configureRobotCameraButton;
         GameObject configureCameraPanel;
-        //Toggle between horizontal plane and height
-        GameObject changeCameraNodeButton;
-        Text cameraNodeText;
-        GameObject cancelNodeSelectionButton;
 
         //Dark buttons that lock the corresponding button so users can't do different configuration options at the same time
         GameObject lockPositionButton;
@@ -88,7 +83,6 @@ namespace Synthesis.Camera
                 UpdateCameraWindow();
                 if (indicatorActive)
                 {
-                    UpdateNodeAttachment();
                     UpdateIndicatorTransform();
                 }
             }
@@ -143,10 +137,6 @@ namespace Synthesis.Camera
             //For camera position and attachment configuration
             configureCameraPanel = Auxiliary.FindObject(canvas, "CameraConfigurationPanel");
             configureRobotCameraButton = Auxiliary.FindObject(canvas, "CameraConfigurationButton");
-            changeCameraNodeButton = Auxiliary.FindObject(configureCameraPanel, "ChangeNodeButton");
-            cameraNodeText = Auxiliary.FindObject(configureCameraPanel, "NodeText").GetComponent<Text>();
-            cancelNodeSelectionButton = Auxiliary.FindObject(configureCameraPanel, "CancelNodeSelectionButton");
-            cameraNodePanel = Auxiliary.FindObject(configureCameraPanel, "CameraAttachmentPanel");
 
             //For camera angle configuration
             cameraAnglePanel = Auxiliary.FindObject(canvas, "CameraAnglePanel");
@@ -179,14 +169,6 @@ namespace Synthesis.Camera
                 {
                     robotCameraManager.CurrentCamera.SetActive(true);
                     robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = robotCameraView;
-                    //Toggle the robot camera using Z (can be changed later)
-                    if (UnityEngine.Input.GetKeyDown(KeyCode.Z))
-                    {
-                        //Reset the targetTexture of current camera or they will conflict
-                        robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;
-                        robotCameraManager.ToggleCamera();
-                        robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = robotCameraView;
-                    }
                 }
             }
             //Free the target texture of the current camera when the window is closed (for normal toggle camera function)
@@ -225,24 +207,8 @@ namespace Synthesis.Camera
         public void ToggleCameraIndicator()
         {
             indicatorActive = !indicatorActive;
-            //configureRobotCameraButton.SetActive(indicatorActive);
-
-            //if (indicatorActive)
-            //{
-            //    //Only allow the camera configuration when the indicator is active
-            //    //showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
-            //}
-            //else
-            //{
-            //    //showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
-            //    //Close the panel when indicator is not active and stop all configuration
-            //    ResetConfigurationWindow();
-            //    //configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
-            //    configureRobotCameraButton.SetActive(false);
-
-            //    robotCameraManager.ArrowsActive = false;
-            //}
             CameraIndicator.SetActive(indicatorActive);
+            Auxiliary.FindObject(configureCameraPanel, "VisibilityButton").GetComponentInChildren<Text>().text = indicatorActive ? "Hide" : "Show"; 
         }
 
         /// <summary>
@@ -256,19 +222,12 @@ namespace Synthesis.Camera
             {
                 preConfigCamState = dynamicCamera.cameraState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, robotCameraManager.CurrentCamera));
-                //Update the node where current camera is attached to
-                //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
-                //configureRobotCameraButton.GetComponentInChildren<Text>().text = "End";
-
-                //robotCameraManager.ArrowsActive = true;
             }
             else
             {
                 configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure";
                 ResetConfigurationWindow();
                 dynamicCamera.SwitchToState(preConfigCamState);
-
-                //robotCameraManager.ArrowsActive = false;
             }
         }
 
@@ -277,18 +236,7 @@ namespace Synthesis.Camera
         /// </summary>
         public void ToggleChangePosition()
         {
-            if (!robotCameraManager.CurrentCamera.transform.Find("IndicatorMoveArrows"))
-            {
-                GameObject moveArrows = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
-                moveArrows.name = "IndicatorMoveArrows";
-                moveArrows.transform.parent = robotCameraManager.CurrentCamera.transform;
-                moveArrows.transform.localPosition = UnityEngine.Vector3.zero;
-
-                moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
-                    robotCameraManager.CurrentCamera.transform.Translate(translation, Space.World);
-            }
-            else Destroy(robotCameraManager.CurrentCamera.transform.Find("IndicatorMoveArrows").gameObject);
-            
+            StateMachine.SceneGlobal.PushState(new SensorSpawnState(robotCameraManager.CurrentCamera));
         }
 
         /// <summary>
@@ -296,50 +244,9 @@ namespace Synthesis.Camera
         /// </summary>
         public void ToggleChangeNode()
         {
-            if (!robotCameraManager.SelectingNode && robotCameraManager.SelectedNode == null) //open the panel and start selecting
-            {
-                cameraNodePanel.SetActive(true);
-                robotCameraManager.DefineNode(); //Start selecting a new node, set SelectingNode to true
-                //changeCameraNodeButton.GetComponentInChildren<Text>().text = "Confirm";
-                //cancelNodeSelectionButton.SetActive(true);
-            }
-            else if (robotCameraManager.SelectingNode) //close the panel (without saving)
-            {
-                //robotCameraManager.ChangeNodeAttachment();
-                //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
-                //changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
-                //cancelNodeSelectionButton.SetActive(false);
-                //if (robotCameraManager.SelectedNode != null) robotCameraManager.ChangeNodeAttachment();
-                CancelNodeSelection();
-                //cameraNodePanel.SetActive(false);
-            }
+            StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(robotCameraManager));
         }
-
-        /// <summary>
-        /// Exit the state of selecting node attatchment and save the selected node
-        /// </summary>
-        public void SaveNodeSelection()
-        {
-            if (robotCameraManager.SelectedNode != null)
-            {
-                robotCameraManager.ChangeNodeAttachment();
-                CancelNodeSelection();
-            }
-        }
-
-        /// <summary>
-        /// Exit the state of selecting node attachment without saving
-        /// </summary>
-        public void CancelNodeSelection()
-        {
-            robotCameraManager.ResetNodeColors();
-            robotCameraManager.SelectedNode = null;
-            robotCameraManager.SelectingNode = false;
-            //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
-            //changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
-            cameraNodePanel.SetActive(false);
-        }
-
+   
         /// <summary>
         /// Update the local angle of the current camera to the camera angle panel
         /// </summary>
@@ -482,21 +389,10 @@ namespace Synthesis.Camera
         /// </summary>
         public void ToggleCameraFOVPanel()
         {
+            FOVEntry.GetComponent<InputField>().text = robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView.ToString();
             robotCameraManager.IsChangingFOV = !robotCameraManager.IsChangingFOV;
             cameraFOVPanel.SetActive(robotCameraManager.IsChangingFOV);
             isEditingFOV = robotCameraManager.IsChangingFOV;
-
-            //lockPositionButton.SetActive(robotCameraManager.IsChangingFOV);
-            //lockAngleButton.SetActive(robotCameraManager.IsChangingFOV);
-
-            //if (robotCameraManager.IsChangingFOV)
-            //{
-            //    showFOVButton.GetComponentInChildren<Text>().text = "Hide Camera FOV";
-            //}
-            //else
-            //{
-            //    showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera FOV";
-            //}
         }
 
         public void ChangeCameraFOV(int sign)
@@ -527,16 +423,7 @@ namespace Synthesis.Camera
                 isEditingFOV = false;
             }
         }
-
-        /// <summary>
-        /// Update the text indicating attachment node for current camera
-        /// </summary>
-        public void UpdateNodeAttachment()
-        {
-            //if (robotCameraManager.CurrentCamera != null)
-                //cameraNodeText.text = "Current Node: " + robotCameraManager.CurrentCamera.transform.parent.gameObject.name;
-        }
-
+        
         /// <summary>
         /// Update transform of robot camera indicator to follow the current camera
         /// </summary>
@@ -555,8 +442,7 @@ namespace Synthesis.Camera
             //Change the dynamic camera back to its original state
             if (robotCameraManager.ChangingCameraPosition) dynamicCamera.SwitchToState(preConfigCamState);
 
-            //Cancel configuration changes and node selection process
-            CancelNodeSelection();
+            //Cancel configuration changes
             robotCameraManager.ResetConfigurationState();
 
             //Reset all gui stuff
@@ -588,6 +474,17 @@ namespace Synthesis.Camera
             }
             robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;
             robotCameraManager.CurrentCamera.SetActive(false);
+        }
+
+        public void ResetAngle()
+        {
+            robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(Vector3.zero);
+        }
+
+        public void ResetFOV()
+        {
+            robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = 60;
+            FOVEntry.GetComponent<InputField>().text = "60";
         }
         #endregion
     }
