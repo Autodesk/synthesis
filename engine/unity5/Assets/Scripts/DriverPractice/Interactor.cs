@@ -71,7 +71,7 @@ namespace Synthesis.DriverPractice
             this.gamepiece.Insert(id, gamepiece);
             while (collisionDetector.Count < id) collisionDetector.Add(false);
             collisionDetector.Insert(id, false);
-            while (collisionObject.Count < id) collisionObject.Add(new GameObject());
+            while (collisionObject.Count <= id) collisionObject.Add(new GameObject());
         }
         public bool GetDetected(int id)
         {
