@@ -39,10 +39,8 @@ namespace Synthesis.GUI
         private GameObject stopwatchWindow;
         private Text stopwatchText;
         private Text stopwatchStartButtonText;
-        private Text stopwatchPauseButtonText;
 
         private bool stopwatchOn;
-        private bool stopwatchPaused;
         private float stopwatchTime;
 
         private GameObject statsWindow;
@@ -75,7 +73,6 @@ namespace Synthesis.GUI
             stopwatchWindow = Auxiliary.FindObject(canvas, "StopwatchPanel");
             stopwatchText = Auxiliary.FindObject(canvas, "StopwatchText").GetComponent<Text>();
             stopwatchStartButtonText = Auxiliary.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
-            stopwatchPauseButtonText = Auxiliary.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
 
             //Stats Objects
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
@@ -103,10 +100,6 @@ namespace Synthesis.GUI
                 UpdateStatsWindow();
             }
             //UpdateControlIndicator();
-            if (UnityEngine.Input.GetKeyDown(KeyCode.P) && stopwatchWindow.activeSelf)
-            {
-                PauseStopwatch();
-            }
         }
 
         /// <summary>
@@ -314,25 +307,6 @@ namespace Synthesis.GUI
                     });
                 }
             }
-            stopwatchPauseButtonText.text = "Pause";
-            stopwatchPaused = false;
-        }
-
-        public void PauseStopwatch()
-        {
-            if (stopwatchOn)
-            {
-                if (!stopwatchPaused)
-                {
-                    stopwatchPauseButtonText.text = "Resume";
-                    stopwatchPaused = true;
-                }
-                else
-                {
-                    stopwatchPauseButtonText.text = "Pause";
-                    stopwatchPaused = false;
-                }
-            }
         }
 
         public void ResetStopwatch()
@@ -343,7 +317,7 @@ namespace Synthesis.GUI
 
         private void UpdateStopwatch()
         {
-            if (stopwatchOn && !stopwatchPaused)
+            if (stopwatchOn)
             {
                 stopwatchTime += Time.deltaTime;
                 stopwatchText.text = (Mathf.Round(stopwatchTime * 100) / 100).ToString();
@@ -413,10 +387,6 @@ namespace Synthesis.GUI
             if (stopwatchOn)
             {
                 ResetStopwatch();
-                if (stopwatchPaused)
-                {
-                    PauseStopwatch();
-                }
                 ToggleStopwatch();
             }
 
