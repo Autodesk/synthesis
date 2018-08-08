@@ -7,8 +7,8 @@ Driver::Driver(const Driver & driverToCopy)
 {
 	type = driverToCopy.type;
 	portSignal = driverToCopy.portSignal;
-	portA = driverToCopy.portA;
-	portB = driverToCopy.portB;
+	portOne = driverToCopy.portOne;
+	portTwo = driverToCopy.portTwo;
 	inputGear = driverToCopy.inputGear;
 	outputGear = driverToCopy.outputGear;
 
@@ -28,8 +28,8 @@ Driver::Driver(Type type)
 {
 	this->type = type;
 	portSignal = PWM;
-	portA = 0;
-	portB = 0;
+	portOne = 0;
+	portTwo = 0;
 	inputGear = 1;
 	outputGear = 1;
 
@@ -43,8 +43,8 @@ void Driver::write(XmlWriter & output) const
 
 	output.writeElement("DriveType", toString(type));
 
-	output.writeElement("PortA", std::to_string(portA + 1)); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
-	output.writeElement("PortB", std::to_string(portB + 1)); // For backwards compatibility, ports will be stored one larger than their actual value.
+	output.writeElement("Port1", std::to_string(portOne + 1)); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
+	output.writeElement("Port2", std::to_string(portTwo + 1)); // For backwards compatibility, ports will be stored one larger than their actual value.
 
 	if (inputGear > 0 && outputGear > 0)
 	{
@@ -73,8 +73,8 @@ rapidjson::Value Driver::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocat
 
 	driverJSON.AddMember("type", rapidjson::Value((int)type), allocator);
 	driverJSON.AddMember("signal", rapidjson::Value((int)portSignal), allocator);
-	driverJSON.AddMember("portA", rapidjson::Value(portA), allocator);
-	driverJSON.AddMember("portB", rapidjson::Value(portB), allocator);
+	driverJSON.AddMember("portOne", rapidjson::Value(portOne), allocator);
+	driverJSON.AddMember("portTwo", rapidjson::Value(portTwo), allocator);
 
 	// Components
 	// Wheel Information
@@ -102,10 +102,10 @@ void Driver::loadJSONObject(const rapidjson::Value & driverJSON)
 			type = (Driver::Type)driverJSON["type"].GetInt();
 		if (driverJSON["signal"].IsNumber())
 			portSignal = (Driver::Signal)driverJSON["signal"].GetInt();
-		if (driverJSON["portA"].IsNumber())
-			portA = driverJSON["portA"].GetInt();
-		if (driverJSON["portB"].IsNumber())
-			portB = driverJSON["portB"].GetInt();
+		if (driverJSON["portOne"].IsNumber())
+			portOne = driverJSON["portOne"].GetInt();
+		if (driverJSON["portTwo"].IsNumber())
+			portTwo = driverJSON["portTwo"].GetInt();
 
 		// Components
 		const rapidjson::Value& wheelJSON = driverJSON["wheel"];
