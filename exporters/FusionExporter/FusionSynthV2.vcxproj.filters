@@ -132,6 +132,9 @@
     <ClInclude Include="Source\Data\BXDJ\Components.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\JointSensor.h">
+      <Filter>Headers\Data\BXDJ</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Data\BXDJ\CustomJSONObject.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
@@ -218,8 +221,14 @@
     <ClCompile Include="Source\Data\BXDJ\Utility.cpp">
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\JointSensor.cpp">
+      <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Data\BXDJ\CustomJSONObject.cpp">
       <Filter>Source\Data\BXDJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AddIn\EUI-EventHandling.cpp">
+      <Filter>Source\AddIn</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -239,6 +248,15 @@
       <Filter>Source\AddIn\Palette</Filter>
     </None>
     <None Include="palette\js\progress.js">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\sensors.html">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\js\sensors.js">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\js\utility.js">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
   </ItemGroup>

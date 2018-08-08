@@ -3,6 +3,7 @@
 #include <Core/Geometry/Vector3D.h>
 #include "../ConfigData.h"
 #include "../Driver.h"
+#include "../JointSensor.h"
 #include "../Components/Wheel.h"
 
 using namespace BXDJ;
@@ -60,6 +61,12 @@ void RotationalJoint::applyConfig(const ConfigData & config)
 
 		setDriver(*driver);
 	}
+
+	// Add sensors
+	std::vector<std::shared_ptr<JointSensor>> sensors = config.getSensors(getFusionJoint());
+	for (std::shared_ptr<JointSensor> sensor : sensors)
+		if (sensor->type == JointSensor::ENCODER) // Filter out unsupported sensors
+			addSensor(*sensor);
 }
 
 void RotationalJoint::write(XmlWriter & output) const

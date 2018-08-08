@@ -1,4 +1,5 @@
 #include "CustomHandlers.h"
+#include <Fusion/FusionAll.h>
 #include "Identifiers.h"
 #include "EUI.h"
 #include "../Exporter.h"
@@ -16,6 +17,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
 	{
 		eui->createExportPalette();
+		eui->createSensorsPalette();
 		eui->createProgressPalette();
 	}
 }
@@ -26,6 +28,7 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 	if (eventArgs->workspace()->id() == K_WORKSPACE)
 	{
 		eui->closeExportPalette();
+		eui->closeSensorsPalette();
 		eui->cancelExportThread();
 	}
 }
@@ -108,6 +111,39 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		cam->isSmoothTransition(true);
 		app->activeViewport()->camera(cam);
 	}
+	else if (eventArgs->action() == "edit_sensors")
+	{
+		if (thread != nullptr)
+		{
+			thread->join();
+			delete thread;
+		}
+
+		thread = new std::thread([](std::string data, EUI * eui)
+		{
+			eui->openSensorsPalette(data);
+		}, eventArgs->data(), eui);
+	}
+	else if (eventArgs->action() == "save_sensors")
+	{
+		if (thread != nullptr)
+		{
+			thread->join();
+			delete thread;
+		}
+
+		thread = new std::thread([](std::string data, Ptr<Palette> palette, EUI * eui)
+		{
+			eui->closeSensorsPalette();
+			palette->sendInfoToHTML("sensors", data);
+		}, eventArgs->data(), palette, eui);
+	}
+	else if (eventArgs->action() == "save")
+	{
+		BXDJ::ConfigData config;
+		config.fromJSONString(eventArgs->data());
+		Exporter::saveConfiguration(config, app->activeDocument());
+	}
 	else if (eventArgs->action() == "export")
 	{
 		palette->isVisible(false);
@@ -119,11 +155,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 }
 
 // Close Exporter Form Event
-void CloseFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+void CloseExporterFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
-	Ptr<CommandDefinition> exportButtonCommand = app->userInterface()->commandDefinitions()->itemById(K_EXPORT_BUTTON);
-	if (!exportButtonCommand)
-		return;
-
-	exportButtonCommand->controlDefinition()->isEnabled(true);
+	eui->closeExportPalette();
 }

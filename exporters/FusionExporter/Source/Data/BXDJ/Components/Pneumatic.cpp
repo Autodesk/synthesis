@@ -58,7 +58,7 @@ rapidjson::Value Pneumatic::getJSONObject(rapidjson::MemoryPoolAllocator<>& allo
 	return pneumaticJSON;
 }
 
-void BXDJ::Pneumatic::loadJSONObject(const rapidjson::Value & pneumaticJSON)
+void Pneumatic::loadJSONObject(const rapidjson::Value & pneumaticJSON)
 {
 	if (pneumaticJSON.IsObject())
 	{
