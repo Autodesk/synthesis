@@ -163,8 +163,7 @@ namespace Synthesis.States
                 {
                     foreach (Material m in renderers.materials)
                     {
-                        m.color = storedColors[counter];
-                        counter++;
+                        if (m.HasProperty("_Color")) { m.color = storedColors[counter]; counter++; }
                     }
                 }
                 storedColors.Clear();
