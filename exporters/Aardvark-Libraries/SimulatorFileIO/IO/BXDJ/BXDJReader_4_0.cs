@@ -88,6 +88,7 @@ public partial class BXDJSkeleton
                     <xs:enumeration value='MECANUM'/>
                     <xs:enumeration value='SWERVE'/>
                     <xs:enumeration value='CUSTOM'/>
+                    <xs:enumeration value='NONE'/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
