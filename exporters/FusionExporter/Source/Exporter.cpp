@@ -1,5 +1,10 @@
 #include "Exporter.h"
 #include <vector>
+#include <Fusion/Fusion/Design.h>
+#include <Fusion/Components/Component.h>
+#include <Fusion/Components/JointMotion.h>
+#include <Core/Application/Attributes.h>
+#include <Core/Application/Attribute.h>
 #include "Data/Filesystem.h"
 #include "Data/BXDA/Mesh.h"
 #include "Data/BXDA/SubMesh.h"
@@ -85,7 +90,7 @@ void Exporter::exportExampleXml()
 	std::string filename = Filesystem::getCurrentRobotDirectory("example") + "exampleFusionXml.bxdj";
 	BXDJ::XmlWriter xml(filename, false);
 	xml.startElement("BXDJ");
-	xml.writeAttribute("Version", "3.0.0");
+	xml.writeAttribute("Version", "4.0.0");
 	xml.startElement("Node");
 	xml.writeAttribute("GUID", "0ba8e1ce-1004-4523-b844-9bfa69efada9");
 	xml.writeElement("ParentID", "-1");
@@ -119,8 +124,14 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 	BXDJ::XmlWriter xml(filenameBXDJ, false);
 
 	xml.startElement("BXDJ");
-	xml.writeAttribute("Version", "3.0.0");
+	xml.writeAttribute("Version", "4.0.0");
+
 	xml.write(*rootNode);
+
+	xml.startElement("DriveTrainType");
+	xml.writeElement("DriveTrainTypeNumber", std::to_string((int)config.driveTrainType));
+	xml.endElement();
+
 	xml.endElement();
 
 	// Write BXDA files

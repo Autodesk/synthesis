@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core/CoreAll.h>
+#include <thread>
 
 using namespace adsk::core;
 using namespace adsk::fusion;
@@ -52,19 +53,22 @@ namespace Synthesis
 	{
 	public:
 		ReceiveFormDataHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) { }
+		~ReceiveFormDataHandler() { if (thread != nullptr) { thread->join(); delete thread; } }
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 	private:
 		const char ASCII_OFFSET = -32;
 		Ptr<Application> app;
 		EUI * eui;
+		// Some events don't like doing everything on a single thread
+		std::thread * thread = nullptr;
 	};
 
-	class CloseFormEventHandler : public UserInterfaceGeneralEventHandler
+	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:
-		CloseFormEventHandler(Ptr<Application> app) : app(app) {}
+		CloseExporterFormEventHandler(EUI * eui) : eui(eui) {}
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
 	private:
-		Ptr<Application> app;
+		EUI * eui;
 	};
 }

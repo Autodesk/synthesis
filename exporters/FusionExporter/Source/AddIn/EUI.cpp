@@ -27,6 +27,8 @@ EUI::~EUI()
 	deleteWorkspace();
 }
 
+// WORKSPACE
+
 bool EUI::createWorkspace()
 {
 	try
@@ -38,19 +40,6 @@ bool EUI::createWorkspace()
 			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/SynthesisIcons");
 			workSpace->tooltip("Export robot models to the Synthesis simulator");
 		}
-		
-		// Create workspace events
-		Ptr<WorkspaceEvent> workspaceActivatedEvent = UI->workspaceActivated();
-		if (!workspaceActivatedEvent)
-			throw "Failed to create workspace events.";
-
-		workspaceActivatedEvent->add(new WorkspaceActivatedHandler(this));
-
-		Ptr<WorkspaceEvent> workspaceDeactivatedEvent = UI->workspaceDeactivated();
-		if (!workspaceDeactivatedEvent)
-			throw "Failed to create workspace events.";
-
-		workspaceDeactivatedEvent->add(new WorkspaceDeactivatedHandler(this));
 
 		// Create panel
 		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
@@ -81,11 +70,18 @@ void EUI::deleteWorkspace()
 {
 	// Delete palettes
 	deleteExportPalette();
+	deleteSensorsPalette();
 	deleteProgressPalette();
 
 	// Delete buttons
 	deleteExportButton();
+
+	// Delete event handlers
+	delete formDataHandler;
+	delete closeExporterHandler;
 }
+
+// EXPORT PALETTE
 
 bool EUI::createExportPalette()
 {
@@ -97,27 +93,14 @@ bool EUI::createExportPalette()
 	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
 	if (!exportPalette)
 	{
-		// Create palette
 		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/export.html", false, true, true, 300, 200);
 		if (!exportPalette)
 			return false;
 
-		// Dock the palette to the right side of Fusion window.
 		exportPalette->dockingState(PaletteDockStateRight);
 
-		// Add handler to HTMLEvent of the palette
-		Ptr<HTMLEvent> htmlEvent = exportPalette->incomingFromHTML();
-		if (!htmlEvent)
-			return false;
-
-		htmlEvent->add(new ReceiveFormDataHandler(app, this));
-
-		// Add handler to CloseEvent of the palette
-		Ptr<UserInterfaceGeneralEvent> closeEvent = exportPalette->closed();
-		if (!closeEvent)
-			return false;
-
-		closeEvent->add(new CloseFormEventHandler(app));
+		addEventToPalette<ReceiveFormDataHandler>(exportPalette);
+		addEventToPalette<CloseExporterFormEventHandler>(exportPalette);
 	}
 
 	return true;
@@ -136,20 +119,82 @@ void EUI::deleteExportPalette()
 	if (!palettes)
 		return;
 
-	// Check if palette already exists
+	// Check if palette exists
 	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
-	
-	if (exportPalette)
-		exportPalette->deleteMe();
 
+	if (!exportPalette)
+		return;
+
+	clearEventFromPalette<ReceiveFormDataHandler>(exportPalette);
+	clearEventFromPalette<CloseExporterFormEventHandler>(exportPalette);
+
+	exportPalette->deleteMe();
 	exportPalette = nullptr;
 }
 
 void EUI::closeExportPalette()
 {
 	exportPalette->isVisible(false);
+	sensorsPalette->isVisible(false);
 	exportButtonCommand->controlDefinition()->isEnabled(true);
 }
+
+// SENSORS PALETTE
+
+bool EUI::createSensorsPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	sensorsPalette = palettes->itemById(K_SENSORS_PALETTE);
+	if (!sensorsPalette)
+	{
+		// Create palette
+		sensorsPalette = palettes->add(K_SENSORS_PALETTE, "Sensors", "Palette/sensors.html", false, true, true, 300, 200);
+		if (!sensorsPalette)
+			return false;
+
+		// Dock the palette to the right side of Fusion window.
+		sensorsPalette->dockingState(PaletteDockStateRight);
+
+		addEventToPalette<ReceiveFormDataHandler>(sensorsPalette);
+	}
+
+	return true;
+}
+
+void EUI::openSensorsPalette(std::string sensors)
+{
+	sensorsPalette->sendInfoToHTML("sensors", sensors);
+	sensorsPalette->isVisible(true);
+}
+
+void EUI::deleteSensorsPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette already exists
+	sensorsPalette = palettes->itemById(K_SENSORS_PALETTE);
+
+	if (!sensorsPalette)
+		return;
+
+	clearEventFromPalette<ReceiveFormDataHandler>(sensorsPalette);
+
+	sensorsPalette->deleteMe();
+	sensorsPalette = nullptr;
+}
+
+void EUI::closeSensorsPalette()
+{
+	sensorsPalette->isVisible(false);
+}
+
+// PROGRESS PALETTE
 
 bool EUI::createProgressPalette()
 {
@@ -174,7 +219,7 @@ bool EUI::createProgressPalette()
 	return true;
 }
 
-void Synthesis::EUI::openProgressPalette()
+void EUI::openProgressPalette()
 {
 	progressPalette->sendInfoToHTML("progress", "0");
 	progressPalette->isVisible(true);
@@ -188,10 +233,10 @@ void EUI::deleteProgressPalette()
 
 	// Check if palette already exists
 	progressPalette = palettes->itemById(K_PROGRESS_PALETTE);
+	if (!progressPalette)
+		return;
 
-	if (progressPalette)
-		progressPalette->deleteMe();
-
+	progressPalette->deleteMe();
 	progressPalette = nullptr;
 }
 
@@ -200,6 +245,8 @@ void EUI::closeProgressPalette()
 	progressPalette->isVisible(false);
 	exportButtonCommand->controlDefinition()->isEnabled(true);
 }
+
+// BUTTONS
 
 bool EUI::createExportButton()
 {
