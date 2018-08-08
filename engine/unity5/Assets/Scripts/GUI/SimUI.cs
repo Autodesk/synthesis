@@ -42,6 +42,7 @@ namespace Synthesis.GUI
         GameObject canvas;
 
         GameObject freeroamCameraWindow;
+        GameObject overviewCameraWindow;
         GameObject spawnpointPanel;
 
         GameObject changeRobotPanel;
@@ -75,6 +76,7 @@ namespace Synthesis.GUI
         GameObject emulationTab;
 
         private bool freeroamWindowClosed = false;
+        private bool overviewWindowClosed = false;
         private bool oppositeSide = false;
         public static bool inputPanelOn = false;
         public static bool changeAnalytics = true;
@@ -144,6 +146,7 @@ namespace Synthesis.GUI
             canvas = GameObject.Find("Canvas");
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
+            overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
             spawnpointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
             //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
@@ -196,7 +199,10 @@ namespace Synthesis.GUI
         private void UpdateWindows()
         {
             if (State != null)
+            {
                 UpdateFreeroamWindow();
+                UpdateOverviewWindow();
+            }
             UpdateSpawnpointWindow();
             UpdateDriverStationPanel();
         }
@@ -480,6 +486,22 @@ namespace Synthesis.GUI
             }
         }
 
+        private void UpdateOverviewWindow()
+        {
+            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)) && !overviewWindowClosed)
+            {
+                if (!overviewWindowClosed)
+                {
+                    overviewCameraWindow.SetActive(true);
+                }
+
+            }
+            else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            {
+                overviewCameraWindow.SetActive(false);
+            }
+        }
+
         /// <summary>
         /// Close freeroam camera tool tip
         /// </summary>
@@ -489,6 +511,14 @@ namespace Synthesis.GUI
             freeroamWindowClosed = true;
         }
 
+        /// <summary>
+        /// Close overview camera tooltip
+        /// </summary>
+        public void CloseOverviewWindow()
+        {
+            overviewCameraWindow.SetActive(false);
+            overviewWindowClosed = true;
+        }
 
         /// <summary>
         /// Activate driver station tool tips if the main camera is in driver station state
