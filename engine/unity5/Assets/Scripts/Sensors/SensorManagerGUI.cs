@@ -123,7 +123,7 @@ namespace Synthesis.Sensors
             if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
             if (isEditingRange && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditRange();
 
-            //If an increment button is held, increment sensor or angle
+            //If an increment button is held, increment range or angle
             if (changingRange)
             {
                 float temp = currentSensor.GetSensorRange() + rangeIncrement * rangeSign;
