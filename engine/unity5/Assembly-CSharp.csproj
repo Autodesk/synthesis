@@ -8,7 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -262,14 +263,11 @@
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMPresetMono.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMSimUI.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
     <Compile Include="Assets\Scripts\NetworkMultiplayer\MultiplayerNetwork.cs" />
     <Compile Include="Assets\Scripts\NetworkMultiplayer\NetworkElement.cs" />
@@ -328,7 +326,6 @@
     <None Include="Assets\Packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.xml" />
     <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
-    <None Include="Assets\item_data.xml" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
