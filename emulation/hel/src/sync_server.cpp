@@ -4,14 +4,10 @@
 #include <unistd.h>
 #include <iostream>
 
-using asio::ip::tcp;
-
 namespace hel {
 
-    void handle(const asio::error_code&, std::size_t){}
-
     SyncServer::SyncServer(asio::io_service& io)   {
-        endpoint = asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 11001);
+        endpoint = asio::ip::tcp::endpoint(asio::ip::tcp::v4(), SEND_PORT);
         startSync(io);
     }
 
@@ -20,12 +16,12 @@ namespace hel {
             asio::ip::tcp::socket socket(io);
             asio::ip::tcp::acceptor acceptor(io, endpoint);
             acceptor.accept(socket);
+            std::string data = "";
             while(1) {
-
                 auto instance = hel::SendDataManager::getInstance();
 
                 if(instance.first->hasNewData()){
-                    auto data =  instance.first->serializeShallow();
+                    data = instance.first->serializeShallow();
                     instance.second.unlock();
                     try {
                         asio::write(socket, asio::buffer(data), asio::transfer_all());

@@ -4,6 +4,8 @@
 #include "roborio.hpp"
 #include <asio.hpp>
 
+#define RECEIVE_PORT 11000
+
 namespace hel {
     class SyncClient {
     public:
