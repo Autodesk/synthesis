@@ -64,13 +64,12 @@ namespace hel{
      * Analog Input, Analog Output, PWM, DIO, SPI, MXP, RS232, and I2C.
      */
     struct RoboRIO{
-        bool engine_initialized;
         /**
          * \var bool user_button
          * \represents the state of the user button on the roborio
          */
 
-        bool user_button; //TODO
+        bool user_button;
 
         Accelerometer accelerometer;
         BoundsCheckedArray<Accumulator, AnalogInputs::NUM_ANALOG_INPUTS> accumulators;

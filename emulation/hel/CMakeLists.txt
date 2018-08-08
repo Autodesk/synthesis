@@ -205,7 +205,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
         PREFIX lib/google_test
         DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
         GIT_REPOSITORY https://www.github.com/google/googletest
-        CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}) #TODO changing architecture requires full clean
+        CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
     else()
       MESSAGE(WARNING "HAL- and CTRE-based tests are not supported with the x86_64 architecture compiler flag.")
       EXTERNALPROJECT_ADD(GoogleTest
@@ -222,7 +222,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
       STRING(REPLACE ".cpp" "" test_name_unclean ${file})
       GET_FILENAME_COMPONENT(test_name ${test_name_unclean} NAME)
 
-      MESSAGE("Test file discovered: ${test_name}. Generating build target ${test_name}_test")
+      MESSAGE("Test file discovered: ${test_name}. Generating build target ${test_name}")
 
       ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
 
