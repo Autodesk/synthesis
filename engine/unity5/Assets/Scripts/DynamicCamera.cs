@@ -106,12 +106,9 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            //Look towards the robot
-            //if (RobotProvider.Robot.transform.childCount > 0)
-            //{
-                lookingRotation = Quaternion.LookRotation(RobotProvider.Robot.transform.position - Mono.transform.position);
-                currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
-            //}
+
+            lookingRotation = Quaternion.LookRotation(RobotProvider.Robot.transform.position - Mono.transform.position);
+            currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
 
             if (ControlEnabled && RobotProvider.RobotActive)
             {
