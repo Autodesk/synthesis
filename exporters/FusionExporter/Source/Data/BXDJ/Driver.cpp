@@ -98,27 +98,27 @@ void Driver::loadJSONObject(const rapidjson::Value & driverJSON)
 	if (driverJSON.IsObject())
 	{
 		// Driver Properties
-		if (driverJSON["type"].IsNumber())
+		if (driverJSON.HasMember("type") && driverJSON["type"].IsNumber())
 			type = (Driver::Type)driverJSON["type"].GetInt();
-		if (driverJSON["signal"].IsNumber())
+		if (driverJSON.HasMember("signal") && driverJSON["signal"].IsNumber())
 			portSignal = (Driver::Signal)driverJSON["signal"].GetInt();
-		if (driverJSON["portOne"].IsNumber())
+		if (driverJSON.HasMember("portOne") && driverJSON["portOne"].IsNumber())
 			portOne = driverJSON["portOne"].GetInt();
-		if (driverJSON["portTwo"].IsNumber())
+		if (driverJSON.HasMember("portTwo") && driverJSON["portTwo"].IsNumber())
 			portTwo = driverJSON["portTwo"].GetInt();
 
 		// Components
-		const rapidjson::Value& wheelJSON = driverJSON["wheel"];
-		const rapidjson::Value& pneumaticJSON = driverJSON["pneumatic"];
 
-		if (wheelJSON.IsObject())
+		if (driverJSON.HasMember("wheel") && driverJSON["wheel"].IsObject())
 		{
+			const rapidjson::Value& wheelJSON = driverJSON["wheel"];
 			Wheel wheel;
 			wheel.loadJSONObject(wheelJSON);
 			setComponent(wheel);
 		}
-		else if (pneumaticJSON.IsObject())
+		else if (driverJSON.HasMember("pneumatic") && driverJSON["pneumatic"].IsObject())
 		{
+			const rapidjson::Value& pneumaticJSON = driverJSON["pneumatic"];
 			Pneumatic pneumatic;
 			pneumatic.loadJSONObject(pneumaticJSON);
 			setComponent(pneumatic);
