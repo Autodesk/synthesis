@@ -56,6 +56,8 @@ namespace Synthesis.States
         private SensorManager sensorManager;
         private SensorManagerGUI sensorManagerGUI;
 
+        private SimUI simUI;
+
         private GameObject fieldObject;
         private UnityFieldDefinition fieldDefinition;
 
@@ -68,6 +70,7 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
+        public bool isEmulationDownloaded = false;
 
         bool reset;
 
@@ -110,8 +113,6 @@ namespace Synthesis.States
             //starts a new instance of unity packet which receives packets from the driver station
             unityPacket.Start();
 
-            
-
             //If a replay has been selected, load the replay. Otherwise, load the field and robot.
             string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
 
@@ -139,7 +140,7 @@ namespace Synthesis.States
                 Controls.Load();
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
-                
+
                 if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
                 {
                     Debug.Log(LoadManipulator(RobotTypeManager.ManipulatorPath) ? "Load manipulator success" : "Load manipulator failed");
@@ -150,7 +151,7 @@ namespace Synthesis.States
                 awaitingReplay = true;
                 LoadReplay(selectedReplay);
             }
-            
+
             //initializes the dynamic camera
             DynamicCameraObject = GameObject.Find("Main Camera");
             dynamicCamera = DynamicCameraObject.AddComponent<DynamicCamera>();
@@ -158,6 +159,8 @@ namespace Synthesis.States
 
             sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
             sensorManagerGUI = StateMachine.gameObject.GetComponent<SensorManagerGUI>();
+
+            simUI = StateMachine.SceneGlobal.GetComponent<SimUI>();
 
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
 
@@ -170,6 +173,15 @@ namespace Synthesis.States
             StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetGamepieceSpawnpointUI"));
             StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
             StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
+
+            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Autodesk\Synthesis\Emulator");
+            string directoryPath = "";
+
+            if (Directory.Exists(defaultDirectory))
+            {
+                directoryPath = defaultDirectory;
+                isEmulationDownloaded = true;
+            }
         }
 
         /// <summary>
@@ -358,7 +370,7 @@ namespace Synthesis.States
             MaMRobot mamRobot = ActiveRobot as MaMRobot;
             mamRobot?.DeleteManipulatorNodes();
         }
-        
+
         /// <summary>
         /// Changes the active robot from the current one to the next one in the list
         /// </summary>
