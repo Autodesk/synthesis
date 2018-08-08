@@ -17,13 +17,13 @@ namespace InternalFieldExporter.FieldWizard
         /// <summary>
         /// Used for determining if the exporter is running.
         /// </summary>
-        public bool IsExporting
-        {
-            get
-            {
-                return Exporter.IsBusy;
-            }
-        }
+        //public bool IsExporting
+        //{
+        //    get
+        //    {
+        //        return Exporter.IsBusy;
+        //    }
+        //}
 
         /// <summary>
         /// Initializes a new instance of the ExportForm class.
@@ -46,6 +46,16 @@ namespace InternalFieldExporter.FieldWizard
                 exportButton.Enabled = true;
                 statusLabel.Text = "Ready to export.";
             }
+        }
+
+        /// <summary>
+        /// Starts the export process when the "Export" button is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void exportButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
