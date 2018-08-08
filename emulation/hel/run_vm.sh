@@ -1,6 +1,6 @@
 #!/bin/bash
-SSH_COMMAND="ssh -p 10022 -t synthesis@localhost rm -rf /home/synthesis/FRCUserProgram"
-SCP_COMMAND="scp -P 10022 ./user-code/FRCUserProgram synthesis@localhost:/home/synthesis"
+SSH_COMMAND="ssh -p 10022 -t lvuser@localhost rm -rf /home/lvuser/FRCUserProgram"
+SCP_COMMAND="scp -P 10022 ./user-code/FRCUserProgram lvuser@localhost:/home/lvuser"
 PASSWORD="adskbxd"
 
 ./scripts/download_vm.sh
@@ -18,4 +18,4 @@ else
 	expect -c "spawn $SSH_COMMAND; expect \"assword:\"; send \"$PASSWORD\r\"; interact"
 	expect -c "spawn $SCP_COMMAND; expect \"assword:\"; send \"$PASSWORD\r\"; interact"
 fi
-printf "File copied to VM. To execute, type the following command:\n\nssh -t synthesis@localhost \"./FRCUserProgram\" -p 10022\n"
+printf "File copied to VM. To execute, type the following command:\n\nssh -t lvuser@localhost \"./FRCUserProgram\" -p 10022\n"

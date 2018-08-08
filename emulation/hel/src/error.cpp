@@ -56,7 +56,7 @@ namespace hel{
 
 	const char* UnsupportedFeature::what()const throw(){
 		std::string s = "Synthesis exception: Feature unsupported by Synthesis";
-		if(details.size() > 0){
+		if(!details.empty()){
 			s += ": " + details;
 		}
 		s += "\n";

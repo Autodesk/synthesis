@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <fstream>
 #define LIBHEL_VERSION "1.0"
-#define VIRTUAL_MACHINE_INFO_PATH "/home/synthesis/.vminfo"
+#define VIRTUAL_MACHINE_INFO_PATH "/home/lvuser/.vminfo"
 
 namespace hel{
     std::atomic<bool> hal_is_initialized{false};

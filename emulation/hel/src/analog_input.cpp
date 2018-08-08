@@ -86,7 +86,7 @@ namespace hel {
             hel::AnalogInputs analog_inputs = instance.first->analog_inputs;
             uint8_t channel = analog_inputs.getReadSelect().Channel;
 
-            if(analog_inputs.getValues(channel).size() == 0){
+            if(analog_inputs.getValues(channel).empty()){
                 return 0;
             }
 
