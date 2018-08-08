@@ -72,10 +72,7 @@ namespace Synthesis.GUI
         GameObject resetDropdown;
 
         GameObject tabs;
-        GameObject mainTab;
-        GameObject dpmTab;
-        GameObject scoringTab;
-        GameObject sensorTab;
+        GameObject emulationTab;
 
         private bool freeroamWindowClosed = false;
         private bool oppositeSide = false;
@@ -131,6 +128,7 @@ namespace Synthesis.GUI
                 }
             }
             HighlightTabs();
+            if (State.isEmulationDownloaded) emulationTab.SetActive(true);
         }
 
         private void OnGUI()
@@ -178,10 +176,7 @@ namespace Synthesis.GUI
             driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
             tabs = Auxiliary.FindGameObject("Tabs");
-            mainTab = Auxiliary.FindObject(tabs, "HomeTab");
-            dpmTab = Auxiliary.FindObject(tabs, "DriverPracticeTab");
-            scoringTab = Auxiliary.FindObject(tabs, "ScoringTab");
-            sensorTab = Auxiliary.FindObject(tabs, "SensorTab");
+            emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
 
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
@@ -240,6 +235,11 @@ namespace Synthesis.GUI
             if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
             currentTab = "EmulationTab";
             tabStateMachine.ChangeState(new EmulationToolbarState());
+        }
+
+        public void SetEmulationTabActive()
+        {
+            emulationTab.SetActive(true);
         }
 
         private void CloseHelpMenu(string currentID = " ")
