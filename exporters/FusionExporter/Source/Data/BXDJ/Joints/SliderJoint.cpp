@@ -3,6 +3,7 @@
 #include <Core/Geometry/Vector3D.h>
 #include "../ConfigData.h"
 #include "../Driver.h"
+#include "../JointSensor.h"
 
 using namespace BXDJ;
 
@@ -51,6 +52,12 @@ void SliderJoint::applyConfig(const ConfigData & config)
 	{
 		setDriver(*driver);
 	}
+
+	// Add sensors
+	std::vector<std::shared_ptr<JointSensor>> sensors = config.getSensors(getFusionJoint());
+	for (std::shared_ptr<JointSensor> sensor : sensors)
+		if (false) // Filter out unsupported sensors (no limit sensors are implemented)
+			addSensor(*sensor);
 }
 
 void SliderJoint::write(XmlWriter & output) const

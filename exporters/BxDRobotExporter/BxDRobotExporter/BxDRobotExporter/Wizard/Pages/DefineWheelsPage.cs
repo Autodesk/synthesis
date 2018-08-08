@@ -326,15 +326,15 @@ namespace BxDRobotExporter.Wizard
                                 break;
 
                         }
-                        if (node.GetSkeletalJoint().cDriver.portA == 0)
+                        if (node.GetSkeletalJoint().cDriver.port1 == 0)
                         {
                             SetWheelSide(node, WheelSide.RIGHT, true);
                         }
-                        else if (node.GetSkeletalJoint().cDriver.portA == 1)
+                        else if (node.GetSkeletalJoint().cDriver.port1 == 1)
                         {
                             SetWheelSide(node, WheelSide.LEFT, true);
                         }
-                        else if (node.GetSkeletalJoint().cDriver.portA == 2 && this.DriveTrainDropdown.SelectedIndex == 2)
+                        else if (node.GetSkeletalJoint().cDriver.port1 == 2 && this.DriveTrainDropdown.SelectedIndex == 2)
                         {
                             SetWheelSide(node, WheelSide.MIDDLE, true);
                         }

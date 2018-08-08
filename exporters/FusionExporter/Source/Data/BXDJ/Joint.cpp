@@ -2,6 +2,7 @@
 #include <Fusion/Components/JointGeometry.h>
 #include <Core/Geometry/Point3D.h>
 #include "RigidNode.h"
+#include "JointSensor.h"
 
 using namespace BXDJ;
 
@@ -72,8 +73,21 @@ std::unique_ptr<Driver> Joint::getDriver() const
 		return nullptr;
 }
 
+void Joint::addSensor(JointSensor sensor)
+{
+	sensors.push_back(std::make_shared<JointSensor>(sensor));
+}
+
+void Joint::clearSensors()
+{
+	sensors.clear();
+}
+
 void Joint::write(XmlWriter & output) const
 {
 	if (driver != nullptr)
 		output.write(*driver);
+
+	for (std::shared_ptr<JointSensor> sensor : sensors)
+		output.write(*sensor);
 }

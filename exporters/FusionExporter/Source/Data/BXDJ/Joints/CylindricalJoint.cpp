@@ -77,6 +77,8 @@ void CylindricalJoint::applyConfig(const ConfigData & config)
 	{
 		setDriver(*driver);
 	}
+
+	// This joint does not currently support sensors
 }
 
 void CylindricalJoint::write(XmlWriter & output) const

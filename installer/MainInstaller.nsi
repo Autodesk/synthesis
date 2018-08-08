@@ -41,7 +41,7 @@ RequestExecutionLevel admin
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
   !insertmacro MUI_UNPAGE_FINISH
-
+  
 ;--------------------------------
 ;Languages
 
@@ -227,5 +227,25 @@ Section "Uninstall"
   RMDir $INSTDIR
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
+  
+  IfFileExists "$PROGRAMFILES64\qemu" file_found
+  
+	file_found:
+	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO Negative
+	exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe" \s'
+	Quit
+	
+	Negative: goto uninstall_complete
+	
+  IfFileExists "$PROGRAMFILES\qemu" file_discovered
+  
+	file_discovered:
+	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO Nope
+	exec '"$PROGRAMFILES\qemu\qemu-uninstall.exe" \s'
+	Quit
+	
+	Nope: goto uninstall_complete
+	
+	uninstall_complete:
 
 SectionEnd

@@ -45,12 +45,12 @@
             // 
             // moduleColumnHeader
             // 
-            this.moduleColumnHeader.Text = "Port 1";
+            this.moduleColumnHeader.Text = "Port A";
             this.moduleColumnHeader.Width = 76;
             // 
             // portColumnHeader
             // 
-            this.portColumnHeader.Text = "Port 2";
+            this.portColumnHeader.Text = "Port B";
             // 
             // sensorListView
             // 

@@ -33,6 +33,11 @@ namespace Synthesis
 		void deleteExportPalette();
 		void closeExportPalette();
 
+		bool createSensorsPalette();
+		void openSensorsPalette(std::string sensors);
+		void deleteSensorsPalette();
+		void closeSensorsPalette();
+
 		bool createProgressPalette();
 		void openProgressPalette();
 		void deleteProgressPalette();
@@ -54,10 +59,21 @@ namespace Synthesis
 		Ptr<ToolbarControls> panelControls;
 
 		Ptr<Palette> exportPalette;
+		Ptr<Palette> sensorsPalette;
 		Ptr<Palette> progressPalette;
 
 		Ptr<CommandDefinition> exportButtonCommand;
 
+		// Event Handlers
+		ReceiveFormDataHandler * formDataHandler = nullptr;
+		CloseExporterFormEventHandler * closeExporterHandler = nullptr;
+
+		template<typename T>
+		bool addEventToPalette(Ptr<Palette>);
+		template<typename T>
+		bool clearEventFromPalette(Ptr<Palette>);
+
+		// Thread Information
 		std::thread * exportThread;
 		bool killExportThread;
 		void exportRobot(BXDJ::ConfigData);

@@ -51,6 +51,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>C:\Users\t_walkn\Documents\GitHub\synthesis\exporters\FusionExporter\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -74,7 +75,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -122,6 +123,7 @@
     <ClInclude Include="Source\Data\BXDJ\Joints\RotationalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\CustomJSONObject.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
+    <ClInclude Include="Source\Data\BXDJ\JointSensor.h" />
     <ClInclude Include="Source\Data\BXDJ\Utility.h" />
     <ClInclude Include="Source\Data\BXDJ\XmlWriter.h" />
     <ClInclude Include="Source\Data\Filesystem.h" />
@@ -131,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\AddIn\CustomHandlers.cpp" />
+    <ClCompile Include="Source\AddIn\EUI-EventHandling.cpp" />
     <ClCompile Include="Source\AddIn\EUI.cpp" />
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp" />
     <ClCompile Include="Source\Data\BXDA\BinaryWriter.cpp" />
@@ -153,6 +156,7 @@
     <ClCompile Include="Source\Data\BXDJ\RigidNode-Tree.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode-Mesh.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode.cpp" />
+    <ClCompile Include="Source\Data\BXDJ\JointSensor.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Utility.cpp" />
     <ClCompile Include="Source\Data\BXDJ\XmlWriter.cpp" />
     <ClCompile Include="Source\Data\Filesystem.cpp" />
@@ -165,7 +169,10 @@
     <None Include="Palette\js\export.js" />
     <None Include="palette\export.html" />
     <None Include="palette\js\progress.js" />
+    <None Include="palette\js\sensors.js" />
+    <None Include="palette\js\utility.js" />
     <None Include="palette\progress.html" />
+    <None Include="palette\sensors.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
