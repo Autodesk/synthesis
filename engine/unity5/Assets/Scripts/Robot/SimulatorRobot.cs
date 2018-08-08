@@ -239,13 +239,13 @@ namespace Synthesis.Robot
             if(overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
             #endregion
 
-            Button resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
+            Button resetButton = Auxiliary.FindObject(resetCanvas, "ResetButton").GetComponent<Button>();
             resetButton.onClick.RemoveAllListeners();
             resetButton.onClick.AddListener(BeginRevertSpawnpoint);
-            Button helpButton = GameObject.Find("HelpButton").GetComponent<Button>();
+            Button helpButton = Auxiliary.FindObject(resetCanvas, "HelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(HelpMenu);
-            Button returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
+            Button returnButton = Auxiliary.FindObject(resetCanvas, "ReturnButton").GetComponent<Button>();
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(EndReset);
             Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
