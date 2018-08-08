@@ -204,13 +204,13 @@ namespace Synthesis.States
             //Spawn a new robot from the same path or switch active robot
             if (!ActiveRobot.IsResetting && ActiveRobot.ControlIndex == 0)
             {
-                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].duplicateRobot) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
+                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
                 if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].switchActiveRobot)) SwitchActiveRobot();
 
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen &&
+            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
