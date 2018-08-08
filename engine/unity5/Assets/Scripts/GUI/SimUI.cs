@@ -237,11 +237,6 @@ namespace Synthesis.GUI
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
 
-        public void SetEmulationTabActive()
-        {
-            emulationTab.SetActive(true);
-        }
-
         private void CloseHelpMenu(string currentID = " ")
         {
             string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;
