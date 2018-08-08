@@ -159,6 +159,8 @@ namespace Synthesis.Robot
             RootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
             RootNode.ListAllNodes(nodes);
 
+            Debug.Log(RootNode.driveTrainType.ToString());
+
             emuList = new List<EmuNetworkInfo>();
 
             foreach (RigidNode_Base Base in RootNode.ListAllNodes())
@@ -169,8 +171,8 @@ namespace Synthesis.Robot
                     {
                         foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
                         {
-                            Debug.Log(sensor.type.ToString() + " " + sensor.conTypePort1 + " " + sensor.conTypePort2 + " " + sensor.conversionFactor +
-                                " " + sensor.port1 + " " + sensor.port2);
+                            Debug.Log(sensor.type.ToString() + " " + sensor.conTypePortA + " " + sensor.conTypePortB + " " + sensor.conversionFactor +
+                                " " + sensor.portA + " " + sensor.portB);
 
                             if(sensor.type == RobotSensorType.ENCODER)
                             {
