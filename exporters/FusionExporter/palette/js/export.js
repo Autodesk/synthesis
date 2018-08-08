@@ -1,14 +1,4 @@
-// Used for hiding/showing elements in the following function
-function setVisible(element, visible)
-{
-    element.style.visibility = visible ? '' : 'hidden';
-}
-
-// Gets an a single child element that has the class specified
-function getElByClass(fieldset, className)
-{
-    return fieldset.getElementsByClassName(className)[0]
-}
+var openFieldsetSensors = null;
 
 // Used for hiding/showing elements in the following function
 function setPortView(fieldset, portView)
@@ -56,10 +46,17 @@ function requestInfoFromFusion()
 }
 
 // Highlight a joint in Fusion
-function highlightJoint(jointName)
+function highlightJoint(jointID)
 {
-    console.log('Highlighting ' + jointName);
-    adsk.fusionSendData('highlight', jointName);
+    console.log('Highlighting ' + jointID);
+    adsk.fusionSendData('highlight', jointID);
+}
+
+// Open a menu for editing joint sensors
+function editSensors(fieldset)
+{
+    openFieldsetSensors = fieldset;
+    adsk.fusionSendData('edit_sensors', fieldset.dataset.sensors);
 }
 
 // Handles the receiving of data from Fusion
@@ -74,6 +71,13 @@ window.fusionJavaScriptHandler =
                     console.log("Receiving joint info...");
                     console.log(data);
                     applyConfigData(JSON.parse(data));
+                }
+                else if (action == 'sensors')
+                {
+                    console.log("Receiving sensor info...");
+                    console.log(data);
+                    if (openFieldsetSensors != null)
+                        openFieldsetSensors.dataset.sensors = data;
                 }
                 else if (action == 'debugger')
                 {
@@ -115,6 +119,7 @@ function applyConfigData(configData)
 
         fieldset.id = 'joint-config-' + String(i);
         fieldset.dataset.jointId = joints[i].id;
+        fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
@@ -302,7 +307,8 @@ function readConfigData()
             'driver': null,
             'id': fieldset.dataset.jointId,
             'name': getElByClass(fieldset, 'joint-config-legend').innerHTML,
-            'type': parseInt(fieldset.dataset.joint_type)
+            'type': parseInt(fieldset.dataset.joint_type),
+            'sensors': JSON.parse(fieldset.dataset.sensors)
         };
 
         var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
@@ -363,5 +369,17 @@ function sendInfoToFusion()
         return;
     }
     
+    adsk.fusionSendData('save', JSON.stringify(readConfigData()));
+}
+
+// Sends the data to the Fusion add-in
+function exportRobot()
+{
+    if (document.getElementById('name').value.length == 0)
+    {
+        alert("Please enter a name.");
+        return;
+    }
+
     adsk.fusionSendData('export', JSON.stringify(readConfigData()));
 }

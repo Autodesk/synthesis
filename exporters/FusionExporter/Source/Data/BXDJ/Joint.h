@@ -1,9 +1,11 @@
 #pragma once
 
+#include <vector>
 #include <Fusion/Components/Joint.h>
 #include <Fusion/Components/Occurrence.h>
 #include "XmlWriter.h"
 #include "Driver.h"
+#include "JointSensor.h"
 #include "../Vector3.h"
 
 using namespace adsk;
@@ -30,6 +32,9 @@ namespace BXDJ
 		void setNoDriver();
 		std::unique_ptr<Driver> getDriver() const;
 
+		void addSensor(JointSensor);
+		void clearSensors();
+
 	protected:
 		enum OneTwo : bool { ONE = true, TWO = false };
 
@@ -43,6 +48,8 @@ namespace BXDJ
 		RigidNode * parent;
 		std::shared_ptr<RigidNode> child;
 		std::unique_ptr<Driver> driver;
+
+		std::vector<std::shared_ptr<JointSensor>> sensors;
 
 	};
 };

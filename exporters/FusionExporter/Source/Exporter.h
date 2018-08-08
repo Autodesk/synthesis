@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Core/CoreAll.h>
-#include <Fusion/FusionAll.h>
+#include <Fusion/Fusion/FusionDocument.h>
 #include <functional>
 #include "Data/BXDJ/ConfigData.h"
 

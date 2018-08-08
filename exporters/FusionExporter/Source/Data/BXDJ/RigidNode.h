@@ -36,7 +36,7 @@ namespace BXDJ
 		int getOccurrenceCount() const;
 		void getMesh(BXDA::Mesh &, bool ignorePhysics = false, std::function<void(double)> progressCallback = nullptr, bool * cancel = nullptr) const;
 
-		void addJoint(std::shared_ptr<Joint> joint);
+		void addJoint(std::shared_ptr<Joint>);
 		
 		std::string log = "";
 

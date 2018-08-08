@@ -23,6 +23,8 @@ void BallJoint::applyConfig(const ConfigData & config)
 	{
 		setDriver(*driver);
 	}
+
+	// Ball joints do not support sensors
 }
 
 void BallJoint::write(XmlWriter & output) const

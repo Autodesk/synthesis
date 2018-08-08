@@ -38,9 +38,17 @@ var PRESSURE_10PSI = 0;
 var PRESSURE_20PSI = 1;
 var PRESSURE_60PSI = 2;
 
+// Sensor Port Types
+var DIO = 1;
+var ANALOG = 2;
+
+// Joint Sensor Types
+var SENSOR_ENCODER = 1;
+var CONVERSION_FACTOR_NAMES = { 1: "Ticks per Revolution" };
+
 function createDriver(_type = DRIVER_MOTOR, _signal = PWM, _portA = 0, _portB = -1)
 {
-    return {type: _type, signal: _signal, portA: _portA, portB: _portB, wheel: null, pneumatic: null};
+    return { type: _type, signal: _signal, portA: _portA, portB: _portB, wheel: null, pneumatic: null };
 }
 
 function createWheel(_type = WHEEL_NORMAL, _frictionLevel = FRICTION_MEDIUM, _isDriveWheel = false)
@@ -51,4 +59,9 @@ function createWheel(_type = WHEEL_NORMAL, _frictionLevel = FRICTION_MEDIUM, _is
 function createPneumatic(_width = 5.0, _pressure = 40.0)
 {
     return { width: _width, pressure: _pressure };
+}
+
+function createSensor(_type = SENSOR_ENCODER, _signal = DIO, _portA = 0, _portB = 1, _conversionFactor = 1)
+{
+    return { type: _type, signal: _signal, portA: _portA, portB: _portB, conversionFactor: _conversionFactor };
 }

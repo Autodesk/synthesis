@@ -11,11 +11,13 @@ using namespace BXDJ;
 ConfigData::ConfigData()
 {
 	robotName = "unnamed";
+	driveTrainType = TANK;
 }
 
 ConfigData::ConfigData(const ConfigData & other)
 {
 	robotName = other.robotName;
+	driveTrainType = other.driveTrainType;
 
 	for (auto i = other.joints.begin(); i != other.joints.end(); i++)
 		joints[i->first] = i->second;
@@ -45,6 +47,16 @@ void ConfigData::setNoDriver(core::Ptr<fusion::Joint> joint)
 	joints[id].name = joint->name();
 	joints[id].motion = internalJointMotion(joint->jointMotion()->jointType());
 	joints[id].driver = nullptr;
+}
+
+std::vector<std::shared_ptr<JointSensor>> ConfigData::getSensors(core::Ptr<fusion::Joint> joint) const
+{
+	std::string id = BXDJ::Utility::getUniqueJointID(joint);
+
+	if (joints.find(id) == joints.end() || joints.at(id).driver == nullptr)
+		return std::vector<std::shared_ptr<JointSensor>>();
+
+	return joints.at(id).sensors;
 }
 
 void ConfigData::filterJoints(std::vector<core::Ptr<fusion::Joint>> filterJoints)
@@ -81,8 +93,9 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 	rapidjson::Value configJSON;
 	configJSON.SetObject();
 
-	// Robot Name
+	// General Information
 	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), allocator), allocator);
+	configJSON.AddMember("driveTrainType", rapidjson::Value((int)driveTrainType), allocator);
 
 	// Joints
 	rapidjson::Value jointsJSON;
@@ -108,6 +121,15 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 
 		jointJSON.AddMember("driver", driverJSON, allocator);
 
+		// Sensor Information
+		rapidjson::Value sensorsJSON;
+		sensorsJSON.SetArray();
+
+		for (std::shared_ptr<JointSensor> sensor : jointConfig.sensors)
+			sensorsJSON.PushBack(sensor->getJSONObject(allocator), allocator);
+
+		jointJSON.AddMember("sensors", sensorsJSON, allocator);
+
 		// Add joint to JSON array
 		jointsJSON.PushBack(jointJSON, allocator);
 	}
@@ -118,31 +140,63 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 
 void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 {
-	// Get robot name
-	robotName = configJSON["name"].GetString();
+	// Get general information 
+	if (configJSON.HasMember("name") && configJSON["name"].IsString())
+		robotName = configJSON["name"].GetString();
+
+	if (configJSON.HasMember("driveTrainType") && configJSON["driveTrainType"].IsNumber())
+		driveTrainType = (DriveTrainType)configJSON["driveTrainType"].GetInt();
 
 	// Read each joint configuration
 	auto jointsJSON = configJSON["joints"].GetArray();
 	for (rapidjson::SizeType i = 0; i < jointsJSON.Size(); i++)
 	{
+		// Joint Info
 		std::string jointID = jointsJSON[i]["id"].GetString();
 
 		joints[jointID].name = jointsJSON[i]["name"].GetString();
 		joints[jointID].motion = (JointMotionType)jointsJSON[i]["type"].GetInt();
 
-		const rapidjson::Value& driverJSON = jointsJSON[i]["driver"];
-		if (driverJSON.IsObject())
+		// Driver Information
+		if (jointsJSON[i].HasMember("driver") && jointsJSON[i]["driver"].IsObject())
 		{
 			Driver driver;
-			driver.loadJSONObject(driverJSON);
+			driver.loadJSONObject(jointsJSON[i]["driver"]);
 			joints[jointID].driver = std::make_unique<Driver>(driver);
 		}
 		else
 			joints[jointID].driver = nullptr;
+
+		// Sensor Information
+		if (jointsJSON[i].HasMember("sensors") && jointsJSON[i]["sensors"].IsArray())
+		{
+			auto sensorsJSONArray = jointsJSON[i]["sensors"].GetArray();
+			for (rapidjson::SizeType j = 0; j < sensorsJSONArray.Size(); j++)
+			{
+				if (sensorsJSONArray[j].IsObject())
+				{
+					std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
+					sensor->loadJSONObject(sensorsJSONArray[j]);
+					joints[jointID].sensors.push_back(sensor);
+				}
+			}
+		}
 	}
 }
 
-ConfigData::JointMotionType ConfigData::internalJointMotion(fusion::JointTypes type) const
+std::string BXDJ::ConfigData::toString(DriveTrainType type)
+{
+	switch (type)
+	{
+	case TANK: return "TANK";
+	case H_DRIVE: return "H_DRIVE";
+	case CUSTOM: return "CUSTOM";
+	}
+
+	return "NONE";
+}
+
+ConfigData::JointMotionType ConfigData::internalJointMotion(fusion::JointTypes type)
 {
 	if (type == fusion::JointTypes::RevoluteJointType)
 		return ANGULAR;
