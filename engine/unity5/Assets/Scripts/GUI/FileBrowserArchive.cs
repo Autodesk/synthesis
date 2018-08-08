@@ -9,7 +9,7 @@ namespace Synthesis.GUI
     /// Modified version of http://wiki.unity3d.com/index.php?title=FileBrowser.
     /// Directory only based file browser.
     /// </summary>
-    class FileBrowser : OverlayWindow
+    class FileBrowserArchive : OverlayWindow
     {
         private Rect windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
 
@@ -126,12 +126,12 @@ namespace Synthesis.GUI
 
         private DirectoryInfo tempSelection;
 
-        public FileBrowser(string windowTitle, bool allowEsc = true)
+        public FileBrowserArchive(string windowTitle, bool allowEsc = true)
         {
             Init(windowTitle, Directory.GetParent(Application.dataPath).FullName, allowEsc);
         }
 
-        public FileBrowser(string windowTitle, string defaultDirectory, bool allowEsc = true)
+        public FileBrowserArchive(string windowTitle, string defaultDirectory, bool allowEsc = true)
         {
             if (Directory.Exists(defaultDirectory)) directoryPath = defaultDirectory;
             Init(windowTitle, defaultDirectory, allowEsc);
