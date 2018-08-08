@@ -40,9 +40,10 @@
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(258, 45);
+            this.okButton.Location = new System.Drawing.Point(344, 55);
+            this.okButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(96, 32);
+            this.okButton.Size = new System.Drawing.Size(128, 39);
             this.okButton.TabIndex = 0;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -50,9 +51,10 @@
             // cancelButton
             // 
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(156, 45);
+            this.cancelButton.Location = new System.Drawing.Point(208, 55);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(96, 32);
+            this.cancelButton.Size = new System.Drawing.Size(128, 39);
             this.cancelButton.TabIndex = 1;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
@@ -60,45 +62,51 @@
             // enterNameLabel
             // 
             this.enterNameLabel.AutoSize = true;
-            this.enterNameLabel.Location = new System.Drawing.Point(12, 15);
+            this.enterNameLabel.Location = new System.Drawing.Point(16, 18);
+            this.enterNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.enterNameLabel.Name = "enterNameLabel";
-            this.enterNameLabel.Size = new System.Drawing.Size(66, 13);
+            this.enterNameLabel.Size = new System.Drawing.Size(87, 17);
             this.enterNameLabel.TabIndex = 2;
             this.enterNameLabel.Text = "Enter Name:";
             // 
             // nameTextBox
             // 
-            this.nameTextBox.Location = new System.Drawing.Point(105, 12);
+            this.nameTextBox.Location = new System.Drawing.Point(140, 15);
+            this.nameTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.nameTextBox.MaxLength = 20;
             this.nameTextBox.Name = "nameTextBox";
-            this.nameTextBox.Size = new System.Drawing.Size(249, 20);
+            this.nameTextBox.Size = new System.Drawing.Size(331, 22);
             this.nameTextBox.TabIndex = 3;
+            this.nameTextBox.TextChanged += new System.EventHandler(this.nameTextBox_TextChanged);
             // 
             // reservedLabel
             // 
             this.reservedLabel.ForeColor = System.Drawing.Color.Red;
-            this.reservedLabel.Location = new System.Drawing.Point(12, 48);
+            this.reservedLabel.Location = new System.Drawing.Point(16, 59);
+            this.reservedLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.reservedLabel.Name = "reservedLabel";
-            this.reservedLabel.Size = new System.Drawing.Size(123, 17);
+            this.reservedLabel.Size = new System.Drawing.Size(164, 21);
             this.reservedLabel.TabIndex = 4;
             this.reservedLabel.Text = "Name is Reserved";
+            this.reservedLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RequestAssociativeAlloc);
             // 
             // warningImage
             // 
             this.warningImage.Image = ((System.Drawing.Image)(resources.GetObject("warningImage.Image")));
-            this.warningImage.Location = new System.Drawing.Point(105, 45);
+            this.warningImage.Location = new System.Drawing.Point(140, 55);
+            this.warningImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.warningImage.Name = "warningImage";
-            this.warningImage.Size = new System.Drawing.Size(45, 32);
+            this.warningImage.Size = new System.Drawing.Size(60, 39);
             this.warningImage.TabIndex = 5;
             this.warningImage.TabStop = false;
             // 
             // EnterNameDialog
             // 
             this.AcceptButton = this.okButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(367, 92);
+            this.ClientSize = new System.Drawing.Size(489, 113);
             this.Controls.Add(this.warningImage);
             this.Controls.Add(this.reservedLabel);
             this.Controls.Add(this.nameTextBox);
@@ -106,6 +114,7 @@
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "EnterNameDialog";
             this.Text = "Enter Property Set Name";
             ((System.ComponentModel.ISupportInitialize)(this.warningImage)).EndInit();
