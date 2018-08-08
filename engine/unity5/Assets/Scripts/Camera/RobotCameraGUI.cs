@@ -88,8 +88,6 @@ namespace Synthesis.Camera
                 UpdateCameraWindow();
                 if (indicatorActive)
                 {
-                    UpdateCameraAnglePanel();
-                    UpdateCameraFOVPanel();
                     UpdateNodeAttachment();
                     UpdateIndicatorTransform();
                 }
@@ -98,39 +96,17 @@ namespace Synthesis.Camera
             //Allows users to save their configuration using enter
             if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
             if (isEditingFOV && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditFOV();
-
-            //if (changingFOV)
-            //{
-            //    FOVEntry.GetComponent<InputField>().text =
-            //        (robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign).ToString();
-            //    SyncCameraFOV();
-
+            
             //If an increment button is held, increment fov or angle
-            if (changingFOV)
-            {
-                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView =
-                    robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign;
-            }
+            if (changingFOV) robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView + fovIncrement * fovSign;
             else if (changingAngle)
             {
-                if (changingAngleX)
-                {
-                    robotCameraManager.RotateTransform(angleIncrement * angleSign, 0, 0);
-                }
-                else if (changingAngleY)
-                {
-                    robotCameraManager.RotateTransform(0, angleIncrement * angleSign, 0);
-                }
-                else if (changingAngleZ)
-                {
-                    robotCameraManager.RotateTransform(0, 0, angleIncrement * angleSign);
-                }
+                if (changingAngleX) robotCameraManager.RotateTransform(angleIncrement * angleSign, 0, 0);
+                else if (changingAngleY) robotCameraManager.RotateTransform(0, angleIncrement * angleSign, 0);
+                else if (changingAngleZ) robotCameraManager.RotateTransform(0, 0, angleIncrement * angleSign);
                 UpdateCameraAnglePanel();
             }
-            else if (robotCameraManager.IsShowingAngle)
-            {
-                SyncCameraAngle();
-            }
+            else if (robotCameraManager.IsShowingAngle) SyncCameraAngle();
         }
 
         #region robot camera GUI functions
@@ -138,7 +114,7 @@ namespace Synthesis.Camera
         /// <summary>
         /// Find all robot camera related GUI elements in the canvas
         /// </summary>
-        public void FindGUIElements()
+        private void FindGUIElements()
         {
             canvas = GameObject.Find("Canvas");
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
@@ -208,11 +184,7 @@ namespace Synthesis.Camera
                 }
             }
             //Free the target texture of the current camera when the window is closed (for normal toggle camera function)
-            else
-            {
-                if (robotCameraManager.CurrentCamera != null)
-                    robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;
-            }
+            else if (robotCameraManager.CurrentCamera != null) robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().targetTexture = null;
         }
 
         /// <summary>
@@ -299,8 +271,18 @@ namespace Synthesis.Camera
         /// </summary>
         public void ToggleChangePosition()
         {
-            robotCameraManager.CurrentCamera.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(
-                !robotCameraManager.CurrentCamera.GetComponentInChildren<MoveArrows>(true).gameObject.activeSelf);
+            if (!robotCameraManager.CurrentCamera.transform.Find("IndicatorMoveArrows"))
+            {
+                GameObject moveArrows = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+                moveArrows.name = "IndicatorMoveArrows";
+                moveArrows.transform.parent = robotCameraManager.CurrentCamera.transform;
+                moveArrows.transform.localPosition = UnityEngine.Vector3.zero;
+
+                moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
+                    robotCameraManager.CurrentCamera.transform.Translate(translation, Space.World);
+            }
+            else Destroy(robotCameraManager.CurrentCamera.transform.Find("IndicatorMoveArrows").gameObject);
+            
         }
 
         /// <summary>
@@ -355,7 +337,7 @@ namespace Synthesis.Camera
         /// <summary>
         /// Update the local angle of the current camera to the camera angle panel
         /// </summary>
-        public void UpdateCameraAnglePanel()
+        private void UpdateCameraAnglePanel()
         {
             if (robotCameraManager.CurrentCamera != null)
             {
