@@ -35,13 +35,15 @@
             this.loadingAnimationPictureBox = new System.Windows.Forms.PictureBox();
             this.exportProgressBar = new System.Windows.Forms.ProgressBar();
             this.exportButton = new System.Windows.Forms.Button();
+            this.statusLabel = new System.Windows.Forms.Label();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.loadingAnimationPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // exportLocationLabel
             // 
             this.exportLocationLabel.AutoSize = true;
-            this.exportLocationLabel.Location = new System.Drawing.Point(6, 10);
+            this.exportLocationLabel.Location = new System.Drawing.Point(6, 17);
             this.exportLocationLabel.Name = "exportLocationLabel";
             this.exportLocationLabel.Size = new System.Drawing.Size(114, 17);
             this.exportLocationLabel.TabIndex = 8;
@@ -49,7 +51,7 @@
             // 
             // browseButton
             // 
-            this.browseButton.Location = new System.Drawing.Point(122, 6);
+            this.browseButton.Location = new System.Drawing.Point(122, 12);
             this.browseButton.Name = "browseButton";
             this.browseButton.Size = new System.Drawing.Size(74, 26);
             this.browseButton.TabIndex = 10;
@@ -61,9 +63,9 @@
             // 
             this.filePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.filePathTextBox.Location = new System.Drawing.Point(202, 7);
+            this.filePathTextBox.Location = new System.Drawing.Point(202, 12);
             this.filePathTextBox.Name = "filePathTextBox";
-            this.filePathTextBox.Size = new System.Drawing.Size(377, 22);
+            this.filePathTextBox.Size = new System.Drawing.Size(355, 22);
             this.filePathTextBox.TabIndex = 9;
             // 
             // loadingAnimationPictureBox
@@ -81,7 +83,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.exportProgressBar.Location = new System.Drawing.Point(9, 451);
             this.exportProgressBar.Name = "exportProgressBar";
-            this.exportProgressBar.Size = new System.Drawing.Size(495, 28);
+            this.exportProgressBar.Size = new System.Drawing.Size(548, 28);
             this.exportProgressBar.Step = 1;
             this.exportProgressBar.TabIndex = 11;
             // 
@@ -94,12 +96,27 @@
             this.exportButton.Text = "Export";
             this.exportButton.UseVisualStyleBackColor = true;
             // 
+            // statusLabel
+            // 
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Location = new System.Drawing.Point(106, 421);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(352, 17);
+            this.statusLabel.TabIndex = 12;
+            this.statusLabel.Text = "Please select an export location in the browser above. ";
+            // 
+            // folderBrowserDialog
+            // 
+            this.folderBrowserDialog.Description = "Select the file path by which to export the field.";
+            this.folderBrowserDialog.ShowNewFolderButton = false;
+            // 
             // ExportForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(585, 521);
+            this.ClientSize = new System.Drawing.Size(563, 496);
+            this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.exportButton);
             this.Controls.Add(this.exportProgressBar);
             this.Controls.Add(this.loadingAnimationPictureBox);
@@ -125,5 +142,7 @@
         private System.Windows.Forms.PictureBox loadingAnimationPictureBox;
         private System.Windows.Forms.ProgressBar exportProgressBar;
         private System.Windows.Forms.Button exportButton;
+        private System.Windows.Forms.Label statusLabel;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
     }
 }
