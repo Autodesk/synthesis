@@ -271,6 +271,7 @@ void EUI::openProgressPalette()
 void EUI::closeProgressPalette()
 {
 	progressPalette->isVisible(false);
+	enableExportButton();
 }
 
 // BUTTONS
