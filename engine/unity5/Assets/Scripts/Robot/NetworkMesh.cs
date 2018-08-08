@@ -7,9 +7,10 @@ using UnityEngine;
 
 public class NetworkMesh : MonoBehaviour
 {
-    private const float AdaptiveLinearAcceleration = 0.01f;
-    private const float AdaptiveLinearDampingFactor = 8f;
-    private const float AdaptiveMaxLinearSpeed = 20f;
+    private const float AdaptiveLinearAcceleration = 100f;
+    private const float AdaptiveLinearDampingFactor = 10f;
+    private const float AdaptiveMaxLinearSpeed = 15f;
+    private const float AdaptiveMaxLinearDamping = 30f;
 
     private const float VelocityCorrectionScalar = 100f;
     private const float RotationCorrectionScalar = 10f;
@@ -56,8 +57,8 @@ public class NetworkMesh : MonoBehaviour
 
         Vector3 offset = transform.position - MeshObject.transform.position;
 
-        adaptiveLinearVelocity += offset * AdaptiveLinearAcceleration / Time.deltaTime;
-        adaptiveLinearVelocity /= 1 + (AdaptiveLinearDampingFactor / offset.magnitude) * Time.deltaTime;
+        adaptiveLinearVelocity += offset * AdaptiveLinearAcceleration * Time.deltaTime;
+        adaptiveLinearVelocity /= 1 + Math.Min((AdaptiveLinearDampingFactor / offset.magnitude), AdaptiveMaxLinearDamping) * Time.deltaTime;
 
         if (adaptiveLinearVelocity.magnitude > AdaptiveMaxLinearSpeed)
             adaptiveLinearVelocity = adaptiveLinearVelocity.normalized * AdaptiveMaxLinearSpeed;
