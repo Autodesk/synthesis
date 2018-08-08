@@ -109,6 +109,7 @@ namespace Synthesis.Camera
             newCamera.transform.parent = anchor;
             newCamera.transform.localPosition = positionOffset;
             newCamera.transform.localRotation = Quaternion.Euler(rotationOffset);
+            newCamera.GetComponent<UnityEngine.Camera>().fieldOfView = 60;
 
             RobotCamera configuration = newCamera.AddComponent<RobotCamera>();
             configuration.UpdateConfiguration();
