@@ -34,7 +34,7 @@ namespace BXDJ
 		Joint * getParent() const;
 		void getChildren(std::vector<std::shared_ptr<RigidNode>> &, bool recursive = false) const;
 		int getOccurrenceCount() const;
-		void getMesh(BXDA::Mesh &, bool ignorePhysics = false, std::function<void(double)> progressCallback = nullptr, bool * cancel = nullptr) const;
+		void getMesh(BXDA::Mesh &, bool ignorePhysics = false, std::function<void(double)> progressCallback = nullptr, const bool * cancel = nullptr) const;
 
 		void addJoint(std::shared_ptr<Joint>);
 		

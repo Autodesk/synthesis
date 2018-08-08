@@ -98,7 +98,7 @@ void Exporter::exportExampleXml()
 	xml.writeElement("ModelID", "Part2:1");
 }
 
-void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document, std::function<void(double)> progressCallback, bool * cancel)
+void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document, std::function<void(double)> progressCallback, const bool * cancel)
 {	
 	if (progressCallback)
 		progressCallback(0);
