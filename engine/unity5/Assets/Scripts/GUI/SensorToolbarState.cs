@@ -51,7 +51,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         /// <param name="dropdown"></param>
         /// <param name="sensors"></param>
-        public void UpdateSensorDropdown(Dropdown dropdown, IEnumerable<GameObject> sensors)
+        private void UpdateSensorDropdown(Dropdown dropdown, IEnumerable<GameObject> sensors)
         {
             dropdown.ClearOptions();
 
@@ -147,8 +147,7 @@ namespace Assets.Scripts.GUI
         /// <param name="ultrasonicList"></param>
         /// <param name="beamBreakerList"></param>
         /// <param name="gyroList"></param>
-        public void RemoveSensorFromDropdown(string type,
-            List<GameObject> ultrasonicList, List<GameObject> beamBreakerList, List<GameObject> gyroList)
+        public void RemoveSensorFromDropdown(string type, List<GameObject> ultrasonicList, List<GameObject> beamBreakerList, List<GameObject> gyroList)
         {
             switch (type)
             {

@@ -586,30 +586,14 @@ namespace Synthesis.Sensors
             if (configureSensorPanel.activeSelf)
             {
                 configureSensorPanel.SetActive(false);
-                //switch camera state back to what it was
+                if(currentSensor.transform.Find("IndicatorMoveArrows") != null) Destroy(currentSensor.transform.Find("IndicatorMoveArrows").gameObject);
             }
             else
             {
                 StartConfiguration();
             }
         }
-
-        /// <summary>
-        /// Toggle between changing position along horizontal plane or changing height
-        /// </summary>
-        public void ToggleConfigurationMode()
-        {
-            currentSensor.IsChangingHeight = !currentSensor.IsChangingHeight;
-            if (currentSensor.IsChangingHeight)
-            {
-                sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Horizontal Plane";
-            }
-            else
-            {
-                sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
-            }
-        }
-
+        
         /// <summary>
         /// Going into the state of selecting a new node and confirming it
         /// </summary>
@@ -646,7 +630,7 @@ namespace Synthesis.Sensors
             //deleteSensorButton.SetActive(true);
             //hideSensorButton.SetActive(true);
             nodePanel.SetActive(false);
-            
+
             sensorManager.ClearSelectedNode();
             sensorManager.ResetNodeColors();
             sensorManager.SelectingNode = false;
@@ -656,12 +640,9 @@ namespace Synthesis.Sensors
         /// </summary>
         public void UpdateSensorAnglePanel()
         {
-            //if (!isEditingAngle)
-            //{
-                xAngleEntry.GetComponent<InputField>().text = currentSensor.transform.localEulerAngles.x.ToString();
-                yAngleEntry.GetComponent<InputField>().text = currentSensor.transform.localEulerAngles.y.ToString();
-                zAngleEntry.GetComponent<InputField>().text = currentSensor.transform.localEulerAngles.z.ToString();
-            //}
+            xAngleEntry.GetComponent<InputField>().text = currentSensor.transform.localEulerAngles.x.ToString();
+            yAngleEntry.GetComponent<InputField>().text = currentSensor.transform.localEulerAngles.y.ToString();
+            zAngleEntry.GetComponent<InputField>().text = currentSensor.transform.localEulerAngles.z.ToString();
         }
 
         /// <summary>
@@ -794,9 +775,9 @@ namespace Synthesis.Sensors
 
             currentSensor.IsChangingRange = !currentSensor.IsChangingRange;
             //isEditingRange = !isEditingRange;
-            
+
             sensorRangePanel.SetActive(currentSensor.IsChangingRange);
-            
+
             //if (!currentSensor.IsChangingRange) SyncSensorRange();
 
             //lockPositionButton.SetActive(currentSensor.IsChangingRange);
@@ -804,11 +785,11 @@ namespace Synthesis.Sensors
 
             //if (currentSensor.IsChangingRange)
             //{
-                //showRangeButton.GetComponentInChildren<Text>().text = "Hide Sensor Range";
+            //showRangeButton.GetComponentInChildren<Text>().text = "Hide Sensor Range";
             //}
             //else
             //{
-                //showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
+            //showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
             //}
         }
 
@@ -835,8 +816,18 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ToggleChangePosition()
         {
-            currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.SetActive(
-                !currentSensor.GetComponentInChildren<MoveArrows>(true).gameObject.activeSelf);
+            if (!currentSensor.transform.Find("IndicatorMoveArrows"))
+            {
+                GameObject moveArrows = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+                moveArrows.name = "IndicatorMoveArrows";
+                moveArrows.transform.parent = currentSensor.transform;
+                moveArrows.transform.rotation = currentSensor.transform.rotation;
+                moveArrows.transform.localPosition = UnityEngine.Vector3.zero;
+
+                moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
+                    currentSensor.transform.Translate(translation, Space.World);
+            }
+            else Destroy(currentSensor.transform.Find("IndicatorMoveArrows").gameObject);
         }
 
         /// <summary>
@@ -918,7 +909,7 @@ namespace Synthesis.Sensors
             }
         }
         #endregion
-
+        
         #region Sensor Output
         /// <summary>
         /// Create an output panel for the current sensor if there is not one for it. Output update is handled by each sensor (in SensorBase/other sensor scripts)
