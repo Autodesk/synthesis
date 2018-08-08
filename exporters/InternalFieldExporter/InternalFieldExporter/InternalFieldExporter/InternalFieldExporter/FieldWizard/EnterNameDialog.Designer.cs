@@ -41,8 +41,9 @@
             // okButton
             // 
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.okButton.Location = new System.Drawing.Point(344, 55);
-            this.okButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(128, 39);
             this.okButton.TabIndex = 0;
@@ -52,8 +53,9 @@
             // cancelButton
             // 
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cancelButton.Location = new System.Drawing.Point(208, 55);
-            this.cancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(128, 39);
             this.cancelButton.TabIndex = 1;
@@ -63,6 +65,7 @@
             // enterNameLabel
             // 
             this.enterNameLabel.AutoSize = true;
+            this.enterNameLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.enterNameLabel.Location = new System.Drawing.Point(16, 18);
             this.enterNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.enterNameLabel.Name = "enterNameLabel";
@@ -73,7 +76,7 @@
             // nameTextBox
             // 
             this.nameTextBox.Location = new System.Drawing.Point(140, 15);
-            this.nameTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.nameTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.nameTextBox.MaxLength = 20;
             this.nameTextBox.Name = "nameTextBox";
             this.nameTextBox.Size = new System.Drawing.Size(331, 22);
@@ -82,6 +85,7 @@
             // 
             // reservedLabel
             // 
+            this.reservedLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.reservedLabel.ForeColor = System.Drawing.Color.Red;
             this.reservedLabel.Location = new System.Drawing.Point(16, 59);
             this.reservedLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -95,7 +99,7 @@
             // 
             this.warningImage.Image = ((System.Drawing.Image)(resources.GetObject("warningImage.Image")));
             this.warningImage.Location = new System.Drawing.Point(140, 55);
-            this.warningImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.warningImage.Margin = new System.Windows.Forms.Padding(4);
             this.warningImage.Name = "warningImage";
             this.warningImage.Size = new System.Drawing.Size(60, 39);
             this.warningImage.TabIndex = 5;
@@ -115,7 +119,7 @@
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "EnterNameDialog";
             this.Text = "Enter Property Set Name";
             ((System.ComponentModel.ISupportInitialize)(this.warningImage)).EndInit();

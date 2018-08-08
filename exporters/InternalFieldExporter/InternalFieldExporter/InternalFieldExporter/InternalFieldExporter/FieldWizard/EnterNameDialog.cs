@@ -38,7 +38,7 @@ namespace InternalFieldExporter.FieldWizard
             {
                 if (nameTextBox.Text.Equals(BXDFProperties.BXDF_DEFAULT_NAME))
                 {
-                    reservedLabel.Visible = true;
+                    //reservedLabel.Visible = true;
                     okButton.Enabled = false;
                 }
                 else

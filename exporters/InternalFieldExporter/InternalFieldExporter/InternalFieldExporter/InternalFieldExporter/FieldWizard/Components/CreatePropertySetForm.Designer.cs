@@ -34,6 +34,7 @@
             // 
             // label1
             // 
+            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.label1.Location = new System.Drawing.Point(4, 259);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
@@ -45,6 +46,7 @@
             // createButton
             // 
             this.createButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.createButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.createButton.Location = new System.Drawing.Point(307, 152);
             this.createButton.Margin = new System.Windows.Forms.Padding(4);
             this.createButton.Name = "createButton";

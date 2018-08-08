@@ -33,6 +33,10 @@
             this.inventorSelectButton = new System.Windows.Forms.Button();
             this.addSelectionButton = new System.Windows.Forms.Button();
             this.propertiesScrollablePanel = new System.Windows.Forms.Panel();
+            this.jointsGroupBox = new System.Windows.Forms.GroupBox();
+            this.jointTypeLabel = new System.Windows.Forms.Label();
+            this.jointComboBox = new System.Windows.Forms.ComboBox();
+            this.jointCheckBox = new System.Windows.Forms.CheckBox();
             this.physicalPropertiesGroupBox = new System.Windows.Forms.GroupBox();
             this.dynamicCheckBox = new System.Windows.Forms.CheckBox();
             this.dynamicGroupBox = new System.Windows.Forms.GroupBox();
@@ -54,12 +58,9 @@
             this.changeNameButton = new System.Windows.Forms.Button();
             this.meshPropertiesTable = new System.Windows.Forms.TableLayoutPanel();
             this.inventorTreeView = new InternalFieldExporter.InventorTreeView(this.components);
-            this.jointsGroupBox = new System.Windows.Forms.GroupBox();
-            this.jointCheckBox = new System.Windows.Forms.CheckBox();
-            this.jointComboBox = new System.Windows.Forms.ComboBox();
-            this.jointTypeLabel = new System.Windows.Forms.Label();
             this.inventorActionsPanel.SuspendLayout();
             this.propertiesScrollablePanel.SuspendLayout();
+            this.jointsGroupBox.SuspendLayout();
             this.physicalPropertiesGroupBox.SuspendLayout();
             this.dynamicGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).BeginInit();
@@ -69,7 +70,6 @@
             this.colliderTypePanel.SuspendLayout();
             this.propertySetOptionsBox.SuspendLayout();
             this.propertyOptionsLayoutPanel.SuspendLayout();
-            this.jointsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // inventorActionsPanel
@@ -92,6 +92,7 @@
             // inventorSelectButton
             // 
             this.inventorSelectButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.inventorSelectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.inventorSelectButton.Location = new System.Drawing.Point(3, 3);
             this.inventorSelectButton.Name = "inventorSelectButton";
             this.inventorSelectButton.Size = new System.Drawing.Size(144, 34);
@@ -104,6 +105,7 @@
             // 
             this.addSelectionButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.addSelectionButton.Enabled = false;
+            this.addSelectionButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.addSelectionButton.Location = new System.Drawing.Point(153, 3);
             this.addSelectionButton.Name = "addSelectionButton";
             this.addSelectionButton.Size = new System.Drawing.Size(145, 34);
@@ -126,6 +128,51 @@
             this.propertiesScrollablePanel.Size = new System.Drawing.Size(296, 400);
             this.propertiesScrollablePanel.TabIndex = 2;
             // 
+            // jointsGroupBox
+            // 
+            this.jointsGroupBox.Controls.Add(this.jointTypeLabel);
+            this.jointsGroupBox.Controls.Add(this.jointComboBox);
+            this.jointsGroupBox.Controls.Add(this.jointCheckBox);
+            this.jointsGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.jointsGroupBox.Location = new System.Drawing.Point(6, 270);
+            this.jointsGroupBox.Name = "jointsGroupBox";
+            this.jointsGroupBox.Size = new System.Drawing.Size(281, 122);
+            this.jointsGroupBox.TabIndex = 3;
+            this.jointsGroupBox.TabStop = false;
+            // 
+            // jointTypeLabel
+            // 
+            this.jointTypeLabel.AutoSize = true;
+            this.jointTypeLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.jointTypeLabel.Location = new System.Drawing.Point(5, 28);
+            this.jointTypeLabel.Name = "jointTypeLabel";
+            this.jointTypeLabel.Size = new System.Drawing.Size(78, 17);
+            this.jointTypeLabel.TabIndex = 2;
+            this.jointTypeLabel.Text = "Joint Type:";
+            // 
+            // jointComboBox
+            // 
+            this.jointComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.jointComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.jointComboBox.FormattingEnabled = true;
+            this.jointComboBox.Location = new System.Drawing.Point(89, 21);
+            this.jointComboBox.Name = "jointComboBox";
+            this.jointComboBox.Size = new System.Drawing.Size(189, 24);
+            this.jointComboBox.TabIndex = 1;
+            this.jointComboBox.SelectedIndexChanged += new System.EventHandler(this.jointComboBox_SelectedIndexChanged);
+            // 
+            // jointCheckBox
+            // 
+            this.jointCheckBox.AutoSize = true;
+            this.jointCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.jointCheckBox.Location = new System.Drawing.Point(9, 0);
+            this.jointCheckBox.Name = "jointCheckBox";
+            this.jointCheckBox.Size = new System.Drawing.Size(56, 21);
+            this.jointCheckBox.TabIndex = 0;
+            this.jointCheckBox.Text = "Joint";
+            this.jointCheckBox.UseVisualStyleBackColor = true;
+            this.jointCheckBox.CheckedChanged += new System.EventHandler(this.jointCheckBox_CheckChanged);
+            // 
             // physicalPropertiesGroupBox
             // 
             this.physicalPropertiesGroupBox.Controls.Add(this.dynamicCheckBox);
@@ -133,6 +180,7 @@
             this.physicalPropertiesGroupBox.Controls.Add(this.frictionLabelsLayoutPanel);
             this.physicalPropertiesGroupBox.Controls.Add(this.frictionTrackBar);
             this.physicalPropertiesGroupBox.Controls.Add(this.frictionLabel);
+            this.physicalPropertiesGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.physicalPropertiesGroupBox.Location = new System.Drawing.Point(3, 125);
             this.physicalPropertiesGroupBox.Name = "physicalPropertiesGroupBox";
             this.physicalPropertiesGroupBox.Size = new System.Drawing.Size(290, 139);
@@ -143,9 +191,10 @@
             // dynamicCheckBox
             // 
             this.dynamicCheckBox.AutoSize = true;
+            this.dynamicCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.dynamicCheckBox.Location = new System.Drawing.Point(12, 82);
             this.dynamicCheckBox.Name = "dynamicCheckBox";
-            this.dynamicCheckBox.Size = new System.Drawing.Size(84, 21);
+            this.dynamicCheckBox.Size = new System.Drawing.Size(80, 21);
             this.dynamicCheckBox.TabIndex = 4;
             this.dynamicCheckBox.Text = "Dynamic";
             this.dynamicCheckBox.UseVisualStyleBackColor = true;
@@ -176,6 +225,7 @@
             // 
             // massLabel
             // 
+            this.massLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.massLabel.Location = new System.Drawing.Point(6, 24);
             this.massLabel.Name = "massLabel";
             this.massLabel.Size = new System.Drawing.Size(77, 17);
@@ -204,6 +254,7 @@
             // 
             this.iceLabel.AutoSize = true;
             this.iceLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.iceLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.iceLabel.Location = new System.Drawing.Point(3, 0);
             this.iceLabel.Name = "iceLabel";
             this.iceLabel.Size = new System.Drawing.Size(63, 20);
@@ -215,6 +266,7 @@
             // 
             this.carpetLabel.AutoSize = true;
             this.carpetLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.carpetLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.carpetLabel.Location = new System.Drawing.Point(72, 0);
             this.carpetLabel.Name = "carpetLabel";
             this.carpetLabel.Size = new System.Drawing.Size(68, 20);
@@ -226,6 +278,7 @@
             // 
             this.rubberLabel.AutoSize = true;
             this.rubberLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rubberLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.rubberLabel.Location = new System.Drawing.Point(146, 0);
             this.rubberLabel.Name = "rubberLabel";
             this.rubberLabel.Size = new System.Drawing.Size(65, 20);
@@ -245,6 +298,7 @@
             // 
             // frictionLabel
             // 
+            this.frictionLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.frictionLabel.Location = new System.Drawing.Point(6, 18);
             this.frictionLabel.Name = "frictionLabel";
             this.frictionLabel.Size = new System.Drawing.Size(58, 34);
@@ -276,6 +330,7 @@
             // colliderTypeCombobox
             // 
             this.colliderTypeCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.colliderTypeCombobox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.colliderTypeCombobox.FormattingEnabled = true;
             this.colliderTypeCombobox.Location = new System.Drawing.Point(104, 3);
             this.colliderTypeCombobox.Name = "colliderTypeCombobox";
@@ -286,6 +341,7 @@
             // colliderTypeLabel
             // 
             this.colliderTypeLabel.AutoSize = true;
+            this.colliderTypeLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.colliderTypeLabel.Location = new System.Drawing.Point(3, 6);
             this.colliderTypeLabel.Name = "colliderTypeLabel";
             this.colliderTypeLabel.Size = new System.Drawing.Size(95, 17);
@@ -321,22 +377,26 @@
             // removeButton
             // 
             this.removeButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.removeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.removeButton.Location = new System.Drawing.Point(3, 3);
             this.removeButton.Name = "removeButton";
             this.removeButton.Size = new System.Drawing.Size(136, 32);
             this.removeButton.TabIndex = 0;
             this.removeButton.Text = "Remove";
             this.removeButton.UseVisualStyleBackColor = true;
+            this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
             // 
             // changeNameButton
             // 
             this.changeNameButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.changeNameButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.changeNameButton.Location = new System.Drawing.Point(145, 3);
             this.changeNameButton.Name = "changeNameButton";
             this.changeNameButton.Size = new System.Drawing.Size(136, 32);
             this.changeNameButton.TabIndex = 1;
             this.changeNameButton.Text = "Change Name";
             this.changeNameButton.UseVisualStyleBackColor = true;
+            this.changeNameButton.Click += new System.EventHandler(this.changeNameButton_Click);
             // 
             // meshPropertiesTable
             // 
@@ -352,47 +412,6 @@
             this.inventorTreeView.Size = new System.Drawing.Size(295, 354);
             this.inventorTreeView.TabIndex = 3;
             // 
-            // jointsGroupBox
-            // 
-            this.jointsGroupBox.Controls.Add(this.jointTypeLabel);
-            this.jointsGroupBox.Controls.Add(this.jointComboBox);
-            this.jointsGroupBox.Controls.Add(this.jointCheckBox);
-            this.jointsGroupBox.Location = new System.Drawing.Point(6, 270);
-            this.jointsGroupBox.Name = "jointsGroupBox";
-            this.jointsGroupBox.Size = new System.Drawing.Size(281, 122);
-            this.jointsGroupBox.TabIndex = 3;
-            this.jointsGroupBox.TabStop = false;
-            // 
-            // jointCheckBox
-            // 
-            this.jointCheckBox.AutoSize = true;
-            this.jointCheckBox.Location = new System.Drawing.Point(9, 0);
-            this.jointCheckBox.Name = "jointCheckBox";
-            this.jointCheckBox.Size = new System.Drawing.Size(60, 21);
-            this.jointCheckBox.TabIndex = 0;
-            this.jointCheckBox.Text = "Joint";
-            this.jointCheckBox.UseVisualStyleBackColor = true;
-            this.jointCheckBox.CheckedChanged += new System.EventHandler(this.jointCheckBox_CheckChanged);
-            // 
-            // jointComboBox
-            // 
-            this.jointComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.jointComboBox.FormattingEnabled = true;
-            this.jointComboBox.Location = new System.Drawing.Point(89, 21);
-            this.jointComboBox.Name = "jointComboBox";
-            this.jointComboBox.Size = new System.Drawing.Size(189, 24);
-            this.jointComboBox.TabIndex = 1;
-            this.jointComboBox.SelectedIndexChanged += new System.EventHandler(this.jointComboBox_SelectedIndexChanged);
-            // 
-            // jointTypeLabel
-            // 
-            this.jointTypeLabel.AutoSize = true;
-            this.jointTypeLabel.Location = new System.Drawing.Point(0, 24);
-            this.jointTypeLabel.Name = "jointTypeLabel";
-            this.jointTypeLabel.Size = new System.Drawing.Size(78, 17);
-            this.jointTypeLabel.TabIndex = 2;
-            this.jointTypeLabel.Text = "Joint Type:";
-            // 
             // ComponentPropertiesForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -404,6 +423,8 @@
             this.inventorActionsPanel.ResumeLayout(false);
             this.propertiesScrollablePanel.ResumeLayout(false);
             this.propertiesScrollablePanel.PerformLayout();
+            this.jointsGroupBox.ResumeLayout(false);
+            this.jointsGroupBox.PerformLayout();
             this.physicalPropertiesGroupBox.ResumeLayout(false);
             this.physicalPropertiesGroupBox.PerformLayout();
             this.dynamicGroupBox.ResumeLayout(false);
@@ -416,8 +437,6 @@
             this.colliderTypePanel.PerformLayout();
             this.propertySetOptionsBox.ResumeLayout(false);
             this.propertyOptionsLayoutPanel.ResumeLayout(false);
-            this.jointsGroupBox.ResumeLayout(false);
-            this.jointsGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }

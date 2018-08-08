@@ -38,6 +38,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.label1.Location = new System.Drawing.Point(9, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(169, 17);
@@ -58,7 +59,8 @@
             // 
             this.Ok_Button.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Ok_Button.Enabled = false;
-            this.Ok_Button.Location = new System.Drawing.Point(93, 170);
+            this.Ok_Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Ok_Button.Location = new System.Drawing.Point(81, 170);
             this.Ok_Button.Name = "Ok_Button";
             this.Ok_Button.Size = new System.Drawing.Size(63, 33);
             this.Ok_Button.TabIndex = 2;
@@ -69,9 +71,10 @@
             // Cancel_Button
             // 
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(162, 170);
+            this.Cancel_Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Cancel_Button.Location = new System.Drawing.Point(150, 170);
             this.Cancel_Button.Name = "Cancel_Button";
-            this.Cancel_Button.Size = new System.Drawing.Size(64, 33);
+            this.Cancel_Button.Size = new System.Drawing.Size(76, 33);
             this.Cancel_Button.TabIndex = 3;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
@@ -80,7 +83,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(238, 211);
+            this.ClientSize = new System.Drawing.Size(240, 211);
             this.Controls.Add(this.Cancel_Button);
             this.Controls.Add(this.Ok_Button);
             this.Controls.Add(this.AssemblyListBox);

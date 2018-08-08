@@ -89,6 +89,7 @@
             // 
             // exportButton
             // 
+            this.exportButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exportButton.Location = new System.Drawing.Point(9, 414);
             this.exportButton.Name = "exportButton";
             this.exportButton.Size = new System.Drawing.Size(75, 31);
