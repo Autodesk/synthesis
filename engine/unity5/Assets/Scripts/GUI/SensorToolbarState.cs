@@ -45,6 +45,10 @@ namespace Assets.Scripts.GUI
             UpdateSensorDropdown(beamBreakerDropdown, sensorManagerGUI.sensorManager.beamBreakerList);
             UpdateSensorDropdown(gyroDropdown, sensorManagerGUI.sensorManager.gyroList);
 
+            numUltrasonics = sensorManagerGUI.sensorManager.ultrasonicList.Count();
+            numBeamBreakers = sensorManagerGUI.sensorManager.beamBreakerList.Count();
+            numGyros = sensorManagerGUI.sensorManager.gyroList.Count();
+
             UpdateOutputButton();            
         }
 
