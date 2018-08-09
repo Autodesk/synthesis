@@ -127,8 +127,8 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 	{
 		if (joint->occurrenceOne() != nullptr && joint->occurrenceTwo() != nullptr)
 		{
-			core::Ptr<fusion::Occurrence> lowerOccurrence = Utility::lowerOccurrence(joint);
-			core::Ptr<fusion::Occurrence> upperOccurrence = Utility::upperOccurrence(joint);
+			core::Ptr<fusion::Occurrence> lowerOccurrence = joint->occurrenceOne();
+			core::Ptr<fusion::Occurrence> upperOccurrence = joint->occurrenceTwo();
 
 			jointSummary.children[lowerOccurrence] = upperOccurrence;
 			jointSummary.parents[upperOccurrence].push_back(joint);

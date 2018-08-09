@@ -13,23 +13,7 @@ int Utility::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
 	return levelOfOccurrence(occurrence->assemblyContext()) + 1;
 }
 
-core::Ptr<adsk::fusion::Occurrence> Utility::lowerOccurrence(core::Ptr<fusion::Joint> joint)
-{
-	if (levelOfOccurrence(joint->occurrenceOne()) >= levelOfOccurrence(joint->occurrenceTwo()))
-		return joint->occurrenceOne();
-	else
-		return joint->occurrenceTwo();
-}
-
-core::Ptr<adsk::fusion::Occurrence> Utility::upperOccurrence(core::Ptr<fusion::Joint> joint)
-{
-	if (levelOfOccurrence(joint->occurrenceOne()) < levelOfOccurrence(joint->occurrenceTwo()))
-		return joint->occurrenceOne();
-	else
-		return joint->occurrenceTwo();
-}
-
 std::string Utility::getUniqueJointID(core::Ptr<adsk::fusion::Joint> joint)
 {
-	return upperOccurrence(joint)->fullPathName() + joint->name();
+	return joint->occurrenceTwo()->fullPathName() + joint->name();
 }
