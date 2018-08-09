@@ -26,6 +26,9 @@ namespace Synthesis.GUI.Scrollables
 
         public string selectedEntry { get; set; } //this is set to whatever item is currently being selected
 
+        public Texture2D ThumbTexture { get; set; }
+        public Color ListTextColor { get; set; }
+
         // Use this for initialization
         protected virtual void Start()
         {
@@ -36,7 +39,9 @@ namespace Synthesis.GUI.Scrollables
             listStyle.hover.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.active.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.alignment = TextAnchor.MiddleLeft;
-            listStyle.normal.textColor = Color.white;
+
+            if (ListTextColor == Color.clear) ListTextColor = Color.white;
+            if (ThumbTexture == null) ThumbTexture = Resources.Load("Images/New Textures/Button") as Texture2D;
 
             highlightStyle = new GUIStyle(listStyle);
             highlightStyle.normal.background = listStyle.active.background;
@@ -55,9 +60,13 @@ namespace Synthesis.GUI.Scrollables
 
             if (toScale)
             {
-                listStyle.fontSize = Mathf.RoundToInt(16 * scale);
-                highlightStyle.fontSize = Mathf.RoundToInt(20 * scale);
+                listStyle.fontSize = Mathf.RoundToInt(24 * scale);
+                highlightStyle.fontSize = Mathf.RoundToInt(24 * scale);
             }
+
+            UnityEngine.GUI.skin.verticalScrollbar.normal.background = null;
+            UnityEngine.GUI.skin.verticalScrollbarThumb.normal.background = ThumbTexture;
+            listStyle.normal.textColor = ListTextColor;
 
             //Sets up the new rectangle area for drawing UI components
             GUILayout.BeginArea(new Rect(area.x, area.y * 1.01f, area.width, rect.height * scale * .95f));

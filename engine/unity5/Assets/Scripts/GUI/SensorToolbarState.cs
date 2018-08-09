@@ -18,7 +18,11 @@ namespace Assets.Scripts.GUI
         SensorManagerGUI sensorManagerGUI;
 
         GameObject canvas;
+        GameObject tabs;
         GameObject sensorToolbar;
+
+        GameObject helpMenu;
+        GameObject overlay;
 
         Dropdown ultrasonicDropdown;
         Dropdown beamBreakerDropdown;
@@ -34,7 +38,11 @@ namespace Assets.Scripts.GUI
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
             canvas = GameObject.Find("Canvas");
+            tabs = Auxiliary.FindObject(canvas, "Tabs");
             sensorToolbar = Auxiliary.FindObject(canvas, "SensorToolbar");
+
+            helpMenu = Auxiliary.FindObject(canvas, "Help");
+            overlay = Auxiliary.FindObject(canvas, "Overlay");
 
             ultrasonicDropdown = Auxiliary.FindObject(sensorToolbar, "UltrasonicDropdown").GetComponent<Dropdown>();
             beamBreakerDropdown = Auxiliary.FindObject(sensorToolbar, "BeamBreakDropdown").GetComponent<Dropdown>();
@@ -45,13 +53,29 @@ namespace Assets.Scripts.GUI
             UpdateSensorDropdown(beamBreakerDropdown, sensorManagerGUI.sensorManager.beamBreakerList);
             UpdateSensorDropdown(gyroDropdown, sensorManagerGUI.sensorManager.gyroList);
 
-            UpdateOutputButton();            
+            numUltrasonics = sensorManagerGUI.sensorManager.ultrasonicList.Count();
+            numBeamBreakers = sensorManagerGUI.sensorManager.beamBreakerList.Count();
+            numGyros = sensorManagerGUI.sensorManager.gyroList.Count();
+
+            UpdateOutputButton();
+
+            Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            helpButton.onClick.RemoveAllListeners();
+            helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
         private void UpdateOutputButton()
         {
-            if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() == 0) Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(false);
-            else Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(true);
+            if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() == 0 && Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
+            {
+                Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(false);
+                sensorToolbar.transform.Find("HelpButton").Translate(new Vector3(-100, 0, 0));
+            }
+            else if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() > 0 && !Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
+            {
+                Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(true);
+                sensorToolbar.transform.Find("HelpButton").Translate(new Vector3(100, 0, 0));
+            }
         }
 
         /// <summary>
@@ -173,6 +197,31 @@ namespace Assets.Scripts.GUI
                     numGyros--;
                     UpdateSensorDropdown(gyroDropdown, gyroList);
                     break;
+            }
+        }
+
+        public void OnHelpButtonPressed()
+        {
+            helpMenu.SetActive(true);
+            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "SensorToolbar";
+            overlay.SetActive(true);
+            tabs.transform.Translate(new Vector3(200, 0, 0));
+            foreach (Transform t in sensorToolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(200, 0, 0));
+                else t.gameObject.SetActive(false);
+            }
+        }
+
+        private void CloseHelpMenu()
+        {
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            foreach (Transform t in sensorToolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                else t.gameObject.SetActive(true);
             }
         }
     }
