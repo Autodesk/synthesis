@@ -82,8 +82,15 @@ namespace Synthesis.Robot
                     return false;
                 }
 
-                otherNode.CreateJoint(0, this);
                 otherNode.MainObject.AddComponent<Tracker>().Trace = true;
+            }
+
+            Vector3 wheelNormal = CalculateWheelNormal(nodes);
+
+            for (int i = 1; i < nodes.Capacity; i++)
+            {
+                RigidNode otherNode = (RigidNode)nodes[i];
+                otherNode.CreateJoint(0, wheelNormal, this);
             }
 
             RotateRobot(robotStartOrientation);
@@ -170,7 +177,7 @@ namespace Synthesis.Robot
             if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName, true, wheelMass))
                 return false;
 
-            node.CreateJoint(numWheels, this);
+            node.CreateJoint(numWheels, Vector3.zero, this);
 
             if (node.PhysicalProperties != null)
                 collectiveMass += node.PhysicalProperties.mass;
@@ -238,9 +245,15 @@ namespace Synthesis.Robot
                     }
                     node.MainObject.GetComponentInChildren<MeshRenderer>().materials = materials;
                 }
+            }
 
-                //Create the joints that interact with physics
-                node.CreateJoint(numWheels, this, wheelFriction, wheelLateralFriction);
+            Vector3 wheelNormal = CalculateWheelNormal(nodes);
+
+            //Create the joints that interact with physics
+            for (int i = 1; i < nodes.Count; i++)
+            {
+                node = (RigidNode)nodes[i];
+                node.CreateJoint(numWheels, wheelNormal, this, wheelFriction, wheelLateralFriction);
 
                 if (node.HasDriverMeta<WheelDriverMeta>())
                     node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelRadius;
@@ -250,6 +263,7 @@ namespace Synthesis.Robot
 
                 if (node.MainObject.GetComponent<BRigidBody>() != null)
                     node.MainObject.AddComponent<Tracker>().Trace = true;
+
             }
 
             return true;

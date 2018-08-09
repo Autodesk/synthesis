@@ -219,6 +219,34 @@ namespace Synthesis.Utils
             return true;
         }
 
+        /// <summary>
+        /// Finds the best unit normal that fits the set of points provided.
+        /// </summary>
+        /// <param name="points"></param>
+        /// <returns></returns>
+        public static Vector3 BestFitUnitNormal(Vector3[] points, out Vector3 centroid)
+        {
+            Debug.Assert(points.Length > 3);
+
+            Vector3 displacement, result = centroid = displacement = Vector3.zero;
+
+            foreach (Vector3 p in points)
+                centroid += p;
+
+            centroid /= points.Length;
+
+            foreach (Vector3 p in points)
+                displacement += Abs(p - centroid);
+
+            int min = 0;
+            for (int i = 1; i < 3; i++)
+                if (displacement[i] < displacement[min])
+                    min = i;
+
+            result[min] = 1f;
+            return result;
+        }
+
         public static float ToFeet(float meter)
         {
             return meter * (328.084f) / 100;
@@ -237,6 +265,11 @@ namespace Synthesis.Utils
         public static float ToDegrees(float rad)
         {
             return rad * RadToDeg;
+        }
+
+        private static Vector3 Abs(Vector3 v)
+        {
+            return new Vector3(Math.Abs(v.x), Math.Abs(v.y), Math.Abs(v.z));
         }
     }
 }

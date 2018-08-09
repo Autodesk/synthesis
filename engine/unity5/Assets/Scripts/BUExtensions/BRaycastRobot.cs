@@ -26,6 +26,11 @@ namespace Synthesis.BUExtensions
         public RaycastRobot RaycastRobot { get; private set; }
 
         /// <summary>
+        /// The normal vector for the wheels.
+        /// </summary>
+        public Vector3 WheelNormal { get; set; }
+
+        /// <summary>
         /// Used as a multiplier to calculate the stiffness values for each wheel.
         /// </summary>
         public int NumWheels
@@ -61,7 +66,7 @@ namespace Synthesis.BUExtensions
             }
 
             RobotWheelInfo wheel = RaycastRobot.AddWheel(connectionPoint,
-                -BulletSharp.Math.Vector3.UnitY, axle, suspensionRestLength,
+                WheelNormal.ToBullet(), axle, suspensionRestLength,
                 radius, defaultVehicleTuning, false);
 
             wheel.RollInfluence = RollInfluence;
@@ -95,7 +100,9 @@ namespace Synthesis.BUExtensions
             (RigidBody)rigidBody.GetCollisionObject(),
             new BRobotRaycaster((DynamicsWorld)BPhysicsWorld.Get().world));
 
+            // TODO: Dynamically modify the coordinate system.
             RaycastRobot.SetCoordinateSystem(0, 1, 2);
+            //RaycastRobot.SetCoordinateSystem(0, 2, 1);
 
             BRobotManager.Instance.RegisterRaycastRobot(RaycastRobot);
         }
