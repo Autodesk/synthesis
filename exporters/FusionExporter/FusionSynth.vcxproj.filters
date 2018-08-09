@@ -227,7 +227,10 @@
     <ClCompile Include="Source\Data\BXDJ\CustomJSONObject.cpp">
       <Filter>Source\Data\BXDJ</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AddIn\EUI-EventHandling.cpp">
+    <ClCompile Include="Source\AddIn\EUI-UIManagement.cpp">
+      <Filter>Source\AddIn</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AddIn\EUI-Handlers.cpp">
       <Filter>Source\AddIn</Filter>
     </ClCompile>
   </ItemGroup>

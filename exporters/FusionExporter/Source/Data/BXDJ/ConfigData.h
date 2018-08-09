@@ -39,6 +39,8 @@ namespace BXDJ
 		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
 		void loadJSONObject(const rapidjson::Value&);
 
+		static std::string toString(DriveTrainType);
+
 	private:
 		// Constants used for communicating joint motion type
 		enum JointMotionType : int
@@ -78,7 +80,6 @@ namespace BXDJ
 
 		std::map<std::string, JointConfig> joints;
 
-		static std::string toString(DriveTrainType);
 		static JointMotionType internalJointMotion(fusion::JointTypes);
 
 	};

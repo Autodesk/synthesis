@@ -17,15 +17,13 @@ RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 	configData = nodeToCopy.configData;
 	jointSummary = nodeToCopy.jointSummary;
 
-	for (core::Ptr<fusion::Occurrence> occurence : nodeToCopy.fusionOccurrences)
-		fusionOccurrences.push_back(occurence);
+	for (core::Ptr<fusion::Occurrence> occurrence : nodeToCopy.fusionOccurrences)
+		fusionOccurrences.push_back(occurrence);
 
 	for (std::shared_ptr<Joint> joint : nodeToCopy.childrenJoints)
 		childrenJoints.push_back(joint);
 
 	parent = nodeToCopy.parent;
-
-	log = nodeToCopy.log;
 }
 
 Guid BXDJ::RigidNode::getGUID() const

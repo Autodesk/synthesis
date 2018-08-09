@@ -144,9 +144,9 @@ void BXDJ::Wheel::loadJSONObject(const rapidjson::Value & wheelJSON)
 {
 	if (wheelJSON.IsObject())
 	{
-		if (wheelJSON["isDriveWheel"].IsNumber())
+		if (wheelJSON["type"].IsNumber())
 			type = (Wheel::Type)wheelJSON["type"].GetInt();
-		if (wheelJSON["isDriveWheel"].IsNumber())
+		if (wheelJSON["frictionLevel"].IsNumber())
 			frictionLevel = (Wheel::FrictionLevel)wheelJSON["frictionLevel"].GetInt();
 		if (wheelJSON["isDriveWheel"].IsBool())
 			isDriveWheel = wheelJSON["isDriveWheel"].GetBool();

@@ -15,6 +15,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>FusionSynthV2</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <ProjectName>FusionSynth</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -45,7 +46,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>C:\Users\t_walkn\Documents\GitHub\synthesis\exporters\FusionExporter\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -133,7 +134,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\AddIn\CustomHandlers.cpp" />
-    <ClCompile Include="Source\AddIn\EUI-EventHandling.cpp" />
+    <ClCompile Include="Source\AddIn\EUI-Handlers.cpp" />
+    <ClCompile Include="Source\AddIn\EUI-UIManagement.cpp" />
     <ClCompile Include="Source\AddIn\EUI.cpp" />
     <ClCompile Include="Source\AddIn\FusionSynthV2.cpp" />
     <ClCompile Include="Source\Data\BXDA\BinaryWriter.cpp" />
