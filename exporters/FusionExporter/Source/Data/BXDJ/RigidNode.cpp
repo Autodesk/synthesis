@@ -34,6 +34,11 @@ std::string RigidNode::getModelId() const
 		return "empty";
 }
 
+int BXDJ::RigidNode::getOccurrenceCount() const
+{
+	return fusionOccurrences.size();
+}
+
 void RigidNode::write(XmlWriter & output) const
 {
 	// Generate filename
