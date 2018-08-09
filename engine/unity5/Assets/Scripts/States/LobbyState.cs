@@ -14,6 +14,8 @@ namespace Synthesis.States
 {
     public class LobbyState : State
     {
+        private const int MaxPlayers = 6;
+
         private readonly bool host;
         private string lobbyCode;
 
@@ -56,7 +58,7 @@ namespace Synthesis.States
             {
                 lobbyCodeText.text = "Lobby Code: " + (lobbyCode = IPCrypt.Encrypt(network.networkAddress = GetLocalIP()));
 
-                if (network.StartHost() == null)
+                if (network.StartHost(new ConnectionConfig(), MaxPlayers) == null)
                 {
                     UserMessageManager.Dispatch("Could not host a lobby on this network!", 5f);
                     StateMachine.ChangeState(new HostJoinState());
