@@ -37,6 +37,7 @@
             this.exportButton = new System.Windows.Forms.Button();
             this.statusLabel = new System.Windows.Forms.Label();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.exporter = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.loadingAnimationPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -112,6 +113,14 @@
             this.folderBrowserDialog.Description = "Select the file path by which to export the field.";
             this.folderBrowserDialog.ShowNewFolderButton = false;
             // 
+            // exporter
+            // 
+            this.exporter.WorkerReportsProgress = true;
+            this.exporter.WorkerSupportsCancellation = true;
+            this.exporter.DoWork += new System.ComponentModel.DoWorkEventHandler(this.exporter_DoWork);
+            this.exporter.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.exporter_ProgressChanged);
+            this.exporter.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.exporter_RunWorkerCompleted);
+            // 
             // ExportForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -146,5 +155,6 @@
         private System.Windows.Forms.Button exportButton;
         private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
+        private System.ComponentModel.BackgroundWorker exporter;
     }
 }

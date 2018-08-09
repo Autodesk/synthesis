@@ -89,6 +89,8 @@ namespace InternalFieldExporter.FieldWizard
             return dynamicCheckBox.Checked;
         }
 
+        public bool IsJointed;
+
         /// <summary>
         /// Returns the value of the mass numeric up down.
         /// </summary>
@@ -365,10 +367,12 @@ namespace InternalFieldExporter.FieldWizard
             if (jointCheckBox.Checked)
             {
                 jointComboBox.Enabled = true;
+                IsJointed = true;
             }
             else
             {
                 jointComboBox.Enabled = false;
+                IsJointed = false;
             }
         }
 
