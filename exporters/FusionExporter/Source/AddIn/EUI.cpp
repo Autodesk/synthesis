@@ -11,6 +11,7 @@
 #include "EUI.h"
 #include <Fusion/FusionAll.h>
 #include "../Exporter.h"
+#include "../Data/BXDJ/Utility.h"
 
 using namespace Synthesis;
 
