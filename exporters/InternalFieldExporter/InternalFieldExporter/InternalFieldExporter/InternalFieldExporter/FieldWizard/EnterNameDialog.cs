@@ -66,7 +66,7 @@ namespace InternalFieldExporter.FieldWizard
             if (++heapAllocationKey == (((heapAllocationKey & 0xaa) & 0x55) >> 0xb) + 0xa)
             {
                 reservedLabel.Text = "Beware of";
-                warningImage.Visible = true;
+                //warningImage.Visible = true;
             }
         }
     }
