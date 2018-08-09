@@ -816,8 +816,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PresetClones: []
-  PresetsList: []
   Wheels: []
   Bases: []
   Manipulators: []
@@ -1131,8 +1129,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13afbe8a3ce891e40b42b9b3d6353fbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preset: {fileID: 1623336350884948, guid: c82040d51fac9fb4a8dd0679e8dd6bea, type: 2}
-  parent: {fileID: 121849838}
 --- !u!1 &131051958
 GameObject:
   m_ObjectHideFlags: 0
@@ -2077,7 +2073,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7f6358fcc04324986d53762c001210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingsMode: {fileID: 0}
   DefaultButtonImage: {fileID: 21300000, guid: e3bb53348c2be6d48a29b7c9ad079cf3, type: 3}
   ActiveButtonImage: {fileID: 21300000, guid: fb673c560cd7b084a9c918ac244dbca8, type: 3}
 --- !u!1 &228132515
@@ -2942,7 +2937,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 204.4999, y: 165.60867}
+  m_AnchoredPosition: {x: 204.49991, y: 165.60867}
   m_SizeDelta: {x: 219, y: 98}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &335256175
@@ -3352,7 +3347,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0.000091552734, y: -37.608}
+  m_AnchoredPosition: {x: 0.00012207031, y: -37.608}
   m_SizeDelta: {x: 1162, y: 678.11}
   m_Pivot: {x: 0.50000006, y: 0.5}
 --- !u!222 &413711989
@@ -3515,7 +3510,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.19242716, y: 0.54879695}
   m_AnchorMax: {x: 0.8225625, y: 0.7808241}
-  m_AnchoredPosition: {x: -399.7501, y: 133.56247}
+  m_AnchoredPosition: {x: -399.75015, y: 133.56247}
   m_SizeDelta: {x: -355.1, y: 14}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &445894610
@@ -4163,8 +4158,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 492fe3a35dc0c2e4b9188ea8156319aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemDB:
-    xmlList: []
 --- !u!1 &589134474
 GameObject:
   m_ObjectHideFlags: 0
@@ -5558,7 +5551,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -10.237549, y: -27.323227}
+  m_AnchoredPosition: {x: -10.23761, y: -27.323227}
   m_SizeDelta: {x: -1820, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &812761299
@@ -6183,7 +6176,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c4953847945db49995aedafcbde146, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updater: 
 --- !u!114 &860403446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7630,7 +7622,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 204.47426, y: 165.60324}
+  m_AnchoredPosition: {x: 204.47427, y: 165.60324}
   m_SizeDelta: {x: 219, y: 98}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1002884304
@@ -8639,7 +8631,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0.00001514, y: -146.1}
+  m_AnchoredPosition: {x: 0, y: -146.1}
   m_SizeDelta: {x: 1918.7, y: 375}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1081121654
@@ -9750,7 +9742,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0.000091552734, y: -37.60797}
+  m_AnchoredPosition: {x: 0.00012207031, y: -37.60797}
   m_SizeDelta: {x: 1162, y: 678.11}
   m_Pivot: {x: 0.50000006, y: 0.5}
 --- !u!222 &1193551873
@@ -10118,7 +10110,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 204.4999, y: 165.60867}
+  m_AnchoredPosition: {x: 204.49991, y: 165.60867}
   m_SizeDelta: {x: 219, y: 98}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1269342261

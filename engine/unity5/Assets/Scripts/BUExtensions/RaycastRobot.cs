@@ -73,7 +73,7 @@ namespace Synthesis.BUExtensions
         {
             get { return wheelInfo.Length; }
         }
-
+        
         /// <summary>
         /// The relative right axis of the robot.
         /// </summary>

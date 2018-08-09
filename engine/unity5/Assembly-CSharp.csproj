@@ -222,7 +222,7 @@
     <Compile Include="Assets\Scripts\GUI\DPMToolbarState.cs" />
     <Compile Include="Assets\Scripts\GUI\EmulationDriverStation.cs" />
     <Compile Include="Assets\Scripts\GUI\EmulationToolbarState.cs" />
-    <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
+    <Compile Include="Assets\Scripts\GUI\FileBrowserArchive.cs" />
     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\GUI\MainToolbarState.cs" />
@@ -237,6 +237,7 @@
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\SensorToolbarState.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
+    <Compile Include="Assets\Scripts\GUI\SynthesisFileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
@@ -283,6 +284,7 @@
     <Compile Include="Assets\Scripts\Robot\RobotBase.cs" />
     <Compile Include="Assets\Scripts\Robot\SimulatorRobot.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
+    <Compile Include="Assets\Scripts\Sensors\Encoder.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorManager.cs" />
@@ -319,23 +321,57 @@
     <Compile Include="Assets\Scripts\Utils\BulletExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\Scripts\Util\BackgroundController.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\Scripts\Util\PlatformController.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Social.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\StaticManager.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIDrag.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIFocus.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIHint.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIResize.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIWindowManager.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\AudioFilterController.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\AudioSourceController.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\FPSDisplay.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\ScrollRectHandler.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\TakeScreenshot.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\WindowManager.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\Examples.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIMain.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIScenes.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\FileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Config.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Constants.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Helper.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserBase.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserEditor.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserGeneric.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserMac.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserWindows.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\IFileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\IStandaloneFileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\BasicSample.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileImage.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileText.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleSaveFileImage.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleSaveFileText.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserEditor.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserMac.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserWindows.cs" />
     <None Include="Assets\Resources\Materials\Arrow Shader.shader" />
     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
+    <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\VERSIONS.txt" />
+    <None Include="Assets\StandaloneFileBrowser\FileBrowser\README.txt" />
     <None Include="Assets\BulletUnity\license.txt" />
+    <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\id\62455202-c9ff-4b04-b6c3-1d4b836a5fff.txt" />
+    <None Include="Assets\StandaloneFileBrowser\Common\README.txt" />
+    <None Include="Assets\StandaloneFileBrowser\Common\UI\Colors.txt" />
     <None Include="Assets\Packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.xml" />
     <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
-    <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
@@ -554,6 +590,12 @@
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
       <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="Ookii.Dialogs">
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
