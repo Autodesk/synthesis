@@ -66,6 +66,7 @@ namespace Synthesis.DriverPractice
                     dpmRobot = mainState.ActiveRobot.GetDriverPractice();
                     FindElements();
                 }
+                if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) OnActiveRobotChange();
                 SetGamepieceIndex();
                 if (trajectory && !editing) UpdateTrajectoryValues();
                 if (dpmRobot.drawing && DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray().Length > 0) DrawTrajectory();
@@ -282,7 +283,7 @@ namespace Synthesis.DriverPractice
             line.enabled = true;
 
             DriverPractice dp = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0];
-            GameObject releaseNode = GameObject.Find(dp.releaseNode);
+            GameObject releaseNode = Auxiliary.FindObject(dpmRobot.gameObject, dp.releaseNode);
 
             int verts = 100; //This determines how far along time the illustration goes.
             line.positionCount = verts;
@@ -318,7 +319,7 @@ namespace Synthesis.DriverPractice
         public void RefreshMoveArrows()
         {
             dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
-            GameObject releaseNode = GameObject.Find(dp.releaseNode);
+            GameObject releaseNode = Auxiliary.FindObject(dpmRobot.gameObject, dp.releaseNode);
             moveArrows.transform.parent = releaseNode.transform;
             moveArrows.transform.localPosition = dp.releasePosition;
         }
@@ -331,11 +332,12 @@ namespace Synthesis.DriverPractice
         private GameObject CreateMoveArrows()
         {
             dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
-            GameObject releaseNode = GameObject.Find(dp.releaseNode);
+            GameObject releaseNode = Auxiliary.FindObject(dpmRobot.gameObject, dp.releaseNode);
             GameObject arrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
             arrows.name = "ReleasePositionMoveArrows";
             arrows.transform.parent = releaseNode.transform;
             arrows.transform.localPosition = dp.releasePosition;
+            arrows.transform.localRotation = dpmRobot.gameObject.transform.localRotation;
 
             arrows.GetComponent<MoveArrows>().Translate = (translation) =>
             {
@@ -349,6 +351,13 @@ namespace Synthesis.DriverPractice
             StateMachine.SceneGlobal.Link<MainState>(arrows, false);
 
             return arrows;
+        }
+        private void OnActiveRobotChange()
+        {
+            dpmRobot = mainState.ActiveRobot.GetDriverPractice();
+            trajectoryLine.transform.parent = dpmRobot.transform;
+            Destroy(moveArrows);
+            moveArrows = CreateMoveArrows();
         }
     }
 }

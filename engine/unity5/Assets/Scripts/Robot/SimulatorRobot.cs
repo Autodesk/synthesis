@@ -32,6 +32,8 @@ namespace Synthesis.Robot
         /// </summary>
         public bool IsResetting { get; private set; } = false;
 
+        public string FilePath { get; set; }
+
         private const float ResetVelocity = 0.05f;
         private const float HoldTime = 0.8f;
 
