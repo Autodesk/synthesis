@@ -273,8 +273,8 @@ public static partial class BXDJSkeleton
         writer.WriteStartElement("JointDriver");
 
         writer.WriteElementString("DriveType", driver.GetDriveType().ToString());
-        writer.WriteElementString("port1", (driver.port1 + 1).ToString()); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
-        writer.WriteElementString("port2", (driver.port2 + 1).ToString()); // For backwards compatibility, ports will be stored one larger than their actual value.
+        writer.WriteElementString("Port1", (driver.port1 + 1).ToString()); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
+        writer.WriteElementString("Port2", (driver.port2 + 1).ToString()); // For backwards compatibility, ports will be stored one larger than their actual value.
         if (driver.InputGear == 0)// prevents a gearing of 0 from being written to the bxdj
         {
             driver.InputGear = 1;
