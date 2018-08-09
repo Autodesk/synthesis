@@ -281,7 +281,7 @@ namespace hel{
 
         }
 
-        template<typename S, typename = std::enable_if<!std::is_same<S,T>::value>>
+        template<typename S, typename = std::enable_if<!std::is_same<S,T>::value>> //TODO necessary?
         BoundsCheckedArray(std::initializer_list<T> list){
             if(list.size() != LEN){
                 throw std::out_of_range("Exception: assignement to array of size " + std::to_string(LEN) + " to brace-enclosed initializer list of different size " + std::to_string(list.size()));

@@ -14,7 +14,7 @@ namespace hel{
     struct Accelerometer{
 
         /**
-         * \enum Register: uint8_t
+         * \enum Register
          * \brief Copy of HAL emuneration specifying target for Accelerometer function call
          */
 
@@ -64,7 +64,7 @@ namespace hel{
         };
 
         /**
-         * \enum class ControlMode
+         * \enum ControlMode
          * \brief Represents which data the accelerometer model will modify
          */
 
@@ -73,7 +73,7 @@ namespace hel{
 
         /**
          * \var ControlMode control_mode
-         * \brief Changes what value NI FPGA accelerometer writes data to
+         * \brief Changes what value Ni FPGA accelerometer writes data to
          */
 
         ControlMode control_mode;
@@ -87,7 +87,7 @@ namespace hel{
 
         /**
          * \var bool active
-         * \brief Whether the accelerometer is active
+         * \brief Whether the accelerometer is active or not
          */
 
         bool active;
@@ -132,9 +132,9 @@ namespace hel{
         ControlMode getControlMode()const noexcept;
 
         /**
-         * \fn void setControlMode(ControlMode control_mode)
+         * \fn void setControlMode(ControlMode control_mode)noexcept
          * \brief Sets the active control mode
-         * \param control_mode the data to specify for modification
+         * \param control_mode The data to specify for modification
          */
 
         void setControlMode(ControlMode)noexcept;
@@ -148,9 +148,9 @@ namespace hel{
         uint8_t getCommTargetReg()const noexcept;
 
         /**
-         * \fn void setCommTargetReg(uint8_t comm_target_reg)
+         * \fn void setCommTargetReg(uint8_t comm_target_reg)noexcept
          * \brief Set the current data target for communication
-         * \param comm_target_reg the data target for communication
+         * \param comm_target_reg The data target for communication
          */
 
         void setCommTargetReg(uint8_t)noexcept;
@@ -158,15 +158,15 @@ namespace hel{
         /**
          * \fn bool getActive()const noexcept
          * \brief Get if the accelerometer is active
-         * \return true if the accelerometer is set to active
+         * \return True if the accelerometer is set to active
          */
 
         bool getActive()const noexcept;
 
         /**
-         * \fn void setActive(bool active)
+         * \fn void setActive(bool active)noexcept
          * \brief Enable the accelerometer
-         * \param active true to enable the accelerometer
+         * \param active True to enable the accelerometer
          */
 
         void setActive(bool)noexcept;
@@ -174,15 +174,15 @@ namespace hel{
         /**
          * \fn uint8_t getRange()const noexcept
          * \brief Get the operating range of the accelerometer
-         * \return a byte representing the operating range of the accelerometer
+         * \return A byte representing the operating range of the accelerometer
          */
 
         uint8_t getRange()const noexcept;
 
         /**
-         * \fn void setRange(uint_t range)
+         * \fn void setRange(uint_t range)noexcept
          * \brief Set the operating range for accelerometer
-         * \param range the operating range of the accelerometer
+         * \param Range the operating range of the accelerometer
          */
 
         void setRange(uint8_t)noexcept;
@@ -190,15 +190,15 @@ namespace hel{
         /**
          * \fn float getXAccel()const noexcept
          * \brief Get the acceleration in the x direction
-         * \return a float representing the acceleration in the x direction
+         * \return A float representing the acceleration in the x direction
          */
 
         float getXAccel()const noexcept;
 
         /**
-         * \fn void setXAccel(float x_accel)
+         * \fn void setXAccel(float x_accel)noexcept
          * \brief Set the acceleration in the x direction
-         * \param x_accel a float to set the acceleration in the x direction
+         * \param x_accel A float to set the acceleration in the x direction
          */
 
         void setXAccel(float)noexcept;
@@ -206,15 +206,15 @@ namespace hel{
         /**
          * \fn float getYAccel()const noexcept
          * \brief Get the acceleration in the y direction
-         * \return a float representing the acceleration in the y direction
+         * \return A float representing the acceleration in the y direction
          */
 
         float getYAccel()const noexcept;
 
         /**
-         * \fn void setYAccel(float y_accel)
+         * \fn void setYAccel(float y_accel)noexcept
          * \brief Set the acceleration in the y direction
-         * \param y_accel a float to set the acceleration in the y direction
+         * \param y_accel A float to set the acceleration in the y direction
          */
 
         void setYAccel(float)noexcept;
@@ -222,39 +222,51 @@ namespace hel{
         /**
          * \fn float getZAccel()const noexcept
          * \brief Get the acceleration in the z direction
-         * \return a float representing the acceleration in the z direction
+         * \return A float representing the acceleration in the z direction
          */
 
         float getZAccel()const noexcept;
 
         /**
-         * \fn void setZAccel(float z_accel)
+         * \fn void setZAccel(float z_accel)noexcept
          * \brief Set the acceleration in the z direction
-         * \param z_accel a float to set the acceleration in the z direction
+         * \param z_accel A float to set the acceleration in the z direction
          */
 
         void setZAccel(float)noexcept;
 
         /**
-         * \fn
-         * \brief
-         * \
+         * \fn float convertAccel(std::pair<uint8_t,uint8_t> accel)noexcept
+         * \brief Converts the format of acceleration the Ni FPGA would generate to acceleration in g's
+         * \param accel A pair of bytes that when concatenated represend the value of acceleration without scaling from range configuration
+         * \return A float representing acceleration in g's
          */
 
         float convertAccel(std::pair<uint8_t,uint8_t>)noexcept;
 
         /**
-         * \fn
-         * \brief
-         * \
+         * \fn std::pair<uint8_t, uint8_t> convertAccel(float accel)noexcept
+         * \brief Converts acceleration in g's to the format of acceleration the Ni FPGA would generate
+         * \param accel A float representing acceleration in g's
+         * \return A pair of bytes that when concatenated represend the value of acceleration without scaling from range configuration
          */
 
         std::pair<uint8_t, uint8_t> convertAccel(float)noexcept;
 
+        /**
+         * Constructor for an Accelerometer
+         */
+
         Accelerometer()noexcept;
+
+        /**
+         * Constructor for an Accelerometer
+         *
+         * \param source An accelerometer object to copy
+         */
+
         Accelerometer(const Accelerometer&)noexcept;
     };
-
 }
 
 #endif

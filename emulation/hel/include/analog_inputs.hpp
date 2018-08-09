@@ -8,15 +8,35 @@
 #include "bounds_checked_array.hpp"
 
 namespace hel{
-    /**
+
+/**
      * \struct AnalogInputs
      * \brief Data model for analog inputs.
      * Holds all internal data needed to model analog inputs on the RoboRIO.
      */
+
     struct AnalogInputs {
-        static constexpr const int32_t NUM_ANALOG_INPUTS_HDRS = 4;
-        static constexpr const int32_t NUM_ANALOG_INPUTS_MXP = 4;
-        static constexpr const int32_t NUM_ANALOG_INPUTS = NUM_ANALOG_INPUTS_HDRS + NUM_ANALOG_INPUTS_MXP; //hal::kNumAnalogInputs
+
+        /**
+         * \var static constexpr in32_t NUM_ANALOG_INPUTS_HDRS
+         * \brief The number of analog input pins directly on the RoboRIO
+         */
+
+        static constexpr int32_t NUM_ANALOG_INPUTS_HDRS = 4;
+
+        /**
+         * \var static constexpr int32_t NUM_ANALOG_INPUTS_MXP
+         * \brief The number of analog input pins on the MXP
+         */
+
+        static constexpr int32_t NUM_ANALOG_INPUTS_MXP = 4;
+
+        /**
+         * \var static constexpr int32_t NUM_ANALOG_INPUTS
+         * \brief The total number of analog inputs on the RoboRIO
+         */
+
+        static constexpr int32_t NUM_ANALOG_INPUTS = NUM_ANALOG_INPUTS_HDRS + NUM_ANALOG_INPUTS_MXP; //hal::kNumAnalogInputs
 
         static constexpr uint32_t LSB_WEIGHT = 1E9;
         static constexpr int32_t OFFSET = 0;
@@ -26,6 +46,7 @@ namespace hel{
          * \brief Data model for individual analog input
          * Holds all internal data for a single analog input.
          */
+
         struct AnalogInput{
             /**
              * \var uint8_t oversample_bits.

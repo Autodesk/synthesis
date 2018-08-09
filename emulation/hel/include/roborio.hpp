@@ -48,7 +48,6 @@
 #include "pcm.hpp"
 #include "pdp.hpp"
 #include "spi_system.hpp"
-#include "sync_server.hpp"
 #include "sys_watchdog.hpp"
 #include "system_interface.hpp"
 
