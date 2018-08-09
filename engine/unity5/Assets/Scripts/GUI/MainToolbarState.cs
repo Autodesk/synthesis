@@ -51,6 +51,8 @@ namespace Assets.Scripts.GUI
         GameObject overlay;
         GameObject tabs;
 
+        Text helpBodyText;
+
         public bool dpmWindowOn = false; //if the driver practice mode window is active
         public static bool inputPanelOn = false;
 
@@ -63,6 +65,7 @@ namespace Assets.Scripts.GUI
             toolbar = Auxiliary.FindObject(canvas, "MainToolbar");
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
+            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
 
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
@@ -261,12 +264,18 @@ namespace Assets.Scripts.GUI
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
+            helpBodyText.GetComponent<Text>().text = "TUTORIALS: bxd.autodesk.com \n\n" +
+                "HOME TAB: Main simulator functions \n\n" +
+                "DRIVER PRACTICE TAB: Gamepiece setup and interaction \n\n" +
+                "SCORING TAB: Match play \n\n" +
+                "SENSORS TAB: Robot camera and sensors \n\n";
+
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
             overlay.SetActive(true);
-            tabs.transform.Translate(new Vector3(200, 0, 0));
+            tabs.transform.Translate(new Vector3(300, 0, 0));
             foreach (Transform t in toolbar.transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
         }
@@ -275,10 +284,10 @@ namespace Assets.Scripts.GUI
         {
             helpMenu.SetActive(false);
             overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            tabs.transform.Translate(new Vector3(-300, 0, 0));
             foreach (Transform t in toolbar.transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
         }
