@@ -33,6 +33,7 @@ namespace Synthesis.GUI.Scrollables
             listStyle.hover.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.active.background = Resources.Load("images/New Textures/greenButton") as Texture2D;
             listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
+            listStyle.active.textColor = Color.white;
             listStyle.alignment = TextAnchor.MiddleLeft;
             listStyle.normal.textColor = Color.black;
 
