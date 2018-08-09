@@ -155,6 +155,9 @@
             this.jointComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.jointComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.jointComboBox.FormattingEnabled = true;
+            this.jointComboBox.Items.AddRange(new object[] {
+            "Rotational",
+            "Linear"});
             this.jointComboBox.Location = new System.Drawing.Point(89, 21);
             this.jointComboBox.Name = "jointComboBox";
             this.jointComboBox.Size = new System.Drawing.Size(189, 24);
@@ -332,6 +335,10 @@
             this.colliderTypeCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.colliderTypeCombobox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.colliderTypeCombobox.FormattingEnabled = true;
+            this.colliderTypeCombobox.Items.AddRange(new object[] {
+            "Box",
+            "Sphere",
+            "Mesh"});
             this.colliderTypeCombobox.Location = new System.Drawing.Point(104, 3);
             this.colliderTypeCombobox.Name = "colliderTypeCombobox";
             this.colliderTypeCombobox.Size = new System.Drawing.Size(177, 24);
