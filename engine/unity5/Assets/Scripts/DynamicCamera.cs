@@ -450,7 +450,7 @@ public class DynamicCamera : MonoBehaviour
             if (robot != null && robot.transform.childCount > 0)
             {
                 // Focus on node 0 of the robot
-                targetVector = StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.transform.GetChild(0).transform.position;
+                targetVector = robot.transform.GetChild(0).transform.position;
 
                 bool adjusting = false;
 
@@ -501,7 +501,7 @@ public class DynamicCamera : MonoBehaviour
             }
             else
             {
-                robot = GameObject.Find("Robot");
+                robot = StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.gameObject;
             }
         }
 
