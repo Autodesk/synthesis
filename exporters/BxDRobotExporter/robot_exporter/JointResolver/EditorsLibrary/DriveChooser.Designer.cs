@@ -65,8 +65,6 @@
             this.lblBrakePort = new System.Windows.Forms.Label();
             this.brakePort1 = new System.Windows.Forms.NumericUpDown();
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
-            this.metaElevatorStages = new System.Windows.Forms.TabPage();
-            this.cmbStages = new System.Windows.Forms.ComboBox();
             this.ConfigJointLayout = new System.Windows.Forms.TableLayoutPanel();
             this.OutputGeartxt = new System.Windows.Forms.NumericUpDown();
             this.grpChooseDriver.SuspendLayout();
@@ -88,7 +86,6 @@
             this.BreakLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.brakePort2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePort1)).BeginInit();
-            this.metaElevatorStages.SuspendLayout();
             this.ConfigJointLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).BeginInit();
             this.SuspendLayout();
@@ -343,7 +340,6 @@
             this.tabsMeta.Controls.Add(this.metaPneumatic);
             this.tabsMeta.Controls.Add(this.metaGearing);
             //this.tabsMeta.Controls.Add(this.metaElevatorBrake);
-            this.tabsMeta.Controls.Add(this.metaElevatorStages);
             this.tabsMeta.Location = new System.Drawing.Point(3, 60);
             this.tabsMeta.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);
             this.tabsMeta.Name = "tabsMeta";
@@ -637,34 +633,6 @@
             this.chkBoxHasBrake.UseVisualStyleBackColor = true;
             this.chkBoxHasBrake.CheckedChanged += new System.EventHandler(this.chkBoxHasBrake_CheckedChanged);
             // 
-            // metaElevatorStages
-            // 
-            this.metaElevatorStages.Controls.Add(this.cmbStages);
-            this.metaElevatorStages.Location = new System.Drawing.Point(4, 25);
-            this.metaElevatorStages.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.metaElevatorStages.Name = "metaElevatorStages";
-            this.metaElevatorStages.Size = new System.Drawing.Size(424, 63);
-            this.metaElevatorStages.TabIndex = 4;
-            this.metaElevatorStages.Text = "Stages";
-            this.metaElevatorStages.UseVisualStyleBackColor = true;
-            // 
-            // cmbStages
-            // 
-            this.cmbStages.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cmbStages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbStages.FormattingEnabled = true;
-            this.cmbStages.Items.AddRange(new object[] {
-            "Single Stage Elevator",
-            "Cascading Stage One",
-            "Cascading Stage Two",
-            "Continuous Stage One",
-            "Continuos Stage Two"});
-            this.cmbStages.Location = new System.Drawing.Point(0, 0);
-            this.cmbStages.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.cmbStages.Name = "cmbStages";
-            this.cmbStages.Size = new System.Drawing.Size(424, 24);
-            this.cmbStages.TabIndex = 0;
-            // 
             // ConfigJointLayout
             // 
             this.ConfigJointLayout.AutoSize = true;
@@ -755,7 +723,6 @@
             this.BreakLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.brakePort2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePort1)).EndInit();
-            this.metaElevatorStages.ResumeLayout(false);
             this.ConfigJointLayout.ResumeLayout(false);
             this.ConfigJointLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).EndInit();
@@ -796,8 +763,6 @@
     private System.Windows.Forms.Label lblBrakePort;
     private System.Windows.Forms.NumericUpDown brakePort2;
     private System.Windows.Forms.NumericUpDown brakePort1;
-    private System.Windows.Forms.TabPage metaElevatorStages;
-    private System.Windows.Forms.ComboBox cmbStages;
     private System.Windows.Forms.RadioButton rbPWM;
     private System.Windows.Forms.RadioButton rbCAN;
     private System.Windows.Forms.TableLayoutPanel ConfigJointLayout;
