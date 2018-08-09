@@ -11,52 +11,90 @@ using namespace adsk;
 
 namespace BXDJ
 {
+	///
+	/// Stores the user's configuration for drivers, wheels, pneumatics, etc.
+	/// All data is relative to a Joint.
+	///
 	class ConfigData : public CustomJSONObject
 	{
 	public:
-		enum DriveTrainType : int
+		///
+		/// Type of drive train.
+		///
+		enum DrivetrainType : int
 		{
-			TANK = 1,
-			H_DRIVE = 2,
-			CUSTOM = 3
+			TANK = 1, ///< Tank
+			H_DRIVE = 2, ///< H-Drive
+			CUSTOM = 3 ///< Custom Drivetrain
 		};
 
-		std::string robotName;
-		DriveTrainType driveTrainType;
+		std::string robotName; ///< Name of the robot. Used for writing to the robot directory.
+		DrivetrainType drivetrainType; ///< The type of the robot's drivetrain.
 
+		///
+		/// Creates a set of config data with no drivers, the name "unnamed," and tank drive.
+		///
 		ConfigData();
+
+		/// Copy constructor.
 		ConfigData(const ConfigData & other);
 
-		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const;
+		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const; /// \return The driver assigned to a Fusion joint.
+
+		///
+		/// Assigns a driver to a joint in Fusion.
+		/// \param joint Joint to apply driver to.
+		/// \param driver Driver to apply to joint.
+		///
 		void setDriver(core::Ptr<fusion::Joint>, const Driver &);
+		
+		///
+		/// Unassigns any driver from a joint in Fusion.
+		/// \param joint Joint to remove driver from.
+		///
 		void setNoDriver(core::Ptr<fusion::Joint>);
 
-		std::vector<std::shared_ptr<JointSensor>> getSensors(core::Ptr<fusion::Joint>) const;
+		std::vector<std::shared_ptr<JointSensor>> getSensors(core::Ptr<fusion::Joint>) const; /// \return A vector containing the sensors attached to a Fusion joint.
 
-		// Removes joint configurations that are not in a vector of joints, and adds empty configurations for those not present.
+		///
+		/// Ensures that the only documented joints are those listed in the given vector, and that all joints in that vector are documented.
+		/// \param filterJoints Joints to keep in the ConfigData.
+		///
 		void filterJoints(std::vector<core::Ptr<fusion::Joint>>);
 
 		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
 		void loadJSONObject(const rapidjson::Value&);
 
-		static std::string toString(DriveTrainType);
+		static std::string toString(DrivetrainType); ///< \return The name of the drivetrain.
 
 	private:
-		// Constants used for communicating joint motion type
+		///
+		/// Constants used for communicating joint motion type
+		///
 		enum JointMotionType : int
 		{
-			ANGULAR = 1, LINEAR = 2, BOTH = 3, NEITHER = 0
+			ANGULAR = 1, ///< Joint is allowed to have a wheel.
+			LINEAR = 2, ///< Joint is allowed to have pneumatics.
+			BOTH = 3, ///< Joint can have a wheel or pneumatics.
+			NEITHER = 0 ///< Joint cannot have wheel or pneumatics.
 		};
 
+		///
+		/// Contains the information needed to identify a Fusion joint, as well as any driver or sensors on the associated Joint.
+		///
 		struct JointConfig
 		{
-			std::string name;
-			JointMotionType motion;
-			std::unique_ptr<Driver> driver;
-			std::vector<std::shared_ptr<JointSensor>> sensors;
+			std::string name; ///< The name of the Fusion joint.
+			JointMotionType motion; ///< The limitation of the joint's motion.
+			std::unique_ptr<Driver> driver; ///< The driver assigned to the joint.
+			std::vector<std::shared_ptr<JointSensor>> sensors; /// The sensors assigned to the joint.
 
+			///
+			/// Creates a nameless configuration without a driver.
+			///
 			JointConfig() { name = ""; motion = NEITHER; driver = nullptr; }
 
+			/// Copy constructor.
 			JointConfig(const JointConfig & other)
 			{
 				name = other.name;
@@ -78,9 +116,9 @@ namespace BXDJ
 			}
 		};
 
-		std::map<std::string, JointConfig> joints;
+		std::map<std::string, JointConfig> joints; ///< Map of all documented Fusion joints, accessed by their ID generated from Utility::getUniqueJointID.
 
-		static JointMotionType internalJointMotion(fusion::JointTypes);
+		static JointMotionType internalJointMotion(fusion::JointTypes); ///< /return The JointMotionType equivalent of a Fusion joint type.
 
 	};
 }
