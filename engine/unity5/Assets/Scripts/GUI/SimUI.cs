@@ -576,9 +576,9 @@ namespace Synthesis.GUI
         /// Toggle the control panel ON/OFF based on the boolean passed.
         /// </summary>
         /// <param name="show"></param>
-        public void ShowControlPanel(bool show)
+        public void ShowControlPanel(bool alreadySaved)
         {
-            if (show)
+            if (!inputManagerPanel.activeSelf)
             {
                 DynamicCamera.ControlEnabled = false;
                 InputControl.freeze = true;
@@ -598,7 +598,7 @@ namespace Synthesis.GUI
                 inputPanelOn = false;
                 ToggleHotKeys(false);
 
-                if (Controls.CheckIfSaved())
+                if (!alreadySaved && Controls.CheckIfSaved())
                 {
                     checkSavePanel.SetActive(true);
                 }
