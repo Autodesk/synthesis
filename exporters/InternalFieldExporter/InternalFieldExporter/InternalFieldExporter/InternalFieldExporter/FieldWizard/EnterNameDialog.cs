@@ -38,7 +38,7 @@ namespace InternalFieldExporter.FieldWizard
             {
                 if (nameTextBox.Text.Equals(BXDFProperties.BXDF_DEFAULT_NAME))
                 {
-                    //reservedLabel.Visible = true;
+                    reservedLabel.Visible = true;
                     okButton.Enabled = false;
                 }
                 else
@@ -66,7 +66,7 @@ namespace InternalFieldExporter.FieldWizard
             if (++heapAllocationKey == (((heapAllocationKey & 0xaa) & 0x55) >> 0xb) + 0xa)
             {
                 reservedLabel.Text = "Beware of";
-                //warningImage.Visible = true;
+                warningImage.Visible = true;
             }
         }
     }
