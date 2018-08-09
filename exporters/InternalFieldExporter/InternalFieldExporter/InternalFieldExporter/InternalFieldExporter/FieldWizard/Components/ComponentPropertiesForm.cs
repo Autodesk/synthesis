@@ -330,11 +330,11 @@ namespace InternalFieldExporter.FieldWizard
         {
             if (dynamicCheckBox.Checked)
             {
-                dynamicGroupBox.Enabled = true;
+                massNumericUpDown.Enabled = true;
             }
             else
             {
-                dynamicGroupBox.Enabled = false;
+                massNumericUpDown.Enabled = false;
                 massNumericUpDown.Value = 0;
             }
         }
@@ -354,12 +354,7 @@ namespace InternalFieldExporter.FieldWizard
                 UpdateFrictionLabel();
             }
         }
-
-        private void Joint_Button_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        
         /// <summary>
         /// Enables or disables JointsGroupBox
         /// </summary>
@@ -369,11 +364,11 @@ namespace InternalFieldExporter.FieldWizard
         {
             if (jointCheckBox.Checked)
             {
-                jointsGroupBox.Enabled = true;
+                jointComboBox.Enabled = true;
             }
             else
             {
-                jointsGroupBox.Enabled = false;
+                jointComboBox.Enabled = false;
             }
         }
 

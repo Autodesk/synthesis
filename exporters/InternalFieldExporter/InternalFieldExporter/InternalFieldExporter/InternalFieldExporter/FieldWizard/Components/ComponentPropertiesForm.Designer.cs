@@ -153,6 +153,7 @@
             // jointComboBox
             // 
             this.jointComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.jointComboBox.Enabled = false;
             this.jointComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.jointComboBox.FormattingEnabled = true;
             this.jointComboBox.Items.AddRange(new object[] {
@@ -216,6 +217,7 @@
             // massNumericUpDown
             // 
             this.massNumericUpDown.DecimalPlaces = 2;
+            this.massNumericUpDown.Enabled = false;
             this.massNumericUpDown.Location = new System.Drawing.Point(89, 21);
             this.massNumericUpDown.Maximum = new decimal(new int[] {
             10000,
