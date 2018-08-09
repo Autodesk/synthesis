@@ -257,6 +257,7 @@ namespace Assets.Scripts.GUI
         {
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
         }
+
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
@@ -269,6 +270,7 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
         }
+
         private void CloseHelpMenu()
         {
             helpMenu.SetActive(false);
@@ -280,7 +282,6 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(true);
             }
         }
-
 
         /// <summary>
         /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
