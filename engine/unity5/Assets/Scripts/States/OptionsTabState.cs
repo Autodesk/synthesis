@@ -72,10 +72,9 @@ namespace Synthesis.States
         }
 
         /// <summary>
-        /// Applies the graphics settings when the back button is pressed.
+        /// Applies the graphics settings.
         /// </summary>
-
-        public void OnBackButtonPressed()
+        public void OnApplySettingsButtonPressed()
         {
             PopupButton resPopup = GameObject.Find("ResolutionButton").GetComponent<PopupButton>();
             int xRes;
@@ -84,6 +83,14 @@ namespace Synthesis.States
             ParseResolution(resPopup.list[PlayerPrefs.GetInt("resolution")].text, out xRes, out yRes);
 
             Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
+        }
+
+        /// <summary>
+        /// Exits the state of changing the graphics settings.
+        /// </summary>
+        public void OnBackButtonPressed()
+        {
+            OnApplySettingsButtonPressed();
             StateMachine.ChangeState(new HomeTabState());
         }
 
