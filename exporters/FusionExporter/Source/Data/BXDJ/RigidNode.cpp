@@ -7,11 +7,6 @@
 
 using namespace BXDJ;
 
-RigidNode::RigidNode()
-{
-	parent = NULL;
-}
-
 RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 {
 	configData = nodeToCopy.configData;

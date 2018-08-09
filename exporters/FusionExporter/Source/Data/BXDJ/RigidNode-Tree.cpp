@@ -17,13 +17,14 @@ std::string RigidNode::log = "";
 int RigidNode::depth = 0;
 #endif
 
-RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config) : RigidNode()
+RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config)
 {
 #if _DEBUG
 	log = "";
 	depth = 0;
 #endif
 
+	parent = nullptr;
 	configData = std::make_shared<ConfigData>(config);
 	jointSummary = std::make_shared<JointSummary>(getJointSummary(rootComponent));
 
