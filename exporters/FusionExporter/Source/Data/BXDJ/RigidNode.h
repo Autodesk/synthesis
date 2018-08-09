@@ -24,7 +24,6 @@ namespace BXDJ
 	class RigidNode : public XmlWritable
 	{
 	public:
-		RigidNode();
 		RigidNode(const RigidNode &);
 		RigidNode(core::Ptr<fusion::Component>, ConfigData config);
 		RigidNode(core::Ptr<fusion::Occurrence>, Joint * parent);
