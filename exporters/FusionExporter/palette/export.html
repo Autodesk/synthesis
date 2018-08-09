@@ -34,6 +34,15 @@
                 right: 2.5rem;
                 width: auto;
             }
+
+            .wheel-side
+            {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
         </style>
     </head>
     <body>
@@ -76,10 +85,10 @@
                                 <span class="field-label">Is Drive Wheel: </span>
                                 <input type="checkbox" class="field-label is-drive-wheel" onchange="updateFieldOptions(this)" /></span>
 
-                                <span class="field-select drive-wheel-ports-div"><select class="wheel-side">
-                                    <option value="1">Left Wheel</option>
-                                    <option value="0">Right Wheel</option>
-                                </select></span>
+                                <select class="wheel-side">
+                                    <option value="1">Left Wheel (PWM 1)</option>
+                                    <option value="0">Right Wheel (PWM 0)</option>
+                                </select>
                             </div>
                         </div>
 
