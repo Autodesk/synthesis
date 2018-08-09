@@ -56,10 +56,10 @@ void JointSensor::write(XmlWriter & output) const
 	output.startElement("RobotSensor");
 
 	output.writeElement("SensorType", toString(type));
-	output.writeElement("SensorPortNumber1", std::to_string(portA));
-	output.writeElement("SensorSignalType1", toString(portSignal));
-	output.writeElement("SensorPortNumber2", std::to_string(portB));
-	output.writeElement("SensorSignalType2", toString(portSignal));
+	output.writeElement("SensorPortNumberA", std::to_string(portA));
+	output.writeElement("SensorSignalTypeA", toString(portSignal));
+	output.writeElement("SensorPortNumberB", std::to_string(portB));
+	output.writeElement("SensorSignalTypeB", toString(portSignal));
 	output.writeElement("SensorConversionFactor", std::to_string(conversionFactor));
 
 	output.endElement();

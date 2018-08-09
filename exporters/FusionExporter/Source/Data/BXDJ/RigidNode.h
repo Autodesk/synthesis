@@ -20,7 +20,7 @@ namespace BXDJ
 	class ConfigData;
 	class Joint;
 
-	// Stores the collection of component occurences that act as a single rigidbody in Synthesis
+	// Stores the collection of component occurrences that act as a single rigidbody in Synthesis
 	class RigidNode : public XmlWritable
 	{
 	public:
@@ -37,29 +37,37 @@ namespace BXDJ
 		void getMesh(BXDA::Mesh &, bool ignorePhysics = false, std::function<void(double)> progressCallback = nullptr, bool * cancel = nullptr) const;
 
 		void addJoint(std::shared_ptr<Joint>);
-		
-		std::string log = "";
+
+#if _DEBUG
+		std::string getLog() const;
+#endif
 
 	private:
-		// Used for storing information about which occurences are parents or children in joints
+		// Used for storing information about which occurrences are parents or children in joints
 		struct JointSummary
 		{
-			std::vector<core::Ptr<fusion::Occurrence>> children;
+			std::map<core::Ptr<fusion::Occurrence>, core::Ptr<fusion::Occurrence>> children;
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> parents;
+			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Occurrence>>> rigidgroups;
 		};
 
 		// Globally Unique Identifier
 		Guid guid;
-		// Stores information about which occurences are parents or children in joints
+		// Stores information about which occurrences are parents or children in joints
 		std::shared_ptr<ConfigData> configData;
-		// Stores information about which occurences are parents or children in joints
+		// Stores information about which occurrences are parents or children in joints
 		std::shared_ptr<JointSummary> jointSummary;
 		// Stores the joints that lead to this node's children
 		std::vector<std::shared_ptr<Joint>> childrenJoints;
 		// Stores a reference to the node's parent
 		Joint * parent;
-		// Stores all component occurences that are grouped into this node
+		// Stores all component occurrences that are grouped into this node
 		std::vector<core::Ptr<fusion::Occurrence>> fusionOccurrences;
+
+#if _DEBUG
+		static std::string log;
+		static int depth;
+#endif
 
 		JointSummary getJointSummary(core::Ptr<fusion::Component>);
 		void buildTree(core::Ptr<fusion::Occurrence>);
