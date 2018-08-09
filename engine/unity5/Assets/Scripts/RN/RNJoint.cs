@@ -27,7 +27,7 @@ namespace Synthesis.RN
             Y
         }
 
-        public void CreateJoint(int numWheels, RobotBase robotBase, float wheelFriction = 1f, float lateralFriction = 1f)
+        public void CreateJoint(int numWheels, Vector3 wheelNormal, RobotBase robotBase, float wheelFriction = 1f, float lateralFriction = 1f)
         {
             if (joint != null || GetSkeletalJoint() == null)
             {
@@ -46,6 +46,7 @@ namespace Synthesis.RN
                         {
                             BRaycastRobot robot = parent.MainObject.AddComponent<BRaycastRobot>();
                             robot.NumWheels = numWheels;
+                            robot.WheelNormal = wheelNormal;
                         }
 
                         WheelType wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
