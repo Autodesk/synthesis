@@ -146,6 +146,10 @@ function applyConfigData(configData)
         for (var j = 0; j < elsToHide.length; j++)
             elsToHide[j].style.display = 'none';
 
+        // Hide sensors button if joint is not angular
+        if ((joints[i].type & JOINT_LINEAR) == JOINT_LINEAR)
+            setVisible(getElByClass(fieldset, 'edit-sensors-button'), false);
+
         // Set joint type
         fieldset.dataset.joint_type = joints[i].type;
 
@@ -168,8 +172,8 @@ function applyDriverData(driver, fieldset)
 
     getElByClass(fieldset, 'driver-type').value = driver.type;
     getElByClass(fieldset, 'port-signal').value = driver.signal;
-    getElByClass(fieldset, 'port-number-a').value = driver.portA;
-    getElByClass(fieldset, 'port-number-b').value = driver.portB;
+    getElByClass(fieldset, 'port-number-one').value = driver.portOne;
+    getElByClass(fieldset, 'port-number-two').value = driver.portTwo;
 
     if (driver.wheel != null)
     {
@@ -177,7 +181,7 @@ function applyDriverData(driver, fieldset)
         getElByClass(fieldset, 'is-drive-wheel').checked = driver.wheel.isDriveWheel;
 
         if (driver.wheel.isDriveWheel)
-            getElByClass(fieldset, 'wheel-side').value = driver.portA;
+            getElByClass(fieldset, 'wheel-side').value = driver.portOne;
     }
 
     if (driver.pneumatic != null)
@@ -222,9 +226,9 @@ function updateFieldOptions(fieldset)
         var linearJointDiv = getElByClass(fieldset, 'linear-joint-div');
 
         var genericPortsDiv = getElByClass(fieldset, 'generic-ports-div');
-        var portBSelector = getElByClass(fieldset, 'port-number-b');
+        var portTwoSelector = getElByClass(fieldset, 'port-number-two');
         setVisible(genericPortsDiv, true);
-        setVisible(portBSelector, false);
+        setVisible(portTwoSelector, false);
         
         setPortView(fieldset, 'motor');
 
@@ -232,7 +236,7 @@ function updateFieldOptions(fieldset)
         if ((jointType & JOINT_ANGULAR) == JOINT_ANGULAR)
         {
             if (driverType == DRIVER_DUAL_MOTOR)
-                setVisible(portBSelector, true);
+                setVisible(portTwoSelector, true);
 
             // Wheel Info
             var selectedWheel = parseInt(getElByClass(fieldset, 'wheel-type').value);
@@ -278,7 +282,7 @@ function updateFieldOptions(fieldset)
             {
                 if (driverType == DRIVER_BUMPER_PNEUMATIC)
                 {
-                    setVisible(portBSelector, true);
+                    setVisible(portTwoSelector, true);
                     setPortView(fieldset, 'pneumatic');
                 }
                 else
@@ -316,10 +320,10 @@ function readConfigData()
         if (selectedDriver > 0)
         {
             var signal = parseInt(getElByClass(fieldset, 'port-signal').querySelector('option:checked').dataset.portValue);
-            var portA = parseInt(getElByClass(fieldset, 'port-number-a').value);
-            var portB = parseInt(getElByClass(fieldset, 'port-number-b').value);
+            var portOne = parseInt(getElByClass(fieldset, 'port-number-one').value);
+            var portTwo = parseInt(getElByClass(fieldset, 'port-number-two').value);
 
-            joint.driver = createDriver(selectedDriver, signal, portA, portB);
+            joint.driver = createDriver(selectedDriver, signal, portOne, portTwo);
             
             if ((joint.type & JOINT_ANGULAR) == JOINT_ANGULAR)
             {
@@ -333,8 +337,8 @@ function readConfigData()
                     if (isDriveWheel)
                     {
                         joint.driver.signal = PWM;
-                        joint.driver.portA = parseInt(getElByClass(fieldset, 'wheel-side').value);
-                        joint.driver.portB = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        joint.driver.portOne = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        joint.driver.portTwo = parseInt(getElByClass(fieldset, 'wheel-side').value);
                     }
                 }
             }

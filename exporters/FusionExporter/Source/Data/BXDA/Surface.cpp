@@ -81,26 +81,26 @@ void BXDA::Surface::setColor(unsigned char r, unsigned char g, unsigned char b, 
 	color = r + g * 0x100 + b * 0x10000 + a * 0x1000000;
 }
 
-void Surface::setColor(core::Ptr<core::Appearance> appearance)
+void Surface::setColor(core::Ptr<core::Material> material, core::Ptr<core::Appearance> appearance)
 {
-	if (appearance == nullptr)
+	if (material == nullptr || appearance == nullptr)
 		return;
 
-	core::Ptr<core::Properties> properties = appearance->appearanceProperties();
+	core::Ptr<core::ColorProperty> colorPropM = material->appearance()->appearanceProperties()->itemById("metal_f0");
+	if (colorPropM == nullptr)
+		colorPropM = material->appearance()->appearanceProperties()->itemByName("Color");
 
-	core::Ptr<core::Property> * propArr = new core::Ptr<core::Property>[properties->count()];
-	properties->copyTo(propArr);
+	core::Ptr<core::ColorProperty> colorPropA = appearance->appearanceProperties()->itemById("metal_f0");
+	if (colorPropA == nullptr)
+		colorPropA = appearance->appearanceProperties()->itemByName("Color");
+		
+	if (colorPropM != nullptr && colorPropM->value() != nullptr &&
+		colorPropA != nullptr && colorPropA->value() != nullptr)
 
-	// Find the first property that is a color. Cannot use findByName, since multiple properties share the name "color" and the one we want is not found by that function.
-	for (int i = 0; i < properties->count(); i++)
-	{
-		core::Ptr<core::ColorProperty> colorProp = propArr[i];
-		if (colorProp != nullptr && propArr[i]->name() == "Color")
-		{
-			setColor(colorProp->value()->red(), colorProp->value()->green(), colorProp->value()->blue(), colorProp->value()->opacity());
-			return;
-		}
-	}
+		setColor(colorPropM->value()->red() * (colorPropA->value()->red() / 255.0),
+				 colorPropM->value()->green() * (colorPropA->value()->green() / 255.0),
+				 colorPropM->value()->blue() * (colorPropA->value()->blue() / 255.0),
+				 colorPropM->value()->opacity() * (colorPropA->value()->opacity() / 255.0));
 }
 
 void BXDA::Surface::removeColor()

@@ -8,16 +8,9 @@ using namespace BXDJ;
 int Utility::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
 {
 	if (occurrence == nullptr)
-		return INT_MAX;
+		return -1;
 
-	std::string pathName = occurrence->fullPathName();
-
-	int count = 0;
-	for (char c : pathName)
-		if (c == '+')
-			count++;
-
-	return count;
+	return levelOfOccurrence(occurrence->assemblyContext()) + 1;
 }
 
 core::Ptr<adsk::fusion::Occurrence> Utility::lowerOccurrence(core::Ptr<fusion::Joint> joint)
