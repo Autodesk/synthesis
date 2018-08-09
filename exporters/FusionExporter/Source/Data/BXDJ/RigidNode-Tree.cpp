@@ -166,6 +166,10 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 		}
 	}
 
+#if _DEBUG
+	log += "SUMMARY:\n" + jointSummary.toString() + "\nLOG:\n";
+#endif
+
 	return jointSummary;
 }
 
