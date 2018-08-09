@@ -321,21 +321,6 @@
     <Compile Include="Assets\Scripts\Utils\BulletExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\Scripts\Util\BackgroundController.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\Scripts\Util\PlatformController.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Social.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\StaticManager.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIDrag.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIFocus.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIHint.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIResize.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\UIWindowManager.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\AudioFilterController.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\AudioSourceController.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\FPSDisplay.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\ScrollRectHandler.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\Util\TakeScreenshot.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\Common\UI\Scripts\WindowManager.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\Examples.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIMain.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIScenes.cs" />
@@ -367,11 +352,18 @@
     <None Include="Assets\StandaloneFileBrowser\FileBrowser\README.txt" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\id\62455202-c9ff-4b04-b6c3-1d4b836a5fff.txt" />
-    <None Include="Assets\StandaloneFileBrowser\Common\README.txt" />
-    <None Include="Assets\StandaloneFileBrowser\Common\UI\Colors.txt" />
     <None Include="Assets\Packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.xml" />
     <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
+    <Reference Include="UnityEditor.StandardEvents">
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.PackageManagerUI.Editor">
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
