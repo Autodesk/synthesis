@@ -2,6 +2,7 @@
 
 #include "error.hpp"
 #include "json_util.hpp"
+#include "send_data.hpp"
 #include "util.hpp"
 
 namespace hel{
@@ -19,6 +20,9 @@ namespace hel{
 
     void RobotMode::setEnabled(bool e)noexcept{
         enabled = e;
+        auto instance = SendDataManager::getInstance();
+        instance.first->enable(e);
+        instance.second.unlock();
     }
 
     bool RobotMode::getEmergencyStopped()const noexcept{
@@ -53,6 +57,8 @@ namespace hel{
         control_word.eStop = emergency_stopped;
         control_word.fmsAttached = fms_attached;
         control_word.dsAttached = ds_attached;
+        //controlWord->autonomous = instance.first->robot_mode.getMode()==hel::RobotMode::Mode::AUTONOMOUS?1:0;
+        //controlWord->test = instance.first->robot_mode.getMode()==hel::RobotMode::Mode::TEST?1:0;
         return control_word;
     }
 

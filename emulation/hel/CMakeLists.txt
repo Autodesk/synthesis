@@ -27,7 +27,7 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 
 SET(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
-if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
+if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
@@ -36,7 +36,7 @@ else()
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
-if(ARCH MATCHES "[Aa][Rr][Mm]")
+if(ARCH MATCHES "^[Aa][Rr][Mm]")
   SET(CMAKE_C_COMPILER arm-frc-linux-gnueabi-gcc)
   SET(CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
 
@@ -168,13 +168,13 @@ TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
   "${ASIO_DIRECTORY}/include"
   "${CMAKE_BINARY_DIR}/include")
-if(ARCH MATCHES "[Aa][Rr][Mm]")
+if(ARCH MATCHES "^[Aa][Rr][Mm]")
   TARGET_LINK_LIBRARIES(hel wpi)
 else()
   TARGET_LINK_LIBRARIES(hel wpi-x86)
 endif()
 
-if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
+if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
    if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
     if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
       ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
@@ -198,7 +198,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
   endif()
 
   if(NOT NO_UNIT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_UNIT MATCHES "[Oo][Nn]")
-    if(ARCH MATCHES "[Aa][Rr][Mm]")
+    if(ARCH MATCHES "^[Aa][Rr][Mm]")
       EXTERNALPROJECT_ADD(GoogleTest
         PREFIX lib/google_test
         DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
@@ -226,7 +226,7 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
 
       ADD_DEPENDENCIES(${test_name} hel GoogleTest asio wpilib)
 
-      if(ARCH MATCHES "[Aa][Rr][Mm]")
+      if(ARCH MATCHES "^[Aa][Rr][Mm]")
         ADD_DEPENDENCIES(${test_name} ctre)
         TARGET_LINK_LIBRARIES(${test_name} wpi libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
         TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
@@ -259,8 +259,8 @@ if(TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]")
   endif()
 endif()
 
-if(BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]")
-  if(ARCH MATCHES "[Aa][Rr][Mm]")
+if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
+  if(ARCH MATCHES "^[Aa][Rr][Mm]")
     MESSAGE(WARNING "Benchmarks not supported in ARM mode. If you wish to run benchmarks, please append -DARCH=x86_64 to cmake command")
     return()
   else()

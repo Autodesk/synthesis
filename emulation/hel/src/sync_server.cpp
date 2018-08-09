@@ -1,4 +1,5 @@
 #include "sync_server.hpp"
+#include "roborio_manager.hpp"
 #include "send_data.hpp"
 
 #include <unistd.h>

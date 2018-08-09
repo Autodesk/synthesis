@@ -14,6 +14,7 @@ class Robot: public frc::IterativeRobot{
     frc::Spark m_rightMotor{1};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
     frc::Joystick m_stick{0};
+    frc::Encoder encoder{0,1};
     frc::Timer auto_timer;
     bool run_auto = true;
 
@@ -29,17 +30,17 @@ public:
     void TestPeriodic(){}
 
     void AutonomousInit(){
-        auto_timer.Start();
+        std::cout<<"AutonomousInit\n";
+        encoder.Reset();
     }
 
     void AutonomousPeriodic(){
-        //std::cout<<"Remaining: "<<auto_timer.Get()<<"\n";
-        /*if(!auto_timer.HasPeriodPassed(5) && run_auto){
-            m_robotDrive.TankDrive(1.0,-1.0);
-            run_auto = false;
+        std::cout<<"Encoder raw: "<<encoder.GetRaw()<<"\n";
+        if(abs(encoder.GetRaw()) < 20){
+            m_robotDrive.TankDrive(1.0,1.0);
         } else{
             m_robotDrive.TankDrive(0,0);
-            }*/
+        }
     }
 
     void TeleopPeriodic(){

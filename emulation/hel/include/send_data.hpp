@@ -20,7 +20,7 @@ namespace hel{
     private:
         std::string serialized_data;
         bool new_data;
-
+        bool enabled;
         BoundsCheckedArray<double, PWMSystem::NUM_HDRS> pwm_hdrs;
 
         BoundsCheckedArray<RelaySystem::State, RelaySystem::NUM_RELAY_HEADERS> relays;
@@ -33,17 +33,19 @@ namespace hel{
 
         std::map<uint32_t, CANMotorController> can_motor_controllers;
 
-		void serializePWMHdrs();
+        void serializePWMHdrs();
         void serializeRelays();
         void serializeAnalogOutputs();
         void serializeDigitalMXP();
         void serializeDigitalHdrs();
         void serializeCANMotorControllers();
+
     public:
         SendData();
 
         void updateShallow();
         void updateDeep();
+        void enable(bool);
 
         std::string toString()const;
 

@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <vector>
+#include <cassert>
 
 #define NYI {\
     printf("NYI:" + __FILE__ + ":" __LINE__ + "\n"); \
@@ -62,7 +63,7 @@ namespace hel{
     }
 
 	template<typename T>
-    struct Maybe {
+    struct Maybe { //TODO optimize
 
     private:
         T _data;
@@ -98,10 +99,16 @@ namespace hel{
             return out;
         }
 
-        constexpr T get()const noexcept{return _data;}
-        void set(T data) {_data=data;_is_valid=true;}
+      constexpr T& get()noexcept{
+          assert(_is_valid);
+          return _data;
+      }
+      void set(T data){
+          _data = data;
+          _is_valid = true;
+      }
 
-        constexpr operator bool()const noexcept{return _is_valid;}
+      constexpr operator bool()const noexcept{return _is_valid;}
 
         Maybe& operator=(const Maybe& m)noexcept {_data = m._data; _is_valid = m._is_valid;}
 
