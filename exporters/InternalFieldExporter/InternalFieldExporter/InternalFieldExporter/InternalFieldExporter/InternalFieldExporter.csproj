@@ -196,6 +196,7 @@
     <Compile Include="FieldWizard\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldWizard\Utilities\Utilities.cs" />
     <Compile Include="LegacyInterchange.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
