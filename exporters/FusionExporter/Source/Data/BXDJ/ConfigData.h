@@ -39,7 +39,7 @@ namespace BXDJ
 		/// Copy constructor.
 		ConfigData(const ConfigData & other);
 
-		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const; /// \return The driver assigned to a Fusion joint.
+		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const; ///< \return The driver assigned to a Fusion joint.
 
 		///
 		/// Assigns a driver to a joint in Fusion.
@@ -54,7 +54,7 @@ namespace BXDJ
 		///
 		void setNoDriver(core::Ptr<fusion::Joint>);
 
-		std::vector<std::shared_ptr<JointSensor>> getSensors(core::Ptr<fusion::Joint>) const; /// \return A vector containing the sensors attached to a Fusion joint.
+		std::vector<std::shared_ptr<JointSensor>> getSensors(core::Ptr<fusion::Joint>) const; ///< \return A vector containing the sensors attached to a Fusion joint.
 
 		///
 		/// Ensures that the only documented joints are those listed in the given vector, and that all joints in that vector are documented.
@@ -118,7 +118,7 @@ namespace BXDJ
 
 		std::map<std::string, JointConfig> joints; ///< Map of all documented Fusion joints, accessed by their ID generated from Utility::getUniqueJointID.
 
-		static JointMotionType internalJointMotion(fusion::JointTypes); ///< /return The JointMotionType equivalent of a Fusion joint type.
+		static JointMotionType internalJointMotion(fusion::JointTypes); ///< \return The JointMotionType equivalent of a Fusion joint type.
 
 	};
 }
