@@ -611,9 +611,6 @@ namespace Synthesis.Sensors
             sensorAnglePanel.SetActive(currentSensor.IsChangingAngle);
             isEditingAngle = currentSensor.IsChangingAngle;
 
-            lockPositionButton.SetActive(currentSensor.IsChangingAngle);
-            lockRangeButton.SetActive(currentSensor.IsChangingAngle);
-
             //if (currentSensor.IsChangingAngle)
             //{
             //    showAngleButton.GetComponentInChildren<Text>().text = "Hide Sensor Angle";
