@@ -25,7 +25,8 @@ namespace EditorsLibrary
             sensorTypeOptions = RobotSensor.GetAllowedSensors(joint);
             foreach (RobotSensorType sensorType in sensorTypeOptions)
             {
-                typeBox.Items.Add(Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ').ToLowerInvariant());
+                typeBox.Items.Add(char.ToUpper(Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ')[0])
+                    + Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ').Substring(1).ToLower());
             }
             Console.WriteLine(sourceIndex >= 0 && sourceIndex < joint.attachedSensors.Count);
             base.Text = (sourceIndex >= 0 && sourceIndex < joint.attachedSensors.Count) ? ("Editing Sensor # " + sourceIndex) : "New Sensor";
@@ -33,28 +34,27 @@ namespace EditorsLibrary
             {
                 RobotSensor sensor = joint.attachedSensors[sourceIndex];
                 typeBox.SelectedIndex = Array.IndexOf(sensorTypeOptions, sensor.type);
-                portTextBox.Text = Convert.ToString(sensor.port);
-                moduleTextBox.Text = Convert.ToString(sensor.module);
-                secondaryBox.Checked = sensor.useSecondarySource;
-                {
-                    StringBuilder coeffTxt = new StringBuilder();
-                    for (int i = sensor.equation.coeff.Length - 1; i >= 0; i--)
-                    {
-                        coeffTxt.Append(sensor.equation.coeff[i]);
-                        if (i > 0)
-                        {
-                            coeffTxt.Append(",");
-                        }
-                    }
-                    coefficentTextBox.Text = coeffTxt.ToString();
-                    coefficentTextBox_TextChanged(null, null);
-                }
+                PortANumericUpDown.Value = (decimal)sensor.portA;
+                PortBNumericUpDown.Value = (decimal)sensor.portB;
+                ConversionNumericUpDown.Value = (decimal)sensor.conversionFactor;
             }
-
-            ///Only applies to cylindrical joints.  True use secondary means to use the linear component rather than rotation.
-            if (joint.GetJointType() == SkeletalJointType.CYLINDRICAL)
+            if (typeBox.SelectedIndex == 0)
             {
-                secondaryBox.Visible = true;
+                this.PortALbl.Enabled = true;
+                this.PortANumericUpDown.Enabled = true;
+                this.PortBLbl.Visible = true;
+                this.PortBNumericUpDown.Visible = true;
+                this.ConversionLbl.Visible = true;
+                this.ConversionNumericUpDown.Visible = true;
+            }
+            else
+            {
+                this.PortALbl.Enabled = false;
+                this.PortANumericUpDown.Enabled = false;
+                this.PortBLbl.Visible = false;
+                this.PortBNumericUpDown.Visible = false;
+                this.ConversionLbl.Visible = false;
+                this.ConversionNumericUpDown.Visible = false;
             }
         }
 
@@ -73,39 +73,10 @@ namespace EditorsLibrary
             }
 
             //Doesn't save if numbers aren't entered correctly.
-            try
-            {
-                addedSensor.module = Convert.ToInt16(moduleTextBox.Text);
-                addedSensor.port = Convert.ToInt16(portTextBox.Text);
-            }
-            catch
-            {
-                MessageBox.Show("Enter an integer for the module and port numbers.");
-                return;
-            }
-
-
-            ///Gets all of the entered polynomial coefficients, seperating by commas.
-            string[] coefficients = coefficentTextBox.Text.Split(',');
-
-            float[] polyCoeff = new float[coefficients.Length];
-
-            for (int i = 0; i < coefficients.Length; i++)
-            {
-                ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
-                try
-                {
-                    polyCoeff[coefficients.Length - 1 - i] = Convert.ToSingle(coefficients[i]);
-                }
-                catch
-                {
-                    MessageBox.Show("For coefficients, enter only numbers followed by commas.");
-                    return;
-                }
-            }
-            addedSensor.equation = new Polynomial(polyCoeff);
-            addedSensor.useSecondarySource = secondaryBox.Checked;
-
+            addedSensor.portA = (int)this.PortANumericUpDown.Value;
+            addedSensor.portB = (int)this.PortBNumericUpDown.Value;
+            addedSensor.conversionFactor = (double)this.ConversionNumericUpDown.Value;
+            
             if (sourceIndex >= 0 && sourceIndex < joint.attachedSensors.Count)
             {
                 joint.attachedSensors[sourceIndex] = addedSensor;
@@ -118,25 +89,48 @@ namespace EditorsLibrary
             LegacyInterchange.LegacyEvents.OnRobotModified();
             Close();
         }
-
-        private void coefficentTextBox_TextChanged(object sender, EventArgs e)
+        
+        public void ShowEncoderFields()
         {
-            string[] coefficients = coefficentTextBox.Text.Split(',');
-            float[] polyCoeff = new float[coefficients.Length];
-            for (int i = 0; i < coefficients.Length; i++)
+            this.PortBLbl.Visible = true;
+            this.PortBNumericUpDown.Visible = true;
+            this.ConversionLbl.Visible = true;
+            this.ConversionNumericUpDown.Visible = true;
+            this.ConversionLbl.Text = "Counts per Rev";
+        }
+        public void HideSecondFields()
+        {
+            this.PortBLbl.Visible = false;
+            this.PortBNumericUpDown.Visible = false;
+            this.ConversionLbl.Visible = false;
+            this.ConversionNumericUpDown.Visible = false;
+        }
+
+        private void typeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch ((RobotSensorType)typeBox.SelectedIndex)
             {
-                ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
-                try
-                {
-                    polyCoeff[coefficients.Length - 1 - i] = Convert.ToSingle(coefficients[i]);
-                }
-                catch
-                {
-                    lblEquationParsed.Text = "Parse Error";
-                    return;
-                }
+                case RobotSensorType.ENCODER:
+                    ShowEncoderFields();
+                    this.PortANumericUpDown.Enabled = true;
+                    this.PortALbl.Enabled = true;
+                    break;
+                case RobotSensorType.LIMIT:
+                    HideSecondFields();
+                    this.PortANumericUpDown.Enabled = true;
+                    this.ConversionLbl.Enabled = true;
+                    break;
+                case RobotSensorType.POTENTIOMETER:
+                    HideSecondFields();
+                    this.PortANumericUpDown.Enabled = true;
+                    this.ConversionLbl.Enabled = true;
+                    break;
+                default:
+                    HideSecondFields();
+                    this.PortANumericUpDown.Enabled = false;
+                    this.ConversionLbl.Enabled = false;
+                    break;
             }
-            lblEquationParsed.Text = new Polynomial(polyCoeff).ToString();
         }
     }
 }

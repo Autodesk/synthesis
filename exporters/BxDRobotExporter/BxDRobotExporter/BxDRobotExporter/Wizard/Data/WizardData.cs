@@ -41,6 +41,7 @@ namespace BxDRobotExporter.Wizard
             H_DRIVE,
             CUSTOM
         }
+
         public enum WizardWheelType
         {
             NORMAL = 1,
@@ -164,12 +165,7 @@ namespace BxDRobotExporter.Wizard
         /// The name of the robot. Does not do anything now.
         /// </summary>
         public string robotName;
-    
-        //Drive Information
-        /// <summary>
-        /// Drive train set in <see cref="BasicRobotInfoPage"/>
-        /// </summary>
-        public WizardDriveTrain driveTrain;
+
         /// <summary>
         /// Number of wheels on the robot. TODO: Use this alongside the wheel detection algorithm to add an "Autodetect Wheels" button on <see cref="DefineWheelsPage"/>
         /// </summary>

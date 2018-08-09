@@ -87,6 +87,69 @@ namespace BxDRobotExporter.Wizard
             DriverComboBox_SelectedIndexChanged(null, null);
         }
         /// <summary>
+        /// refills values from existing joint
+        /// </summary>
+        /// <param name="joint"></param>
+        public void refillValues(SkeletalJoint_Base joint)
+        {
+            JointDriverType[] typeOptions;
+            typeOptions = JointDriver.GetAllowedDrivers(joint);
+            DriverComboBox.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
+
+            if (joint.cDriver.port1 < PortOneUpDown.Minimum)
+                PortOneUpDown.Value = PortOneUpDown.Minimum;
+            else if (joint.cDriver.port1 > PortOneUpDown.Maximum)
+                PortOneUpDown.Value = PortOneUpDown.Maximum;
+            else
+                PortOneUpDown.Value = joint.cDriver.port1;
+
+            if (joint.cDriver.port2 < PortTwoUpDown.Minimum)
+                PortTwoUpDown.Value = PortTwoUpDown.Minimum;
+            else if (joint.cDriver.port2 > PortTwoUpDown.Maximum)
+                PortTwoUpDown.Value = PortTwoUpDown.Maximum;
+            else
+                PortTwoUpDown.Value = joint.cDriver.port2;
+            
+            rbCAN.Checked = joint.cDriver.isCan;
+            if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
+            {
+                joint.cDriver.OutputGear = 1;
+            }
+            if (joint.cDriver.InputGear == 0)// prevents input gear from being 0
+            {
+                joint.cDriver.InputGear = 1;
+            }
+            OutputGeartxt.Value = (decimal)joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+            InputGeartxt.Value = (decimal)joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+
+            #region Meta info recovery
+            {
+                PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+                if (pneumaticMeta != null)
+                {
+                    cmbPneumaticDiameter.SelectedIndex = (int)pneumaticMeta.widthEnum;
+                    cmbPneumaticPressure.SelectedIndex = (int)pneumaticMeta.pressureEnum;
+                }
+                else
+                {
+                    cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
+                    cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.HIGH;
+                }
+            }
+            {
+                ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+                if (elevatorMeta != null && (int)elevatorMeta.type < 7)
+                {
+                    cmbStages.SelectedIndex = (int)elevatorMeta.type;
+                }
+                else
+                {
+                    cmbStages.SelectedIndex = 0;
+                }
+            }
+            #endregion
+        }
+        /// <summary>
         /// Handles all of the different kinds of data that should be displayed when the SelectedIndex of the <see cref="ComboBox"/> is changed.
         /// </summary>
         /// <param name="sender"></param>
@@ -166,8 +229,8 @@ namespace BxDRobotExporter.Wizard
                     case 5: //Worm Screw
                         this.PortsGroupBox.Visible = true;
                         this.tabsMeta.Visible = false;
-                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
-                        this.PortLayout.RowStyles[1].Height = 0;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Percent;
+                        this.PortLayout.RowStyles[1].Height = 50F;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
                         PortOneLabel.Visible = true;
@@ -204,8 +267,8 @@ namespace BxDRobotExporter.Wizard
                     case 1: //Elevator
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
-                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
-                        this.PortLayout.RowStyles[1].Height = 0;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Percent;
+                        this.PortLayout.RowStyles[1].Height = 50F;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
                         if (!tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Add(metaElevatorStages);
@@ -253,8 +316,8 @@ namespace BxDRobotExporter.Wizard
                     case 4: //Worm Screw
                         this.PortsGroupBox.Visible = true;
                         this.tabsMeta.Visible = false;
-                        this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
-                        this.PortLayout.RowStyles[1].Height = 0;
+                        this.PortLayout.RowStyles[1].SizeType = SizeType.Percent;
+                        this.PortLayout.RowStyles[1].Height = 50F;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
                         PortOneLabel.Visible = true;
@@ -303,7 +366,7 @@ namespace BxDRobotExporter.Wizard
                         driver.InputGear = (double)InputGeartxt.Value;
                         driver.OutputGear = (double)OutputGeartxt.Value;
                         driver.SetPort((int)PortOneUpDown.Value, 1);
-                        driver.isCan = true;
+                        driver.isCan = this.rbCAN.Checked;
                         return driver;
                     case 2: //Servo
                         driver = new JointDriver(JointDriverType.SERVO);
@@ -332,6 +395,7 @@ namespace BxDRobotExporter.Wizard
                     case 5: //Worm Screw
                         driver = new JointDriver(JointDriverType.WORM_SCREW);
                         driver.SetPort((int)PortOneUpDown.Value);
+                        driver.isCan = this.rbCAN.Checked;
                         return driver;
                     case 6: //Dual Motor
                         driver = new JointDriver(JointDriverType.DUAL_MOTOR);
@@ -356,7 +420,7 @@ namespace BxDRobotExporter.Wizard
                         }; //The info about the wheel attached to the joint.
                         driver.AddInfo(elevatorDriver);
                         driver.SetPort((int)PortOneUpDown.Value, 1);
-                        driver.isCan = true;
+                        driver.isCan = this.rbCAN.Checked;
                         return driver;
                     case 2: //Bumper Pneumatic
                         driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
@@ -381,6 +445,7 @@ namespace BxDRobotExporter.Wizard
                     case 4: //Worm Screw
                         driver = new JointDriver(JointDriverType.WORM_SCREW);
                         driver.SetPort((int)PortOneUpDown.Value);
+                        driver.isCan = this.rbCAN.Checked;
                         return driver;
                 }
                 return null;

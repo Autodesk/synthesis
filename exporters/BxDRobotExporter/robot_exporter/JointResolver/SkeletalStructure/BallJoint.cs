@@ -14,6 +14,11 @@ public class BallJoint : BallJoint_Base, InventorSkeletalJoint
     {
     } // TODO
 
+    public void ReloadInventorJoint()
+    {
+        basePoint = Utilities.ToBXDVector(wrapped.rigidJoint.geomOne);
+    }
+
     public static bool IsBallJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
@@ -31,7 +36,7 @@ public class BallJoint : BallJoint_Base, InventorSkeletalJoint
             throw new Exception("Not a rotational joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
-        basePoint = Utilities.ToBXDVector(rigidJoint.geomOne);
+        ReloadInventorJoint();
     }
 
     protected override string ToString_Internal()

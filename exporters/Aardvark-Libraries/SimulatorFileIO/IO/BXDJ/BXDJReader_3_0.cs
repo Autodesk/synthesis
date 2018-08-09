@@ -662,13 +662,13 @@ public partial class BXDJSkeleton
                     // Initialize the driver.
                     driver = new JointDriver((JointDriverType)Enum.Parse(typeof(JointDriverType), reader.ReadElementContentAsString()));
                     break;
-                case "PortA":
+                case "PortA":// mismatched naming so we can keep backwards compatibility
                     // Assign a value to portA.
-                    driver.portA = reader.ReadElementContentAsInt();
+                    driver.port1 = reader.ReadElementContentAsInt();
                     break;
                 case "PortB":
-                    // Assign a value to portB.
-                    driver.portB = reader.ReadElementContentAsInt();
+                    // Assign a value to port2.
+                    driver.port2 = reader.ReadElementContentAsInt();
                     break;
 
                 case "InputGear":
@@ -854,19 +854,19 @@ public partial class BXDJSkeleton
                     break;
                 case "SensorModule":
                     // Assign a value to the module.
-                    robotSensor.module = (short)reader.ReadElementContentAsInt();
+                    short m = (short)reader.ReadElementContentAsInt();
                     break;
                 case "SensorPort":
                     // Assign a value to the port.
-                    robotSensor.port = (short)reader.ReadElementContentAsInt();
+                    short s = (short)reader.ReadElementContentAsInt();
                     break;
                 case "Polynomial":
                     // Create a polynomial and assign it to the equation.
-                    robotSensor.equation = ReadPolynomial_3_0(reader.ReadSubtree());
+                    Polynomial e  = ReadPolynomial_3_0(reader.ReadSubtree());
                     break;
                 case "UseSecondarySource":
                     // Assign a value to useSecondarySource.
-                    robotSensor.useSecondarySource = reader.ReadElementContentAsBoolean();
+                    reader.ReadElementContentAsBoolean();
                     break;
             }
         }

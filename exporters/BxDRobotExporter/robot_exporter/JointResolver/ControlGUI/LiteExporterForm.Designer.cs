@@ -27,22 +27,13 @@
     private void InitializeComponent()
     {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LiteExporterForm));
-            this.LoadingAnimation = new System.Windows.Forms.PictureBox();
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.ExporterWorker = new System.ComponentModel.BackgroundWorker();
             this.ExitButton = new System.Windows.Forms.Button();
+            this.LoadingAnimation = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingAnimation)).BeginInit();
             this.SuspendLayout();
-            // 
-            // LoadingAnimation
-            // 
-            this.LoadingAnimation.BackColor = System.Drawing.Color.Transparent;
-            this.LoadingAnimation.Location = new System.Drawing.Point(12, 12);
-            this.LoadingAnimation.Name = "LoadingAnimation";
-            this.LoadingAnimation.Size = new System.Drawing.Size(354, 354);
-            this.LoadingAnimation.TabIndex = 0;
-            this.LoadingAnimation.TabStop = false;
             // 
             // ProgressBar
             // 
@@ -78,6 +69,16 @@
             this.ExitButton.Text = "Close";
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            // 
+            // LoadingAnimation
+            // 
+            this.LoadingAnimation.BackColor = System.Drawing.Color.Transparent;
+            this.LoadingAnimation.Image = global::JointResolver.Properties.Resources.LoadAnimationNewLogo;
+            this.LoadingAnimation.Location = new System.Drawing.Point(12, 12);
+            this.LoadingAnimation.Name = "LoadingAnimation";
+            this.LoadingAnimation.Size = new System.Drawing.Size(354, 354);
+            this.LoadingAnimation.TabIndex = 0;
+            this.LoadingAnimation.TabStop = false;
             // 
             // LiteExporterForm
             // 
