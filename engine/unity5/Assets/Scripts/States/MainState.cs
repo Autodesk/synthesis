@@ -287,29 +287,23 @@ namespace Synthesis.States
         {
             if (SpawnedRobots.Count < MAX_ROBOTS)
             {
-                if (isMixAndMatch)
-                {
-                    robotPath = RobotTypeManager.RobotPath;
-                }
-                else
-                {
-                    robotPath = directory;
-                }
-
                 GameObject robotObject = new GameObject("Robot");
                 SimulatorRobot robot;
 
                 if (isMixAndMatch)
                 {
+                    robotPath = RobotTypeManager.RobotPath;
                     MaMRobot mamRobot = robotObject.AddComponent<MaMRobot>();
                     mamRobot.RobotHasManipulator = false; // Defaults to false
                     robot = mamRobot;
                 }
                 else
                 {
+                    robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
+                    robot.FilePath = robotPath;
                 }
-
+                
                 //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
                 if (!robot.InitializeRobot(robotPath))
                     return false;
@@ -406,6 +400,7 @@ namespace Synthesis.States
             if (index < SpawnedRobots.Count)
             {
                 ActiveRobot = SpawnedRobots[index];
+                DPMDataHandler.Load(ActiveRobot.FilePath);
                 dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }

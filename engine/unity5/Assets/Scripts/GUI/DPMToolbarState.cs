@@ -72,6 +72,7 @@ namespace Assets.Scripts.GUI
         public override void Update()
         {
             if (dpmRobot == null) dpmRobot = mainState.ActiveRobot.GetDriverPractice();
+            if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) dpmRobot = mainState.ActiveRobot.GetDriverPractice();
             if (dropdown && buffer)
                 if (Input.GetMouseButtonUp(0))
                 {
