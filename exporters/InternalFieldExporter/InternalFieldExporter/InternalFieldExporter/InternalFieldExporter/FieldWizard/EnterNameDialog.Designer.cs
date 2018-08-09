@@ -41,6 +41,7 @@
             // okButton
             // 
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.okButton.Enabled = false;
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.okButton.Location = new System.Drawing.Point(344, 55);
             this.okButton.Margin = new System.Windows.Forms.Padding(4);
@@ -75,6 +76,7 @@
             // 
             // nameTextBox
             // 
+            this.nameTextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.nameTextBox.Location = new System.Drawing.Point(140, 15);
             this.nameTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.nameTextBox.MaxLength = 20;
@@ -93,6 +95,7 @@
             this.reservedLabel.Size = new System.Drawing.Size(164, 21);
             this.reservedLabel.TabIndex = 4;
             this.reservedLabel.Text = "Name is Reserved";
+            this.reservedLabel.Visible = false;
             this.reservedLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RequestAssociativeAlloc);
             // 
             // warningImage
@@ -104,6 +107,7 @@
             this.warningImage.Size = new System.Drawing.Size(60, 39);
             this.warningImage.TabIndex = 5;
             this.warningImage.TabStop = false;
+            this.warningImage.Visible = false;
             // 
             // EnterNameDialog
             // 
