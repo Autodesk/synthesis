@@ -60,7 +60,7 @@ namespace BXDJ
 		/// Ensures that the only documented joints are those listed in the given vector, and that all joints in that vector are documented.
 		/// \param filterJoints Joints to keep in the ConfigData.
 		///
-		void filterJoints(std::vector<core::Ptr<fusion::Joint>>);
+		void filterJoints(std::vector<core::Ptr<fusion::Joint>> filterJoints);
 
 		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
 		void loadJSONObject(const rapidjson::Value&);
