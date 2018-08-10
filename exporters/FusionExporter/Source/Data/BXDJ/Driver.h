@@ -31,8 +31,8 @@ namespace BXDJ
 		};
 
 		Signal portSignal;
-		int portA;
-		int portB;
+		int portOne;
+		int portTwo;
 		float inputGear;
 		float outputGear;
 		

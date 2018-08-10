@@ -30,15 +30,6 @@ namespace Synthesis
 	};
 
 	// Button Events
-	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
-	{
-	public:
-		ShowPaletteCommandCreatedHandler(EUI * eui) : eui(eui) {}
-		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
-	private:
-		EUI * eui;
-	};
-
 	class ShowPaletteCommandExecuteHandler : public CommandEventHandler
 	{
 	public:
@@ -48,19 +39,27 @@ namespace Synthesis
 		EUI * eui;
 	};
 
+	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
+	{
+	public:
+		ShowPaletteCommandCreatedHandler(EUI * eui) : eui(eui) {}
+		~ShowPaletteCommandCreatedHandler();
+		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+	private:
+		EUI * eui;
+
+		ShowPaletteCommandExecuteHandler * showPaletteCommandExecuteHandler = nullptr;
+		Ptr<Command> command;
+	};
+
 	// Palette Events
 	class ReceiveFormDataHandler : public HTMLEventHandler
 	{
 	public:
-		ReceiveFormDataHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) { }
-		~ReceiveFormDataHandler() { if (thread != nullptr) { thread->join(); delete thread; } }
+		ReceiveFormDataHandler(EUI * eui) : eui(eui) { }
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 	private:
-		const char ASCII_OFFSET = -32;
-		Ptr<Application> app;
 		EUI * eui;
-		// Some events don't like doing everything on a single thread
-		std::thread * thread = nullptr;
 	};
 
 	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler

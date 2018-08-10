@@ -35,9 +35,8 @@ namespace BXDA
 		if (!outputFile.is_open())
 			return;
 
-		char* bytes = (char*)(&data);
-		for (int i = 0; i < sizeof(data); i++)
-			outputFile << bytes[i];
+		// Generate null-terminated c-string, where each character is a byte from the data
+		outputFile.write((char*)(&data), sizeof(T));
 	}
 
 	// Classes that inherit from BinaryWritable can be fed into a BinaryWriter
