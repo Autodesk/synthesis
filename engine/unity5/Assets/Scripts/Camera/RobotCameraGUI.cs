@@ -45,7 +45,7 @@ namespace Synthesis.Camera
         bool changingFOV = false;
         float fovIncrement = 1f;
         int fovSign;
-        
+
 
         GameObject robotCameraViewWindow;
         RenderTexture robotCameraView;
@@ -208,7 +208,7 @@ namespace Synthesis.Camera
         {
             indicatorActive = !indicatorActive;
             CameraIndicator.SetActive(indicatorActive);
-            Auxiliary.FindObject(configureCameraPanel, "VisibilityButton").GetComponentInChildren<Text>().text = indicatorActive ? "Hide" : "Show"; 
+            Auxiliary.FindObject(configureCameraPanel, "VisibilityButton").GetComponentInChildren<Text>().text = indicatorActive ? "Hide" : "Show";
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace Synthesis.Camera
         {
             StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(robotCameraManager));
         }
-   
+
         /// <summary>
         /// Update the local angle of the current camera to the camera angle panel
         /// </summary>
@@ -268,13 +268,13 @@ namespace Synthesis.Camera
             float xTemp = 0;
             float yTemp = 0;
             float zTemp = 0;
-            if (float.TryParse(xAngleEntry.GetComponent<InputField>().text, out xTemp) &&
-                float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp) &&
-                float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp))
-            {
-                robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
-            }
-
+            xAngleEntry.GetComponent<InputField>().text = xAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            yAngleEntry.GetComponent<InputField>().text = yAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            zAngleEntry.GetComponent<InputField>().text = zAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            if (!float.TryParse(xAngleEntry.GetComponent<InputField>().text, out xTemp)) xAngleEntry.GetComponent<InputField>().text = "0";
+            if (!float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp)) yAngleEntry.GetComponent<InputField>().text = "0";
+            if (!float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp)) zAngleEntry.GetComponent<InputField>().text = "0";
+            robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
         }
 
         /// <summary>
@@ -363,14 +363,9 @@ namespace Synthesis.Camera
         public void SyncCameraFOV()
         {
             float temp = 0;
-            if ((float.TryParse(FOVEntry.GetComponent<InputField>().text, out temp) && temp >= 0))
-            {
-                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
-            }
-            else
-            {
-                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
-            }
+            FOVEntry.GetComponent<InputField>().text = FOVEntry.GetComponent<InputField>().text.TrimStart('0');
+            if (!(float.TryParse(FOVEntry.GetComponent<InputField>().text, out temp) || temp < 0)) { temp = 0; FOVEntry.GetComponent<InputField>().text = "0"; }
+            robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
         }
 
         public void ChangeFOV(int sign)
@@ -423,7 +418,7 @@ namespace Synthesis.Camera
                 isEditingFOV = false;
             }
         }
-        
+
         /// <summary>
         /// Update transform of robot camera indicator to follow the current camera
         /// </summary>
