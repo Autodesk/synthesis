@@ -9,6 +9,7 @@ using Synthesis.States;
 using Synthesis.Utils;
 using Synthesis.Configuration;
 using Assets.Scripts.GUI;
+using Synthesis.Robot;
 
 namespace Synthesis.Sensors
 {
@@ -531,6 +532,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public void StartConfiguration()
         {
+            if (configureSensorPanel.activeSelf) configureSensorPanel.SetActive(false);
             if (currentSensor.sensorType.Equals("Gyro"))
             {
                 configureSensorPanel = Auxiliary.FindObject(canvas, "GyroConfigurationPanel");
@@ -789,6 +791,21 @@ namespace Synthesis.Sensors
                 sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
         }
 
+        public void RemoveSensorsFromRobot(SimulatorRobot robot)
+        {
+            List<GameObject> sensorsOnRobot = sensorManager.GetSensorsFromRobot(robot);
+            foreach (GameObject removingSensors in sensorsOnRobot)
+            {
+                string type = removingSensors.GetComponent<SensorBase>().sensorType;
+
+                Destroy(removingSensors);
+                sensorManager.RemoveSensor(removingSensors, type);
+                ShiftOutputPanels();
+                if(currentSensor != null && currentSensor.Equals(removingSensors.GetComponent<SensorBase>())) { currentSensor = null; EndProcesses(); }
+                tabStateMachine.FindState<SensorToolbarState>().RemoveSensorFromDropdown(type,
+                    sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
+            }
+        }
         /// <summary>
         /// Toggle between showing current sensor and hiding it
         /// </summary>
