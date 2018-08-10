@@ -206,7 +206,9 @@ namespace Assets.Scripts.GUI
         {
             helpMenu.SetActive(true);
 
-            helpBodyText.GetComponent<Text>().text = "Scoring: Visit bxd.autodesk.com";
+            helpBodyText.GetComponent<Text>().text = "\n\nRobot Cameras: Configure cameras for your robot" +
+                "\n\nSensor Dropdowns: CLICK on an existing sensor to configure OR" +
+                "\nAdd: Adds a selected sensor to robot and configuring tools";
 
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "SensorToolbar";
             overlay.SetActive(true);
