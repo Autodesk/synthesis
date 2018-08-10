@@ -264,11 +264,12 @@ namespace Assets.Scripts.GUI
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
-            helpBodyText.GetComponent<Text>().text = "TUTORIALS: bxd.autodesk.com \n\n" +
-                "HOME TAB: Main simulator functions \n\n" +
-                "DRIVER PRACTICE TAB: Gamepiece setup and interaction \n\n" +
-                "SCORING TAB: Match play \n\n" +
-                "SENSORS TAB: Robot camera and sensors \n\n";
+
+            helpBodyText.GetComponent<Text>().text = "\n\nTutorials: bxd.autodesk.com" +
+                "\n\nHome Tab: Main simulator functions" +
+                "\n\nDriver Practice Tab: Gamepiece setup and interaction" +
+                "\n\nScoring Tab: Match play" +
+                "\n\nSensors Tab: Robot camera and sensors";
 
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
             overlay.SetActive(true);
