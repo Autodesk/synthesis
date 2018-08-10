@@ -4,9 +4,7 @@
 #include <stdio.h>
 #include <string>
 
-///
 /// Globally Unique Identifier: Used to identify Meshes and RigidNodes in the written files.
-///
 class Guid
 {
 public:

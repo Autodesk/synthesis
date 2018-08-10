@@ -4,10 +4,8 @@
 #include "BXDA/BinaryWriter.h"
 #include "BXDJ/XmlWriter.h"
 
-///
 /// A three-number vector.
 /// \param T The type of number stored.
-///
 template<typename T = double>
 class Vector3 : public BXDA::BinaryWritable, public BXDJ::XmlWritable
 {

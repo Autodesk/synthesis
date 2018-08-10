@@ -20,9 +20,7 @@ namespace BXDJ
 	class ConfigData;
 	class Joint;
 
-	/// 
 	/// Stores a collection of component occurrences that act as a single RigidBody in the Synthesis engine.
-	///
 	class RigidNode : public XmlWritable
 	{
 	public:

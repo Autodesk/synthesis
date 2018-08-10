@@ -7,9 +7,7 @@ using namespace adsk;
 
 namespace BXDJ
 {
-	///
 	/// Allows the child RigidNode to slide and rotate along an axis.
-	///
 	class CylindricalJoint : public Joint
 	{
 	public:

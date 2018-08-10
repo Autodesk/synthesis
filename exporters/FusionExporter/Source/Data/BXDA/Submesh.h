@@ -10,9 +10,7 @@ namespace BXDA
 	class Vertex;
 	class Surface;
 
-	///
 	/// A container of a vertices and surfaces that exists as a distinct body.
-	///
 	class SubMesh : public BinaryWritable
 	{
 	public:

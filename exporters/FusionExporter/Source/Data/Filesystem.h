@@ -2,9 +2,7 @@
 
 #include <string>
 
-///
 /// Contains directory-related functions.
-///
 namespace Filesystem
 {
 	///

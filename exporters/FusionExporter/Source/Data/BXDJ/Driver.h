@@ -7,15 +7,11 @@
 
 namespace BXDJ
 {
-	///
 	/// An object that applies force to a Joint.
-	///
 	class Driver : public XmlWritable, public CustomJSONObject
 	{
 	public:
-		///
 		/// Type of Driver.
-		///
 		enum Type : char
 		{
 			UNKNOWN = 0, ///< Unknown driver type.
@@ -30,9 +26,7 @@ namespace BXDJ
 
 		Type type; ///< The type of the Driver.
 
-		///
 		/// Signal for communicating with a Driver.
-		///
 		enum Signal : char
 		{
 			PWM = 1, ///< Pulse Width Modulation

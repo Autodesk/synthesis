@@ -4,9 +4,7 @@
 
 namespace BXDJ
 {
-	///
 	/// Contains basic Utilities for joints.
-	///
 	namespace Utility
 	{
 		///

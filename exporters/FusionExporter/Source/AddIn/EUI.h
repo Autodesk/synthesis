@@ -19,10 +19,7 @@ using namespace adsk::fusion;
 
 namespace SynthesisAddIn
 {
-	///
-	/// Exporter User Interface.
-	/// Manages the creation and deletion of user interface elements, such as palettes and buttons.
-	///
+	/// Exporter User Interface: Manages the creation and deletion of user interface elements, such as palettes and buttons.
 	class EUI
 	{
 	public:

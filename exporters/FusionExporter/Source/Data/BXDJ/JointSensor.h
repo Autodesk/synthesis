@@ -7,17 +7,11 @@
 
 namespace BXDJ
 {
-	///
-	/// A sensor which measures information relative to a joint.
-	/// This can include encoders and limit switches.
-	/// Accelerometers and gyros are relative to a RigidNode.
-	///
+	/// A sensor which measures information relative to a joint. This can include encoders and limit switches. Accelerometers and gyros are relative to a RigidNode.
 	class JointSensor : public XmlWritable, public CustomJSONObject
 	{
 	public:
-		///
 		/// A type of JointSensor.
-		///
 		enum Type : char
 		{
 			UNKNOWN = 0, ///< Unknown sensor type.
@@ -26,9 +20,7 @@ namespace BXDJ
 
 		Type type; ///< The type of the sensor.
 
-		///
 		/// A type of signal that a sensor accepts.
-		///
 		enum Signal : char
 		{
 			DIO = 1, ///< Digital Input/Output ports.

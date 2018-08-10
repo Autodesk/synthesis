@@ -6,9 +6,7 @@ namespace BXDA
 {
 	class BinaryWritable;
 
-	///
 	/// Writes binary data to a file.
-	///
 	class BinaryWriter
 	{
 	public:
@@ -49,9 +47,7 @@ namespace BXDA
 		outputFile.write((char*)(&data), sizeof(T));
 	}
 
-	///
 	/// Class that can define a custom method of being written to a BinaryWriter.
-	///
 	class BinaryWritable
 	{
 		friend BinaryWriter;

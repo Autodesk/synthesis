@@ -7,9 +7,7 @@ using namespace adsk;
 
 namespace BXDJ
 {
-	///
 	/// Allows the child RigidNode to rotate freely about a fixed point relative to the parent RigidNode.
-	///
 	class BallJoint : public Joint
 	{
 	public:
