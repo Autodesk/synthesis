@@ -10,6 +10,9 @@ using namespace adsk;
 
 namespace BXDA
 {
+	///
+	/// A collection of triangles with a common appearance.
+	///
 	class Surface : public BinaryWritable
 	{
 	public:

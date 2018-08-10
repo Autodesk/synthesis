@@ -4,6 +4,10 @@
 #include "BXDA/BinaryWriter.h"
 #include "BXDJ/XmlWriter.h"
 
+///
+/// A three-number vector.
+/// \param T The type of number stored.
+///
 template<typename T = double>
 class Vector3 : public BXDA::BinaryWritable, public BXDJ::XmlWritable
 {
@@ -12,19 +16,27 @@ public:
 	T y;
 	T z;
 		
-	Vector3();
-	Vector3(const Vector3<T> &);
-	Vector3(T x, T y, T z);
+	Vector3(); ///< Contructs with coordinates (0, 0, 0).
+	Vector3(const Vector3<T> &); ///< Copy constructor.
+	Vector3(T x, T y, T z); ///< Constructs with the given coordinates.
 
 	template<typename U> Vector3<T> operator+(const Vector3<U> &) const;
 	template<typename U> Vector3<T> operator-(const Vector3<U> &) const;
-	template<typename U> T operator*(const Vector3<U> &) const; // Dot product
+	template<typename U> T operator*(const Vector3<U> &) const; ///< Dot product
 	template<typename S> Vector3<T> operator*(S) const;
 	template<typename S> Vector3<T> operator/(S) const;
 	T magnitude() const;
+
+	///
+	/// Gets the radial coordinates of the Vector.
+	/// \param axis The axis about which to calculate radius.
+	/// \param origin Used to offset the coordinates of the Vector.
+	/// \param[out] distance The distance along the axis that the vector resides.
+	/// \param[out] radius The distance from the axis that the vector resides.
+	///
 	template<typename U> void getRadialCoordinates(Vector3<U>, Vector3<U>, T &, T &) const;
 
-	std::string toString();
+	std::string toString(); ///< \return A debug string representing the Vector's coordinates.
 
 protected:
 	void write(BXDA::BinaryWriter &) const;

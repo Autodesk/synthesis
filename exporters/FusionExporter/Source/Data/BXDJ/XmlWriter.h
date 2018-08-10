@@ -95,9 +95,9 @@ namespace BXDJ
 	private:
 		///
 		/// Writes the object to an XML file.
-		/// \param xml XmlWriter that controls the output file.
+		/// \param output XmlWriter that controls the output file.
 		///
-		virtual void write(XmlWriter & xml) const = 0;
+		virtual void write(XmlWriter & output) const = 0;
 
 	};
 
