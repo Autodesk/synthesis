@@ -173,9 +173,6 @@ namespace Synthesis.Robot
                     {
                         foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
                         {
-                            Debug.Log(sensor.type.ToString() + " " + sensor.conTypePortA + " " + sensor.conTypePortB + " " + sensor.conversionFactor +
-                                " " + sensor.portA + " " + sensor.portB);
-
                             if(sensor.type == RobotSensorType.ENCODER)
                             {
                                 EmuNetworkInfo emuStruct = new EmuNetworkInfo();

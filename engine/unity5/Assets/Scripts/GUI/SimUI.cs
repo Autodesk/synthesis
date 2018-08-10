@@ -175,7 +175,6 @@ namespace Synthesis.GUI
 
             changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
             addPanel = Auxiliary.FindObject(canvas, "AddPanel");
-            //toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
             driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
             tabs = Auxiliary.FindGameObject("Tabs");
