@@ -1,6 +1,7 @@
 ﻿using BulletUnity;
 using Synthesis.DriverPractice;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
@@ -11,10 +12,10 @@ namespace Synthesis.Field
     {
         #region values
         private static XDocument file;
-        public static List<Gamepiece> gamepieces;
-        public static List<List<GameObject>> redGoals;
-        public static List<List<GameObject>> blueGoals;
-        public static Vector3 robotSpawn;
+        public static List<Gamepiece> gamepieces = new List<Gamepiece>();
+        public static List<List<GameObject>> redGoals = new List<List<GameObject>>();
+        public static List<List<GameObject>> blueGoals = new List<List<GameObject>>();
+        public static Vector3 robotSpawn = new Vector3(0f,3f,0f);
         #endregion
         #region fileWriting
         public static void WriteField()
@@ -94,11 +95,14 @@ namespace Synthesis.Field
         #region getData
         public static void Load()
         {
-            file = XDocument.Load(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml");
-            gamepieces = getGamepieces();
-            redGoals = getRedGoals();
-            blueGoals = getBlueGoals();
-            robotSpawn = getRobotSpawn();
+            if (File.Exists(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml"))
+            {
+                file = XDocument.Load(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml");
+                gamepieces = getGamepieces();
+                redGoals = getRedGoals();
+                blueGoals = getBlueGoals();
+                robotSpawn = getRobotSpawn();
+            } else WriteField();
         }
         private static List<Gamepiece> getGamepieces()
         {
