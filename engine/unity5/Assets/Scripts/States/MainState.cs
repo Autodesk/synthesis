@@ -134,8 +134,6 @@ namespace Synthesis.States
                     return;
                 }
 
-                DPMDataHandler.Load();
-
                 Controls.Init();
                 Controls.Load();
 
@@ -301,9 +299,10 @@ namespace Synthesis.States
                 {
                     robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
-                    robot.FilePath = robotPath;
                 }
-                
+
+                robot.FilePath = robotPath;
+
                 //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
                 if (!robot.InitializeRobot(robotPath))
                     return false;
@@ -316,6 +315,8 @@ namespace Synthesis.States
 
                 robot.ControlIndex = SpawnedRobots.Count;
                 SpawnedRobots.Add(robot);
+
+                DPMDataHandler.Load(robotPath);
 
                 return true;
             }
@@ -562,11 +563,11 @@ namespace Synthesis.States
             GameObject robotObject = new GameObject("Robot");
             MaMRobot robot = robotObject.AddComponent<MaMRobot>();
 
+            robot.FilePath = robotPath;
+
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory)) return false;
-
-            robotObject.AddComponent<DriverPracticeRobot>();
-
+            
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (ActiveRobot == null)
                 ActiveRobot = robot;
@@ -574,6 +575,7 @@ namespace Synthesis.States
             robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
+            DPMDataHandler.Load(robotPath);
             return robot.InitializeManipulator(manipulatorDirectory);
         }
 
