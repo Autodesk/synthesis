@@ -7,9 +7,7 @@ using namespace adsk;
 
 namespace BXDJ
 {
-	///
 	/// Allows the child RigidNode to rotate along an axis.
-	///
 	class RotationalJoint : public Joint
 	{
 	public:

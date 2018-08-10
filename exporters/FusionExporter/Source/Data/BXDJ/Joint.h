@@ -15,9 +15,7 @@ namespace BXDJ
 	class RigidNode;
 	class ConfigData;
 
-	///
 	/// Serves as an abstract class for objects that connect two RigidNodes together with a defined type of motion.
-	///
 	class Joint : public XmlWritable
 	{
 	public:

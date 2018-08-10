@@ -9,9 +9,7 @@ using namespace adsk::fusion;
 
 namespace SynthesisAddIn
 {
-	///
 	/// Manages robot configurations and exporting robots.
-	///
 	class Exporter
 	{
 	public:

@@ -4,9 +4,7 @@
 
 namespace BXDA
 {
-	///
 	/// A triangle face on a Surface of a SubMesh.
-	///
 	class Triangle : public BinaryWritable
 	{
 	public:

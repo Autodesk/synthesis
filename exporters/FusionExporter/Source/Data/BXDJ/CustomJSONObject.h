@@ -4,9 +4,7 @@
 
 namespace BXDJ
 {
-	///
 	/// An object that can be written to and read from JSON.
-	///
 	class CustomJSONObject
 	{
 	public:

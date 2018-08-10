@@ -6,9 +6,7 @@
 
 namespace BXDA
 {
-	///
 	/// Stores the physics properties of a mesh, such as mass and center of mass.
-	///
 	class Physics : public BinaryWritable
 	{
 	public:

@@ -11,16 +11,12 @@ using namespace adsk;
 
 namespace BXDJ
 {
-	///
 	/// Stores the user's configuration for drivers, wheels, pneumatics, etc.
 	/// All data is relative to a Joint.
-	///
 	class ConfigData : public CustomJSONObject
 	{
 	public:
-		///
 		/// Type of drive train.
-		///
 		enum DrivetrainType : int
 		{
 			TANK = 1, ///< Tank
@@ -68,9 +64,7 @@ namespace BXDJ
 		static std::string toString(DrivetrainType); ///< \return The name of the drivetrain.
 
 	private:
-		///
 		/// Constants used for communicating joint motion type
-		///
 		enum JointMotionType : int
 		{
 			ANGULAR = 1, ///< Joint is allowed to have a wheel.
@@ -79,9 +73,7 @@ namespace BXDJ
 			NEITHER = 0 ///< Joint cannot have wheel or pneumatics.
 		};
 
-		///
 		/// Contains the information needed to identify a Fusion joint, as well as any driver or sensors on the associated Joint.
-		///
 		struct JointConfig
 		{
 			std::string name; ///< The name of the Fusion joint.

@@ -6,9 +6,7 @@
 
 namespace BXDJ
 {
-	///
 	/// Stores pneumatic information about a Driver.
-	///
 	class Pneumatic : public XmlWritable, public CustomJSONObject
 	{
 	public:

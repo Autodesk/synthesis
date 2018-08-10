@@ -4,9 +4,7 @@
 
 namespace BXDA
 {
-	///
 	/// A point with a normal vector located in Fusion space.
-	///
 	class Vertex
 	{
 	public:

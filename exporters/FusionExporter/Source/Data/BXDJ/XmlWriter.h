@@ -9,9 +9,7 @@ namespace BXDJ
 {
 	class XmlWritable;
 
-	///
 	/// Writes XmlWritables and other data to an XML file
-	///
 	class XmlWriter
 	{
 	public:
@@ -85,9 +83,7 @@ namespace BXDJ
 
 	};
 
-	///
 	/// An object that can be fed into an XmlWriter.
-	///
 	class XmlWritable
 	{
 		friend XmlWriter;

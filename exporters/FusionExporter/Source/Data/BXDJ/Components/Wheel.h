@@ -8,9 +8,7 @@ namespace BXDJ
 {
 	class RotationalJoint;
 
-	///
 	/// Stores wheel information about a Driver.
-	///
 	class Wheel : public XmlWritable, public CustomJSONObject
 	{
 	public:
