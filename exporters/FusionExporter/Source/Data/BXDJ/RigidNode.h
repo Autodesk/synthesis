@@ -79,6 +79,8 @@ namespace BXDJ
 			std::map<core::Ptr<fusion::Occurrence>, core::Ptr<fusion::Occurrence>> children; ///< Map of all Fusion occurrences that are children of joints/rigidgroups to their parents.
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> parents; ///< Map of all Fusion occurrences that are parents of joints to their children.
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Occurrence>>> rigidgroups; ///< Map of all Fusion occurrences that are parents of rigidgroups to their children.
+
+			std::string toString() const; ///< \return A stringified version of the JointSummary.
 		};
 
 		Guid guid; ///< Globally Unique IDentifier: Used to identify this node in the BXDJ file.

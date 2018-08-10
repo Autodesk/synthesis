@@ -51,12 +51,18 @@ void EUI::highlightJoint(std::string jointID)
 
 	// Highlight the parts of the joint
 	UI->activeSelections()->clear();
-	UI->activeSelections()->add(BXDJ::Utility::lowerOccurrence(highlightedJoint));
+	UI->activeSelections()->add(highlightedJoint->occurrenceOne());
 
 	// Set camera view
 	Ptr<Camera> cam = app->activeViewport()->camera();
 
 	Ptr<JointGeometry> geo = highlightedJoint->geometryOrOriginOne();
+	if (geo == nullptr || geo->origin() == nullptr)
+		geo = highlightedJoint->geometryOrOriginTwo();
+
+	if (geo == nullptr || geo->origin() == nullptr)
+		return;
+
 	Ptr<Point3D> eyeLocation = Point3D::create(geo->origin()->x(), geo->origin()->y(), geo->origin()->z());
 	eyeLocation->translateBy(Vector3D::create(0, 100, 0));
 
