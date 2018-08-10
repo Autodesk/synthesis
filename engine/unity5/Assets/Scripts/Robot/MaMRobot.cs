@@ -26,6 +26,7 @@ namespace Synthesis.Robot
         /// If true, this robot has a manipulator.
         /// </summary>
         public bool RobotHasManipulator { get; set; }
+        
 
         private RigidNode_Base manipulatorNode;
 

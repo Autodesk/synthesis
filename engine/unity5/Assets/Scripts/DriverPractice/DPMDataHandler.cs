@@ -62,7 +62,7 @@ namespace Synthesis.DriverPractice
         }
         public static void Load(string filePath)
         {
-            if (File.Exists(PlayerPrefs.GetString("simSelectedRobot") + "\\" + "robot_data.xml"))
+            if (File.Exists(filePath + "\\" + "robot_data.xml"))
             {
 
                 file = XDocument.Load(filePath + "\\" + "robot_data.xml");

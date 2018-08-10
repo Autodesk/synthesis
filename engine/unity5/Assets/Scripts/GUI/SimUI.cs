@@ -294,7 +294,6 @@ namespace Synthesis.GUI
                 robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
                 sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
-                DPMDataHandler.Load();
                 State.ChangeRobot(directory, false);
 
             }
