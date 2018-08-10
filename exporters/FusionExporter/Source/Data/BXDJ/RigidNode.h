@@ -49,6 +49,8 @@ namespace BXDJ
 			std::map<core::Ptr<fusion::Occurrence>, core::Ptr<fusion::Occurrence>> children;
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> parents;
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Occurrence>>> rigidgroups;
+
+			std::string toString() const;
 		};
 
 		// Globally Unique Identifier

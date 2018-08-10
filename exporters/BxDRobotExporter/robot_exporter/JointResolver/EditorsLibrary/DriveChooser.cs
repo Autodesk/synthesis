@@ -132,13 +132,7 @@ public partial class DriveChooser : Form
             }
             {
                 ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-                if (elevatorMeta != null && (int)elevatorMeta.type < 7)
-                {
-                    cmbStages.SelectedIndex = (int)elevatorMeta.type;
-                } else
-                {
-                    cmbStages.SelectedIndex = 0;
-                }
+                
             }
             #endregion
         }
@@ -160,8 +154,7 @@ public partial class DriveChooser : Form
             cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
             cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
             chkBoxDriveWheel.Checked = false;
-
-            cmbStages.SelectedIndex = (int)ElevatorType.NOT_MULTI;
+            
         }
 
         PrepLayout();
@@ -202,8 +195,7 @@ public partial class DriveChooser : Form
             chkBoxDriveWheel.Checked != wheel.isDriveWheel))
             return true;
 
-        if (elevator != null &&
-            cmbStages.SelectedIndex != (int)elevator.type)
+        if (elevator != null)
             return true;
 
         //If going from "NOT A WHEEL" to a wheel
@@ -261,11 +253,8 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Clear();
                 chkBoxHasBrake.Show();
                 //tabsMeta.TabPages.Add(metaElevatorBrake);
-                tabsMeta.TabPages.Add(metaElevatorStages);
                 tabsMeta.TabPages.Add(metaGearing);
-
-                if(cmbStages.SelectedIndex == -1)
-                    cmbStages.SelectedIndex = 0;
+                
                 rbCAN.Show();
                 rbPWM.Show();
             }
@@ -369,7 +358,7 @@ public partial class DriveChooser : Form
                 #region ELEVATOR_SAVING
                 ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta()
                 {
-                    type = (ElevatorType)cmbStages.SelectedIndex
+                    type = ElevatorType.NOT_MULTI
                 };
                 joint.cDriver.AddInfo(elevatorDriver);
                 #endregion
