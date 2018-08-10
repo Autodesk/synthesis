@@ -7,54 +7,71 @@
 
 namespace BXDJ
 {
+	///
+	/// An object that applies force to a Joint.
+	///
 	class Driver : public XmlWritable, public CustomJSONObject
 	{
 	public:
+		///
+		/// Type of Driver.
+		///
 		enum Type : char
 		{
-			UNKNOWN = 0,
-			MOTOR = 1,
-			SERVO = 2,
-			WORM_SCREW = 3,
-			BUMPER_PNEUMATIC = 4,
-			RELAY_PNEUMATIC = 5,
-			DUAL_MOTOR = 6,
-			ELEVATOR = 7
+			UNKNOWN = 0, ///< Unknown driver type.
+			MOTOR = 1, ///< Standard rotational motor.
+			SERVO = 2, ///< Attempts to move joint to specific angle.
+			WORM_SCREW = 3, ///< Applies linear force to a joint.
+			BUMPER_PNEUMATIC = 4, ///< I don't actually know what this is.
+			RELAY_PNEUMATIC = 5, ///< Not quite sure.
+			DUAL_MOTOR = 6, ///< Two motors working in tandem.
+			ELEVATOR = 7 ///< It goes up.
 		};
 
-		Type type;
+		Type type; ///< The type of the Driver.
 
+		///
+		/// Signal for communicating with a Driver.
+		///
 		enum Signal : char
 		{
-			PWM = 1,
-			CAN = 2
+			PWM = 1, ///< Pulse Width Modulation
+			CAN = 2 ///< Cereal And Noodles
 		};
 
-		Signal portSignal;
+		Signal portSignal; ///< The signal used for controlling the Driver.
 		int portOne;
 		int portTwo;
 		float inputGear;
 		float outputGear;
 		
+		/// Copy constructor.
 		Driver(const Driver &);
-		Driver(Type type = UNKNOWN);
+
+		///
+		/// Constructs a driver with the given type.
+		/// \param type The type of Driver.
+		///
+		Driver(Type = UNKNOWN);
 
 		// Component Functions
-		void removeComponents();
-		void setComponent(Wheel);
-		void setComponent(Pneumatic);
-		std::unique_ptr<Wheel> getWheel();
-		std::unique_ptr<Pneumatic> getPneumatic();
+
+		void removeComponents(); ///< Removes all components from the Driver.
+		void setComponent(Wheel); ///< Applies a Wheel to the Driver.
+		void setComponent(Pneumatic); ///< Applies a Pneumatic to the Driver.
+
+		std::unique_ptr<Wheel> getWheel(); ///< Gets any wheel configuration from the Driver. If the Driver has no Wheel, returns nullptr.
+		std::unique_ptr<Pneumatic> getPneumatic(); ///< Gets any pneumatic configuration from the Driver. If the Driver has no Pneumatic, returns nullptr.
 
 		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
 		void loadJSONObject(const rapidjson::Value&);
 
 	private:
-		std::unique_ptr<Wheel> wheel;
-		std::unique_ptr<Pneumatic> pneumatic;
+		std::unique_ptr<Wheel> wheel; ///< Wheel attached to the Driver.
+		std::unique_ptr<Pneumatic> pneumatic; ///< Pneumatic attached to the Driver.
 
-		static std::string toString(Type);
-		static std::string toString(Signal);
+		static std::string toString(Type); ///< \return Name of the Driver Type.
+		static std::string toString(Signal); ///< \return Name of the Signal.
 
 		void write(XmlWriter &) const;
 
