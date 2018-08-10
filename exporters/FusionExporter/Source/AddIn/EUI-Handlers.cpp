@@ -1,6 +1,6 @@
 #include "EUI.h"
 
-using namespace Synthesis;
+using namespace SynthesisAddIn;
 
 // Workspace Activated Handler
 template<>

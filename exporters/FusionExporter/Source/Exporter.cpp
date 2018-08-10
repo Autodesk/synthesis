@@ -13,7 +13,7 @@
 #include "Data/BXDA/Triangle.h"
 #include "Data/BXDJ/RigidNode.h"
 
-using namespace Synthesis;
+using namespace SynthesisAddIn;
 
 std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 {

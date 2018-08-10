@@ -6,7 +6,7 @@
 using namespace adsk::core;
 using namespace adsk::fusion;
 
-namespace Synthesis
+namespace SynthesisAddIn
 {
 	class EUI;
 
