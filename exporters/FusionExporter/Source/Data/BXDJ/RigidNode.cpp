@@ -62,3 +62,22 @@ void RigidNode::write(XmlWriter & output) const
 		output.write(*joint->getChild());
 	}
 }
+
+std::string RigidNode::JointSummary::toString() const
+{
+	std::string output;
+
+	output += "CHILDREN:\n";
+	for (auto childParent : children)
+		output += childParent.first->fullPathName() + " <= " + childParent.second->fullPathName() + "\n";
+
+	output += "PARENTS:\n";
+	for (auto parentChildren : parents)
+		output += parentChildren.first->fullPathName() + " => " + std::to_string(parentChildren.second.size()) + "\n";
+
+	output += "RIGIDGROUPS:\n";
+	for (auto group : rigidgroups)
+		output += group.first->fullPathName() + " == " + std::to_string(group.second.size()) + "\n";
+
+	return output;
+}
