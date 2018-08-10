@@ -23,6 +23,7 @@ namespace Assets.Scripts.GUI
 
         GameObject helpMenu;
         GameObject overlay;
+        Text helpBodyText;
 
         public override void Start()
         {
@@ -34,6 +35,11 @@ namespace Assets.Scripts.GUI
 
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
+            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
+
+            Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            helpButton.onClick.RemoveAllListeners();
+            helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
         public void OnSelectRobotCodeButtonPressed()
@@ -54,6 +60,11 @@ namespace Assets.Scripts.GUI
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "\n\nStart Code: Select your code file" +
+                "\n\nDriver Station: Access the Synthesis FRC Driver Station to manipulate your robot" +
+                "\n\nStart Code/ Stop Code: Run or disable code";
+
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "EmulationToolbar";
             overlay.SetActive(true);
             tabs.transform.Translate(new Vector3(300, 0, 0));
