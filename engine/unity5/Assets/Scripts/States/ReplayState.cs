@@ -27,6 +27,7 @@ namespace Synthesis.States
         GameObject helpMenu;
         GameObject toolbar;
         GameObject overlay;
+        Text helpBodyText;
         #endregion
 
         private const float CircleRenderDistance = 10f;
@@ -294,6 +295,8 @@ namespace Synthesis.States
             Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             closeHelp.onClick.RemoveAllListeners();
             closeHelp.onClick.AddListener(CloseHelpMenu);
+
+            helpBodyText = Auxiliary.FindObject(helpMenu, "BodyText").GetComponent<Text>();
         }
 
         /// <summary>
@@ -737,6 +740,15 @@ namespace Synthesis.States
         {
             helpMenu.SetActive(true);
             overlay.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "Play Replay: Click the play button or press SPACE" +
+                "\n\nView Significant Collisions: Click markers on the replay slider to jump to collisions" +
+                "\n\nChange Collision Threshold: Click and drag slider to desired impact force" +
+                "\n\nSave Replay: Click SAVE REPLAY, enter replay name, and press SAVE" +
+                "\n\nRun Through Replay: Drag slider at the bottom of the replay" +
+                "\n\nExit Replay Mode: Press TAB, press ESC, or click EXIT" +
+                "\n\nEnter Replay Mode Shortcut: Press TAB";
+
             toolbar.transform.Translate(new Vector3(100, 0, 0));
             foreach (Transform t in toolbar.transform)
             {
