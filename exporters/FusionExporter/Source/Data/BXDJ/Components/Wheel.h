@@ -44,7 +44,7 @@ namespace BXDJ
 		///
 		/// Creates a wheel.
 		/// \param type The type of wheel.
-		/// \param frictionLvel The friction level of the wheel.
+		/// \param frictionLevel The friction level of the wheel.
 		/// \param isDriveWheel Whether or not the wheel is used in the drivetrain.
 		///
 		Wheel(Type = NORMAL, FrictionLevel = MEDIUM, bool = false);
