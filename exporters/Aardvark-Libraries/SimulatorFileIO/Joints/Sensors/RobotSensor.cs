@@ -58,7 +58,7 @@ public class RobotSensor : BinaryRWObject
             case SkeletalJointType.ROTATIONAL:
                 return new RobotSensorType[] {RobotSensorType.ENCODER/*, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT*/};
             case SkeletalJointType.LINEAR:
-                return new RobotSensorType[] {RobotSensorType.LIMIT };
+                return new RobotSensorType[] {RobotSensorType.ENCODER };
             case SkeletalJointType.CYLINDRICAL:
                 return new RobotSensorType[] {RobotSensorType.ENCODER/*, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT*/};
             case SkeletalJointType.PLANAR:
