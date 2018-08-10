@@ -7550,7 +7550,7 @@ GameObject:
   - component: {fileID: 150525502}
   - component: {fileID: 150525501}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: BodyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7571,8 +7571,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40.4235}
-  m_SizeDelta: {x: 160, y: -80.847}
+  m_AnchoredPosition: {x: 0, y: -35}
+  m_SizeDelta: {x: 160, y: -170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &150525501
 MonoBehaviour:
@@ -7606,12 +7606,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
+  m_Text: "Score Zones\r\nMove Goal: WASD keys or drag navigation arrows. Click and
+    drag a face of the navigation cube to move goal freely\r\n\r\nScale Goal: WASD
+    keys or drag arrows. Click and drag a face of the orientation cube to scale goal
+    freely\r\n\nSave: Press ENTER\r\n"
 --- !u!222 &150525502
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43192,7 +43190,7 @@ GameObject:
   - component: {fileID: 916130703}
   - component: {fileID: 916130702}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: BodyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43213,8 +43211,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40.4235}
-  m_SizeDelta: {x: 160, y: -80.847}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 160, y: -240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &916130702
 MonoBehaviour:
@@ -43248,12 +43246,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
+  m_Text: 
 --- !u!222 &916130703
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47366,7 +47359,7 @@ GameObject:
   - component: {fileID: 1004263323}
   - component: {fileID: 1004263322}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: BodyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47387,8 +47380,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40.4235}
-  m_SizeDelta: {x: 160, y: -80.847}
+  m_AnchoredPosition: {x: 0, y: -35}
+  m_SizeDelta: {x: 160, y: -170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1004263322
 MonoBehaviour:
@@ -47422,12 +47415,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
+  m_Text: 
 --- !u!222 &1004263323
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -63475,7 +63463,7 @@ GameObject:
   - component: {fileID: 1377299068}
   - component: {fileID: 1377299067}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: BodyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63496,8 +63484,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40.4235}
-  m_SizeDelta: {x: 160, y: -80.847}
+  m_AnchoredPosition: {x: 0, y: -35}
+  m_SizeDelta: {x: 160, y: -170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1377299067
 MonoBehaviour:
@@ -63531,12 +63519,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
+  m_Text: "Move Gamepiece: WASD keys or drag navigation arrows. Click and drag a face
+    of the navigation cube to move gamepiece freely\r\n\nSave: Press ENTER\r\n"
 --- !u!222 &1377299068
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -64951,7 +64935,7 @@ GameObject:
   - component: {fileID: 1414098184}
   - component: {fileID: 1414098183}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: BodyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64972,8 +64956,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40.4235}
-  m_SizeDelta: {x: 160, y: -80.847}
+  m_AnchoredPosition: {x: 0, y: -35}
+  m_SizeDelta: {x: 160, y: -170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1414098183
 MonoBehaviour:
@@ -65007,12 +64991,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
+  m_Text: 
 --- !u!222 &1414098184
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -72693,7 +72672,7 @@ GameObject:
   - component: {fileID: 1611259851}
   - component: {fileID: 1611259850}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: BodyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72714,8 +72693,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40.4235}
-  m_SizeDelta: {x: 160, y: -80.847}
+  m_AnchoredPosition: {x: -0.000011444, y: 0}
+  m_SizeDelta: {x: 160, y: -247.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1611259850
 MonoBehaviour:
@@ -72738,10 +72717,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ea86d21da3b1d76458b09d99e18b8e5c, type: 3}
-    m_FontSize: 14
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 0
     m_AlignByGeometry: 0
@@ -72749,12 +72728,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
+  m_Text: 
 --- !u!222 &1611259851
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -84490,7 +84464,7 @@ GameObject:
   - component: {fileID: 1867258102}
   - component: {fileID: 1867258101}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: BodyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84511,8 +84485,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40.4235}
-  m_SizeDelta: {x: 160, y: -80.847}
+  m_AnchoredPosition: {x: 0, y: -49}
+  m_SizeDelta: {x: 160, y: -170.05}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1867258101
 MonoBehaviour:
@@ -84546,12 +84520,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
+  m_Text: "Define Intake/Release: Select the node that will release the gamepiece
+    by clicking on the mechanism on the robot model.\r\n\nView Selection: Use the
+    HIGHLIGHT button to view the component that is already defined as the release.\n\nSave:
+    Press ENTER\r\n"
 --- !u!222 &1867258102
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -91861,7 +91833,7 @@ GameObject:
   - component: {fileID: 2034670807}
   - component: {fileID: 2034670806}
   m_Layer: 0
-  m_Name: Text (1)
+  m_Name: BodyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91874,7 +91846,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2034670804}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.000000029808}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2081251384}
@@ -91882,8 +91854,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40.4235}
-  m_SizeDelta: {x: 160, y: -80.847}
+  m_AnchoredPosition: {x: 0.000000029808, y: -32}
+  m_SizeDelta: {x: 250, y: -140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2034670806
 MonoBehaviour:
@@ -91906,10 +91878,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ea86d21da3b1d76458b09d99e18b8e5c, type: 3}
-    m_FontSize: 14
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 0
     m_AlignByGeometry: 0
@@ -91917,12 +91889,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
+  m_Text: 
 --- !u!222 &2034670807
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -94401,7 +94368,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2081251383}
   m_LocalRotation: {x: -0.000000007450581, y: -0, z: 0.000000007450581, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0000066757}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2035689954}
@@ -94413,8 +94380,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100.00002, y: 0}
-  m_SizeDelta: {x: 200, y: 0}
+  m_AnchoredPosition: {x: 150, y: 0.000061035156}
+  m_SizeDelta: {x: 300, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2081251385
 MonoBehaviour:

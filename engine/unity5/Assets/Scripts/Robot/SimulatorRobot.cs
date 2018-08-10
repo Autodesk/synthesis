@@ -56,6 +56,7 @@ namespace Synthesis.Robot
         GameObject helpMenu;
         GameObject toolbar;
         GameObject overlay;
+        Text helpBodyText;
         #endregion
 
 
@@ -293,6 +294,7 @@ namespace Synthesis.Robot
             if(helpMenu == null) helpMenu = Auxiliary.FindObject(resetCanvas, "Help");
             if(toolbar == null) toolbar = Auxiliary.FindObject(resetCanvas, "ResetStateToolbar");
             if(overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
+            if (helpBodyText == null) helpBodyText = Auxiliary.FindObject(resetCanvas, "BodyText").GetComponent<Text>();
             #endregion
 
             Button resetButton = Auxiliary.FindObject(resetCanvas, "ResetButton").GetComponent<Button>();
@@ -511,6 +513,12 @@ namespace Synthesis.Robot
         {
             helpMenu.SetActive(true);
             overlay.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "Move Robot: WASD keys or drag navigation arrows. " +
+                "\nClick and drag a face of the navigation cube to move robot freely" +
+                "\n\nRotate Robot: Hold RIGHT MOUSE BUTTON, and use A and D keys to rotate" +
+                "\n\nSave: Press ENTER";
+
             toolbar.transform.Translate(new Vector3(100, 0, 0));
             foreach (Transform t in toolbar.transform)
             {
