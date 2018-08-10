@@ -7606,7 +7606,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: "Score Zones\r\nMove Goal: WASD keys or drag navigation arrows. Click and
+    drag a face of the navigation cube to move goal freely\r\n\r\nScale Goal: WASD
+    keys or drag arrows. Click and drag a face of the orientation cube to scale goal
+    freely\r\n\nSave: Press ENTER\r\n"
 --- !u!222 &150525502
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -63516,7 +63519,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: "Move Gamepiece: WASD keys or drag navigation arrows. Click and drag a face
+    of the navigation cube to move gamepiece freely\r\n\nSave: Press ENTER\r\n"
 --- !u!222 &1377299068
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -84516,7 +84520,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: "Define Intake/Release: Select the node that will release the gamepiece
+    by clicking on the mechanism on the robot model.\r\n\nView Selection: Use the
+    HIGHLIGHT button to view the component that is already defined as the release.\n\nSave:
+    Press ENTER\r\n"
 --- !u!222 &1867258102
 CanvasRenderer:
   m_ObjectHideFlags: 0
