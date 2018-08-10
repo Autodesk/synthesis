@@ -10,7 +10,6 @@
 namespace hel{
 
 /**
-     * \struct AnalogInputs
      * \brief Data model for analog inputs.
      * Holds all internal data needed to model analog inputs on the RoboRIO.
      */
@@ -38,11 +37,25 @@ namespace hel{
 
         static constexpr int32_t NUM_ANALOG_INPUTS = NUM_ANALOG_INPUTS_HDRS + NUM_ANALOG_INPUTS_MXP; //hal::kNumAnalogInputs
 
+        /**
+         * \var static constexpr uint32_t LSB_WEIGHT
+         * \brief The smallest increment the ADC can convert
+         *
+         * If 1E9 is used as the LSB weight, then the analog value and voltage can used interchangeably
+         */
+
         static constexpr uint32_t LSB_WEIGHT = 1E9;
+
+        /**
+         * \var static constexpr int32_t OFFSET
+         * \brief The offset of the result of the ADC and the actual voltage
+         *
+         * If 0 is used as the offset, then the analog value and voltage can be used interchangeably
+         */
+
         static constexpr int32_t OFFSET = 0;
 
         /**
-         * \struct AnalogInput
          * \brief Data model for individual analog input
          * Holds all internal data for a single analog input.
          */
@@ -65,9 +78,8 @@ namespace hel{
             uint8_t scan_list;
 
             /**
-             * \var int32_t value
+             * \var std::vector<int32_t> values
              * \brief The history of analog input values
-             * The most recent value is the last element.
              */
 
             std::vector<int32_t> values;
@@ -77,37 +89,37 @@ namespace hel{
         };
 
         /**
-         * \fn void setConfig(tConfig value)
+         * \fn void setConfig(tConfig value)noexcept
          * \brief Sets analog input configuration.
          * Sets current analog input system to \b value.
-         * \param value a tConfig object containing new configuration data.
+         * \param value A tConfig object containing new configuration data.
          */
 
         void setConfig(nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig value)noexcept;
 
         /**
-         * \fn tConfig getConfig()
+         * \fn tConfig getConfig()noexcept
          * \brief Get current analog input configuration.
          * Gets current analog system configuration settings.
-         * \return tConfig representing current analog system configuration.
+         * \return A tConfig object representing current analog system configuration.
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig getConfig()noexcept;
 
         /**
-         * \fn void setReadSelect(tReadSelect value)
+         * \fn void setReadSelect(tReadSelect value)noexcept
          * \brief Sets analog input read select.
          * Sets current analog input system to \b value. This specifies which analog input to read.
-         * \param value a tReadSelect object containing addressing information for the desired analog input.
+         * \param value A tReadSelect object containing addressing information for the desired analog input.
          */
 
         void setReadSelect(nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect)noexcept;
 
         /**
-         * \fn tConfig getReadSelect()
+         * \fn tConfig getReadSelect()noexcept
          * \brief Get current analog input read select.
          * Gets current analog system read select. This specifies which analog input to read.
-         * \return tReadSelect representing current analog system read selection.
+         * \return A tReadSelect object representing current analog system read selection.
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect getReadSelect()noexcept;
@@ -115,8 +127,8 @@ namespace hel{
         /**
          * \fn void setOversampleBits(uint8_t channel, uint8_t value)
          * \brief Sets number of samples to keep beyond those needed for averaging.
-         * \param channel a byte representing the hardware channel of the desired analog input.
-         * \param value a byte representing the number of samples to collect after that need for the average.
+         * \param channel A byte representing the hardware channel of the desired analog input.
+         * \param value A byte representing the number of samples to collect after that need for the average.
          */
 
         void setOversampleBits(uint8_t, uint8_t);
@@ -124,8 +136,8 @@ namespace hel{
         /**
          * \fn void setOversampleBits(uint8_t channel, uint8_t value)
          * \brief Sets number of sample to average to 2**value.
-         * \param channel a byte representing the hardware channel of the desired analog input.
-         * \param value a byte representing the number of samples to use in averaging.
+         * \param channel A byte representing the hardware channel of the desired analog input.
+         * \param value A byte representing the number of samples to use in averaging.
          */
 
         void setAverageBits(uint8_t, uint8_t);
@@ -134,16 +146,16 @@ namespace hel{
          * \fn void setOversampleBits(uint8_t channel, uint8_t value)
          * \brief Sets analog input scan lsit.
          * Sets a given analog inputs scan list to \b value.
-         * \param channel a byte representing the hardware channel of the desired analog input.
-         * \param value a byte representing the scan list.
+         * \param channel A byte representing the hardware channel of the desired analog input.
+         * \param value A byte representing the scan list.
          */
         void setScanList(uint8_t, uint8_t);
 
         /**
          * \fn void setValue(uint8_t channel, std::vector<int32_t> values)
          * \brief Sets the history of analog input values.
-         * \param channel a byte representing the hardware channel of the desired analog input.
-         * \param value a vector history of 32-bit integers representing the value of the input.
+         * \param channel A byte representing the hardware channel of the desired analog input.
+         * \param value A vector history of 32-bit integers representing the value of the input.
          */
 
         void setValues(uint8_t, std::vector<int32_t>);
@@ -152,8 +164,8 @@ namespace hel{
          * \fn uint8_t getOversampleBits(uint8_t channel)
          * \brief Get current analog input configuration.
          * Gets current analog system configuration settings.
-         * \param channel a byte representing the hardware channel of the desired analog input.
-         * \return a byte representing the current bits to oversample.
+         * \param channel A byte representing the hardware channel of the desired analog input.
+         * \return A byte representing the current bits to oversample.
          */
 
         uint8_t getOversampleBits(uint8_t);
@@ -162,8 +174,8 @@ namespace hel{
          * \fn uint8_t getAverageBits(uint8_t channel)
          * \brief Get current analog input configuration.
          * Gets current analog system configuration settings.
-         * \param channel a byte representing the hardware channel of the desired analog input.
-         * \return a byte representing the number of bits per sample for analog input \b channel.
+         * \param channel A byte representing the hardware channel of the desired analog input.
+         * \return A byte representing the number of bits per sample for analog input \b channel.
          */
 
         uint8_t getAverageBits(uint8_t);
@@ -172,22 +184,33 @@ namespace hel{
          * \fn uint8_t getScanList(uint8_t channel)
          * \brief Get current analog input configuration.
          * Gets current analog system configuration settings.
-         * \param channel a byte representing the hardware channel of the desired analog input.
-         * \return a byte representing the current scan list for analog input \b channel.
+         * \param channel A byte representing the hardware channel of the desired analog input.
+         * \return A byte representing the current scan list for analog input \b channel.
          */
 
         uint8_t getScanList(uint8_t);
 
         /**
-         * \fn uint8_t getValue(uint8_t channel)
+         * \fn std::vector<uint8_t> getValues(uint8_t channel)
          * \brief Get the recent history of analog input values.
-         * \param channel a byte representing the hardware channel of the desired analog input.
-         * \return a vector of 32-bit integer representing the recent history of the analog input value for analog input \b channel.
+         * \param channel A byte representing the hardware channel of the desired analog input.
+         * \return A vector of 32-bit integer representing the recent history of the analog input value for analog input \b channel.
          */
 
         std::vector<int32_t> getValues(uint8_t);
 
+        /**
+         * Constructor for AnalogInputs
+         */
+
         AnalogInputs()noexcept;
+
+        /**
+         * Constructor for AnalogInputs
+         *
+         * \param source An AnalogInputs object to copy
+         */
+
         AnalogInputs(const AnalogInputs&)noexcept;
 
     private:
@@ -195,21 +218,20 @@ namespace hel{
         /**
          * \var BoundsCheckedArray<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs
          * \brief Array of all analog inputs.
-         * A holder array for all analog input objects.
          */
 
         BoundsCheckedArray<AnalogInput, NUM_ANALOG_INPUTS> analog_inputs;
 
         /**
          * \var tConfig config;
-         * \brief current analog input configuration.
+         * \brief Current analog input configuration.
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig config;
 
         /**
          * \var tReadSelect read_select;
-         * \brief current analog input read select configuration.
+         * \brief Current analog input read select configuration.
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tAI::tReadSelect read_select;

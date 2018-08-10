@@ -8,7 +8,6 @@
 namespace hel{
 
     /**
-     * \struct RobotMode
      * \brief Represents match phase and robot enabled state
      */
 

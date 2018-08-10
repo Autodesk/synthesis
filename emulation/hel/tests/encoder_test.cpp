@@ -9,8 +9,9 @@ using namespace nRoboRIO_FPGANamespace;
 TEST(EncoderTest, Increment){
     auto instance = hel::RoboRIOManager::getInstance();
     {
-        frc::Encoder encoder = {0,11,false,frc::Encoder::EncodingType::k4X};
-        instance.first->encoder_managers[0] = hel::EncoderManager{0,hel::EncoderManager::PortType::DI,11,hel::EncoderManager::PortType::DI};
+        std::string in = "{\"a_channel\":2,\"a_type\":\"DI\",\"b_channel\":3,\"b_type\":\"DI\",\"ticks\":-300}";
+        instance.first->encoder_managers[0] = hel::EncoderManager::deserialize(in);//hel::EncoderManager{2,hel::EncoderManager::PortType::DI,3,hel::EncoderManager::PortType::DI};
+        frc::Encoder encoder = {2,3};
         for(unsigned i = 0; i < 100; i++){
             instance.first->encoder_managers[0].get().setTicks(i);
             instance.first->encoder_managers[0].get().update();

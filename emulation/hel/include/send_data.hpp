@@ -15,8 +15,6 @@
 
 namespace hel{
     struct SendData{
-
-
     private:
         std::string serialized_data;
         bool new_data;

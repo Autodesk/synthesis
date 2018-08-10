@@ -7,14 +7,25 @@
 namespace hel{
 
     /**
-     * \struct FPGAEncoder
      * \brief Data model for incremental encoder input data
      * Holds all the data for encoder inputs
      */
 
     struct FPGAEncoder{
+
+        /**
+         * \var static constexpr const int32_t NUM_ENCODERS
+         * \brief The number of FPGA encoders HAL supports
+         */
+
         static constexpr const int32_t NUM_ENCODERS = 8; //hal::kNumFPGAEncoders
+
     private:
+        /**
+         * \var nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput zeroed_output
+         * \brief The counter's count at the point it was reset
+         */
+
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput zeroed_output;
 
         /**
@@ -60,17 +71,97 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig timer_config;
 
     public:
+        /**
+         * \fn void reset()noexcept
+         * \brief Reset the counter
+         *
+         * Resets the zero point of the count
+         */
+
         void reset()noexcept;
+        /**
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getCurrentOutput()const noexcept
+         * \brief Get the current count of the encoder incuding resets
+         * \return The current encoder count
+         */
+
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getCurrentOutput()const noexcept;
+
+        /**
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getRawOutput()const noexcept
+         * \brief Get the raw count of the encoder ignoring resets
+         * \return The raw count of the encoder
+         */
+
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getRawOutput()const noexcept;
+
+        /**
+         * \fn void setRawOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput output)noexcept
+         * \brief Set the raw count of the encoder
+         * \param output The count to set the encoder to
+         */
+
         void setRawOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput)noexcept;
+
+        /**
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const noexcept
+         * \brief Get the configuration of the encoder
+         * \return The configuration of the encoder
+         */
+
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const noexcept;
+
+        /**
+         * \fn void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig config)noexcept
+         * \brief Set the encoders' configuration
+         * \param config The configuration to use
+         */
+
         void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig)noexcept;
+
+        /**
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const noexcept
+         * \brief Get the sample timing of the encoder
+         * \return The encoder sample timing
+         */
+
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const noexcept;
+
+        /**
+         * \fn void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput timer_output)noexcept
+         * \brief Set the encoder's sample timing
+         * \param timer_output The sample timing to use
+         */
+
         void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput)noexcept;
+
+        /**
+         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const noexcept
+         * \brief Get the encoder's sample timing configuration
+         * \return The encoder's sample timing configuration
+         */
+
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const noexcept;
+
+        /**
+         * \fn void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig timer_config)noexcept
+         * \brief Set the encoder's sample timing configuration
+         * \param timer_config The sample timing configuration to use
+         */
+
         void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig)noexcept;
+
+        /**
+         * Constructor for FPGAEncoder
+         */
+
         FPGAEncoder()noexcept;
+
+        /**
+         * Constructor for FPGAEncoder
+         * \param source An FPGAEncoder object to copy
+         */
+
         FPGAEncoder(const FPGAEncoder&)noexcept;
     };
 }

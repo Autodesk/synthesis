@@ -7,8 +7,9 @@
 namespace hel{
 
     /**
-     * \struct BoundsCheckedArray
-     * \brief Array type with bounds checking and helpful operators
+     * \brief Array wrapper with bounds checking and helpful operators
+     * \tparam T The type the BoundsCheckedArray stores
+     * \tparam LEN The length of the BoundsCheckedArray
      */
     template<typename T, std::size_t LEN>
     struct BoundsCheckedArray{
@@ -28,7 +29,7 @@ namespace hel{
         /**
          * \fn constexpr const T& at(std::size_t pos)const
          * \brief Returns a reference to the element at pos with bounds checking
-         * \param The position of the element to return
+         * \param pos The position of the element to return
          * \return A reference to the requested element
          */
 
@@ -42,7 +43,7 @@ namespace hel{
         /**
          * \fn constexpr T& at(std::size_t pos)
          * \brief Returns a reference to the element at pos with bounds checking
-         * \param The position of the element to return
+         * \param pos The position of the element to return
          * \return A reference to the requested element
          */
 
@@ -56,7 +57,7 @@ namespace hel{
         /**
          * \fn constexpr const T& operator[](std::size_t pos)const
          * \brief Returns a reference to the element at pos with bounds checking
-         * \param The position of the element to return
+         * \param pos The position of the element to return
          * \return A reference to the requested element
          */
 
@@ -70,7 +71,7 @@ namespace hel{
         /**
          * \fn constexpr T& operator[](std::size_t pos)
          * \brief Returns a reference to the element at pos with bounds checking
-         * \param The position of the element to return
+         * \param pos The position of the element to return
          * \return A reference to the requested element
          */
 
@@ -134,7 +135,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const std::array<T, LEN>& toArray()const
+         * \fn constexpr const std::array<T, LEN>& toArray()const noexcept
          * \brief Fetches the internal std::array of the BoundsCheckedArray
          * \return The internal std::array of this BoundsCheckedArray
          */
@@ -144,17 +145,17 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr std::array<T, LEN>& toArray()
+         * \fn constexpr std::array<T, LEN>& toArray()noexcept
          * \brief Fetches the internal std::array of the BoundsCheckedArray
          * \return The internal std::array of this BoundsCheckedArray
          */
 
-        constexpr std::array<T, LEN>*& toArray()noexcept{
+        constexpr std::array<T, LEN>& toArray()noexcept{
             return internal;
         }
 
         /**
-         * \fn constexpr const T* data()
+         * \fn constexpr const T* data()const noexcept
          * \brief Fetches the underlying basic array
          * \return A pointer to the underlying basic array
          */
@@ -167,7 +168,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const T* data()
+         * \fn constexpr const T* data()noexcept
          * \brief Fetches the underlying basic array
          * \return A pointer to the underlying basic array
          */
@@ -180,7 +181,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr std::size_t size()const
+         * \fn constexpr std::size_t size()const noexcept
          * \brief Fetches the number of elements in the array
          * \return The number of elements in the array
          */
@@ -190,7 +191,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr bool empty()const
+         * \fn constexpr bool empty()const noexcept
          * \brief Checks if the container has no elements
          * \return true if the array is empty, false otherwise
          */
@@ -200,7 +201,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr std::size_t max_size()const
+         * \fn constexpr std::size_t max_size()const noexcept
          * \brief Returns the maximum number of elements the array can hold
          * \return Maximum number of elements
          */
@@ -210,7 +211,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr typename std::array<T, LEN>::iterator begin()
+         * \fn constexpr typename std::array<T, LEN>::iterator begin()noexcept
          * \brief Returns an iterator to the first element in the container
          * \return Iterator to the first element
          */
@@ -220,7 +221,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const typename std::array<T, LEN>::const_iterator begin()const
+         * \fn constexpr const typename std::array<T, LEN>::const_iterator begin()const noexcept
          * \brief Returns an iterator to the first element in the container
          * \return Iterator to the first element
          */
@@ -230,7 +231,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const typename std::array<T, LEN>::const_iterator begin()const
+         * \fn constexpr typename std::array<T, LEN>::const_iterator begin()const noexcept
          * \brief Returns an iterator to the first element in the container
          * \return Iterator to the first element
          */
@@ -240,7 +241,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr typename std::array<T, LEN>::iterator end()
+         * \fn constexpr typename std::array<T, LEN>::iterator end()noexcept
          * \brief Returns an iterator to the last element in the container
          * \return Iterator to the last element
          */
@@ -250,7 +251,7 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr typename std::array<T, LEN>::const_iterator end()const
+         * \fn constexpr typename std::array<T, LEN>::const_iterator end()const noexcept
          * \brief Returns an iterator to the last element in the container
          * \return Iterator to the last element
          */
@@ -259,7 +260,7 @@ namespace hel{
             return internal.end();
         }
         /**
-         * \fn constexpr typename std::array<T, LEN>::const_iterator cend()const
+         * \fn constexpr typename std::array<T, LEN>::const_iterator cend()const noexcept
          * \brief Returns an iterator to the last element in the container
          * \return Iterator to the last element
          */
@@ -268,9 +269,21 @@ namespace hel{
             return internal.cend();
         }
 
+        /**
+         * Constructor for a BoundsCheckedArray
+         *
+         * \param default_data A default value to fill the array with
+         */
+
         BoundsCheckedArray(const T& default_data)noexcept{
             internal.fill(default_data);
         }
+
+        /**
+         * Constructor for a BoundsCheckedArray
+         *
+         * \param iterable An iterable object to copy
+         */
 
         template<typename S, typename = std::enable_if<std::is_same<typename S::value_type,T>::value && !std::is_same<S,std::initializer_list<T>>::value>>
         BoundsCheckedArray(const S& iterable)noexcept{
@@ -281,7 +294,13 @@ namespace hel{
 
         }
 
-        template<typename S, typename = std::enable_if<!std::is_same<S,T>::value>> //TODO necessary?
+        /**
+         * Constructor for a BoundsCheckedArray
+         *
+         * \param list An initializer list to copy
+         */
+
+        template<typename S, typename = std::enable_if<!std::is_same<S,T>::value>> //TODO template necessary?
         BoundsCheckedArray(std::initializer_list<T> list){
             if(list.size() != LEN){
                 throw std::out_of_range("Exception: assignement to array of size " + std::to_string(LEN) + " to brace-enclosed initializer list of different size " + std::to_string(list.size()));
@@ -289,9 +308,11 @@ namespace hel{
             std::copy(list.begin(), list.end(), internal.begin());
         }
 
+        /**
+         * Deconstructor for a BoundsCheckedArray
+         */
 
         ~BoundsCheckedArray() = default;
-
 
         template<typename S, std::size_t L>
         friend bool operator==(const BoundsCheckedArray<S, L>&, const BoundsCheckedArray<S, L>&);
@@ -300,10 +321,26 @@ namespace hel{
         friend bool operator!=(const BoundsCheckedArray<S, L>&, const BoundsCheckedArray<S, L>&);
     };
 
+    /**
+     * \fn bool operator==(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b)
+     * \brief Equality comparision operator for two BoundsCheckedArray objects
+     * \param a The first object to compare against
+     * \param b The second object to compare against
+     * \return True if the two BoundsCheckedArray objects are equal
+     */
+
     template<typename T, std::size_t LEN>
     bool operator==(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b){
         return a.internal == b.internal;
     }
+
+    /**
+     * \fn bool operator!=(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b)
+     * \brief Inqeuality comparision operator for two BoundsCheckedArray objects
+     * \param a The first object to compare against
+     * \param b The second object to compare against
+     * \return True if the two BoundsCheckedArray objects are not equal
+     */
 
     template<typename T, std::size_t LEN>
     bool operator!=(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b){

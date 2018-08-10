@@ -184,8 +184,10 @@ namespace hel{
     }
 
     void SendData::enable(bool e){
-        new_data = true;
-        enabled = e;
+        if(e != enabled){
+            new_data = true;
+            enabled = e;
+        }
     }
 }
 

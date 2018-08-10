@@ -8,7 +8,6 @@
 
 namespace hel{
     /**
-     * \struct RelaySystem
      * \brief Data model for Relay system.
      * Holds all internal data to model relay outputs.
      */

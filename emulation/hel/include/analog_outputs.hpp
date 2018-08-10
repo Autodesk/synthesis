@@ -9,12 +9,17 @@
 namespace hel{
 
     /**
-     * \struct AnalogOutputs
      * \brief Data model for analog outputs.
      * Holds all internal data needed to model analog outputs on the RoboRIO.
      */
     struct AnalogOutputs{
-		static constexpr int32_t NUM_ANALOG_OUTPUTS = 2; //nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters>
+
+        /**
+         * \var static constexpr int32_t NUM_ANALOG_OUTPUTS
+         * \brief The number of analog outputs on the RoboRIO (positioned on the MXP)
+         */
+
+        static constexpr int32_t NUM_ANALOG_OUTPUTS = 2; //nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters
 
     private:
         /**
@@ -27,22 +32,33 @@ namespace hel{
     public:
         /**
          * \fn uint16_t getMXPOutput(uint8_t index)const
-         * \brief Get MXP output.
-         * Returns the MXP output given
-         * \param index an byte representing the index of the analog output.
-         * \return an unsigned 16-bit integer representing the current analog output.
+         * \brief Get the MXP output at the given port
+         * \param index A byte representing the index of the analog output.
+         * \return An unsigned, 16-bit integer representing the current analog output.
          */
+
         uint16_t getMXPOutput(uint8_t)const;
+
         /**
          * \n void setMXPOutput(uint8_t index, uint16_t value)
-         * \brief Set MXP output.
-         * Set the MXP value of analog output with a given index to a given value
-         * \param index an byte representing the index of the analog output.
-         * \param value an unsigned 16-bit integer representing the value of the analog output.
+         * \brief Set the MXP value of analog output with a given index to a given value
+         * \param index A byte representing the index of the analog output.
+         * \param value An unsigned 16-bit integer representing the value of the analog output.
          */
         void setMXPOutput(uint8_t,uint16_t);
 
+        /**
+         * Constructor for AnalogOutputs
+         */
+
         AnalogOutputs()noexcept;
+
+        /**
+         * Constructor for AnalogOutputs
+         *
+         * \param source An AnalogOutputs object to copy
+         */
+
         AnalogOutputs(const AnalogOutputs&)noexcept;
     };
 }

@@ -7,7 +7,6 @@
 namespace hel{
 
     /**
-     * \struct Accelerometer
      * \brief Data model for on-board RoboRIO accelerometer
      */
 

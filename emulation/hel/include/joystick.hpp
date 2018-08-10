@@ -8,7 +8,6 @@
 namespace hel{
 
     /**
-     * \struct Joystick
      * \brief A data container for joystick data
      * Holds data surrounding joystick inputs and outputs and a description
      */
