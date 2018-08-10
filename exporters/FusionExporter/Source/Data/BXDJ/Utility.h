@@ -4,6 +4,9 @@
 
 namespace BXDJ
 {
+	///
+	/// Contains basic Utilities for joints.
+	///
 	namespace Utility
 	{
 		///
@@ -11,13 +14,13 @@ namespace BXDJ
 		/// \param occurrence Occurrence to calculate the level of.
 		/// \return The depth of the occurrence in the hierarchy. The root component is 0. nullptr will return -1.
 		///
-		int levelOfOccurrence(adsk::core::Ptr<adsk::fusion::Occurrence>);
+		int levelOfOccurrence(adsk::core::Ptr<adsk::fusion::Occurrence> occurrence);
 
 		///
 		/// Generates a unique identifier for a Fusion joint.
 		/// \param joint Joint to create identifier for.
 		/// \return Unique ID for the joint.
 		///
-		std::string getUniqueJointID(adsk::core::Ptr<adsk::fusion::Joint>);
+		std::string getUniqueJointID(adsk::core::Ptr<adsk::fusion::Joint> joint);
 	}
 }
