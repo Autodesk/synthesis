@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core/CoreAll.h>
+#include <thread>
 
 using namespace adsk::core;
 using namespace adsk::fusion;
@@ -29,15 +30,6 @@ namespace Synthesis
 	};
 
 	// Button Events
-	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
-	{
-	public:
-		ShowPaletteCommandCreatedHandler(EUI * eui) : eui(eui) {}
-		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
-	private:
-		EUI * eui;
-	};
-
 	class ShowPaletteCommandExecuteHandler : public CommandEventHandler
 	{
 	public:
@@ -47,24 +39,35 @@ namespace Synthesis
 		EUI * eui;
 	};
 
+	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
+	{
+	public:
+		ShowPaletteCommandCreatedHandler(EUI * eui) : eui(eui) {}
+		~ShowPaletteCommandCreatedHandler();
+		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+	private:
+		EUI * eui;
+
+		ShowPaletteCommandExecuteHandler * showPaletteCommandExecuteHandler = nullptr;
+		Ptr<Command> command;
+	};
+
 	// Palette Events
 	class ReceiveFormDataHandler : public HTMLEventHandler
 	{
 	public:
-		ReceiveFormDataHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) { }
+		ReceiveFormDataHandler(EUI * eui) : eui(eui) { }
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 	private:
-		const char ASCII_OFFSET = -32;
-		Ptr<Application> app;
 		EUI * eui;
 	};
 
-	class CloseFormEventHandler : public UserInterfaceGeneralEventHandler
+	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:
-		CloseFormEventHandler(Ptr<Application> app) : app(app) {}
+		CloseExporterFormEventHandler(EUI * eui) : eui(eui) {}
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
 	private:
-		Ptr<Application> app;
+		EUI * eui;
 	};
 }

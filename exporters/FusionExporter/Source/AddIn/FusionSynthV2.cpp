@@ -7,7 +7,7 @@ using namespace adsk::core;
 Ptr<Application> app;
 Ptr<UserInterface> UI;
 
-Synthesis::EUI * EUI;
+Synthesis::EUI * EUI = nullptr;
 
 extern "C" XI_EXPORT bool run(const char* context)
 {

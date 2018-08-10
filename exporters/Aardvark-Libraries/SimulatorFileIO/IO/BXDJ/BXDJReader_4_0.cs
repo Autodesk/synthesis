@@ -20,7 +20,6 @@ public partial class BXDJSkeleton
         <xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
         
         <!-- definition of simple elements -->
-        <xs:element name='DriveTrainTypeNumber' type='xs:integer'/>
         <xs:element name='ParentID' type='xs:integer'/>
         <xs:element name='ModelFileName' type='xs:string'/>
         <xs:element name='ModelID' type='xs:string'/>
@@ -48,14 +47,14 @@ public partial class BXDJSkeleton
         <xs:element name='SideExtremeSlip' type='xs:decimal'/>
         <xs:element name='SideExtremeValue' type='xs:decimal'/>
         <xs:element name='IsDriveWheel' type='xs:boolean'/>
-        <xs:element name='PortA' type='xs:integer'/>
-        <xs:element name='PortB' type='xs:integer'/>
+        <xs:element name='Port1' type='xs:integer'/>
+        <xs:element name='Port2' type='xs:integer'/>
         <xs:element name='InputGear' type='xs:double'/>
         <xs:element name='OutputGear' type='xs:double'/>
         <xs:element name='LowerLimit' type='xs:float'/>
         <xs:element name='UpperLimit' type='xs:float'/>
-        <xs:element name='SensorPortNumber1' type='xs:integer'/>
-        <xs:element name='SensorPortNumber2' type='xs:integer'/>
+        <xs:element name='SensorPortNumberA' type='xs:integer'/>
+        <xs:element name='SensorPortNumberB' type='xs:integer'/>
         <xs:element name='SensorConversionFactor' type='xs:double'/>
         <xs:element name='ElevatorType'>
             <xs:simpleType>
@@ -78,6 +77,18 @@ public partial class BXDJSkeleton
                     <xs:enumeration value='RELAY_PNEUMATIC'/>
                     <xs:enumeration value='DUAL_MOTOR'/>
                     <xs:enumeration value='ELEVATOR'/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:element>
+        <xs:element name='DriveTrainType'>
+            <xs:simpleType>
+                <xs:restriction base='xs:string'>
+                    <xs:enumeration value='TANK'/>
+                    <xs:enumeration value='HDRIVE'/>
+                    <xs:enumeration value='MECANUM'/>
+                    <xs:enumeration value='SWERVE'/>
+                    <xs:enumeration value='CUSTOM'/>
+                    <xs:enumeration value='NONE'/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
@@ -115,7 +126,7 @@ public partial class BXDJSkeleton
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
-        <xs:element name='SensorSignalType1'>
+        <xs:element name='SensorSignalTypeA'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
                     <xs:enumeration value='DIO'/>
@@ -129,7 +140,7 @@ public partial class BXDJSkeleton
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
-        <xs:element name='SensorSignalType2'>
+        <xs:element name='SensorSignalTypeB'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
                     <xs:enumeration value='DIO'/>
@@ -254,8 +265,8 @@ public partial class BXDJSkeleton
             <xs:complexType>
                 <xs:sequence>
                     <xs:element ref='DriveType'/>
-                    <xs:element ref='PortA'/>
-                    <xs:element ref='PortB'/>
+                    <xs:element ref='Port1'/>
+                    <xs:element ref='Port2'/>
                     <xs:element ref='InputGear'/>
                     <xs:element ref='OutputGear'/>
                     <xs:element ref='LowerLimit'/>
@@ -273,10 +284,10 @@ public partial class BXDJSkeleton
             <xs:complexType>
                 <xs:sequence>
                     <xs:element ref='SensorType'/>
-                    <xs:element ref='SensorPortNumber1'/>
-                    <xs:element ref='SensorSignalType1'/>
-                    <xs:element ref='SensorPortNumber2'/>
-                    <xs:element ref='SensorSignalType2'/>
+                    <xs:element ref='SensorPortNumberA'/>
+                    <xs:element ref='SensorSignalTypeA'/>
+                    <xs:element ref='SensorPortNumberB'/>
+                    <xs:element ref='SensorSignalTypeB'/>
                     <xs:element ref='SensorConversionFactor'/>
                 </xs:sequence>
             </xs:complexType>
@@ -300,13 +311,6 @@ public partial class BXDJSkeleton
                 <xs:attribute ref='GUID' use='required'/>
             </xs:complexType>
         </xs:element>
-        <xs:element name='DriveTrainType'>
-            <xs:complexType>
-                <xs:sequence>
-                    <xs:element ref='DriveTrainTypeNumber' minOccurs='0' maxOccurs='1'/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:element>
         <xs:element name='BXDJ'>
             <xs:complexType>
                 <xs:sequence>
@@ -316,7 +320,6 @@ public partial class BXDJSkeleton
                 <xs:attribute ref='Version' use='required'/>
             </xs:complexType>
         </xs:element>
-
         
         </xs:schema>";
 
@@ -354,7 +357,7 @@ public partial class BXDJSkeleton
                 switch (name)
                 {
                     case "DriveTrainType":
-                        ReadNode_4_0(reader.ReadSubtree(), nodes, ref root);
+                        root.driveTrainType = (RigidNode_Base.DriveTrainType)Enum.Parse(typeof(RigidNode_Base.DriveTrainType), reader.ReadElementContentAsString());
                         break;
                     case "Node":
                         // Reads the current element as a node.
@@ -401,9 +404,6 @@ public partial class BXDJSkeleton
 
                     if (parentID == -1) // If this is the root...
                         root = nodes[nodes.Count - 1];
-                    break;
-                case "DriveTrainTypeNumber":
-                    root.driveTrainType = (RigidNode_Base.DriveTrainType) reader.ReadElementContentAsInt();
                     break;
                 case "ModelFileName":
                     // Assigns the ModelFileName property to the ModelFileName element value.
@@ -702,13 +702,13 @@ public partial class BXDJSkeleton
                     // Initialize the driver.
                     driver = new JointDriver((JointDriverType)Enum.Parse(typeof(JointDriverType), reader.ReadElementContentAsString()));
                     break;
-                case "PortA":
-                    // Assign a value to portA.
-                    driver.portA = reader.ReadElementContentAsInt();
+                case "Port1":
+                    // Assign a value to port1.
+                    driver.port1 = reader.ReadElementContentAsInt();
                     break;
-                case "PortB":
-                    // Assign a value to portB.
-                    driver.portB = reader.ReadElementContentAsInt();
+                case "Port2":
+                    // Assign a value to port2.
+                    driver.port2 = reader.ReadElementContentAsInt();
                     break;
 
                 case "InputGear":
@@ -892,21 +892,21 @@ public partial class BXDJSkeleton
                     // Initialize the RobotSensor.
                     robotSensor = new RobotSensor((RobotSensorType)Enum.Parse(typeof(RobotSensorType), reader.ReadElementContentAsString()));
                     break;
-                case "SensorPortNumber1":
+                case "SensorPortNumberA":
                     // Assign a value to the port.
-                    robotSensor.port1 = float.Parse(reader.ReadElementContentAsString());
+                    robotSensor.portA = float.Parse(reader.ReadElementContentAsString());
                     break;
-                case "SensorSignalType1":
+                case "SensorSignalTypeA":
                     // Assign a value to the port.
-                    robotSensor.conTypePort1 = (SensorConnectionType)Enum.Parse(typeof(SensorConnectionType), reader.ReadElementContentAsString());
+                    robotSensor.conTypePortA = (SensorConnectionType)Enum.Parse(typeof(SensorConnectionType), reader.ReadElementContentAsString());
                     break;
-                case "SensorPortNumber2":
+                case "SensorPortNumberB":
                     // Assign a value to the port.
-                    robotSensor.port2 = float.Parse(reader.ReadElementContentAsString());
+                    robotSensor.portB = float.Parse(reader.ReadElementContentAsString());
                     break;
-                case "SensorSignalType2":
+                case "SensorSignalTypeB":
                     // Assign a value to the port.
-                    robotSensor.conTypePort2 = (SensorConnectionType)Enum.Parse(typeof(SensorConnectionType), reader.ReadElementContentAsString());
+                    robotSensor.conTypePortB = (SensorConnectionType)Enum.Parse(typeof(SensorConnectionType), reader.ReadElementContentAsString());
                     break;
                 case "SensorConversionFactor":
                     // Assign a value to useSecondarySource.

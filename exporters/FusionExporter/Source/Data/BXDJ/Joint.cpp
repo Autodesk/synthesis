@@ -2,6 +2,7 @@
 #include <Fusion/Components/JointGeometry.h>
 #include <Core/Geometry/Point3D.h>
 #include "RigidNode.h"
+#include "JointSensor.h"
 
 using namespace BXDJ;
 
@@ -45,12 +46,24 @@ std::shared_ptr<RigidNode> Joint::getChild() const
 Vector3<> Joint::getParentBasePoint() const
 {
 	core::Ptr<fusion::JointGeometry> geometry = (parentOcc ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
+	if (geometry == nullptr || geometry->origin() == nullptr)
+		geometry = (!parentOcc ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
+
+	if (geometry == nullptr || geometry->origin() == nullptr)
+		return Vector3<>(0, 0, 0);
+
 	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 }
 
 Vector3<> Joint::getChildBasePoint() const
 {
 	core::Ptr<fusion::JointGeometry> geometry = (parentOcc ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
+	if (geometry == nullptr || geometry->origin() == nullptr)
+		geometry = (!parentOcc ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
+
+	if (geometry == nullptr || geometry->origin() == nullptr)
+		return Vector3<>(0, 0, 0);
+
 	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 }
 
@@ -72,8 +85,21 @@ std::unique_ptr<Driver> Joint::getDriver() const
 		return nullptr;
 }
 
+void Joint::addSensor(JointSensor sensor)
+{
+	sensors.push_back(std::make_shared<JointSensor>(sensor));
+}
+
+void Joint::clearSensors()
+{
+	sensors.clear();
+}
+
 void Joint::write(XmlWriter & output) const
 {
 	if (driver != nullptr)
 		output.write(*driver);
+
+	for (std::shared_ptr<JointSensor> sensor : sensors)
+		output.write(*sensor);
 }

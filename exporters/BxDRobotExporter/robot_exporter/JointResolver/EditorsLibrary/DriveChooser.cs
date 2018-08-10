@@ -59,19 +59,19 @@ public partial class DriveChooser : Form
         {
             cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
 
-            if (joint.cDriver.portA < txtPortA.Minimum)
-                txtPortA.Value = txtPortA.Minimum;
-            else if (joint.cDriver.portA > txtPortA.Maximum)
-                txtPortA.Value = txtPortA.Maximum;
+            if (joint.cDriver.port1 < txtPort1.Minimum)
+                txtPort1.Value = txtPort1.Minimum;
+            else if (joint.cDriver.port1 > txtPort1.Maximum)
+                txtPort1.Value = txtPort1.Maximum;
             else
-                txtPortA.Value = joint.cDriver.portA;
+                txtPort1.Value = joint.cDriver.port1;
 
-            if (joint.cDriver.portB < txtPortB.Minimum)
-                txtPortB.Value = txtPortB.Minimum;
-            else if (joint.cDriver.portB > txtPortB.Maximum)
-                txtPortB.Value = txtPortB.Maximum;
+            if (joint.cDriver.port2 < txtPort2.Minimum)
+                txtPort2.Value = txtPort2.Minimum;
+            else if (joint.cDriver.port2 > txtPort2.Maximum)
+                txtPort2.Value = txtPort2.Maximum;
             else
-                txtPortB.Value = joint.cDriver.portB;
+                txtPort2.Value = joint.cDriver.port2;
 
             txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
@@ -132,21 +132,15 @@ public partial class DriveChooser : Form
             }
             {
                 ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-                if (elevatorMeta != null && (int)elevatorMeta.type < 7)
-                {
-                    cmbStages.SelectedIndex = (int)elevatorMeta.type;
-                } else
-                {
-                    cmbStages.SelectedIndex = 0;
-                }
+                
             }
             #endregion
         }
         else //Default values
         {
             cmbJointDriver.SelectedIndex = 0;
-            txtPortA.Value = txtPortA.Minimum;
-            txtPortB.Value = txtPortB.Minimum;
+            txtPort1.Value = txtPort1.Minimum;
+            txtPort2.Value = txtPort2.Minimum;
             txtLowLimit.Value = txtLowLimit.Minimum;
             txtHighLimit.Value = txtHighLimit.Minimum;
             InputGeartxt.Value = (decimal) 1.0;
@@ -160,8 +154,7 @@ public partial class DriveChooser : Form
             cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
             cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
             chkBoxDriveWheel.Checked = false;
-
-            cmbStages.SelectedIndex = (int)ElevatorType.NOT_MULTI;
+            
         }
 
         PrepLayout();
@@ -183,8 +176,8 @@ public partial class DriveChooser : Form
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
         if (cmbJointDriver.SelectedIndex != typeOptions.ToList().IndexOf(joint.cDriver.GetDriveType()) + 1 ||
-            txtPortA.Value != joint.cDriver.portA ||
-            txtPortB.Value != joint.cDriver.portB ||
+            txtPort1.Value != joint.cDriver.port1 ||
+            txtPort2.Value != joint.cDriver.port2 ||
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
             txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
             inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear || 
@@ -202,8 +195,7 @@ public partial class DriveChooser : Form
             chkBoxDriveWheel.Checked != wheel.isDriveWheel))
             return true;
 
-        if (elevator != null &&
-            cmbStages.SelectedIndex != (int)elevator.type)
+        if (elevator != null)
             return true;
 
         //If going from "NOT A WHEEL" to a wheel
@@ -232,8 +224,8 @@ public partial class DriveChooser : Form
         {
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
             lblPort.Text = cType.GetPortType(rbCAN.Checked) + " Port" + (cType.HasTwoPorts() ? "s" : "");
-            txtPortB.Visible = cType.HasTwoPorts();
-            txtPortA.Maximum = txtPortB.Maximum = cType.GetPortMax();
+            txtPort2.Visible = cType.HasTwoPorts();
+            txtPort1.Maximum = txtPort2.Maximum = cType.GetPortMax();
             grpDriveOptions.Visible = true;
 
             if (cType.IsMotor())
@@ -256,16 +248,13 @@ public partial class DriveChooser : Form
             {
                 tabsMeta.Visible = true;
                 lblBrakePort.Enabled = false;
-                brakePortA.Enabled = false;
-                brakePortB.Enabled = false;
+                brakePort1.Enabled = false;
+                brakePort2.Enabled = false;
                 tabsMeta.TabPages.Clear();
                 chkBoxHasBrake.Show();
                 //tabsMeta.TabPages.Add(metaElevatorBrake);
-                tabsMeta.TabPages.Add(metaElevatorStages);
                 tabsMeta.TabPages.Add(metaGearing);
-
-                if(cmbStages.SelectedIndex == -1)
-                    cmbStages.SelectedIndex = 0;
+                
                 rbCAN.Show();
                 rbPWM.Show();
             }
@@ -319,8 +308,8 @@ public partial class DriveChooser : Form
 
             joint.cDriver = new JointDriver(cType)
             {
-                portA = (int)txtPortA.Value,
-                portB = (int)txtPortB.Value,
+                port1 = (int)txtPort1.Value,
+                port2 = (int)txtPort2.Value,
                 InputGear = inputGear,// writes the input gear to the internal joint driver so it can be exported
                 OutputGear = outputGear,// writes the output gear to the internal joint driver so it can be exported
                 lowerLimit = (float)txtLowLimit.Value,
@@ -369,7 +358,7 @@ public partial class DriveChooser : Form
                 #region ELEVATOR_SAVING
                 ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta()
                 {
-                    type = (ElevatorType)cmbStages.SelectedIndex
+                    type = ElevatorType.NOT_MULTI
                 };
                 joint.cDriver.AddInfo(elevatorDriver);
                 #endregion
@@ -392,8 +381,8 @@ public partial class DriveChooser : Form
                 {
                     JointDriver driver = new JointDriver(joint.cDriver.GetDriveType())
                     {
-                        portA = joint.cDriver.portA,
-                        portB = joint.cDriver.portB,
+                        port1 = joint.cDriver.port1,
+                        port2 = joint.cDriver.port2,
                         isCan = joint.cDriver.isCan,
                         OutputGear = joint.cDriver.OutputGear,
                         InputGear = joint.cDriver.InputGear,
@@ -434,14 +423,14 @@ public partial class DriveChooser : Form
         if (chkBoxHasBrake.Checked)
         {
             lblBrakePort.Enabled = true;
-            brakePortA.Enabled = true;
-            brakePortB.Enabled = true;
+            brakePort1.Enabled = true;
+            brakePort2.Enabled = true;
         }
         else
         {
             lblBrakePort.Enabled = false;
-            brakePortA.Enabled = false;
-            brakePortB.Enabled = false;
+            brakePort1.Enabled = false;
+            brakePort2.Enabled = false;
         }
     }
 

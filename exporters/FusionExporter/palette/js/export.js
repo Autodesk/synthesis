@@ -1,14 +1,4 @@
-// Used for hiding/showing elements in the following function
-function setVisible(element, visible)
-{
-    element.style.visibility = visible ? '' : 'hidden';
-}
-
-// Gets an a single child element that has the class specified
-function getElByClass(fieldset, className)
-{
-    return fieldset.getElementsByClassName(className)[0]
-}
+var openFieldsetSensors = null;
 
 // Used for hiding/showing elements in the following function
 function setPortView(fieldset, portView)
@@ -56,10 +46,17 @@ function requestInfoFromFusion()
 }
 
 // Highlight a joint in Fusion
-function highlightJoint(jointName)
+function highlightJoint(jointID)
 {
-    console.log('Highlighting ' + jointName);
-    adsk.fusionSendData('highlight', jointName);
+    console.log('Highlighting ' + jointID);
+    adsk.fusionSendData('highlight', jointID);
+}
+
+// Open a menu for editing joint sensors
+function editSensors(fieldset)
+{
+    openFieldsetSensors = fieldset;
+    adsk.fusionSendData('edit_sensors', fieldset.dataset.sensors);
 }
 
 // Handles the receiving of data from Fusion
@@ -74,6 +71,13 @@ window.fusionJavaScriptHandler =
                     console.log("Receiving joint info...");
                     console.log(data);
                     applyConfigData(JSON.parse(data));
+                }
+                else if (action == 'sensors')
+                {
+                    console.log("Receiving sensor info...");
+                    console.log(data);
+                    if (openFieldsetSensors != null)
+                        openFieldsetSensors.dataset.sensors = data;
                 }
                 else if (action == 'debugger')
                 {
@@ -115,6 +119,7 @@ function applyConfigData(configData)
 
         fieldset.id = 'joint-config-' + String(i);
         fieldset.dataset.jointId = joints[i].id;
+        fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
@@ -141,6 +146,10 @@ function applyConfigData(configData)
         for (var j = 0; j < elsToHide.length; j++)
             elsToHide[j].style.display = 'none';
 
+        // Hide sensors button if joint is not angular
+        if ((joints[i].type & JOINT_LINEAR) == JOINT_LINEAR)
+            setVisible(getElByClass(fieldset, 'edit-sensors-button'), false);
+
         // Set joint type
         fieldset.dataset.joint_type = joints[i].type;
 
@@ -163,8 +172,8 @@ function applyDriverData(driver, fieldset)
 
     getElByClass(fieldset, 'driver-type').value = driver.type;
     getElByClass(fieldset, 'port-signal').value = driver.signal;
-    getElByClass(fieldset, 'port-number-a').value = driver.portA;
-    getElByClass(fieldset, 'port-number-b').value = driver.portB;
+    getElByClass(fieldset, 'port-number-one').value = driver.portOne;
+    getElByClass(fieldset, 'port-number-two').value = driver.portTwo;
 
     if (driver.wheel != null)
     {
@@ -172,7 +181,7 @@ function applyDriverData(driver, fieldset)
         getElByClass(fieldset, 'is-drive-wheel').checked = driver.wheel.isDriveWheel;
 
         if (driver.wheel.isDriveWheel)
-            getElByClass(fieldset, 'wheel-side').value = driver.portA;
+            getElByClass(fieldset, 'wheel-side').value = driver.portOne;
     }
 
     if (driver.pneumatic != null)
@@ -217,9 +226,9 @@ function updateFieldOptions(fieldset)
         var linearJointDiv = getElByClass(fieldset, 'linear-joint-div');
 
         var genericPortsDiv = getElByClass(fieldset, 'generic-ports-div');
-        var portBSelector = getElByClass(fieldset, 'port-number-b');
+        var portTwoSelector = getElByClass(fieldset, 'port-number-two');
         setVisible(genericPortsDiv, true);
-        setVisible(portBSelector, false);
+        setVisible(portTwoSelector, false);
         
         setPortView(fieldset, 'motor');
 
@@ -227,7 +236,7 @@ function updateFieldOptions(fieldset)
         if ((jointType & JOINT_ANGULAR) == JOINT_ANGULAR)
         {
             if (driverType == DRIVER_DUAL_MOTOR)
-                setVisible(portBSelector, true);
+                setVisible(portTwoSelector, true);
 
             // Wheel Info
             var selectedWheel = parseInt(getElByClass(fieldset, 'wheel-type').value);
@@ -245,7 +254,7 @@ function updateFieldOptions(fieldset)
 
                 // Drive wheel
                 var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
-                var driveWheelPortsDiv = getElByClass(fieldset, 'drive-wheel-ports-div');
+                var driveWheelPortsDiv = getElByClass(fieldset, 'wheel-side');
                 
                 if (!isDriveWheel)
                     setVisible(driveWheelPortsDiv, false);
@@ -273,7 +282,7 @@ function updateFieldOptions(fieldset)
             {
                 if (driverType == DRIVER_BUMPER_PNEUMATIC)
                 {
-                    setVisible(portBSelector, true);
+                    setVisible(portTwoSelector, true);
                     setPortView(fieldset, 'pneumatic');
                 }
                 else
@@ -302,7 +311,8 @@ function readConfigData()
             'driver': null,
             'id': fieldset.dataset.jointId,
             'name': getElByClass(fieldset, 'joint-config-legend').innerHTML,
-            'type': parseInt(fieldset.dataset.joint_type)
+            'type': parseInt(fieldset.dataset.joint_type),
+            'sensors': JSON.parse(fieldset.dataset.sensors)
         };
 
         var selectedDriver = parseInt(fieldset.getElementsByClassName('driver-type')[0].value);
@@ -310,10 +320,10 @@ function readConfigData()
         if (selectedDriver > 0)
         {
             var signal = parseInt(getElByClass(fieldset, 'port-signal').querySelector('option:checked').dataset.portValue);
-            var portA = parseInt(getElByClass(fieldset, 'port-number-a').value);
-            var portB = parseInt(getElByClass(fieldset, 'port-number-b').value);
+            var portOne = parseInt(getElByClass(fieldset, 'port-number-one').value);
+            var portTwo = parseInt(getElByClass(fieldset, 'port-number-two').value);
 
-            joint.driver = createDriver(selectedDriver, signal, portA, portB);
+            joint.driver = createDriver(selectedDriver, signal, portOne, portTwo);
             
             if ((joint.type & JOINT_ANGULAR) == JOINT_ANGULAR)
             {
@@ -327,8 +337,8 @@ function readConfigData()
                     if (isDriveWheel)
                     {
                         joint.driver.signal = PWM;
-                        joint.driver.portA = parseInt(getElByClass(fieldset, 'wheel-side').value);
-                        joint.driver.portB = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        joint.driver.portOne = parseInt(getElByClass(fieldset, 'wheel-side').value);
+                        joint.driver.portTwo = parseInt(getElByClass(fieldset, 'wheel-side').value);
                     }
                 }
             }
@@ -363,5 +373,17 @@ function sendInfoToFusion()
         return;
     }
     
+    adsk.fusionSendData('save', JSON.stringify(readConfigData()));
+}
+
+// Sends the data to the Fusion add-in
+function exportRobot()
+{
+    if (document.getElementById('name').value.length == 0)
+    {
+        alert("Please enter a name.");
+        return;
+    }
+
     adsk.fusionSendData('export', JSON.stringify(readConfigData()));
 }

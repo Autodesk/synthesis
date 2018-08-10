@@ -34,8 +34,8 @@
             this.txtHighLimit = new System.Windows.Forms.NumericUpDown();
             this.lblPort = new System.Windows.Forms.Label();
             this.txtLowLimit = new System.Windows.Forms.NumericUpDown();
-            this.txtPortA = new System.Windows.Forms.NumericUpDown();
-            this.txtPortB = new System.Windows.Forms.NumericUpDown();
+            this.txtPort1 = new System.Windows.Forms.NumericUpDown();
+            this.txtPort2 = new System.Windows.Forms.NumericUpDown();
             this.lblLimits = new System.Windows.Forms.Label();
             this.rbCAN = new System.Windows.Forms.RadioButton();
             this.rbPWM = new System.Windows.Forms.RadioButton();
@@ -61,12 +61,10 @@
             this.InputGeartxt = new System.Windows.Forms.NumericUpDown();
             this.metaElevatorBrake = new System.Windows.Forms.TabPage();
             this.BreakLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.brakePortB = new System.Windows.Forms.NumericUpDown();
+            this.brakePort2 = new System.Windows.Forms.NumericUpDown();
             this.lblBrakePort = new System.Windows.Forms.Label();
-            this.brakePortA = new System.Windows.Forms.NumericUpDown();
+            this.brakePort1 = new System.Windows.Forms.NumericUpDown();
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
-            this.metaElevatorStages = new System.Windows.Forms.TabPage();
-            this.cmbStages = new System.Windows.Forms.ComboBox();
             this.ConfigJointLayout = new System.Windows.Forms.TableLayoutPanel();
             this.OutputGeartxt = new System.Windows.Forms.NumericUpDown();
             this.grpChooseDriver.SuspendLayout();
@@ -74,8 +72,8 @@
             this.JointOptionsLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtPort1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtPort2)).BeginInit();
             this.tabsMeta.SuspendLayout();
             this.metaWheel.SuspendLayout();
             this.WheelLayout.SuspendLayout();
@@ -86,9 +84,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).BeginInit();
             this.metaElevatorBrake.SuspendLayout();
             this.BreakLayout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).BeginInit();
-            this.metaElevatorStages.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePort2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePort1)).BeginInit();
             this.ConfigJointLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).BeginInit();
             this.SuspendLayout();
@@ -143,8 +140,8 @@
             this.JointOptionsLayout.Controls.Add(this.txtHighLimit, 1, 3);
             this.JointOptionsLayout.Controls.Add(this.lblPort, 0, 0);
             this.JointOptionsLayout.Controls.Add(this.txtLowLimit, 0, 3);
-            this.JointOptionsLayout.Controls.Add(this.txtPortA, 0, 1);
-            this.JointOptionsLayout.Controls.Add(this.txtPortB, 1, 1);
+            this.JointOptionsLayout.Controls.Add(this.txtPort1, 0, 1);
+            this.JointOptionsLayout.Controls.Add(this.txtPort2, 1, 1);
             this.JointOptionsLayout.Controls.Add(this.lblLimits, 0, 2);
             this.JointOptionsLayout.Controls.Add(this.rbCAN, 3, 1);
             this.JointOptionsLayout.Controls.Add(this.rbPWM, 2, 1);
@@ -212,29 +209,29 @@
             this.txtLowLimit.TabIndex = 3;
             this.txtLowLimit.Visible = false;
             // 
-            // txtPortA
+            // txtPort1
             // 
-            this.txtPortA.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtPortA.Location = new System.Drawing.Point(3, 27);
-            this.txtPortA.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtPortA.Name = "txtPortA";
-            this.txtPortA.Size = new System.Drawing.Size(140, 22);
-            this.txtPortA.TabIndex = 1;
-            this.txtPortA.Value = new decimal(new int[] {
+            this.txtPort1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPort1.Location = new System.Drawing.Point(3, 27);
+            this.txtPort1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtPort1.Name = "txtPort1";
+            this.txtPort1.Size = new System.Drawing.Size(140, 22);
+            this.txtPort1.TabIndex = 1;
+            this.txtPort1.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
             // 
-            // txtPortB
+            // txtPort2
             // 
-            this.txtPortB.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtPortB.Location = new System.Drawing.Point(149, 27);
-            this.txtPortB.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtPortB.Name = "txtPortB";
-            this.txtPortB.Size = new System.Drawing.Size(140, 22);
-            this.txtPortB.TabIndex = 2;
-            this.txtPortB.Value = new decimal(new int[] {
+            this.txtPort2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPort2.Location = new System.Drawing.Point(149, 27);
+            this.txtPort2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtPort2.Name = "txtPort2";
+            this.txtPort2.Size = new System.Drawing.Size(140, 22);
+            this.txtPort2.TabIndex = 2;
+            this.txtPort2.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -343,7 +340,6 @@
             this.tabsMeta.Controls.Add(this.metaPneumatic);
             this.tabsMeta.Controls.Add(this.metaGearing);
             //this.tabsMeta.Controls.Add(this.metaElevatorBrake);
-            this.tabsMeta.Controls.Add(this.metaElevatorStages);
             this.tabsMeta.Location = new System.Drawing.Point(3, 60);
             this.tabsMeta.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);
             this.tabsMeta.Name = "tabsMeta";
@@ -583,9 +579,9 @@
             this.BreakLayout.ColumnCount = 2;
             this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.BreakLayout.Controls.Add(this.brakePortB, 1, 1);
+            this.BreakLayout.Controls.Add(this.brakePort2, 1, 1);
             this.BreakLayout.Controls.Add(this.lblBrakePort, 0, 0);
-            this.BreakLayout.Controls.Add(this.brakePortA, 0, 1);
+            this.BreakLayout.Controls.Add(this.brakePort1, 0, 1);
             this.BreakLayout.Controls.Add(this.chkBoxHasBrake, 1, 0);
             this.BreakLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.BreakLayout.Location = new System.Drawing.Point(0, 0);
@@ -597,14 +593,14 @@
             this.BreakLayout.Size = new System.Drawing.Size(424, 55);
             this.BreakLayout.TabIndex = 13;
             // 
-            // brakePortB
+            // brakePort2
             // 
-            this.brakePortB.Dock = System.Windows.Forms.DockStyle.Top;
-            this.brakePortB.Location = new System.Drawing.Point(215, 31);
-            this.brakePortB.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.brakePortB.Name = "brakePortB";
-            this.brakePortB.Size = new System.Drawing.Size(206, 22);
-            this.brakePortB.TabIndex = 3;
+            this.brakePort2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.brakePort2.Location = new System.Drawing.Point(215, 31);
+            this.brakePort2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.brakePort2.Name = "brakePort2";
+            this.brakePort2.Size = new System.Drawing.Size(206, 22);
+            this.brakePort2.TabIndex = 3;
             // 
             // lblBrakePort
             // 
@@ -616,14 +612,14 @@
             this.lblBrakePort.TabIndex = 1;
             this.lblBrakePort.Text = "Brake Port";
             // 
-            // brakePortA
+            // brakePort1
             // 
-            this.brakePortA.Dock = System.Windows.Forms.DockStyle.Top;
-            this.brakePortA.Location = new System.Drawing.Point(3, 31);
-            this.brakePortA.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.brakePortA.Name = "brakePortA";
-            this.brakePortA.Size = new System.Drawing.Size(206, 22);
-            this.brakePortA.TabIndex = 2;
+            this.brakePort1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.brakePort1.Location = new System.Drawing.Point(3, 31);
+            this.brakePort1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.brakePort1.Name = "brakePort1";
+            this.brakePort1.Size = new System.Drawing.Size(206, 22);
+            this.brakePort1.TabIndex = 2;
             // 
             // chkBoxHasBrake
             // 
@@ -636,34 +632,6 @@
             this.chkBoxHasBrake.Text = "Has Brake";
             this.chkBoxHasBrake.UseVisualStyleBackColor = true;
             this.chkBoxHasBrake.CheckedChanged += new System.EventHandler(this.chkBoxHasBrake_CheckedChanged);
-            // 
-            // metaElevatorStages
-            // 
-            this.metaElevatorStages.Controls.Add(this.cmbStages);
-            this.metaElevatorStages.Location = new System.Drawing.Point(4, 25);
-            this.metaElevatorStages.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.metaElevatorStages.Name = "metaElevatorStages";
-            this.metaElevatorStages.Size = new System.Drawing.Size(424, 63);
-            this.metaElevatorStages.TabIndex = 4;
-            this.metaElevatorStages.Text = "Stages";
-            this.metaElevatorStages.UseVisualStyleBackColor = true;
-            // 
-            // cmbStages
-            // 
-            this.cmbStages.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cmbStages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbStages.FormattingEnabled = true;
-            this.cmbStages.Items.AddRange(new object[] {
-            "Single Stage Elevator",
-            "Cascading Stage One",
-            "Cascading Stage Two",
-            "Continuous Stage One",
-            "Continuos Stage Two"});
-            this.cmbStages.Location = new System.Drawing.Point(0, 0);
-            this.cmbStages.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.cmbStages.Name = "cmbStages";
-            this.cmbStages.Size = new System.Drawing.Size(424, 24);
-            this.cmbStages.TabIndex = 0;
             // 
             // ConfigJointLayout
             // 
@@ -733,8 +701,8 @@
             this.JointOptionsLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtPort1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtPort2)).EndInit();
             this.tabsMeta.ResumeLayout(false);
             this.metaWheel.ResumeLayout(false);
             this.metaWheel.PerformLayout();
@@ -753,9 +721,8 @@
             this.metaElevatorBrake.PerformLayout();
             this.BreakLayout.ResumeLayout(false);
             this.BreakLayout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).EndInit();
-            this.metaElevatorStages.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.brakePort2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePort1)).EndInit();
             this.ConfigJointLayout.ResumeLayout(false);
             this.ConfigJointLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).EndInit();
@@ -769,9 +736,9 @@
     private System.Windows.Forms.ComboBox cmbJointDriver;
     private System.Windows.Forms.GroupBox grpChooseDriver;
     private System.Windows.Forms.GroupBox grpDriveOptions;
-    private System.Windows.Forms.NumericUpDown txtPortB;
+    private System.Windows.Forms.NumericUpDown txtPort2;
     private System.Windows.Forms.Label lblPort;
-    private System.Windows.Forms.NumericUpDown txtPortA;
+    private System.Windows.Forms.NumericUpDown txtPort1;
     private System.Windows.Forms.Button SaveButton;
     private System.Windows.Forms.ComboBox cmbWheelType;
     private System.Windows.Forms.ComboBox cmbPneumaticPressure;
@@ -794,10 +761,8 @@
     private System.Windows.Forms.CheckBox chkBoxHasBrake;
     private System.Windows.Forms.CheckBox chkBoxDriveWheel;
     private System.Windows.Forms.Label lblBrakePort;
-    private System.Windows.Forms.NumericUpDown brakePortB;
-    private System.Windows.Forms.NumericUpDown brakePortA;
-    private System.Windows.Forms.TabPage metaElevatorStages;
-    private System.Windows.Forms.ComboBox cmbStages;
+    private System.Windows.Forms.NumericUpDown brakePort2;
+    private System.Windows.Forms.NumericUpDown brakePort1;
     private System.Windows.Forms.RadioButton rbPWM;
     private System.Windows.Forms.RadioButton rbCAN;
     private System.Windows.Forms.TableLayoutPanel ConfigJointLayout;

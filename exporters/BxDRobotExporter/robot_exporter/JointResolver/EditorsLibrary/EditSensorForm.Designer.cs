@@ -31,19 +31,19 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditSensorForm));
             this.label1 = new System.Windows.Forms.Label();
             this.typeBox = new System.Windows.Forms.ComboBox();
-            this.port1Lbl = new System.Windows.Forms.Label();
+            this.PortALbl = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.Port1NumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.PortANumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.button1 = new System.Windows.Forms.Button();
-            this.Port2Lbl = new System.Windows.Forms.Label();
-            this.Port2NumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.PortBLbl = new System.Windows.Forms.Label();
+            this.PortBNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.ConversionLbl = new System.Windows.Forms.Label();
             this.ConversionNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Port1NumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Port2NumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PortANumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PortBNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ConversionNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -73,12 +73,12 @@
             // 
             // port1Lbl
             // 
-            this.port1Lbl.AutoSize = true;
-            this.port1Lbl.Location = new System.Drawing.Point(3, 42);
-            this.port1Lbl.Name = "port1Lbl";
-            this.port1Lbl.Size = new System.Drawing.Size(50, 17);
-            this.port1Lbl.TabIndex = 2;
-            this.port1Lbl.Text = "Port 1:";
+            this.PortALbl.AutoSize = true;
+            this.PortALbl.Location = new System.Drawing.Point(3, 42);
+            this.PortALbl.Name = "portALbl";
+            this.PortALbl.Size = new System.Drawing.Size(50, 17);
+            this.PortALbl.TabIndex = 2;
+            this.PortALbl.Text = "Port A:";
             // 
             // SaveButton
             // 
@@ -114,17 +114,17 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Controls.Add(this.port1Lbl, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.PortALbl, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.CancelButton, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.SaveButton, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.typeBox, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.button1, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.Port2Lbl, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.Port2NumericUpDown, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.PortBLbl, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.PortBNumericUpDown, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.ConversionLbl, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.ConversionNumericUpDown, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.Port1NumericUpDown, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.PortANumericUpDown, 1, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
@@ -139,15 +139,15 @@
             // 
             // Port1NumericUpDown
             // 
-            this.Port1NumericUpDown.Location = new System.Drawing.Point(103, 45);
-            this.Port1NumericUpDown.Maximum = new decimal(new int[] {
+            this.PortANumericUpDown.Location = new System.Drawing.Point(103, 45);
+            this.PortANumericUpDown.Maximum = new decimal(new int[] {
             50,
             0,
             0,
             0});
-            this.Port1NumericUpDown.Name = "Port1NumericUpDown";
-            this.Port1NumericUpDown.Size = new System.Drawing.Size(94, 22);
-            this.Port1NumericUpDown.TabIndex = 14;
+            this.PortANumericUpDown.Name = "PortANumericUpDown";
+            this.PortANumericUpDown.Size = new System.Drawing.Size(94, 22);
+            this.PortANumericUpDown.TabIndex = 14;
             // 
             // button1
             // 
@@ -158,26 +158,26 @@
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
             // 
-            // Port2Lbl
+            // PortBLbl
             // 
-            this.Port2Lbl.AutoSize = true;
-            this.Port2Lbl.Location = new System.Drawing.Point(203, 42);
-            this.Port2Lbl.Name = "Port2Lbl";
-            this.Port2Lbl.Size = new System.Drawing.Size(50, 17);
-            this.Port2Lbl.TabIndex = 15;
-            this.Port2Lbl.Text = "Port 2:";
+            this.PortBLbl.AutoSize = true;
+            this.PortBLbl.Location = new System.Drawing.Point(203, 42);
+            this.PortBLbl.Name = "PortBLbl";
+            this.PortBLbl.Size = new System.Drawing.Size(50, 17);
+            this.PortBLbl.TabIndex = 15;
+            this.PortBLbl.Text = "Port B:";
             // 
             // Port2NumericUpDown
             // 
-            this.Port2NumericUpDown.Location = new System.Drawing.Point(303, 45);
-            this.Port2NumericUpDown.Maximum = new decimal(new int[] {
+            this.PortBNumericUpDown.Location = new System.Drawing.Point(303, 45);
+            this.PortBNumericUpDown.Maximum = new decimal(new int[] {
             50,
             0,
             0,
             0});
-            this.Port2NumericUpDown.Name = "Port2NumericUpDown";
-            this.Port2NumericUpDown.Size = new System.Drawing.Size(94, 22);
-            this.Port2NumericUpDown.TabIndex = 16;
+            this.PortBNumericUpDown.Name = "PortBNumericUpDown";
+            this.PortBNumericUpDown.Size = new System.Drawing.Size(94, 22);
+            this.PortBNumericUpDown.TabIndex = 16;
             // 
             // ConversionLbl
             // 
@@ -224,8 +224,8 @@
             this.Text = "Sensor";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Port1NumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Port2NumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PortANumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PortBNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ConversionNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -236,14 +236,14 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox typeBox;
-        private System.Windows.Forms.Label port1Lbl;
+        private System.Windows.Forms.Label PortALbl;
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Button CancelButton;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.NumericUpDown Port1NumericUpDown;
-        private System.Windows.Forms.Label Port2Lbl;
-        private System.Windows.Forms.NumericUpDown Port2NumericUpDown;
+        private System.Windows.Forms.NumericUpDown PortANumericUpDown;
+        private System.Windows.Forms.Label PortBLbl;
+        private System.Windows.Forms.NumericUpDown PortBNumericUpDown;
         private System.Windows.Forms.Label ConversionLbl;
         private System.Windows.Forms.NumericUpDown ConversionNumericUpDown;
     }

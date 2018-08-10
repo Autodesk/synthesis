@@ -96,19 +96,19 @@ namespace BxDRobotExporter.Wizard
             typeOptions = JointDriver.GetAllowedDrivers(joint);
             DriverComboBox.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
 
-            if (joint.cDriver.portA < PortOneUpDown.Minimum)
+            if (joint.cDriver.port1 < PortOneUpDown.Minimum)
                 PortOneUpDown.Value = PortOneUpDown.Minimum;
-            else if (joint.cDriver.portA > PortOneUpDown.Maximum)
+            else if (joint.cDriver.port1 > PortOneUpDown.Maximum)
                 PortOneUpDown.Value = PortOneUpDown.Maximum;
             else
-                PortOneUpDown.Value = joint.cDriver.portA;
+                PortOneUpDown.Value = joint.cDriver.port1;
 
-            if (joint.cDriver.portB < PortTwoUpDown.Minimum)
+            if (joint.cDriver.port2 < PortTwoUpDown.Minimum)
                 PortTwoUpDown.Value = PortTwoUpDown.Minimum;
-            else if (joint.cDriver.portB > PortTwoUpDown.Maximum)
+            else if (joint.cDriver.port2 > PortTwoUpDown.Maximum)
                 PortTwoUpDown.Value = PortTwoUpDown.Maximum;
             else
-                PortTwoUpDown.Value = joint.cDriver.portB;
+                PortTwoUpDown.Value = joint.cDriver.port2;
             
             rbCAN.Checked = joint.cDriver.isCan;
             if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
@@ -138,14 +138,6 @@ namespace BxDRobotExporter.Wizard
             }
             {
                 ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-                if (elevatorMeta != null && (int)elevatorMeta.type < 7)
-                {
-                    cmbStages.SelectedIndex = (int)elevatorMeta.type;
-                }
-                else
-                {
-                    cmbStages.SelectedIndex = 0;
-                }
             }
             #endregion
         }
@@ -175,7 +167,6 @@ namespace BxDRobotExporter.Wizard
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
-                        if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
                         PortTwoUpDown.Visible = false;
@@ -203,7 +194,6 @@ namespace BxDRobotExporter.Wizard
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
-                        if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                         PortsGroupBox.Text = "Solenoid Ports";
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = true;
@@ -219,7 +209,6 @@ namespace BxDRobotExporter.Wizard
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
-                        if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                         PortsGroupBox.Text = "Relay Port";
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
@@ -249,7 +238,6 @@ namespace BxDRobotExporter.Wizard
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
-                        if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = true;
                         PortTwoUpDown.Visible = true;
@@ -271,7 +259,6 @@ namespace BxDRobotExporter.Wizard
                         this.PortLayout.RowStyles[1].Height = 50F;
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
-                        if (!tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Add(metaElevatorStages);
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
                         //if (!tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Add(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
@@ -290,7 +277,6 @@ namespace BxDRobotExporter.Wizard
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
-                        if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                         PortsGroupBox.Text = "Solenoid Ports";
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = true;
@@ -306,7 +292,6 @@ namespace BxDRobotExporter.Wizard
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
                         if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
-                        if (tabsMeta.TabPages.Contains(metaElevatorStages)) tabsMeta.TabPages.Remove(metaElevatorStages);
                         PortsGroupBox.Text = "Relay Port";
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
@@ -416,7 +401,7 @@ namespace BxDRobotExporter.Wizard
                         driver.OutputGear = (double)OutputGeartxt.Value;
                         ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta()
                         {
-                            type = (ElevatorType)cmbStages.SelectedIndex
+                            type = ElevatorType.NOT_MULTI
                         }; //The info about the wheel attached to the joint.
                         driver.AddInfo(elevatorDriver);
                         driver.SetPort((int)PortOneUpDown.Value, 1);

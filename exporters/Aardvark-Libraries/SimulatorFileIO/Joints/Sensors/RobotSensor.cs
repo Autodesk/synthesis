@@ -20,11 +20,11 @@ public enum SensorConnectionType : byte
 
 public class RobotSensor : BinaryRWObject
 {
-    public float port1;
-    public float port2;
+    public float portA;
+    public float portB;
     public RobotSensorType type;
-    public SensorConnectionType conTypePort1;
-    public SensorConnectionType conTypePort2;
+    public SensorConnectionType conTypePortA;
+    public SensorConnectionType conTypePortB;
     public double conversionFactor;
     public RobotSensor()
     {
@@ -37,16 +37,16 @@ public class RobotSensor : BinaryRWObject
         switch (type)
         {
             case RobotSensorType.ENCODER:
-                conTypePort1 = SensorConnectionType.DIO;
-                conTypePort2 = SensorConnectionType.DIO;
+                conTypePortA = SensorConnectionType.DIO;
+                conTypePortB = SensorConnectionType.DIO;
                 break;
             case RobotSensorType.LIMIT:
-                conTypePort1 = SensorConnectionType.DIO;
-                conTypePort2 = SensorConnectionType.DIO;
+                conTypePortA = SensorConnectionType.DIO;
+                conTypePortB = SensorConnectionType.DIO;
                 break;
             case RobotSensorType.POTENTIOMETER:
-                conTypePort1 = SensorConnectionType.ANALOG;
-                conTypePort2 = SensorConnectionType.ANALOG;
+                conTypePortA = SensorConnectionType.ANALOG;
+                conTypePortB = SensorConnectionType.ANALOG;
                 break;
         }
     }
@@ -58,7 +58,7 @@ public class RobotSensor : BinaryRWObject
             case SkeletalJointType.ROTATIONAL:
                 return new RobotSensorType[] {RobotSensorType.ENCODER/*, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT*/};
             case SkeletalJointType.LINEAR:
-                return new RobotSensorType[] {RobotSensorType.LIMIT };
+                return new RobotSensorType[] {RobotSensorType.ENCODER };
             case SkeletalJointType.CYLINDRICAL:
                 return new RobotSensorType[] {RobotSensorType.ENCODER/*, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT*/};
             case SkeletalJointType.PLANAR:
@@ -73,18 +73,18 @@ public class RobotSensor : BinaryRWObject
     public void WriteBinaryData(BinaryWriter writer)
     {
         writer.Write((byte) type);
-        writer.Write(port1);
-        writer.Write((byte)conTypePort1);
-        writer.Write(port2);
-        writer.Write((byte)conTypePort2);
+        writer.Write(portA);
+        writer.Write((byte)conTypePortA);
+        writer.Write(portB);
+        writer.Write((byte)conTypePortB);
         writer.Write(conversionFactor);
     }
 
     public void ReadBinaryData(BinaryReader reader)
     {
         type = (RobotSensorType) reader.ReadByte();
-        port1 = reader.ReadInt16();
-        port2 = reader.ReadInt16();
+        portA = reader.ReadInt16();
+        portB = reader.ReadInt16();
         conversionFactor = reader.ReadDouble();
     }
 
@@ -101,6 +101,6 @@ public class RobotSensor : BinaryRWObject
     /// <param name="otherSensor"></param>
     public bool Equals(RobotSensor otherSensor)
     {
-        return port1 == otherSensor.port1 && port2 == otherSensor.port2 && conversionFactor == otherSensor.conversionFactor;    // Other fields are not important for equivalancy
+        return portA == otherSensor.portA && portB == otherSensor.portB && conversionFactor == otherSensor.conversionFactor;    // Other fields are not important for equivalancy
     }
 }

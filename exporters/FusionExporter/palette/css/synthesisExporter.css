@@ -26,11 +26,11 @@ fieldset
 
 input, select, button
 {
-    transition: border 0.25s;
+    transition: border 0.25s, background 0.25s;
     border: 1px solid rgb(185, 185, 185);
 }
 
-input:focus, select:focus, button:hover
+input:focus, select:focus, button:focus
 {
     outline: none;
     border: 1px solid rgb(255, 186, 86);
@@ -38,7 +38,18 @@ input:focus, select:focus, button:hover
 
 button
 {
-    background: rgb(233, 233, 233)
+    background: rgb(233, 233, 233);
+    margin-bottom: 1rem;
+}
+
+button:hover
+{
+    background: rgb(225, 225, 225);
+}
+
+button:active
+{
+    background: rgb(210, 210, 210);
 }
 
 a
@@ -50,4 +61,45 @@ a
 a:hover
 {
     color: rgb(255, 186, 86);
+}
+
+/* Form Fields */
+
+fieldset
+{
+    padding-bottom: 0;
+}
+
+.field-label
+{
+    float: left;
+}
+
+.field-input
+{
+    overflow: hidden;
+    display: block;
+    padding-left: 0.5rem;
+    padding-right: 2px;
+    margin-bottom: 1rem;
+}
+
+.field-select
+{
+    overflow: hidden;
+    display: block;
+    padding-left: 0.5rem;
+    padding-right: 0;
+    margin-bottom: 1rem;
+}
+
+.field-input *, .field-select *
+{
+    width: 100%;
+}
+
+button
+{
+    width: 100%;
+    text-align: center;
 }
