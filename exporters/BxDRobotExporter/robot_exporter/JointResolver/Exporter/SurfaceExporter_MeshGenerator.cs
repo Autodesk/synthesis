@@ -117,14 +117,26 @@ public partial class SurfaceExporter
             // Add facets for each face of the surface
             foreach (Face face in faces)
             {
-                face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
-                outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(face.Appearance));
+                if (face.Appearance != null) { 
+                    face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+                    outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(face.Appearance));
+                }
             }
         }
         else
         {
             // Add facets once for the entire surface
-            outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(faces[1].Appearance));
+            AssetProperties asset;
+            try
+            {
+                asset = GetAssetProperties(faces[1].Appearance);
+            }
+            catch (Exception)
+            {
+                asset = new AssetProperties();
+            }
+
+            outputMesh.AddSurface(ref bufferSurface, asset);
         }
     }
 

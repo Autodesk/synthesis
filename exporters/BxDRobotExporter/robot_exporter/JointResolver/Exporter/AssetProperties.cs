@@ -4,10 +4,12 @@ using Inventor;
 
 public class AssetProperties
 {
-    public uint color = 0;
+    public uint color = 0xFFFFFFFF;
     public double transparency = 0;
     public double translucency = 0;
     public double specular = 0;
+
+    public AssetProperties() { }
 
     public AssetProperties(Asset asset)
     {
