@@ -12,12 +12,6 @@ namespace BXDJ
 		/// \return The depth of the occurrence in the hierarchy. The root component is 0. nullptr will return -1.
 		///
 		int levelOfOccurrence(adsk::core::Ptr<adsk::fusion::Occurrence>);
-		
-		///
-		/// Gets the upper/lower occurrence in a joint (for deterimining parent/child relationships
-		///
-		adsk::core::Ptr<adsk::fusion::Occurrence> lowerOccurrence(adsk::core::Ptr<adsk::fusion::Joint>);
-		adsk::core::Ptr<adsk::fusion::Occurrence> upperOccurrence(adsk::core::Ptr<adsk::fusion::Joint>);
 
 		///
 		/// Generates a unique identifier for a Fusion joint.

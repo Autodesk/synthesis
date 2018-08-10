@@ -254,7 +254,7 @@ function updateFieldOptions(fieldset)
 
                 // Drive wheel
                 var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
-                var driveWheelPortsDiv = getElByClass(fieldset, 'drive-wheel-ports-div');
+                var driveWheelPortsDiv = getElByClass(fieldset, 'wheel-side');
                 
                 if (!isDriveWheel)
                     setVisible(driveWheelPortsDiv, false);
