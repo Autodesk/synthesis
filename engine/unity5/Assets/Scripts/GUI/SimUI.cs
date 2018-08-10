@@ -249,10 +249,10 @@ namespace Synthesis.GUI
             if (toolbarID.Equals(currentID)) return;
             helpMenu.SetActive(false);
             overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            tabs.transform.Translate(new Vector3(-300, 0, 0));
             foreach (Transform t in Auxiliary.FindObject(toolbarID).transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
         }

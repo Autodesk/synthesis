@@ -23,6 +23,7 @@ namespace Assets.Scripts.GUI
 
         GameObject helpMenu;
         GameObject overlay;
+        Text helpBodyText;
 
         Dropdown ultrasonicDropdown;
         Dropdown beamBreakerDropdown;
@@ -43,6 +44,7 @@ namespace Assets.Scripts.GUI
 
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
+            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
 
             ultrasonicDropdown = Auxiliary.FindObject(sensorToolbar, "UltrasonicDropdown").GetComponent<Dropdown>();
             beamBreakerDropdown = Auxiliary.FindObject(sensorToolbar, "BeamBreakDropdown").GetComponent<Dropdown>();
@@ -203,12 +205,15 @@ namespace Assets.Scripts.GUI
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "Scoring: Visit bxd.autodesk.com";
+
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "SensorToolbar";
             overlay.SetActive(true);
-            tabs.transform.Translate(new Vector3(200, 0, 0));
+            tabs.transform.Translate(new Vector3(300, 0, 0));
             foreach (Transform t in sensorToolbar.transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
         }
@@ -217,10 +222,10 @@ namespace Assets.Scripts.GUI
         {
             helpMenu.SetActive(false);
             overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            tabs.transform.Translate(new Vector3(-300, 0, 0));
             foreach (Transform t in sensorToolbar.transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
         }
