@@ -208,6 +208,12 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
+            if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2)
+            {
+                if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
+                BeginReset();
+                EndReset();
+            }
 
             #region Encoder Calculations
             foreach (EmuNetworkInfo a in emuList)
@@ -241,7 +247,7 @@ namespace Synthesis.Robot
                         else
                         {
                             a.encoderTickCount += ((angleDifference / 360) * a.RobotSensor.conversionFactor);
-                        }   
+                        }
                     }
                     else if (bRaycastWheel.GetWheelSpeed() < 0)
                     {
@@ -285,15 +291,15 @@ namespace Synthesis.Robot
             //GetDriverPractice().DestroyAllGamepieces();
 
             InputControl.freeze = true;
-            if(canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
-            if(resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
+            if (canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
+            if (resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
             canvas.GetComponent<Canvas>().enabled = false;
             resetCanvas.SetActive(true);
 
             #region init
-            if(helpMenu == null) helpMenu = Auxiliary.FindObject(resetCanvas, "Help");
-            if(toolbar == null) toolbar = Auxiliary.FindObject(resetCanvas, "ResetStateToolbar");
-            if(overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
+            if (helpMenu == null) helpMenu = Auxiliary.FindObject(resetCanvas, "Help");
+            if (toolbar == null) toolbar = Auxiliary.FindObject(resetCanvas, "ResetStateToolbar");
+            if (overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
             if (helpBodyText == null) helpBodyText = Auxiliary.FindObject(resetCanvas, "BodyText").GetComponent<Text>();
             #endregion
 
