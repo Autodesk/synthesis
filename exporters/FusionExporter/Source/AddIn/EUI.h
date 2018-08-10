@@ -25,29 +25,29 @@ namespace Synthesis
 		EUI(Ptr<UserInterface>, Ptr<Application>);
 		~EUI();
 
-		bool createWorkspace();
-		void deleteWorkspace();
-		
-		bool createExportPalette();
+		// UI Management
+		void preparePalettes();
+
 		void openExportPalette();
-		void deleteExportPalette();
 		void closeExportPalette();
 
-		bool createSensorsPalette();
 		void openSensorsPalette(std::string sensors);
-		void deleteSensorsPalette();
-		void closeSensorsPalette();
+		void closeSensorsPalette(std::string sensorsToSave = "");
 
-		bool createProgressPalette();
 		void openProgressPalette();
-		void deleteProgressPalette();
 		void closeProgressPalette();
 
-		bool createExportButton();
-		void deleteExportButton();
+		void enableExportButton();
+		void disableExportButton();
 
-		void startExportThread(BXDJ::ConfigData &);
-		void cancelExportThread();
+		// UI Controls
+		void highlightJoint(std::string jointID);
+
+		// Robot Exporting
+		void saveConfiguration(std::string jsonConfig);
+
+		void startExportRobot();
+		void cancelExportRobot();
 		void updateProgress(double percent);
 
 	private:
@@ -65,16 +65,35 @@ namespace Synthesis
 		Ptr<CommandDefinition> exportButtonCommand;
 
 		// Event Handlers
-		ReceiveFormDataHandler * formDataHandler = nullptr;
-		CloseExporterFormEventHandler * closeExporterHandler = nullptr;
+		WorkspaceActivatedHandler * workspaceActivatedHandler = nullptr;
+		WorkspaceDeactivatedHandler * workspaceDeactivatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler * showPaletteCommandCreatedHandler = nullptr;
+		ReceiveFormDataHandler * receiveFormDataHandler = nullptr;
+		CloseExporterFormEventHandler * closeExporterFormEventHandler = nullptr;
 
-		template<typename T>
-		bool addEventToPalette(Ptr<Palette>);
-		template<typename T>
-		bool clearEventFromPalette(Ptr<Palette>);
+		template<typename E, typename T>
+		bool addHandler(Ptr<T>);
+		template<typename E, typename T>
+		bool clearHandler(Ptr<T>);
+
+		// UI Creation/Deletion
+		bool createWorkspace();
+		void deleteWorkspace();
+
+		bool createExportPalette();
+		void deleteExportPalette();
+
+		bool createSensorsPalette();
+		void deleteSensorsPalette();
+
+		bool createProgressPalette();
+		void deleteProgressPalette();
+
+		bool createExportButton();
+		void deleteExportButton();
 
 		// Thread Information
-		std::thread * exportThread;
+		std::thread * exportRobotThread;
 		bool killExportThread;
 		void exportRobot(BXDJ::ConfigData);
 	};

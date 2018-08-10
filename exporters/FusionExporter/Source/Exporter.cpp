@@ -107,6 +107,14 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 	Guid::resetAutomaticSeed();
 	std::shared_ptr<BXDJ::RigidNode> rootNode = std::make_shared<BXDJ::RigidNode>(document->design()->rootComponent(), config);
 
+#if _DEBUG
+	// Save tree generation log to file
+	std::ofstream lg;
+	lg.open(Filesystem::getCurrentRobotDirectory(config.robotName) + "log.txt");
+	lg << rootNode->getLog();
+	lg.close();
+#endif
+
 	// List all rigid-nodes in tree
 	std::vector<std::shared_ptr<BXDJ::RigidNode>> allNodes;
 	allNodes.push_back(rootNode);
@@ -128,10 +136,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 
 	xml.write(*rootNode);
 
-	xml.startElement("DriveTrainType");
-	xml.writeElement("DriveTrainTypeNumber", std::to_string((int)config.driveTrainType));
-	xml.endElement();
-
+	xml.writeElement("DriveTrainType", BXDJ::ConfigData::toString(config.driveTrainType));
 	xml.endElement();
 
 	// Write BXDA files
@@ -166,6 +171,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 		if (*cancel)
 			return; // TODO: Delete the create robot directory to prevent corrupted robots from being available
 
+	// Complete progress bar
 	if (progressCallback)
 		progressCallback(1);
 }
