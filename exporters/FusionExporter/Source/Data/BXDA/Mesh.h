@@ -11,6 +11,9 @@ namespace BXDA
 {
 	class SubMesh;
 
+	///
+	/// A collection of SubMeshes identified by a common GUID.
+	///
 	class Mesh : public BinaryWritable
 	{
 	public:
