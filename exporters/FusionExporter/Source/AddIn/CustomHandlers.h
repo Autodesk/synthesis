@@ -11,6 +11,7 @@ namespace SynthesisAddIn
 	class EUI;
 
 	// Workspace Events
+	/// Notified when the Synthesis workspace is selected by the user.
 	class WorkspaceActivatedHandler : public WorkspaceEventHandler
 	{
 	public:
@@ -20,6 +21,7 @@ namespace SynthesisAddIn
 		EUI * eui;
 	};
 
+	/// Notified when the user leaves the Synthesis workspace.
 	class WorkspaceDeactivatedHandler : public WorkspaceEventHandler
 	{
 	public:
@@ -30,6 +32,7 @@ namespace SynthesisAddIn
 	};
 
 	// Button Events
+	/// Notified when the export robot button is created.
 	class ShowPaletteCommandExecuteHandler : public CommandEventHandler
 	{
 	public:
@@ -39,6 +42,7 @@ namespace SynthesisAddIn
 		EUI * eui;
 	};
 
+	/// Notified when the export robot button is clicked.
 	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
 	{
 	public:
@@ -53,6 +57,7 @@ namespace SynthesisAddIn
 	};
 
 	// Palette Events
+	/// Notified when a palette sends data back to Fusion.
 	class ReceiveFormDataHandler : public HTMLEventHandler
 	{
 	public:
@@ -62,6 +67,7 @@ namespace SynthesisAddIn
 		EUI * eui;
 	};
 
+	/// Notified when the export robot form is closed.
 	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:
