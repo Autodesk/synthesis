@@ -52,7 +52,6 @@ namespace Synthesis.Camera
 
         //The indicator object is originally under robot camera list in unity scene
         public GameObject CameraIndicator;
-        GameObject showCameraButton;
 
         //Camera configuration
         GameObject configureRobotCameraButton;
@@ -132,7 +131,6 @@ namespace Synthesis.Camera
             {
                 CameraIndicator = Auxiliary.FindObject(robotCameraListObject, "CameraIndicator");
             }
-            showCameraButton = Auxiliary.FindObject(canvas, "ShowCameraButton");
 
             //For camera position and attachment configuration
             configureCameraPanel = Auxiliary.FindObject(canvas, "CameraConfigurationPanel");
