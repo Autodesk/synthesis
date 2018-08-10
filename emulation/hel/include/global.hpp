@@ -6,7 +6,6 @@
 namespace hel{
 
     /**
-     * \struct Global
      * \brief Manages data associated with Ni FPGA's tGlobal class
      */
 
@@ -34,7 +33,18 @@ namespace hel{
          */
 
         static uint64_t getCurrentTime()noexcept;
+
+        /**
+         * Constructor for Global
+         */
+
         Global()noexcept;
+
+        /**
+         * Constructor for Global
+         * \param source A Global object to copy
+         */
+
         Global(const Global&)noexcept;
     };
 }

@@ -7,7 +7,6 @@
 namespace hel{
 
     /**
-     * \struct Alarm
      * \brief Data model for a time-based trigger/alarm
      */
 

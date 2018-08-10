@@ -7,7 +7,6 @@
 namespace hel{
 
         /**
-         * \struct Power
          * \brief Data model for RoboRIO voltmeter and power manager
          */
 

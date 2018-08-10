@@ -8,7 +8,6 @@
 
 namespace hel{
     /**
-     * \struct PWMSystem
      * \brief Data model for PWM system.
      * Data model for all PWMS. Holds all internal data for PWMs.
      */

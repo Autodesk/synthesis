@@ -7,7 +7,6 @@
 namespace hel{
 
     /**
-     * \struct Error
      * \brief Base class for all error types
      */
 
@@ -17,7 +16,6 @@ namespace hel{
     };
 
     /**
-     * \struct DSError
      * \brief Error message container with data to print to driver station
      */
 
@@ -75,17 +73,34 @@ namespace hel{
         std::string toString()const;
 
         /**
-         * \brief Constructs new DSError given values from NI FPGA's sendError function
+         * Constructor for DSError
+         * \param is_error
+         * \param error_code
+         * \param details
+         * \param location
+         * \param call_stack
          */
 
         DSError(bool, int32_t, const char*, const char*, const char*)noexcept;
+
+        /**
+         * Constructor for DSError
+         * \param source A DSError object to copy
+         */
+
         DSError(const DSError&)noexcept;
     };
+
+    /**
+     * \fn std::string as_string(DSError::Type type)
+     * \brief Formats a DSError::Type as a string
+     * \param type The value to convert
+     * \return The type formatted as a string
+     */
 
     std::string as_string(DSError::Type);
 
     /**
-     * \struct UnhandledEnumConstantException: public std::exception
      * \brief An exception for enum constant comparisons which are not handled
      */
 
@@ -99,38 +114,94 @@ namespace hel{
         std::string enum_type;
 
     public:
+        /**
+         * Constructor for UnhandledEnumConstantException
+         * \param enum_type The enum type with the unhandled case as a string
+         */
+
         UnhandledEnumConstantException(std::string)noexcept;
+
+        /**
+         * \fn const char* what()const throw
+         * \brief Returns the exception messaage
+         */
 
         const char* what()const throw();
     };
 
     /**
-     * \struct UnhandledCase: public std::exception
      * \brief A generic exception for unhandled cases when all should be handled
      */
 
     struct UnhandledCase: public std::exception{
+        /**
+         * \fn const char* what()const throw
+         * \brief Returns the exception messaage
+         */
+
         const char* what()const throw();
     };
 
-    struct UnsupportedFeature: std::exception{
+    /**
+     * \brief A generic exception for when user code attempts to access a feature unsupported by Synthesis
+     */
+
+    struct UnsupportedFeature: std::exception{ //TODO rename to UnsupportedFeatureException
     private:
+        /**
+         * \var std::string details
+         * \brief Details about the unsupported feature
+         */
+
         std::string details;
 
     public:
+        /**
+         * \fn const char* what()const throw
+         * \brief Returns the exception messaage
+         */
+
         const char* what()const throw();
 
+        /**
+         * Constructor for UnsupportedFeature
+         */
+
         UnsupportedFeature()noexcept;
+
+        /**
+         * Constructor for UnsupportedFeature
+         * \param details Details about the unsupported feature to include in the exception message
+         */
+
         UnsupportedFeature(std::string)noexcept;
     };
 
+    /**
+     * \brief An exception for input configuration mismatches between user code and the exported robot
+     */
 
     struct InputConfigurationException: std::exception{
     private:
+        /**
+         * \var std::string details
+         * \brief Details about the input misconfiguration
+         */
+
         std::string details;
 
     public:
+        /**
+         * \fn const char* what()const throw
+         * \brief Returns the exception messaage
+         */
+
         const char* what()const throw();
+
+        /**
+         * Constructor for InputConfigurationException
+         * \param details Details about the input misconfiguration to include in the exception message
+         */
 
         InputConfigurationException(std::string)noexcept;
     };

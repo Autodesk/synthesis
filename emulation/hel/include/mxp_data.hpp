@@ -5,13 +5,12 @@
 
 namespace hel{
     /**
-     * \struct MXPData
      * \brief Represents a RoboRIO MXP configurations and values
      */
 
     struct MXPData{
         /**
-         * \enum class Config
+         * \enum Config
          * \brief Represents the various possible MXP configurations
          */
 

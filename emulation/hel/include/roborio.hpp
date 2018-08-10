@@ -1,12 +1,6 @@
 #ifndef _ROBORIO_HPP_
 #define _ROBORIO_HPP_
 
-/**
- * \file roborio.hpp
- * \brief Defines internal structure of mock RoboRIO
- * This file defines the RoboRIOs structure
- */
-
 #define ASIO_STANDALONE
 #define ASIO_HAS_STD_ADDRESSOF
 #define ASIO_HAS_STD_ARRAY
@@ -51,12 +45,31 @@
 #include "sys_watchdog.hpp"
 #include "system_interface.hpp"
 
+/**
+ * \namespace nFPGA
+ * \brief Namespace for all of Ni FPGA code
+ */
+
+namespace nFPGA{
+
+    /**
+     * \namespace nRoboRIO_FPGANamespace
+     * \brief Namespace for all Ni FPGA RoboRIO chip object code
+     */
+
+    namespace nRoboRIO_FPGANamespace{}
+}
+
+/**
+ * \namespace hel
+ * \brief Namespace for all Synthesis emulation code
+ */
+
 namespace hel{
 
     extern std::atomic<bool> hal_is_initialized;
 
     /**
-     * \struct RoboRIO roborio.hpp
      * \brief Mock RoboRIO implementation
      *
      * This class represents the internals of the RoboRIO hardware, broken up into several sub-systems:
@@ -80,7 +93,7 @@ namespace hel{
         DigitalSystem digital_system;
         std::vector<DSError> ds_errors;
         MatchInfo match_info;
-        BoundsCheckedArray<Maybe<EncoderManager>, FPGAEncoder::NUM_ENCODERS> encoder_managers;
+        BoundsCheckedArray<Maybe<EncoderManager>, FPGAEncoder::NUM_ENCODERS> encoder_managers; //TODO should be total number of FPGAEncoders and Counters
         BoundsCheckedArray<FPGAEncoder, FPGAEncoder::NUM_ENCODERS> fpga_encoders;
         Global global;
         BoundsCheckedArray<Joystick, Joystick::MAX_JOYSTICK_COUNT> joysticks;

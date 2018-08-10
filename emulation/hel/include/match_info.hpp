@@ -8,7 +8,6 @@
 namespace hel{
 
     /**
-     * \struct MatchInfo
      * \brief A data container for match/driver station information
      * Holds all of the match data communicated to the robot via the driver station
      */

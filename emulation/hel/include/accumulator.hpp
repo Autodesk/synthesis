@@ -7,7 +7,6 @@
 namespace hel{
 
     /**
-     * \struct Accumulator
      * \brief Data model for an analog accumulator
      * Accumulates analog values in a total over time while tracking count
      */
