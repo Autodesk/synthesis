@@ -61,7 +61,7 @@ namespace hel{
 
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tCounter::tOutput getCurrentOutput()const noexcept
-         * \brief Get the current count of the counter incuding resets
+         * \brief Get the current count of the counter including resets
          * \return The current encoder count
          */
 

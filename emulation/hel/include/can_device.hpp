@@ -68,7 +68,7 @@ namespace hel{
      * \fn std::string as_string(CANDevice::Type type)
      * \brief Converts a CANDevice::Type to a string
      * \param type The CANDevice::Type to convert
-     * \return A string represendation of the CANDevice::Type
+     * \return A string representation of the CANDevice::Type
      */
 
     std::string as_string(CANDevice::Type);

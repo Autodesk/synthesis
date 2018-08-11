@@ -23,7 +23,7 @@ extern "C" {
             Occur(x);
         };
         instance.first->net_comm.occurFunction = newData;
-        ds_spoofer = std::thread([newData](){while(1){newData(42);}});
+        ds_spoofer = std::thread([newData](){while(1){newData(42);}});//TODO use NetComm ref_num instead of 42
         hel::hal_is_initialized.store(true);
         instance.second.unlock();
     }

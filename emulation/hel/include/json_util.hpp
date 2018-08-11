@@ -7,21 +7,51 @@
 #include "bounds_checked_array.hpp"
 
 namespace hel{
+    /**
+     * \var constexpr char JSON_PACKET_SUFFIX
+     * \brief A unique character to end JSON transmissions with
+     * This enables the receiving end to more easily differentiate between packets
+     */
+
     constexpr char JSON_PACKET_SUFFIX = '\x1B';
 
     /**
-     * \brief An expcetion representing when parsing failed due to unexpected data format
+     * \brief An exception representing when parsing failed due to unexpected data format
      */
 
     struct JSONParsingException: std::exception{
     private:
+        /**
+         * \var std::string details
+         * \brief Details about the JSON parsing exception
+         */
+
         std::string details;
 
     public:
+        /**
+         * \fn const char* what()const throw
+         * \brief Returns the exception message
+         */
+
         const char* what()const throw();
+
+        /**
+         * Constructor for JSONParsingException
+         * \param details The details of the parsing exception
+         */
 
         JSONParsingException(std::string);
     };
+
+    /**
+     * \fn std::string serializeList(const std::string& label, const T& iterable, std::function<std::string(typename T::value_type)> to_s)
+     * \brief Serialize an iterable container as a JSON string
+     * \param label The JSON label to use
+     * \param iterable The data to serialize
+     * \param to_s A serialization function for the container's value type
+     * \return The JSON serialized data
+     */
 
     template<typename T>
     std::string serializeList(const std::string& label, const T& iterable, std::function<std::string(typename T::value_type)> to_s){
@@ -39,17 +69,17 @@ namespace hel{
     /**
      * \fn std::string removeExtraneousSpaces(std::string input)
      * \brief Removes duplicate spaces from a string
-     * \param input the string to clean extra spaces from
-     * \return the cleaned string
+     * \param input The string to clean extra spaces from
+     * \return The cleaned string
      */
     std::string removeExtraneousSpaces(std::string);
 
     /**
-     * \fn std::string excludeFromString(std::string input, std::vector<char> characters)
+     * \fn std::string excludeFromString(const std::string& input, const std::vector<char>& characters)
      * \brief Remove the given characters from the input string
-     * \param input the string to remove characters from
-     * \param characters the characters to exclude
-     * \return the input string excluding the specified characters
+     * \param input The string to remove characters from
+     * \param characters The characters to exclude
+     * \return The input string excluding the specified characters
      */
 
     std::string excludeFromString(const std::string&, const std::vector<char>&);
@@ -57,8 +87,8 @@ namespace hel{
     /**
      * \fn std::string trim(std::string input)
      * \brief Trims a string of preceding and following whitespace
-     * \param input the string to trim
-     * \return the trimmed string
+     * \param input The string to trim
+     * \return The trimmed string
      */
 
     std::string trim(std::string);
@@ -67,8 +97,8 @@ namespace hel{
      * \fn std::vector<std::string> split(std::string input, const char DELIMITER)
      * \brief Splits a string into a vector of string along the given delimiter
      * \param input the string to split
-     * \param const char DELIMITER the delimiter to split along
-     * \return a vector of strings from the input split along the delimiter, excluding the delimiter
+     * \param DELIMITER The delimiter to split along
+     * \return A vector of strings from the input split along the delimiter, excluding the delimiter
      */
 
     std::vector<std::string> split(std::string, const char);
@@ -76,8 +106,8 @@ namespace hel{
     /**
      * \fn std::vector<std::string> splitObject(std::string input)
      * \brief Splits an input string into the found JSON sub-objects
-     * \param input the string to parse
-     * \return a vector of all the found JSON objects
+     * \param input The string to parse
+     * \return A vector of all the found JSON objects
      */
 
     std::vector<std::string> splitObject(std::string);
@@ -85,21 +115,30 @@ namespace hel{
     /**
      * \fn std::string clipList(std::string input)
      * \brief Remove the outer brackets from a JSON list
-     * \param input the list to trim
-     * \return the input list without outer list brackets
+     * \param input The list to trim
+     * \return The input list without outer list brackets
      */
 
     std::string clipList(std::string);
 
     /**
      * \fn std::string pullObject(std::string label, std::string& input)
-     * \brief Removes a string representing the value part of the first JSON object of the given label from the input
-     * \param label the target object
-     * \param input the string to parse
-     * \return a string containing the value pulled from the input string
+     * \brief Removes and returns a string representing a JSON object of the given label from the input
+     * \param label The target object
+     * \param input The string to parse
+     * \return A string containing the value pulled from the input string
      */
 
     std::string pullObject(std::string,std::string&);
+
+    /**
+     * \fn T pullObject(std::string label,std::string& input,const std::function<T(std::string)>& from_s)
+     * \brief Removes a string representing a JSON object of the given label from the input and deserializes it
+     * \param label The target object
+     * \param input The string to parse
+     * \param from_s The deserialization function to use
+     * \return An object containing the parsed data
+     */
 
     template<typename T>
     T pullObject(std::string label,std::string& input,const std::function<T(std::string)>& from_s){
@@ -107,13 +146,22 @@ namespace hel{
     }
 
     /**
-     * \fn std::string pullObject(std::string& input)
+     * \fn std::string pullObject(std::string& input, unsigned start = 0)
      * \brief Removes the first string representing a JSON object from the input
-     * \param input the string to parse
-     * \return a string containing the first JSON object in the input
+     * \param input The string to parse
+     * \return A string containing the first JSON object in the input
      */
 
     std::string pullObject(std::string&,unsigned start = 0);
+
+    /**
+     * \fn std::vector<T> deserializeList(std::string input, const std::function<T(std::string)>& from_s, bool clip = false)
+     * \brief Deserialize a JSON list into a vector
+     * \param input The JSON string to deserialize
+     * \param from_s The deserialization function for the list's value type
+     * \param clip Whether to clip the JSON string's brackets or not
+     * \return A vector of deserialized objects
+     */
 
     template<typename T>
     std::vector<T> deserializeList(std::string input, const std::function<T(std::string)>& from_s, bool clip = false){
@@ -129,10 +177,10 @@ namespace hel{
     }
 
     /**
-     * \fn std::string quote(std::string input)
+     * \fn std::string quote(const std::string& input)
      * \brief Add quotes surrounding the input string
-     * \param input the string to add quotes to
-     * \return the string with outer quotation marks
+     * \param input The string to add quotes to
+     * \return The string with outer quotation marks
      */
 
     std::string quote(const std::string&);
@@ -140,8 +188,8 @@ namespace hel{
     /**
      * \fn std::string unquote(std::string input)
      * \brief Remove the outer quotation marks of a string
-     * \param input the string to remove the outer quotation marks from
-     * \return the trimmed string without outer quotation marks
+     * \param input The string to remove the outer quotation marks from
+     * \return The trimmed string without outer quotation marks
      */
 
     std::string unquote(std::string);

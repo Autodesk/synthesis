@@ -144,7 +144,7 @@ namespace hel{
 
         /**
          * \fn void setOversampleBits(uint8_t channel, uint8_t value)
-         * \brief Sets analog input scan lsit.
+         * \brief Sets analog input scan list.
          * Sets a given analog inputs scan list to \b value.
          * \param channel A byte representing the hardware channel of the desired analog input.
          * \param value A byte representing the scan list.

@@ -57,7 +57,7 @@ namespace hel{
 
         /**
          * \var uint8_t a_channel
-         * \brief The port indx the encoder a channel is attached to
+         * \brief The port index the encoder a channel is attached to
          */
 
         uint8_t a_channel;
@@ -71,7 +71,7 @@ namespace hel{
 
         /**
          * \var uint8_t b_channel
-         * \brief The port indx the encoder b channel is attached to
+         * \brief The port index the encoder b channel is attached to
          */
 
         uint8_t b_channel;
@@ -94,12 +94,12 @@ namespace hel{
          * \fn bool checkDevice(uint8_t, bool, bool, uint8_t, bool, bool)const noexcept
          * \brief Check the EncoderManager configuration against tEncoder or tCounter configurations
          * This is used to determine what device to map the EncoderManager to
-         * \param a The confiugration's a channel value
+         * \param a The configuration's a channel value
          * \param a_module The configuration's a module value
-         * \param a_analog The confiugration's b analog value
+         * \param a_analog The configuration's b analog value
          * \param b The configuration's b channel value
          * \param b_module The configuration's b module value
-         * \param b_analog The confiugration's b analog value
+         * \param b_analog The configuration's b analog value
          * \return True if the devices match
          */
 
@@ -211,7 +211,7 @@ namespace hel{
 
         /**
          * \fn void update()
-         * \brief Updates the EncoderManager's type and index and the ticks of its corresponding FPGAEncoder or Coutner
+         * \brief Updates the EncoderManager's type and index and the ticks of its corresponding FPGAEncoder or Counter
          */
 
         void update();
@@ -234,7 +234,7 @@ namespace hel{
 
         /**
          * \fn std::string toString()const
-         * \brief Format hte EncoderManager data as a string
+         * \brief Format the EncoderManager data as a string
          * \return The EncoderManager data in string format
          */
 
@@ -256,8 +256,8 @@ namespace hel{
         /**
          * Constructor for EncoderManager
          * \param a_channel The port the encoder's a channel is attached to
-         * \param a_type The type of port the encoder's a channel is attacehd to
-         * \param b_channel The port the encoder's b channel is attacehd to
+         * \param a_type The type of port the encoder's a channel is attached to
+         * \param b_channel The port the encoder's b channel is attached to
          * \param b_type The type of port the encoder's b channel is attached to
          */
 
