@@ -126,9 +126,9 @@ namespace Synthesis.Robot
         /// <param name="numWheels"></param>
         /// <param name="collectiveMass"></param>
         /// <returns></returns>
-        protected override bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
+        protected override bool ConstructRobot(List<RigidNode_Base> nodes, ref float collectiveMass)
         {
-            if (!base.ConstructRobot(nodes, numWheels, ref collectiveMass))
+            if (!base.ConstructRobot(nodes, ref collectiveMass))
                 return false;
 
             foreach (RigidNode_Base n in nodes)

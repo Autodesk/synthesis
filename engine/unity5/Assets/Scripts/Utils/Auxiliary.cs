@@ -226,10 +226,10 @@ namespace Synthesis.Utils
         /// <returns></returns>
         public static Vector3 BestFitUnitNormal(Vector3[] points, out Vector3 centroid)
         {
-            Debug.Assert(points.Length > 3);
+            Debug.Assert(points.Length >= 2);
 
             Vector3 displacement, result = centroid = displacement = Vector3.zero;
-
+            
             foreach (Vector3 p in points)
                 centroid += p;
 
@@ -245,6 +245,17 @@ namespace Synthesis.Utils
 
             result[min] = 1f;
             return result;
+        }
+
+        /// <summary>
+        /// Returns a new <see cref="Vector3"/> with each component set to the absolute value
+        /// of its corresponding component in the <see cref="Vector3"/> provided.
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public static Vector3 Abs(Vector3 v)
+        {
+            return new Vector3(Math.Abs(v.x), Math.Abs(v.y), Math.Abs(v.z));
         }
 
         public static float ToFeet(float meter)
@@ -265,11 +276,6 @@ namespace Synthesis.Utils
         public static float ToDegrees(float rad)
         {
             return rad * RadToDeg;
-        }
-
-        private static Vector3 Abs(Vector3 v)
-        {
-            return new Vector3(Math.Abs(v.x), Math.Abs(v.y), Math.Abs(v.z));
         }
     }
 }
