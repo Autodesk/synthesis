@@ -81,7 +81,7 @@ namespace hel{
         void reset()noexcept;
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getCurrentOutput()const noexcept
-         * \brief Get the current count of the encoder incuding resets
+         * \brief Get the current count of the encoder including resets
          * \return The current encoder count
          */
 

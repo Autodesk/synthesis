@@ -6,44 +6,55 @@
 
 namespace hel{
 
+    /**
+     * \brief Data model for RoboRIO voltmeter and power manager
+     */
+
+    struct Power{
+    private:
+
         /**
-         * \brief Data model for RoboRIO voltmeter and power manager
+         * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status
+         * \brief The active state of the power supply rails
          */
 
-        struct Power{
-        private:
+        nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status;
 
-            /**
-             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status
-             * \brief The active state of the power supply rails
-             */
+        /**
+         * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts
+         * \brief A running count of faults for each rail
+         */
 
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status;
+        nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts;
 
-            /**
-             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts
-             * \brief A running count of faults for each rail
-             */
+        /**
+         * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled
+         * \brief Which power rails have been disabled
+         */
 
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts;
+        nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled;
 
-            /**
-             * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled
-             * \brief Which power rails have been disabled
-             */
+    public:
+        nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus getStatus()const noexcept;
+        void setStatus(nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus)noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts getFaultCounts()const noexcept;
+        void setFaultCounts(nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts)noexcept;
+        nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable getDisabled()const noexcept;
+        void setDisabled(nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable)noexcept;
 
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled;
+        /**
+         * Constructor for Power
+         */
 
-        public:
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus getStatus()const noexcept;
-            void setStatus(nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus)noexcept;
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts getFaultCounts()const noexcept;
-            void setFaultCounts(nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts)noexcept;
-            nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable getDisabled()const noexcept;
-            void setDisabled(nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable)noexcept;
-            Power()noexcept;
-            Power(const Power&)noexcept;
-        };
+        Power()noexcept;
+
+        /**
+         * Constructor for Power
+         * \param source A Power object to copy
+         */
+
+        Power(const Power&)noexcept;
+    };
 }
 
 #endif

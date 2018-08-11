@@ -57,7 +57,7 @@ namespace hel{
          */
 
         AllianceStationID_t alliance_station_id;
- 
+
         /**
          * \var double match_time
          * \brief Represents match time in seconds
@@ -68,124 +68,153 @@ namespace hel{
     public:
 
         /**
-         * \fn std::string getEventName()const
+         * \fn std::string getEventName()const noexcept
          * \brief Fetch a string representing the event name
-         * return a standard string representing the event name
+         * \return A string representing the event name
          */
 
         std::string getEventName()const noexcept;
 
         /**
-         * \fn void setEventName(std::string event_name)
+         * \fn void setEventName(std::string event_name)noexcept
          * \brief Set the name of the event
-         * \param event_name a standard string representing the name of the event
+         * \param event_name A string representing the name of the event
          */
 
         void setEventName(std::string)noexcept;
 
         /**
-         * \fn std::string getGameSpecificMessage()const
+         * \fn std::string getGameSpecificMessage()const noexcept
          * \brief Fetch any game specific message for the match
-         * \return a standard string representing any game specific message
+         * \return A string representing any game specific message
          */
 
         std::string getGameSpecificMessage()const noexcept;
 
         /**
-         * \fn void setGameSpecificMessage(std::string game_specific_message)
+         * \fn void setGameSpecificMessage(std::string game_specific_message)noexcept
          * \brief Set the game specific message for the match
-         * \param game_specific_message the game specific message for the match
+         * \param game_specific_message The game specific message for the match
          */
 
         void setGameSpecificMessage(std::string)noexcept;
 
         /**
-         * \fn MatchType_t getMatchType()const
+         * \fn MatchType_t getMatchType()const noexcept
          * \brief Fetch the type of match
-         * \return a MatchType_t object representing the type of match
+         * \return A MatchType_t object representing the type of match
          */
 
         MatchType_t getMatchType()const noexcept;
 
         /**
-         * \fn void setMatchType(MatchType_t match_type)
-         * \brief Set the tye of match
-         * \param match_type the type of match running
+         * \fn void setMatchType(MatchType_t match_type)noexcept
+         * \brief Set the type of match
+         * \param match_type The type of match running
          */
 
         void setMatchType(MatchType_t)noexcept;
 
         /**
-         * \fn uint16_t getMatchNumber()const
+         * \fn uint16_t getMatchNumber()const noexcept
          * \brief Fetch the match number at the event
-         * \return a 16-bit integer representing the match number
+         * \return A 16-bit integer representing the match number
          */
 
         uint16_t getMatchNumber()const noexcept;
 
         /**
-         * \fn void setMatchNumber(uint16_t match_number)
+         * \fn void setMatchNumber(uint16_t match_number)noexcept
          * \brief Set the match number at the event
-         * \param match_number the running match number
+         * \param match_number The running match number
          */
 
         void setMatchNumber(uint16_t)noexcept;
 
         /**
-         * \fn uint8_t getReplayNumber()const
+         * \fn uint8_t getReplayNumber()const noexcept
          * \brief Get the replay number for the running match
-         * \return a byte representing the replay number of the running match (0 if not a replay)
+         * \return A byte representing the replay number of the running match (0 if not a replay)
          */
 
         uint8_t getReplayNumber()const noexcept;
 
         /**
-         * \fn void setReplayNumber(uint8_t replay_number)
+         * \fn void setReplayNumber(uint8_t replay_number)noexcept
          * \brief Set the replay number for the running match
-         * \param replay_number a byte representing the replay number for the running match (0 if not a replay)
+         * \param replay_number A byte representing the replay number for the running match (0 if not a replay)
          */
 
         void setReplayNumber(uint8_t)noexcept;
 
         /**
-         * \fn AllianceStationID_t getAllianceStationID()const
+         * \fn AllianceStationID_t getAllianceStationID()const noexcept
          * \brief Fetch the driver station position controlling the robot
-         * \return an AllianceStationID_t object representing the robot's driver station ID
+         * \return An AllianceStationID_t object representing the robot's driver station ID
          */
 
         AllianceStationID_t getAllianceStationID()const noexcept;
 
         /**
-         * \fn void setAllianceStationID(AllianceStationID_t alliance_station_id)
+         * \fn void setAllianceStationID(AllianceStationID_t alliance_station_id)noexcept
          * \brief Set the driver station position for the robot's drivers
-         * \param alliance_station_id the driver station position for the robot
+         * \param alliance_station_id The driver station position for the robot
          */
 
         void setAllianceStationID(AllianceStationID_t)noexcept;
 
         /**
-         * \fn double getMatchTime()const
+         * \fn double getMatchTime()const noexcept
          * \brief Get the match time in seconds
-         * \return a double representing the match time in seconds
+         * \return A double representing the match time in seconds
          */
 
         double getMatchTime()const noexcept;
 
         /**
-         * \fn void SetMatchTime(double match_time)
+         * \fn void setMatchTime(double match_time)noexcept
          * \brief Set the match time
-         * \param match_time a double representing the match time in seconds
+         * \param match_time A double representing the match time in seconds
          */
 
         void setMatchTime(double)noexcept;
 
+        /**
+         * \fn static MatchInfo deserialize(std::string input)
+         * \brief Deserialize a JSON string into a MatchInfo object
+         * \param input The JSON to parse
+         * \return The parsed MatchInfo object
+         */
+
         static MatchInfo deserialize(std::string);
+
+        /**
+         * \fn std::string serialize()const
+         * \brief Format the match information as JSON
+         * \return The match information in JSON format
+         */
 
         std::string serialize()const;
 
+        /**
+         * \fn std::string toString()const
+         * \brief Convert the match information to string format
+         * \return A string containing the match info
+         */
+
         std::string toString()const;
 
+        /**
+         * Constructor for MatchInfo
+         */
+
         MatchInfo()noexcept;
+
+        /**
+         * Constructor for MatchInfo
+         * \param source A MatchInfo object to copy
+         */
+
         MatchInfo(const MatchInfo&)noexcept;
     };
 }

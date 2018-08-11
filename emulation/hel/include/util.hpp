@@ -13,12 +13,12 @@
 namespace hel{
 
     /**
-     * \fn unsigned findMostSignificantBit(T value)
+     * \fn constexpr unsigned findMostSignificantBit(T value)
      * \brief Finds the most significant bit in an integer
      * Finds the index of the high bit of the greatest value; returns zero if zero is passed in
-     * \type T the type of integer
-     * \param value the integer to analyze
-     * \return the zero-indexed index of the most significant bit
+     * \type T The type of integer
+     * \param value The integer to analyze
+     * \return The zero-indexed index of the most significant bit
      */
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
@@ -34,12 +34,12 @@ namespace hel{
     }
 
     /**
-     * \fn bool checkBitHigh(T value, unsigned index)
+     * \fn constexpr bool checkBitHigh(const T& value, const unsigned& index)
      * \brief Check if the bit in place \b index of integer \b value is high
-     * \type T the type of integer
-     * \param value the integer to analyze
-     * \param index the zero-indexed index to check
-     * \return true if the bit is high
+     * \type T The type of integer
+     * \param value The integer to analyze
+     * \param index The zero-indexed index to check
+     * \return True if the bit is high
      */
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
@@ -47,10 +47,28 @@ namespace hel{
     	return value & (1u << index);
     }
 
+    /**
+     * \fn constexpr bool checkBitLow(const T& value, const unsigned& index)
+     * \brief Check if the bit in place \b index of integer \b value is low
+     * \type T The type of integer
+     * \param value The integer to analyze
+     * \param index The zero-indexed index to check
+     * \return True if the bit is high
+     */
+
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
-    constexpr bool checkBitLow(T value,unsigned index){
+    constexpr bool checkBitLow(const T& value,const unsigned& index){
         return !checkBitHigh(value, index);
     }
+
+    /**
+     * \fn constexpr TInteger setBit(TInteger integer,bool bit, TIndex index)
+     * \brief Set a bit at a given index in a given integer to a given value
+     * \param integer The integer to modify
+     * \param bit The value of bit to use
+     * \param index The zero-indexed index to set the bit at
+     * \return The modified integer
+     */
 
     template<typename TInteger, typename TIndex, typename = std::enable_if<std::is_integral<TInteger>::value && std::is_integral<TIndex>::value>>
     constexpr TInteger setBit(TInteger integer,bool bit, TIndex index){

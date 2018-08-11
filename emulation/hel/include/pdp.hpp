@@ -5,18 +5,33 @@
 
 namespace hel{
 
+    /**
+     * \brief Data model for the Power Distribution Panel (PDP)
+     * Currently unsupported by Synthesis
+     */
+
     struct PDP{ //TODO handle emulated data
+
+        /**
+         * \enum MessageData
+         * \brief Interpretation definitions for CAN message data bytes
+         */
 
         enum MessageData{
             SIZE = 8
         };
 
-        enum SendCommandByteMask: uint8_t{};
+        /**
+         * Constructor for PDP
+         */
 
-        enum ReceiveCommandIDMask: uint32_t{};
+        PDP()noexcept;
+        /**
+         * Constructor for PDP
+         * \param source A PDP object to copy
+         */
 
-		PDP()noexcept;
-		PDP(const PDP&)noexcept;
+        PDP(const PDP&)noexcept;
     };
 }
 

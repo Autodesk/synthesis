@@ -123,7 +123,7 @@ namespace hel{
 
         /**
          * \fn const char* what()const throw
-         * \brief Returns the exception messaage
+         * \brief Returns the exception message
          */
 
         const char* what()const throw();
@@ -136,7 +136,7 @@ namespace hel{
     struct UnhandledCase: public std::exception{
         /**
          * \fn const char* what()const throw
-         * \brief Returns the exception messaage
+         * \brief Returns the exception message
          */
 
         const char* what()const throw();
@@ -158,7 +158,7 @@ namespace hel{
     public:
         /**
          * \fn const char* what()const throw
-         * \brief Returns the exception messaage
+         * \brief Returns the exception message
          */
 
         const char* what()const throw();
@@ -193,7 +193,7 @@ namespace hel{
     public:
         /**
          * \fn const char* what()const throw
-         * \brief Returns the exception messaage
+         * \brief Returns the exception message
          */
 
         const char* what()const throw();

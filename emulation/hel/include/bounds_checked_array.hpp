@@ -90,7 +90,7 @@ namespace hel{
 
         constexpr const T& front()const{
             if(LEN == 0){
-                throw std::out_of_range("Exception: array index out of bounds: cannot refernece front of array of size " + std::to_string(LEN));
+                throw std::out_of_range("Exception: array index out of bounds: cannot reference front of array of size " + std::to_string(LEN));
             }
             return internal.front();
         }
@@ -103,7 +103,7 @@ namespace hel{
 
         constexpr T& front(){
             if(LEN == 0){
-                throw std::out_of_range("Exception: array index out of bounds: cannot refernece front of array of size " + std::to_string(LEN));
+                throw std::out_of_range("Exception: array index out of bounds: cannot reference front of array of size " + std::to_string(LEN));
             }
             return internal.front();
         }
@@ -116,7 +116,7 @@ namespace hel{
 
         constexpr const T& back()const{
             if(LEN == 0){
-                throw std::out_of_range("Exception: array index out of bounds: cannot refernece back of array of size " + std::to_string(LEN));
+                throw std::out_of_range("Exception: array index out of bounds: cannot reference back of array of size " + std::to_string(LEN));
             }
             return internal.back();
         }
@@ -129,7 +129,7 @@ namespace hel{
 
         constexpr T& back(){
             if(LEN == 0){
-                throw std::out_of_range("Exception: array index out of bounds: cannot refernece back of array of size " + std::to_string(LEN));
+                throw std::out_of_range("Exception: array index out of bounds: cannot reference back of array of size " + std::to_string(LEN));
             }
             return internal.back();
         }
@@ -288,7 +288,7 @@ namespace hel{
         template<typename S, typename = std::enable_if<std::is_same<typename S::value_type,T>::value && !std::is_same<S,std::initializer_list<T>>::value>>
         BoundsCheckedArray(const S& iterable)noexcept{
             if(iterable.size() != LEN){
-                throw std::out_of_range("Exception: assignement to array of size " + std::to_string(LEN) + " to iterable of different size " + std::to_string(iterable.size()));
+                throw std::out_of_range("Exception: assignment to array of size " + std::to_string(LEN) + " to iterable of different size " + std::to_string(iterable.size()));
             }
             std::copy(iterable.begin(), iterable.end(), internal.begin());
 
@@ -303,7 +303,7 @@ namespace hel{
         template<typename S, typename = std::enable_if<!std::is_same<S,T>::value>> //TODO template necessary?
         BoundsCheckedArray(std::initializer_list<T> list){
             if(list.size() != LEN){
-                throw std::out_of_range("Exception: assignement to array of size " + std::to_string(LEN) + " to brace-enclosed initializer list of different size " + std::to_string(list.size()));
+                throw std::out_of_range("Exception: assignment to array of size " + std::to_string(LEN) + " to brace-enclosed initializer list of different size " + std::to_string(list.size()));
             }
             std::copy(list.begin(), list.end(), internal.begin());
         }
@@ -323,7 +323,7 @@ namespace hel{
 
     /**
      * \fn bool operator==(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b)
-     * \brief Equality comparision operator for two BoundsCheckedArray objects
+     * \brief Equality comparison operator for two BoundsCheckedArray objects
      * \param a The first object to compare against
      * \param b The second object to compare against
      * \return True if the two BoundsCheckedArray objects are equal
@@ -336,7 +336,7 @@ namespace hel{
 
     /**
      * \fn bool operator!=(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b)
-     * \brief Inqeuality comparision operator for two BoundsCheckedArray objects
+     * \brief Inequality comparison operator for two BoundsCheckedArray objects
      * \param a The first object to compare against
      * \param b The second object to compare against
      * \return True if the two BoundsCheckedArray objects are not equal

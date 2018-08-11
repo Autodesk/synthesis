@@ -124,7 +124,7 @@ namespace hel{
 
             /**
              * \var Config expected_configuration
-             * \brief The expected configuration for the digital port to use the digital functionity
+             * \brief The expected configuration for the digital port to use the digital functionality
              */
 
             Config expected_configuration;
@@ -139,7 +139,7 @@ namespace hel{
         public:
             /**
              * \fn const char* what()const throw
-             * \brief Returns the exception messaage
+             * \brief Returns the exception message
              */
 
             const char* what()const throw();
@@ -188,15 +188,15 @@ namespace hel{
 
         /**
          * \fn uint16_t getMXPSpecialFunctionsEnabled()const noexcept
-         * \brief Fetch the bit mask for enabled mxp special functions
-         * \return The bit mask for enabled mxp special functions
+         * \brief Fetch the bit mask for enabled MXP special functions
+         * \return The bit mask for enabled MXP special functions
          */
 
         uint16_t getMXPSpecialFunctionsEnabled()const noexcept;
 
         /**
          * \fn void setMXPSpecialFunctionsEnabled(uint16_t mxp_special_functions_enabled)noexcept
-         * \brief Set the bit mask to enable mxp special functions
+         * \brief Set the bit mask to enable MXP special functions
          * \param mxp_special_functions_enabled The bit mask to use
          */
 

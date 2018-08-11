@@ -25,7 +25,7 @@ namespace hel{
 
         /**
          * \enum SendCommandByteMask
-         * \brief Interpretation defintions for command byte bitmask
+         * \brief Interpretation definitions for command byte bitmask
          */
 
         enum SendCommandByteMask: uint8_t{
@@ -35,7 +35,7 @@ namespace hel{
 
         /**
          * \enum ReceiveCommandIDMask
-         * \brief Interpretation defintions for message ID bitmask for CAN frames requesting data
+         * \brief Interpretation definitions for message ID bitmask for CAN frames requesting data
          */
 
         enum ReceiveCommandIDMask: uint32_t{
@@ -61,7 +61,7 @@ namespace hel{
 
         /**
          * \var double percent_output
-         * \brief The set percent output of the motor contoller
+         * \brief The set percent output of the motor controller
          */
 
         double percent_output;

@@ -14,7 +14,7 @@ namespace hel{
 
         /**
          * \enum Register
-         * \brief Copy of HAL emuneration specifying target for Accelerometer function call
+         * \brief Copy of HAL enumeration specifying target for Accelerometer function call
          */
 
         enum Register: uint8_t {
@@ -237,7 +237,7 @@ namespace hel{
         /**
          * \fn float convertAccel(std::pair<uint8_t,uint8_t> accel)noexcept
          * \brief Converts the format of acceleration the Ni FPGA would generate to acceleration in g's
-         * \param accel A pair of bytes that when concatenated represend the value of acceleration without scaling from range configuration
+         * \param accel A pair of bytes that when concatenated represent the value of acceleration without scaling from range configuration
          * \return A float representing acceleration in g's
          */
 
@@ -247,7 +247,7 @@ namespace hel{
          * \fn std::pair<uint8_t, uint8_t> convertAccel(float accel)noexcept
          * \brief Converts acceleration in g's to the format of acceleration the Ni FPGA would generate
          * \param accel A float representing acceleration in g's
-         * \return A pair of bytes that when concatenated represend the value of acceleration without scaling from range configuration
+         * \return A pair of bytes that when concatenated represent the value of acceleration without scaling from range configuration
          */
 
         std::pair<uint8_t, uint8_t> convertAccel(float)noexcept;
