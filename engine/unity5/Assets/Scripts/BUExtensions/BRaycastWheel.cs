@@ -99,9 +99,9 @@ namespace Synthesis.BUExtensions
 
             Vector3 localPosition = parent.MainObject.transform.InverseTransformPoint(node.MainObject.transform.position);
 
-            basePoint = localPosition.ToBullet() - robot.WheelNormal.ToBullet() * VerticalOffset;//new BulletSharp.Math.Vector3(0f, 0f, VerticalOffset);//new BulletSharp.Math.Vector3(0f, VerticalOffset, 0f);
+            basePoint = localPosition.ToBullet() - robot.RootNode.WheelsNormal.ToBullet() * VerticalOffset;
 
-            Debug.Log("Normal: " + robot.WheelNormal);
+            Debug.Log("Normal: " + robot.RootNode.WheelsNormal);
             wheelIndex = robot.AddWheel(driverMeta.type, basePoint, axis.normalized.ToBullet(), VerticalOffset, radius);
         }
 

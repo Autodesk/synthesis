@@ -193,10 +193,9 @@ namespace Synthesis.Robot
             }
 
             //Initializes the wheel variables
-            int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
             float collectiveMass = 0f;
 
-            if (!ConstructRobot(nodes, numWheels, ref collectiveMass))
+            if (!ConstructRobot(nodes, ref collectiveMass))
                 return false;
 
             foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
@@ -270,26 +269,6 @@ namespace Synthesis.Robot
         {
             return false;
         }
-
-        /// <summary>
-        /// Calculates the wheel normal vector from the given list of nodes.
-        /// </summary>
-        /// <param name="nodes"></param>
-        /// <returns></returns>
-        protected Vector3 CalculateWheelNormal(List<RigidNode_Base> nodes)
-        {
-            Vector3 centroid;
-
-            Vector3 wheelNormal = Auxiliary.BestFitUnitNormal(nodes
-                .Where(n => n.HasDriverMeta<WheelDriverMeta>() && n.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL)
-                .Select(n => ((RigidNode)n).MainObject.transform.position)
-                .ToArray(), out centroid);
-
-            if (Vector3.Dot(centroid - RootNode.MainObject.transform.position, wheelNormal) < 0)
-                wheelNormal *= -1f;
-
-            return wheelNormal;
-        }
         
         /// <summary>
         /// Constructs the robot from the given list of nodes and number of wheels,
@@ -299,7 +278,7 @@ namespace Synthesis.Robot
         /// <param name="numWheels"></param>
         /// <param name="collectiveMass"></param>
         /// <returns></returns>
-        protected virtual bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
+        protected virtual bool ConstructRobot(List<RigidNode_Base> nodes, ref float collectiveMass)
         {
             //Initializes the nodes
             foreach (RigidNode_Base n in nodes)
@@ -314,12 +293,10 @@ namespace Synthesis.Robot
                     collectiveMass += node.PhysicalProperties.mass;
             }
 
-            Vector3 wheelNormal = CalculateWheelNormal(nodes);
-
-            Debug.Log(wheelNormal.x + ", " + wheelNormal.y + ", " + wheelNormal.z);
+            RootNode.GenerateWheelInfo();
 
             foreach (RigidNode_Base n in nodes)
-                ((RigidNode)n).CreateJoint(numWheels, wheelNormal, this);
+                ((RigidNode)n).CreateJoint(this);
 
             return true;
         }

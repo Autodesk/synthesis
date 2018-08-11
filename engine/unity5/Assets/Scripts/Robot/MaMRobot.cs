@@ -85,12 +85,12 @@ namespace Synthesis.Robot
                 otherNode.MainObject.AddComponent<Tracker>().Trace = true;
             }
 
-            Vector3 wheelNormal = CalculateWheelNormal(nodes);
+            RootNode.GenerateWheelInfo();
 
             for (int i = 1; i < nodes.Capacity; i++)
             {
                 RigidNode otherNode = (RigidNode)nodes[i];
-                otherNode.CreateJoint(0, wheelNormal, this);
+                otherNode.CreateJoint(this);
             }
 
             RotateRobot(robotStartOrientation);
@@ -165,10 +165,10 @@ namespace Synthesis.Robot
         /// <param name="numWheels"></param>
         /// <param name="collectiveMass"></param>
         /// <returns></returns>
-        protected override bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
+        protected override bool ConstructRobot(List<RigidNode_Base> nodes, ref float collectiveMass)
         {
             if (IsMecanum())
-                return base.ConstructRobot(nodes, numWheels, ref collectiveMass);
+                return base.ConstructRobot(nodes, ref collectiveMass);
 
             //Load Node_0, the base of the robot
             RigidNode node = (RigidNode)nodes[0];
@@ -177,7 +177,7 @@ namespace Synthesis.Robot
             if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName, true, wheelMass))
                 return false;
 
-            node.CreateJoint(numWheels, Vector3.zero, this);
+            node.CreateJoint(this);
 
             if (node.PhysicalProperties != null)
                 collectiveMass += node.PhysicalProperties.mass;
@@ -247,13 +247,13 @@ namespace Synthesis.Robot
                 }
             }
 
-            Vector3 wheelNormal = CalculateWheelNormal(nodes);
+            RootNode.GenerateWheelInfo();
 
             //Create the joints that interact with physics
             for (int i = 1; i < nodes.Count; i++)
             {
                 node = (RigidNode)nodes[i];
-                node.CreateJoint(numWheels, wheelNormal, this, wheelFriction, wheelLateralFriction);
+                node.CreateJoint(this, wheelFriction, wheelLateralFriction);
 
                 if (node.HasDriverMeta<WheelDriverMeta>())
                     node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelRadius;
