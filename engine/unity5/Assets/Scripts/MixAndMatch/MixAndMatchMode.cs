@@ -21,15 +21,6 @@ namespace Synthesis.MixAndMatch
         private GameObject infoText;
         private GameObject mecWheelPanel;
 
-        //Presets
-        private GameObject presetsPanel;
-        [HideInInspector] public List<GameObject> PresetClones = new List<GameObject>();
-        [HideInInspector] public List<MaMPreset> PresetsList = new List<MaMPreset>();
-        private GameObject setPresetPanel;
-        private GameObject inputField;
-        private GameObject deletePresetButton;
-
-
         //Wheel options
         private GameObject tractionWheel;
         private GameObject colsonWheel;
@@ -64,8 +55,6 @@ namespace Synthesis.MixAndMatch
         private GameObject driveBaseLeftScroll;
         private GameObject manipulatorRightScroll;
         private GameObject manipulatorLeftScroll;
-        private GameObject presetRightScroll;
-        private GameObject presetLeftScroll;
         #endregion
         // Use this for initialization
         private void Awake()
@@ -91,10 +80,6 @@ namespace Synthesis.MixAndMatch
             mixAndMatchModeScript = GameObject.Find("MixAndMatchModeScript");
             infoText = GameObject.Find("PartDescription");
             Text txt = infoText.GetComponent<Text>();
-            presetsPanel = GameObject.Find("PresetPanel");
-            setPresetPanel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("SetPresetPanel")).First();
-            inputField = GameObject.Find("InputField");
-            deletePresetButton = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("DeleteButton")).First();
             mecWheelPanel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("MecWheelLabel")).First();
 
             //Find wheel objects
@@ -129,8 +114,6 @@ namespace Synthesis.MixAndMatch
             driveBaseLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("BaseLeftScroll")).First(); ;
             manipulatorRightScroll = GameObject.Find("ManipulatorRightScroll");
             manipulatorLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ManipulatorLeftScroll")).First();
-            presetRightScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PresetRightScroll")).First();
-            presetLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PresetLeftScroll")).First();
 
             if (this.gameObject.name == "MixAndMatchModeScript")
             {
@@ -149,24 +132,8 @@ namespace Synthesis.MixAndMatch
                 wheelLeftScroll.SetActive(false);
                 driveBaseLeftScroll.SetActive(false);
                 manipulatorLeftScroll.SetActive(false);
-                presetLeftScroll.SetActive(false);
-                presetRightScroll.SetActive(false);
 
                 mecWheelPanel.SetActive(false);
-
-                setPresetPanel.SetActive(false);
-
-                deletePresetButton.SetActive(false);
-                //XMLManager.ins.itemDB.xmlList.Clear();
-
-                String presetFile = Application.persistentDataPath + "/item_data.xml";
-                if (File.Exists(presetFile))
-                {
-                    XMLManager.ins.LoadItems();
-                    LoadPresets();
-                }
-
-                if (XMLManager.ins.itemDB.xmlList.Count() > 3) presetRightScroll.SetActive(true);
 
                 SelectWheel(0);
                 SelectDriveBase(0);
@@ -315,205 +282,6 @@ namespace Synthesis.MixAndMatch
         }
         #endregion
 
-        #region Presets
-
-        /// <summary>
-        /// When the user enters the name for a preset, creates a MaMPreset object with the name and selected parts and adds it to the list.
-        /// Also creates a GameObject clone of the preset prefab and adds it to the presetClones list.
-        /// </summary>
-        public void SetPresetName()
-        {
-            String name = "";
-            if (inputField.GetComponent<InputField>().text.Length > 0)
-            {
-                name = inputField.GetComponent<InputField>().text;
-            }
-            else
-            {
-                UserMessageManager.Dispatch("Please enter a name", 5);
-                ToggleSetPresetPanel();
-                return;
-            }
-
-            foreach (MaMPreset preset in XMLManager.ins.itemDB.xmlList)
-            {
-                if (name == preset.GetName())
-                {
-                    UserMessageManager.Dispatch("Please choose a new preset name", 5);
-                    ToggleSetPresetPanel();
-                    return;
-                }
-            }
-            XMLManager.ins.itemDB.xmlList.Add(new MaMPreset(SelectedWheel, selectedDriveBase, selectedManipulator, name));
-
-            XMLManager.ins.SaveItems();
-
-            int clonePosition = (PresetClones.Count < 3) ? PresetClones.Count : 0;
-            GameObject clone = presetsPanel.GetComponent<MaMPresetMono>().CreateClone(XMLManager.ins.itemDB.xmlList[PresetClones.Count], clonePosition);
-            clone.GetComponent<Text>().text = XMLManager.ins.itemDB.xmlList[PresetClones.Count].GetName();
-            SetPresetFontSize(clone);
-
-            PresetClones.Add(clone);
-            if (PresetClones.Count > 3)
-            {
-                clone.SetActive(false);
-                presetRightScroll.SetActive(true);
-            }
-
-            //Creates a listener for OnClick
-            int value = PresetClones.Count - 1;
-            Button buttonCtrl = clone.GetComponent<Button>();
-            buttonCtrl.onClick.AddListener(() => SelectPresets(value));
-
-            Text txt = infoText.GetComponent<Text>();
-            txt.text = XMLManager.ins.itemDB.xmlList[PresetClones.Count - 1].GetName();
-
-            if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-            {
-                Analytics.CustomEvent("Created Mix and Match Preset", new Dictionary<string, object>
-                {
-                });
-            }
-
-            inputField.GetComponent<InputField>().text = "";
-        }
-
-        void SetPresetFontSize(GameObject clone)
-        {
-            Debug.Log(clone.GetComponent<Text>().text + clone.GetComponent<Text>().text.Length);
-            if (clone.GetComponent<Text>().text.Length < 8)
-            {
-                clone.GetComponent<Text>().fontSize = 36;
-            }
-            else if (clone.GetComponent<Text>().text.Length < 20)
-            {
-                clone.GetComponent<Text>().fontSize = 36 - 3 * (clone.GetComponent<Text>().text.Length - 8);
-            }
-            else
-            {
-                clone.GetComponent<Text>().fontSize = 16;
-            }
-        }
-
-        int lastSelectedPreset;
-        /// <summary>
-        /// Called when a preset option is clicked. Selects the preset's wheel, drive base and manipulator.
-        /// </summary>
-        /// <param name="value"></param>
-        public void SelectPresets(int value)
-        {
-            int wheel = XMLManager.ins.itemDB.xmlList[value].GetWheel();
-            int driveBase = XMLManager.ins.itemDB.xmlList[value].GetDriveBase();
-            int manipulator = XMLManager.ins.itemDB.xmlList[value].GetManipulator();
-            SelectWheel(wheel);
-            SelectDriveBase(driveBase);
-            SelectManipulator(manipulator, "preset");
-
-            Text txt = infoText.GetComponent<Text>();
-
-            txt.text = XMLManager.ins.itemDB.xmlList[value].GetName() + "\n\n";
-
-            SplitCamelCase(Wheels[wheel].name);
-            SplitCamelCase(Bases[driveBase].name);
-            SplitCamelCase(Manipulators[manipulator].name);
-
-            lastSelectedPreset = value;
-
-            deletePresetButton.SetActive(true);
-        }
-
-        /// <summary>
-        /// Splits the variable names of the parts for a more readable info text when a preset is selected
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public void SplitCamelCase(string source)
-        {
-            String[] partName = Regex.Split(source, @"(?<!^)(?=[A-Z])");
-            Text txt = infoText.GetComponent<Text>();
-            foreach (var s in partName)
-            {
-                txt.text += s + " ";
-            }
-            txt.text += "\n";
-        }
-
-        public void DeletePreset()
-        {
-            XMLManager.ins.itemDB.xmlList.RemoveAt(lastSelectedPreset);
-            XMLManager.ins.SaveItems();
-
-            int count = PresetClones.Count;
-            for (int i = 0; i < count; i++)
-            {
-                Destroy(PresetClones[0]);
-                PresetClones.RemoveAt(0);
-            }
-
-            MaMScroller.firstPreset = 0;
-
-            XMLManager.ins.LoadItems();
-            LoadPresets();
-
-            deletePresetButton.SetActive(false);
-            presetLeftScroll.SetActive(false);
-            presetRightScroll.SetActive(false);
-            if (PresetClones.Count > 3) presetRightScroll.SetActive(true);
-        }
-
-        public void HidePresetButton()
-        {
-            deletePresetButton.SetActive(false);
-        }
-
-        /// <summary>
-        /// Creates the GameObjects that are clones of the PresetPrefab and addes them to the presetClones list.
-        /// Sets the text to the name of the corresponding MaMPreset Object.
-        /// Shows the first 3 in the preset panel. 
-        /// </summary>
-        public void LoadPresets()
-        {
-
-            //Loads the first three presets
-            for (int i = 0; i < 3 && i < XMLManager.ins.itemDB.xmlList.Count; i++)
-            {
-                GameObject clone = presetsPanel.GetComponent<MaMPresetMono>().CreateClone(XMLManager.ins.itemDB.xmlList[i], i);
-                clone.GetComponent<Text>().text = XMLManager.ins.itemDB.xmlList[i].GetName();
-                SetPresetFontSize(clone);
-                PresetClones.Add(clone);
-
-                //Creates a listner for OnClick
-                int value = i;
-                Button buttonCtrl = clone.GetComponent<Button>();
-                buttonCtrl.onClick.AddListener(() => SelectPresets(value));
-            }
-
-            //Loads the rest of the presets and inactivates them
-            for (int i = 3; i < XMLManager.ins.itemDB.xmlList.Count; i++)
-            {
-                GameObject clone = presetsPanel.GetComponent<MaMPresetMono>().CreateClone(XMLManager.ins.itemDB.xmlList[i], 0);
-                clone.GetComponent<Text>().text = XMLManager.ins.itemDB.xmlList[i].GetName();
-                SetPresetFontSize(clone);
-                PresetClones.Add(clone);
-                clone.SetActive(false);
-
-                //Creates a listner for OnClick
-                int value = i;
-                Button buttonCtrl = clone.GetComponent<Button>();
-                buttonCtrl.onClick.AddListener(() => SelectPresets(value));
-            }
-
-        }
-
-        public static bool setPresetPanelOpen = false;
-        public void ToggleSetPresetPanel()
-        {
-            setPresetPanel.SetActive(!setPresetPanel.activeSelf);
-            setPresetPanelOpen = setPresetPanel.activeSelf;
-        }
-
-        #endregion
-
         #region Selecters
         /// <summary>
         /// Selects a wheel, as referenced by its index in the wheels list.
@@ -585,24 +353,6 @@ namespace Synthesis.MixAndMatch
             SetColor(Manipulators[manipulator], purple);
             this.gameObject.GetComponent<MaMInfoText>().SetManipulatorInfoText(manipulator);
             selectedManipulator = manipulator;
-        }
-
-        public void SelectManipulator(int manipulator, string presetName)
-        {
-            Color purple = new Color(0.757f, 0.200f, 0.757f);
-
-            //unselects all manipulators
-            for (int k = 0; k < Manipulators.Count; k++)
-            {
-                SetColor(Manipulators[k], Color.white);
-            }
-
-            //selects the manipulator that is clicked
-            SetColor(Manipulators[manipulator], purple);
-            HasManipulator = (manipulator == 0) ? false : true;
-            selectedManipulator = manipulator;
-            Text txt = infoText.GetComponent<Text>();
-            txt.text = "";
         }
 
         /// <summary>
