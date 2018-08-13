@@ -14,7 +14,8 @@ class Robot: public frc::IterativeRobot{
     frc::Spark m_rightMotor{1};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};
     frc::Joystick m_stick{0};
-    frc::Encoder encoder{0,1};
+    frc::Encoder encoder1{0,1};
+    frc::Encoder encoder2{2,3};
     frc::Timer auto_timer;
     bool run_auto = true;
 
@@ -31,12 +32,12 @@ public:
 
     void AutonomousInit(){
         std::cout<<"AutonomousInit\n";
-        encoder.Reset();
+        encoder1.Reset();
     }
 
     void AutonomousPeriodic(){
-        std::cout<<"Encoder raw: "<<encoder.GetRaw()<<"\n";
-        if(abs(encoder.GetRaw()) < 20){
+        std::cout<<"Encoder raw: "<<encoder1.GetRaw()<<"\n";
+        if(abs(encoder1.GetRaw()) < 20){
             m_robotDrive.TankDrive(1.0,1.0);
         } else{
             m_robotDrive.TankDrive(0,0);
@@ -47,9 +48,9 @@ public:
         double start = frc::Timer::GetFPGATimestamp();
         //std::cout << "1: "<< m_stick.GetRawAxis(1) << " 4: " << m_stick.GetRawAxis(4)<< "\n";
         if(!driveMode)
-            m_robotDrive.ArcadeDrive(-m_stick.GetRawAxis(1), m_stick.GetRawAxis(4));
+            m_robotDrive.ArcadeDrive(-m_stick.GetRawAxis(1), m_stick.GetRawAxis(5));
         else
-            m_robotDrive.TankDrive(m_stick.GetRawAxis(1), m_stick.GetRawAxis(5));
+            m_robotDrive.TankDrive(m_stick.GetRawAxis(1), m_stick.GetRawAxis(6));
         if(m_stick.GetRawButton(2)) {
             driveMode = !driveMode;
         }
