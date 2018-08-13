@@ -81,7 +81,6 @@ namespace Synthesis.States
             {
                 ReturnToMainState();
             }
-
         }
         private void ReturnToMainState()
         {
