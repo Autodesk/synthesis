@@ -16,7 +16,7 @@ namespace FieldExporter.Components
         bool selectingPoints = false;
         InteractionEvents interactionEvents;
         SelectEvents selectEvents;
-        List<dynamic> occurrences = new List<dynamic>();
+        List<Inventor.Point> spawnpoints = new List<Inventor.Point>();
 
         public FieldMetaForm()
         {
@@ -82,9 +82,10 @@ namespace FieldExporter.Components
             Program.LockInventor();
             selectCoordinatesButton.Enabled = false;
 
-            occurrences.Clear();
+            spawnpoints.Clear();
             foreach (dynamic selection in selectEvents.SelectedEntities)
-                occurrences.Add(selection);
+                if (selection is Inventor.Point point)
+                    spawnpoints.Add(point);
 
             selectCoordinatesButton.Enabled = true;
             Program.UnlockInventor();
