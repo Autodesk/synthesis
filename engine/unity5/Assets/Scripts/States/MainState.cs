@@ -126,16 +126,11 @@ namespace Synthesis.States
                     return;
                 }
 
-                FieldDataHandler.Load();
-
                 if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                 {
                     AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                     return;
                 }
-
-                Controls.Init();
-                Controls.Load();
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
 
@@ -268,6 +263,10 @@ namespace Synthesis.States
 
             if (!File.Exists(directory + "\\definition.bxdf"))
                 return false;
+
+            FieldDataHandler.Load(fieldPath);
+            Controls.Init();
+            Controls.Load();
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
