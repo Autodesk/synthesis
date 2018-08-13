@@ -1,4 +1,4 @@
-﻿namespace BxDRobotExporter.Forms
+﻿namespace SynthesisRobotExporter.Forms
 {
     partial class DebugHighlightForm
     {
