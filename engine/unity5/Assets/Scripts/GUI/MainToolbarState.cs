@@ -37,8 +37,6 @@ namespace Assets.Scripts.GUI
         GameObject addPanel;
         GameObject changeFieldPanel;
         GameObject resetDropdown;
-        GameObject dpmPanel;
-        GameObject toolkitPanel;
         GameObject multiplayerPanel;
         GameObject stopwatchWindow;
         GameObject statsWindow;
@@ -74,10 +72,8 @@ namespace Assets.Scripts.GUI
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
 
             resetDropdown = GameObject.Find("ResetRobotDropdown");
-            dpmPanel = Auxiliary.FindObject(canvas, "DPMPanel"); // going to be moved to its own state
             multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
 
-            toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
             stopwatchWindow = Auxiliary.FindObject(canvas, "StopwatchPanel");
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
             rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
@@ -163,25 +159,6 @@ namespace Assets.Scripts.GUI
             }
         }
 
-        // TODO: Add the reset robot dropdown and camera dropdown
-
-        /// <summary>
-        /// Toggles the Driver Practice Mode window
-        /// </summary>
-        public void OnDriverPracticeButtonPressed()
-        {
-            if (dpmWindowOn)
-            {
-                dpmWindowOn = false;
-            }
-            else
-            {
-                EndOtherProcesses();
-                dpmWindowOn = true;
-            }
-            dpmPanel.SetActive(dpmWindowOn);
-        }
-
         public void OnChangeFieldButtonPressed()
         {
             if (changeFieldPanel.activeSelf)
@@ -202,14 +179,6 @@ namespace Assets.Scripts.GUI
         public void OnReplayModeButtonPressed()
         {
             State.EnterReplayState();
-        }
-
-        /// <summary>
-        /// Toggle the toolkit window on/off according to its current state
-        /// </summary>
-        public void OnToolkitButtonPressed()
-        {
-            toolkit.ToggleToolkitWindow(!toolkitPanel.activeSelf);
         }
 
         /// <summary>
