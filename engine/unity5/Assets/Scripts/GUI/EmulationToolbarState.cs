@@ -24,7 +24,7 @@ namespace Assets.Scripts.GUI
 
         public void OnSelectRobotCodeButtonPressed()
         {
-
+            SSHClient.SCPFileSender();
         }
 
         public void OnDriverStationButtonPressed()
@@ -35,6 +35,8 @@ namespace Assets.Scripts.GUI
         public void OnStartRobotCodeButtonPressed()
         {
             emulationDriverStation.ToggleRobotCodeButton();
+            SSHClient.StartRobotCode();
+            //Serialization.RestartThreads("10.140.148.66");
         }
     }
 }
