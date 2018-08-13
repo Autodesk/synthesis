@@ -40,6 +40,7 @@ namespace Synthesis.GUI
         GoalManager gm;
 
         GameObject canvas;
+        GameObject resetUI;
 
         GameObject freeroamCameraWindow;
         GameObject overviewCameraWindow;
@@ -136,6 +137,7 @@ namespace Synthesis.GUI
         private void FindElements()
         {
             canvas = GameObject.Find("Canvas");
+            resetUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
@@ -153,7 +155,7 @@ namespace Synthesis.GUI
             hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
             hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
-            orientWindow = Auxiliary.FindObject(canvas, "OrientWindow");
+            orientWindow = Auxiliary.FindObject(resetUI, "OrientWindow");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
