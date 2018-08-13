@@ -11352,9 +11352,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'CTRL + H: hide/show toolbar
-
-    Long hold R or other RESET key: configure spawnpoint and robot orientation
+  m_Text: 'Long hold R or other RESET key: configure spawnpoint and robot orientation
 
     ALT + LEFT MOUSE: click and drag gamepieces around (God Mode)
 
