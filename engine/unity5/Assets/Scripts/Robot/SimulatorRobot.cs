@@ -16,6 +16,7 @@ using Synthesis.States;
 using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +51,8 @@ namespace Synthesis.Robot
 
         private MainState state;
 
+        public static Serialization s;
+
         #region help ui variables
         GameObject helpMenu;
         GameObject toolbar;
@@ -65,6 +68,9 @@ namespace Synthesis.Robot
         /// </summary>
         private void Awake()
         {
+            //Process.Start("\"C:\\Program Files\\qemu\\qemu-system-arm.exe\" (qemu-system-arm -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\zImage\" \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\zynq-zed.dtb\" -display none -serial null -serial mon:stdio -localtime -append \"console = ttyPS0, 115200 earlyprintk root =/ dev / mmcblk0\" -redir tcp:10022::22  -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\rootfs.ext4\"");
+            s = new Serialization("10.140.148.66");
+
             StateMachine.SceneGlobal.Link<MainState>(this);
         }
 
@@ -196,6 +202,8 @@ namespace Synthesis.Robot
         /// </summary>
         protected override void UpdatePhysics()
         {
+
+            var begin = DateTime.Now;
             base.UpdatePhysics();
 
             if (!state.IsMetric)
@@ -205,7 +213,7 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
-
+            int iter = 0;
             #region Encoder Calculations
             foreach (EmuNetworkInfo a in emuList)
             {
@@ -217,47 +225,13 @@ namespace Synthesis.Robot
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e.StackTrace);
+                    UnityEngine.Debug.Log(e.StackTrace);
                 }
 
                 BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
-
-                if (a.RobotSensor.type == RobotSensorType.ENCODER)
-                {
-                    bRaycastWheel.GetWheelSpeed();
-
-                    double angleDifference = bRaycastWheel.transform.eulerAngles.x - a.previousEuler;
-
-                    // Checks to handle specific wheel rotational cases
-                    if (bRaycastWheel.GetWheelSpeed() > 0) // To handle positive wheel speeds
-                    {
-                        if (angleDifference < 0) // To handle special case (positive wheel speed, negative angleDifference)
-                        {
-                            a.encoderTickCount += (((360 - a.previousEuler + bRaycastWheel.transform.eulerAngles.x) / 360.0) * a.RobotSensor.conversionFactor);
-                        }
-                        else
-                        {
-                            a.encoderTickCount += ((angleDifference / 360) * a.RobotSensor.conversionFactor);
-                        }   
-                    }
-                    else if (bRaycastWheel.GetWheelSpeed() < 0)
-                    {
-                        if (angleDifference > 0)
-                        {
-                            a.encoderTickCount += (((((360 - bRaycastWheel.transform.eulerAngles.x) + a.previousEuler) * (-1)) / 360.0) * a.RobotSensor.conversionFactor);
-                        }
-                        else
-                        {
-                            a.encoderTickCount += (((angleDifference) / 360.0) * a.RobotSensor.conversionFactor);
-                        }
-                    }
-
-                    Debug.Log(a.encoderTickCount);
-                    a.previousEuler = bRaycastWheel.transform.eulerAngles.x;
-                }
             }
             #endregion
-
+            UnityEngine.Debug.Log(DateTime.Now - begin);
             if (IsResetting)
                 Resetting();
         }
