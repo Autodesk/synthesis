@@ -46,9 +46,9 @@ var ANALOG = 2;
 var SENSOR_ENCODER = 1;
 var CONVERSION_FACTOR_NAMES = { 1: "Ticks per Revolution" };
 
-function createDriver(_type = DRIVER_MOTOR, _signal = PWM, _portA = 0, _portB = -1)
+function createDriver(_type = DRIVER_MOTOR, _signal = PWM, _portOne = 0, _portTwo = -1)
 {
-    return { type: _type, signal: _signal, portA: _portA, portB: _portB, wheel: null, pneumatic: null };
+    return { type: _type, signal: _signal, portOne: _portOne, portTwo: _portTwo, wheel: null, pneumatic: null };
 }
 
 function createWheel(_type = WHEEL_NORMAL, _frictionLevel = FRICTION_MEDIUM, _isDriveWheel = false)

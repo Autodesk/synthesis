@@ -7,9 +7,7 @@ using namespace adsk::core;
 Ptr<Application> app;
 Ptr<UserInterface> UI;
 
-Synthesis::EUI * EUI = nullptr;
-Synthesis::WorkspaceActivatedHandler * activatedHandler = nullptr;
-Synthesis::WorkspaceDeactivatedHandler * deactivatedHandler = nullptr;
+SynthesisAddIn::EUI * EUI = nullptr;
 
 extern "C" XI_EXPORT bool run(const char* context)
 {
@@ -21,20 +19,7 @@ extern "C" XI_EXPORT bool run(const char* context)
 	if (!UI)
 		return false;
 
-	EUI = new Synthesis::EUI(UI, app);
-
-	// Add workspace events
-	Ptr<WorkspaceEvent> workspaceActivatedEvent = UI->workspaceActivated();
-	Ptr<WorkspaceEvent> workspaceDeactivatedEvent = UI->workspaceDeactivated();
-
-	if (!workspaceActivatedEvent || !workspaceDeactivatedEvent)
-		return false;
-
-	activatedHandler = new Synthesis::WorkspaceActivatedHandler(EUI);
-	workspaceActivatedEvent->add(activatedHandler);
-
-	deactivatedHandler = new Synthesis::WorkspaceDeactivatedHandler(EUI);
-	workspaceDeactivatedEvent->add(deactivatedHandler);
+	EUI = new SynthesisAddIn::EUI(UI, app);
 
 	return true;
 }
@@ -45,21 +30,6 @@ extern "C" XI_EXPORT bool stop(const char* context)
 	{
 		delete EUI;
 		EUI = nullptr;
-
-		// Delete old handlers
-		Ptr<WorkspaceEvent> workspaceActivatedEvent = UI->workspaceActivated();
-		Ptr<WorkspaceEvent> workspaceDeactivatedEvent = UI->workspaceDeactivated();
-
-		if (!workspaceActivatedEvent || !workspaceDeactivatedEvent)
-			return false;
-
-		workspaceActivatedEvent->remove(activatedHandler);
-		delete activatedHandler;
-		activatedHandler = nullptr;
-
-		workspaceDeactivatedEvent->remove(deactivatedHandler);
-		delete deactivatedHandler;
-		deactivatedHandler = nullptr;
 
 		// Delete reference to UI
 		app = nullptr;

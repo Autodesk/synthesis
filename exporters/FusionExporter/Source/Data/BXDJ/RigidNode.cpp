@@ -7,25 +7,18 @@
 
 using namespace BXDJ;
 
-RigidNode::RigidNode()
-{
-	parent = NULL;
-}
-
 RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 {
 	configData = nodeToCopy.configData;
 	jointSummary = nodeToCopy.jointSummary;
 
-	for (core::Ptr<fusion::Occurrence> occurence : nodeToCopy.fusionOccurrences)
-		fusionOccurrences.push_back(occurence);
+	for (core::Ptr<fusion::Occurrence> occurrence : nodeToCopy.fusionOccurrences)
+		fusionOccurrences.push_back(occurrence);
 
 	for (std::shared_ptr<Joint> joint : nodeToCopy.childrenJoints)
 		childrenJoints.push_back(joint);
 
 	parent = nodeToCopy.parent;
-
-	log = nodeToCopy.log;
 }
 
 Guid BXDJ::RigidNode::getGUID() const
@@ -39,6 +32,11 @@ std::string RigidNode::getModelId() const
 		return fusionOccurrences[0]->fullPathName();
 	else
 		return "empty";
+}
+
+int BXDJ::RigidNode::getOccurrenceCount() const
+{
+	return fusionOccurrences.size();
 }
 
 void RigidNode::write(XmlWriter & output) const
@@ -63,4 +61,23 @@ void RigidNode::write(XmlWriter & output) const
 	{
 		output.write(*joint->getChild());
 	}
+}
+
+std::string RigidNode::JointSummary::toString() const
+{
+	std::string output;
+
+	output += "CHILDREN:\n";
+	for (auto childParent : children)
+		output += childParent.first->fullPathName() + " <= " + childParent.second->fullPathName() + "\n";
+
+	output += "PARENTS:\n";
+	for (auto parentChildren : parents)
+		output += parentChildren.first->fullPathName() + " => " + std::to_string(parentChildren.second.size()) + "\n";
+
+	output += "RIGIDGROUPS:\n";
+	for (auto group : rigidgroups)
+		output += group.first->fullPathName() + " == " + std::to_string(group.second.size()) + "\n";
+
+	return output;
 }

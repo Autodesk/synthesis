@@ -4,7 +4,6 @@
         <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
-        <script src="js/export.js"></script>
 
         <style>
             #joint-config-template
@@ -35,9 +34,19 @@
                 right: 2.5rem;
                 width: auto;
             }
+
+            .wheel-side
+            {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
         </style>
     </head>
     <body>
+        <script src="js/export.js"></script>
         <div id="export-settings">
             <div id="basic-info">
                 <span class="field-label">Robot Name: </span>
@@ -76,10 +85,10 @@
                                 <span class="field-label">Is Drive Wheel: </span>
                                 <input type="checkbox" class="field-label is-drive-wheel" onchange="updateFieldOptions(this)" /></span>
 
-                                <span class="field-select drive-wheel-ports-div"><select class="wheel-side">
-                                    <option value="1">Left Wheel</option>
-                                    <option value="0">Right Wheel</option>
-                                </select></span>
+                                <select class="wheel-side">
+                                    <option value="1">Left Wheel (PWM 1)</option>
+                                    <option value="0">Right Wheel (PWM 0)</option>
+                                </select>
                             </div>
                         </div>
 
@@ -107,7 +116,7 @@
                                 <option value="3" data-port-value="1" class="pneumatic-port">Solenoid</option>
                                 <option value="4" data-port-value="1" class="relay-port">Relay</option>
                             </select>
-                            <span class="field-select"><select class="port-number-a">
+                            <span class="field-select"><select class="port-number-one">
                                 <option value="0">0</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -118,7 +127,7 @@
                                 <option value="7">7</option>
                                 <option value="8">8</option>
                             </select>
-                            <select class="port-number-b">
+                            <select class="port-number-two">
                                 <option value="0">0</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>

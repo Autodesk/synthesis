@@ -1,5 +1,7 @@
 ﻿using BulletUnity;
 using Synthesis.Field;
+using Synthesis.FSM;
+using Synthesis.States;
 using Synthesis.Utils;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +22,7 @@ namespace Synthesis.DriverPractice
         {
             XElement robot = new XElement("RobotData", null);
             robot.Add(DriverStationData());
-            robot.Save(PlayerPrefs.GetString("simSelectedRobot") + "\\" + "robot_data.xml");
+            robot.Save(StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.FilePath + "\\" + "robot_data.xml");
         }
         private static XElement DriverStationData()
         {
@@ -54,6 +56,16 @@ namespace Synthesis.DriverPractice
             {
 
                 file = XDocument.Load(PlayerPrefs.GetString("simSelectedRobot") + "\\" + "robot_data.xml");
+                dpmodes = getDriverPractice();
+            }
+            else WriteRobot();
+        }
+        public static void Load(string filePath)
+        {
+            if (File.Exists(filePath + "\\" + "robot_data.xml"))
+            {
+
+                file = XDocument.Load(filePath + "\\" + "robot_data.xml");
                 dpmodes = getDriverPractice();
             }
             else WriteRobot();

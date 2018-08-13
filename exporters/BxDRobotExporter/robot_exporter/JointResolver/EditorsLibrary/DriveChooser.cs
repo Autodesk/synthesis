@@ -35,7 +35,7 @@ public partial class DriveChooser : Form
             foreach (RigidNode_Base node in nodes)
             {
                 JointDriver driver = node.GetSkeletalJoint().cDriver;
-                if (driver == null || driver.CompareTo(baseJoint.cDriver) != 0)
+                if (driver == null || driver.CompareTo(baseJoint.cDriver) != 0) 
                     same = false;
             }
 
@@ -132,13 +132,7 @@ public partial class DriveChooser : Form
             }
             {
                 ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-                if (elevatorMeta != null && (int)elevatorMeta.type < 7)
-                {
-                    cmbStages.SelectedIndex = (int)elevatorMeta.type;
-                } else
-                {
-                    cmbStages.SelectedIndex = 0;
-                }
+                
             }
             #endregion
         }
@@ -160,8 +154,7 @@ public partial class DriveChooser : Form
             cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
             cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
             chkBoxDriveWheel.Checked = false;
-
-            cmbStages.SelectedIndex = (int)ElevatorType.NOT_MULTI;
+            
         }
 
         PrepLayout();
@@ -174,18 +167,6 @@ public partial class DriveChooser : Form
         if (joint.cDriver == null) return true;
 
         double inputGear = 1, outputGear = 1;
-
-
-        try
-        {
-            inputGear = Convert.ToDouble(InputGeartxt.Text);
-            outputGear = Convert.ToDouble(OutputGeartxt.Text);// reads from the text file to determine whether or not we should save
-        }
-        catch (Exception)
-        { // catches any non-numeric values, we tell the user that theres an issue later in the program, this is just a saving program, so it doesn't need to worry too much about the exception
-        }
-
-
         
         inputGear = (double) InputGeartxt.Value;
         outputGear = (double)OutputGeartxt.Value;
@@ -195,21 +176,15 @@ public partial class DriveChooser : Form
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
         if (cmbJointDriver.SelectedIndex != typeOptions.ToList().IndexOf(joint.cDriver.GetDriveType()) + 1 ||
-
-            txtPortA.Value != joint.cDriver.portA ||
-            txtPortB.Value != joint.cDriver.portB ||
-            txtLowLimit.Value != (decimal)joint.cDriver.lowerLimit ||
-            txtHighLimit.Value != (decimal)joint.cDriver.upperLimit ||
-            inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear ||
             txtPort1.Value != joint.cDriver.port1 ||
             txtPort2.Value != joint.cDriver.port2 ||
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
             txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
             inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear || 
-            rbCAN.Checked != joint.cDriver.isCan) 
+            rbCAN.Checked != joint.cDriver.isCan)
             return true;
 
-        if (pneumatic != null &&
+        if (pneumatic != null && 
             (cmbPneumaticDiameter.SelectedIndex != (int)pneumatic.widthEnum ||
             cmbPneumaticPressure.SelectedIndex != (int)pneumatic.pressureEnum))
             return true;
@@ -220,8 +195,7 @@ public partial class DriveChooser : Form
             chkBoxDriveWheel.Checked != wheel.isDriveWheel))
             return true;
 
-        if (elevator != null &&
-            cmbStages.SelectedIndex != (int)elevator.type)
+        if (elevator != null)
             return true;
 
         //If going from "NOT A WHEEL" to a wheel
@@ -279,11 +253,8 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Clear();
                 chkBoxHasBrake.Show();
                 //tabsMeta.TabPages.Add(metaElevatorBrake);
-                tabsMeta.TabPages.Add(metaElevatorStages);
                 tabsMeta.TabPages.Add(metaGearing);
-
-                if (cmbStages.SelectedIndex == -1)
-                    cmbStages.SelectedIndex = 0;
+                
                 rbCAN.Show();
                 rbPWM.Show();
             }
@@ -387,7 +358,7 @@ public partial class DriveChooser : Form
                 #region ELEVATOR_SAVING
                 ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta()
                 {
-                    type = (ElevatorType)cmbStages.SelectedIndex
+                    type = ElevatorType.NOT_MULTI
                 };
                 joint.cDriver.AddInfo(elevatorDriver);
                 #endregion

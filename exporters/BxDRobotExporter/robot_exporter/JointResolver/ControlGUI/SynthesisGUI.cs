@@ -491,6 +491,10 @@ public partial class SynthesisGUI : Form
                     ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
                     elevator.type = (ElevatorType)Utilities.GetProperty(propertySet, "elevator-type", (int)ElevatorType.NOT_MULTI);
+                    if(((int)elevator.type) > 7)
+                    {
+                        elevator.type = ElevatorType.NOT_MULTI;
+                    }
                 }
                 for(int i = 0; i < Utilities.GetProperty(propertySet, "num-sensors", 0); i++)
                 {

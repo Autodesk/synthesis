@@ -62,6 +62,8 @@ namespace Synthesis.States
                 PlayerPrefs.Save();
                 Application.LoadLevel("Scene");
             }
+
+            replayList.SetActive(false);
         }
     }
 }

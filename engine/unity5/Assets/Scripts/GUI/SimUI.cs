@@ -40,6 +40,7 @@ namespace Synthesis.GUI
         GoalManager gm;
 
         GameObject canvas;
+        GameObject resetUI;
 
         GameObject freeroamCameraWindow;
         GameObject overviewCameraWindow;
@@ -52,7 +53,6 @@ namespace Synthesis.GUI
         GameObject mixAndMatchPanel;
         GameObject changePanel;
         GameObject addPanel;
-        GameObject driverStationSettingsPanel;
         GameObject driverStationPanel;
 
         GameObject inputManagerPanel;
@@ -63,8 +63,6 @@ namespace Synthesis.GUI
         GameObject hotKeyButton;
         GameObject hotKeyPanel;
         GameObject analyticsPanel;
-
-        GameObject toolbar;
 
         GameObject exitPanel;
         GameObject loadingPanel;
@@ -119,11 +117,6 @@ namespace Synthesis.GUI
                     else MainMenuExit("cancel");
                 }
 
-                if (UnityEngine.Input.GetKey(KeyCode.LeftControl) && UnityEngine.Input.GetKeyDown(KeyCode.H))
-                {
-                    TogglePanel(toolbar);
-                }
-
                 if (KeyButton.Binded() && inputPanelOn)
                 {
                     ShowBindedInfoPanel();
@@ -144,6 +137,7 @@ namespace Synthesis.GUI
         private void FindElements()
         {
             canvas = GameObject.Find("Canvas");
+            resetUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
@@ -161,7 +155,7 @@ namespace Synthesis.GUI
             hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
             hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
-            orientWindow = Auxiliary.FindObject(canvas, "OrientWindow");
+            orientWindow = Auxiliary.FindObject(resetUI, "OrientWindow");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -171,12 +165,9 @@ namespace Synthesis.GUI
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
             robotCameraGUI = GetComponent<RobotCameraGUI>();
             mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
-            toolbar = Auxiliary.FindObject(canvas, "Toolbar");
 
             changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
             addPanel = Auxiliary.FindObject(canvas, "AddPanel");
-            //toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
-            driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
             tabs = Auxiliary.FindGameObject("Tabs");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
@@ -249,10 +240,10 @@ namespace Synthesis.GUI
             if (toolbarID.Equals(currentID)) return;
             helpMenu.SetActive(false);
             overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            tabs.transform.Translate(new Vector3(-300, 0, 0));
             foreach (Transform t in Auxiliary.FindObject(toolbarID).transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
         }
@@ -294,7 +285,6 @@ namespace Synthesis.GUI
                 robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
                 sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
-                DPMDataHandler.Load();
                 State.ChangeRobot(directory, false);
 
             }
@@ -576,9 +566,9 @@ namespace Synthesis.GUI
         /// Toggle the control panel ON/OFF based on the boolean passed.
         /// </summary>
         /// <param name="show"></param>
-        public void ShowControlPanel(bool show)
+        public void ShowControlPanel(bool alreadySaved)
         {
-            if (show)
+            if (!inputManagerPanel.activeSelf)
             {
                 DynamicCamera.ControlEnabled = false;
                 InputControl.freeze = true;
@@ -598,7 +588,7 @@ namespace Synthesis.GUI
                 inputPanelOn = false;
                 ToggleHotKeys(false);
 
-                if (Controls.CheckIfSaved())
+                if (!alreadySaved && Controls.CheckIfSaved())
                 {
                     checkSavePanel.SetActive(true);
                 }

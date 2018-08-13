@@ -33,7 +33,9 @@ namespace Synthesis.Robot
         /// </summary>
         public bool IsResetting { get; private set; } = false;
 
-        private const float ResetVelocity = 0.05f;
+        public string FilePath { get; set; }
+
+        private const float ResetVelocity = 5f;
         private const float HoldTime = 0.8f;
 
         private readonly SensorManager sensorManager;
@@ -51,12 +53,11 @@ namespace Synthesis.Robot
 
         private MainState state;
 
-        public static Serialization s;
-
         #region help ui variables
         GameObject helpMenu;
         GameObject toolbar;
         GameObject overlay;
+        Text helpBodyText;
         #endregion
 
         private static Process proc;
@@ -77,7 +78,6 @@ namespace Synthesis.Robot
             startinfo.WindowStyle = ProcessWindowStyle.Normal;
             startinfo.Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\zImage" + " -dtb " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\zynq-zed.dtb" + " -display none -serial null -serial mon:stdio -localtime -append \"console = ttyPS0, 115200 earlyprintk root =/ dev / mmcblk0\" -redir tcp:10022::22 -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\rootfs.ext4";
             //proc = Process.Start(startinfo);
-            s = new Serialization("127.0.0.1");
 
             StateMachine.SceneGlobal.Link<MainState>(this);
         }
@@ -151,9 +151,9 @@ namespace Synthesis.Robot
         /// <param name="numWheels"></param>
         /// <param name="collectiveMass"></param>
         /// <returns></returns>
-        protected override bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
+        protected override bool ConstructRobot(List<RigidNode_Base> nodes, ref float collectiveMass)
         {
-            if (!base.ConstructRobot(nodes, numWheels, ref collectiveMass))
+            if (!base.ConstructRobot(nodes, ref collectiveMass))
                 return false;
 
             foreach (RigidNode_Base n in nodes)
@@ -182,6 +182,8 @@ namespace Synthesis.Robot
 
                 if (!rigidBody.GetCollisionObject().IsActive)
                     rigidBody.GetCollisionObject().Activate();
+
+                Resetting();
             }
             else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
             {
@@ -210,7 +212,6 @@ namespace Synthesis.Robot
         /// </summary>
         protected override void UpdatePhysics()
         {
-
             var begin = DateTime.Now;
             base.UpdatePhysics();
 
@@ -221,7 +222,13 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
-            int iter = 0;
+            if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2)
+            {
+                if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
+                BeginReset();
+                EndReset();
+            }
+
             #region Encoder Calculations
             foreach (EmuNetworkInfo a in emuList)
             {
@@ -239,9 +246,6 @@ namespace Synthesis.Robot
                 BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
             }
             #endregion
-            UnityEngine.Debug.Log(DateTime.Now - begin);
-            if (IsResetting)
-                Resetting();
         }
 
         /// <summary>
@@ -264,15 +268,16 @@ namespace Synthesis.Robot
             //GetDriverPractice().DestroyAllGamepieces();
 
             InputControl.freeze = true;
-            if(canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
-            if(resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
+            if (canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
+            if (resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
             canvas.GetComponent<Canvas>().enabled = false;
             resetCanvas.SetActive(true);
 
             #region init
-            if(helpMenu == null) helpMenu = Auxiliary.FindObject(resetCanvas, "Help");
-            if(toolbar == null) toolbar = Auxiliary.FindObject(resetCanvas, "ResetStateToolbar");
-            if(overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
+            if (helpMenu == null) helpMenu = Auxiliary.FindObject(resetCanvas, "Help");
+            if (toolbar == null) toolbar = Auxiliary.FindObject(resetCanvas, "ResetStateToolbar");
+            if (overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
+            if (helpBodyText == null) helpBodyText = Auxiliary.FindObject(resetCanvas, "BodyText").GetComponent<Text>();
             #endregion
 
             Button resetButton = Auxiliary.FindObject(resetCanvas, "ResetButton").GetComponent<Button>();
@@ -342,7 +347,7 @@ namespace Synthesis.Robot
                 //Transform rotation along the horizontal plane
                 Vector3 rotation = new Vector3(0f,
                     UnityEngine.Input.GetKey(KeyCode.D) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
-                    0f);
+                    0f) * Time.deltaTime;
                 if (!rotation.Equals(Vector3.zero))
                     RotateRobot(rotation);
             }
@@ -352,7 +357,7 @@ namespace Synthesis.Robot
                 Vector3 transposition = new Vector3(
                     UnityEngine.Input.GetKey(KeyCode.W) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f,
                     0f,
-                    UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f);
+                    UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f) * Time.deltaTime;
 
                 if (!transposition.Equals(Vector3.zero))
                     TranslateRobot(transposition);
@@ -491,6 +496,12 @@ namespace Synthesis.Robot
         {
             helpMenu.SetActive(true);
             overlay.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "Move Robot: WASD keys or drag navigation arrows. " +
+                "\nClick and drag a face of the navigation cube to move robot freely" +
+                "\n\nRotate Robot: Hold RIGHT MOUSE BUTTON, and use A and D keys to rotate" +
+                "\n\nSave: Press ENTER";
+
             toolbar.transform.Translate(new Vector3(100, 0, 0));
             foreach (Transform t in toolbar.transform)
             {
