@@ -71,6 +71,9 @@ namespace Synthesis.GUI.Scrollables
             highlightStyle.fontSize = Mathf.RoundToInt(25 * scale);
             Rect position = new Rect(p.x, Screen.height - p.y, rect.width * scale, rect.height * scale);
 
+            UnityEngine.GUI.skin.verticalScrollbar.normal.background = null;
+            UnityEngine.GUI.skin.verticalScrollbarThumb.normal.background = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
+
             GUILayout.BeginArea(new Rect(position.x, position.y * 1.01f, position.width, rect.height * scale * .95f));
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
