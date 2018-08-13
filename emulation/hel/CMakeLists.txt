@@ -15,7 +15,7 @@ SET(hel_VERSION_MINOR 0)
 
 SET(WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
 SET(ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
-SET(CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
+# SET(CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
@@ -27,12 +27,12 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 
 SET(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
-if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
-elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
+if(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
 else()
-  MESSAGE(WARNING "No build type specified; defaulting to debug.")
+  if(NOT CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
+    MESSAGE(WARNING "No build type specified; defaulting to debug.")
+  endif()
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
@@ -45,34 +45,22 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${CMAKE_BINARY_DIR}/lib/lib
     ${WPILIB_DIRECTORY}/ni-libraries/lib
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena
-    ${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/linuxathena/linux/athena/shared
-    ${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/linuxathena/linux/athena/shared
-    ${WPILIB_DIRECTORY}/hal/build/libs/halAthena/shared
-    ${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/linuxathena/linux/athena/shared
+    ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena
+    ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena
+    ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena
+    ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena
+    ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/
     ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/
-    ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/
-    ${CTRE_DIRECTORY}/libraries/driver/lib/)
-elseif(ARCH MATCHES "([Xx]86([-_]64)?)")
-
-  SET(CMAKE_C_COMPILER gcc)
-  SET(CMAKE_CXX_COMPILER g++)
-
-  LINK_DIRECTORIES(
-    ${CMAKE_BINARY_DIR}/lib
-    ${CMAKE_BINARY_DIR}/lib/lib
-    ${CMAKE_BINARY_DIR}/lib/lib64
-    ${WPILIB_DIRECTORY}/ni-libraries/lib
-    ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64
-    ${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/linuxx86-64/linux/x86-64/shared
-    ${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/linuxx86-64/linux/x86-64/shared
-    ${WPILIB_DIRECTORY}/wpilibc/build/install/wpilibcTestingBaseTest/lib
-    ${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/linuxx86-64/linux/x86-64/shared
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared)
+    # ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static
+    # ${CTRE_DIRECTORY}/libraries/driver/lib
+    )
 else()
-  MESSAGE(WARNING "No architecture specified; defaulting to x86.")
+  if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
+    MESSAGE(WARNING "No architecture specified; defaulting to x86.")
+    SET(ARCH "x86_64")
+  endif()
   SET(CMAKE_C_COMPILER gcc)
   SET(CMAKE_CXX_COMPILER g++)
-  SET(ARCH "x86_64")
 
   LINK_DIRECTORIES(
     ${CMAKE_BINARY_DIR}/lib
@@ -80,11 +68,11 @@ else()
     ${CMAKE_BINARY_DIR}/lib/lib64
     ${WPILIB_DIRECTORY}/ni-libraries/lib
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64
-    ${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/linuxx86-64/linux/x86-64/shared
-    ${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/linuxx86-64/linux/x86-64/shared
-    ${WPILIB_DIRECTORY}/wpilibc/build/install/wpilibcTestingBaseTest/lib
-    ${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/linuxx86-64/linux/x86-64/shared
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared)
+    ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64
+    ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64
+    ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64
+    ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared/)
 endif()
 
 ADD_CUSTOM_TARGET(build_vm
@@ -102,20 +90,19 @@ ADD_CUSTOM_TARGET(asio ALL
 EXTERNALPROJECT_ADD(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
-  GIT_TAG v2018.4.1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/libwpilibc.so  ./gradlew :wpilibc:build WPILib
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/libwpilibc.so ./gradlew :wpilibc:build WPILib
   INSTALL_COMMAND "")
 
-EXTERNALPROJECT_ADD(ctre
-  PREFIX lib/ctre
-  GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
-  GIT_TAG Phoenix_v5.5.0.0
-  CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
-  PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre && patch -p0 < ${CMAKE_BINARY_DIR}/external-configs/gradle.patch
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
-  INSTALL_COMMAND "")
-ADD_DEPENDENCIES(ctre wpilib)
+# EXTERNALPROJECT_ADD(ctre
+#   PREFIX lib/ctre
+#   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
+#   GIT_TAG v2018.19.0
+#   CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
+#   PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre/ && patch -p1 < ${CMAKE_BINARY_DIR}/external-configs/ctre.patch
+#   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
+#   INSTALL_COMMAND "")
+# ADD_DEPENDENCIES(ctre wpilib)
 
 ADD_LIBRARY(hel SHARED
   src/roborio.cpp
@@ -161,11 +148,7 @@ ADD_LIBRARY(hel SHARED
 ADD_DEPENDENCIES(hel asio wpilib)
 
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
-  "${WPILIB_DIRECTORY}/hal/src/main/native"
-  "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers"
-  "${WPILIB_DIRECTORY}/hal/src/main/native/include"
   "${WPILIB_DIRECTORY}/ni-libraries/include"
-  "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
   "${ASIO_DIRECTORY}/include"
   "${CMAKE_BINARY_DIR}/include")
 if(ARCH MATCHES "^[Aa][Rr][Mm]")
@@ -175,26 +158,26 @@ else()
 endif()
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
-   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]")
-    if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
-      ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
-      ADD_DEPENDENCIES(FRCUserProgram wpilib ctre)
-      TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE
-        "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers"
-        "${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/headers"
-        "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers"
-        "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
-        "${WPILIB_DIRECTORY}/hal/src/main/native/include"
-        "${CTRE_DIRECTORY}/cpp/include/"
-        "${CTRE_DIRECTORY}/libraries/driver/include")
-      SET_TARGET_PROPERTIES(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user-code")
-      TARGET_COMPILE_OPTIONS(FRCUserProgram PUBLIC -pthread)
-      TARGET_LINK_LIBRARIES(FRCUserProgram wpi pthread libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
-    else()
-      MESSAGE(WARNING "Robot code generation not supported on x86_64.")
-    endif()
+  if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]" OR NOT ARCH MATCHES "([Xx]86([-_]64)?)")
+    ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
+    ADD_DEPENDENCIES(FRCUserProgram wpilib)
+    # ADD_DEPENDENCIES(ctre)
+    TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE
+      "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
+      "${WPILIB_DIRECTORY}/cscore/src/main/native/include"
+      "${WPILIB_DIRECTORY}/ntcore/src/main/native/include"
+      "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include"
+      "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
+      "${WPILIB_DIRECTORY}/hal/src/main/native/include"
+      # "${CTRE_DIRECTORY}/cpp/include/"
+      # "${CTRE_DIRECTORY}/libraries/driver/include"
+      )
+    SET_TARGET_PROPERTIES(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user-code")
+    TARGET_COMPILE_OPTIONS(FRCUserProgram PUBLIC -pthread)
+    TARGET_LINK_LIBRARIES(FRCUserProgram wpi pthread)
+    # TARGET_LINK_LIBRARIES(libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
   else()
-    MESSAGE(STATUS "Skipping test robot code generation.")
+    MESSAGE(WARNING "Robot code generation not supported on x86_64. Skipping test robot code generation.")
   endif()
 
   if(NOT NO_UNIT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_UNIT MATCHES "[Oo][Nn]")
@@ -212,26 +195,24 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
         GIT_REPOSITORY https://www.github.com/google/googletest
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
     endif()
-
-   MESSAGE("Disovering test files:")
+    MESSAGE("Disovering test files:")
 
     FILE(GLOB test_list tests/*.cpp)
     FOREACH(file ${test_list})
       STRING(REPLACE ".cpp" "" test_name_unclean ${file})
       GET_FILENAME_COMPONENT(test_name ${test_name_unclean} NAME)
 
-      MESSAGE("Test file discovered: ${test_name}. Generating build target ${test_name}")
+      MESSAGE("Test \"${test_name}\" found. Generating build target.")
 
       ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
-
       ADD_DEPENDENCIES(${test_name} hel GoogleTest asio wpilib)
 
       if(ARCH MATCHES "^[Aa][Rr][Mm]")
-        ADD_DEPENDENCIES(${test_name} ctre)
-        TARGET_LINK_LIBRARIES(${test_name} wpi libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
-        TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
-          "${CTRE_DIRECTORY}/cpp/include/"
-          "${CTRE_DIRECTORY}/libraries/driver/include")
+        # ADD_DEPENDENCIES(${test_name} ctre)
+        # TARGET_LINK_LIBRARIES(${test_name} wpi libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
+        # TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
+          # "${CTRE_DIRECTORY}/cpp/include/"
+          # "${CTRE_DIRECTORY}/libraries/driver/include")
       else()
         TARGET_LINK_LIBRARIES(${test_name} wpi-x86)
       endif()
@@ -240,14 +221,15 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
       TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
 
       TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
-        "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers"
-        "${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/headers"
-        "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers"
+        "${WPILIB_DIRECTORY}/cscore/src/main/native/include"
+        "${WPILIB_DIRECTORY}/ntcore/src/main/native/include"
+        "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include"
+        "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
         "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
         "${WPILIB_DIRECTORY}/hal/src/main/native/include"
         "${WPILIB_DIRECTORY}/ni-libraries/include"
-        "${CTRE_DIRECTORY}/cpp/include/"
-        "${CTRE_DIRECTORY}/libraries/driver/include"
+        # "${CTRE_DIRECTORY}/cpp/include/"
+        # "${CTRE_DIRECTORY}/libraries/driver/include"
         "${CMAKE_BINARY_DIR}/include"
         "${ASIO_DIRECTORY}/include"
         "${CMAKE_BINARY_DIR}/lib/include")
@@ -261,7 +243,7 @@ endif()
 
 if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
   if(ARCH MATCHES "^[Aa][Rr][Mm]")
-    MESSAGE(WARNING "Benchmarks not supported in ARM mode. If you wish to run benchmarks, please append -DARCH=x86_64 to cmake command")
+    MESSAGE(WARNING "Benchmarks not supported in ARM mode. If you wish to run benchmarks, please use -DARCH=x86_64")
     return()
   else()
     MESSAGE(WARNING "HAL- and CTRE-based benchmarks are not supported with the x86_64 architecture compiler flag.")
@@ -281,21 +263,21 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
     MESSAGE("Benchmark file discovered: ${benchmark_name}. Generating build target ${benchmark_name}_bench")
 
     ADD_EXECUTABLE(${benchmark_name} ${file})
-
     ADD_DEPENDENCIES(${benchmark_name} hel GoogleTest GoogleBench asio wpilib)
 
     TARGET_LINK_LIBRARIES(${benchmark_name} gtest gtest_main pthread hel benchmark benchmark_main wpi-x86)
     TARGET_COMPILE_OPTIONS(${benchmark_name} PUBLIC -pthread)
 
     TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE
-      "${WPILIB_DIRECTORY}/build/dependencies/ntcore-cpp/headers"
-      "${WPILIB_DIRECTORY}/build/dependencies/cscore-cpp/headers"
-      "${WPILIB_DIRECTORY}/build/dependencies/wpiutil-cpp/headers"
+      "${WPILIB_DIRECTORY}/cscore/src/main/native/include"
+      "${WPILIB_DIRECTORY}/ntcore/src/main/native/include"
+      "${WPILIB_DIRECTORY}/wpiutil/src/main/native/include"
+      "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
       "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
       "${WPILIB_DIRECTORY}/hal/src/main/native/include"
       "${WPILIB_DIRECTORY}/ni-libraries/include"
-      "${CTRE_DIRECTORY}/cpp/include/"
-      "${CTRE_DIRECTORY}/libraries/driver/include"
+      # "${CTRE_DIRECTORY}/cpp/include/"
+      # "${CTRE_DIRECTORY}/libraries/driver/include"
       "${CMAKE_BINARY_DIR}/include"
       "${ASIO_DIRECTORY}/include"
       "${CMAKE_BINARY_DIR}/include"
@@ -305,16 +287,17 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
   ENDFOREACH(file in test_list)
 endif()
 
-if(DOXYGEN_FOUND AND CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" OR BUILD_DOC MATCHES "^[Oo][Nn]" OR BUILD_DOC MATCHES "^[Tt][Rr][Uu][Ee]")
+if(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" OR BUILD_DOC MATCHES "^[Oo][Nn]" OR BUILD_DOC MATCHES "^[Tt][Rr][Uu][Ee]")
   FIND_PACKAGE(Doxygen)
+  if(DOXYGEN_FOUND)
+    SET(DOXYFILE ${CMAKE_BINARY_DIR}/docs/Doxyfile)
 
-  SET(DOXYFILE ${CMAKE_BINARY_DIR}/docs/Doxyfile)
-
-  ADD_CUSTOM_TARGET(doxygen ALL
-    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMENT "Generating API documentation"
-    VERBATIM)
-else()
-  MESSAGE("Doxygen not found; skipping")
+    ADD_CUSTOM_TARGET(doxygen ALL
+      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      COMMENT "Generating API documentation"
+      VERBATIM)
+  else()
+    MESSAGE("Doxygen not found; skipping")
+  endif()
 endif()
