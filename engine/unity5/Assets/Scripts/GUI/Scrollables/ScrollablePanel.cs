@@ -26,17 +26,22 @@ namespace Synthesis.GUI.Scrollables
 
         public string selectedEntry { get; set; } //this is set to whatever item is currently being selected
 
+        public Texture2D ThumbTexture { get; set; }
+        public Color ListTextColor { get; set; }
+
         // Use this for initialization
         protected virtual void Start()
         {
-            canvas = FindObjectOfType<Canvas>().gameObject;
+            canvas = GameObject.Find("Canvas");
             //Universal style for all scrollable panels
             listStyle = new GUIStyle("button");
             listStyle.normal.background = new Texture2D(0, 0);
-            listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
-            listStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
+            listStyle.hover.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
+            listStyle.active.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.alignment = TextAnchor.MiddleLeft;
-            listStyle.normal.textColor = Color.white;
+
+            if (ListTextColor == Color.clear) ListTextColor = Color.white;
+            if (ThumbTexture == null) ThumbTexture = Resources.Load("Images/New Textures/Button") as Texture2D;
 
             highlightStyle = new GUIStyle(listStyle);
             highlightStyle.normal.background = listStyle.active.background;
@@ -46,6 +51,7 @@ namespace Synthesis.GUI.Scrollables
         // Update is called once per frame
         protected virtual void OnGUI()
         {
+
             //Uses canvas scale and current rectangle transform data to create a new rectangle that the panel will occupy
             float scale = canvas.GetComponent<Canvas>().scaleFactor;
 
@@ -54,9 +60,13 @@ namespace Synthesis.GUI.Scrollables
 
             if (toScale)
             {
-                listStyle.fontSize = Mathf.RoundToInt(16 * scale);
-                highlightStyle.fontSize = Mathf.RoundToInt(20 * scale);
+                listStyle.fontSize = Mathf.RoundToInt(24 * scale);
+                highlightStyle.fontSize = Mathf.RoundToInt(24 * scale);
             }
+
+            UnityEngine.GUI.skin.verticalScrollbar.normal.background = null;
+            UnityEngine.GUI.skin.verticalScrollbarThumb.normal.background = ThumbTexture;
+            listStyle.normal.textColor = ListTextColor;
 
             //Sets up the new rectangle area for drawing UI components
             GUILayout.BeginArea(new Rect(area.x, area.y * 1.01f, area.width, rect.height * scale * .95f));
@@ -79,7 +89,7 @@ namespace Synthesis.GUI.Scrollables
                 GUILayout.Label(errorMessage, listStyle);
                 selectedEntry = null;
             }
-            
+
             GUILayout.EndScrollView();
             GUILayout.EndArea();
         }

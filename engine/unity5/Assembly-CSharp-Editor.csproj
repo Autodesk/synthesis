@@ -89,6 +89,17 @@
     <Compile Include="Assets\BulletUnity\Scripts\Editor\EditorHelpers.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\Editor\EditorInterface.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\Editor\PrimitiveEditor.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Task\CompileDefines.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Task\ConfigLoader.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Task\ReminderCheck.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Task\ReminderCT.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Task\SetApiLevel.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Task\Telemetry.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Task\UpdateCheck.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Task\ZInstaller.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Util\EditorConfig.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Util\EditorConstants.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Editor\Util\GAApi.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
@@ -379,6 +390,15 @@
     </Reference>
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+    </Reference>
+    <Reference Include="CTCommon">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="CTCommonEditor">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommonEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

@@ -22,6 +22,7 @@ using UnityEngine.SceneManagement;
 using BulletSharp;
 using Synthesis.GUI;
 using UnityEngine.Networking;
+using Synthesis.Field;
 
 namespace Synthesis.Robot
 {
@@ -74,7 +75,7 @@ namespace Synthesis.Robot
         /// The calculated speed of the robot.
         /// </summary>
         public float Speed { get; protected set; }
-        
+
         /// <summary>
         /// The calculated weight of the robot.
         /// </summary>
@@ -98,12 +99,12 @@ namespace Synthesis.Robot
         /// <summary>
         /// The starting position of the robot.
         /// </summary>
-        protected Vector3 robotStartPosition = new Vector3(0f, 3f, 0f);/*new Vector3(0f, 1f, 0f);*/
+        public Vector3 robotStartPosition = new Vector3(0f, 3f, 0f);/*new Vector3(0f, 1f, 0f);*/
 
         /// <summary>
         /// The starting orientation of the robot.
         /// </summary>
-        protected BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+        public BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
         /// <summary>
         /// The default state packet sent by the robot.
@@ -145,6 +146,7 @@ namespace Synthesis.Robot
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
+            robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
             if (!File.Exists(directory + "\\skeleton.bxdj"))
@@ -171,9 +173,6 @@ namespace Synthesis.Robot
                     {
                         foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
                         {
-                            Debug.Log(sensor.type.ToString() + " " + sensor.conTypePortA + " " + sensor.conTypePortB + " " + sensor.conversionFactor +
-                                " " + sensor.portA + " " + sensor.portB);
-
                             if(sensor.type == RobotSensorType.ENCODER)
                             {
                                 EmuNetworkInfo emuStruct = new EmuNetworkInfo();
@@ -269,7 +268,7 @@ namespace Synthesis.Robot
         {
             return false;
         }
-        
+
         /// <summary>
         /// Constructs the robot from the given list of nodes and number of wheels,
         /// and updates the collective mass.
@@ -338,6 +337,8 @@ namespace Synthesis.Robot
 
             if (rigidBody == null)
                 AppModel.ErrorToMenu("Could not generate robot physics data.");
+            else if (!rigidBody.GetCollisionObject().IsActive)
+                rigidBody.GetCollisionObject().Activate();
         }
 
         /// <summary>
