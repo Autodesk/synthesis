@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <Core/Materials/Material.h>
 #include <Core/Materials/Appearance.h>
 #include "BinaryWriter.h"
 #include "Triangle.h"
@@ -24,7 +25,7 @@ namespace BXDA
 		void offsetIndices(int offset); // Adds an offset to all triangles' vertex indices
 
 		void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
-		void setColor(core::Ptr<core::Appearance>);
+		void setColor(core::Ptr<core::Material>, core::Ptr<core::Appearance>);
 		void removeColor();
 
 	private:

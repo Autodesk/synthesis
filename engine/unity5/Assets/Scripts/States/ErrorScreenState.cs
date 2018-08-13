@@ -13,26 +13,15 @@ namespace Synthesis.States
 {
     public class ErrorScreenState : State
     {
-        private GameObject navigationPanel;
 
         /// <summary>
         /// Initailizes references to requried <see cref="GameObject"/>s and sets the error message text.
         /// </summary>
         public override void Start()
         {
-            navigationPanel = Auxiliary.FindGameObject("NavigationPanel");
-            navigationPanel.SetActive(false);
 
             Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
             AppModel.ClearError();
-        }
-
-        /// <summary>
-        /// Enables the navigation panel when this <see cref="State"/> exits.
-        /// </summary>
-        public override void End()
-        {
-            navigationPanel.SetActive(true);
         }
 
         /// <summary>

@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Collections.ObjectModel;
 using UnityEngine.UI;
 using Synthesis.Input.Inputs;
+using Synthesis.Field;
+using System.Linq;
 
 //=========================================================================================
 //                                      Player Class
@@ -88,6 +90,7 @@ namespace Synthesis.Input
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
         public KeyMapping SetKey(string name, CustomInput primary = null, CustomInput secondary = null, bool isTankDrive = false)
         {
+
             KeyMapping outKey = null; //Key to return
             KeyMapping defaultKey = null; //Key to store default key preferances (for resetting individual player lists)
 
@@ -213,6 +216,16 @@ namespace Synthesis.Input
         /// <returns>The active player list.</returns>
         public ReadOnlyCollection<KeyMapping> GetActiveList()
         {
+            for(int i = 0; i < activeList.Count; i++)
+            {
+                if (activeList[i].name.Contains(" Pick Up ") || activeList[i].name.Contains(" Release ") || activeList[i].name.Contains(" Spawn "))
+                    if (FieldDataHandler.gamepieces.Where(g => activeList[i].name.Contains(g.name)).ToArray().Count() == 0)
+                    {
+                        if (!isTankDrive) { arcadeDriveMap.Remove(activeList[i].name); resetArcadeDriveMap.Remove(activeList[i].name); }
+                        else { tankDriveMap.Remove(activeList[i].name); resetTankDriveMap.Remove(activeList[i].name); }
+                        activeList.RemoveAt(i);
+                    }
+            }
             return activeList.AsReadOnly();
         }
 
