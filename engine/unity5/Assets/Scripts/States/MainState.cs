@@ -70,7 +70,8 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        public bool isEmulationDownloaded = false;
+        //public bool isEmulationDownloaded = File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation");
+        public bool isEmulationDownloaded = true;
 
         bool reset;
 

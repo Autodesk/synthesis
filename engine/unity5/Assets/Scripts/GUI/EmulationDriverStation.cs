@@ -14,14 +14,17 @@ namespace Synthesis.GUI
 {
     class EmulationDriverStation : MonoBehaviour
     {
-        enum DriveState
+
+        public static EmulationDriverStation Instance { get; private set; }
+
+        public enum DriveState
         {
             Auto,
             Teleop,
             Test,
         };
 
-        enum AllianceStation
+        public enum AllianceStation
         {
             Red1,
             Red2,
@@ -31,13 +34,13 @@ namespace Synthesis.GUI
             Blue3,
         };
 
-        DriveState state;
-        AllianceStation allianceStation;
+        public DriveState state;
+        public AllianceStation allianceStation;
 
-        bool isRobotDisabled = false;
-        bool isActiveState;
-        bool isRunCode = false;
-        int teamStation;
+        public bool isRobotDisabled = false;
+        public bool isActiveState;
+        public bool isRunCode = false;
+        public int teamStation;
 
         GameObject canvas;
         InputField gameDataInput;
@@ -61,6 +64,11 @@ namespace Synthesis.GUI
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
             runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
             GameData();
+        }
+
+        private void Awake()
+        {
+            Instance = this;
         }
 
         private void Update()
