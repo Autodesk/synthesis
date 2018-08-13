@@ -514,7 +514,7 @@ public class DriveJoints
                 motors[i] = (float)Serialization.getPWM(i);
             }
             foreach (var CAN in OutputManager.Instance.Roborio.CANDevices)
-                motors[CAN.id + 10] = CAN.speed;
+                motors[CAN.id + 10] = CAN.inverted==0?CAN.speed:-CAN.speed;
         }
 
         int iter = 0;
