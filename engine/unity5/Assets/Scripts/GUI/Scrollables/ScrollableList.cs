@@ -22,6 +22,8 @@ namespace Synthesis.GUI.Scrollables
         private GUIStyle listStyle;
         private GUIStyle highlightStyle;
 
+        private Color ListTextColor { get; set; }
+
         // Use this for initialization
         void Start()
         {
@@ -35,7 +37,8 @@ namespace Synthesis.GUI.Scrollables
             listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
             listStyle.active.textColor = Color.white;
             listStyle.alignment = TextAnchor.MiddleLeft;
-            listStyle.normal.textColor = Color.black;
+
+            if (ListTextColor == Color.clear) ListTextColor = Color.black;
 
             highlightStyle = new GUIStyle(listStyle);
             highlightStyle.normal.background = listStyle.active.background;
@@ -67,9 +70,11 @@ namespace Synthesis.GUI.Scrollables
 
             float scale = GameObject.Find("Canvas").GetComponent<Canvas>().scaleFactor;
             Rect rect = GetComponent<RectTransform>().rect;
-            listStyle.fontSize = Mathf.RoundToInt(20 * scale);
-            highlightStyle.fontSize = Mathf.RoundToInt(25 * scale);
+            listStyle.fontSize = Mathf.RoundToInt(24 * scale);
+            highlightStyle.fontSize = Mathf.RoundToInt(24 * scale);
             Rect position = new Rect(p.x, Screen.height - p.y, rect.width * scale, rect.height * scale);
+
+            listStyle.normal.textColor = ListTextColor;
 
             UnityEngine.GUI.skin.verticalScrollbar.normal.background = null;
             UnityEngine.GUI.skin.verticalScrollbarThumb.normal.background = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
