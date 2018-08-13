@@ -9,6 +9,8 @@ using Synthesis.States;
 using Synthesis.Utils;
 using Synthesis.Configuration;
 using Assets.Scripts.GUI;
+using Synthesis.Robot;
+using System;
 
 namespace Synthesis.Sensors
 {
@@ -27,8 +29,6 @@ namespace Synthesis.Sensors
         DynamicCamera dynamicCamera;
         RobotCameraGUI robotCameraGUI;
 
-        GameObject sensorOptionPanel;
-        GameObject sensorTypePanel;
         GameObject cancelOptionButton;
         GameObject addSensorButton;
         GameObject selectExistingButton;
@@ -38,14 +38,12 @@ namespace Synthesis.Sensors
         GameObject addBeamBreakerButton;
         GameObject addGyroButton;
         GameObject cancelTypeButton;
-        
+
 
         GameObject sensorAnglePanel;
         GameObject xAngleEntry;
         GameObject yAngleEntry;
         GameObject zAngleEntry;
-        GameObject showAngleButton;
-        GameObject editAngleButton;
 
         bool changingAngle = false;
         bool changingAngleX = false;
@@ -55,25 +53,15 @@ namespace Synthesis.Sensors
         int angleSign;
 
         GameObject sensorRangePanel;
-        GameObject editRangeButton;
-        GameObject showRangeButton;
         GameObject RangeEntry;
-        Text rangeUnit;
 
         bool changingRange = false;
         float rangeIncrement = .01f;
         int rangeSign;
 
-        GameObject showSensorButton;
         GameObject sensorConfigurationModeButton;
         GameObject configureSensorPanel;
-        GameObject deleteSensorButton;
-        GameObject hideSensorButton;
         GameObject sensorConfigHeader;
-
-        GameObject lockPositionButton;
-        GameObject lockAngleButton;
-        GameObject lockRangeButton;
 
         GameObject sensorOutputPanel;
 
@@ -111,11 +99,6 @@ namespace Synthesis.Sensors
                 UpdateSensorAnglePanel();
                 UpdateSensorRangePanel();
             }
-            showSensorButton.SetActive(sensorManager.GetActiveSensors().Count > 0 && isHidingOutput);
-
-            //Allows users to save their configuration using enter
-            if (isEditingAngle && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditAngle();
-            if (isEditingRange && UnityEngine.Input.GetKeyDown(KeyCode.Return)) ToggleEditRange();
 
             //If an increment button is held, increment range or angle
             if (changingRange)
@@ -162,26 +145,8 @@ namespace Synthesis.Sensors
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
             toolkit = GetComponent<Toolkit>();
 
-            sensorOptionPanel = Auxiliary.FindObject(canvas, "SensorOptionPanel");
-            sensorTypePanel = Auxiliary.FindObject(canvas, "SensorTypePanel");
-
-            //For sensor option panel
-            addSensorButton = Auxiliary.FindObject(sensorOptionPanel, "AddNewSensor");
-            selectExistingButton = Auxiliary.FindObject(sensorOptionPanel, "ConfigureExistingSensor");
-            cancelOptionButton = Auxiliary.FindObject(sensorOptionPanel, "CancelButton");
-            sensorOptionToolTip = Auxiliary.FindObject(sensorOptionPanel, "ToolTipPanel");
-
-            //For choosing sensor type
-            addUltrasonicButton = Auxiliary.FindObject(sensorTypePanel, "AddUltrasonic");
-            addBeamBreakerButton = Auxiliary.FindObject(sensorTypePanel, "AddBeamBreaker");
-            addGyroButton = Auxiliary.FindObject(sensorTypePanel, "AddGyro");
-            cancelTypeButton = Auxiliary.FindObject(sensorTypePanel, "CancelButton");
-
             //For Sensor position and attachment configuration
             configureSensorPanel = Auxiliary.FindObject(canvas, "SensorConfigurationPanel");
-            sensorConfigurationModeButton = Auxiliary.FindObject(configureSensorPanel, "ConfigurationMode");
-            deleteSensorButton = Auxiliary.FindObject(configureSensorPanel, "DeleteSensorButton");
-            hideSensorButton = Auxiliary.FindObject(configureSensorPanel, "HideSensorButton");
             sensorConfigHeader = Auxiliary.FindObject(configureSensorPanel, "SensorConfigHeader");
 
             //For Sensor angle configuration
@@ -189,17 +154,11 @@ namespace Synthesis.Sensors
             xAngleEntry = Auxiliary.FindObject(sensorAnglePanel, "xAngleEntry");
             yAngleEntry = Auxiliary.FindObject(sensorAnglePanel, "yAngleEntry");
             zAngleEntry = Auxiliary.FindObject(sensorAnglePanel, "zAngleEntry");
-            showAngleButton = Auxiliary.FindObject(configureSensorPanel, "ShowSensorAngleButton");
-            editAngleButton = Auxiliary.FindObject(sensorAnglePanel, "EditButton");
 
             //For range configuration
             sensorRangePanel = Auxiliary.FindObject(canvas, "RangePanel");
             RangeEntry = Auxiliary.FindObject(sensorRangePanel, "RangeEntry");
-            showRangeButton = Auxiliary.FindObject(configureSensorPanel, "ShowSensorRangeButton");
-            editRangeButton = Auxiliary.FindObject(sensorRangePanel, "EditButton");
-            rangeUnit = Auxiliary.FindObject(sensorRangePanel, "RangeUnit").GetComponent<Text>();
-            
-            showSensorButton = Auxiliary.FindObject(canvas, "ShowOutputButton");
+
             sensorOutputPanel = Auxiliary.FindObject(canvas, "SensorOutputBorder");
             robotCameraGUI = GetComponent<RobotCameraGUI>();
 
@@ -215,7 +174,6 @@ namespace Synthesis.Sensors
             robotCameraGUI.EndProcesses();
             toolkit.EndProcesses(true);
             isChoosingOption = !isChoosingOption;
-            sensorOptionPanel.SetActive(isChoosingOption);
             if (isChoosingOption)
             {
                 preConfigState = dynamicCamera.cameraState;
@@ -247,8 +205,6 @@ namespace Synthesis.Sensors
             {
                 addSensorButton.GetComponentInChildren<Text>().text = "Add New Sensor";
                 //Activate sensor type panel if a valid node is selected
-                sensorTypePanel.SetActive(true);
-                sensorOptionPanel.SetActive(false);
                 CancelOptionSelection();
             }
         }
@@ -287,7 +243,6 @@ namespace Synthesis.Sensors
                 //If a valid sensor is selected, start configuring it
                 if (currentSensor != null)
                 {
-                    sensorOptionPanel.SetActive(false);
                     StartConfiguration();
                     //Clean up SelectedSensor and reset the panel
                     CancelOptionSelection();
@@ -373,7 +328,6 @@ namespace Synthesis.Sensors
                 addUltrasonicButton.GetComponentInChildren<Text>().text = "Add Ultrasonic";
 
                 StartConfiguration();
-                sensorTypePanel.SetActive(false);
             }
         }
 
@@ -404,7 +358,6 @@ namespace Synthesis.Sensors
             {
                 addBeamBreakerButton.GetComponentInChildren<Text>().text = "Add Beam Breaker";
                 StartConfiguration();
-                sensorTypePanel.SetActive(false);
             }
         }
 
@@ -434,7 +387,6 @@ namespace Synthesis.Sensors
             {
                 addGyroButton.GetComponentInChildren<Text>().text = "Add Gyro";
                 StartConfiguration();
-                sensorTypePanel.SetActive(false);
             }
         }
 
@@ -531,20 +483,15 @@ namespace Synthesis.Sensors
         /// </summary>
         public void StartConfiguration()
         {
+            if (configureSensorPanel.activeSelf) configureSensorPanel.SetActive(false);
             if (currentSensor.sensorType.Equals("Gyro"))
             {
                 configureSensorPanel = Auxiliary.FindObject(canvas, "GyroConfigurationPanel");
-                sensorConfigurationModeButton = Auxiliary.FindObject(configureSensorPanel, "ConfigurationMode");
-                deleteSensorButton = Auxiliary.FindObject(configureSensorPanel, "DeleteSensorButton");
-                hideSensorButton = Auxiliary.FindObject(configureSensorPanel, "HideSensorButton");
                 sensorConfigHeader = Auxiliary.FindObject(configureSensorPanel, "SensorConfigHeader");
             }
             else if (configureSensorPanel.name.Equals("GyroConfigurationPanel"))
             {
                 configureSensorPanel = Auxiliary.FindObject(canvas, "SensorConfigurationPanel");
-                sensorConfigurationModeButton = Auxiliary.FindObject(configureSensorPanel, "ConfigurationMode");
-                deleteSensorButton = Auxiliary.FindObject(configureSensorPanel, "DeleteSensorButton");
-                hideSensorButton = Auxiliary.FindObject(configureSensorPanel, "HideSensorButton");
                 sensorConfigHeader = Auxiliary.FindObject(configureSensorPanel, "SensorConfigHeader");
             }
             HideInvisibleSensors();
@@ -594,12 +541,13 @@ namespace Synthesis.Sensors
             float xTemp = 0;
             float yTemp = 0;
             float zTemp = 0;
-            if (float.TryParse(xAngleEntry.GetComponent<InputField>().text, out xTemp) &&
-                float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp) &&
-                float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp))
-            {
-                currentSensor.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
-            }
+            xAngleEntry.GetComponent<InputField>().text = xAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            yAngleEntry.GetComponent<InputField>().text = yAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            zAngleEntry.GetComponent<InputField>().text = zAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            if (!float.TryParse(xAngleEntry.GetComponent<InputField>().text, out xTemp)) xAngleEntry.GetComponent<InputField>().text = "0";
+            if (!float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp)) yAngleEntry.GetComponent<InputField>().text = "0";
+            if (!float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp)) zAngleEntry.GetComponent<InputField>().text = "0";
+            currentSensor.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
         }
 
         /// <summary>
@@ -611,9 +559,6 @@ namespace Synthesis.Sensors
             sensorAnglePanel.SetActive(currentSensor.IsChangingAngle);
             isEditingAngle = currentSensor.IsChangingAngle;
 
-            lockPositionButton.SetActive(currentSensor.IsChangingAngle);
-            lockRangeButton.SetActive(currentSensor.IsChangingAngle);
-
             //if (currentSensor.IsChangingAngle)
             //{
             //    showAngleButton.GetComponentInChildren<Text>().text = "Hide Sensor Angle";
@@ -622,24 +567,6 @@ namespace Synthesis.Sensors
             //{
             //    showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
             //}
-        }
-
-        /// <summary>
-        /// Toggle angle edit mode and update angle from the input
-        /// </summary>
-        public void ToggleEditAngle()
-        {
-            isEditingAngle = !isEditingAngle;
-            if (isEditingAngle)
-            {
-                editAngleButton.GetComponentInChildren<Text>().text = "Done";
-            }
-            else
-            {
-                editAngleButton.GetComponentInChildren<Text>().text = "Edit";
-                SyncSensorAngle();
-                isEditingAngle = false;
-            }
         }
 
         public void ChangeSensorAngleX(int sign)
@@ -690,10 +617,9 @@ namespace Synthesis.Sensors
         public void SyncSensorRange()
         {
             float temp = 0;
-            if ((float.TryParse(RangeEntry.GetComponent<InputField>().text, out temp) && temp >= 0))
-            {
-                currentSensor.SetSensorRange(temp, true);
-            }
+            RangeEntry.GetComponent<InputField>().text = RangeEntry.GetComponent<InputField>().text.TrimStart('0');
+            if (!(float.TryParse(RangeEntry.GetComponent<InputField>().text, out temp) || temp < 0)) { temp = 0; RangeEntry.GetComponent<InputField>().text = "0"; }
+            currentSensor.SetSensorRange(temp, true);
         }
 
         public void ChangeSensorRange(int sign)
@@ -732,24 +658,6 @@ namespace Synthesis.Sensors
             //{
             //showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
             //}
-        }
-
-        /// <summary>
-        /// Toggle range edit mode and update range from the input
-        /// </summary>
-        public void ToggleEditRange()
-        {
-            isEditingRange = !isEditingRange;
-            if (isEditingRange)
-            {
-                editRangeButton.GetComponentInChildren<Text>().text = "Done";
-            }
-            else
-            {
-                editRangeButton.GetComponentInChildren<Text>().text = "Edit";
-                SyncSensorRange();
-                isEditingRange = false;
-            }
         }
 
         /// <summary>
@@ -792,6 +700,21 @@ namespace Synthesis.Sensors
                 sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
         }
 
+        public void RemoveSensorsFromRobot(SimulatorRobot robot)
+        {
+            List<GameObject> sensorsOnRobot = sensorManager.GetSensorsFromRobot(robot);
+            foreach (GameObject removingSensors in sensorsOnRobot)
+            {
+                string type = removingSensors.GetComponent<SensorBase>().sensorType;
+
+                Destroy(removingSensors);
+                sensorManager.RemoveSensor(removingSensors, type);
+                ShiftOutputPanels();
+                if (currentSensor != null && currentSensor.Equals(removingSensors.GetComponent<SensorBase>())) { currentSensor = null; EndProcesses(); }
+                tabStateMachine.FindState<SensorToolbarState>().RemoveSensorFromDropdown(type,
+                    sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
+            }
+        }
         /// <summary>
         /// Toggle between showing current sensor and hiding it
         /// </summary>
@@ -875,7 +798,6 @@ namespace Synthesis.Sensors
             }
             else
             {
-                showSensorButton.SetActive(false);
                 sensorOutputPanel.SetActive(false);
             }
         }
@@ -904,7 +826,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ToggleSensorOutput()
         {
-            if(sensorManager.GetActiveSensors().Count > 0) sensorOutputPanel.SetActive(!sensorOutputPanel.activeSelf);
+            if (sensorManager.GetActiveSensors().Count > 0) sensorOutputPanel.SetActive(!sensorOutputPanel.activeSelf);
             Auxiliary.FindObject(Auxiliary.FindObject(canvas, "SensorToolbar"), "ShowOutputsButton").GetComponentInChildren<Text>().text = sensorOutputPanel.activeSelf ? "Hide Outputs" : "Show Outputs";
         }
         #endregion
@@ -945,8 +867,6 @@ namespace Synthesis.Sensors
                 currentSensor.ResetConfigurationState();
                 currentSensor = null;
             }
-            sensorOptionPanel.SetActive(false);
-            sensorTypePanel.SetActive(false);
             //CancelOptionSelection();
             //CancelTypeSelection();
             ResetConfigurationWindow();

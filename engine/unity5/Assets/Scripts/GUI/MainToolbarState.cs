@@ -37,8 +37,6 @@ namespace Assets.Scripts.GUI
         GameObject addPanel;
         GameObject changeFieldPanel;
         GameObject resetDropdown;
-        GameObject dpmPanel;
-        GameObject toolkitPanel;
         GameObject multiplayerPanel;
         GameObject stopwatchWindow;
         GameObject statsWindow;
@@ -50,6 +48,8 @@ namespace Assets.Scripts.GUI
         GameObject toolbar;
         GameObject overlay;
         GameObject tabs;
+
+        Text helpBodyText;
 
         public bool dpmWindowOn = false; //if the driver practice mode window is active
         public static bool inputPanelOn = false;
@@ -63,6 +63,7 @@ namespace Assets.Scripts.GUI
             toolbar = Auxiliary.FindObject(canvas, "MainToolbar");
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
+            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
 
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
@@ -71,10 +72,8 @@ namespace Assets.Scripts.GUI
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
 
             resetDropdown = GameObject.Find("ResetRobotDropdown");
-            dpmPanel = Auxiliary.FindObject(canvas, "DPMPanel"); // going to be moved to its own state
             multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
 
-            toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
             stopwatchWindow = Auxiliary.FindObject(canvas, "StopwatchPanel");
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
             rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
@@ -160,25 +159,6 @@ namespace Assets.Scripts.GUI
             }
         }
 
-        // TODO: Add the reset robot dropdown and camera dropdown
-
-        /// <summary>
-        /// Toggles the Driver Practice Mode window
-        /// </summary>
-        public void OnDriverPracticeButtonPressed()
-        {
-            if (dpmWindowOn)
-            {
-                dpmWindowOn = false;
-            }
-            else
-            {
-                EndOtherProcesses();
-                dpmWindowOn = true;
-            }
-            dpmPanel.SetActive(dpmWindowOn);
-        }
-
         public void OnChangeFieldButtonPressed()
         {
             if (changeFieldPanel.activeSelf)
@@ -199,14 +179,6 @@ namespace Assets.Scripts.GUI
         public void OnReplayModeButtonPressed()
         {
             State.EnterReplayState();
-        }
-
-        /// <summary>
-        /// Toggle the toolkit window on/off according to its current state
-        /// </summary>
-        public void OnToolkitButtonPressed()
-        {
-            toolkit.ToggleToolkitWindow(!toolkitPanel.activeSelf);
         }
 
         /// <summary>
@@ -257,30 +229,38 @@ namespace Assets.Scripts.GUI
         {
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
         }
+
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "\n\nTutorials: bxd.autodesk.com" +
+                "\n\nHome Tab: Main simulator functions" +
+                "\n\nDriver Practice Tab: Gamepiece setup and interaction" +
+                "\n\nScoring Tab: Match play" +
+                "\n\nSensors Tab: Robot camera and sensors";
+
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
             overlay.SetActive(true);
-            tabs.transform.Translate(new Vector3(200, 0, 0));
+            tabs.transform.Translate(new Vector3(300, 0, 0));
             foreach (Transform t in toolbar.transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
         }
+
         private void CloseHelpMenu()
         {
             helpMenu.SetActive(false);
             overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            tabs.transform.Translate(new Vector3(-300, 0, 0));
             foreach (Transform t in toolbar.transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
         }
-
 
         /// <summary>
         /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)

@@ -54,10 +54,8 @@ namespace Synthesis.States
         {
             if (fileBrowser == null)
             {
-                StateMachine.CurrentState.Pause();
                 // Standalone plugin adaptions from: https://github.com/gkngkc/UnityStandaloneFileBrowser
                 filePath = SFB.StandaloneFileBrowser.OpenFolderPanel(prefsKey, directory, false);
-                StateMachine.CurrentState.Resume();
 
                 //check for empty string(if native file browser is closed without selection) and default to Fields directory
                 if (string.IsNullOrEmpty(filePath))

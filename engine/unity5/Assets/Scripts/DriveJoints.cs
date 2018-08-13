@@ -346,8 +346,6 @@ public class DriveJoints
 
     public static void UpdateAllMotors(RigidNode_Base skeleton, float[] pwm, List<Synthesis.Robot.RobotBase.EmuNetworkInfo> emuList)
     {
-
-
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
         float[] motors = new float[73];
@@ -626,8 +624,6 @@ public class DriveJoints
 
                 if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
                 {
-
-
                     if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
                     {
 

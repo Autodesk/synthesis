@@ -8,35 +8,12 @@ using namespace BXDJ;
 int Utility::levelOfOccurrence(core::Ptr<fusion::Occurrence> occurrence)
 {
 	if (occurrence == nullptr)
-		return INT_MAX;
+		return -1;
 
-	std::string pathName = occurrence->fullPathName();
-
-	int count = 0;
-	for (char c : pathName)
-		if (c == '+')
-			count++;
-
-	return count;
-}
-
-core::Ptr<adsk::fusion::Occurrence> Utility::lowerOccurrence(core::Ptr<fusion::Joint> joint)
-{
-	if (levelOfOccurrence(joint->occurrenceOne()) >= levelOfOccurrence(joint->occurrenceTwo()))
-		return joint->occurrenceOne();
-	else
-		return joint->occurrenceTwo();
-}
-
-core::Ptr<adsk::fusion::Occurrence> Utility::upperOccurrence(core::Ptr<fusion::Joint> joint)
-{
-	if (levelOfOccurrence(joint->occurrenceOne()) < levelOfOccurrence(joint->occurrenceTwo()))
-		return joint->occurrenceOne();
-	else
-		return joint->occurrenceTwo();
+	return levelOfOccurrence(occurrence->assemblyContext()) + 1;
 }
 
 std::string Utility::getUniqueJointID(core::Ptr<adsk::fusion::Joint> joint)
 {
-	return upperOccurrence(joint)->fullPathName() + joint->name();
+	return joint->occurrenceTwo()->fullPathName() + joint->name();
 }

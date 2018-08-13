@@ -29,36 +29,28 @@ namespace Synthesis.RN
             }
         }
 
-        private void CreateWheel()
+        public void GenerateWheelInfo()
         {
-            WheelDriverMeta wheel = this.GetDriverMeta<WheelDriverMeta>();
-            BSphereShape sphereShape = MainObject.AddComponent<BSphereShape>();
-            sphereShape.Radius = wheel.radius * 0.01f;
-        }
+            if (GetParent() != null)
+            {
+                Debug.LogWarning("Generating wheel info should only be called on the root node!");
+                return;
+            }
+            
+            Vector3 centroid;
 
-        private void UpdateWheelRigidBody()
-        {
-            BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
-            rigidBody.friction = WHEEL_FRICTION;
+            IEnumerable<RigidNode> wheelNodes = ListAllNodes()
+                .Where(n => n.HasDriverMeta<WheelDriverMeta>() && n.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL)
+                .Select(n => n as RigidNode);
 
-            rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
-            rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
-        }
+            WheelCount = wheelNodes.Count();
 
-        private void UpdateWheelRigidBody(float friction)
-        {
-            BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
-            rigidBody.friction = friction;
+            WheelsNormal = Auxiliary.BestFitUnitNormal(wheelNodes
+                .Select(n => n.MainObject.transform.position)
+                .ToArray(), out centroid);
 
-            rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
-            rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
-        }
-
-        private void UpdateWheelMass()
-        {
-            BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
-            rigidBody.mass *= WHEEL_MASS_SCALE;
-            rigidBody.GetCollisionObject().CollisionShape.CalculateLocalInertia(rigidBody.mass);
+            if (Vector3.Dot(centroid - MainObject.transform.position, WheelsNormal) < 0)
+                WheelsNormal *= -1f;
         }
     }
 }

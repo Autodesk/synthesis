@@ -39,6 +39,7 @@ namespace Assets.Scripts.GUI
         GameObject helpMenu;
         GameObject overlay;
         GameObject tabs;
+        Text helpBodyText;
 
         public override void Start()
         {
@@ -58,6 +59,7 @@ namespace Assets.Scripts.GUI
             tabs = Auxiliary.FindObject(canvas, "Tabs");
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
+            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
 
             trajectoryPanel = Auxiliary.FindObject(canvas, "TrajectoryPanel");
 
@@ -72,6 +74,7 @@ namespace Assets.Scripts.GUI
         public override void Update()
         {
             if (dpmRobot == null) dpmRobot = mainState.ActiveRobot.GetDriverPractice();
+            if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) dpmRobot = mainState.ActiveRobot.GetDriverPractice();
             if (dropdown && buffer)
                 if (Input.GetMouseButtonUp(0))
                 {
@@ -171,12 +174,23 @@ namespace Assets.Scripts.GUI
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "The workflow of Driver Practice Mode is intended to be left to right " +
+                "across the toolbar for initial setup." +
+                "\n\n 1. If there are multiple gamepieces, click on the game piece dropdown in the far left and select desired gamepiece.All configuration will be specific to currently selected gamepiece." +
+                "\n\n 2. Click DEFINE INTAKE then select the intake node by clicking on appropriate mechanism on robot model, hover over model to highlight available nodes." +
+                "\n\n 3. Click DEFINE RELEASE then select the intake node by clicking on appropriate mechanism on robot model, hover over model to highlight available nodes.Intake and release can be the same mechanism." +
+                "\n\nChange Gamepiece Motion: Click EDIT TRAJECTORY to change the speed, angle, and release position of the game piece." +
+                "\n\nChange Gamepiece Spawnpoint: Click SET SPAWNPOINT and use WASD or drag navigation arrows to edit game piece spawn location" +
+                "\n\nAdd Gamepieces: Click SPAWN to add gamepieces to field" +
+                "\n\nClear Gamepieces: Click CLEAR to delete spawned gamepieces. To reset all field elements, navigate to the HOME tab, open the RESET dropdown, and select RESET FIELD.";
+
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "DPMToolbar";
             overlay.SetActive(true);
-            tabs.transform.Translate(new Vector3(200, 0, 0));
+            tabs.transform.Translate(new Vector3(300, 0, 0));
             foreach (Transform t in dpmToolbar.transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
         }
@@ -184,10 +198,10 @@ namespace Assets.Scripts.GUI
         {
             helpMenu.SetActive(false);
             overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-200, 0, 0));
+            tabs.transform.Translate(new Vector3(-300, 0, 0));
             foreach (Transform t in dpmToolbar.transform)
             {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-200, 0, 0));
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
         }

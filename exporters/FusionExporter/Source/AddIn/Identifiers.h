@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Synthesis
+namespace SynthesisAddIn
 {
 	const std::string K_WORKSPACE = "SynthesisExporterWorkspace";
 	const std::string K_PANEL = "SynthesisExporterPanel";
