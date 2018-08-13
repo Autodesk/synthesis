@@ -21,8 +21,6 @@ Guid::Guid(const Guid & guidToCopy)
 	{
 		bytes[i] = guidToCopy.bytes[i];
 	}
-
-	init = true;
 }
 
 void Guid::resetAutomaticSeed()
@@ -40,8 +38,6 @@ void Guid::regenerate(unsigned int seed)
 	{
 		bytes[i] = rand() % 0x100;
 	}
-
-	init = true;
 }
 
 std::string Guid::toString() const
@@ -62,11 +58,6 @@ std::string Guid::toString() const
 		   fullString.substr(12, 4) + '-' +
 		   fullString.substr(16, 4) + '-' +
 		   fullString.substr(20);
-}
-
-bool Guid::isInitialized() const
-{
-	return init;
 }
 
 unsigned int Guid::getSeed() const

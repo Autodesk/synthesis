@@ -15,7 +15,7 @@
 
 using namespace BXDJ;
 
-void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics, std::function<void(double)> progressCallback, bool * cancel) const
+void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics, std::function<void(double)> progressCallback, const bool * cancel) const
 {
 	if (progressCallback)
 		progressCallback(0);
