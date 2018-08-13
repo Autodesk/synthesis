@@ -52,7 +52,6 @@ namespace Synthesis.GUI
         GameObject mixAndMatchPanel;
         GameObject changePanel;
         GameObject addPanel;
-        GameObject driverStationSettingsPanel;
         GameObject driverStationPanel;
 
         GameObject inputManagerPanel;
@@ -63,8 +62,6 @@ namespace Synthesis.GUI
         GameObject hotKeyButton;
         GameObject hotKeyPanel;
         GameObject analyticsPanel;
-
-        GameObject toolbar;
 
         GameObject exitPanel;
         GameObject loadingPanel;
@@ -119,11 +116,6 @@ namespace Synthesis.GUI
                     else MainMenuExit("cancel");
                 }
 
-                if (UnityEngine.Input.GetKey(KeyCode.LeftControl) && UnityEngine.Input.GetKeyDown(KeyCode.H))
-                {
-                    TogglePanel(toolbar);
-                }
-
                 if (KeyButton.Binded() && inputPanelOn)
                 {
                     ShowBindedInfoPanel();
@@ -171,11 +163,9 @@ namespace Synthesis.GUI
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
             robotCameraGUI = GetComponent<RobotCameraGUI>();
             mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
-            toolbar = Auxiliary.FindObject(canvas, "Toolbar");
 
             changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
             addPanel = Auxiliary.FindObject(canvas, "AddPanel");
-            driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
             tabs = Auxiliary.FindGameObject("Tabs");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
