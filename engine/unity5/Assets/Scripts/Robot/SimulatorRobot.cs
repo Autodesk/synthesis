@@ -34,7 +34,7 @@ namespace Synthesis.Robot
 
         public string FilePath { get; set; }
 
-        private const float ResetVelocity = 0.05f;
+        private const float ResetVelocity = 5f;
         private const float HoldTime = 0.8f;
 
         private readonly SensorManager sensorManager;
@@ -171,6 +171,8 @@ namespace Synthesis.Robot
 
                 if (!rigidBody.GetCollisionObject().IsActive)
                     rigidBody.GetCollisionObject().Activate();
+
+                Resetting();
             }
             else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
             {
@@ -278,9 +280,6 @@ namespace Synthesis.Robot
                 }
             }
             #endregion
-
-            if (IsResetting)
-                Resetting();
         }
 
         /// <summary>
@@ -382,7 +381,7 @@ namespace Synthesis.Robot
                 //Transform rotation along the horizontal plane
                 Vector3 rotation = new Vector3(0f,
                     UnityEngine.Input.GetKey(KeyCode.D) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
-                    0f);
+                    0f) * Time.deltaTime;
                 if (!rotation.Equals(Vector3.zero))
                     RotateRobot(rotation);
             }
@@ -392,7 +391,7 @@ namespace Synthesis.Robot
                 Vector3 transposition = new Vector3(
                     UnityEngine.Input.GetKey(KeyCode.W) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f,
                     0f,
-                    UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f);
+                    UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f) * Time.deltaTime;
 
                 if (!transposition.Equals(Vector3.zero))
                     TranslateRobot(transposition);
