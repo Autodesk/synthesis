@@ -138,6 +138,9 @@
     <ClInclude Include="Source\Data\BXDJ\CustomJSONObject.h">
       <Filter>Headers\Data\BXDJ</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Data\BXDJ\Components\Elevator.h">
+      <Filter>Headers\Data\BXDJ\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="Source\AddIn\EUI-Handlers.cpp">
       <Filter>Source\AddIn</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Data\BXDJ\Components\Elevator.cpp">
+      <Filter>Source\Data\BXDJ\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
