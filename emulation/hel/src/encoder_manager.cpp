@@ -99,8 +99,7 @@ namespace hel{
     }
 
     uint8_t EncoderManager::getIndex()const noexcept{
-        return index;
-    }
+        return index;    }
 
     uint8_t EncoderManager::getAChannel()const noexcept{
         return a_channel;
@@ -149,6 +148,7 @@ namespace hel{
         case Type::UNKNOWN:
             instance.second.unlock();
             std::cerr<<"Synthesis exception: No matching input found in user code for input configured in robot model (EncoderManager with a channel on "<<as_string(a_type)<<" port "<<((unsigned)a_channel)<<" and b channel on "<<as_string(b_type)<<" port "<<((unsigned)b_channel)<<")\n";
+            return;
         case Type::FPGA_ENCODER:
         {
             tEncoder::tOutput output;
