@@ -18,8 +18,8 @@ namespace hel{
             throw UnhandledEnumConstantException("hel::EncoderManager::Type");
         }
     }
-    std::string as_string(EncoderManager::PortType type){
-        switch(type){
+    std::string as_string(EncoderManager::PortType port_type){
+        switch(port_type){
         case EncoderManager::PortType::DI:
             return "DI";
         case EncoderManager::PortType::AI:
@@ -29,8 +29,8 @@ namespace hel{
         }
     }
 
-    EncoderManager::PortType s_to_encoder_port_type(std::string s){
-        switch(hasher(s.c_str())){
+    EncoderManager::PortType s_to_encoder_port_type(std::string input){
+        switch(hasher(input.c_str())){
         case hasher("DI"):
             return EncoderManager::PortType::DI;
         case hasher("AI"):
@@ -114,8 +114,8 @@ namespace hel{
         return a_type;
     }
 
-    void EncoderManager::setAType(PortType t)noexcept{
-        a_type = t;
+    void EncoderManager::setAType(PortType a_t)noexcept{
+        a_type = a_t;
     }
 
     uint8_t EncoderManager::getBChannel()const noexcept{
@@ -130,8 +130,8 @@ namespace hel{
         return b_type;
     }
 
-    void EncoderManager::setBType(PortType t)noexcept{
-        b_type = t;
+    void EncoderManager::setBType(PortType b_t)noexcept{
+        b_type = b_t;
     }
 
     void EncoderManager::setTicks(int32_t t)noexcept{
@@ -148,7 +148,7 @@ namespace hel{
         switch(type){
         case Type::UNKNOWN:
             instance.second.unlock();
-            throw InputConfigurationException("EncoderManager with a channel on " + as_string(a_type) + " port " + std::to_string(a_channel) + " and b channel on " + as_string(b_type) + " port " + std::to_string(b_channel));
+            std::cerr<<"Synthesis exception: No matching input found in user code for input configured in robot model (EncoderManager with a channel on "<<as_string(a_type)<<" port "<<((unsigned)a_channel)<<" and b channel on "<<as_string(b_type)<<" port "<<((unsigned)b_channel)<<")\n";
         case Type::FPGA_ENCODER:
         {
             tEncoder::tOutput output;
@@ -182,13 +182,13 @@ namespace hel{
         return s;
     }
 
-    EncoderManager EncoderManager::deserialize(std::string s){
+    EncoderManager EncoderManager::deserialize(std::string input){
         EncoderManager a;
-        a.a_channel = std::stoi(hel::pullObject("\"a_channel\"",s));
-        a.b_channel = std::stoi(hel::pullObject("\"b_channel\"",s));
-        a.a_type = hel::s_to_encoder_port_type(unquote(hel::pullObject("\"a_type\"",s)));
-        a.b_type = hel::s_to_encoder_port_type(unquote(hel::pullObject("\"b_type\"",s)));
-        a.ticks = std::stoi(hel::pullObject("\"ticks\"",s));
+        a.a_channel = std::stoi(hel::pullObject("\"a_channel\"",input));
+        a.b_channel = std::stoi(hel::pullObject("\"b_channel\"",input));
+        a.a_type = hel::s_to_encoder_port_type(unquote(hel::pullObject("\"a_type\"",input)));
+        a.b_type = hel::s_to_encoder_port_type(unquote(hel::pullObject("\"b_type\"",input)));
+        a.ticks = std::stoi(hel::pullObject("\"ticks\"",input));
         return a;
     }
 

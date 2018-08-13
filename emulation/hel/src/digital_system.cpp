@@ -10,16 +10,16 @@ namespace hel{
         return outputs;
     }
 
-    void DigitalSystem::setOutputs(tDIO::tDO value)noexcept{
-        outputs = value;
+    void DigitalSystem::setOutputs(tDIO::tDO out)noexcept{
+        outputs = out;
     }
 
     tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const noexcept{
         return enabled_outputs;
     }
 
-    void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable value)noexcept{
-        enabled_outputs = value;
+    void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable enabled_out)noexcept{
+        enabled_outputs = enabled_out;
         auto instance = SendDataManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
@@ -37,16 +37,16 @@ namespace hel{
         return inputs;
     }
 
-    void DigitalSystem::setInputs(tDIO::tDI value)noexcept{
-        inputs = value;
+    void DigitalSystem::setInputs(tDIO::tDI in)noexcept{
+        inputs = in;
     }
 
     uint16_t DigitalSystem::getMXPSpecialFunctionsEnabled()const noexcept{
     		return mxp_special_functions_enabled;
     }
 
-    void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t value)noexcept{
-        mxp_special_functions_enabled = value;
+    void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t enabled_mxp_special_functions)noexcept{
+        mxp_special_functions_enabled = enabled_mxp_special_functions;
         auto instance = SendDataManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
@@ -56,42 +56,42 @@ namespace hel{
         return pulse_length;
     }
 
-    void DigitalSystem::setPulseLength(uint8_t value)noexcept{
-        pulse_length = value;
+    void DigitalSystem::setPulseLength(uint8_t length)noexcept{
+        pulse_length = length;
     }
 
     uint8_t DigitalSystem::getPWMPulseWidth(uint8_t index)const{
         return pwm[index];
     }
 
-    void DigitalSystem::setPWMPulseWidth(uint8_t index, uint8_t value){
-        pwm[index] = value;
+    void DigitalSystem::setPWMPulseWidth(uint8_t index, uint8_t pulse_width){
+        pwm[index] = pulse_width;
     }
 
-	MXPData::Config DigitalSystem::toMXPConfig(uint16_t output_mode, uint16_t special_func, uint8_t i){
-		if(i >= NUM_DIGITAL_MXP_CHANNELS){
-			throw std::out_of_range("Synthesis exception: attempting to check configuration for digital MXP port at digital index " + std::to_string(i));
+	MXPData::Config DigitalSystem::toMXPConfig(uint16_t output_mode, uint16_t special_func, uint8_t index){
+		if(index >= NUM_DIGITAL_MXP_CHANNELS){
+			throw std::out_of_range("Synthesis exception: attempting to check configuration for digital MXP port at digital index " + std::to_string(index));
 		}
-		if(checkBitHigh(special_func, i)){
+		if(checkBitHigh(special_func, index)){
 			if(
-				i == 4 || i == 5 ||
-				i == 6 || i == 7
+				index == 4 || index == 5 ||
+				index == 6 || index == 7
             ){
 				return hel::MXPData::Config::SPI;
 			}
-			if(i == 14 || i == 15){
+			if(index == 14 || index == 15){
 				return hel::MXPData::Config::I2C;
 			}
 			/* must be true
-			i == 0  || i == 1  ||
-			i == 2  || i == 3  ||
-			i == 8  || i == 9  ||
-			i == 10 || i == 11 ||
-			i == 12 || i == 13
+			index == 0  || index == 1  ||
+			index == 2  || index == 3  ||
+			index == 8  || index == 9  ||
+			index == 10 || index == 11 ||
+			index == 12 || index == 13
 			*/
 			return hel::MXPData::Config::PWM;
 		}
-		if(checkBitHigh(output_mode,i)){
+		if(checkBitHigh(output_mode,index)){
 			return hel::MXPData::Config::DO;
 		}
 		return hel::MXPData::Config::DI;
@@ -119,8 +119,8 @@ namespace hel{
 #undef COPY
     }
 
-    std::string as_string(DigitalSystem::DIOConfigurationException::Config c){
-        switch(c){
+    std::string as_string(DigitalSystem::DIOConfigurationException::Config config){
+        switch(config){
         case DigitalSystem::DIOConfigurationException::Config::DI:
             return "digital input";
         case DigitalSystem::DIOConfigurationException::Config::DO:
@@ -137,7 +137,7 @@ namespace hel{
         return s.c_str();
     }
 
-    DigitalSystem::DIOConfigurationException::DIOConfigurationException(Config config, Config expected, uint8_t p)noexcept:configuration(config), expected_configuration(expected), port(p){}
+    DigitalSystem::DIOConfigurationException::DIOConfigurationException(Config config, Config expected, uint8_t index)noexcept:configuration(config), expected_configuration(expected), port(index){}
 
     struct DIOManager: public tDIO{
         tSystemInterface* getSystemInterface() override{

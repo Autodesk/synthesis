@@ -34,16 +34,16 @@ namespace hel{
         return timer_output;
     }
 
-    void FPGAEncoder::setTimerOutput(tEncoder::tTimerOutput output)noexcept{
-        timer_output = output;
+    void FPGAEncoder::setTimerOutput(tEncoder::tTimerOutput timer_out)noexcept{
+        timer_output = timer_out;
     }
 
     tEncoder::tTimerConfig FPGAEncoder::getTimerConfig()const noexcept{
         return timer_config;
     }
 
-    void FPGAEncoder::setTimerConfig(tEncoder::tTimerConfig c)noexcept{
-        timer_config = c;
+    void FPGAEncoder::setTimerConfig(tEncoder::tTimerConfig timer_c)noexcept{
+        timer_config = timer_c;
     }
 
     FPGAEncoder::FPGAEncoder()noexcept:output(),config(),timer_output(),timer_config(){}

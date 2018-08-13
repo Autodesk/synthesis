@@ -19,8 +19,8 @@ namespace hel{
         }
     }
 
-    CANDevice::Type s_to_can_device_type(std::string s){
-        switch(hasher(s.c_str())){
+    CANDevice::Type s_to_can_device_type(std::string input){
+        switch(hasher(input.c_str())){
         case hasher("TALON_SRX"):
             return CANDevice::Type::TALON_SRX;
         case hasher("VICTOR_SPX"):

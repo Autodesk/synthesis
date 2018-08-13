@@ -14,7 +14,6 @@ namespace hel{
     struct CANMotorController{
 
         /**
-         * \enum MessageData
          * \brief Interpretation definitions for CAN message data bytes
          */
 
@@ -24,7 +23,6 @@ namespace hel{
         };
 
         /**
-         * \enum SendCommandByteMask
          * \brief Interpretation definitions for command byte bitmask
          */
 
@@ -34,7 +32,6 @@ namespace hel{
         };
 
         /**
-         * \enum ReceiveCommandIDMask
          * \brief Interpretation definitions for message ID bitmask for CAN frames requesting data
          */
 
@@ -44,7 +41,6 @@ namespace hel{
 
     private:
         /**
-         * \var CANDevice::Type type
          * \brief The type of CAN device
          *
          * Should be a motor controller type
@@ -53,21 +49,18 @@ namespace hel{
         CANDevice::Type type;
 
         /**
-         * \var uint8_t id
          * \brief The CAN device ID
          */
 
         uint8_t id;
 
         /**
-         * \var double percent_output
          * \brief The set percent output of the motor controller
          */
 
         double percent_output;
 
         /**
-         * \var bool inverted
          * \brief Whether to invert the percent_output signal or not
          */
 
@@ -75,7 +68,6 @@ namespace hel{
 
     public:
         /**
-         * \fn std::string toString()const
          * \brief Format the CANMotorController as a string
          * \return A string representing the CANMotorController data
          */
@@ -83,7 +75,6 @@ namespace hel{
         std::string toString()const;
 
         /**
-         * \fn CANDevice::Type getType()const noexcept
          * \brief Get the type of motor controller
          * \return The motor controller's type as a CANDevice::Type
          */
@@ -91,7 +82,6 @@ namespace hel{
         CANDevice::Type getType()const noexcept;
 
         /**
-         * \fn uint8_t getID()const noexcept
          * \brief Get the device ID of the motor controller
          * \return The device ID of the motor controller
          */
@@ -99,23 +89,20 @@ namespace hel{
         uint8_t getID()const noexcept;
 
         /**
-         * \fn void setPercentOutputData(BoundsCheckedArray<uint8_t,MessageData::SIZE> percent_output)noexcept
          * \brief Set the percent output of the motor controller using the byte format CTRE CAN protocol uses
-         * \param percent_output The percent output to set to
+         * \param data The percent output to set to
          */
 
         void setPercentOutputData(BoundsCheckedArray<uint8_t,MessageData::SIZE>)noexcept;
 
         /**
-         * \fn void setPercentOutput(double percent_output)noexcept
          * \brief Set the percent output of the motor controller
-         * \param percent_output The percent output to set to
+         * \param out The percent output to set to
          */
 
         void setPercentOutput(double)noexcept;
 
         /**
-         * \fn double getPercentOutput()const noexcept
          * \brief Get the percent output of the motor controller
          * \return The percent output of the motor controller
          */
@@ -133,7 +120,7 @@ namespace hel{
         /**
          * \fn void setInverted(bool inverted)noexcept
          * \brief Set the inverted flag of the motor controller
-         * \param inverted Whether to invert motor controller output
+         * \param i Whether to invert motor controller output
          */
 
         void setInverted(bool)noexcept;

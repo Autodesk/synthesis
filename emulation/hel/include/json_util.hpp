@@ -8,7 +8,6 @@
 
 namespace hel{
     /**
-     * \var constexpr char JSON_PACKET_SUFFIX
      * \brief A unique character to end JSON transmissions with
      * This enables the receiving end to more easily differentiate between packets
      */
@@ -22,7 +21,6 @@ namespace hel{
     struct JSONParsingException: std::exception{
     private:
         /**
-         * \var std::string details
          * \brief Details about the JSON parsing exception
          */
 
@@ -30,7 +28,6 @@ namespace hel{
 
     public:
         /**
-         * \fn const char* what()const throw
          * \brief Returns the exception message
          */
 

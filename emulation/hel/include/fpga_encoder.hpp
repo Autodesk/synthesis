@@ -14,7 +14,6 @@ namespace hel{
     struct FPGAEncoder{
 
         /**
-         * \var static constexpr const int32_t NUM_ENCODERS
          * \brief The number of FPGA encoders HAL supports
          */
 
@@ -22,14 +21,12 @@ namespace hel{
 
     private:
         /**
-         * \var nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput zeroed_output
          * \brief The counter's count at the point it was reset
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput zeroed_output;
 
         /**
-         * \var tEnoder::tOutput output
          * \brief The encoder's raw count
          * Direction is the direction of motion
          * Value is the encoder tick count
@@ -38,7 +35,6 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput output;
 
         /**
-         * \var tEnoder::tConfig config
          * \brief Configuration for count
          * IndexSource specifies which input will reset the encoder count
          * Reverse reversed the encoder's direction
@@ -51,7 +47,6 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig config;
 
         /**
-         * \var tEnoder::tTimerOutput timer_output
          * \brief The period of the most recent pulse
          * Stalled represents the encoder stalled state (i.e. it it's stopped turning)
          * Period is the time taken to count \bCount encoder ticks in units of system ticks (40 microseconds per system tick). It increments by 2's but uses the first bit, so it must be left bit-shifted one before interpretation.
@@ -61,7 +56,6 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput timer_output;
 
         /**
-         * \var tEnoder::tTimerConfig timer_config
          * \brief Configuration for encoder period measurement
          * StallPeriod is the time that must pass until the encoder is continued stalled (in system ticks)
          * AverageSize sets the number of samples the timer uses when calculating the period (expects 1 to 127)
@@ -72,7 +66,6 @@ namespace hel{
 
     public:
         /**
-         * \fn void reset()noexcept
          * \brief Reset the counter
          *
          * Resets the zero point of the count
@@ -80,7 +73,6 @@ namespace hel{
 
         void reset()noexcept;
         /**
-         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getCurrentOutput()const noexcept
          * \brief Get the current count of the encoder including resets
          * \return The current encoder count
          */
@@ -88,7 +80,6 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getCurrentOutput()const noexcept;
 
         /**
-         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getRawOutput()const noexcept
          * \brief Get the raw count of the encoder ignoring resets
          * \return The raw count of the encoder
          */
@@ -96,15 +87,14 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput getRawOutput()const noexcept;
 
         /**
-         * \fn void setRawOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput output)noexcept
+         * \fn void setRawOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput out)noexcept
          * \brief Set the raw count of the encoder
-         * \param output The count to set the encoder to
+         * \param out The count to set the encoder to
          */
 
         void setRawOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tOutput)noexcept;
 
         /**
-         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const noexcept
          * \brief Get the configuration of the encoder
          * \return The configuration of the encoder
          */
@@ -112,15 +102,14 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig getConfig()const noexcept;
 
         /**
-         * \fn void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig config)noexcept
+         * \fn void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig c)noexcept
          * \brief Set the encoders' configuration
-         * \param config The configuration to use
+         * \param c The configuration to use
          */
 
         void setConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tConfig)noexcept;
 
         /**
-         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const noexcept
          * \brief Get the sample timing of the encoder
          * \return The encoder sample timing
          */
@@ -128,15 +117,14 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput getTimerOutput()const noexcept;
 
         /**
-         * \fn void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput timer_output)noexcept
+         * \fn void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput timer_out)noexcept
          * \brief Set the encoder's sample timing
-         * \param timer_output The sample timing to use
+         * \param timer_out The sample timing to use
          */
 
         void setTimerOutput(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerOutput)noexcept;
 
         /**
-         * \fn nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const noexcept
          * \brief Get the encoder's sample timing configuration
          * \return The encoder's sample timing configuration
          */
@@ -144,9 +132,9 @@ namespace hel{
         nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig getTimerConfig()const noexcept;
 
         /**
-         * \fn void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig timer_config)noexcept
+         * \fn void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig timer_c)noexcept
          * \brief Set the encoder's sample timing configuration
-         * \param timer_config The sample timing configuration to use
+         * \param timer_c The sample timing configuration to use
          */
 
         void setTimerConfig(nFPGA::nRoboRIO_FPGANamespace::tEncoder::tTimerConfig)noexcept;

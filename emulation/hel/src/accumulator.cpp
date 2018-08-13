@@ -46,11 +46,11 @@ namespace hel{
         tSystemInterface* getSystemInterface(){ //unnecessary for emulation
             return new SystemInterface();
         }
- 
+
         uint8_t getSystemIndex(){
             return index;
         }
- 
+
         tOutput readOutput(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();

@@ -12,7 +12,6 @@ namespace hel{
     struct Global{
     private:
         /**
-         * \var uint64_t fpga_start_time
          * \brief The time in microseconds at which the emulated FPGA started
          */
 
@@ -21,14 +20,12 @@ namespace hel{
     public:
 
         /**
-         * \fn uint64_t getFPGAStartTime()const
          * \brief Get the time in microseconds at which the emulated FPGA started
          */
 
         uint64_t getFPGAStartTime()const noexcept;
 
         /**
-         * \fn static uint64_t getCurrentTime()
          * \brief Get the time in microseconds for which the emulated FPGA has been running
          */
 

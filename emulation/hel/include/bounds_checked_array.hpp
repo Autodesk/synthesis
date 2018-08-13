@@ -18,7 +18,6 @@ namespace hel{
     private:
 
         /**
-         * \var std::array<T, LEN> internal
          * \brief The internal data array for this wrapper
          */
 
@@ -27,7 +26,6 @@ namespace hel{
     public:
 
         /**
-         * \fn constexpr const T& at(std::size_t pos)const
          * \brief Returns a reference to the element at pos with bounds checking
          * \param pos The position of the element to return
          * \return A reference to the requested element
@@ -41,7 +39,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr T& at(std::size_t pos)
          * \brief Returns a reference to the element at pos with bounds checking
          * \param pos The position of the element to return
          * \return A reference to the requested element
@@ -55,7 +52,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const T& operator[](std::size_t pos)const
          * \brief Returns a reference to the element at pos with bounds checking
          * \param pos The position of the element to return
          * \return A reference to the requested element
@@ -69,7 +65,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr T& operator[](std::size_t pos)
          * \brief Returns a reference to the element at pos with bounds checking
          * \param pos The position of the element to return
          * \return A reference to the requested element
@@ -83,7 +78,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const T& front()const
          * \brief Returns a reference to the first element
          * \return A reference to the first element
          */
@@ -96,7 +90,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr T& front()
          * \brief Returns a reference to the first element
          * \return A reference to the first element
          */
@@ -109,7 +102,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const T& back()const
          * \brief Returns a reference to the last element
          * \return A reference to the last element
          */
@@ -122,7 +114,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr T& back()
          * \brief Returns a reference to the last element
          * \return A reference to the last element
          */
@@ -135,7 +126,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const std::array<T, LEN>& toArray()const noexcept
          * \brief Fetches the internal std::array of the BoundsCheckedArray
          * \return The internal std::array of this BoundsCheckedArray
          */
@@ -145,7 +135,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr std::array<T, LEN>& toArray()noexcept
          * \brief Fetches the internal std::array of the BoundsCheckedArray
          * \return The internal std::array of this BoundsCheckedArray
          */
@@ -155,7 +144,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const T* data()const noexcept
          * \brief Fetches the underlying basic array
          * \return A pointer to the underlying basic array
          */
@@ -168,7 +156,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const T* data()noexcept
          * \brief Fetches the underlying basic array
          * \return A pointer to the underlying basic array
          */
@@ -181,7 +168,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr std::size_t size()const noexcept
          * \brief Fetches the number of elements in the array
          * \return The number of elements in the array
          */
@@ -191,7 +177,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr bool empty()const noexcept
          * \brief Checks if the container has no elements
          * \return true if the array is empty, false otherwise
          */
@@ -201,7 +186,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr std::size_t max_size()const noexcept
          * \brief Returns the maximum number of elements the array can hold
          * \return Maximum number of elements
          */
@@ -211,7 +195,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr typename std::array<T, LEN>::iterator begin()noexcept
          * \brief Returns an iterator to the first element in the container
          * \return Iterator to the first element
          */
@@ -221,7 +204,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr const typename std::array<T, LEN>::const_iterator begin()const noexcept
          * \brief Returns an iterator to the first element in the container
          * \return Iterator to the first element
          */
@@ -231,7 +213,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr typename std::array<T, LEN>::const_iterator begin()const noexcept
          * \brief Returns an iterator to the first element in the container
          * \return Iterator to the first element
          */
@@ -241,7 +222,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr typename std::array<T, LEN>::iterator end()noexcept
          * \brief Returns an iterator to the last element in the container
          * \return Iterator to the last element
          */
@@ -251,7 +231,6 @@ namespace hel{
         }
 
         /**
-         * \fn constexpr typename std::array<T, LEN>::const_iterator end()const noexcept
          * \brief Returns an iterator to the last element in the container
          * \return Iterator to the last element
          */
@@ -260,7 +239,6 @@ namespace hel{
             return internal.end();
         }
         /**
-         * \fn constexpr typename std::array<T, LEN>::const_iterator cend()const noexcept
          * \brief Returns an iterator to the last element in the container
          * \return Iterator to the last element
          */
@@ -322,7 +300,6 @@ namespace hel{
     };
 
     /**
-     * \fn bool operator==(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b)
      * \brief Equality comparison operator for two BoundsCheckedArray objects
      * \param a The first object to compare against
      * \param b The second object to compare against
@@ -335,7 +312,6 @@ namespace hel{
     }
 
     /**
-     * \fn bool operator!=(const BoundsCheckedArray<T, LEN>& a, const BoundsCheckedArray<T, LEN>& b)
      * \brief Inequality comparison operator for two BoundsCheckedArray objects
      * \param a The first object to compare against
      * \param b The second object to compare against

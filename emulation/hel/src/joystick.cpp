@@ -40,8 +40,8 @@ namespace hel{
         return button_count;
     }
 
-    void Joystick::setButtonCount(uint8_t count)noexcept{
-        button_count = count;
+    void Joystick::setButtonCount(uint8_t b_count)noexcept{
+        button_count = b_count;
     }
 
     BoundsCheckedArray<int8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxes()const{
@@ -56,16 +56,16 @@ namespace hel{
         return axis_count;
     }
 
-    void Joystick::setAxisCount(uint8_t count)noexcept{
-        axis_count = count;
+    void Joystick::setAxisCount(uint8_t a_count)noexcept{
+        axis_count = a_count;
     }
 
     BoundsCheckedArray<uint8_t, Joystick::MAX_AXIS_COUNT> Joystick::getAxisTypes()const{
         return axis_types;
     }
 
-    void Joystick::setAxisTypes(BoundsCheckedArray<uint8_t, Joystick::MAX_AXIS_COUNT> types){
-        axis_types = types;
+    void Joystick::setAxisTypes(BoundsCheckedArray<uint8_t, Joystick::MAX_AXIS_COUNT> a_types){
+        axis_types = a_types;
     }
 
     BoundsCheckedArray<int16_t, Joystick::MAX_POV_COUNT> Joystick::getPOVs()const{
@@ -80,16 +80,16 @@ namespace hel{
         return pov_count;
     }
 
-    void Joystick::setPOVCount(uint8_t count)noexcept{
-        pov_count = count;
+    void Joystick::setPOVCount(uint8_t p_count)noexcept{
+        pov_count = p_count;
     }
 
     uint32_t Joystick::getOutputs()const noexcept{
         return outputs;
     }
 
-    void Joystick::setOutputs(uint32_t outs)noexcept{
-        outputs = outs;
+    void Joystick::setOutputs(uint32_t out)noexcept{
+        outputs = out;
     }
 
     uint16_t Joystick::getLeftRumble()const noexcept{
@@ -145,36 +145,36 @@ namespace hel{
         return s;
     }
 
-    Joystick Joystick::deserialize(std::string s){
+    Joystick Joystick::deserialize(std::string input){
         Joystick joy;
-        joy.is_xbox = hel::stob(hel::pullObject("\"is_xbox\"", s));
-        joy.type = std::stoi(hel::pullObject("\"type\"",s));
-        joy.name = hel::unquote(hel::pullObject("\"name\"", s));
-        joy.buttons = std::stoi(hel::pullObject("\"buttons\"", s));
-        joy.button_count = std::stoi(hel::pullObject("\"button_count\"", s));
-        std::vector<int8_t> axes_deserialized = hel::deserializeList(hel::pullObject("\"axes\"",s), std::function<int8_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
+        joy.is_xbox = hel::stob(hel::pullObject("\"is_xbox\"", input));
+        joy.type = std::stoi(hel::pullObject("\"type\"",input));
+        joy.name = hel::unquote(hel::pullObject("\"name\"", input));
+        joy.buttons = std::stoi(hel::pullObject("\"buttons\"", input));
+        joy.button_count = std::stoi(hel::pullObject("\"button_count\"", input));
+        std::vector<int8_t> axes_deserialized = hel::deserializeList(hel::pullObject("\"axes\"",input), std::function<int8_t(std::string)>([&](std::string input){ return std::stoi(input);}), true);
         if(axes_deserialized.size() == joy.axes.size()){
             joy.axes = axes_deserialized;
         } else {
             throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(axes_deserialized.size()) + " axes, expected " + std::to_string(joy.axes.size()));
         }
-        joy.axis_count = std::stoi(hel::pullObject("\"axis_count\"", s));
-        std::vector<uint8_t> axis_types_deserialized = hel::deserializeList(hel::pullObject("\"axis_types\"",s), std::function<uint8_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
+        joy.axis_count = std::stoi(hel::pullObject("\"axis_count\"", input));
+        std::vector<uint8_t> axis_types_deserialized = hel::deserializeList(hel::pullObject("\"axis_types\"",input), std::function<uint8_t(std::string)>([&](std::string input){ return std::stoi(input);}), true);
         if(axis_types_deserialized.size() == joy.axis_types.size()){
             joy.axis_types = axis_types_deserialized;
         } else {
             throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(axis_types_deserialized.size()) + " axis types, expected " + std::to_string(joy.axis_types.size()));
         }
-        std::vector<int16_t> povs_deserialized = hel::deserializeList(hel::pullObject("\"povs\"",s), std::function<int16_t(std::string)>([&](std::string s){ return std::stoi(s);}), true);
+        std::vector<int16_t> povs_deserialized = hel::deserializeList(hel::pullObject("\"povs\"",input), std::function<int16_t(std::string)>([&](std::string input){ return std::stoi(input);}), true);
         if(povs_deserialized.size() == joy.povs.size()){
             joy.povs = povs_deserialized;
         } else {
             throw std::out_of_range("Exception: deserialization resulted in array of " + std::to_string(povs_deserialized.size()) + " povs, expected " + std::to_string(joy.povs.size()));
         }
-        joy.pov_count = std::stoi(hel::pullObject("\"pov_count\"", s));
-        joy.outputs = std::stoi(hel::pullObject("\"outputs\"", s));
-        joy.left_rumble = std::stoi(hel::pullObject("\"left_rumble\"", s));
-        joy.right_rumble = std::stoi(hel::pullObject("\"right_rumble\"", s));
+        joy.pov_count = std::stoi(hel::pullObject("\"pov_count\"", input));
+        joy.outputs = std::stoi(hel::pullObject("\"outputs\"", input));
+        joy.left_rumble = std::stoi(hel::pullObject("\"left_rumble\"", input));
+        joy.right_rumble = std::stoi(hel::pullObject("\"right_rumble\"", input));
 
         return joy;
     }
