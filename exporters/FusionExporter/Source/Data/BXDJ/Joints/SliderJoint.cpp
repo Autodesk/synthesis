@@ -12,7 +12,7 @@ SliderJoint::SliderJoint(const SliderJoint & jointToCopy) : Joint(jointToCopy)
 	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
-SliderJoint::SliderJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, joint, parentOccurrence)
+SliderJoint::SliderJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 }

@@ -13,7 +13,7 @@
 #include "Data/BXDA/Triangle.h"
 #include "Data/BXDJ/RigidNode.h"
 
-using namespace Synthesis;
+using namespace SynthesisAddIn;
 
 std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 {
@@ -98,7 +98,7 @@ void Exporter::exportExampleXml()
 	xml.writeElement("ModelID", "Part2:1");
 }
 
-void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document, std::function<void(double)> progressCallback, bool * cancel)
+void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> document, std::function<void(double)> progressCallback, const bool * cancel)
 {	
 	if (progressCallback)
 		progressCallback(0);
@@ -136,7 +136,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 
 	xml.write(*rootNode);
 
-	xml.writeElement("DriveTrainType", BXDJ::ConfigData::toString(config.driveTrainType));
+	xml.writeElement("DriveTrainType", BXDJ::ConfigData::toString(config.drivetrainType));
 	xml.endElement();
 
 	// Write BXDA files

@@ -1,7 +1,7 @@
 #include "Filesystem.h"
 #include <windows.h>
 
-const std::string Filesystem::ROBOT_APPDATA_DIRECTORY = "Synthesis\\Robots";
+const std::string ROBOT_APPDATA_DIRECTORY = "Synthesis\\Robots";
 
 std::string Filesystem::getCurrentRobotDirectory(std::string name)
 {

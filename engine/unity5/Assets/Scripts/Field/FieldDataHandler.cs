@@ -104,6 +104,20 @@ namespace Synthesis.Field
                 robotSpawn = getRobotSpawn();
             } else WriteField();
         }
+
+        public static void Load(string fieldPath)
+        {
+            if (File.Exists(fieldPath + "\\" + "field_data.xml"))
+            {
+                file = XDocument.Load(fieldPath + "\\" + "field_data.xml");
+                gamepieces = getGamepieces();
+                redGoals = getRedGoals();
+                blueGoals = getBlueGoals();
+                robotSpawn = getRobotSpawn();
+            }
+            else WriteField();
+        }
+
         private static List<Gamepiece> getGamepieces()
         {
             List<Gamepiece> pieces = new List<Gamepiece>();

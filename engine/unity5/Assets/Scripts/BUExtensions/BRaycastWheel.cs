@@ -101,7 +101,6 @@ namespace Synthesis.BUExtensions
 
             basePoint = localPosition.ToBullet() - robot.RootNode.WheelsNormal.ToBullet() * VerticalOffset;
 
-            Debug.Log("Normal: " + robot.RootNode.WheelsNormal);
             wheelIndex = robot.AddWheel(driverMeta.type, basePoint, axis.normalized.ToBullet(), VerticalOffset, radius);
         }
 

@@ -17,13 +17,14 @@ std::string RigidNode::log = "";
 int RigidNode::depth = 0;
 #endif
 
-RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config) : RigidNode()
+RigidNode::RigidNode(core::Ptr<fusion::Component> rootComponent, ConfigData config)
 {
 #if _DEBUG
 	log = "";
 	depth = 0;
 #endif
 
+	parent = nullptr;
 	configData = std::make_shared<ConfigData>(config);
 	jointSummary = std::make_shared<JointSummary>(getJointSummary(rootComponent));
 
@@ -48,74 +49,15 @@ Joint * RigidNode::getParent() const
 	return parent;
 }
 
-void BXDJ::RigidNode::getChildren(std::vector<std::shared_ptr<RigidNode>> & children, bool recursive) const
+void RigidNode::getChildren(std::vector<std::shared_ptr<RigidNode>> & children, bool recursive) const
 {
 	for (std::shared_ptr<Joint> joint : childrenJoints)
 	{
 		children.push_back(joint->getChild());
 
 		if (recursive)
-			joint->getChild()->getChildren(children);
+			joint->getChild()->getChildren(children, true);
 	}
-}
-
-int BXDJ::RigidNode::getOccurrenceCount() const
-{
-	return fusionOccurrences.size();
-}
-
-void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
-{
-#if _DEBUG
-	log += std::string(depth, '\t') + "Adding occurrence \"" + rootOccurrence->fullPathName() + "\"\n";
-	depth++;
-#endif
-
-	// Add the occurrence to this node
-	fusionOccurrences.push_back(rootOccurrence);
-
-	// Create a joint from this occurrence if it is the parent of any joints
-	if (jointSummary->parents.find(rootOccurrence) != jointSummary->parents.end())
-	{
-#if _DEBUG
-		log += std::string(depth - 1, '\t') + "Joints:\n";
-#endif
-
-		for (core::Ptr<fusion::Joint> joint : jointSummary->parents[rootOccurrence])
-			addJoint(joint, rootOccurrence);
-	}
-
-	// Merge this occurrence with any occurrences rigidgrouped to it
-	if (jointSummary->rigidgroups.find(rootOccurrence) != jointSummary->rigidgroups.end())
-	{
-#if _DEBUG
-		log += std::string(depth - 1, '\t') + "Rigidgroups:\n";
-#endif
-
-		for (core::Ptr<fusion::Occurrence> occurrence : jointSummary->rigidgroups[rootOccurrence])
-			buildTree(occurrence);
-	}
-
-	// Add all occurrences without joints or that are only parents in joints to the root node
-#if _DEBUG
-	if (rootOccurrence->childOccurrences()->count() > 0)
-	log += std::string(depth - 1, '\t') + "Children:\n";
-#endif
-
-	for (core::Ptr<fusion::Occurrence> occurrence : rootOccurrence->childOccurrences())
-	{
-		// Add the occurrence to this node if it is not the child of a joint
-		if (jointSummary->children.find(occurrence) == jointSummary->children.end())
-			buildTree(occurrence);
-#if _DEBUG
-		else
-			log += std::string(depth, '\t') + "\"" + occurrence->fullPathName() + "\" is connected separately by joint\n";
-#endif
-	}
-
-#if _DEBUG
-	depth--;
-#endif
 }
 
 RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> rootComponent)
@@ -173,10 +115,64 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 	return jointSummary;
 }
 
+void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
+{
+#if _DEBUG
+	log += std::string(depth, '\t') + "Adding occurrence \"" + rootOccurrence->fullPathName() + "\"\n";
+	depth++;
+#endif
+
+	// Add the occurrence to this node
+	fusionOccurrences.push_back(rootOccurrence);
+
+	// Create a joint from this occurrence if it is the parent of any joints
+	if (jointSummary->parents.find(rootOccurrence) != jointSummary->parents.end())
+	{
+#if _DEBUG
+		log += std::string(depth - 1, '\t') + "Joints:\n";
+#endif
+
+		for (core::Ptr<fusion::Joint> joint : jointSummary->parents[rootOccurrence])
+			addJoint(joint, rootOccurrence);
+	}
+
+	// Merge this occurrence with any occurrences rigidgrouped to it
+	if (jointSummary->rigidgroups.find(rootOccurrence) != jointSummary->rigidgroups.end())
+	{
+#if _DEBUG
+		log += std::string(depth - 1, '\t') + "Rigidgroups:\n";
+#endif
+
+		for (core::Ptr<fusion::Occurrence> occurrence : jointSummary->rigidgroups[rootOccurrence])
+			buildTree(occurrence);
+	}
+
+	// Add all occurrences without joints or that are only parents in joints to the root node
+#if _DEBUG
+	if (rootOccurrence->childOccurrences()->count() > 0)
+		log += std::string(depth - 1, '\t') + "Children:\n";
+#endif
+
+	for (core::Ptr<fusion::Occurrence> occurrence : rootOccurrence->childOccurrences())
+	{
+		// Add the occurrence to this node if it is not the child of a joint
+		if (jointSummary->children.find(occurrence) == jointSummary->children.end())
+			buildTree(occurrence);
+#if _DEBUG
+		else
+			log += std::string(depth, '\t') + "\"" + occurrence->fullPathName() + "\" is connected separately by joint\n";
+#endif
+	}
+
+#if _DEBUG
+	depth--;
+#endif
+}
+
 void RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent)
 {
 	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
-	
+
 	// Do not add joint if child has changed parents
 	if (jointSummary->children[child] != parent)
 	{
@@ -199,7 +195,7 @@ void RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occur
 		newJoint = std::make_shared<CylindricalJoint>(this, joint, parent);
 	else if (jointType == fusion::JointTypes::BallJointType)
 		newJoint = std::make_shared<BallJoint>(this, joint, parent);
-	else 
+	else
 	{
 		// If joint type is unsupported, add as if occurrence is attached by rigid joint (same rigidNode)
 		buildTree(child);
@@ -208,12 +204,7 @@ void RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occur
 
 	// Apply user configuration to joint
 	newJoint->applyConfig(*configData);
-	addJoint(newJoint);
-}
-
-void RigidNode::addJoint(std::shared_ptr<Joint> joint)
-{
-	childrenJoints.push_back(joint);
+	childrenJoints.push_back(newJoint);
 }
 
 #if _DEBUG
