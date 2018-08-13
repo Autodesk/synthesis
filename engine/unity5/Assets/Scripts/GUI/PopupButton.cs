@@ -47,7 +47,8 @@ namespace Synthesis.GUI
         void Start()
         {
             listStyle = new GUIStyle();
-            listStyle.normal.textColor = Color.white;
+            listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
+            listStyle.normal.textColor = Color.black;
             var tex = new Texture2D(2, 2);
             var colors = new Color[4];
             for (int i = 0; i < colors.Length; i++) colors[i] = Color.white;
@@ -58,10 +59,10 @@ namespace Synthesis.GUI
             listStyle.padding.left = listStyle.padding.right = listStyle.padding.top = listStyle.padding.bottom = 4;
 
             buttonStyle = new GUIStyle("button");
-            buttonBackground = Resources.Load("Images/normalbuttontexture") as Texture2D;
+            buttonBackground = Resources.Load("Images/New Textures/highlightGray") as Texture2D;
             buttonStyle.normal.background = buttonBackground;
-            buttonStyle.font = Resources.Load("Fonts/Russo_One") as Font;
-            buttonStyle.normal.textColor = Color.white;
+            buttonStyle.font = Resources.Load("Fonts/Artifakt Element Bold") as Font;
+            buttonStyle.normal.textColor = Color.black;
             buttonStyle.alignment = TextAnchor.MiddleCenter;
 
             boxStyle = new GUIStyle("box");
@@ -80,7 +81,7 @@ namespace Synthesis.GUI
 
             float scale = canvas.scaleFactor;
 
-            buttonStyle.fontSize = Mathf.RoundToInt(24 * scale);
+            buttonStyle.fontSize = Mathf.RoundToInt(30 * scale);
             Vector3 p = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
             Rect rect = GetComponent<RectTransform>().rect;
             if (Popup.List(new Rect(p.x - rect.width / 2 * scale, Screen.height - p.y - rect.height / 2 * scale, rect.width * scale, rect.height * scale), ref showList, ref listEntry, list[listEntry], list, buttonStyle, boxStyle, listStyle))
