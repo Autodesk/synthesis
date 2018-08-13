@@ -5,12 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <WPILib.h>
+#include <frc/WPILib.h>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <unistd.h>
-#include "ctre/Phoenix.h"
+//#include "ctre/Phoenix.h"
 #include <chrono>
 
 #define NOW std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()
@@ -30,8 +30,8 @@ class Robot : public frc::IterativeRobot {
     frc::AnalogInput ai{0};
     frc::Encoder encoder{0,1};
     frc::Solenoid solenoid{0};
-    ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
-	long long unsigned start = NOW;
+    //ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
+    long long unsigned start = NOW;
 public:
     void RobotInit(){}
 
@@ -41,14 +41,14 @@ public:
 
     void TeleopPeriodic() {
 		TIME_IT();
-        TIME_IT(dio.Set(true));
+    TIME_IT(dio.Set(true));
 		TIME_IT(spark.Set(0.56));
 		TIME_IT(relay.Set(frc::Relay::Value::kForward));
 		TIME_IT(ao.SetVoltage(1.0));
 		TIME_IT(solenoid.Set(true));
-        TIME_IT(talon.Set(0.3));
+    //TIME_IT(talon.Set(0.3));
 
-        TIME_IT(usleep(45000));
+    TIME_IT(usleep(45000));
 		printf("\n");
     }
 };
