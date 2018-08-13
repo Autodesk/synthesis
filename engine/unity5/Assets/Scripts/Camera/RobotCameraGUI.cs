@@ -27,7 +27,6 @@ namespace Synthesis.Camera
         GameObject yAngleEntry;
         GameObject zAngleEntry;
         GameObject showAngleButton;
-        GameObject editAngleButton;
 
         bool changingAngle = false;
         bool changingAngleX = false;
@@ -38,7 +37,6 @@ namespace Synthesis.Camera
 
         //FOV panel
         GameObject cameraFOVPanel;
-        GameObject editFOVButton;
         GameObject showFOVButton;
         GameObject FOVEntry;
 
@@ -56,11 +54,6 @@ namespace Synthesis.Camera
         //Camera configuration
         GameObject configureRobotCameraButton;
         GameObject configureCameraPanel;
-
-        //Dark buttons that lock the corresponding button so users can't do different configuration options at the same time
-        GameObject lockPositionButton;
-        GameObject lockAngleButton;
-        GameObject lockFOVButton;
 
         private bool usingRobotView = false;
         private bool indicatorActive = false;
@@ -141,19 +134,12 @@ namespace Synthesis.Camera
             xAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "xAngleEntry1");
             yAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "yAngleEntry1");
             zAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "zAngleEntry1");
-            showAngleButton = Auxiliary.FindObject(configureCameraPanel, "ShowCameraAngleButton");
-            editAngleButton = Auxiliary.FindObject(cameraAnglePanel, "EditButton");
 
             //For field of view configuration
             cameraFOVPanel = Auxiliary.FindObject(configureCameraPanel, "CameraFOVPanel");
             FOVEntry = Auxiliary.FindObject(cameraFOVPanel, "FOVEntry");
-            showFOVButton = Auxiliary.FindObject(configureCameraPanel, "ShowCameraFOVButton");
-            editFOVButton = Auxiliary.FindObject(cameraFOVPanel, "EditButton");
-
-            lockPositionButton = Auxiliary.FindObject(configureCameraPanel, "LockPositionButton");
-            lockAngleButton = Auxiliary.FindObject(configureCameraPanel, "LockAngleButton");
-            lockFOVButton = Auxiliary.FindObject(configureCameraPanel, "LockFOVButton");
         }
+
         /// <summary>
         /// Updates the robot camera view window
         /// </summary>
@@ -284,9 +270,6 @@ namespace Synthesis.Camera
             cameraAnglePanel.SetActive(robotCameraManager.IsShowingAngle);
             isEditingAngle = robotCameraManager.IsShowingAngle;
 
-            lockPositionButton.SetActive(robotCameraManager.IsShowingAngle);
-            lockFOVButton.SetActive(robotCameraManager.IsShowingAngle);
-
             //if (robotCameraManager.IsShowingAngle)
             //{
             //    showAngleButton.GetComponentInChildren<Text>().text = "Hide Camera Angle";
@@ -305,11 +288,9 @@ namespace Synthesis.Camera
             isEditingAngle = !isEditingAngle;
             if (isEditingAngle)
             {
-                editAngleButton.GetComponentInChildren<Text>().text = "Done";
             }
             else
             {
-                editAngleButton.GetComponentInChildren<Text>().text = "Edit";
                 SyncCameraAngle();
                 isEditingAngle = false;
             }
@@ -407,11 +388,9 @@ namespace Synthesis.Camera
             isEditingFOV = !isEditingFOV;
             if (isEditingFOV)
             {
-                editFOVButton.GetComponentInChildren<Text>().text = "Done";
             }
             else
             {
-                editFOVButton.GetComponentInChildren<Text>().text = "Edit";
                 SyncCameraFOV();
                 isEditingFOV = false;
             }
@@ -439,9 +418,6 @@ namespace Synthesis.Camera
             robotCameraManager.ResetConfigurationState();
 
             //Reset all gui stuff
-            lockPositionButton.SetActive(false);
-            lockAngleButton.SetActive(false);
-            lockFOVButton.SetActive(false);
 
             //showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
             //showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Range";

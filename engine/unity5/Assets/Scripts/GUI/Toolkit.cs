@@ -20,7 +20,6 @@ namespace Synthesis.GUI
         private bool ignoreClick = true;
 
         private GameObject canvas;
-        private GameObject toolkitWindow;
         private SensorManagerGUI sensorManagerGUI;
 
         //ruler variables
@@ -57,7 +56,6 @@ namespace Synthesis.GUI
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
-            toolkitWindow = Auxiliary.FindObject(canvas, "ToolkitPanel");
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
             //Ruler Objects
@@ -101,40 +99,6 @@ namespace Synthesis.GUI
             }
             //UpdateControlIndicator();
         }
-
-        /// <summary>
-        /// Toggle the tookit window on/off according to the show boolean passed in
-        /// </summary>
-        /// <param name="show"></param>
-        public void ToggleToolkitWindow(bool show)
-        {
-            if (show)
-            {
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Opened Toolkit", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
-                toolkitWindow.SetActive(true);
-            }
-            else
-            {
-                ToggleRulerWindow(false);
-                ToggleStopwatchWindow(false);
-                toolkitWindow.SetActive(false);
-            }
-        }
-
-        /// <summary>
-        /// Toggle the toolkit window on/off according to its current state
-        /// </summary>
-        public void ToggleToolkitWindow()
-        {
-            ToggleToolkitWindow(!toolkitWindow.activeSelf);
-        }
-
-
 
         #region Ruler Functions
         /// <summary>
@@ -392,7 +356,6 @@ namespace Synthesis.GUI
                 ToggleStopwatch();
             }
 
-            toolkitWindow.SetActive(toolkitWindowOn);
             ToggleStatsWindow(false);
             ToggleStopwatchWindow(false);
             sensorManagerGUI.EndProcesses();

@@ -164,5 +164,13 @@ namespace Synthesis.BUExtensions
             m_constraintPtr.OverrideNumSolverIterations = m_overrideNumSolverIterations;
             return true;
         }
+        /// <summary>
+        /// Get the wheel speed to be used for encoder calculations
+        /// </summary>
+        /// <returns></returns>
+        public float GetSpeed()
+        {
+            return targetMotorAngularVelocity;
+        }
     }
 }
