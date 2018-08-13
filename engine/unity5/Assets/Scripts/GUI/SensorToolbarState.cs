@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
@@ -128,6 +129,13 @@ namespace Assets.Scripts.GUI
                 List<GameObject> updatedList = sensorManagerGUI.AddUltrasonic();
                 UpdateSensorDropdown(ultrasonicDropdown, updatedList);
                 numUltrasonics++;
+
+                if (PlayerPrefs.GetInt("analytics") == 1)
+                {
+                    Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
+                    {
+                    });
+                }
             }
             else //Edit one of the existing sensors
             {
@@ -145,6 +153,13 @@ namespace Assets.Scripts.GUI
                 List<GameObject> updatedList = sensorManagerGUI.AddBeamBreaker();
                 UpdateSensorDropdown(beamBreakerDropdown, updatedList);
                 numBeamBreakers++;
+
+                if (PlayerPrefs.GetInt("analytics") == 1)
+                {
+                    Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
+                    {
+                    });
+                }
             }
             else //Edit one of the existing sensors
             {
@@ -162,6 +177,13 @@ namespace Assets.Scripts.GUI
                 List<GameObject> updatedList = sensorManagerGUI.AddGyro();
                 UpdateSensorDropdown(gyroDropdown, updatedList);
                 numGyros++;
+
+                if (PlayerPrefs.GetInt("analytics") == 1)
+                {
+                    Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
+                    {
+                    });
+                }
             }
             else //Edit one of the existing sensors
             {
