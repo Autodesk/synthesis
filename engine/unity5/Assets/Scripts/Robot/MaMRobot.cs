@@ -90,7 +90,7 @@ namespace Synthesis.Robot
 
             RootNode.GenerateWheelInfo();
 
-            for (int i = 1; i < nodes.Capacity; i++)
+            for (int i = 1; i < nodes.Count; i++)
             {
                 RigidNode otherNode = (RigidNode)nodes[i];
                 otherNode.CreateJoint(this);
