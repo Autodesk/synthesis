@@ -14,14 +14,12 @@ namespace hel{
     private:
 
         /**
-         * \var bool enabled
          * \brief Whether the alarm is enabled and will trigger
          */
 
         bool enabled;
 
         /**
-         * \var uint32_t trigger_time
          * \brief Represents the trigger time in microseconds
          */
 
@@ -30,7 +28,6 @@ namespace hel{
     public:
 
         /**
-         * \fn bool getEnabled()const noexcept
          * \brief Get the enabled state of the alarm
          * \return True if the alarm is enabled
          */
@@ -38,15 +35,13 @@ namespace hel{
         bool getEnabled()const noexcept;
 
         /**
-         * \fn void setEnabled(bool enabled)noexcept
          * \brief Set the enabled state of the alarm
-         * \param enabled True to enable the alarm
+         * \param a True to enable the alarm
          */
 
         void setEnabled(bool)noexcept;
 
         /**
-         * \fn uint32_t getTriggerTime()const noexcept
          * \brief Get the time the alarm will trigger
          * \return The time the alarm will trigger
          */
@@ -54,9 +49,8 @@ namespace hel{
         uint32_t getTriggerTime()const noexcept;
 
         /**
-         * \fn void setTriggerTime(uint32_t trigger_time)noexcept
          * \brief Set the time the alarm will trigger
-         * \param trigger_time The time at which to trigger the alarm
+         * \param time The time at which to trigger the alarm
          */
 
         void setTriggerTime(uint32_t)noexcept;

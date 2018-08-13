@@ -27,12 +27,12 @@ namespace hel{
         return s;
     }
 
-    CANMotorController CANMotorController::deserialize(std::string s){
+    CANMotorController CANMotorController::deserialize(std::string input){
         CANMotorController a;
-        a.type = s_to_can_device_type(hel::unquote(hel::pullObject("\"type\"",s)));
-        a.id = std::stod(hel::pullObject("\"id\"",s));
-        a.percent_output = std::stod(hel::pullObject("\"percent_output\"",s));
-        a.inverted = hel::stob(hel::pullObject("\"inverted\"",s));
+        a.type = s_to_can_device_type(hel::unquote(hel::pullObject("\"type\"",input)));
+        a.id = std::stod(hel::pullObject("\"id\"",input));
+        a.percent_output = std::stod(hel::pullObject("\"percent_output\"",input));
+        a.inverted = hel::stob(hel::pullObject("\"inverted\"",input));
         return a;
     }
 
@@ -59,8 +59,8 @@ namespace hel{
         instance.second.unlock();
     }
 
-    void CANMotorController::setPercentOutput(double s)noexcept{
-        percent_output = s;
+    void CANMotorController::setPercentOutput(double out)noexcept{
+        percent_output = out;
         auto instance = SendDataManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();

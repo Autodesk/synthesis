@@ -15,7 +15,6 @@ namespace hel{
     struct AnalogOutputs{
 
         /**
-         * \var static constexpr int32_t NUM_ANALOG_OUTPUTS
          * \brief The number of analog outputs on the RoboRIO (positioned on the MXP)
          */
 
@@ -23,15 +22,14 @@ namespace hel{
 
     private:
         /**
-         * \var BoundsCheckedArray<uint16_t, NUM_ANALOG_OUTPUTS> mxp_outputs
          * \brief Analog output data
          *
          */
+
         BoundsCheckedArray<uint16_t, NUM_ANALOG_OUTPUTS> mxp_outputs;
 
     public:
         /**
-         * \fn uint16_t getMXPOutput(uint8_t index)const
          * \brief Get the MXP output at the given port
          * \param index A byte representing the index of the analog output.
          * \return An unsigned, 16-bit integer representing the current analog output.
@@ -40,7 +38,6 @@ namespace hel{
         uint16_t getMXPOutput(uint8_t)const;
 
         /**
-         * \n void setMXPOutput(uint8_t index, uint16_t value)
          * \brief Set the MXP value of analog output with a given index to a given value
          * \param index A byte representing the index of the analog output.
          * \param value An unsigned 16-bit integer representing the value of the analog output.

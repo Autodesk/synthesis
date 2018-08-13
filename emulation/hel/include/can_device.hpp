@@ -13,14 +13,12 @@ namespace hel{
     struct CANDevice{
 
         /**
-         * \enum Type
          * \brief The various CAN devices Synthesis can recognize
          */
 
         enum class Type{VICTOR_SPX,TALON_SRX,PCM,PDP,UNKNOWN};
 
         /**
-         * \var static constexpr uint8_t MAX_CAN_BUS_ADDRESS
          * \brief The maximum CAN bus address allowed on the RoboRIO
          * Valid addresses are 0-62
          */
@@ -29,7 +27,6 @@ namespace hel{
 
     private:
         /**
-         * \enum IDMask
          * \brief Bit fields to compare CAN message IDs against for identification
          *
          * Masks can be used to determine the device type and capture its ID
@@ -46,18 +43,16 @@ namespace hel{
 
     public:
         /**
-         * \fn static uint8_t pullDeviceID(uint32_t messageID)noexcept
          * \brief Captures the target CAN device ID from a CAN message ID
-         * \param messageID The CAN message ID to parse
+         * \param message_id The CAN message ID to parse
          * \return A byte representing the CAN device ID
          */
 
         static uint8_t pullDeviceID(uint32_t)noexcept;
 
         /**
-         * \fn static uint8_t pullDeviceType(uint32_t messageID)noexcept
          * \brief Captures the target CAN device type from a CAN message ID
-         * \param messageID The CAN message ID to parse
+         * \param message_id The CAN message ID to parse
          * \return The type of CAN device
          */
 
@@ -65,7 +60,6 @@ namespace hel{
     };
 
     /**
-     * \fn std::string as_string(CANDevice::Type type)
      * \brief Converts a CANDevice::Type to a string
      * \param type The CANDevice::Type to convert
      * \return A string representation of the CANDevice::Type
@@ -74,7 +68,6 @@ namespace hel{
     std::string as_string(CANDevice::Type);
 
     /**
-     * \fn CANDevice::Type s_to_can_device_type(std::string input)
      * \brief Converts a string to a CANDevice::Type
      * \param input The string to parse
      * \return The parsed CANDevice::Type

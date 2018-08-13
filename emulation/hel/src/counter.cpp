@@ -34,16 +34,16 @@ namespace hel{
         return timer_output;
     }
 
-    void Counter::setTimerOutput(tCounter::tTimerOutput out)noexcept{
-        timer_output = out;
+    void Counter::setTimerOutput(tCounter::tTimerOutput timer_out)noexcept{
+        timer_output = timer_out;
     }
 
     tCounter::tTimerConfig Counter::getTimerConfig()const noexcept{
         return timer_config;
     }
 
-    void Counter::setTimerConfig(tCounter::tTimerConfig c)noexcept{
-        timer_config = c;
+    void Counter::setTimerConfig(tCounter::tTimerConfig timer_c)noexcept{
+        timer_config = timer_c;
     }
 
     Counter::Counter()noexcept:output(),config(),timer_output(),timer_config(){}
