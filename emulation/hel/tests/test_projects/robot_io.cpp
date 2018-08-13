@@ -5,12 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <WPILib.h>
+#include <frc/WPILib.h>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <unistd.h>
-#include "ctre/Phoenix.h"
+//#include "ctre/Phoenix.h"
 
 class Robot : public frc::IterativeRobot {
     frc::Spark m_leftMotor{0};
@@ -25,7 +25,7 @@ class Robot : public frc::IterativeRobot {
     frc::Solenoid solenoid{0};
     frc::Solenoid solenoid1{1};
     frc::Solenoid solenoid7{7};
-    ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
+    //ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
 
     bool current_state = false;
 
@@ -53,7 +53,7 @@ public:
         solenoid.Set(current_state);
         solenoid1.Set(!current_state);
         solenoid7.Set(current_state);
-        talon.Set(0.3);
+        //talon.Set(0.3);
 
         std::cout<<"Setting left to "<<left<<" - Set to "<< m_leftMotor.GetSpeed()<<"\nSetting right to "<<right<<" - Set to "<<m_rightMotor.GetSpeed()<<"\n\n";
         std::cout<<"AnalogInput:"<<ai.GetVoltage()<<"\n";
