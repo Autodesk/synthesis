@@ -22,6 +22,7 @@ installer/cygscripts/http*
 *.VC.db
 
 Synthesis_Data/
+
 Replays/
 *.dll
 !CER_Utility.dll
