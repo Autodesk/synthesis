@@ -75,7 +75,7 @@ namespace Synthesis.DriverPractice
         }
         void FindElements()
         {
-            canvas = GameObject.Find("Canvas");
+            canvas = Auxiliary.FindGameObject("Canvas");
 
             dpmToolbar = Auxiliary.FindObject(canvas, "DPMToolbar");
             gamepieceDropdownButton = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdownButton");
