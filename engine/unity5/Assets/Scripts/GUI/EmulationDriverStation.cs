@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Synthesis.GUI
@@ -74,6 +75,14 @@ namespace Synthesis.GUI
             {
                 emuDriverStationPanel.SetActive(false);
                 InputControl.freeze = false;
+
+                if (PlayerPrefs.GetInt("analytics") == 1)
+                {
+                    Analytics.CustomEvent("Opened Driver Station", new Dictionary<string, object> //for analytics tracking
+                    {
+                    });
+                }
+
             }
             else
             {
