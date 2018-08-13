@@ -70,8 +70,8 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        //public bool isEmulationDownloaded = File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation");
-        public bool isEmulationDownloaded = true;
+        public bool isEmulationDownloaded = File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\zImage") && File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\rootfs.ext4") && File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\zynq-zed.dtb");
+        //public bool isEmulationDownloaded = true;
 
         bool reset;
 

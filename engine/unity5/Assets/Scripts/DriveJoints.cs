@@ -361,13 +361,15 @@ public class DriveJoints
         Debug.Log("Joy 1 axis 4: " + Input.GetAxis("Joystick 1 Axis 10"));
 
         Serialization.updateJoystick(0, new double[] {
-                Input.GetAxis("Joystick 1 Axis 4"),
-                Input.GetAxis("Joystick 1 Axis 2"),
-                Input.GetAxis("Joystick 1 Axis 9"),
-                Input.GetAxis("Joystick 1 Axis 10"),
                 Input.GetAxis("Joystick 1 Axis 1"),
+                Input.GetAxis("Joystick 1 Axis 2"),
+                Input.GetAxis("Joystick 1 Axis 3"),
+                Input.GetAxis("Joystick 1 Axis 4"),
                 Input.GetAxis("Joystick 1 Axis 5"),
-                0.0, 0.0, 0.0, 0.0, 0.0 ,0.0
+                Input.GetAxis("Joystick 1 Axis 6"),
+                Input.GetAxis("Joystick 1 Axis 7"),
+                Input.GetAxis("Joystick 1 Axis 8"),
+                0.0, 0.0, 0.0, 0.0
             },
        new bool[] {
                 Input.GetButton("Joystick 1 Button 3"),
