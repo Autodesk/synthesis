@@ -1,7 +1,7 @@
 #include "EUI.h"
 #include "../Exporter.h"
 
-using namespace Synthesis;
+using namespace SynthesisAddIn;
 
 // Developer Note: When sending data to HTML pages, data is sent twice. Sometimes pages do not receive/process the
 //                 first set of data in time, so sending it a second time ensures the data is received. Additionally,
@@ -299,7 +299,7 @@ void EUI::deleteExportButton()
 	if (!panels)
 		return;
 
-	Ptr<ToolbarPanel> panel = panels->itemById(Synthesis::K_PANEL);
+	Ptr<ToolbarPanel> panel = panels->itemById(SynthesisAddIn::K_PANEL);
 	if (!panel)
 		return;
 
