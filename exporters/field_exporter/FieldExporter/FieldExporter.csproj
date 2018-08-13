@@ -113,6 +113,12 @@
     <Compile Include="Components\CreatePropertySetTabPage.Designer.cs">
       <DependentUpon>CreatePropertySetTabPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\FieldMetaForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\FieldMetaForm.Designer.cs">
+      <DependentUpon>FieldMetaForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ExportForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -221,6 +227,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Components\CreatePropertySetTabPage.resx">
       <DependentUpon>CreatePropertySetTabPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\FieldMetaForm.resx">
+      <DependentUpon>FieldMetaForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
