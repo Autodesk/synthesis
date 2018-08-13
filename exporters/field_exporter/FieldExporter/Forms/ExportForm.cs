@@ -78,7 +78,7 @@ namespace FieldExporter.Components
         {
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
 
-            foreach (PropertySet ps in LegacyInterchange.PropSets/*Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets()*/)
+            foreach (PropertySet ps in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
             {
                 fieldDefinition.AddPropertySet(ps);
             }
