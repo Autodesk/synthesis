@@ -1,5 +1,7 @@
 ﻿using BulletSharp;
 using BulletUnity;
+using Synthesis.RN;
+using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,7 @@ namespace Synthesis.BUExtensions
         private const int DefaultNumWheels = 4;
 
         private VehicleTuning defaultVehicleTuning;
+        private RigidNode rootNode;
         private BRigidBody rigidBody;
 
         /// <summary>
@@ -26,13 +29,28 @@ namespace Synthesis.BUExtensions
         public RaycastRobot RaycastRobot { get; private set; }
 
         /// <summary>
-        /// Used as a multiplier to calculate the stiffness values for each wheel.
+        /// The <see cref="RigidNode"/> contianing the wheel information for this <see cref="BRaycastRobot"/>.
         /// </summary>
-        public int NumWheels
+        public RigidNode RootNode
         {
+            get
+            {
+                return rootNode;
+            }
             set
             {
-                defaultVehicleTuning.SuspensionStiffness = CalculateStiffness(value);
+                rootNode = value;
+
+                List<int> driveCoordinates = new List<int>(2);
+                int upIndex = GetAxisIdex(Auxiliary.Abs(rootNode.WheelsNormal));
+
+                for (int i = 0; i < 3; i++)
+                    if (i != upIndex)
+                        driveCoordinates.Add(i);
+
+                RaycastRobot.SetCoordinateSystem(driveCoordinates[0], upIndex, driveCoordinates[1]);
+
+                defaultVehicleTuning.SuspensionStiffness = CalculateStiffness(rootNode.WheelCount);
             }
         }
 
@@ -61,7 +79,7 @@ namespace Synthesis.BUExtensions
             }
 
             RobotWheelInfo wheel = RaycastRobot.AddWheel(connectionPoint,
-                -BulletSharp.Math.Vector3.UnitY, axle, suspensionRestLength,
+                rootNode.WheelsNormal.ToBullet(), axle, suspensionRestLength,
                 radius, defaultVehicleTuning, false);
 
             wheel.RollInfluence = RollInfluence;
@@ -95,8 +113,6 @@ namespace Synthesis.BUExtensions
             (RigidBody)rigidBody.GetCollisionObject(),
             new BRobotRaycaster((DynamicsWorld)BPhysicsWorld.Get().world));
 
-            RaycastRobot.SetCoordinateSystem(0, 1, 2);
-
             BRobotManager.Instance.RegisterRaycastRobot(RaycastRobot);
         }
 
@@ -125,6 +141,27 @@ namespace Synthesis.BUExtensions
         private float CalculateStiffness(int numWheels)
         {
             return SuspensionStiffnessRatio / numWheels;
+        }
+
+        /// <summary>
+        /// Returns the axis index of the given <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        private int GetAxisIdex(Vector3 axis)
+        {
+            if (axis.magnitude != 1f)
+            {
+                Debug.LogError("Vector3 provided is not a unit vector!");
+                return -1;
+            }
+
+            for (int i = 0; i < 3; i++)
+                if (axis[i] == 1f)
+                    return i;
+
+            Debug.LogError("Vector3 provided is not aligned with an axis!");
+            return -1;
         }
     }
 }

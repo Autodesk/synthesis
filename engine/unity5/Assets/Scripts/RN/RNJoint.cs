@@ -27,7 +27,7 @@ namespace Synthesis.RN
             Y
         }
 
-        public void CreateJoint(int numWheels, RobotBase robotBase, float wheelFriction = 1f, float lateralFriction = 1f)
+        public void CreateJoint(RobotBase robotBase, float wheelFriction = 1f, float lateralFriction = 1f)
         {
             if (joint != null || GetSkeletalJoint() == null)
             {
@@ -43,10 +43,7 @@ namespace Synthesis.RN
                         RigidNode parent = (RigidNode)GetParent();
 
                         if (parent.MainObject.GetComponent<BRaycastRobot>() == null)
-                        {
-                            BRaycastRobot robot = parent.MainObject.AddComponent<BRaycastRobot>();
-                            robot.NumWheels = numWheels;
-                        }
+                            parent.MainObject.AddComponent<BRaycastRobot>().RootNode = RootNode;
 
                         WheelType wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
 
