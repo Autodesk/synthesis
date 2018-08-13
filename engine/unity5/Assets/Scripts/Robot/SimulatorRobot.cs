@@ -228,32 +228,45 @@ namespace Synthesis.Robot
                 {
                     Debug.Log(e.StackTrace);
                 }
-
+                
+                float speed;
+                double angleDifference;
+                float angleX;
                 BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+                BHingedConstraintEx bHingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraintEx>();
 
                 if (a.RobotSensor.type == RobotSensorType.ENCODER)
                 {
-                    bRaycastWheel.GetWheelSpeed();
-
-                    double angleDifference = bRaycastWheel.transform.eulerAngles.x - a.previousEuler;
+                    if(bRaycastWheel == null)
+                    {
+                        speed = bHingedConstraint.GetSpeed();
+                        angleDifference = bHingedConstraint.transform.eulerAngles.x - a.previousEuler;
+                        angleX = bHingedConstraint.transform.eulerAngles.x;
+                    }
+                    else
+                    {
+                        speed = bRaycastWheel.GetWheelSpeed();
+                        angleDifference = bRaycastWheel.transform.eulerAngles.x - a.previousEuler;
+                        angleX = bRaycastWheel.transform.eulerAngles.x;
+                    }
 
                     // Checks to handle specific wheel rotational cases
-                    if (bRaycastWheel.GetWheelSpeed() > 0) // To handle positive wheel speeds
+                    if (speed > 0) // To handle positive wheel speeds
                     {
                         if (angleDifference < 0) // To handle special case (positive wheel speed, negative angleDifference)
                         {
-                            a.encoderTickCount += (((360 - a.previousEuler + bRaycastWheel.transform.eulerAngles.x) / 360.0) * a.RobotSensor.conversionFactor);
+                            a.encoderTickCount += (((360 - a.previousEuler + angleX) / 360.0) * a.RobotSensor.conversionFactor);
                         }
                         else
                         {
                             a.encoderTickCount += ((angleDifference / 360) * a.RobotSensor.conversionFactor);
                         }
                     }
-                    else if (bRaycastWheel.GetWheelSpeed() < 0)
+                    else if (speed < 0)
                     {
                         if (angleDifference > 0)
                         {
-                            a.encoderTickCount += (((((360 - bRaycastWheel.transform.eulerAngles.x) + a.previousEuler) * (-1)) / 360.0) * a.RobotSensor.conversionFactor);
+                            a.encoderTickCount += (((((360 - angleX) + a.previousEuler) * (-1)) / 360.0) * a.RobotSensor.conversionFactor);
                         }
                         else
                         {
@@ -261,8 +274,7 @@ namespace Synthesis.Robot
                         }
                     }
 
-                    Debug.Log(a.encoderTickCount);
-                    a.previousEuler = bRaycastWheel.transform.eulerAngles.x;
+                    a.previousEuler = bRaycastWheel == null ? bHingedConstraint.transform.eulerAngles.x : bRaycastWheel.transform.eulerAngles.x;
                 }
             }
             #endregion
