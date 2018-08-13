@@ -6,7 +6,7 @@
 #include "../Data/BXDJ/Driver.h"
 #include "../Data/BXDJ/Components.h"
 
-using namespace Synthesis;
+using namespace SynthesisAddIn;
 
 /// Workspace Events
 // Activate Workspace Event
