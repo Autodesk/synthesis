@@ -43,7 +43,7 @@ void XmlWriter::writeElement(std::string name, std::string innerXml)
 		currentElement = new XmlElement();
 
 	// Write opening, content, and closing on same line
-	currentElement->innerXml += (lightWeight ? "" : "\n") + indent(elementStack.size()) + "<" + name + ">";
+	currentElement->innerXml += indent(elementStack.size()) + "<" + name + ">";
 	currentElement->innerXml += innerXml;
 	currentElement->innerXml += "</" + name + ">";
 
@@ -58,6 +58,10 @@ void XmlWriter::writeElement(std::string name, std::string innerXml)
 
 void XmlWriter::endElement()
 {
+	// Make sure there is an element to end.
+	if (elementStack.empty())
+		return;
+
 	XmlElement * endingElement = elementStack.top();
 	elementStack.pop();
 	XmlElement * currentElement = NULL;
@@ -68,7 +72,7 @@ void XmlWriter::endElement()
 		currentElement = new XmlElement();
 
 	// Print out opening bracket
-	currentElement->innerXml += (lightWeight ? "" : "\n") + indent(elementStack.size()) + "<" + endingElement->name;
+	currentElement->innerXml += indent(elementStack.size()) + "<" + endingElement->name;
 
 	if (endingElement->attributes.size() > 0)
 		for (Attribute attr : endingElement->attributes)
@@ -80,7 +84,7 @@ void XmlWriter::endElement()
 	currentElement->innerXml += endingElement->innerXml;
 
 	// Print out closing bracket
-	currentElement->innerXml += (lightWeight ? "" : "\n") + indent(elementStack.size()) + "</" + endingElement->name + ">";
+	currentElement->innerXml += indent(elementStack.size()) + "</" + endingElement->name + ">";
 
 	// If the closed item was the last in the stack, print to file
 	if (elementStack.empty())
@@ -98,7 +102,7 @@ void XmlWriter::endElement()
 std::string XmlWriter::indent(size_t indentation)
 {
 	if (!lightWeight)
-		return std::string(indentation * 2, ' ');
+		return '\n' + std::string(indentation * 2, ' ');
 	else
 		return "";
 }
