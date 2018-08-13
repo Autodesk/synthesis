@@ -99,8 +99,7 @@ namespace hel{
     }
 
     uint8_t EncoderManager::getIndex()const noexcept{
-        return index;
-    }
+        return index;    }
 
     uint8_t EncoderManager::getAChannel()const noexcept{
         return a_channel;
@@ -148,7 +147,9 @@ namespace hel{
         switch(type){
         case Type::UNKNOWN:
             instance.second.unlock();
-            throw InputConfigurationException("EncoderManager with a channel on " + as_string(a_type) + " port " + std::to_string(a_channel) + " and b channel on " + as_string(b_type) + " port " + std::to_string(b_channel));
+            std::cerr << ("EncoderManager with a channel on " + as_string(a_type) + " port " + std::to_string(a_channel) + " and b channel on " + as_string(b_type) + " port " + std::to_string(b_channel)+ "\n");
+            return;
+            //throw InputConfigurationException("EncoderManager with a channel on " + as_string(a_type) + " port " + std::to_string(a_channel) + " and b channel on " + as_string(b_type) + " port " + std::to_string(b_channel));
         case Type::FPGA_ENCODER:
         {
             tEncoder::tOutput output;
