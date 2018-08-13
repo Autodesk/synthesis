@@ -5,9 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <WPILib.h>
+#include <frc/WPILib.h>
 #include <iostream>
-#include "ctre/Phoenix.h"
+//#include "ctre/Phoenix.h"
 
 class Robot: public frc::IterativeRobot{
     frc::Spark m_leftMotor{0};
@@ -55,7 +55,7 @@ public:
             driveMode = !driveMode;
         }
         frc::Wait(0.005);
-        //std::cout<<"Loop time: "<<(frc::Timer::GetFPGATimestamp() - start)<<" s\n";
+        std::cout<<"Loop time: "<<(frc::Timer::GetFPGATimestamp() - start)<<" s\n";
     }
 };
 
