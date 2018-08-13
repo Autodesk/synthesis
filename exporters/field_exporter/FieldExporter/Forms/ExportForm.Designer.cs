@@ -139,8 +139,6 @@
             this.Controls.Add(this.exportLocationLabel);
             this.Controls.Add(this.exportButton);
             this.DoubleBuffered = true;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExportForm";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Load += new System.EventHandler(this.ExportForm_Load);

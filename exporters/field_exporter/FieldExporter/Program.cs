@@ -246,7 +246,7 @@ namespace FieldExporter
                 return;
             }
 
-            //Application.Run(MAINWINDOW = new MainWindow());
+            Application.Run(MAINWINDOW = new MainWindow());
 
             try
             {
