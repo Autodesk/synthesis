@@ -8,7 +8,7 @@ using Inventor;
 
 namespace FieldExporter.Components
 {
-    public partial class ExportForm : Form
+    public partial class ExportForm : UserControl
     {
         public string path;
 
