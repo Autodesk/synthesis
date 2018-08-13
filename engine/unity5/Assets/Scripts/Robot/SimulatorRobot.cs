@@ -5,6 +5,7 @@ using Synthesis.Camera;
 using Synthesis.Configuration;
 using Synthesis.DriverPractice;
 using Synthesis.FEA;
+using Synthesis.Field;
 using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Input;
@@ -20,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Synthesis.Robot
 {
@@ -30,6 +32,8 @@ namespace Synthesis.Robot
         /// </summary>
         public bool IsResetting { get; private set; } = false;
 
+        public string FilePath { get; set; }
+
         private const float ResetVelocity = 0.05f;
         private const float HoldTime = 0.8f;
 
@@ -37,7 +41,7 @@ namespace Synthesis.Robot
 
         private DriverPracticeRobot dpmRobot;
 
-        private Vector3 nodeToRobotOffset;
+        public Vector3 nodeToRobotOffset;
 
         private float keyDownTime = 0f;
         private RobotCameraManager robotCameraManager;
@@ -47,6 +51,17 @@ namespace Synthesis.Robot
         private DynamicCamera.CameraState lastCameraState;
 
         private MainState state;
+
+        #region help ui variables
+        GameObject helpMenu;
+        GameObject toolbar;
+        GameObject overlay;
+        Text helpBodyText;
+        #endregion
+
+
+        GameObject canvas;
+        GameObject resetCanvas;
 
         /// <summary>
         /// Links this instance to the <see cref="MainState"/> state.
@@ -89,7 +104,6 @@ namespace Synthesis.Robot
 
             //Initializes Driver Practice component
             dpmRobot = gameObject.AddComponent<DriverPracticeRobot>();
-            dpmRobot.Initialize(RobotDirectory);
 
             //Initializing robot cameras
             bool hasRobotCamera = false;
@@ -126,9 +140,9 @@ namespace Synthesis.Robot
         /// <param name="numWheels"></param>
         /// <param name="collectiveMass"></param>
         /// <returns></returns>
-        protected override bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
+        protected override bool ConstructRobot(List<RigidNode_Base> nodes, ref float collectiveMass)
         {
-            if (!base.ConstructRobot(nodes, numWheels, ref collectiveMass))
+            if (!base.ConstructRobot(nodes, ref collectiveMass))
                 return false;
 
             foreach (RigidNode_Base n in nodes)
@@ -158,7 +172,7 @@ namespace Synthesis.Robot
                 if (!rigidBody.GetCollisionObject().IsActive)
                     rigidBody.GetCollisionObject().Activate();
             }
-            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
+            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
             {
                 keyDownTime = Time.time;
             }
@@ -167,13 +181,13 @@ namespace Synthesis.Robot
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 SceneManager.LoadScene("Scene");
             }
-            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen &&
-                !state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
+                !state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HoldTime)
                     BeginReset();
             }
-            else if (InputControl.GetButtonUp(Controls.buttons[ControlIndex].resetRobot) && !MixAndMatchMode.setPresetPanelOpen)
+            else if (InputControl.GetButtonUp(Controls.buttons[ControlIndex].resetRobot))
             {
                 BeginReset();
                 EndReset();
@@ -194,6 +208,12 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
+            if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2)
+            {
+                if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
+                BeginReset();
+                EndReset();
+            }
 
             #region Encoder Calculations
             foreach (EmuNetworkInfo a in emuList)
@@ -227,7 +247,7 @@ namespace Synthesis.Robot
                         else
                         {
                             a.encoderTickCount += ((angleDifference / 360) * a.RobotSensor.conversionFactor);
-                        }   
+                        }
                     }
                     else if (bRaycastWheel.GetWheelSpeed() < 0)
                     {
@@ -268,11 +288,36 @@ namespace Synthesis.Robot
         /// <param name="resetTransform"></param>
         public void BeginReset()
         {
-            GetDriverPractice().DestroyAllGamepieces();
+            //GetDriverPractice().DestroyAllGamepieces();
+
+            InputControl.freeze = true;
+            if (canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
+            if (resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
+            canvas.GetComponent<Canvas>().enabled = false;
+            resetCanvas.SetActive(true);
+
+            #region init
+            if (helpMenu == null) helpMenu = Auxiliary.FindObject(resetCanvas, "Help");
+            if (toolbar == null) toolbar = Auxiliary.FindObject(resetCanvas, "ResetStateToolbar");
+            if (overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
+            if (helpBodyText == null) helpBodyText = Auxiliary.FindObject(resetCanvas, "BodyText").GetComponent<Text>();
+            #endregion
+
+            Button resetButton = Auxiliary.FindObject(resetCanvas, "ResetButton").GetComponent<Button>();
+            resetButton.onClick.RemoveAllListeners();
+            resetButton.onClick.AddListener(BeginRevertSpawnpoint);
+            Button helpButton = Auxiliary.FindObject(resetCanvas, "HelpButton").GetComponent<Button>();
+            helpButton.onClick.RemoveAllListeners();
+            helpButton.onClick.AddListener(HelpMenu);
+            Button returnButton = Auxiliary.FindObject(resetCanvas, "ReturnButton").GetComponent<Button>();
+            returnButton.onClick.RemoveAllListeners();
+            returnButton.onClick.AddListener(EndReset);
+            Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            closeHelp.onClick.RemoveAllListeners();
+            closeHelp.onClick.AddListener(CloseHelpMenu);
 
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-            lastCameraState = dynamicCamera.ActiveState;
-            Debug.Log(lastCameraState);
+            lastCameraState = dynamicCamera.cameraState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
 
             foreach (SimulatorRobot robot in state.SpawnedRobots)
@@ -280,7 +325,7 @@ namespace Synthesis.Robot
                     if (rb != null && !rb.GetCollisionObject().IsActive)
                         rb.GetCollisionObject().Activate();
 
-            if (!state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+            if (!state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 IsResetting = true;
 
@@ -342,20 +387,16 @@ namespace Synthesis.Robot
             }
 
             //Update robotStartPosition when hit enter
-            if (UnityEngine.Input.GetKey(KeyCode.Return))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
             {
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
-
-                if (lastCameraState != null)
-                {
-                    DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-                    dynamicCamera.SwitchCameraState(lastCameraState);
-                    lastCameraState = null;
-                }
+                FieldDataHandler.robotSpawn = robotStartPosition;
+                FieldDataHandler.WriteField();
 
                 EndReset();
             }
+            if (UnityEngine.Input.GetKeyUp(KeyCode.Escape)) EndReset();
         }
 
         /// <summary>
@@ -391,6 +432,13 @@ namespace Synthesis.Robot
                 r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
             }
 
+            if (lastCameraState != null)
+            {
+                DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
+                dynamicCamera.SwitchCameraState(lastCameraState);
+                lastCameraState = null;
+            }
+
             OnEndReset();
 
             Destroy(resetMoveArrows);
@@ -398,6 +446,11 @@ namespace Synthesis.Robot
 
             foreach (Tracker t in GetComponentsInChildren<Tracker>())
                 t.Clear();
+
+            if (helpMenu.activeSelf) CloseHelpMenu();
+            InputControl.freeze = false;
+            canvas.GetComponent<Canvas>().enabled = true;
+            resetCanvas.SetActive(false);
         }
 
         /// <summary>
@@ -459,6 +512,35 @@ namespace Synthesis.Robot
                 RigidBody r = (RigidBody)br.GetCollisionObject();
 
                 r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+            }
+        }
+
+        private void HelpMenu()
+        {
+            helpMenu.SetActive(true);
+            overlay.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "Move Robot: WASD keys or drag navigation arrows. " +
+                "\nClick and drag a face of the navigation cube to move robot freely" +
+                "\n\nRotate Robot: Hold RIGHT MOUSE BUTTON, and use A and D keys to rotate" +
+                "\n\nSave: Press ENTER";
+
+            toolbar.transform.Translate(new Vector3(100, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
+                else t.gameObject.SetActive(false);
+            }
+        }
+        private void CloseHelpMenu()
+        {
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            toolbar.transform.Translate(new Vector3(-100, 0, 0));
+            foreach (Transform t in toolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
+                else t.gameObject.SetActive(true);
             }
         }
 

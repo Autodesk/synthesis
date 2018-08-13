@@ -33,6 +33,15 @@ namespace BxDRobotExporter.Wizard
 
 
         #region Nested enums and classes
+        public enum WizardDriveTrain
+        {
+            TANK = 1,
+            MECANUM,
+            SWERVE,
+            H_DRIVE,
+            CUSTOM
+        }
+
         public enum WizardWheelType
         {
             NORMAL = 1,

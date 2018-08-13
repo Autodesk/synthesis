@@ -26,6 +26,7 @@ namespace Synthesis.Robot
         /// If true, this robot has a manipulator.
         /// </summary>
         public bool RobotHasManipulator { get; set; }
+        
 
         private RigidNode_Base manipulatorNode;
 
@@ -39,6 +40,8 @@ namespace Synthesis.Robot
         private Vector3 manipulatorOffset;
 
         private bool robotIsMecanum;
+
+        // TODO: Something weird is going on with the spawn, at least with robots with manipulators. Reset is fine.
 
         /// <summary>
         /// Loads and initializes the physical manipulator object (used in Mix and Match mode)
@@ -82,8 +85,15 @@ namespace Synthesis.Robot
                     return false;
                 }
 
-                otherNode.CreateJoint(0, this);
                 otherNode.MainObject.AddComponent<Tracker>().Trace = true;
+            }
+
+            RootNode.GenerateWheelInfo();
+
+            for (int i = 1; i < nodes.Capacity; i++)
+            {
+                RigidNode otherNode = (RigidNode)nodes[i];
+                otherNode.CreateJoint(this);
             }
 
             RotateRobot(robotStartOrientation);
@@ -158,10 +168,10 @@ namespace Synthesis.Robot
         /// <param name="numWheels"></param>
         /// <param name="collectiveMass"></param>
         /// <returns></returns>
-        protected override bool ConstructRobot(List<RigidNode_Base> nodes, int numWheels, ref float collectiveMass)
+        protected override bool ConstructRobot(List<RigidNode_Base> nodes, ref float collectiveMass)
         {
             if (IsMecanum())
-                return base.ConstructRobot(nodes, numWheels, ref collectiveMass);
+                return base.ConstructRobot(nodes, ref collectiveMass);
 
             //Load Node_0, the base of the robot
             RigidNode node = (RigidNode)nodes[0];
@@ -170,7 +180,7 @@ namespace Synthesis.Robot
             if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName, true, wheelMass))
                 return false;
 
-            node.CreateJoint(numWheels, this);
+            node.CreateJoint(this);
 
             if (node.PhysicalProperties != null)
                 collectiveMass += node.PhysicalProperties.mass;
@@ -238,9 +248,15 @@ namespace Synthesis.Robot
                     }
                     node.MainObject.GetComponentInChildren<MeshRenderer>().materials = materials;
                 }
+            }
 
-                //Create the joints that interact with physics
-                node.CreateJoint(numWheels, this, wheelFriction, wheelLateralFriction);
+            RootNode.GenerateWheelInfo();
+
+            //Create the joints that interact with physics
+            for (int i = 1; i < nodes.Count; i++)
+            {
+                node = (RigidNode)nodes[i];
+                node.CreateJoint(this, wheelFriction, wheelLateralFriction);
 
                 if (node.HasDriverMeta<WheelDriverMeta>())
                     node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelRadius;
@@ -250,6 +266,7 @@ namespace Synthesis.Robot
 
                 if (node.MainObject.GetComponent<BRigidBody>() != null)
                     node.MainObject.AddComponent<Tracker>().Trace = true;
+
             }
 
             return true;
@@ -300,7 +317,7 @@ namespace Synthesis.Robot
                 newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
                 newTransform.Basis = BulletSharp.Math.Matrix.Identity;
                 r.WorldTransform = newTransform;
-                
+
                 if (i == 0)
                     Debug.Log("Transform Origin" + newTransform.Origin);
 
@@ -337,7 +354,7 @@ namespace Synthesis.Robot
         {
             if (!RobotHasManipulator)
                 return;
-        
+
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
                 BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
