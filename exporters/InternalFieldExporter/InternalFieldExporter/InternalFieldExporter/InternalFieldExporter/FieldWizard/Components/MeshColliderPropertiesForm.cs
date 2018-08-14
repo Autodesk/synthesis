@@ -18,9 +18,6 @@ namespace InternalFieldExporter.FieldWizard
         public MeshColliderPropertiesForm()
         {
             InitializeComponent();
-
-            infoPictureBox.Image = System.Drawing.SystemIcons.Information.ToBitmap();
-            infoTooltip.SetToolTip(infoPictureBox, "Export may take longer when using mesh colliders");
         }
 
         /// <summary>
