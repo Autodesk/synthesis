@@ -21,8 +21,8 @@ namespace hel{
 		}
 	}
 
-	MXPData::Config s_to_mxp_config(std::string s){
-		switch(hasher(s.c_str())){
+	MXPData::Config s_to_mxp_config(std::string input){
+		switch(hasher(input.c_str())){
 		case hasher("DI"):
 			return MXPData::Config::DI;
 		case hasher("DO"):

@@ -12,13 +12,12 @@ namespace hel{
 
     struct PCM{ //TODO add support for other PCM data
         /**
-         * \var static constexpr uint8_t NUM_SOLENOIDS
          * \brief The maximum number of pneumatic solenoid valves supported by the PCM
          */
+
         static constexpr uint8_t NUM_SOLENOIDS = 8;
 
         /**
-         * \enum MessageData
          * \brief Interpretation definitions for CAN message data bytes
          */
 
@@ -29,7 +28,6 @@ namespace hel{
 
     private:
         /**
-         * \var BoundsCheckedArray<bool,NUM_SOLENOIDS> solenoids
          * \brief The states of the solenoids
          */
 
@@ -45,7 +43,6 @@ namespace hel{
         BoundsCheckedArray<bool, NUM_SOLENOIDS> getSolenoids()const noexcept;
 
         /**
-         * \fn void setSolenoids(uint8_t index, bool value)
          * \brief Set a given solenoid to a given value
          * \param index The index to the solenoid to set
          * \param value The value to set the solenoid to
@@ -54,7 +51,6 @@ namespace hel{
         void setSolenoid(uint8_t,bool);
 
         /**
-         * \fn void setSolenoids(uint8_t values)
          * \brief Set the states of all solenoids
          * \param values A bitmask of the values to set for the solenoids
          */

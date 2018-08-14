@@ -13,7 +13,6 @@ namespace hel{
     struct PDP{ //TODO handle emulated data
 
         /**
-         * \enum MessageData
          * \brief Interpretation definitions for CAN message data bytes
          */
 
