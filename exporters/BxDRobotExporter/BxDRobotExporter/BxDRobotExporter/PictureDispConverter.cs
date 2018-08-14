@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 // Written by Philippe Leefsma 
 // http://adndevblog.typepad.com/manufacturing/2012/06/how-to-convert-iconbitmap-to-ipicturedisp-without-visualbasiccompatibilityvb6supporticontoipicture.html
-namespace SynthesisRobotExporter {
+namespace BxDRobotExporter {
     public sealed class PictureDispConverter
     {
         [DllImport("OleAut32.dll",
