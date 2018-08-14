@@ -150,15 +150,6 @@ File /r "MixAndMatch\*"
 
 SectionEnd
 
-Section /o "Standalone Robot Exporter (legacy)" LegacyExporter
-
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\RobotExporter
-
-  File /r "RobotExporter\*"
-
-SectionEnd
-
 Section "Robot Exporter Plugin (reccommended)" PluginExporter
 
   ; Set output path to plugin directory
@@ -185,14 +176,12 @@ SectionEnd
 
   LangString DESC_SynthesisRequired ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
   LangString DESC_MixMatch ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
-  LangString DESC_LegacyExporter ${LANG_ENGLISH} "The Legacy Robot Exporter is a standalone application used to convert an Autodesk Inventor Assembly file into a format that can be read and loaded by the simulator"
   LangString DESC_PluginExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor Addin used to import Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_RoboFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
   !insertmacro MUI_DESCRIPTION_TEXT ${MixMatch} $(DESC_MixMatch)
-  !insertmacro MUI_DESCRIPTION_TEXT ${LegacyExporter} $(DESC_LegacyExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${PluginExporter} $(DESC_PluginExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RoboFiles} $(DESC_RoboFiles)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
