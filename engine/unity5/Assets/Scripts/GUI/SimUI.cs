@@ -40,6 +40,7 @@ namespace Synthesis.GUI
         GoalManager gm;
 
         GameObject canvas;
+        GameObject resetUI;
 
         GameObject freeroamCameraWindow;
         GameObject overviewCameraWindow;
@@ -136,6 +137,7 @@ namespace Synthesis.GUI
         private void FindElements()
         {
             canvas = GameObject.Find("Canvas");
+            resetUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
@@ -153,7 +155,7 @@ namespace Synthesis.GUI
             hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
             hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
-            orientWindow = Auxiliary.FindObject(canvas, "OrientWindow");
+            orientWindow = Auxiliary.FindObject(resetUI, "OrientWindow");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -206,16 +208,24 @@ namespace Synthesis.GUI
 
         public void OnDPMTab()
         {
-            if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
-            currentTab = "DriverPracticeTab";
-            tabStateMachine.ChangeState(new DPMToolbarState());
+            if (FieldDataHandler.gamepieces.Count > 0)
+            {
+                if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
+                currentTab = "DriverPracticeTab";
+                tabStateMachine.ChangeState(new DPMToolbarState());
+            }
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Driver Practice Disabled.", 3);
         }
 
         public void OnScoringTab()
         {
-            if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
-            currentTab = "ScoringTab";
-            tabStateMachine.ChangeState(new ScoringToolbarState());
+            if (FieldDataHandler.gamepieces.Count > 0)
+            {
+                if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
+                currentTab = "ScoringTab";
+                tabStateMachine.ChangeState(new ScoringToolbarState());
+            }
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Scoring Disabled.", 3);
         }
 
         public void OnSensorTab()
@@ -284,7 +294,7 @@ namespace Synthesis.GUI
                 sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
                 State.ChangeRobot(directory, false);
-
+                RobotTypeManager.IsMixAndMatch = false;
             }
             else
             {

@@ -70,7 +70,8 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        public bool isEmulationDownloaded = false;
+        public bool isEmulationDownloaded = File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\zImage") && File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\rootfs.ext4") && File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\zynq-zed.dtb");
+        //public bool isEmulationDownloaded = true;
 
         bool reset;
 
@@ -126,16 +127,11 @@ namespace Synthesis.States
                     return;
                 }
 
-                FieldDataHandler.Load();
-
                 if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                 {
                     AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                     return;
                 }
-
-                Controls.Init();
-                Controls.Load();
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
 
@@ -268,6 +264,10 @@ namespace Synthesis.States
 
             if (!File.Exists(directory + "\\definition.bxdf"))
                 return false;
+
+            FieldDataHandler.Load(fieldPath);
+            Controls.Init();
+            Controls.Load();
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);

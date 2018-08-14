@@ -46,6 +46,8 @@ namespace Synthesis.Robot
             public RobotSensor RobotSensor;
             public RigidNode_Base wheel;
             public double previousEuler = 0;
+            public Vector3 previousPosition = new Vector3();
+            public double wheel_radius;
 
             // for emulation data
             public double encoderTickCount;
@@ -179,6 +181,7 @@ namespace Synthesis.Robot
                                 emuStruct.encoderTickCount = 0;
                                 emuStruct.RobotSensor = sensor;
                                 emuStruct.wheel = Base;
+                                emuStruct.wheel_radius = 0;
 
                                 emuList.Add(emuStruct);
                             }
@@ -305,7 +308,7 @@ namespace Synthesis.Robot
         /// </summary>
         protected virtual void UpdateMotors(float[] pwm = null)
         {
-            DriveJoints.UpdateAllMotors(RootNode, pwm ?? DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, IsMecanum()));
+            DriveJoints.UpdateAllMotors(RootNode, pwm ?? DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, IsMecanum()), emuList);
         }
 
         /// <summary>
