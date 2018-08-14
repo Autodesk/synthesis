@@ -1,24 +1,24 @@
 # Building the VM image
 
-THIS IS NOT A SIMPLE PROCESS. IT REQUIRES A LINUX ENVIRONMENT SOME KNOWLEDGE OF LINUX COMMAND LINE UTILITIES 
+THIS IS NOT A SIMPLE PROCESS. IT REQUIRES A LINUX ENVIRONMENT AND SOME KNOWLEDGE OF LINUX COMMAND LINE UTILITIES.
 
 ## Setup
 
 This process assumes you are working off of a linux machine of some sort. A virtual machine will suffice for this example. For 
 those who wish to build the image from source but do not have access to a linux environment, VirtualBox is a good free virtual 
-machine software and Ubuntu linux is a user friendly option for the linux distribution.
+machine software, and Ubuntu Linux is a user-friendly option for the Linux distribution.
 
 The amount of space required to make the image is rather large. Due to the number of tools and software needed to actually 
-build the image, it could take upwards of 5GB of disk space. The end result however should be no more than 530MB and you can 
-clean most of the folders after building is complete.
+build the image, it could take upwards of 5 GB of disk space. However, the end result should be no more than 530 MB, and most 
+most of the folders can be deleted once building is complete.
 
 There are several tools required to build the image. Most of the utilities involved are core Linux/Unix utilities (i.e. tar, 
-zcat, mkfs, dd). The tools involved that are not core are GCC, G++, GNU Make, the official FRC GCC Compiler for linux, QEMU 
+zcat, mkfs, dd). The tools involved that are not core are GCC, G++, GNU Make, the official FRC GCC Compiler for Linux, QEMU 
 (with ARM extention) and (...). Once you have all of those installed, you can proceed to phase 1.
 
-It is important to note this is not the fastest process, as during this you are going to be downloading roughly 4GB of git 
-repositories and building a large amount of code. The process can take anywhere between 30 minutes to 2 hours depending on 
-internet and computer speed. With all this in mind, please move on to phase 1.
+Please note that this is not a fast process, as during this you are going to download roughly 4 GB of git repositories and 
+build a large amount of code. The process can take anywhere between 30 minutes and 2 hours depending on internet and computer
+speed. With all this in mind, please move on to phase 1.
 
 ## Phase 1:
 
@@ -45,7 +45,8 @@ $ cp ~/git/synthesis/emulation/hel/external-configs/.linux-config ~/git/linux-xl
 $ cp ~/git/synthesis/emulation/hel/external-configs/.buildroot-config ~/git/buildroot/.config
 ```
 
-After you have copied the files, move into the linux directory. After you are in, run the following make commands (replace 8 in -j8 with 2 times the number of CPU cores you have). The build process can take several minutes.
+After you have copied the files, move into the linux directory. After you are in, run the following make commands (replace 8 in -j8
+with 2 times the number of CPU cores you have). The build process can take several minutes.
 
 ```shell
 $ make -j8 ARCH=arm zImage CROSS_COMPILE=arm-frc-linux-gnueabi- 
@@ -164,5 +165,5 @@ $ ln -s /usr/lib/jvm/bin/java /usr/bin/java
 # Press control-x then a to close VM
 ```
 
-VM image creation is complete. It can now be used as a drop in replacement for any current synthesis installations, or used 
-again via the qemu command listed above 
+VM image creation is now complete. It can now be used as a drop in replacement for any current synthesis installations, or used 
+again via the qemu command listed above. 
