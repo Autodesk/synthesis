@@ -5,6 +5,7 @@ using Inventor;
 
 public class CustomRigidGroup
 {
+  
     public List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
 
     public bool grounded;

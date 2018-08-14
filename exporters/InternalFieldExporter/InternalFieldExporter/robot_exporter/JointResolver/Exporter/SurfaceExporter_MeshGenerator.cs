@@ -36,6 +36,7 @@ public partial class SurfaceExporter
         public FacetCollection facets = new FacetCollection();
     }
 
+    private BXDAMesh outputMesh = new BXDAMesh();
     /// <summary>
     /// Default tolerance used when generating meshes (cm)
     /// </summary>
@@ -149,7 +150,7 @@ public partial class SurfaceExporter
         /// </summary>
         /// <param name="bufferSurface">Surface to add to mesh.</param>
         /// <param name="asset">Asset for surface.</param>
-        public void AddSurface(ref PartialSurface bufferSurface, AssetProperties asset)
+        public  void AddSurface(ref PartialSurface bufferSurface, AssetProperties asset)
         {
             // Create new surface
             BXDAMesh.BXDASurface newMeshSurface = new BXDAMesh.BXDASurface();
@@ -206,6 +207,7 @@ public partial class SurfaceExporter
             lock (outputVerts)
                 lock (outputMeshSurfaces)
                     DumpOutputInternal();
+
         }
 
         /// <summary>

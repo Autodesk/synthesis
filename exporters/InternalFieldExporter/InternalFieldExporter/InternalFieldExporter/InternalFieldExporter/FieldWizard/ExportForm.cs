@@ -118,20 +118,20 @@ namespace InternalFieldExporter.FieldWizard
 
                     if (!exportedMeshes.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
                     {
-                        surfaceExporter.Reset();
-                        surfaceExporter.Export(((PartDocument)currentOccurrence.ReferencedDocumentDescriptor.ReferencedDocument).ComponentDefinition, false, true);
+                        List<BXDAMesh.BXDASubMesh> outputMeshes = surfaceExporter.Export(currentOccurrence);
 
-                        BXDAMesh.BXDASubMesh outputMesh = surfaceExporter.GetOutput().meshes.First();
-
-                        exportedMeshes.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
-                        fieldDefinition.AddSubMesh(outputMesh);
+                        foreach (BXDAMesh.BXDASubMesh mesh in outputMeshes)
+                        {
+                            exportedMeshes.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
+                            fieldDefinition.AddSubMesh(surfaceExporter.ExportAll(mesh, Guid.NewGuid()));
+                        }
                     }
 
                     outputNode.SubMeshID = exportedMeshes.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
 
                     //ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
                     string componentProperties = LegacyInterchange.GetCompFromDictionary(currentOccurrence.Name);
-
+                    
                     if (componentProperties != null)
                     {
                         outputNode.PropertySetID = componentProperties/*.Name*/;
@@ -210,5 +210,7 @@ namespace InternalFieldExporter.FieldWizard
             exportButton.Text = "Export";
             browseButton.Enabled = true;
         }
+
+
     }
 }

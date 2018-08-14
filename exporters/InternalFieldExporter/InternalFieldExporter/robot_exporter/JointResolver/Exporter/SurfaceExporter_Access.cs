@@ -10,6 +10,26 @@ public partial class SurfaceExporter
     {
         assets.Clear();
     }
+    
+    /// <summary>
+    /// Exports the field as a series of submeshes
+    /// </summary>
+    /// <param name="component"></param>
+    /// <returns>A list of submeshes</returns>
+    public List<BXDAMesh.BXDASubMesh> Export(ComponentOccurrence component)
+    {
+        MeshController outputMesh = new MeshController(Guid.NewGuid());
+        List<SurfaceBody> plans = new List<SurfaceBody>();
+        GenerateExportList(component, plans);
+
+        for (int i = 0; i < plans.Count; i++)
+        {
+            CalculateSurfaceFacets(plans[i], outputMesh);
+        }
+
+        outputMesh.DumpOutput();
+        return outputMesh.Mesh.meshes;
+    }
 
     /// <summary>
     /// Exports all the components in this group to the in-RAM mesh.
@@ -21,8 +41,8 @@ public partial class SurfaceExporter
         // Create output mesh
         MeshController outputMesh = new MeshController(guid);
 
-        // Collect surfaces to export
-        List<SurfaceBody> plannedSurfaces = GenerateExportList(group, outputMesh.Mesh.physics);
+        //Collect surfaces to export
+        List<SurfaceBody> plannedSurfaces = CreateExportList(group);
 
         // Export faces, multithreaded
         if (plannedSurfaces.Count > 0)
@@ -49,5 +69,7 @@ public partial class SurfaceExporter
         }
 
         return outputMesh.Mesh;
+
     }
+
 }

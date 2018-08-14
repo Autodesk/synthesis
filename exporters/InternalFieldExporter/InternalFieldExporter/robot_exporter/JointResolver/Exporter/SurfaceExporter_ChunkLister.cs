@@ -18,7 +18,8 @@ public partial class SurfaceExporter
     /// <param name="mesh">Mesh to store physics data in.</param>
     /// <param name="ignorePhysics">True to ignore physics in component.</param>
     /// <returns>All the sufaces to export</returns>
-    private void GenerateExportList(ComponentOccurrence occ, List<SurfaceBody> plannedExports, PhysicalProperties physics, double minVolume = 0, bool ignorePhysics = false)
+    // private void GenerateExportList(ComponentOccurrence occ, List<SurfaceBody> plannedExports, PhysicalProperties physics, double minVolume = 0, bool ignorePhysics = false)
+    private void GenerateExportList(ComponentOccurrence occ, List<SurfaceBody> plannedExports, bool separateFaces = false, bool ignorePhysics = false)
     {
         // Invisible objects don't need to be exported
         if (!occ.Visible)
@@ -29,7 +30,7 @@ public partial class SurfaceExporter
             // Compute physics
             try
             {
-                physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
+                outputMesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
             }
             catch
             {
@@ -42,11 +43,12 @@ public partial class SurfaceExporter
             plannedExports.Add(surf);
 
         // Add sub-occurences
+        double minVolume = 0;
         foreach (ComponentOccurrence subOcc in occ.SubOccurrences)
         {
             if (Utilities.BoxVolume(subOcc.RangeBox) >= minVolume)
             {
-                GenerateExportList(subOcc, plannedExports, physics, minVolume, true);
+                GenerateExportList(subOcc, plannedExports, separateFaces, true);
             }
         }
     }
@@ -57,7 +59,7 @@ public partial class SurfaceExporter
     /// <param name="group">The group to export from</param>
     /// <param name="mesh">Mesh to store physics data in.</param>
     /// <returns>All the sufaces to export</returns>
-    private List<SurfaceBody> GenerateExportList(CustomRigidGroup group, PhysicalProperties physics)
+    private List<SurfaceBody> CreateExportList(CustomRigidGroup group, bool separateFaces = false, bool ignorePhysics = false)
     {
         List<SurfaceBody> plannedExports = new List<SurfaceBody>();
 
@@ -76,7 +78,7 @@ public partial class SurfaceExporter
         {
             if (Utilities.BoxVolume(occ.RangeBox) >= minVolume)
             {
-                GenerateExportList(occ, plannedExports, physics, minVolume);
+                GenerateExportList(occ, plannedExports);
             }
         }
 

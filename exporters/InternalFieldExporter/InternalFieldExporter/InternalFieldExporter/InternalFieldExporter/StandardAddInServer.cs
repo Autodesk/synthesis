@@ -464,8 +464,8 @@ namespace InternalFieldExporter
                         // Quit the exporter
                         if (Context.Item["Document"] is DrawingDocument drawing)
                             ForceQuitExporter(drawing);
-                        else if (Context.Item["Document"] is PartDocument part)
-                            ForceQuitExporter(part);
+                        //else if (Context.Item["Document"] is PartDocument part)
+                          //  ForceQuitExporter(part);
                         else if (Context.Item["Document"] is PresentationDocument presentation)
                             ForceQuitExporter(presentation);
                     }
