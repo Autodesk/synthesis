@@ -20,7 +20,7 @@ namespace InternalFieldExporter.FieldWizard.Components
             InitializeComponent();
         }
 
-      PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
+        PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
         {
             return new PropertySet.BoxCollider(new BXDVector3(
                 (float)xScaleUpDown.Value,

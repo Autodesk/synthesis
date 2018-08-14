@@ -280,6 +280,9 @@ namespace InternalFieldExporter.FieldWizard
             ParentTabPage.ChangeName();
         }
 
+        private ColliderPropertiesForm colliderProperties = null;
+        private int lastColliderType = -1;
+
         /// <summary>
         /// Updates the collider properties form when the selected collider is changed.
         /// </summary>
@@ -287,30 +290,34 @@ namespace InternalFieldExporter.FieldWizard
         /// <param name="e"></param>
         private void colliderTypeCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Type selectedType = null;
+            if (colliderProperties != null)
+            {
+                if (colliderTypeCombobox.SelectedIndex == lastColliderType)
+                    return;
+                
+                meshPropertiesTable.Controls.Remove((UserControl)colliderProperties);
+                colliderProperties = null;
+            }
 
             switch (colliderTypeCombobox.SelectedIndex)
             {
                 case 0: // Box
-                    selectedType = typeof(BoxColliderPropertiesForm);
+                    colliderProperties = new BoxColliderPropertiesForm();
                     break;
                 case 1: // Sphere
-                    selectedType = typeof(SphereColliderPropertiesForm);
+                    colliderProperties = new SphereColliderPropertiesForm();
                     break;
                 case 2: // Mesh
-                    selectedType = typeof(MeshColliderPropertiesForm);
+                    colliderProperties = new MeshColliderPropertiesForm();
                     break;
             }
+            lastColliderType = colliderTypeCombobox.SelectedIndex;
 
-            if (meshPropertiesTable.Controls.Count > 1)
+            if (colliderProperties != null)
             {
-                if (selectedType == null || meshPropertiesTable.Controls[1].GetType().Equals(selectedType))
-                    return;
-
-                meshPropertiesTable.Controls.RemoveAt(1);
+                meshPropertiesTable.Controls.Add((UserControl)colliderProperties, 0, 1);
+                ((UserControl)colliderProperties).Dock = DockStyle.Top;
             }
-
-            meshPropertiesTable.Controls.Add((UserControl)Activator.CreateInstance(selectedType), 0, 1);
         }
 
         /// <summary>
