@@ -35,14 +35,13 @@ namespace hel{
 
         /**
          * Constructor for JSONParsingException
-         * \param details The details of the parsing exception
+         * \param det The details of the parsing exception
          */
 
         JSONParsingException(std::string);
     };
 
     /**
-     * \fn std::string serializeList(const std::string& label, const T& iterable, std::function<std::string(typename T::value_type)> to_s)
      * \brief Serialize an iterable container as a JSON string
      * \param label The JSON label to use
      * \param iterable The data to serialize
@@ -64,7 +63,6 @@ namespace hel{
     }
 
     /**
-     * \fn std::string removeExtraneousSpaces(std::string input)
      * \brief Removes duplicate spaces from a string
      * \param input The string to clean extra spaces from
      * \return The cleaned string
@@ -72,7 +70,6 @@ namespace hel{
     std::string removeExtraneousSpaces(std::string);
 
     /**
-     * \fn std::string excludeFromString(const std::string& input, const std::vector<char>& characters)
      * \brief Remove the given characters from the input string
      * \param input The string to remove characters from
      * \param characters The characters to exclude
@@ -82,7 +79,6 @@ namespace hel{
     std::string excludeFromString(const std::string&, const std::vector<char>&);
 
     /**
-     * \fn std::string trim(std::string input)
      * \brief Trims a string of preceding and following whitespace
      * \param input The string to trim
      * \return The trimmed string
@@ -91,7 +87,6 @@ namespace hel{
     std::string trim(std::string);
 
     /**
-     * \fn std::vector<std::string> split(std::string input, const char DELIMITER)
      * \brief Splits a string into a vector of string along the given delimiter
      * \param input the string to split
      * \param DELIMITER The delimiter to split along
@@ -101,7 +96,6 @@ namespace hel{
     std::vector<std::string> split(std::string, const char);
 
     /**
-     * \fn std::vector<std::string> splitObject(std::string input)
      * \brief Splits an input string into the found JSON sub-objects
      * \param input The string to parse
      * \return A vector of all the found JSON objects
@@ -110,7 +104,6 @@ namespace hel{
     std::vector<std::string> splitObject(std::string);
 
     /**
-     * \fn std::string clipList(std::string input)
      * \brief Remove the outer brackets from a JSON list
      * \param input The list to trim
      * \return The input list without outer list brackets
@@ -119,7 +112,6 @@ namespace hel{
     std::string clipList(std::string);
 
     /**
-     * \fn std::string pullObject(std::string label, std::string& input)
      * \brief Removes and returns a string representing a JSON object of the given label from the input
      * \param label The target object
      * \param input The string to parse
@@ -129,7 +121,6 @@ namespace hel{
     std::string pullObject(std::string,std::string&);
 
     /**
-     * \fn T pullObject(std::string label,std::string& input,const std::function<T(std::string)>& from_s)
      * \brief Removes a string representing a JSON object of the given label from the input and deserializes it
      * \param label The target object
      * \param input The string to parse
@@ -143,7 +134,6 @@ namespace hel{
     }
 
     /**
-     * \fn std::string pullObject(std::string& input, unsigned start = 0)
      * \brief Removes the first string representing a JSON object from the input
      * \param input The string to parse
      * \return A string containing the first JSON object in the input
@@ -152,7 +142,6 @@ namespace hel{
     std::string pullObject(std::string&,unsigned start = 0);
 
     /**
-     * \fn std::vector<T> deserializeList(std::string input, const std::function<T(std::string)>& from_s, bool clip = false)
      * \brief Deserialize a JSON list into a vector
      * \param input The JSON string to deserialize
      * \param from_s The deserialization function for the list's value type
@@ -174,7 +163,6 @@ namespace hel{
     }
 
     /**
-     * \fn std::string quote(const std::string& input)
      * \brief Add quotes surrounding the input string
      * \param input The string to add quotes to
      * \return The string with outer quotation marks
@@ -183,7 +171,6 @@ namespace hel{
     std::string quote(const std::string&);
 
     /**
-     * \fn std::string unquote(std::string input)
      * \brief Remove the outer quotation marks of a string
      * \param input The string to remove the outer quotation marks from
      * \return The trimmed string without outer quotation marks

@@ -11,14 +11,12 @@ namespace hel{
 
     struct NetComm{
         /**
-         * \var uint32_t ref_num
          * \brief The handle for the occur function
          */
 
         uint32_t ref_num;
 
         /**
-         * \var std::function<void(uint32_t)> occurFunction
          * \brief The function called to signal HAL is has received new data from the Driver Station
          */
 

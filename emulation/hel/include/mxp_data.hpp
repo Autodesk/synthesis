@@ -19,14 +19,12 @@ namespace hel{
         };
 
         /**
-         * \var Config config
          * \brief The configuration of the port
          */
 
         Config config;
 
         /**
-         * \var double value
          * \brief The value of the port
          * Must be interpreted using the context of the configuration
          */
@@ -34,7 +32,6 @@ namespace hel{
         double value;
 
         /**
-         * \fn std::string toString()const
          * \brief Format the MXPData object as a string
          * \return A string containing the MXPData information
          */
@@ -42,7 +39,6 @@ namespace hel{
         std::string toString()const;
 
         /**
-         * \fn std::string serialize()const
          * \brief Convert the port to a JSON object
          * \return A string representing the data in JSON format
          */
@@ -50,7 +46,6 @@ namespace hel{
         std::string serialize()const;
 
         /**
-         * \fn static MXPData deserialize(std::string input)
          * \brief Convert a JSON object string to an MXPData object
          * \param input The data to parse
          * \return The generated MXPData object
@@ -73,7 +68,6 @@ namespace hel{
     };
 
     /**
-     * \fn MXPData::Config s_to_mxp_config(std::string input)
      * \brief Convert a string to an MXPData::Config
      * \param input The string to parse
      * \return The parsed MXPData::Config
@@ -82,7 +76,6 @@ namespace hel{
     MXPData::Config s_to_mxp_config(std::string);
 
     /**
-     * \fn std::string as_string(MXPData::Config config)
      * \brief Convert an MXP::Config value to a string
      * \param config The value to convert
      * \return The value in string format

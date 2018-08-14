@@ -14,21 +14,18 @@ namespace hel{
     private:
 
         /**
-         * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status
          * \brief The active state of the power supply rails
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tPower::tStatus status;
 
         /**
-         * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts
          * \brief A running count of faults for each rail
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tPower::tFaultCounts fault_counts;
 
         /**
-         * \var nFPGA::nRoboRIO_FPGANamespace::tPower::tDisable disabled
          * \brief Which power rails have been disabled
          */
 

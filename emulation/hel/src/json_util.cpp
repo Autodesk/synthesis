@@ -2,7 +2,7 @@
 #include <cassert>
 
 namespace hel{
-    JSONParsingException::JSONParsingException(std::string s):details(s){}
+    JSONParsingException::JSONParsingException(std::string det):details(det){}
 
     const char* JSONParsingException::what()const throw(){
         std::string s = "Synthesis exception: JSON parsing failed due to malformed data in " + details;
