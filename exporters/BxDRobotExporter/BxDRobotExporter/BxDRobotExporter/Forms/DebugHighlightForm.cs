@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SynthesisRobotExporter.Forms
+namespace BxDRobotExporter.Forms
 {
     public partial class DebugHighlightForm : Form
     {
