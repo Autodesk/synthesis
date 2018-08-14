@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BxDRobotExporter.Wizard
+namespace SynthesisRobotExporter.Wizard
 {
     /// <summary>
     /// Class storing all of the data gathered during the Guided Export process. 

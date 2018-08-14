@@ -11,7 +11,7 @@ using EditorsLibrary;
 using System.Runtime.InteropServices;
 using System.Collections;
 
-namespace BxDRobotExporter
+namespace SynthesisRobotExporter
 {
     public class ExporterFailedException : ApplicationException
     {
@@ -129,43 +129,43 @@ namespace BxDRobotExporter
 
             #region Setup New Environment and Ribbon
             Environments environments = MainApplication.UserInterfaceManager.Environments;
-            ExporterEnv = environments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, SynthesisLogoSmall, SynthesisLogoLarge);
+            ExporterEnv = environments.Add("Robot Exporter", "Synthesis:RobotExporter:Environment", null, SynthesisLogoSmall, SynthesisLogoLarge);
 
             Ribbon assemblyRibbon = MainApplication.UserInterfaceManager.Ribbons["Assembly"];
-            RibbonTab ExporterTab = assemblyRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter:RobotExporterTab", ClientID, "", false, true);
+            RibbonTab ExporterTab = assemblyRibbon.RibbonTabs.Add("Robot Exporter", "Synthesis:RobotExporter:RobotExporterTab", ClientID, "", false, true);
 
             ControlDefinitions ControlDefs = MainApplication.CommandManager.ControlDefinitions;
 
-            SetupPanel = ExporterTab.RibbonPanels.Add("Start Over", "BxD:RobotExporter:SetupPanel", ClientID);
-            SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "BxD:RobotExporter:SettingsPanel", ClientID);
-            FilePanel = ExporterTab.RibbonPanels.Add("File", "BxD:RobotExporter:FilePanel", ClientID);
+            SetupPanel = ExporterTab.RibbonPanels.Add("Start Over", "Synthesis:RobotExporter:SetupPanel", ClientID);
+            SettingsPanel = ExporterTab.RibbonPanels.Add("Settings", "Synthesis:RobotExporter:SettingsPanel", ClientID);
+            FilePanel = ExporterTab.RibbonPanels.Add("File", "Synthesis:RobotExporter:FilePanel", ClientID);
 
             // Reset positioning of panels
-            SettingsPanel.Reposition("BxD:RobotExporter:SetupPanel", false);
-            FilePanel.Reposition("BxD:RobotExporter:SettingsPanel", false);
+            SettingsPanel.Reposition("Synthesis:RobotExporter:SetupPanel", false);
+            FilePanel.Reposition("Synthesis:RobotExporter:SettingsPanel", false);
             #endregion
 
             #region Setup Buttons
             //Begin Wizard Export
-            WizardExportButton = ControlDefs.AddButtonDefinition("Exporter Setup", "BxD:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", ExportSetupRobotIconSmall, ExportSetupRobotIconLarge);
+            WizardExportButton = ControlDefs.AddButtonDefinition("Exporter Setup", "Synthesis:RobotExporter:BeginWizardExport", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Quickly configure wheel and joint information.", ExportSetupRobotIconSmall, ExportSetupRobotIconLarge);
             WizardExportButton.OnExecute += BeginWizardExport_OnExecute;
             WizardExportButton.OnHelp += _OnHelp;
             SetupPanel.CommandControls.AddButton(WizardExportButton, true);
 
             //Set Weight
-            SetWeightButton = ControlDefs.AddButtonDefinition("Robot Weight", "BxD:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", WeightRobotIconSmall, WeightRobotIconLarge);
+            SetWeightButton = ControlDefs.AddButtonDefinition("Robot Weight", "Synthesis:RobotExporter:SetWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Change the weight of the robot.", WeightRobotIconSmall, WeightRobotIconLarge);
             SetWeightButton.OnExecute += SetWeight_OnExecute;
             SetWeightButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
             //Save Button
-            SaveButton = ControlDefs.AddButtonDefinition("Save Configuration", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot configuration to your assembly file for future exporting.", SaveRobotIconSmall, SaveRobotIconLarge);
+            SaveButton = ControlDefs.AddButtonDefinition("Save Configuration", "Synthesis:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot configuration to your assembly file for future exporting.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
             SaveButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(SaveButton, true);
 
             //Export Button
-            ExportButton = ControlDefs.AddButtonDefinition("Export to Synthesis", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot's model to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
+            ExportButton = ControlDefs.AddButtonDefinition("Export to Synthesis", "Synthesis:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot's model to Synthesis.", ExportRobotIconSmall, ExportRobotIconLarge);
             ExportButton.OnExecute += ExportButton_OnExecute;
             ExportButton.OnHelp += _OnHelp;
             FilePanel.CommandControls.AddButton(ExportButton, true);
@@ -174,9 +174,9 @@ namespace BxDRobotExporter
 
             #region DEBUG
 #if DEBUG
-            DebugPanel = ExporterTab.RibbonPanels.Add("Debug", "BxD:RobotExporter:DebugPanel", ClientID);
+            DebugPanel = ExporterTab.RibbonPanels.Add("Debug", "Synthesis:RobotExporter:DebugPanel", ClientID);
             //Selection Test
-            DedectionTestButton = ControlDefs.AddButtonDefinition("Detection Test", "BxD:RobotExporter:DetectionTestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
+            DedectionTestButton = ControlDefs.AddButtonDefinition("Detection Test", "Synthesis:RobotExporter:DetectionTestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
             DedectionTestButton.OnExecute += delegate (NameValueMap context)
             {
                 if (Wizard.WizardUtilities.DetectWheels(Utilities.GUI.SkeletonBase, out List<RigidNode_Base> leftWheels, out List<RigidNode_Base> rightWheels))
@@ -189,7 +189,7 @@ namespace BxDRobotExporter
             };
             DebugPanel.CommandControls.AddButton(DedectionTestButton, true);
             //UI Test
-            UITestButton = ControlDefs.AddButtonDefinition("UI Test", "BxD:RobotExporter:UITestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
+            UITestButton = ControlDefs.AddButtonDefinition("UI Test", "Synthesis:RobotExporter:UITestButton", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, null, DebugButtonSmall, DebugButtonLarge);
             UITestButton.OnExecute += delegate (NameValueMap context)
             {
                     Wizard.WizardForm wizard = new Wizard.WizardForm();
@@ -208,9 +208,9 @@ namespace BxDRobotExporter
             #endregion
 
             #region Final Environment Setup
-            ExporterEnv.DefaultRibbonTab = "BxD:RobotExporter:RobotExporterTab";
+            ExporterEnv.DefaultRibbonTab = "Synthesis:RobotExporter:RobotExporterTab";
             MainApplication.UserInterfaceManager.ParallelEnvironments.Add(ExporterEnv);
-            ExporterEnv.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+            ExporterEnv.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["Synthesis:RobotExporter:Environment"]);
             #endregion
 
             #region Event Handler Assignment

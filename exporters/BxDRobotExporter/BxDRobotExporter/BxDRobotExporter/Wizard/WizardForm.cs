@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.Wizard
+namespace SynthesisRobotExporter.Wizard
 {
     public partial class WizardForm : Form
     {        
