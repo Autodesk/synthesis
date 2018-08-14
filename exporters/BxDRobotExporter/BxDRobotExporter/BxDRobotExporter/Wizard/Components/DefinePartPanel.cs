@@ -69,19 +69,19 @@ namespace BxDRobotExporter.Wizard
                     "No Driver",
                     "Motor",
                     "Servo",
-                    "Bumper Pneumatic",
+                    /*"Bumper Pneumatic",
                     "Relay Pneumatic",
-                    "Worm Screw",
+                    "Worm Screw",*/
                     "Dual Motor"});
             } else
             {
                 this.DriverComboBox.Items.Clear();
                 this.DriverComboBox.Items.AddRange(new object[] {
                     "No Driver",
-                    "Elevator",
-                    "Bumper Pneumatic",
+                    "Elevator"//,
+                    /*"Bumper Pneumatic",
                     "Relay Pneumatic",
-                    "Worm Screw"});
+                    "Worm Screw"*/});
             }
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
