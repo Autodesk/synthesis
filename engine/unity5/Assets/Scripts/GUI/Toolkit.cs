@@ -259,17 +259,19 @@ namespace Synthesis.GUI
                 stopwatchTime = 0f;
                 stopwatchStartButtonText.text = "Stop";
                 stopwatchOn = true;
-            }
-            else
-            {
-                stopwatchStartButtonText.text = "Start";
-                stopwatchOn = false;
+
                 if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Used Stopwatch", new Dictionary<string, object> //for analytics tracking
                     {
                     });
                 }
+            }
+
+            else
+            {
+                stopwatchStartButtonText.text = "Start";
+                stopwatchOn = false;
             }
         }
 

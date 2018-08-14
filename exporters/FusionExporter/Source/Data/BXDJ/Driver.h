@@ -18,10 +18,10 @@ namespace BXDJ
 			MOTOR = 1, ///< Standard rotational motor.
 			SERVO = 2, ///< Attempts to move joint to specific angle.
 			WORM_SCREW = 3, ///< Applies linear force to a joint.
-			BUMPER_PNEUMATIC = 4, ///< I don't actually know what this is.
-			RELAY_PNEUMATIC = 5, ///< Not quite sure.
-			DUAL_MOTOR = 6, ///< Two motors working in tandem.
-			ELEVATOR = 7 ///< It goes up.
+			BUMPER_PNEUMATIC = 4, ///< Controlled by PCM.
+			RELAY_PNEUMATIC = 5, ///< Controlled by Spikes.
+			DUAL_MOTOR = 6, ///< Two motors acting on same joint.
+			ELEVATOR = 7 ///< Used for linear motion with stages (typically vertical).
 		};
 
 		Type type; ///< The type of the Driver.
@@ -30,7 +30,7 @@ namespace BXDJ
 		enum Signal : char
 		{
 			PWM = 1, ///< Pulse Width Modulation
-			CAN = 2 ///< Cereal And Noodles
+			CAN = 2 ///< Controller Area Network
 		};
 
 		Signal portSignal; ///< The signal used for controlling the Driver.

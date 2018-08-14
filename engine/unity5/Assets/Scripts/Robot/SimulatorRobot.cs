@@ -16,6 +16,7 @@ using Synthesis.States;
 using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Synthesis.Robot
 
         public string FilePath { get; set; }
 
-        private const float ResetVelocity = 0.05f;
+        private const float ResetVelocity = 5f;
         private const float HoldTime = 0.8f;
 
         private readonly SensorManager sensorManager;
@@ -59,6 +60,7 @@ namespace Synthesis.Robot
         Text helpBodyText;
         #endregion
 
+        private static Process proc;
 
         GameObject canvas;
         GameObject resetCanvas;
@@ -68,6 +70,15 @@ namespace Synthesis.Robot
         /// </summary>
         private void Awake()
         {
+            //Process.Start("\"C:\\Program Files\\qemu\\qemu-system-arm.exe\" (qemu-system-arm -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\zImage\" \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\zynq-zed.dtb\" -display none -serial null -serial mon:stdio -localtime -append \"console = ttyPS0, 115200 earlyprintk root =/ dev / mmcblk0\" -redir tcp:10022::22  -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\rootfs.ext4\"");
+            ProcessStartInfo startinfo = new ProcessStartInfo();
+            startinfo.CreateNoWindow = false;
+            startinfo.UseShellExecute = false;
+            startinfo.FileName = @"C:\Program Files\qemu\qemu-system-arm.exe";
+            startinfo.WindowStyle = ProcessWindowStyle.Normal;
+            startinfo.Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\zImage" + " -dtb " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\zynq-zed.dtb" + " -display none -serial null -serial mon:stdio -localtime -append \"console = ttyPS0, 115200 earlyprintk root =/ dev / mmcblk0\" -redir tcp:10022::22 -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\rootfs.ext4";
+            //proc = Process.Start(startinfo);
+
             StateMachine.SceneGlobal.Link<MainState>(this);
         }
 
@@ -171,6 +182,8 @@ namespace Synthesis.Robot
 
                 if (!rigidBody.GetCollisionObject().IsActive)
                     rigidBody.GetCollisionObject().Activate();
+
+                Resetting();
             }
             else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
             {
@@ -199,6 +212,7 @@ namespace Synthesis.Robot
         /// </summary>
         protected override void UpdatePhysics()
         {
+            var begin = DateTime.Now;
             base.UpdatePhysics();
 
             if (!state.IsMetric)
@@ -226,49 +240,12 @@ namespace Synthesis.Robot
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e.StackTrace);
+                    UnityEngine.Debug.Log(e.StackTrace);
                 }
 
                 BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
-
-                if (a.RobotSensor.type == RobotSensorType.ENCODER)
-                {
-                    bRaycastWheel.GetWheelSpeed();
-
-                    double angleDifference = bRaycastWheel.transform.eulerAngles.x - a.previousEuler;
-
-                    // Checks to handle specific wheel rotational cases
-                    if (bRaycastWheel.GetWheelSpeed() > 0) // To handle positive wheel speeds
-                    {
-                        if (angleDifference < 0) // To handle special case (positive wheel speed, negative angleDifference)
-                        {
-                            a.encoderTickCount += (((360 - a.previousEuler + bRaycastWheel.transform.eulerAngles.x) / 360.0) * a.RobotSensor.conversionFactor);
-                        }
-                        else
-                        {
-                            a.encoderTickCount += ((angleDifference / 360) * a.RobotSensor.conversionFactor);
-                        }
-                    }
-                    else if (bRaycastWheel.GetWheelSpeed() < 0)
-                    {
-                        if (angleDifference > 0)
-                        {
-                            a.encoderTickCount += (((((360 - bRaycastWheel.transform.eulerAngles.x) + a.previousEuler) * (-1)) / 360.0) * a.RobotSensor.conversionFactor);
-                        }
-                        else
-                        {
-                            a.encoderTickCount += (((angleDifference) / 360.0) * a.RobotSensor.conversionFactor);
-                        }
-                    }
-
-                    Debug.Log(a.encoderTickCount);
-                    a.previousEuler = bRaycastWheel.transform.eulerAngles.x;
-                }
             }
             #endregion
-
-            if (IsResetting)
-                Resetting();
         }
 
         /// <summary>
@@ -370,7 +347,7 @@ namespace Synthesis.Robot
                 //Transform rotation along the horizontal plane
                 Vector3 rotation = new Vector3(0f,
                     UnityEngine.Input.GetKey(KeyCode.D) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
-                    0f);
+                    0f) * Time.deltaTime;
                 if (!rotation.Equals(Vector3.zero))
                     RotateRobot(rotation);
             }
@@ -380,7 +357,7 @@ namespace Synthesis.Robot
                 Vector3 transposition = new Vector3(
                     UnityEngine.Input.GetKey(KeyCode.W) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f,
                     0f,
-                    UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f);
+                    UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f) * Time.deltaTime;
 
                 if (!transposition.Equals(Vector3.zero))
                     TranslateRobot(transposition);

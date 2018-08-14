@@ -75,7 +75,7 @@ namespace Synthesis.DriverPractice
         }
         void FindElements()
         {
-            canvas = GameObject.Find("Canvas");
+            canvas = Auxiliary.FindGameObject("Canvas");
 
             dpmToolbar = Auxiliary.FindObject(canvas, "DPMToolbar");
             gamepieceDropdownButton = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdownButton");
@@ -99,7 +99,7 @@ namespace Synthesis.DriverPractice
             trajectoryLine.AddComponent<LineRenderer>();
             #endregion
 
-            moveArrows = CreateMoveArrows();
+            
         }
         private void SetGamepieceIndex()
         {
@@ -110,6 +110,7 @@ namespace Synthesis.DriverPractice
         {
             if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).Count() > 0)
             {
+                if (moveArrows == null) moveArrows = CreateMoveArrows();
                 trajectory = true;
                 dpmRobot.drawing = true;
                 trajectoryPanel.SetActive(true);

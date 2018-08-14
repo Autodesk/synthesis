@@ -8,20 +8,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Synthesis.GUI
 {
     class EmulationDriverStation : MonoBehaviour
     {
-        enum DriveState
+
+        public static EmulationDriverStation Instance { get; private set; }
+
+        public enum DriveState
         {
             Auto,
             Teleop,
             Test,
         };
 
-        enum AllianceStation
+        public enum AllianceStation
         {
             Red1,
             Red2,
@@ -31,13 +35,13 @@ namespace Synthesis.GUI
             Blue3,
         };
 
-        DriveState state;
-        AllianceStation allianceStation;
+        public DriveState state;
+        public AllianceStation allianceStation;
 
-        bool isRobotDisabled = false;
-        bool isActiveState;
-        bool isRunCode = false;
-        int teamStation;
+        public bool isRobotDisabled = false;
+        public bool isActiveState;
+        public bool isRunCode = false;
+        public int teamStation;
 
         GameObject canvas;
         InputField gameDataInput;
@@ -63,6 +67,11 @@ namespace Synthesis.GUI
             GameData();
         }
 
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         private void Update()
         {
 
@@ -74,6 +83,14 @@ namespace Synthesis.GUI
             {
                 emuDriverStationPanel.SetActive(false);
                 InputControl.freeze = false;
+
+                if (PlayerPrefs.GetInt("analytics") == 1)
+                {
+                    Analytics.CustomEvent("Opened Driver Station", new Dictionary<string, object> //for analytics tracking
+                    {
+                    });
+                }
+
             }
             else
             {

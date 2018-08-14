@@ -1,11 +1,34 @@
-# Emulation
+# FRC Robot Code Emulation
+
 ## Overview
-Here you'll find things regarding emulating hardware, firmware, and/or software, usually related to the RoboRIO.
+The emulator is the Synthesis tool designed to help users test their FRC robot code. Users can upload their own user code as the FRCUserProgram they would normally deploy to the RoboRIO. Its communication with hardware will then be redirected to the engine for simulation and testing.
 
-### Hardware Emulation Layer
+## Hardware Emulation Layer
+The core of Synthesis's emulator is HEL. HEL is a reimplementation of the RoboRIO's hardware abstraction layer (HAL) which runs in an ARM virtual environment rather than the RoboRIO. This allows robot code to run on users' computers and to communicate with Synthesis. This lower layer of robot code runtime was chosen for reimplementation to enable compatibilty across new releases of WPILib and other external solutions. This is a new system that has been integrated into Synthesis, replacing older versions of the emulator such as the HELBuildTool and prior solutions.
 
-`hel` is (mainly) a reimplementation of the hardware abstraction layer that compiles and runs natively on Windows which allows your robot code to do the same and to communicate with Synthesis. By reimplementing a lower level of the robot code runtime, we can improve maintainability and portability of code across new releases of WPILib. This is currently in development and will replace the old solution soon.
+## Building
+HEL is emulation of a layer of robot code several levels below that at which users develops. For the easiest user experience, the code is all handled inside of a Linux virtual machine emulating an ARM processor, much akin to the environment that runs on a RoboRIO. For ease of development, the development environment is built around the same operating system, Linux, as the emulator. It is recommended for those seeking to develop emulation to either install Linux or look into running Linux on a virtual machine solution with their current system (Ubuntu is recommended). Once the Linux environment is set up, there are a few pieces of software to install. The first of those is the build system CMake. To install on Ubuntu, the commands are as follows:
 
-### HEL Build Tool
+```shell
+sudo apt update && sudo apt-get install cmake;
 
-`HELBuildTool` is for compiling robot code via Makefile outside of Eclipse targeted at Synthesis, so that your code can run natively on Windows and communicate with the simulator. In the future, this will be integrated into Eclipse to make the compilation process more intuitive and easier to use.
+# Necessary only for Java users
+sudo apt install openjdk-8-jre-headless;
+sudo apt install openjdk-8-jdk;
+
+# Necessary for all users
+sudo apt-add-repository ppa:wpilib/toolchain
+sudo apt update 
+sudo apt install frc-toolchain
+
+```
+
+After the utilities have been installed, all that is left to do is build. To build HEL, navigate to the `hel` directory in a terminal and execute the following command:
+
+```shell
+cmake . -DCMAKE_BUILD_TYPE=RELEASE \
+        -DARCH=ARM;
+make hel;
+
+```
+
