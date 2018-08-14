@@ -13,7 +13,7 @@
 #include "../Exporter.h"
 #include "../Data/BXDJ/Utility.h"
 
-using namespace Synthesis;
+using namespace SynthesisAddIn;
 
 EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 {
