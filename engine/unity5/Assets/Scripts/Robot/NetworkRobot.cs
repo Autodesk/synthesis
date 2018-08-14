@@ -4,7 +4,6 @@ using BulletUnity;
 using Synthesis.BUExtensions;
 using Synthesis.FSM;
 using Synthesis.Robot;
-using Synthesis.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,28 +14,28 @@ using UnityEngine.Networking;
 [NetworkSettings(channel = 0, sendInterval = 0f)]
 public class NetworkRobot : RobotBase, ICollisionCallback
 {
-    private enum SyncState : byte
+    enum SyncState : byte
     {
         ClientPriority,
         ServerPriority
     }
 
-    private SyncState syncState;
+    SyncState syncState;
 
-    private const float CorrectionPositionThreshold = 0.05f;
-    private const float CorrectionRotationThreshold = 15.0f;
-    private const float StateTransitionTimeout = 0.5f;
+    const float CorrectionPositionThreshold = 0.05f;
+    const float CorrectionRotationThreshold = 15.0f;
+    const float StateTransitionTimeout = 0.5f;
 
     [SyncVar]
     public int RobotID = -1;
 
-    private BRigidBody[] rigidBodies;
-    private NetworkMesh[] networkMeshes;
-    private bool correctionEnabled = true;
-    private bool canSendUpdate = true;
-    private float timeSinceLastContact;
+    BRigidBody[] rigidBodies;
+    NetworkMesh[] networkMeshes;
+    bool correctionEnabled = true;
+    bool canSendUpdate = true;
+    float timeSinceLastContact;
 
-    private List<BRigidBody> activeCollisions;
+    List<BRigidBody> activeCollisions;
 
     private MultiplayerState state;
 
@@ -208,8 +207,8 @@ public class NetworkRobot : RobotBase, ICollisionCallback
     /// <param name="pwm"></param>
     private void RemoteUpdateRobotInfo(float[] pwm)
     {
-        if (RootNode != null)
-            DriveJoints.UpdateAllMotors(RootNode, pwm);
+        if (RootNode != null/* && ControlsEnabled*/)
+            DriveJoints.UpdateAllMotors(RootNode, pwm, emuList);
     }
 
     /// <summary>
@@ -374,18 +373,18 @@ public class NetworkRobot : RobotBase, ICollisionCallback
             activeCollisions.Remove(rb);
     }
 
-    /// <summary>
-    /// Not implemented.
-    /// </summary>
-    public void BOnCollisionStay(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList) { }
+    public void BOnCollisionStay(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
+    {
+        // Not implemented
+    }
 
-    /// <summary>
-    /// Not implemented.
-    /// </summary>
-    public void OnVisitPersistentManifold(PersistentManifold pm) { }
+    public void OnVisitPersistentManifold(PersistentManifold pm)
+    {
+        // Not implemented
+    }
 
-    /// <summary>
-    /// Not implemented.
-    /// </summary>
-    public void OnFinishedVisitingManifolds() { }
+    public void OnFinishedVisitingManifolds()
+    {
+        // Not implemented
+    }
 }

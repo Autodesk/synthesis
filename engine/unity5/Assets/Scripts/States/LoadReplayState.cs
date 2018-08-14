@@ -58,11 +58,12 @@ namespace Synthesis.States
             if (entry != null)
             {
                 splashScreen.SetActive(true);
-                replayList.SetActive(false);
                 PlayerPrefs.SetString("simSelectedReplay", entry);
                 PlayerPrefs.Save();
                 Application.LoadLevel("Scene");
             }
+
+            replayList.SetActive(false);
         }
     }
 }

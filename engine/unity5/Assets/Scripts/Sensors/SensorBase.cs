@@ -29,6 +29,8 @@ namespace Synthesis.Sensors
         protected MainState main;
         public SimulatorRobot Robot { get; set; }
 
+        public string sensorType; //Ultrasonic, Beam Break, or Gyro. Used for when the sensor gets deleted
+
         // Use this for initialization
         void Start()
         {
@@ -94,6 +96,29 @@ namespace Synthesis.Sensors
         /// <param name="range"></param>
         public virtual void SetSensorRange(float range, bool isEditing = false)
         {
+        }
+
+        /// <summary>
+        /// Change angle by a specified amount
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        public virtual void RotateTransform(float x, float y, float z)
+        {
+            //restrict angles to between 0 and 360
+            x = x < 0 ? 360 + x : x;
+            x = x > 360 ? x - 360 : x;
+
+            y = y < 0 ? 360 + y : y;
+            y = y > 360 ? y - 360 : y;
+
+            z = z < 0 ? 360 + z : z;
+            z = z > 360 ? z - 360 : z;
+
+            //actually rotate the sensor
+            transform.Rotate(new Vector3(x, y, z));
+            UpdateAngleTransform();
         }
 
         /// <summary>

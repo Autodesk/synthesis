@@ -7,11 +7,6 @@
 
 using namespace BXDJ;
 
-RigidNode::RigidNode()
-{
-	parent = NULL;
-}
-
 RigidNode::RigidNode(const RigidNode & nodeToCopy) : guid(nodeToCopy.guid)
 {
 	configData = nodeToCopy.configData;
@@ -37,6 +32,11 @@ std::string RigidNode::getModelId() const
 		return fusionOccurrences[0]->fullPathName();
 	else
 		return "empty";
+}
+
+int BXDJ::RigidNode::getOccurrenceCount() const
+{
+	return fusionOccurrences.size();
 }
 
 void RigidNode::write(XmlWriter & output) const

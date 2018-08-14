@@ -11,7 +11,7 @@ CylindricalJoint::CylindricalJoint(const CylindricalJoint & jointToCopy) : Joint
 	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
-CylindricalJoint::CylindricalJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, joint, parentOccurrence)
+CylindricalJoint::CylindricalJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
 	this->fusionJointMotion = getFusionJoint()->jointMotion();
 }

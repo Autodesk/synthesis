@@ -11,21 +11,10 @@ namespace Synthesis.States
 {
     public class LoadFieldState : State
     {
-        private readonly State nextState;
-
         private string fieldDirectory;
         private GameObject mixAndMatchModeScript;
         private GameObject splashScreen;
         private SelectScrollable fieldList;
-
-        /// <summary>
-        /// Initializes a new <see cref="LoadFieldState"/> instance.
-        /// </summary>
-        /// <param name="nextState"></param>
-        public LoadFieldState(State nextState = null)
-        {
-            this.nextState = nextState;
-        }
 
         /// <summary>
         /// Initializes required <see cref="GameObject"/> references.
@@ -36,6 +25,9 @@ namespace Synthesis.States
             mixAndMatchModeScript = Auxiliary.FindGameObject("MixAndMatchModeScript");
             splashScreen = Auxiliary.FindGameObject("LoadSplash");
             fieldList = GameObject.Find("SimLoadFieldList").GetComponent<SelectScrollable>();
+
+            fieldList.ThumbTexture = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
+            fieldList.ListTextColor = Color.black;
         }
 
         /// <summary>
@@ -72,18 +64,14 @@ namespace Synthesis.States
                     PlayerPrefs.SetString("simSelectedField", simSelectedField);
                     PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
                     fieldList.SetActive(false);
-                    splashScreen?.SetActive(true);
+                    splashScreen.SetActive(true);
                     mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartMaMSim();
                 }
                 else
                 {
                     PlayerPrefs.SetString("simSelectedField", simSelectedField);
                     PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
-
-                    if (nextState == null)
-                        StateMachine.PopState();
-                    else
-                        StateMachine.PushState(nextState);
+                    StateMachine.PopState();
                 }
             }
             else

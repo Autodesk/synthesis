@@ -10,8 +10,8 @@ namespace Synthesis.FSM
         private static StateMachine sceneGlobal;
 
         private Stack<State> activeStates;
-        private ObjectStateLinker<Behaviour> stateBehaviours;
-        private ObjectStateLinker<GameObject> stateGameObjects;
+        private readonly ObjectStateLinker<Behaviour> stateBehaviours;
+        private readonly ObjectStateLinker<GameObject> stateGameObjects;
 
         /// <summary>
         /// (Defined from the editor)
@@ -38,16 +38,26 @@ namespace Synthesis.FSM
         }
 
         /// <summary>
-        /// The current state in the <see cref="StateMachine"/>.
+        /// The current state in the StateMachine.
         /// </summary>
         public State CurrentState { get; private set; }
+
+        /// <summary>
+        /// Initializes the StateMachine.
+        /// </summary>
+        private StateMachine()
+        {
+            activeStates = new Stack<State>();
+            stateBehaviours = new ObjectStateLinker<Behaviour>((b, e) => b.enabled = e, (b) => b.enabled);
+            stateGameObjects = new ObjectStateLinker<GameObject>((g, e) => g.SetActive(e), (g) => g.activeSelf);
+        }
 
         /// <summary>
         /// Finds the states of the given type in the stack of active states.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T FindState<T>() where T : class
+        public T FindState<T>() where T : State
         {
             foreach (State state in activeStates)
                 if (state is T)
@@ -88,22 +98,10 @@ namespace Synthesis.FSM
         /// <param name="state"></param>
         public void PushState(State state)
         {
-            PushState(state, true);
-        }
-
-        /// <summary>
-        /// Adds a new state to the StateMachine and pauses the current one
-        /// if specified.
-        /// </summary>
-        /// <param name="state"></param>
-        /// <param name="pausePrevious"></param>
-        public void PushState(State state, bool pausePrevious)
-        {
-            if (pausePrevious && CurrentState != null)
-            {
+            if (CurrentState != null)
                 CurrentState.Pause();
-                DisableAllObjects(false);
-            }
+
+            DisableAllObjects(false);
 
             if (!activeStates.Contains(state))
                 activeStates.Push(state);
@@ -123,17 +121,6 @@ namespace Synthesis.FSM
         /// </summary>
         public bool PopState()
         {
-            return PopState(true);
-        }
-
-        /// <summary>
-        /// Removes the current state from the StateMachine and
-        /// resumes execution of the previous one if specified.
-        /// </summary>
-        /// <param name="resumePrevious"></param>
-        /// <returns></returns>
-        private bool PopState(bool resumePrevious)
-        {
             if (CurrentState == null)
                 return false;
 
@@ -145,7 +132,7 @@ namespace Synthesis.FSM
 
             activeStates.Pop();
 
-            if (resumePrevious && activeStates.Count > 0)
+            if (activeStates.Count > 0)
             {
                 CurrentState = activeStates.First();
 
@@ -164,20 +151,11 @@ namespace Synthesis.FSM
         /// <summary>
         /// Pops all open States and pushes the given State.
         /// </summary>
-        /// <param name="state">The <see cref="State"/> to change to.</param>
-        /// <param name="hardReset">If true, any existing states on the stack will be popped.</param>
-        public void ChangeState(State state, bool hardReset = true)
+        /// <param name="state"></param>
+        public void ChangeState(State state)
         {
-            if (hardReset)
-            {
-                while (PopState()) ;
-                PushState(state);
-            }
-            else
-            {
-                PopState(false);
-                PushState(state, false);
-            }
+            while (PopState()) ;
+            PushState(state);
         }
 
         /// <summary>
@@ -197,6 +175,9 @@ namespace Synthesis.FSM
         /// <param name="force"></param>
         private void DisableAllObjects(bool force)
         {
+            if (CurrentState == null)
+                return;
+
             Type stateType = CurrentState.GetType();
 
             stateBehaviours.DisableObjects(stateType, force);
@@ -208,10 +189,6 @@ namespace Synthesis.FSM
         /// </summary>
         private void Awake()
         {
-            activeStates = new Stack<State>();
-            stateBehaviours = new ObjectStateLinker<Behaviour>((b, e) => b.enabled = e, (b) => b.enabled);
-            stateGameObjects = new ObjectStateLinker<GameObject>((g, e) => g.SetActive(e), (g) => g.activeSelf);
-
             if (sceneGlobalInstance)
                 SceneGlobal = this;
         }

@@ -13,7 +13,7 @@ RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : Joint(jo
 	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
-RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, joint, parentOccurrence)
+RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 }
