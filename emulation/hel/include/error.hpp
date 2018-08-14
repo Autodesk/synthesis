@@ -11,7 +11,17 @@ namespace hel{
      */
 
     struct ErrorBase{
+        /**
+         * Deconstructor for ErrorBase
+         */
+
         virtual ~ErrorBase(){};
+
+        /**
+         * \brief Format the error as a string
+         * \return The resulting string
+         */
+
         virtual std::string toString()const = 0;
     };
 
@@ -21,7 +31,6 @@ namespace hel{
 
     struct DSError: public ErrorBase{
         /**
-         * \enum Type
          * \brief Represents driver station error type
          */
 
@@ -29,35 +38,30 @@ namespace hel{
 
     private:
         /**
-         * \var Type type
          * \brief Whether the error message is a warning or error
          */
 
         Type type;
 
         /**
-         * \var int32_t error_code
          * \brief The associated error code
          */
 
         int32_t error_code;
 
         /**
-         * \var std::string details
          * \brief The details of the error
          */
 
         std::string details;
 
         /**
-         * \var std::string location
          * \brief Currently unknown functionality
          */
 
         std::string location;
 
         /**
-         * \var std::string call_stack
          * \brief Currently unknown functionality
          */
 
@@ -107,7 +111,6 @@ namespace hel{
     struct UnhandledEnumConstantException: public std::exception{
     private:
         /**
-         * \var std::string enum_type
          * \brief The type of enum represented in string form
          */
 
@@ -149,7 +152,6 @@ namespace hel{
     struct UnsupportedFeature: std::exception{ //TODO rename to UnsupportedFeatureException
     private:
         /**
-         * \var std::string details
          * \brief Details about the unsupported feature
          */
 
@@ -184,7 +186,6 @@ namespace hel{
     struct InputConfigurationException: std::exception{
     private:
         /**
-         * \var std::string details
          * \brief Details about the input misconfiguration
          */
 

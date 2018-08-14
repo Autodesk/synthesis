@@ -238,6 +238,7 @@ namespace hel{
     };
 
     /**
+     * \fn std::string as_string(EncoderManager::Type type)
      * \brief Convert an EncoderManager::Type to a string
      * \param type The Encoder::Manager::Type to convert
      * \return The type as a string
@@ -246,6 +247,7 @@ namespace hel{
     std::string as_string(EncoderManager::Type);
 
     /**
+     * \fn std::string as_string(EncoderManager::PortType port_type)
      * \brief Convert the EncoderManager::PortType to a string
      * \param port_type The EncoderManager::PortType to convert
      * \return The port type as a string

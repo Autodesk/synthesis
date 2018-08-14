@@ -13,6 +13,10 @@ namespace hel{
      */
     template<typename T, std::size_t LEN>
     struct BoundsCheckedArray{
+        /**
+         * \brief Define value_type for consistency among C++ iterable containers
+         */
+
         using value_type = T;
 
     private:
