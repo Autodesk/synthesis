@@ -20,9 +20,9 @@ namespace hel{
 #undef COPY
     }
 
-	RelaySystem::State RelaySystem::getState(uint8_t i)noexcept{
-		bool forward = checkBitHigh(value.Forward, i);
-		bool reverse  = checkBitHigh(value.Reverse, i);
+	RelaySystem::State RelaySystem::getState(uint8_t index)noexcept{
+		bool forward = checkBitHigh(value.Forward, index);
+		bool reverse  = checkBitHigh(value.Reverse, index);
 		if(forward){
 			if(reverse){
 				return State::ERROR;
@@ -35,8 +35,8 @@ namespace hel{
 		return State::OFF;
 	}
 
-	std::string as_string(RelaySystem::State r){
-		switch(r){
+	std::string as_string(RelaySystem::State state){
+		switch(state){
 		case RelaySystem::State::OFF:
 			return "OFF";
 		case RelaySystem::State::REVERSE:

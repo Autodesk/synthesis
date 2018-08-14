@@ -13,14 +13,24 @@ namespace hel{
      */
 
     struct RelaySystem{
-		static constexpr int32_t NUM_RELAY_HEADERS = 4; //hal::kNumRelayHeaders
+        /**
+         * \brief The number of relay headers on the RoboRIO
+         */
 
-		enum class State{OFF, REVERSE, FORWARD, ERROR};
-
-	private:
+        static constexpr int32_t NUM_RELAY_HEADERS = 4; //hal::kNumRelayHeaders
 
         /**
-         * \var nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value
+         * \brief Simple representation of the relay state
+         */
+
+        enum class State{
+            OFF, REVERSE,
+            FORWARD, ERROR
+        };
+
+    private:
+
+        /**
          * \brief Relay output data
          */
 
@@ -31,8 +41,7 @@ namespace hel{
         /**
          * \fn nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue getValue()const
          * \brief Get relay output.
-         * Returns the relay output
-         * \return a nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue object representing the reverse and forward channel outputs.
+         * \return A tValue object representing the reverse and forward channel outputs.
          */
 
         nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue getValue()const noexcept;
@@ -40,19 +49,40 @@ namespace hel{
         /**
          * \fn void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue value)
          * \brief Set relay output.
-         * Sets the relay output to \b value
-         * \param value a nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue object representing the reverse and forward channel outputs.
+         * \param value A tValue object representing the reverse and forward channel outputs.
          */
 
         void setValue(nFPGA::nRoboRIO_FPGANamespace::tRelay::tValue)noexcept;
 
-		State getState(uint8_t)noexcept;
+        /**
+         * \brief Get the state of a given relay channel
+         * \param index The relay header to fetch data for
+         * \return The state of the header
+         */
 
-		RelaySystem()noexcept;
+        State getState(uint8_t)noexcept;
+
+        /**
+         * Constructor for RelaySystem
+         */
+
+        RelaySystem()noexcept;
+
+        /**
+         * Constructor for RelaySystem
+         * \param source A RelaySystem object to copy
+         */
+
         RelaySystem(const RelaySystem&)noexcept;
     };
 
-	std::string as_string(RelaySystem::State);
+    /**
+     * \brief Format a RelaySystem::State as a string
+     * \param state The state to convert
+     * \return The resulting string
+     */
+
+    std::string as_string(RelaySystem::State);
 }
 
 #endif

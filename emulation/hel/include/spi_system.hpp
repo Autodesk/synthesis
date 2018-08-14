@@ -6,6 +6,12 @@
 
 namespace hel{
 
+    /**
+     * \brief Data model for SPI system
+     *
+     * This is currently unsupported by HEL
+     */
+
     struct SPISystem{
     private:
         nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig auto_trigger_config;

@@ -80,9 +80,8 @@ namespace hel{
         return integer;
     }
 
-	template<typename T>
-    struct Maybe { //TODO optimize
-
+    template<typename T>
+    struct Maybe {
     private:
         T _data;
         bool _is_valid;
@@ -117,25 +116,41 @@ namespace hel{
             return out;
         }
 
-      constexpr T& get()noexcept{
-          assert(_is_valid);
-          return _data;
-      }
-      void set(T data){
-          _data = data;
-          _is_valid = true;
-      }
+        constexpr T& get()noexcept{
+            assert(_is_valid);
+            return _data;
+        }
+        void set(T data){
+            _data = data;
+            _is_valid = true;
+        }
 
-      constexpr operator bool()const noexcept{return _is_valid;}
+        constexpr operator bool()const noexcept{
+            return _is_valid;
+        }
 
-        Maybe& operator=(const Maybe& m)noexcept {_data = m._data; _is_valid = m._is_valid;}
+        Maybe& operator=(const Maybe& m)noexcept {
+            if(this != &m){
+                _data = m._data;
+                _is_valid = m._is_valid;
+            }
+            return *this;
+        }
 
-        Maybe(T data)noexcept : _data(data), _is_valid(true) {};
-        Maybe()noexcept : _is_valid(false) {};
+        Maybe(T data)noexcept:_data(data), _is_valid(true){}
+        Maybe()noexcept: _is_valid(false) {}
     };
 
+    /**
+     * \brief Function to format an iterable container as a string
+     * \param iterable The container to convert
+     * \param to_s A conversion function from the iterable's value type to a string
+     * \param delimiter The delimiter to use between elements
+     * \param include_brackets Whether to surround the generated string in brackets or not
+     */
+
     template<typename T>
-    std::string as_string(const T& iterable, const std::function<std::string(typename T::value_type)>& to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
+    std::string as_string(const T& iterable, const std::function<std::string(typename T::value_type)>& to_s, const std::string& delimiter = ",", const bool& include_brackets = true){ //TODO use typename Func instead of std::function
         std::string s = "";
         if(include_brackets){
             s += "[";
@@ -152,8 +167,17 @@ namespace hel{
         return s;
     }
 
-    template<typename FIRST, typename SECOND>
-    std::string as_string(const std::pair<FIRST, SECOND>& a, const std::function<std::string(FIRST)>& first_to_s, const std::function<std::string(SECOND)>& second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
+    /**
+     * \brief Function to format a pair as a string
+     * \param a The pair to convert
+     * \param first_to_s A conversion function from the pair's first value type to a string
+     * \param second_to_s A conversion function from the pair's second value type to a string
+     * \param delimiter The delimiter to use between the two
+     * \param include_brackets Whether to surround the generated string in brackets or not
+     */
+
+    template<typename First, typename Second>
+    std::string as_string(const std::pair<First, Second>& a, const std::function<std::string(First)>& first_to_s, const std::function<std::string(Second)>& second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
         std::string s = "";
         if(include_brackets){
             s += "[";
@@ -167,26 +191,51 @@ namespace hel{
         return s;
     }
 
-	bool stob(std::string);
+    /**
+     * \brief Parse a boolean value from a string
+     * \param input The string to parse
+     * \return The parsed bool
+     */
+
+    bool stob(std::string);
+
+    /**
+     * \brief Convert a bool to a string
+     * \param input The bool to convert
+     * \return The resulting string
+     */
+
     std::string as_string(bool);
+
+    /**
+     * \brief Hash function for a constant character array
+     * \param input The character array to hash
+     * \return The resulting hash
+     */
 
     constexpr std::size_t hasher(const char* input){
         return *input ? static_cast<unsigned>(*input) + 33 * hasher(input + 1) : 5381;
     }
 
-    void copystr(const std::string&, char*);
+    /**
+     * \brief Compare the bits in two integers given a comparison mask
+     * \param a The first integer to compare
+     * \param b The second integer to compare
+     * \param comparison_mask The comparison mask to use. The function will compare all the bits where the comparison mask is high
+     * \return True if all the specified bits match
+     */
 
-	constexpr bool compareBits(uint32_t a, uint32_t b, uint32_t comparison_mask){
-		unsigned msb = std::max(findMostSignificantBit(a), findMostSignificantBit(b));
-		for(unsigned i = 0 ; i < msb; i++){
-			if(checkBitHigh(comparison_mask,i)){
-				if(checkBitHigh(a,i) != checkBitHigh(b,i)){
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+    constexpr bool compareBits(uint32_t a, uint32_t b, uint32_t comparison_mask){
+        unsigned msb = std::max(findMostSignificantBit(a), findMostSignificantBit(b));
+        for(unsigned i = 0 ; i < msb; i++){
+            if(checkBitHigh(comparison_mask,i)){
+                if(checkBitHigh(a,i) != checkBitHigh(b,i)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
 
 #endif
