@@ -50,30 +50,26 @@ The target architecture can be specified using `-DARCH=(ARM|X86)`. The build mod
 
 ## Project Structure
 
-* benchmarks
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This directory contains all of the Google Benchmark benchmarking files for HEL.
+#### benchmarks
+This directory contains all of the Google Benchmark benchmarking files for HEL.
 
-* docs
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This directory contains a Doxygen Doxyfile and acts as the target for the documentation 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doxygen generates.
+#### docs
+This directory contains a Doxygen Doxyfile and acts as the target for the documentation Doxygen generates.
 
-* external-configs
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This directory contains configurations for external to modify their build processes 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for compatibility with HEL and each other. 
+#### external-configs
+This directory contains configurations for external to modify their build processes for compatibility with HEL and each other. 
 
-* include
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This directory contains all of HEL's header files.
+#### include
+This directory contains all of HEL's header files.
 
-* lib
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This directory contains all of the downloaded external projects. When they and HEL
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;are built, the resulting libraries are stored here as well.
+#### lib
+This directory contains all of the downloaded external projects. When they and HEL are built, the resulting libraries are stored here as well.
 
-* scripts
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This directory contains useful bash scripts used in the build process and for ease of use
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;during development.
+#### scripts
+This directory contains useful bash scripts used in the build process and for ease of use during development.
 
-* src
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This directory contains all of HEL's cpp files
+#### src
+This directory contains all of HEL's cpp files
 
-* tests
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This directory contains all of the Google Test testing files for HEL.
+#### tests
+This directory contains all of the Google Test testing files for HEL.
