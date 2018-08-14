@@ -120,14 +120,13 @@ namespace InternalFieldExporter.FieldWizard
                     {
                         List<BXDAMesh.BXDASubMesh> outputMeshes = surfaceExporter.Export(currentOccurrence);
 
-                        foreach (BXDAMesh.BXDASubMesh mesh in outputMeshes)
+                        if (outputMeshes.Count > 0)
                         {
                             exportedMeshes.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
-                            fieldDefinition.AddSubMesh(mesh);
+                            outputNode.SubMeshID = exportedMeshes.Count - 1;
+                            fieldDefinition.AddSubMesh(outputMeshes[0]);
                         }
                     }
-
-                    outputNode.SubMeshID = exportedMeshes.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
 
                     //ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
                     string componentProperties = LegacyInterchange.GetCompFromDictionary(currentOccurrence.Name);
@@ -147,13 +146,13 @@ namespace InternalFieldExporter.FieldWizard
                                 tempMesh.meshes.Add(fieldDefinition.GetSubMesh(outputNode.SubMeshID));
                                 var colliders = ConvexHullCalculator.GetHull(tempMesh);
 
-                                foreach (BXDAMesh.BXDASubMesh mesh in colliders)
+                                if (colliders.Count > 0)
                                 {
                                     exportedColliders.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
-                                    fieldDefinition.AddCollisionMesh(mesh);
+                                    outputNode.CollisionMeshID = exportedColliders.Count - 1;
+                                    fieldDefinition.AddCollisionMesh(colliders[0]);
                                 }
                             }
-                            outputNode.CollisionMeshID = exportedColliders.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
                         }
                     }
 
