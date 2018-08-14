@@ -69,6 +69,13 @@ namespace FieldExporter.Components
             }
         }
 
+        private void ExportFieldData()
+        {
+            BXDVector3[] spawnpoints = FieldMetaForm.getSpawnpoints();
+            
+
+        }
+
         /// <summary>
         /// Executes the actual exporting.
         /// </summary>
@@ -76,6 +83,8 @@ namespace FieldExporter.Components
         /// <param name="e"></param>
         private void exporter_DoWork(object sender, DoWorkEventArgs e)
         {
+            ExportFieldData();
+
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
 
             foreach (PropertySet ps in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
