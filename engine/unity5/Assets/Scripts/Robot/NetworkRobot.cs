@@ -208,7 +208,7 @@ public class NetworkRobot : RobotBase, ICollisionCallback
     private void RemoteUpdateRobotInfo(float[] pwm)
     {
         if (RootNode != null/* && ControlsEnabled*/)
-            DriveJoints.UpdateAllMotors(RootNode, pwm);
+            DriveJoints.UpdateAllMotors(RootNode, pwm, emuList);
     }
 
     /// <summary>
