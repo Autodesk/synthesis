@@ -17,7 +17,7 @@ namespace InternalFieldExporter
         public MainWindow()
         {
             InitializeComponent();
-
+            Program.MAINWINDOW = this;
             Text = "Synthesis Field Exporter - " + Program.ASSEMBLY_DOCUMENT.DisplayName;
         }
 

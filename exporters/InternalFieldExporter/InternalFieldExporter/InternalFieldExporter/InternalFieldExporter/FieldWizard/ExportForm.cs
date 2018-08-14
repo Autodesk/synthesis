@@ -81,7 +81,7 @@ namespace InternalFieldExporter.FieldWizard
         {
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
 
-            foreach (PropertySet ps in LegacyInterchange.PropSets/*Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets()*/)
+            foreach (PropertySet ps in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
             {
                 fieldDefinition.AddPropertySet(ps);
             }
@@ -128,12 +128,11 @@ namespace InternalFieldExporter.FieldWizard
                         }
                     }
 
-                    //ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
-                    string componentProperties = LegacyInterchange.GetCompFromDictionary(currentOccurrence.Name);
+                    ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
                     
                     if (componentProperties != null)
                     {
-                        outputNode.PropertySetID = componentProperties/*.Name*/;
+                        outputNode.PropertySetID = componentProperties.Name;
 
                         PropertySet propertySet = fieldDefinition.GetPropertySets()[outputNode.PropertySetID];
 
