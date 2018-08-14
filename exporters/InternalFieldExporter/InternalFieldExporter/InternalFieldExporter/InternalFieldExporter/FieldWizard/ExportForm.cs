@@ -123,7 +123,7 @@ namespace InternalFieldExporter.FieldWizard
                         foreach (BXDAMesh.BXDASubMesh mesh in outputMeshes)
                         {
                             exportedMeshes.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
-                            fieldDefinition.AddSubMesh(surfaceExporter.ExportAll(mesh, Guid.NewGuid()));
+                            fieldDefinition.AddSubMesh(mesh);
                         }
                     }
 
@@ -143,9 +143,15 @@ namespace InternalFieldExporter.FieldWizard
                         {
                             if (!exportedColliders.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
                             {
-                                exportedColliders.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
-                                var test = fieldDefinition.GetSubMesh(outputNode.SubMeshID);
-                                fieldDefinition.AddCollisionMesh(ConvexHullCalculator.GetHull(fieldDefinition.GetSubMesh(outputNode.SubMeshID)));
+                                var tempMesh = new BXDAMesh();
+                                tempMesh.meshes.Add(fieldDefinition.GetSubMesh(outputNode.SubMeshID));
+                                var colliders = ConvexHullCalculator.GetHull(tempMesh);
+
+                                foreach (BXDAMesh.BXDASubMesh mesh in colliders)
+                                {
+                                    exportedColliders.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
+                                    fieldDefinition.AddCollisionMesh(mesh);
+                                }
                             }
                             outputNode.CollisionMeshID = exportedColliders.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
                         }
