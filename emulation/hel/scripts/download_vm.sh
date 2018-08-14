@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Download the emulator VM
+
 FILE_URL="https://dl.dropboxusercontent.com/s/svvxunbh7akmw3y/vm-package.tar.gz?dl=0"
 
 if [ ! -f vm-package.tar.gz ] ; then

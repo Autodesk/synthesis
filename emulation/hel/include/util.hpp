@@ -16,7 +16,7 @@ namespace hel{
      * \fn constexpr unsigned findMostSignificantBit(T value)
      * \brief Finds the most significant bit in an integer
      * Finds the index of the high bit of the greatest value; returns zero if zero is passed in
-     * \type T The type of integer
+     * \tparam T The type of integer
      * \param value The integer to analyze
      * \return The zero-indexed index of the most significant bit
      */
@@ -36,7 +36,7 @@ namespace hel{
     /**
      * \fn constexpr bool checkBitHigh(const T& value, const unsigned& index)
      * \brief Check if the bit in place \b index of integer \b value is high
-     * \type T The type of integer
+     * \tparam T The type of integer
      * \param value The integer to analyze
      * \param index The zero-indexed index to check
      * \return True if the bit is high
@@ -50,7 +50,7 @@ namespace hel{
     /**
      * \fn constexpr bool checkBitLow(const T& value, const unsigned& index)
      * \brief Check if the bit in place \b index of integer \b value is low
-     * \type T The type of integer
+     * \tparam T The type of integer
      * \param value The integer to analyze
      * \param index The zero-indexed index to check
      * \return True if the bit is high

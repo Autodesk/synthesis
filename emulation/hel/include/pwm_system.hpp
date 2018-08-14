@@ -13,7 +13,18 @@ namespace hel{
      */
 
     struct PWMSystem{
+        /**
+         * \brief The expected loop timing by HAL
+         *
+         * When loop timing is requested, this should be used to prevent errors
+         */
+
         static constexpr const int32_t EXPECTED_LOOP_TIMING = 40;
+
+        /**
+         * \brief The number of PWM headers
+         */
+
         static constexpr const int32_t NUM_HDRS = nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters;
     private:
 
@@ -43,7 +54,17 @@ namespace hel{
 
             uint16_t pulse_width;
 
+            /**
+             * Constructor for PWM
+             */
+
             PWM()noexcept;
+
+            /**
+             * Constructor for PWM
+             * \param source A PWM object to copy
+             */
+
             PWM(const PWM&)noexcept;
         };
 
