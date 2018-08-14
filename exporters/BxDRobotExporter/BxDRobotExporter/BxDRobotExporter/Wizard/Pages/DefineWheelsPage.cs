@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-namespace SynthesisRobotExporter.Wizard
+namespace BxDRobotExporter.Wizard
 {
     public enum WheelSide
     {
