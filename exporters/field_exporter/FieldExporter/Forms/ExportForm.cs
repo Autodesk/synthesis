@@ -69,11 +69,11 @@ namespace FieldExporter.Components
             }
         }
 
-        private void ExportFieldData()
+        private void ExportFieldData(string folder)
         {
-            BXDVector3[] spawnpoints = FieldMetaForm.getSpawnpoints();
-            
+            Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints());
 
+            fieldProps.Write(folder + "\\field_data.xml");
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace FieldExporter.Components
         /// <param name="e"></param>
         private void exporter_DoWork(object sender, DoWorkEventArgs e)
         {
-            ExportFieldData();
+            ExportFieldData(filePathTextBox.Text);
 
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
 
