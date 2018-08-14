@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2019\Bin\InternalFielExporter\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2019\Bin\InternalFieldExporter\</OutputPath>
     <DefineConstants>TRACE;DEBUG;LITEMODE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
