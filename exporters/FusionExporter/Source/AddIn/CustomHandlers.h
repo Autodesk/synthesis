@@ -6,11 +6,12 @@
 using namespace adsk::core;
 using namespace adsk::fusion;
 
-namespace Synthesis
+namespace SynthesisAddIn
 {
 	class EUI;
 
 	// Workspace Events
+	/// Notified when the Synthesis workspace is selected by the user.
 	class WorkspaceActivatedHandler : public WorkspaceEventHandler
 	{
 	public:
@@ -20,6 +21,7 @@ namespace Synthesis
 		EUI * eui;
 	};
 
+	/// Notified when the user leaves the Synthesis workspace.
 	class WorkspaceDeactivatedHandler : public WorkspaceEventHandler
 	{
 	public:
@@ -30,15 +32,7 @@ namespace Synthesis
 	};
 
 	// Button Events
-	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
-	{
-	public:
-		ShowPaletteCommandCreatedHandler(EUI * eui) : eui(eui) {}
-		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
-	private:
-		EUI * eui;
-	};
-
+	/// Notified when the export robot button is created.
 	class ShowPaletteCommandExecuteHandler : public CommandEventHandler
 	{
 	public:
@@ -48,21 +42,32 @@ namespace Synthesis
 		EUI * eui;
 	};
 
+	/// Notified when the export robot button is clicked.
+	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
+	{
+	public:
+		ShowPaletteCommandCreatedHandler(EUI * eui) : eui(eui) {}
+		~ShowPaletteCommandCreatedHandler();
+		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+	private:
+		EUI * eui;
+
+		ShowPaletteCommandExecuteHandler * showPaletteCommandExecuteHandler = nullptr;
+		Ptr<Command> command;
+	};
+
 	// Palette Events
+	/// Notified when a palette sends data back to Fusion.
 	class ReceiveFormDataHandler : public HTMLEventHandler
 	{
 	public:
-		ReceiveFormDataHandler(Ptr<Application> app, EUI * eui) : app(app), eui(eui) { }
-		~ReceiveFormDataHandler() { if (thread != nullptr) { thread->join(); delete thread; } }
+		ReceiveFormDataHandler(EUI * eui) : eui(eui) { }
 		void notify(const Ptr<HTMLEventArgs>& eventArgs) override;
 	private:
-		const char ASCII_OFFSET = -32;
-		Ptr<Application> app;
 		EUI * eui;
-		// Some events don't like doing everything on a single thread
-		std::thread * thread = nullptr;
 	};
 
+	/// Notified when the export robot form is closed.
 	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:

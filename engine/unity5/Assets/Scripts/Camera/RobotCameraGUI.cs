@@ -27,7 +27,6 @@ namespace Synthesis.Camera
         GameObject yAngleEntry;
         GameObject zAngleEntry;
         GameObject showAngleButton;
-        GameObject editAngleButton;
 
         bool changingAngle = false;
         bool changingAngleX = false;
@@ -38,30 +37,23 @@ namespace Synthesis.Camera
 
         //FOV panel
         GameObject cameraFOVPanel;
-        GameObject editFOVButton;
         GameObject showFOVButton;
         GameObject FOVEntry;
 
         bool changingFOV = false;
         float fovIncrement = 1f;
         int fovSign;
-        
+
 
         GameObject robotCameraViewWindow;
         RenderTexture robotCameraView;
 
         //The indicator object is originally under robot camera list in unity scene
         public GameObject CameraIndicator;
-        GameObject showCameraButton;
 
         //Camera configuration
         GameObject configureRobotCameraButton;
         GameObject configureCameraPanel;
-
-        //Dark buttons that lock the corresponding button so users can't do different configuration options at the same time
-        GameObject lockPositionButton;
-        GameObject lockAngleButton;
-        GameObject lockFOVButton;
 
         private bool usingRobotView = false;
         private bool indicatorActive = false;
@@ -132,7 +124,6 @@ namespace Synthesis.Camera
             {
                 CameraIndicator = Auxiliary.FindObject(robotCameraListObject, "CameraIndicator");
             }
-            showCameraButton = Auxiliary.FindObject(canvas, "ShowCameraButton");
 
             //For camera position and attachment configuration
             configureCameraPanel = Auxiliary.FindObject(canvas, "CameraConfigurationPanel");
@@ -143,19 +134,12 @@ namespace Synthesis.Camera
             xAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "xAngleEntry1");
             yAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "yAngleEntry1");
             zAngleEntry = Auxiliary.FindObject(cameraAnglePanel, "zAngleEntry1");
-            showAngleButton = Auxiliary.FindObject(configureCameraPanel, "ShowCameraAngleButton");
-            editAngleButton = Auxiliary.FindObject(cameraAnglePanel, "EditButton");
 
             //For field of view configuration
             cameraFOVPanel = Auxiliary.FindObject(configureCameraPanel, "CameraFOVPanel");
             FOVEntry = Auxiliary.FindObject(cameraFOVPanel, "FOVEntry");
-            showFOVButton = Auxiliary.FindObject(configureCameraPanel, "ShowCameraFOVButton");
-            editFOVButton = Auxiliary.FindObject(cameraFOVPanel, "EditButton");
-
-            lockPositionButton = Auxiliary.FindObject(configureCameraPanel, "LockPositionButton");
-            lockAngleButton = Auxiliary.FindObject(configureCameraPanel, "LockAngleButton");
-            lockFOVButton = Auxiliary.FindObject(configureCameraPanel, "LockFOVButton");
         }
+
         /// <summary>
         /// Updates the robot camera view window
         /// </summary>
@@ -208,7 +192,7 @@ namespace Synthesis.Camera
         {
             indicatorActive = !indicatorActive;
             CameraIndicator.SetActive(indicatorActive);
-            Auxiliary.FindObject(configureCameraPanel, "VisibilityButton").GetComponentInChildren<Text>().text = indicatorActive ? "Hide" : "Show"; 
+            Auxiliary.FindObject(configureCameraPanel, "VisibilityButton").GetComponentInChildren<Text>().text = indicatorActive ? "Hide" : "Show";
         }
 
         /// <summary>
@@ -246,7 +230,7 @@ namespace Synthesis.Camera
         {
             StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(robotCameraManager));
         }
-   
+
         /// <summary>
         /// Update the local angle of the current camera to the camera angle panel
         /// </summary>
@@ -268,13 +252,13 @@ namespace Synthesis.Camera
             float xTemp = 0;
             float yTemp = 0;
             float zTemp = 0;
-            if (float.TryParse(xAngleEntry.GetComponent<InputField>().text, out xTemp) &&
-                float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp) &&
-                float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp))
-            {
-                robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
-            }
-
+            xAngleEntry.GetComponent<InputField>().text = xAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            yAngleEntry.GetComponent<InputField>().text = yAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            zAngleEntry.GetComponent<InputField>().text = zAngleEntry.GetComponent<InputField>().text.TrimStart('0');
+            if (!float.TryParse(xAngleEntry.GetComponent<InputField>().text, out xTemp)) xAngleEntry.GetComponent<InputField>().text = "0";
+            if (!float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp)) yAngleEntry.GetComponent<InputField>().text = "0";
+            if (!float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp)) zAngleEntry.GetComponent<InputField>().text = "0";
+            robotCameraManager.CurrentCamera.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
         }
 
         /// <summary>
@@ -285,9 +269,6 @@ namespace Synthesis.Camera
             robotCameraManager.IsShowingAngle = !robotCameraManager.IsShowingAngle;
             cameraAnglePanel.SetActive(robotCameraManager.IsShowingAngle);
             isEditingAngle = robotCameraManager.IsShowingAngle;
-
-            lockPositionButton.SetActive(robotCameraManager.IsShowingAngle);
-            lockFOVButton.SetActive(robotCameraManager.IsShowingAngle);
 
             //if (robotCameraManager.IsShowingAngle)
             //{
@@ -307,11 +288,9 @@ namespace Synthesis.Camera
             isEditingAngle = !isEditingAngle;
             if (isEditingAngle)
             {
-                editAngleButton.GetComponentInChildren<Text>().text = "Done";
             }
             else
             {
-                editAngleButton.GetComponentInChildren<Text>().text = "Edit";
                 SyncCameraAngle();
                 isEditingAngle = false;
             }
@@ -363,14 +342,9 @@ namespace Synthesis.Camera
         public void SyncCameraFOV()
         {
             float temp = 0;
-            if ((float.TryParse(FOVEntry.GetComponent<InputField>().text, out temp) && temp >= 0))
-            {
-                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
-            }
-            else
-            {
-                robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
-            }
+            FOVEntry.GetComponent<InputField>().text = FOVEntry.GetComponent<InputField>().text.TrimStart('0');
+            if (!(float.TryParse(FOVEntry.GetComponent<InputField>().text, out temp) || temp < 0)) { temp = 0; FOVEntry.GetComponent<InputField>().text = "0"; }
+            robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
         }
 
         public void ChangeFOV(int sign)
@@ -414,16 +388,14 @@ namespace Synthesis.Camera
             isEditingFOV = !isEditingFOV;
             if (isEditingFOV)
             {
-                editFOVButton.GetComponentInChildren<Text>().text = "Done";
             }
             else
             {
-                editFOVButton.GetComponentInChildren<Text>().text = "Edit";
                 SyncCameraFOV();
                 isEditingFOV = false;
             }
         }
-        
+
         /// <summary>
         /// Update transform of robot camera indicator to follow the current camera
         /// </summary>
@@ -446,9 +418,6 @@ namespace Synthesis.Camera
             robotCameraManager.ResetConfigurationState();
 
             //Reset all gui stuff
-            lockPositionButton.SetActive(false);
-            lockAngleButton.SetActive(false);
-            lockFOVButton.SetActive(false);
 
             //showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Angle";
             //showFOVButton.GetComponentInChildren<Text>().text = "Show/Edit Camera Range";

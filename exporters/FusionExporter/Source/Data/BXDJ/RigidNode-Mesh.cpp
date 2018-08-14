@@ -6,6 +6,7 @@
 #include <Fusion/MeshData/TriangleMeshCalculator.h>
 #include <Fusion/MeshData/TriangleMesh.h>
 #include <Fusion/Fusion/PhysicalProperties.h>
+#include <Core/Materials/Material.h>
 #include <Core/Geometry/Point3D.h>
 #include "../BXDA/Mesh.h"
 #include "../BXDA/SubMesh.h"
@@ -14,7 +15,7 @@
 
 using namespace BXDJ;
 
-void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics, std::function<void(double)> progressCallback, bool * cancel) const
+void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics, std::function<void(double)> progressCallback, const bool * cancel) const
 {
 	if (progressCallback)
 		progressCallback(0);
@@ -35,16 +36,9 @@ void RigidNode::getMesh(BXDA::Mesh & mesh, bool ignorePhysics, std::function<voi
 
 			// Add faces to sub-mesh
 			std::shared_ptr<BXDA::Surface> surface = std::make_shared<BXDA::Surface>(fusionMesh->nodeIndices(), subMesh->getVertCount());
-			
+
 			// Add color to surface
-			core::Ptr<core::Appearance> appearance = nullptr;
-
-			if (occurrence->appearance() != nullptr)
-				appearance = occurrence->appearance();
-			else if (body->appearance() != nullptr)
-				appearance = body->appearance();
-
-			surface->setColor(appearance);
+			surface->setColor(body->material(), body->appearance());
 			subMesh->addSurface(surface);
 
 			// Add vertices to sub-mesh

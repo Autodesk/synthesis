@@ -38,6 +38,19 @@ namespace EditorsLibrary
                 PortBNumericUpDown.Value = (decimal)sensor.portB;
                 ConversionNumericUpDown.Value = (decimal)sensor.conversionFactor;
             }
+            switch (joint.GetJointType())
+            {
+                case SkeletalJointType.ROTATIONAL:
+                    this.ConversionLbl.Text = "Counts Per Rev";
+                    break;
+                case SkeletalJointType.LINEAR:
+                    this.ConversionLbl.Text = "Counts Per Inch";
+                    break;
+                case SkeletalJointType.CYLINDRICAL:
+                    this.ConversionLbl.Text = "Counts Per Rev";
+                    break;
+
+            }
             if (typeBox.SelectedIndex == 0)
             {
                 this.PortALbl.Enabled = true;
@@ -96,7 +109,6 @@ namespace EditorsLibrary
             this.PortBNumericUpDown.Visible = true;
             this.ConversionLbl.Visible = true;
             this.ConversionNumericUpDown.Visible = true;
-            this.ConversionLbl.Text = "Counts per Rev";
         }
         public void HideSecondFields()
         {

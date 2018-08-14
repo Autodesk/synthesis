@@ -127,18 +127,11 @@ namespace Synthesis.States
                     return;
                 }
 
-                FieldDataHandler.Load();
-
                 if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                 {
                     AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                     return;
                 }
-
-                DPMDataHandler.Load();
-
-                Controls.Init();
-                Controls.Load();
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
 
@@ -272,6 +265,10 @@ namespace Synthesis.States
             if (!File.Exists(directory + "\\definition.bxdf"))
                 return false;
 
+            FieldDataHandler.Load(fieldPath);
+            Controls.Init();
+            Controls.Load();
+
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
             Debug.Log(loadResult);
@@ -288,28 +285,23 @@ namespace Synthesis.States
         {
             if (SpawnedRobots.Count < MAX_ROBOTS)
             {
-                if (isMixAndMatch)
-                {
-                    robotPath = RobotTypeManager.RobotPath;
-                }
-                else
-                {
-                    robotPath = directory;
-                }
-
                 GameObject robotObject = new GameObject("Robot");
                 SimulatorRobot robot;
 
                 if (isMixAndMatch)
                 {
+                    robotPath = RobotTypeManager.RobotPath;
                     MaMRobot mamRobot = robotObject.AddComponent<MaMRobot>();
                     mamRobot.RobotHasManipulator = false; // Defaults to false
                     robot = mamRobot;
                 }
                 else
                 {
+                    robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
                 }
+
+                robot.FilePath = robotPath;
 
                 //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
                 if (!robot.InitializeRobot(robotPath))
@@ -323,6 +315,8 @@ namespace Synthesis.States
 
                 robot.ControlIndex = SpawnedRobots.Count;
                 SpawnedRobots.Add(robot);
+
+                DPMDataHandler.Load(robotPath);
 
                 return true;
             }
@@ -407,6 +401,7 @@ namespace Synthesis.States
             if (index < SpawnedRobots.Count)
             {
                 ActiveRobot = SpawnedRobots[index];
+                DPMDataHandler.Load(ActiveRobot.FilePath);
                 dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }
@@ -568,11 +563,11 @@ namespace Synthesis.States
             GameObject robotObject = new GameObject("Robot");
             MaMRobot robot = robotObject.AddComponent<MaMRobot>();
 
+            robot.FilePath = robotPath;
+
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory)) return false;
-
-            robotObject.AddComponent<DriverPracticeRobot>();
-
+            
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (ActiveRobot == null)
                 ActiveRobot = robot;
@@ -580,6 +575,7 @@ namespace Synthesis.States
             robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
+            DPMDataHandler.Load(robotPath);
             return robot.InitializeManipulator(manipulatorDirectory);
         }
 
