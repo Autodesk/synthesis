@@ -237,7 +237,7 @@ partial class SynthesisGUI
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "SynthesisGUI";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
-            this.Text = "BXD Synthesis";
+            this.Text = "Synthesis";
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);

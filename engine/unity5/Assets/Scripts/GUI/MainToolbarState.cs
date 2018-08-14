@@ -248,6 +248,13 @@ namespace Assets.Scripts.GUI
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
+
+            if (PlayerPrefs.GetInt("analytics") == 1)
+            {
+                Analytics.CustomEvent("Main Toolbar Help Button Pressed", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
         }
 
         private void CloseHelpMenu()
