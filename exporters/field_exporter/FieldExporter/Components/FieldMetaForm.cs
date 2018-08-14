@@ -68,7 +68,7 @@ namespace FieldExporter.Components
         private void interactionEvents_OnActivate()
         {
             selectEvents = interactionEvents.SelectEvents;
-            selectEvents.AddSelectionFilter(SelectionFilterEnum.kWorkPointFilter);
+            selectEvents.AddSelectionFilter(SelectionFilterEnum.kSketchPointFilter);
             selectEvents.OnSelect += selectEvents_OnSelect;
         }
         
@@ -84,8 +84,8 @@ namespace FieldExporter.Components
             spawnpoints.Clear();
 
             foreach (dynamic selectedEntity in selectEvents.SelectedEntities)
-                if (selectedEntity is WorkPoint point)
-                    spawnpoints.Add(new BXDVector3(point.Point.X, point.Point.Y, point.Point.Z));
+                if (selectedEntity is SketchPoint point)
+                    spawnpoints.Add(new BXDVector3(point.Geometry3d.X, point.Geometry3d.Y + 100, point.Geometry3d.Z));
 
             selectCoordinatesButton.Enabled = true;
             Program.UnlockInventor();

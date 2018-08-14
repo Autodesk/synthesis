@@ -49,9 +49,12 @@ namespace FieldExporter.Exporter
                 writer.WriteStartElement("gamepiece");
                 writer.WriteAttributeString("id", gamepiece.id);
                 writer.WriteAttributeString("holdinglimit", gamepiece.holdingLimit.ToString());
-                writer.WriteAttributeString("x", (gamepiece.spawnpoint.x * -0.01).ToString());
-                writer.WriteAttributeString("y", (gamepiece.spawnpoint.y * 0.01).ToString());
-                writer.WriteAttributeString("z", (gamepiece.spawnpoint.z * 0.01).ToString());
+
+                BXDVector3 spawn = new BXDVector3(gamepiece.spawnpoint.x * -0.01, gamepiece.spawnpoint.y * 0.01, gamepiece.spawnpoint.z * 0.01);
+                writer.WriteAttributeString("x", spawn.x.ToString());
+                writer.WriteAttributeString("y", spawn.y.ToString());
+                writer.WriteAttributeString("z", spawn.z.ToString());
+
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
@@ -60,9 +63,12 @@ namespace FieldExporter.Exporter
             foreach (BXDVector3 point in spawnpoints)
             {
                 writer.WriteStartElement("RobotSpawnPoint");
-                writer.WriteAttributeString("x", (point.x * -0.01).ToString());
-                writer.WriteAttributeString("y", (point.y * 0.01).ToString());
-                writer.WriteAttributeString("z", (point.z * 0.01).ToString());
+
+                BXDVector3 spawn = new BXDVector3(point.x * -0.01, point.y * 0.01, point.z * 0.01);
+                writer.WriteAttributeString("x", spawn.x.ToString());
+                writer.WriteAttributeString("y", spawn.y.ToString());
+                writer.WriteAttributeString("z", spawn.z.ToString());
+
                 writer.WriteEndElement();
             }
 
