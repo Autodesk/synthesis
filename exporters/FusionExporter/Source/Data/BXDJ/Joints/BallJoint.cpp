@@ -10,7 +10,7 @@ BallJoint::BallJoint(const BallJoint & jointToCopy) : Joint(jointToCopy)
 	fusionJointMotion = jointToCopy.fusionJointMotion;
 }
 
-BallJoint::BallJoint(RigidNode * parent, core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, joint, parentOccurrence)
+BallJoint::BallJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
 	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
 }

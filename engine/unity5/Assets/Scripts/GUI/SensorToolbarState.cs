@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
@@ -18,7 +19,12 @@ namespace Assets.Scripts.GUI
         SensorManagerGUI sensorManagerGUI;
 
         GameObject canvas;
+        GameObject tabs;
         GameObject sensorToolbar;
+
+        GameObject helpMenu;
+        GameObject overlay;
+        Text helpBodyText;
 
         Dropdown ultrasonicDropdown;
         Dropdown beamBreakerDropdown;
@@ -34,7 +40,12 @@ namespace Assets.Scripts.GUI
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
             canvas = GameObject.Find("Canvas");
+            tabs = Auxiliary.FindObject(canvas, "Tabs");
             sensorToolbar = Auxiliary.FindObject(canvas, "SensorToolbar");
+
+            helpMenu = Auxiliary.FindObject(canvas, "Help");
+            overlay = Auxiliary.FindObject(canvas, "Overlay");
+            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
 
             ultrasonicDropdown = Auxiliary.FindObject(sensorToolbar, "UltrasonicDropdown").GetComponent<Dropdown>();
             beamBreakerDropdown = Auxiliary.FindObject(sensorToolbar, "BeamBreakDropdown").GetComponent<Dropdown>();
@@ -45,13 +56,29 @@ namespace Assets.Scripts.GUI
             UpdateSensorDropdown(beamBreakerDropdown, sensorManagerGUI.sensorManager.beamBreakerList);
             UpdateSensorDropdown(gyroDropdown, sensorManagerGUI.sensorManager.gyroList);
 
-            UpdateOutputButton();            
+            numUltrasonics = sensorManagerGUI.sensorManager.ultrasonicList.Count();
+            numBeamBreakers = sensorManagerGUI.sensorManager.beamBreakerList.Count();
+            numGyros = sensorManagerGUI.sensorManager.gyroList.Count();
+
+            UpdateOutputButton();
+
+            Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
+            helpButton.onClick.RemoveAllListeners();
+            helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
         private void UpdateOutputButton()
         {
-            if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() == 0) Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(false);
-            else Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(true);
+            if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() == 0 && Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
+            {
+                Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(false);
+                sensorToolbar.transform.Find("HelpButton").Translate(new Vector3(-100, 0, 0));
+            }
+            else if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() > 0 && !Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
+            {
+                Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(true);
+                sensorToolbar.transform.Find("HelpButton").Translate(new Vector3(100, 0, 0));
+            }
         }
 
         /// <summary>
@@ -102,6 +129,13 @@ namespace Assets.Scripts.GUI
                 List<GameObject> updatedList = sensorManagerGUI.AddUltrasonic();
                 UpdateSensorDropdown(ultrasonicDropdown, updatedList);
                 numUltrasonics++;
+
+                if (PlayerPrefs.GetInt("analytics") == 1)
+                {
+                    Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
+                    {
+                    });
+                }
             }
             else //Edit one of the existing sensors
             {
@@ -119,6 +153,13 @@ namespace Assets.Scripts.GUI
                 List<GameObject> updatedList = sensorManagerGUI.AddBeamBreaker();
                 UpdateSensorDropdown(beamBreakerDropdown, updatedList);
                 numBeamBreakers++;
+
+                if (PlayerPrefs.GetInt("analytics") == 1)
+                {
+                    Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
+                    {
+                    });
+                }
             }
             else //Edit one of the existing sensors
             {
@@ -136,6 +177,13 @@ namespace Assets.Scripts.GUI
                 List<GameObject> updatedList = sensorManagerGUI.AddGyro();
                 UpdateSensorDropdown(gyroDropdown, updatedList);
                 numGyros++;
+
+                if (PlayerPrefs.GetInt("analytics") == 1)
+                {
+                    Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
+                    {
+                    });
+                }
             }
             else //Edit one of the existing sensors
             {
@@ -173,6 +221,36 @@ namespace Assets.Scripts.GUI
                     numGyros--;
                     UpdateSensorDropdown(gyroDropdown, gyroList);
                     break;
+            }
+        }
+
+        public void OnHelpButtonPressed()
+        {
+            helpMenu.SetActive(true);
+
+            helpBodyText.GetComponent<Text>().text = "\n\nRobot Cameras: Configure cameras for your robot" +
+                "\n\nSensor Dropdowns: CLICK on an existing sensor to configure OR" +
+                "\nAdd: Adds a selected sensor to robot and configuring tools";
+
+            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "SensorToolbar";
+            overlay.SetActive(true);
+            tabs.transform.Translate(new Vector3(300, 0, 0));
+            foreach (Transform t in sensorToolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
+                else t.gameObject.SetActive(false);
+            }
+        }
+
+        private void CloseHelpMenu()
+        {
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            tabs.transform.Translate(new Vector3(-300, 0, 0));
+            foreach (Transform t in sensorToolbar.transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
+                else t.gameObject.SetActive(true);
             }
         }
     }

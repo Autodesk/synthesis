@@ -2,13 +2,19 @@
 
 #include <string>
 
-class Filesystem
+/// Contains directory-related functions.
+namespace Filesystem
 {
-public:
-	static std::string getCurrentRobotDirectory(std::string robotName);
-	static void createDirectory(std::string);
+	///
+	/// Gets the directory that robot files will be saved to.
+	/// \param robotName The name of the robot being saved.
+	///
+	std::string getCurrentRobotDirectory(std::string robotName);
 
-private:
-	static const std::string ROBOT_APPDATA_DIRECTORY;
+	///
+	/// Creates a directory.
+	/// \param path The path of the directory to create.
+	///
+	void createDirectory(std::string path);
 
 };

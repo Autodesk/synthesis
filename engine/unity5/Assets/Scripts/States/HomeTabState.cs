@@ -36,5 +36,13 @@ namespace Synthesis.States
         {
             Application.OpenURL("http://bxd.autodesk.com/");
         }
+
+        /// <summary>
+        /// Exits the program.
+        /// </summary>
+        public void OnExitButtonPressed()
+        {
+            if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
+        }
     }
 }

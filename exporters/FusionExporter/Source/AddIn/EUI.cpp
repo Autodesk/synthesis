@@ -9,308 +9,96 @@
 #define ALLOW_MULTITHREADING
 
 #include "EUI.h"
+#include <Fusion/FusionAll.h>
 #include "../Exporter.h"
+#include "../Data/BXDJ/Utility.h"
 
-using namespace Synthesis;
+using namespace SynthesisAddIn;
 
 EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 {
 	this->UI = UI;
 	this->app = app;
-	exportThread = nullptr;
+	exportRobotThread = nullptr;
 	createWorkspace();
 };
 
 EUI::~EUI()
 {
-	cancelExportThread();
+	cancelExportRobot();
 	deleteWorkspace();
 }
 
-// WORKSPACE
+// UI Controls
 
-bool EUI::createWorkspace()
+void EUI::highlightJoint(std::string jointID)
 {
-	try
+	std::vector<Ptr<Joint>> joints = Exporter::collectJoints(app->activeDocument());
+
+	// Find the joint that was selected
+	Ptr<Joint> highlightedJoint = nullptr;
+	for (Ptr<Joint> joint : joints)
 	{
-		// Create workspace
-		workSpace = UI->workspaces()->itemById(K_WORKSPACE);
-		if (!workSpace)
+		if (BXDJ::Utility::getUniqueJointID(joint) == jointID)
 		{
-			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/SynthesisIcons");
-			workSpace->tooltip("Export robot models to the Synthesis simulator");
+			highlightedJoint = joint;
+			break;
 		}
-
-		// Create panel
-		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
-		panel = workSpace->toolbarPanels()->itemById(K_PANEL);
-		if (!panel)
-			panel = workSpace->toolbarPanels()->add(K_PANEL, "Export");
-
-		panelControls = panel->controls();
-
-		// Create buttons
-		if (!createExportButton())
-			throw "Failed to create toolbar buttons.";
-
-		// Add buttons to panel
-		if (!panelControls->itemById(K_EXPORT_BUTTON))
-			panelControls->addCommand(exportButtonCommand)->isPromoted(true);
-
-		return true;
-	}
-	catch (std::exception e)
-	{
-		UI->messageBox("Failed to load Synthesis Exporter add-in.");
-		return false;
-	}
-}
-
-void EUI::deleteWorkspace()
-{
-	// Delete palettes
-	deleteExportPalette();
-	deleteSensorsPalette();
-	deleteProgressPalette();
-
-	// Delete buttons
-	deleteExportButton();
-
-	// Delete event handlers
-	delete formDataHandler;
-	delete closeExporterHandler;
-}
-
-// EXPORT PALETTE
-
-bool EUI::createExportPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return false;
-
-	// Check if palette already exists
-	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
-	if (!exportPalette)
-	{
-		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/export.html", false, true, true, 300, 200);
-		if (!exportPalette)
-			return false;
-
-		exportPalette->dockingState(PaletteDockStateRight);
-
-		addEventToPalette<ReceiveFormDataHandler>(exportPalette);
-		addEventToPalette<CloseExporterFormEventHandler>(exportPalette);
 	}
 
-	return true;
-}
-
-void Synthesis::EUI::openExportPalette()
-{
-	exportButtonCommand->controlDefinition()->isEnabled(false);
-	exportPalette->sendInfoToHTML("joints", Exporter::loadConfiguration(app->activeDocument()).toJSONString());
-	exportPalette->isVisible(true);
-}
-
-void EUI::deleteExportPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
+	if (highlightedJoint == nullptr)
 		return;
 
-	// Check if palette exists
-	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
+	// Highlight the parts of the joint
+	UI->activeSelections()->clear();
+	UI->activeSelections()->add(highlightedJoint->occurrenceOne());
 
-	if (!exportPalette)
+	// Set camera view
+	Ptr<Camera> cam = app->activeViewport()->camera();
+
+	Ptr<JointGeometry> geo = highlightedJoint->geometryOrOriginOne();
+	if (geo == nullptr || geo->origin() == nullptr)
+		geo = highlightedJoint->geometryOrOriginTwo();
+
+	if (geo == nullptr || geo->origin() == nullptr)
 		return;
 
-	clearEventFromPalette<ReceiveFormDataHandler>(exportPalette);
-	clearEventFromPalette<CloseExporterFormEventHandler>(exportPalette);
+	Ptr<Point3D> eyeLocation = Point3D::create(geo->origin()->x(), geo->origin()->y(), geo->origin()->z());
+	eyeLocation->translateBy(Vector3D::create(0, 100, 0));
 
-	exportPalette->deleteMe();
-	exportPalette = nullptr;
+	cam->target(geo->origin());
+	cam->upVector(Vector3D::create(1, 0, 0));
+	cam->eye(eyeLocation);
+
+	cam->isSmoothTransition(true);
+	app->activeViewport()->camera(cam);
 }
 
-void EUI::closeExportPalette()
+// Robot Exporting
+
+void EUI::saveConfiguration(std::string jsonConfig)
+{
+	BXDJ::ConfigData config;
+	config.fromJSONString(jsonConfig);
+	Exporter::saveConfiguration(config, app->activeDocument());
+}
+
+void EUI::startExportRobot()
 {
 	exportPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
-	exportButtonCommand->controlDefinition()->isEnabled(true);
-}
 
-// SENSORS PALETTE
-
-bool EUI::createSensorsPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return false;
-
-	// Check if palette already exists
-	sensorsPalette = palettes->itemById(K_SENSORS_PALETTE);
-	if (!sensorsPalette)
-	{
-		// Create palette
-		sensorsPalette = palettes->add(K_SENSORS_PALETTE, "Sensors", "Palette/sensors.html", false, true, true, 300, 200);
-		if (!sensorsPalette)
-			return false;
-
-		// Dock the palette to the right side of Fusion window.
-		sensorsPalette->dockingState(PaletteDockStateRight);
-
-		addEventToPalette<ReceiveFormDataHandler>(sensorsPalette);
-	}
-
-	return true;
-}
-
-void EUI::openSensorsPalette(std::string sensors)
-{
-	sensorsPalette->sendInfoToHTML("sensors", sensors);
-	sensorsPalette->isVisible(true);
-}
-
-void EUI::deleteSensorsPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return;
-
-	// Check if palette already exists
-	sensorsPalette = palettes->itemById(K_SENSORS_PALETTE);
-
-	if (!sensorsPalette)
-		return;
-
-	clearEventFromPalette<ReceiveFormDataHandler>(sensorsPalette);
-
-	sensorsPalette->deleteMe();
-	sensorsPalette = nullptr;
-}
-
-void EUI::closeSensorsPalette()
-{
-	sensorsPalette->isVisible(false);
-}
-
-// PROGRESS PALETTE
-
-bool EUI::createProgressPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return false;
-
-	// Check if palette already exists
-	progressPalette = palettes->itemById(K_PROGRESS_PALETTE);
-	if (!progressPalette)
-	{
-		// Create palette
-		progressPalette = palettes->add(K_PROGRESS_PALETTE, "Loading", "Palette/progress.html", false, false, false, 150, 150);
-		if (!progressPalette)
-			return false;
-
-		// Dock the palette to the right side of Fusion window.
-		progressPalette->dockingState(PaletteDockStateBottom);
-		progressPalette->dockingOption(PaletteDockOptionsToVerticalOnly);
-	}
-
-	return true;
-}
-
-void EUI::openProgressPalette()
-{
-	progressPalette->sendInfoToHTML("progress", "0");
-	progressPalette->isVisible(true);
-}
-
-void EUI::deleteProgressPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return;
-
-	// Check if palette already exists
-	progressPalette = palettes->itemById(K_PROGRESS_PALETTE);
-	if (!progressPalette)
-		return;
-
-	progressPalette->deleteMe();
-	progressPalette = nullptr;
-}
-
-void EUI::closeProgressPalette()
-{
-	progressPalette->isVisible(false);
-	exportButtonCommand->controlDefinition()->isEnabled(true);
-}
-
-// BUTTONS
-
-bool EUI::createExportButton()
-{
-	// Create button command definition
-	exportButtonCommand = UI->commandDefinitions()->itemById(K_EXPORT_BUTTON);
-	if (!exportButtonCommand)
-	{
-		exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Export", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
-
-		// Add create and click events to button
-		Ptr<CommandCreatedEvent> commandCreatedEvent = exportButtonCommand->commandCreated();
-		if (!commandCreatedEvent)
-			return false;
-
-		return commandCreatedEvent->add(new ShowPaletteCommandCreatedHandler(this));
-	}
-	
-	return true;
-}
-
-void EUI::deleteExportButton()
-{
-	// Delete button
-	Ptr<ToolbarPanelList> panels = UI->allToolbarPanels();
-	if (!panels)
-		return;
-
-	Ptr<ToolbarPanel> panel = panels->itemById(Synthesis::K_PANEL);
-	if (!panel)
-		return;
-
-	Ptr<ToolbarControls> controls = panel->controls();
-	if (!controls)
-		return;
-
-	Ptr<ToolbarControl> ctrl = controls->itemById(K_EXPORT_BUTTON);
-	if (ctrl)
-		ctrl->deleteMe();
-
-	// Delete command
-	Ptr<CommandDefinitions> commandDefinitions = UI->commandDefinitions();
-	if (!commandDefinitions)
-		return;
-
-	exportButtonCommand = commandDefinitions->itemById(K_EXPORT_BUTTON);
-	if (exportButtonCommand)
-		exportButtonCommand->deleteMe();
-
-	exportButtonCommand = nullptr;
-}
-
-void EUI::startExportThread(BXDJ::ConfigData & config)
-{
 #ifdef ALLOW_MULTITHREADING
 	// Wait for all threads to finish
-	if (exportThread != nullptr)
+	if (exportRobotThread != nullptr)
 	{
 		progressPalette->isVisible(true);
-		exportThread->join();
-		delete exportThread;
+		exportRobotThread->join();
+		delete exportRobotThread;
 	}
 
 	killExportThread = false;
-	exportThread = new std::thread(&EUI::exportRobot, this, config);
+	exportRobotThread = new std::thread(&EUI::exportRobot, this, Exporter::loadConfiguration(app->activeDocument()));
 #else
 	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
 	{
@@ -319,14 +107,14 @@ void EUI::startExportThread(BXDJ::ConfigData & config)
 #endif
 }
 
-void EUI::cancelExportThread()
+void EUI::cancelExportRobot()
 {
-	if (exportThread != nullptr)
+	if (exportRobotThread != nullptr)
 	{
 		killExportThread = true;
-		exportThread->join();
-		delete exportThread;
-		exportThread = nullptr;
+		exportRobotThread->join();
+		delete exportRobotThread;
+		exportRobotThread = nullptr;
 		closeProgressPalette();
 	}
 }

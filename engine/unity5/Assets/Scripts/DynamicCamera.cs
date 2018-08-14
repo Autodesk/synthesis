@@ -501,7 +501,7 @@ public class DynamicCamera : MonoBehaviour
             }
             else
             {
-                robot = GameObject.Find("Robot");
+                robot = StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.gameObject;
             }
         }
 
@@ -563,7 +563,6 @@ public class DynamicCamera : MonoBehaviour
             rotationSpeed = 3f;
             transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
-            if (robot == null) robot = GameObject.Find("robot");
             main = StateMachine.SceneGlobal.FindState<MainState>();
         }
 
@@ -641,7 +640,6 @@ public class DynamicCamera : MonoBehaviour
             mono.transform.position = positionVector;
             rotationVector = new Vector3(90f, 90f, 0f);
             mono.transform.rotation = Quaternion.Euler(rotationVector);
-            if (robot == null) robot = GameObject.Find("robot");
         }
         public override void Update()
         {
