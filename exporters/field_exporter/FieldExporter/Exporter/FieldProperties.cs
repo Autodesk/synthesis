@@ -10,10 +10,12 @@ namespace FieldExporter.Exporter
     class FieldProperties
     {
         BXDVector3[] spawnpoints;
+        Gamepiece[] gamepieces;
 
-        public FieldProperties(BXDVector3[] spawnpoints)
+        public FieldProperties(BXDVector3[] spawnpoints, Gamepiece[] gamepieces)
         {
             this.spawnpoints = spawnpoints;
+            this.gamepieces = gamepieces;
         }
 
         public void Write(string path)
@@ -39,8 +41,19 @@ namespace FieldExporter.Exporter
             writer.WriteEndElement();
 
             // Gamepieces
+            // At some point this should actually be part of the BXDF, not user configurable.
             writer.WriteStartElement("General");
             writer.WriteStartElement("Gamepieces");
+            foreach (Gamepiece gamepiece in gamepieces)
+            {
+                writer.WriteStartElement("gamepiece");
+                writer.WriteAttributeString("id", gamepiece.id);
+                writer.WriteAttributeString("holdinglimit", gamepiece.holdingLimit.ToString());
+                writer.WriteAttributeString("x", gamepiece.spawnpoint.x.ToString());
+                writer.WriteAttributeString("y", gamepiece.spawnpoint.y.ToString());
+                writer.WriteAttributeString("z", gamepiece.spawnpoint.z.ToString());
+                writer.WriteEndElement();
+            }
             writer.WriteEndElement();
 
             // Spawn Points

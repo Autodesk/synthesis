@@ -120,6 +120,7 @@
       <DependentUpon>FieldMetaForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Exporter\FieldProperties.cs" />
+    <Compile Include="Exporter\Gamepiece.cs" />
     <Compile Include="Forms\ExportForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
