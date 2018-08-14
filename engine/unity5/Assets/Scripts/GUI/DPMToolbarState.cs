@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
@@ -128,6 +129,13 @@ namespace Assets.Scripts.GUI
                 }
                 gamepieceDropdownExtension.SetActive(true);
             }
+
+            if (PlayerPrefs.GetInt("analytics") == 1)
+            {
+                Analytics.CustomEvent("Changed Gamepiece", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
         }
         private void HideGamepieceDropdown()
         {
@@ -160,6 +168,14 @@ namespace Assets.Scripts.GUI
             gamepieceClone.name = g.name + "(Clone)";
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
             gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
+
+            if (PlayerPrefs.GetInt("analytics") == 1)
+            {
+                Analytics.CustomEvent("Spawned Gamepiece", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
+
         }
         public void OnClearButtonPressed()
         {
@@ -193,6 +209,14 @@ namespace Assets.Scripts.GUI
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
+
+            if (PlayerPrefs.GetInt("analytics") == 1)
+            {
+                Analytics.CustomEvent("Driver Practice Help Pressed", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
+
         }
         private void CloseHelpMenu()
         {

@@ -286,7 +286,7 @@ namespace Synthesis.GUI
                 sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
                 State.ChangeRobot(directory, false);
-
+                RobotTypeManager.IsMixAndMatch = false;
             }
             else
             {
