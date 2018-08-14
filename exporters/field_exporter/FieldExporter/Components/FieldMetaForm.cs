@@ -1,13 +1,7 @@
-﻿using System;
+﻿using Inventor;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Inventor;
 
 namespace FieldExporter.Components
 {
@@ -16,11 +10,16 @@ namespace FieldExporter.Components
         bool selectingPoints = false;
         InteractionEvents interactionEvents;
         SelectEvents selectEvents;
-        List<Inventor.Point> spawnpoints = new List<Inventor.Point>();
+        static List<BXDVector3> spawnpoints = new List<BXDVector3>();
 
         public FieldMetaForm()
         {
             InitializeComponent();
+        }
+
+        public static BXDVector3[] getSpawnpoints()
+        {
+            return spawnpoints.ToArray();
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace FieldExporter.Components
         private void interactionEvents_OnActivate()
         {
             selectEvents = interactionEvents.SelectEvents;
-            selectEvents.AddSelectionFilter(SelectionFilterEnum.kAllPointEntities);
+            selectEvents.AddSelectionFilter(SelectionFilterEnum.kWorkPointFilter);
             selectEvents.OnSelect += selectEvents_OnSelect;
         }
         
@@ -83,9 +82,10 @@ namespace FieldExporter.Components
             selectCoordinatesButton.Enabled = false;
 
             spawnpoints.Clear();
-            foreach (dynamic selection in selectEvents.SelectedEntities)
-                if (selection is Inventor.Point point)
-                    spawnpoints.Add(point);
+
+            foreach (dynamic selectedEntity in selectEvents.SelectedEntities)
+                if (selectedEntity is WorkPoint point)
+                    spawnpoints.Add(new BXDVector3(point.Point.X, point.Point.Y, point.Point.Z));
 
             selectCoordinatesButton.Enabled = true;
             Program.UnlockInventor();
@@ -93,11 +93,22 @@ namespace FieldExporter.Components
             DisableInteractionEvents();
         }
 
+        private void updatePointView()
+        {
+            spawnPointList.Items.Clear();
+
+            foreach (BXDVector3 point in spawnpoints)
+            {
+                spawnPointList.Items.Add(point.ToString());
+            }
+        }
+
         private void selectCoordinatesButton_Click(object sender, EventArgs e)
         {
             if (selectingPoints)
             {
                 getPointSelections();
+                updatePointView();
             }
             else
             {
