@@ -123,10 +123,10 @@ namespace InternalFieldExporter.FieldWizard
                         if (outputMeshes.Count > 0)
                         {
                             exportedMeshes.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
-                            outputNode.SubMeshID = exportedMeshes.Count - 1;
                             fieldDefinition.AddSubMesh(outputMeshes[0]);
                         }
                     }
+                    outputNode.SubMeshID = exportedMeshes.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
 
                     ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
                     
@@ -148,10 +148,10 @@ namespace InternalFieldExporter.FieldWizard
                                 if (colliders.Count > 0)
                                 {
                                     exportedColliders.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
-                                    outputNode.CollisionMeshID = exportedColliders.Count - 1;
                                     fieldDefinition.AddCollisionMesh(colliders[0]);
                                 }
                             }
+                            outputNode.CollisionMeshID = exportedColliders.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
                         }
                     }
 
