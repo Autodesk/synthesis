@@ -49,6 +49,9 @@ namespace InternalFieldExporter.FieldWizard
             get;
             private set;
         }
+        
+        private ColliderPropertiesForm colliderProperties = null;
+        private int lastColliderType = -1;
 
         /// <summary>
         /// Initializes a new ComponentPropertiesForm classd
@@ -68,7 +71,7 @@ namespace InternalFieldExporter.FieldWizard
 
         public PropertySet.PropertySetCollider GetCollider()
         {
-            return((ColliderPropertiesForm)meshPropertiesTable.Controls[1]).GetCollider();
+            return colliderProperties.GetCollider();
         }
 
         /// <summary>
@@ -279,9 +282,6 @@ namespace InternalFieldExporter.FieldWizard
         {
             ParentTabPage.ChangeName();
         }
-
-        private ColliderPropertiesForm colliderProperties = null;
-        private int lastColliderType = -1;
 
         /// <summary>
         /// Updates the collider properties form when the selected collider is changed.
