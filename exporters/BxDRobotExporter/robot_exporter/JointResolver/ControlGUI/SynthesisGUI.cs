@@ -308,7 +308,7 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
     /// Necessary to pull the limits into the joint as the exporter exports. Where the joint is actually written to the .bxdj,
-    /// we are unable to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue.
+    /// we are unable to access RobotExporterAPI or SynthesisRobotExporter, so writing the limits here is a workaround to that issue.
     /// </summary>
     /// <param name="skeleton">Skeleton to write limits to</param>
     public void WriteLimits(RigidNode_Base skeleton)
@@ -399,7 +399,7 @@ public partial class SynthesisGUI : Form
         try
         {
             // Load global robot data
-            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata", false);
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "Synthesis-robotdata", false);
             
             if (propertySet != null)
             {
@@ -435,7 +435,7 @@ public partial class SynthesisGUI : Form
             RigidNode_Base child = connection.Value;
 
             // Name of the property set in inventor
-            string setName = "bxd-jointdata-" + child.GetModelID();
+            string setName = "Synthesis-jointdata-" + child.GetModelID();
 
             // Attempt to open the property set
             Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, setName, false);
@@ -536,7 +536,7 @@ public partial class SynthesisGUI : Form
         try
         {
             // Save global robot data
-            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "bxd-robotdata");
+            Inventor.PropertySet propertySet = Utilities.GetPropertySet(propertySets, "Synthesis-robotdata");
 
             if (RMeta.ActiveRobotName != null)
                 Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
@@ -568,7 +568,7 @@ public partial class SynthesisGUI : Form
             RigidNode_Base child = connection.Value;
 
             // Name of the property set in inventor
-            string setName = "bxd-jointdata-" + child.GetModelID();
+            string setName = "Synthesis-jointdata-" + child.GetModelID();
 
             // Create the property set if it doesn't exist
             Inventor.PropertySet propertySet = Utilities.GetPropertySet(assemblyPropertySets, setName);

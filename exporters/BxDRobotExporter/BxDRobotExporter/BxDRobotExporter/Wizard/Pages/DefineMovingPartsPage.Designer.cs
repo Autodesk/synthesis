@@ -1,4 +1,4 @@
-﻿namespace BxDRobotExporter.Wizard
+﻿namespace SynthesisRobotExporter.Wizard
 {
     partial class DefineMovingPartsPage
     {
