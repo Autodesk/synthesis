@@ -119,6 +119,7 @@
     <Compile Include="Components\FieldMetaForm.Designer.cs">
       <DependentUpon>FieldMetaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Exporter\FieldProperties.cs" />
     <Compile Include="Forms\ExportForm.cs">
       <SubType>UserControl</SubType>
     </Compile>

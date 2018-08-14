@@ -11,7 +11,7 @@ namespace FieldExporter.Exporter
     {
         BXDVector3[] spawnpoints;
 
-        FieldProperties(BXDVector3[] spawnpoints)
+        public FieldProperties(BXDVector3[] spawnpoints)
         {
             this.spawnpoints = spawnpoints;
         }
