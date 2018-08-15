@@ -499,6 +499,7 @@ namespace Synthesis.Sensors
             SyncHideSensorButton();
             configureSensorPanel.SetActive(true);
             sensorConfigHeader.GetComponentInChildren<Text>().text = currentSensor.name;
+            preConfigState = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().cameraState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
         }
 
@@ -507,6 +508,7 @@ namespace Synthesis.Sensors
             if (configureSensorPanel.activeSelf)
             {
                 configureSensorPanel.SetActive(false);
+                EndProcesses();
                 if (currentSensor.transform.Find("IndicatorMoveArrows") != null) Destroy(currentSensor.transform.Find("IndicatorMoveArrows").gameObject);
             }
             else
@@ -780,7 +782,7 @@ namespace Synthesis.Sensors
                             Destroy(uselessPanel);
                         }
                     }
-                    catch (MissingReferenceException e)
+                    catch (Exception e)
                     {
                         continue;
                     }
