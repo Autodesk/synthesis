@@ -15,13 +15,12 @@ Driver::Driver(const Driver & driverToCopy)
 	// Components
 	if (driverToCopy.wheel != nullptr)
 		setComponent(*driverToCopy.wheel);
-	else
-		wheel = nullptr;
 
 	if (driverToCopy.pneumatic != nullptr)
 		setComponent(*driverToCopy.pneumatic);
-	else
-		pneumatic = nullptr;
+
+	if (driverToCopy.elevator != nullptr)
+		setComponent(*driverToCopy.elevator);
 }
 
 Driver::Driver(Type type)
@@ -32,9 +31,6 @@ Driver::Driver(Type type)
 	portTwo = 0;
 	inputGear = 1;
 	outputGear = 1;
-
-	wheel = nullptr;
-	pneumatic = nullptr;
 }
 
 void Driver::write(XmlWriter & output) const
@@ -62,6 +58,8 @@ void Driver::write(XmlWriter & output) const
 		output.write(*wheel);
 	else if (pneumatic != nullptr)
 		output.write(*pneumatic);
+	else if (elevator != nullptr)
+		output.write(*elevator);
 
 	output.endElement();
 }
@@ -87,8 +85,14 @@ rapidjson::Value Driver::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocat
 	if (pneumatic != nullptr)
 		pneumaticJSON = pneumatic->getJSONObject(allocator);
 
+	// Elevator Information
+	rapidjson::Value elevatorJSON;
+	if (elevator != nullptr)
+		elevatorJSON = elevator->getJSONObject(allocator);
+
 	driverJSON.AddMember("wheel", wheelJSON, allocator);
 	driverJSON.AddMember("pneumatic", pneumaticJSON, allocator);
+	driverJSON.AddMember("elevator", elevatorJSON, allocator);
 
 	return driverJSON;
 }
@@ -123,6 +127,13 @@ void Driver::loadJSONObject(const rapidjson::Value & driverJSON)
 			pneumatic.loadJSONObject(pneumaticJSON);
 			setComponent(pneumatic);
 		}
+		else if (driverJSON.HasMember("elevator") && driverJSON["elevator"].IsObject())
+		{
+			const rapidjson::Value& elevatorJSON = driverJSON["elevator"];
+			Elevator elevator;
+			elevator.loadJSONObject(elevatorJSON);
+			setComponent(elevator);
+		}
 	}
 }
 
@@ -131,6 +142,7 @@ void Driver::removeComponents()
 {
 	this->wheel = nullptr;
 	this->pneumatic = nullptr;
+	this->elevator = nullptr;
 }
 
 void Driver::setComponent(Wheel wheel)
@@ -139,10 +151,16 @@ void Driver::setComponent(Wheel wheel)
 	this->wheel = std::make_unique<Wheel>(wheel);
 }
 
-void BXDJ::Driver::setComponent(Pneumatic pneumatic)
+void Driver::setComponent(Pneumatic pneumatic)
 {
 	removeComponents();
 	this->pneumatic = std::make_unique<Pneumatic>(pneumatic);
+}
+
+void Driver::setComponent(Elevator elevator)
+{
+	removeComponents();
+	this->elevator = std::make_unique<Elevator>(elevator);
 }
 
 std::unique_ptr<Wheel> Driver::getWheel()
@@ -153,10 +171,18 @@ std::unique_ptr<Wheel> Driver::getWheel()
 		return nullptr;
 }
 
-std::unique_ptr<Pneumatic> BXDJ::Driver::getPneumatic()
+std::unique_ptr<Pneumatic> Driver::getPneumatic()
 {
 	if (pneumatic != nullptr)
 		return std::make_unique<Pneumatic>(*pneumatic);
+	else
+		return nullptr;
+}
+
+std::unique_ptr<Elevator> Driver::getElevator()
+{
+	if (elevator != nullptr)
+		return std::make_unique<Elevator>(*elevator);
 	else
 		return nullptr;
 }
