@@ -43,7 +43,7 @@ extern "C"{
                     i != hel::CANMotorController::SendCommandByteMask::SET_INVERTED &&
                     hel::checkBitHigh(command_byte,i)
                     ){
-                    std::cerr<<"Synthesis warning: Writing to CAN motor controller with device ID "<<controller_id<<" using command data byte "<<command_byte<<"\n";
+                    std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Writing to CAN motor controller ("<<as_string(target_type)<<" with ID "<<((unsigned)controller_id)<<") using unknown command data byte "<<((unsigned)command_byte)<<" (bit "<<i<<")\n";
                 }
             }
             break;

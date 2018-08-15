@@ -101,7 +101,7 @@ namespace hel{
         }
 
         AccumulatorManager(uint8_t i)noexcept:index(0){
-            assert(i >= 0 && i < hel::AnalogInputs::NUM_ANALOG_INPUTS);
+            assert(i < hel::AnalogInputs::NUM_ANALOG_INPUTS);
             index = i;
         }
     };
