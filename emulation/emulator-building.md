@@ -36,7 +36,9 @@ $ git clone https://www.github.com/autodesk/synthesis
 $ git clone https://www.github.com/Xilinx/linux-xlnx
 $ git clone https://git.buildroot.net/buildroot
 $ git clone https://www.github.com/wpilibsuite/allwpilib
+$ git clone https://www.github.com/CrossTheRoadElec/Phoenix-frc-lib
 ```
+
 ## Phase 2: Building Linux
 
 After the downloads complete, copy the configuration files from the ~/git/synthesis/emulation/hel/external-configs folder into
@@ -76,8 +78,10 @@ $ cp ~/git/buildroot/output/images/rootfs.cpio.gz ~/vm-package
 
 This process can take upwards of 1 hours, so its recommened you do something else to pass time. After this is complete, move on to phase 3.
 
-## Phase 4: Building WPILib
-TODO: ADD DESCRIPTION
+## Phase 4: Setting up WPILib and CTRE Phoenix Libraries
+
+Build WPILib libaries, download CTRE Phoenix library, and copy them to the VM.
+
 ```shell
 $ cd ~/allwpilib
 $ git checkout v2018.4.1 # Substitute your WPILib release version
@@ -94,19 +98,26 @@ $ find -name ntcore.jar -exec cp {} ~/vm-packages/wpilib \;
 $ find -name cscore.jar -exec cp {} ~/vm-packages/wpilib \;
 $ find -name hal.jar -exec cp {} ~/vm-packages/wpilib \;
 $ find -name wpilibj.jar -exec cp {} ~/vm-packages/wpilib \;
+$ cd ~/Phoenix-frc-lib
+$ git checkout v2018.19.0 # Substitute your Phoenix release version
+$ cp libraries/java/lib/libCTRE_PhoenixCCI.so ~/vm-package
 ```
 
-## Phase 5: Building HEL
-TODO: ADD DESCRIPTION
+## Phase 5: Adding HEL
+
+Build and copy HEL to the VM file system along with a script to run user code.
+
 ```shell
 $ cd ~/synthesis/emulation/hel
 $ cmake . -DCMAKE_BUILD_TYPE=RELEASE -DARCH=ARM
 $ make -j16 hel
-$ cp libs/libhel.so ~/vm-package
+$ cp lib/libhel.so ~/vm-package
+$ cp scripts/frc_program_shooser.sh ~/vm-package
 ```
 
-## Phase 6: Making the Core Image
-This is the most terminal intensive part.
+## Phase 6: Making the Core VM Image
+
+Finish constructing the VM image. This is the most terminal intensive part.
 
 ```shell
 $ wget -O - http://fl.us.mirror.archlinuxarm.org/arm/extra/jdk8-openjdk-8.u172-2-arm.pkg.tar.xz
@@ -130,7 +141,8 @@ $ sudo umount ./root && sudo losetup -d
 ```
 
 ## Phase 7: VM Set-Up
-TODO: ADD DESCRIPTION
+
+Run and configure the VM with the date and users and set up HEL and support files to run user code.
 
 ```shell
 qemu-system-arm -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel ../zImage -dtb ../zynq-zed.dtb -display none -serial null -serial mon:stdio -localtime -append "console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0" -redir tcp:10022::22  -redir tcp:11000::11000 -redir tcp:11001::11001 -sd ../rootfs.ext4 # You will be inside of the VM now
@@ -166,7 +178,8 @@ $ mv /usr/bin/java /usr/bin/java.bak
 $ ln -s /usr/lib/jvm/bin/java /usr/bin/java
 # Press control-x then a to close VM
 ```
-TODO: must deploy .vminfo and frc_program_chooser.sh etc
 
 VM image creation is now complete. It can now be used as a drop in replacement for any current synthesis installations, or used 
 again via the qemu command listed above. 
+
+See [`hel/README.md`](./hel/README.md "hel/README.md") for information on how to use the VM.

@@ -48,6 +48,33 @@ make hel;
 
 The target architecture can be specified using `-DARCH=(ARM|X86)`. The build mode can be specified using `-DCMAKE_BUILD_MODE=(RELEASE|DEBUG)` to enable or disable debug symbols. To build tests, specify `-DTESTING=(ON|OFF)`; note that HAL-, CTRE-, and WPILib-based tests are not supported in x86 mode. If building for x86, benchmarks can be built with `-DBENCHMARKS=(ON|OFF)`. Doxygen comments can be built with `-DBUILD_DOC=(ON|OFF)`.
 
+The project can be cleaned using the clean script:
+
+```shell
+./clean.sh (all|cmake|emulator|gtest|wpilib|ctre|asio|hel|user-code|docs)
+```
+
+## Testing HEL
+
+When built for x86 architecture, HEL's Google Test and Benchmark files can be run natively; though tests will not be able to use WPILib, HAL, or CTRE code. They build to `bin/tests` and `bin/benchmarks` respectively. To test HEL in the emulation environment, either the release emulator or a developer emulator built from scratch (see [here](./../emulator-building.md "emulator-building.md")) must be used, and the test files, test projects, user code, and libhel, deployed. To do so, run the following commands:
+
+```shell
+./run_vm.sh                                      # Download and run the release emulator
+
+./scripts/deploy.sh                              # Deploys libhel, user code, and tests automatically
+./scripts/deploy.sh bin/tests/file_name          # Or deploy specified files
+./scripts/login.sh                               # SSH and sign into the emulator instance
+
+# Running user code and tests from the emulator
+./frc_program_chooser.sh                         # Runs user code
+./tests/test_name                                # Run a given test
+
+# Testing outside of the emulator
+./bin/tests/test_name                            # Run a given test
+./bin/bechmarks/benchmark_name                   # Run a given benchmark
+./scripts/receieve_data.sh                       # Receive data running user code on emulator sends to engine
+```
+
 ## Project Structure
 
 #### benchmarks
