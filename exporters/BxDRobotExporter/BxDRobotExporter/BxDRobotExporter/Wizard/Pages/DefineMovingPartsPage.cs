@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SynthesisRobotExporter.Wizard
+namespace BxDRobotExporter.Wizard
 {
     /// <summary>
     /// Prompts the user to set the properties of each of the remaining <see cref="RigidNode_Base"/> objects.
