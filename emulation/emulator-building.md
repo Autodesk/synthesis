@@ -4,7 +4,7 @@ This is the process for building the emulator virtual machine in which user code
 
 WARNING: This is not a simple process. It requires a Linux environment and knowledge of Linux command line utilities.
 
-## Setup
+## Preface and Set-Up
 
 This process assumes you are working off of a linux machine of some sort. A virtual machine will suffice for this example. For 
 those who wish to build the image from source but do not have access to a linux environment, VirtualBox is a good free virtual 
@@ -22,7 +22,7 @@ Please note that this is not a fast process, as during this you are going to dow
 build a large amount of code. The process can take anywhere between 30 minutes and 2 hours depending on internet and computer
 speed. With all this in mind, please move on to phase 1.
 
-## Phase 1: Set-Up
+## Phase 1: Downloads
 
 Enter your linux environment of choice and open up a terminal. Create a temporary folder for all of the git repositories, 
 typically something like `git`. Enter that directory and run the following commands. Note these will both take quite a bit of 

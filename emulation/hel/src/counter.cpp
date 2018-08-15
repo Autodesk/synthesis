@@ -62,7 +62,7 @@ namespace hel{
 
     public:
         CounterManager(uint8_t i):index(0){
-            assert(i >= 0 && i < hel::Counter::MAX_COUNTER_COUNT);
+            assert(i < hel::Counter::MAX_COUNTER_COUNT);
             index = i;
         }
 

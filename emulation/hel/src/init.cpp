@@ -3,6 +3,7 @@
 #include "receive_data.hpp"
 #include <cstdio>
 #include <fstream>
+
 #define LIBHEL_VERSION "1.0"
 #define VIRTUAL_MACHINE_INFO_PATH "/home/lvuser/.vminfo"
 
@@ -27,7 +28,7 @@ namespace hel{
         std::string wpilib_version;
         std::getline(vm_info, wpilib_version);
 
-        printf("Synthesis Emulation Startup Info: \n\n\tlibhel.so Version: %s\n\tVirtual Machine Version: %s\n\tWPILib Version: %s\n", LIBHEL_VERSION, vm_version.c_str(), wpilib_version.c_str());
+        printf("Synthesis Emulation Startup Info: \n\tlibhel.so Version: %s\n\tVirtual Machine Version: %s\n\tWPILib Version: %s\n\n", LIBHEL_VERSION, vm_version.c_str(), wpilib_version.c_str());
     }
 }
 namespace nFPGA {
