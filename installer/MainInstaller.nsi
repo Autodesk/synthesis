@@ -47,9 +47,6 @@ RequestExecutionLevel admin
 
   !insertmacro MUI_LANGUAGE "English"
 
-;UninstPage uninstConfirm
-;UninstPage instfiles
-
 Section
 
 ;Where we can read registry data if we need it
@@ -59,18 +56,15 @@ IfFileExists "$INSTDIR" +1 +28
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 
-        RMDir /r /REBOOTOK $INSTDIR
-        Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
-        Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDFieldExporter.inventor.addin"
-        Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
-        Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
-        RMDIR /r /REBOOTOK $APPDATA\RobotViewer
-		
-        ; Remove files and uninstaller
-        Delete $INSTDIR\Synthesis.nsi
-        Delete $INSTDIR\uninstall.exe
-        Delete $INSTDIR\*
-        Delete $APPDATA\Autodesk\ApplicationPlugins\*
+        RMDir /r $INSTDIR
+        Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
+		Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
+		Delete "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
+		Delete "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDFieldExporter.inventor.addin"
+        Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
+        Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
+		Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
+        RMDIR /r $APPDATA\RobotViewer
 
         ; Remove shortcuts, if any
         Delete "$SMPROGRAMS\Synthesis.lnk"
@@ -196,14 +190,12 @@ Section "Uninstall"
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark
   RMDir /r /REBOOTOK $APPDATA\Synthesis
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
-  
-  
-  ; Remove files and uninstaller
-  Delete $INSTDIR\Synthesis.nsi
-  Delete $INSTDIR\uninstall.exe
-  Delete $INSTDIR\*
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
   
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Synthesis.lnk"
