@@ -7,12 +7,15 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
+using Synthesis.GUI;
 
 public class Serialization
 {
 
     private static Thread sender;
     private static Thread receiver;
+    private static Process proc;
+
 
     public static bool needsToReconnect { get; set; }
 
@@ -20,8 +23,24 @@ public class Serialization
     {
         sender = new Thread(new ThreadStart(() => Serialize(ip, sendPort)));
         receiver = new Thread(new ThreadStart(() => Deserialize(ip, receivedPort)));
+        ProcessStartInfo startinfo = new ProcessStartInfo();
+        startinfo.CreateNoWindow = true;
+        startinfo.UseShellExecute = false;
+        startinfo.FileName = @"C:\Program Files\qemu\qemu-system-arm.exe";
+        startinfo.WindowStyle = ProcessWindowStyle.Hidden;
+        startinfo.Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + EmulationDriverStation.emulationDir + "zImage" + " -dtb " + EmulationDriverStation.emulationDir + "zynq-zed.dtb" + " -display none -serial null -serial mon:stdio -localtime -append \"console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0\" -redir tcp:10022::22 -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd " + EmulationDriverStation.emulationDir + "rootfs.ext4";
+        startinfo.Verb = "runas";
+        proc = Process.Start(startinfo);
         sender.Start();
         receiver.Start();
+    }
+
+    ~Serialization()
+    {
+        UnityEngine.Debug.Log("Killing Threads");
+        proc.Kill();
+        sender.Abort();
+        receiver.Abort();
     }
 
     public static void RestartThreads(string ip = "127.0.0.1", int sendPort = 11000, int receivePort = 11001)

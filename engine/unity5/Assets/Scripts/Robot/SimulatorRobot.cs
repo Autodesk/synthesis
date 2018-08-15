@@ -52,8 +52,6 @@ namespace Synthesis.Robot
         private DynamicCamera.CameraState lastCameraState;
 
         private MainState state;
-        
-        private static Serialization s;
 
         #region help ui variables
         GameObject helpMenu;
@@ -61,8 +59,6 @@ namespace Synthesis.Robot
         GameObject overlay;
         Text helpBodyText;
         #endregion
-
-        private static Process proc;
 
         GameObject canvas;
         GameObject resetCanvas;
@@ -73,15 +69,6 @@ namespace Synthesis.Robot
         private void Awake()
         {
             //Process.Start("\"C:\\Program Files\\qemu\\qemu-system-arm.exe\" (qemu-system-arm -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\zImage\" \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\zynq-zed.dtb\" -display none -serial null -serial mon:stdio -localtime -append \"console = ttyPS0, 115200 earlyprintk root =/ dev / mmcblk0\" -redir tcp:10022::22  -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd \"C:\\Program Files\\Autodesk\\Synthesis\\Emulator\\rootfs.ext4\"");
-            ProcessStartInfo startinfo = new ProcessStartInfo();
-            startinfo.CreateNoWindow = false;
-            startinfo.UseShellExecute = false;
-            startinfo.FileName = @"C:\Program Files\qemu\qemu-system-arm.exe";
-            startinfo.WindowStyle = ProcessWindowStyle.Normal;
-            startinfo.Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\zImage" + " -dtb " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\zynq-zed.dtb" + " -display none -serial null -serial mon:stdio -localtime -append \"console = ttyPS0, 115200 earlyprintk root =/ dev / mmcblk0\" -redir tcp:10022::22 -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd " + @"C:\PROGRA~1\Autodesk\Synthesis\Emulator\rootfs.ext4";
-            startinfo.Verb = "runas";
-            //proc = Process.Start(startinfo);
-            s = new Serialization();
 
             StateMachine.SceneGlobal.Link<MainState>(this);
         }

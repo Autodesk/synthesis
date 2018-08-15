@@ -24,6 +24,8 @@ namespace Assets.Scripts.GUI
         GameObject helpMenu;
         GameObject overlay;
         Text helpBodyText;
+        public static Serialization s;
+
 
         public override void Start()
         {
