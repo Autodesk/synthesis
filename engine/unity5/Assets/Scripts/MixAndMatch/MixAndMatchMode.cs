@@ -309,7 +309,7 @@ namespace Synthesis.MixAndMatch
         /// <param name="driveBase"></param>
         public void SelectDriveBase(int driveBase)
         {
-            //unselects all wheels
+            //unselects all drive bases
             for (int j = 0; j < Bases.Count; j++)
             {
                 SetColor(Bases[j], Color.white);
