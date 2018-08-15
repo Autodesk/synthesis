@@ -121,10 +121,10 @@
     </Compile>
     <Compile Include="Exporter\FieldProperties.cs" />
     <Compile Include="Exporter\Gamepiece.cs" />
-    <Compile Include="Forms\ExportForm.cs">
+    <Compile Include="Components\ExportForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\ExportForm.Designer.cs">
+    <Compile Include="Components\ExportForm.Designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\InventorTreeView.cs">
@@ -233,7 +233,7 @@
     <EmbeddedResource Include="Components\FieldMetaForm.resx">
       <DependentUpon>FieldMetaForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ExportForm.resx">
+    <EmbeddedResource Include="Components\ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\InventorTreeView.resx">

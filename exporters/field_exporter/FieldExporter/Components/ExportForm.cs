@@ -135,12 +135,11 @@ namespace FieldExporter.Components
 
                     outputNode.SubMeshID = exportedMeshes.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
 
-                    //ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
-                    string componentProperties = LegacyInterchange.GetCompFromDictionary(currentOccurrence.Name);
+                    ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
 
                     if (componentProperties != null)
                     {
-                        outputNode.PropertySetID = componentProperties/*.Name*/;
+                        outputNode.PropertySetID = componentProperties.Name;
 
                         PropertySet propertySet = fieldDefinition.GetPropertySets()[outputNode.PropertySetID];
 
