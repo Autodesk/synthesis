@@ -2,6 +2,7 @@
 using Synthesis.Configuration;
 using Synthesis.Field;
 using Synthesis.FSM;
+using Synthesis.Input;
 using Synthesis.Robot;
 using Synthesis.States;
 using Synthesis.Utils;
@@ -164,6 +165,8 @@ namespace Synthesis.DriverPractice
         }
         public void PositionInput(int xyz)
         {
+            InputControl.freeze = false;
+
             Vector3 releasePosition = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releasePosition;
             switch (xyz)
             {
@@ -184,6 +187,8 @@ namespace Synthesis.DriverPractice
         }
         public void ReleaseInput(int xyz)
         {
+            InputControl.freeze = false;
+
             Vector3 releaseVelocity = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releaseVelocity;
             switch (xyz)
             {
@@ -205,6 +210,7 @@ namespace Synthesis.DriverPractice
         public void StartEditing()
         {
             editing = true;
+            InputControl.freeze = true;
         }
         public void StopEditing()
         {
