@@ -83,6 +83,8 @@ namespace Synthesis.States
             ParseResolution(resPopup.list[PlayerPrefs.GetInt("resolution")].text, out xRes, out yRes);
 
             Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
+
+            OnBackButtonPressed();
         }
 
         /// <summary>
@@ -90,7 +92,6 @@ namespace Synthesis.States
         /// </summary>
         public void OnBackButtonPressed()
         {
-            OnApplySettingsButtonPressed();
             StateMachine.ChangeState(new HomeTabState());
         }
 
