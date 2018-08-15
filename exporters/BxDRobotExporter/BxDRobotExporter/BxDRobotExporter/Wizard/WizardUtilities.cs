@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Inventor;
 using System.Windows.Forms;
 
-namespace SynthesisRobotExporter.Wizard
+namespace BxDRobotExporter.Wizard
 {
     public delegate void WheelTypeChangedEventHandler(object sender, WheelTypeChangedEventArgs e);
     public class WheelTypeChangedEventArgs : EventArgs

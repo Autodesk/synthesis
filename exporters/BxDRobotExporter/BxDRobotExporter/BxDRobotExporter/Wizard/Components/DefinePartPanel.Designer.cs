@@ -1,4 +1,4 @@
-﻿namespace SynthesisRobotExporter.Wizard
+﻿namespace BxDRobotExporter.Wizard
 {
     partial class DefinePartPanel
     {

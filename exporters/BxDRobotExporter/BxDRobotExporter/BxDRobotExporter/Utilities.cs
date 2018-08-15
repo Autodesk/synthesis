@@ -9,7 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Diagnostics;
 
-namespace SynthesisRobotExporter
+namespace BxDRobotExporter
 {
     internal static class Utilities
     {
@@ -27,7 +27,7 @@ namespace SynthesisRobotExporter
             IntPtr[] children = CreateChildDialog();
 
             UserInterfaceManager uiMan = app.UserInterfaceManager;
-            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "Synthesis:RobotExporter:JointEditor", "Robot Joint Editor");
+            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Robot Joint Editor");
             
             #region EmbededJointPane
             EmbededJointPane.DockingState = DockingStateEnum.kDockBottom;

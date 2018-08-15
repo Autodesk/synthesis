@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SynthesisRobotExporter.Wizard
+namespace BxDRobotExporter.Wizard
 {
     /// <summary>
     /// Primary <see cref="Control"/> of the whole wizard and the only object in <see cref="WizardForm.components"/>

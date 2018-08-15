@@ -199,6 +199,11 @@ namespace Synthesis.GUI
         }
 
         #region tab buttons
+        /// <summary>
+        /// Each tab in the simulator is tethered by an OnClick() scripted function (below). Once the tab is clicked,
+        /// each tab will activate a new toolbar state in where all of the toolbar functions will be managed by their
+        /// specific states. 
+        /// </summary>
         public void OnMainTab()
         {
             if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
@@ -208,16 +213,24 @@ namespace Synthesis.GUI
 
         public void OnDPMTab()
         {
-            if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
-            currentTab = "DriverPracticeTab";
-            tabStateMachine.ChangeState(new DPMToolbarState());
+            if (FieldDataHandler.gamepieces.Count > 0)
+            {
+                if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
+                currentTab = "DriverPracticeTab";
+                tabStateMachine.ChangeState(new DPMToolbarState());
+            }
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Driver Practice Disabled.", 3);
         }
 
         public void OnScoringTab()
         {
-            if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
-            currentTab = "ScoringTab";
-            tabStateMachine.ChangeState(new ScoringToolbarState());
+            if (FieldDataHandler.gamepieces.Count > 0)
+            {
+                if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
+                currentTab = "ScoringTab";
+                tabStateMachine.ChangeState(new ScoringToolbarState());
+            }
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Scoring Disabled.", 3);
         }
 
         public void OnSensorTab()

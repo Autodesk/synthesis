@@ -70,7 +70,8 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        public bool isEmulationDownloaded = false;
+        public bool isEmulationDownloaded = File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\zImage") && File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\rootfs.ext4") && File.Exists(@"C:\Program Files\Autodesk\Synthesis\Emulation\zynq-zed.dtb");
+        //public bool isEmulationDownloaded = true;
 
         bool reset;
 
@@ -266,7 +267,6 @@ namespace Synthesis.States
 
             FieldDataHandler.Load(fieldPath);
             Controls.Init();
-            Controls.Load();
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
