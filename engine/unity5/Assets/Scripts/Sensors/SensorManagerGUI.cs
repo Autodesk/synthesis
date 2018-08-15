@@ -499,7 +499,8 @@ namespace Synthesis.Sensors
             SyncHideSensorButton();
             configureSensorPanel.SetActive(true);
             sensorConfigHeader.GetComponentInChildren<Text>().text = currentSensor.name;
-            preConfigState = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().cameraState;
+
+            if (preConfigState == null) preConfigState = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().cameraState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
         }
 
