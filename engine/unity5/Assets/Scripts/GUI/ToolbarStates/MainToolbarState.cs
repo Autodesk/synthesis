@@ -19,6 +19,12 @@ using Synthesis.Field;
 
 namespace Assets.Scripts.GUI
 {
+    /// <summary>
+    /// The MainToolbarState controls the functions of each of the main toolbar functions such as 
+    /// change robots/fields, reset, camera views, etc. Because each toolbar button is controlled by a StateMachine,
+    /// you will need to follow conventions to register a button with a callback. For an example, your button name will need to start
+    /// with "On" and end with "Pressed" to register a callback. Ex: OnChangeRobotButtonPressed.
+    /// </summary>
     public class MainToolbarState : State
     {
         GameObject canvas;
@@ -95,6 +101,9 @@ namespace Assets.Scripts.GUI
             helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
+        /// <summary>
+        /// Change robot button callback
+        /// </summary>
         public void OnChangeRobotButtonPressed()
         {
             if (changePanel.activeSelf == true)
@@ -108,6 +117,11 @@ namespace Assets.Scripts.GUI
             }
         }
 
+        /// <summary>
+        /// Reset robot dropdown callback. Note: Dropdowns register with "On...Clicked"
+        /// naming conventions.
+        /// </summary>
+        /// <param name="i"></param>
         public void OnResetRobotDropdownClicked(int i)
         {
             switch (i)
