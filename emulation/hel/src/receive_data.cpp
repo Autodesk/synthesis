@@ -43,10 +43,11 @@ namespace hel{
             tDIO::tDI di = instance.first->digital_system.getInputs();
             tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
             for(unsigned i = 0; i < digital_hdrs.size(); i++){
-                if(checkBitHigh(output_mode.MXP,i)){
+                if(checkBitLow(output_mode.Headers,i)){ //if set for input, then read in the inputs
                     di.Headers = setBit(di.Headers, digital_hdrs[i], i);
                 }
             }
+            //TODO add MXP digital inputs
             instance.first->digital_system.setInputs(di);
         }
         instance.second.unlock();

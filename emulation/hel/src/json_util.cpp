@@ -46,8 +46,9 @@ namespace hel{
 
     std::vector<std::string> split(std::string input_str, const char DELIMITER){
         std::vector<std::string> split_str;
+        std::string segment = "";
         while(input_str.find(DELIMITER) != std::string::npos){
-            std::string segment = input_str.substr(0, input_str.find(DELIMITER));
+            segment = input_str.substr(0, input_str.find(DELIMITER));
 
             split_str.push_back(trim(segment));
             input_str = input_str.substr(segment.size() + 1); //remove the segment added to the std::vector along with the delimiter
@@ -76,7 +77,7 @@ namespace hel{
         while(input.size() > 0){
             v.push_back(pullObject(input));
             if(input.size() == previous_input_size){
-                throw JSONParsingException("splitObject");
+                throw JSONParsingException("hel::splitObject()");
             }
             previous_input_size = input.size();
         }
@@ -90,7 +91,7 @@ namespace hel{
         int curly_bracket_count = 0;
 
         char c;
-        for(; end < input.size(); end++){
+        for(; end < input.size(); end++){ //count brackets to find end of JSON object
             c = input[end];
             if(c == '['){
                 bracket_count++;
@@ -105,7 +106,7 @@ namespace hel{
                 if(c == ','){ //capture element of list
                     break;
                 } else if(c == '}' || c == ']'){
-                    if(bracket_count == 0 && curly_bracket_count == 0){ //if the brackets close at this character, then the object should begin and end with the bracket, so capture the bracket character too
+                    if(bracket_count == 0 && curly_bracket_count == 0){ //if brackets close at this character, then the object string should begin and end with brackets, so capture the last bracket too
                         end++;
                     }
                     break;
