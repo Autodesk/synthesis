@@ -150,16 +150,15 @@ File /r "MixAndMatch\*"
 
 SectionEnd
 
-Section "Robot Exporter Plugin (reccommended)" PluginExporter
+Section "Inventor Exporter Plugin" Exporter
 
   ; Set output path to plugin directory
-  SetOutPath "$INSTDIR"
-  File /r "RobotExporter\RobotDistrib.bat"
-  File /r "RobotExporter\autodesk.BxDRobotExporter.inventor.addin"
-  ExecShell open "$INSTDIR\RobotDistrib.bat" SW_HIDE
-
-  SetOutPath "C:\Program Files (x86)\Autodesk\Synthesis"
-  File /r "RobotExporter\BxDRobotExporter.dll"
+  
+  SetOutPath $INSTDIR
+  File /r "Exporter"
+  
+  SetOutPath $APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter
+  File /r "Exporter\Autodesk.BxDRobotExporter.Inventor.addin"
 
 SectionEnd
 
@@ -176,13 +175,13 @@ SectionEnd
 
   LangString DESC_SynthesisRequired ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
   LangString DESC_MixMatch ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
-  LangString DESC_PluginExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor Addin used to import Autodesk Inventor Assemblies directly into the simulator"
+  LangString DESC_Exporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor Addin used to import Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_RoboFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
   !insertmacro MUI_DESCRIPTION_TEXT ${MixMatch} $(DESC_MixMatch)
-  !insertmacro MUI_DESCRIPTION_TEXT ${PluginExporter} $(DESC_PluginExporter)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Exporter} $(DESC_Exporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RoboFiles} $(DESC_RoboFiles)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
