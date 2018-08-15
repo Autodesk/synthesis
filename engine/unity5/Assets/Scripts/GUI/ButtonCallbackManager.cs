@@ -14,21 +14,6 @@ namespace Assets.Scripts.GUI
 {
     public static class ButtonCallbackManager
     {
-        //protected abstract void LinkItems();
-
-        ///// <summary>
-        ///// Links a tab to the provided <see cref="State"/> type from the tab's name.
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="tabName"></param>
-        //public static void LinkItem<T>(string tabName, bool strict = true) where T : State
-        //{
-        //    GameObject tab = Auxiliary.FindGameObject(tabName);
-
-        //    if (tab != null)
-        //        stateMachine.Link<T>(tab, strict);
-        //}
-
         /// <summary>
         /// Finds each Button component in the main menu that doesn't already have a
         /// listener and registers it with a callback.
