@@ -4,29 +4,28 @@ This is the process for building the emulator virtual machine in which user code
 
 WARNING: This is not a simple process. It requires a Linux environment and knowledge of Linux command line utilities.
 
+* [Preface and Set-Up](#preface-and-set-up)
+* [Phase 1: Downloads](#phase-1-downloads)
+* [Phase 2: Building Linux](#phase-2-building-linux)
+* [Phase 3: Building the Initial RAM Disk](#phase-3-building-the-initial-ram-disk)
+* [Phase 4: Setting up WPILib and CTRE Phoenix Libraries](#phase-4-setting-up-wpilib-and-ctre-phoenix-libraries)
+* [Phase 5: Adding HEL](#phase-5-adding-hel)
+* [Phase 6: Making the Core VM Image](#phase-6-making-the-core-vm-image)
+* [Phase 7: VM Set-Up](#phase-7-vm-set-up)
+
 ## Preface and Set-Up
 
-This process assumes you are working off of a linux machine of some sort. A virtual machine will suffice for this example. For 
-those who wish to build the image from source but do not have access to a linux environment, VirtualBox is a good free virtual 
-machine software, and Ubuntu Linux is a user-friendly option for the Linux distribution.
+This process assumes you are working off of a linux machine of some sort. A virtual machine will suffice for this example. For those who wish to build the image from source but do not have access to a linux environment, VirtualBox is a good free virtual machine software, and Ubuntu Linux is a user-friendly option for the Linux distribution.
 
-The amount of space required to make the image is rather large. Due to the number of tools and software needed to actually 
-build the image, it could take upwards of 5 GB of disk space. However, the end result should be no more than 530 MB, and most 
-most of the folders can be deleted once building is complete.
+The amount of space required to make the image is rather large. Due to the number of tools and software needed to actually build the image, it could take upwards of 5 GB of disk space. However, the end result should be no more than 530 MB, and most most of the folders can be deleted once building is complete.
 
-There are several tools required to build the image. Most of the utilities involved are core Linux/Unix utilities (i.e. tar, 
-zcat, mkfs, dd). The tools involved that are not core are GCC, G++, GNU Make, the official FRC GCC Compiler for Linux, QEMU 
-(with ARM extention) and (...). Once you have all of those installed, you can proceed to phase 1.
+There are several tools required to build the image. Most of the utilities involved are core Linux/Unix utilities (i.e. tar, zcat, mkfs, dd). The tools involved that are not core are GCC, G++, GNU Make, the official FRC GCC Compiler for Linux, QEMU (with ARM extention) and (...). Once you have all of those installed, you can proceed to phase 1.
 
-Please note that this is not a fast process, as during this you are going to download roughly 4 GB of git repositories and 
-build a large amount of code. The process can take anywhere between 30 minutes and 2 hours depending on internet and computer
-speed. With all this in mind, please move on to phase 1.
+Please note that this is not a fast process, as during this you are going to download roughly 4 GB of git repositories and build a large amount of code. The process can take anywhere between 30 minutes and 2 hours depending on internet and computer speed. With all this in mind, please move on to phase 1.
 
 ## Phase 1: Downloads
 
-Enter your linux environment of choice and open up a terminal. Create a temporary folder for all of the git repositories, 
-typically something like `git`. Enter that directory and run the following commands. Note these will both take quite a bit of 
-time.
+Enter your linux environment of choice and open up a terminal. Create a temporary folder for all of the git repositories, typically something like `git`. Enter that directory and run the following commands. Note these will both take quite a bit of time.
 
 ```shell
 $ mkdir git
@@ -67,7 +66,7 @@ $ cp arch/arm/boot/dts/zynq-zed.dtb ~/vm-package
 
 After this is complete, move on to building buildroot.
 
-## PHase 3: Building the Initial RAM Disk
+## Phase 3: Building the Initial RAM Disk
 
 Move into the buildroot directory. This process is much simpler as it is one make command, however it is much longer time-wise.
 

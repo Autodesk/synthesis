@@ -1,5 +1,13 @@
 # Hardware Emulation Layer
 
+HEL is the core of Synthesis's emulation. It is the piece of software that redirects robot code communication with hardware to Synthesis's simulator. 
+
+* [How It Works](#how-it-works)
+* [Scope of Emulation and Simulation](#scope-of-emulation-and-simulation)
+* [Building HEL](#building-hel)
+* [Testing HEL](#testing-hel)
+* [Project Structure](#project-structure)
+
 ## How It Works
 
 HEL is a re-implementation of the Ni FPGA which would normally run on the RoboRIO. FRC user code interfaces with WPILib, which is a high level library built on HAL (the RoboRIO's hardware abstration layer). In turn, HAL is built on the Ni FPGA, which interfaces with hardware. Ni FPGA code is available as a set of header files, which can be found in allwpilib under [ni-libraries](https://github.com/wpilibsuite/allwpilib/ "allwpilib"). These headers contain pure abstract classes which HEL implements using derived classes. So where HAL calls Ni FPGA functions which normally communicate with hardware, those calls instead use HEL's implementation which communicate with its core, a `RoboRIO` Singleton instance which handles the data. 
