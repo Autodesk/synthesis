@@ -1,6 +1,8 @@
-# Building the VM image
+# Building the VM Image
 
-THIS IS NOT A SIMPLE PROCESS. IT REQUIRES A LINUX ENVIRONMENT AND SOME KNOWLEDGE OF LINUX COMMAND LINE UTILITIES.
+This is the process for building the emulator virtual machine in which user code will run as a part of Synthesis's emulation.
+
+WARNING: This is not a simple process. It requires a Linux environment and knowledge of Linux command line utilities.
 
 ## Setup
 
@@ -20,7 +22,7 @@ Please note that this is not a fast process, as during this you are going to dow
 build a large amount of code. The process can take anywhere between 30 minutes and 2 hours depending on internet and computer
 speed. With all this in mind, please move on to phase 1.
 
-## Phase 1:
+## Phase 1: Set-Up
 
 Enter your linux environment of choice and open up a terminal. Create a temporary folder for all of the git repositories, 
 typically something like `git`. Enter that directory and run the following commands. Note these will both take quite a bit of 
@@ -63,7 +65,7 @@ $ cp arch/arm/boot/dts/zynq-zed.dtb ~/vm-package
 
 After this is complete, move on to building buildroot.
 
-## PHase 3: Building the initial ramdisk
+## PHase 3: Building the Initial RAM Disk
 
 Move into the buildroot directory. This process is much simpler as it is one make command, however it is much longer time-wise.
 
@@ -94,7 +96,7 @@ $ find -name hal.jar -exec cp {} ~/vm-packages/wpilib \;
 $ find -name wpilibj.jar -exec cp {} ~/vm-packages/wpilib \;
 ```
 
-## Phase 5: Building libhel.so
+## Phase 5: Building HEL
 TODO: ADD DESCRIPTION
 ```shell
 $ cd ~/synthesis/emulation/hel
@@ -103,7 +105,7 @@ $ make -j16 hel
 $ cp libs/libhel.so ~/vm-package
 ```
 
-## Phase 6: Making the core image
+## Phase 6: Making the Core Image
 This is the most terminal intensive part.
 
 ```shell
@@ -127,7 +129,7 @@ $ cd ..
 $ sudo umount ./root && sudo losetup -d
 ```
 
-## Phase 7: Initial setup
+## Phase 7: VM Set-Up
 TODO: ADD DESCRIPTION
 
 ```shell

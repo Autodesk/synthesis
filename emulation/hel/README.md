@@ -21,7 +21,7 @@ Since HEL is a re-implementation of  the Ni FPGA, it has the potential to suppor
 
 In the future, HEL and the engine will be expanded to support more features.
 
-## Building
+## Building HEL
 
 HEL is emulation of a layer of robot code several levels below that at which users develops. For the easiest user experience, the code is all handled inside of a Linux virtual machine emulating an ARM processor, much akin to the environment that runs on a RoboRIO. For ease of development, the development environment is built around the same operating system, Linux, as the emulator. It is recommended for those seeking to develop emulation to either install Linux or look into running Linux on a virtual machine solution with their current system (Ubuntu is recommended). Once the Linux environment is set up, there are a few pieces of software to install. The first of those is the build system CMake. To install on Ubuntu, the commands are as follows:
 
