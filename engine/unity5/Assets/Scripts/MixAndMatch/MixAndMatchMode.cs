@@ -55,6 +55,8 @@ namespace Synthesis.MixAndMatch
         private GameObject driveBaseLeftScroll;
         private GameObject manipulatorRightScroll;
         private GameObject manipulatorLeftScroll;
+
+        private Color orange = new Color(241f, 133f, 24f); //new Color(0.757f, 0.200f, 0.757f);
         #endregion
         // Use this for initialization
         private void Awake()
@@ -289,8 +291,6 @@ namespace Synthesis.MixAndMatch
         /// <param name="wheel"></param>
         public void SelectWheel(int wheel)
         {
-            Color purple = new Color(0.757f, 0.200f, 0.757f);
-
             //unselects all wheels
             for (int i = 0; i < Wheels.Count; i++)
             {
@@ -298,7 +298,7 @@ namespace Synthesis.MixAndMatch
             }
 
             //selects the wheel that is clicked
-            SetColor(Wheels[wheel], purple);
+            SetColor(Wheels[wheel], orange);
             this.gameObject.GetComponent<MaMInfoText>().SetWheelInfoText(wheel);
             SelectedWheel = wheel;
         }
@@ -309,8 +309,6 @@ namespace Synthesis.MixAndMatch
         /// <param name="driveBase"></param>
         public void SelectDriveBase(int driveBase)
         {
-            Color purple = new Color(0.757f, 0.200f, 0.757f);
-
             //unselects all wheels
             for (int j = 0; j < Bases.Count; j++)
             {
@@ -318,7 +316,7 @@ namespace Synthesis.MixAndMatch
             }
 
             //selects the wheel that is clicked
-            SetColor(Bases[driveBase], purple);
+            SetColor(Bases[driveBase], orange);
             this.gameObject.GetComponent<MaMInfoText>().SetBaseInfoText(driveBase);
             selectedDriveBase = driveBase;
             mecWheelPanel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("MecWheelLabel")).First();
@@ -341,8 +339,6 @@ namespace Synthesis.MixAndMatch
         /// <param name="manipulator"></param>
         public void SelectManipulator(int manipulator)
         {
-            Color purple = new Color(0.757f, 0.200f, 0.757f);
-
             //unselects all manipulators
             for (int k = 0; k < Manipulators.Count; k++)
             {
@@ -350,7 +346,7 @@ namespace Synthesis.MixAndMatch
             }
 
             //selects the manipulator that is clicked
-            SetColor(Manipulators[manipulator], purple);
+            SetColor(Manipulators[manipulator], orange);
             this.gameObject.GetComponent<MaMInfoText>().SetManipulatorInfoText(manipulator);
             selectedManipulator = manipulator;
         }
