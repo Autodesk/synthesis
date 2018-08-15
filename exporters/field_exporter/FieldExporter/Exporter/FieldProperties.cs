@@ -60,6 +60,10 @@ namespace FieldExporter.Exporter
             writer.WriteEndElement();
 
             // Spawn Points
+            // Create a spawnpoint if none were specified
+            if (spawnpoints.Length == 0)
+                spawnpoints = new BXDVector3[] { new BXDVector3(0, 3, 0) };
+
             foreach (BXDVector3 point in spawnpoints)
             {
                 writer.WriteStartElement("RobotSpawnPoint");
