@@ -5,7 +5,7 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-OutFile "SynthesisInstaller.exe"
+OutFile "SynthesisInstaller4.2.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -117,7 +117,7 @@ Section "Synthesis (required)" SynthesisRequired
                 "DisplayName" "Autodesk Synthesis"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "DisplayIcon" "plantlogo(NoBack).ico"
+                "DisplayIcon" "W16_SYN_launch.ico"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "Publisher" "Autodesk"
@@ -126,7 +126,7 @@ Section "Synthesis (required)" SynthesisRequired
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
   ; Update this on release
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "4.1.0.0"
+                 "DisplayVersion" "4.2.0.0"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -157,7 +157,7 @@ Section "Inventor Exporter Plugin" Exporter
   SetOutPath $INSTDIR
   File /r "Exporter"
   
-  SetOutPath $APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter
+  SetOutPath $APPDATA\Autodesk\ApplicationPlugins
   File /r "Exporter\Autodesk.BxDRobotExporter.Inventor.addin"
 
 SectionEnd
