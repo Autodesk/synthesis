@@ -153,7 +153,7 @@ $ ln -s libhel.so libniriodevunum.so.1
 $ ln -s libhel.so libniriosession.so.1
 $ ln -s libhel.so libRoboRIO_FRC_ChipObject.so.18
 $ ln -s libhel.so libNiFpga.so.13
-$ ln -s libFRC_NetworCommunication.so.18
+$ ln -s libFRC_NetworkCommunication.so.18
 $ cat > .vminfo <<EOF
 $ 1.0
 $ v2018.4.1
@@ -166,6 +166,7 @@ $ mv /usr/bin/java /usr/bin/java.bak
 $ ln -s /usr/lib/jvm/bin/java /usr/bin/java
 # Press control-x then a to close VM
 ```
+TODO: must deploy .vminfo and frc_program_chooser.sh etc
 
 VM image creation is now complete. It can now be used as a drop in replacement for any current synthesis installations, or used 
 again via the qemu command listed above. 

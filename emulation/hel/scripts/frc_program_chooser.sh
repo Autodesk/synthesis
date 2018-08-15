@@ -2,7 +2,7 @@
 
 # This script is used to run the FRCUserProgram within the emulator VM
 
-PREFIX="run_user_program.sh:"
+PREFIX="frc_program_chooser.sh:"
 
 function run_user_program(){ #Run user program infinitely until interrupted by user
 	until $1; do
