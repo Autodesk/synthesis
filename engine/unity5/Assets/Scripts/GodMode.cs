@@ -38,13 +38,14 @@ public class GodMode : LinkedMonoBehaviour<MainState>
             if (callback.CollisionObject != null)
             {
                 BRigidBody rigidBody = callback.CollisionObject.UserObject as BRigidBody;
-                initialState = rigidBody.GetCollisionObject().ActivationState;
-                rigidBody.GetCollisionObject().ActivationState = ActivationState.DisableDeactivation;
-                initialDamping = rigidBody.angularDamping;
-                rigidBody.angularDamping = 0.9f;
 
                 if (rigidBody != null && rigidBody.mass > 0f)
                 {
+                    initialState = rigidBody.GetCollisionObject().ActivationState;
+                    rigidBody.GetCollisionObject().ActivationState = ActivationState.DisableDeactivation;
+                    initialDamping = rigidBody.angularDamping;
+                    rigidBody.angularDamping = 0.9f;
+
                     constraint = rigidBody.gameObject.AddComponent<BBallSocketConstraintEx>();
                     constraint.PivotInA = rigidBody.transform.InverseTransformPoint(callback.HitPointWorld.ToUnity()).ToBullet();
                     constraint.constraintType = BTypedConstraint.ConstraintType.constrainToPointInSpace;

@@ -357,6 +357,7 @@
     <None Include="Assets\Packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.xml" />
     <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
+    <None Include="Assets\Packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.xml" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
