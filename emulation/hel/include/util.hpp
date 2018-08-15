@@ -5,10 +5,10 @@
 #include <vector>
 #include <cassert>
 
-#define NYI {\
-    printf("NYI:" + __FILE__ + ":" __LINE__ + "\n"); \
-    exit(1); \
-}
+#define NYI {                                             \
+        printf("NYI:" + __FILE__ + ":" __LINE__ + "\n");  \
+        exit(1);                                          \
+    }
 
 namespace hel{
 
@@ -23,14 +23,14 @@ namespace hel{
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
     constexpr unsigned findMostSignificantBit(T value){
-    	unsigned most_significant_bit = 0;
+        unsigned most_significant_bit = 0;
 
-    	while(value != 0){
-    		value >>= 1;
-    		most_significant_bit++;
-    	}
+        while(value != 0){
+            value >>= 1;
+            most_significant_bit++;
+        }
 
-    	return most_significant_bit;
+        return most_significant_bit;
     }
 
     /**
@@ -44,7 +44,7 @@ namespace hel{
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
     constexpr bool checkBitHigh(const T& value,const unsigned& index){
-    	return value & (1u << index);
+        return value & (1u << index);
     }
 
     /**

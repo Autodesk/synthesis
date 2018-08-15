@@ -5,7 +5,7 @@
 
 namespace hel{
 
-	std::string CANMotorController::toString()const {
+    std::string CANMotorController::toString()const {
         std::string s = "(";
         s += "type:" + as_string(type) + ", ";
         s += "id:" + std::to_string(id);
@@ -51,7 +51,7 @@ namespace hel{
           data[1] - data[0] is the number of 256*256's
           data[2] - data[0] is the number of 256's
           data[3] - data[0] is the number of 1's
-          divide by (256*256*4) to scale from -256*256*4 to 256*256*4 to -1.0 to 1.0
+          divide by (256*256*4) to scale from the range -256*256*4 to 256*256*4 to the range -1.0 to 1.0
         */
         percent_output = ((double)((data[1] - data[0])*256*256 + (data[2] - data[0])*256 + (data[3] - data[0])))/(256*256*4);
         auto instance = SendDataManager::getInstance();
@@ -74,13 +74,14 @@ namespace hel{
         BoundsCheckedArray<uint8_t, CANMotorController::MessageData::SIZE> data{0};
         uint32_t percent_output_int = std::fabs(percent_output) * 256 * 256 * 4;
 
+        //divide percent_output_int among the bytes as expected by CTRE's CAN protocol
         data[1] = percent_output_int / (256*256);
         percent_output_int %= 256 * 256;
         data[2] = percent_output_int / 256;
         percent_output_int %= 256;
         data[3] = percent_output_int;
 
-        if(percent_output < 0.0){
+        if(percent_output < 0.0){//format as 2's compliment
             data[0] = 255;
             data[1] = 255 - data[1];
             data[2] = 255 - data[2];
@@ -96,11 +97,11 @@ namespace hel{
         instance.second.unlock();
     }
 
-	CANMotorController::CANMotorController()noexcept:type(CANDevice::Type::UNKNOWN),id(0),percent_output(0.0),inverted(false){}
+    CANMotorController::CANMotorController()noexcept:type(CANDevice::Type::UNKNOWN),id(0),percent_output(0.0),inverted(false){}
 
-	CANMotorController::CANMotorController(uint8_t i, CANDevice::Type t)noexcept:type(t),id(i),percent_output(0.0),inverted(false){
+    CANMotorController::CANMotorController(uint8_t i, CANDevice::Type t)noexcept:type(t),id(i),percent_output(0.0),inverted(false){
         assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
-	}
+    }
 
     CANMotorController::CANMotorController(const CANMotorController& source)noexcept{
 #define COPY(NAME) NAME = source.NAME
@@ -115,7 +116,7 @@ namespace hel{
         type = CANDevice::pullDeviceType(message_id);
         assert(type == CANDevice::Type::TALON_SRX || type == CANDevice::Type::VICTOR_SPX);
         id = CANDevice::pullDeviceID(message_id);
-		auto instance = SendDataManager::getInstance();
+        auto instance = SendDataManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }

@@ -70,7 +70,7 @@ namespace hel{
         raw <<= 4; //correctly convert the integer to 2's compliment if negative
         raw >>= 4;
 
-        switch(range) {
+        switch(range) { //correctly scale raw to accel using range as done by HAL
             case 0: //2G
                 return raw / 1024.0f;
             case 1: //4G
@@ -83,7 +83,7 @@ namespace hel{
     }
 
     std::pair<uint8_t, uint8_t> Accelerometer::convertAccel(float accel)noexcept{
-        switch(range) {
+        switch(range) { //correctly scale accel to raw using range as expected by HAL
         case 0: //2G
             accel *= 1024.0f;
             break;
@@ -99,7 +99,7 @@ namespace hel{
         }
         int16_t raw = (int16_t)accel;
 
-        uint8_t first = raw >> 4;
+        uint8_t first = raw >> 4; //split raw into two bytes as expected by HAL
         uint8_t second = raw << 4;
         return {first, second};
     }
@@ -166,26 +166,26 @@ namespace hel{
             }
         }
 
-        uint8_t readDATO(tRioStatusCode* /*status*/){ //unnecessary for emulation 
-            return 0; 
+        uint8_t readDATO(tRioStatusCode* /*status*/){ //unnecessary for emulation
+            return 0;
         }
 
-        void writeCNTR(uint8_t /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation 
+        void writeCNTR(uint8_t /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
 
-        uint8_t readCNTR(tRioStatusCode* /*status*/){ //unnecessary for emulation 
+        uint8_t readCNTR(tRioStatusCode* /*status*/){ //unnecessary for emulation
             return 0;
         }
 
         void writeCNFG(uint8_t /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
 
-        uint8_t readCNFG(tRioStatusCode* /*status*/){ //unnecessary for emulation 
+        uint8_t readCNFG(tRioStatusCode* /*status*/){ //unnecessary for emulation
             return 0;
         }
 
         void writeCNTL(uint8_t value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             Accelerometer::ControlMode control_mode = [&]{
-                if(value == (CONTROL_START | CONTROL_TX_RX)){
+                if(value == (CONTROL_START | CONTROL_TX_RX)){//HAL sets value to this when setting up write to comm target
                     return Accelerometer::ControlMode::SET_COMM_TARGET;
                 }
                 return Accelerometer::ControlMode::SET_DATA;
@@ -200,6 +200,7 @@ namespace hel{
 
         uint8_t readDATI(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
+
             switch(instance.first->accelerometer.getCommTargetReg()){
             case Accelerometer::Register::kReg_WhoAmI:
                 instance.second.unlock();
@@ -239,7 +240,7 @@ namespace hel{
         void writeADDR(uint8_t /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
 
         uint8_t readADDR(tRioStatusCode* /*status*/){ //unnecessary for emulation
-            return 0; 
+            return 0;
         }
     };
 }

@@ -17,7 +17,7 @@ namespace hel{
         s = trim(s);
         if(!s.empty()){
             if(s[0] == '\"'){
-            s.erase(0,1);
+                s.erase(0,1);
             }
             if(s[s.size() - 1] == '\"'){
                 s.erase(s.size() - 1, 1);
@@ -32,25 +32,6 @@ namespace hel{
             input_str.replace(input_str.find(DOUBLE_SPACE), DOUBLE_SPACE.size()," ");
         }
         return input_str;
-    }
-
-    std::string excludeFromString(const std::string& input_str,const std::vector<char>& excluded_chars){
-        std::string processed_str = "";
-        for(char c: input_str){
-            bool exclude = false;
-            for(char excluded_char : excluded_chars){
-                if(c == excluded_char){
-                    exclude = true;
-                    break;
-                }
-            }
-            if(exclude){
-                continue;
-            }
-            processed_str += c;
-        }
-
-        return processed_str;
     }
 
     std::string trim(std::string input_str){

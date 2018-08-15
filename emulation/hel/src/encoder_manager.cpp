@@ -41,7 +41,7 @@ namespace hel{
     }
 
     uint8_t getChannel(uint8_t channel, bool module,EncoderManager::PortType type){
-        if(module){
+        if(module){ //HAL calls this module, but it appears to be simple if it's on the MXP or not
             switch(type){
             case EncoderManager::PortType::AI:
                 return channel + AnalogInputs::NUM_ANALOG_INPUTS_HDRS;
@@ -61,9 +61,7 @@ namespace hel{
         ){
             return false;
         }
-        a = getChannel(a, a_module, a_type);
-        b = getChannel(b, b_module, b_type);
-        if(a != a_channel || b != b_channel){
+        if(getChannel(a, a_module, a_type) != a_channel || getChannel(b, b_module, b_type) != b_channel){
             return false;
         }
         return true;
@@ -71,7 +69,7 @@ namespace hel{
 
     void EncoderManager::updateDevice(){
         auto instance = RoboRIOManager::getInstance();
-        for(unsigned i = 0; i < instance.first->fpga_encoders.size(); i++){
+        for(unsigned i = 0; i < instance.first->fpga_encoders.size(); i++){ //check if FPGA encoder
             tEncoder::tConfig config = instance.first->fpga_encoders[i].getConfig();
             if(checkDevice(config.ASource_Channel,config.ASource_Module,config.ASource_AnalogTrigger,config.BSource_Channel,config.BSource_Module,config.BSource_AnalogTrigger)){
                 type = Type::FPGA_ENCODER;
@@ -80,7 +78,7 @@ namespace hel{
                 return;
             }
         }
-        for(unsigned i = 0; i < instance.first->counters.size(); i++){
+        for(unsigned i = 0; i < instance.first->counters.size(); i++){ //check if counter
             tCounter::tConfig config = instance.first->counters[i].getConfig();
             if(checkDevice(config.UpSource_Channel,config.UpSource_Module,config.UpSource_AnalogTrigger,config.DownSource_Channel,config.DownSource_Module,config.DownSource_AnalogTrigger)){
                 type = Type::COUNTER;
