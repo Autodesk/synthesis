@@ -508,8 +508,8 @@ namespace Synthesis.Sensors
             if (configureSensorPanel.activeSelf)
             {
                 configureSensorPanel.SetActive(false);
-                EndProcesses();
                 if (currentSensor.transform.Find("IndicatorMoveArrows") != null) Destroy(currentSensor.transform.Find("IndicatorMoveArrows").gameObject);
+                EndProcesses();
             }
             else
             {
