@@ -42,7 +42,7 @@ namespace hel{
     }
 
     uint16_t DigitalSystem::getMXPSpecialFunctionsEnabled()const noexcept{
-    		return mxp_special_functions_enabled;
+        return mxp_special_functions_enabled;
     }
 
     void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t enabled_mxp_special_functions)noexcept{
@@ -68,34 +68,34 @@ namespace hel{
         pwm[index] = pulse_width;
     }
 
-	MXPData::Config DigitalSystem::toMXPConfig(uint16_t output_mode, uint16_t special_func, uint8_t index){
-		if(index >= NUM_DIGITAL_MXP_CHANNELS){
-			throw std::out_of_range("Synthesis exception: attempting to check configuration for digital MXP port at digital index " + std::to_string(index));
-		}
-		if(checkBitHigh(special_func, index)){
-			if(
-				index == 4 || index == 5 ||
-				index == 6 || index == 7
-            ){
-				return hel::MXPData::Config::SPI;
-			}
-			if(index == 14 || index == 15){
-				return hel::MXPData::Config::I2C;
-			}
-			/* must be true
-			index == 0  || index == 1  ||
-			index == 2  || index == 3  ||
-			index == 8  || index == 9  ||
-			index == 10 || index == 11 ||
-			index == 12 || index == 13
-			*/
-			return hel::MXPData::Config::PWM;
-		}
-		if(checkBitHigh(output_mode,index)){
-			return hel::MXPData::Config::DO;
-		}
-		return hel::MXPData::Config::DI;
-	}
+    MXPData::Config DigitalSystem::toMXPConfig(uint16_t output_mode, uint16_t special_func, uint8_t index){
+        if(index >= NUM_DIGITAL_MXP_CHANNELS){
+            throw std::out_of_range("Synthesis exception: attempting to check configuration for digital MXP port at digital index " + std::to_string(index));
+        }
+        if(checkBitHigh(special_func, index)){
+            if(
+                index == 4 || index == 5 ||
+                index == 6 || index == 7
+                ){
+                return hel::MXPData::Config::SPI;
+            }
+            if(index == 14 || index == 15){
+                return hel::MXPData::Config::I2C;
+            }
+            /* One of these must be true if the above are false
+               index == 0  || index == 1  ||
+               index == 2  || index == 3  ||
+               index == 8  || index == 9  ||
+               index == 10 || index == 11 ||
+               index == 12 || index == 13
+            */
+            return hel::MXPData::Config::PWM;
+        }
+        if(checkBitHigh(output_mode,index)){
+            return hel::MXPData::Config::DO;
+        }
+        return hel::MXPData::Config::DI;
+    }
 
     DigitalSystem::DigitalSystem()noexcept:
         outputs(),
@@ -124,7 +124,7 @@ namespace hel{
         case DigitalSystem::DIOConfigurationException::Config::DI:
             return "digital input";
         case DigitalSystem::DIOConfigurationException::Config::DO:
-            return "digital ouput";
+            return "digital output";
         case DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION:
             return "mxp special function";
         default:
@@ -149,10 +149,10 @@ namespace hel{
         bool allowOutput(T output,S enabled, bool requires_special_function){
             auto instance = hel::RoboRIOManager::getInstance();
             for(unsigned i = 1; i < findMostSignificantBit(output); i++){
-                if(!checkBitHigh(output, i)){
+                if(!checkBitHigh(output, i)){ //Ignore if it's not trying to output
                     continue;
                 }
-                if(requires_special_function && !checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it reqiores MXP special function, and it's not, don't allow output
+                if(requires_special_function && !checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it requires MXP special function, and it isn't set-up that way, don't allow output
                     instance.second.unlock();
                     throw DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, i);
                     return false;
@@ -422,19 +422,19 @@ namespace hel{
             instance.second.unlock();
             return instance.first->digital_system.getPulses().Headers;
         }
-    
+
         uint8_t readPulse_SPIPort(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getPulses().SPIPort;
         }
-    
+
         uint8_t readPulse_Reserved(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getPulses().Reserved;
         }
-    
+
         uint16_t readPulse_MXP(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
@@ -474,12 +474,12 @@ namespace hel{
         void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.first->digital_system.setMXPSpecialFunctionsEnabled(value);
-			for(unsigned i = 0; i < hel::findMostSignificantBit(value); i++){
-				hel::MXPData::Config mxp_config = hel::DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
-				if(mxp_config == hel::MXPData::Config::I2C || mxp_config == hel::MXPData::Config::SPI){
-					std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Configuring digital MXP input "<<i<<" for "<<as_string(mxp_config)<<"\n";
-				}
-			}
+            for(unsigned i = 0; i < hel::findMostSignificantBit(value); i++){
+                hel::MXPData::Config mxp_config = hel::DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
+                if(mxp_config == hel::MXPData::Config::I2C || mxp_config == hel::MXPData::Config::SPI){
+                    std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Configuring digital MXP input "<<i<<" for "<<as_string(mxp_config)<<"\n";
+                }
+            }
 
             instance.second.unlock();
         }
@@ -527,7 +527,6 @@ namespace hel{
         }
 
         void writeFilterPeriodHdr(uint8_t /*reg_index*/, uint32_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
-
 
         uint32_t readFilterPeriodHdr(uint8_t /*reg_index*/, tRioStatusCode* /*status*/){
             return 0;//unnecessary for emulation

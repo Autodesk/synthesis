@@ -56,43 +56,43 @@ namespace hel{
             instance.second.unlock();
             return instance.first->accumulators[index].getOutput();
         }
- 
+
         signed long long readOutput_Value(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->accumulators[index].getOutput().Value;
         }
- 
+
         uint32_t readOutput_Count(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->accumulators[index].getOutput().Count;
         }
- 
+
         void writeCenter(int32_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->accumulators[index].setCenter(value);
         }
- 
+
         int32_t readCenter(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->accumulators[index].getCenter();
         }
- 
+
         void writeDeadband(int32_t value, tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->accumulators[index].setDeadband(value);
         }
- 
+
         int32_t readDeadband(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->accumulators[index].getDeadband();
         }
- 
+
         void strobeReset(tRioStatusCode* /*status*/){
             auto instance = hel::RoboRIOManager::getInstance();
             tOutput output;
@@ -100,7 +100,10 @@ namespace hel{
             return instance.first->accumulators[index].setOutput(output);
         }
 
-        AccumulatorManager(uint8_t i)noexcept:index(i){}
+        AccumulatorManager(uint8_t i)noexcept:index(0){
+            assert(i >= 0 && i < hel::AnalogInputs::NUM_ANALOG_INPUTS);
+            index = i;
+        }
     };
 }
 

@@ -61,7 +61,10 @@ namespace hel{
         uint8_t index;
 
     public:
-        CounterManager(uint8_t i):index(i){}
+        CounterManager(uint8_t i):index(0){
+            assert(i >= 0 && i < hel::Counter::MAX_COUNTER_COUNT);
+            index = i;
+        }
 
         tSystemInterface* getSystemInterface(){
             return new SystemInterface();

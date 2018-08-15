@@ -96,9 +96,9 @@ namespace hel {
                     std::min(
                         (int)(analog_inputs.getValues(channel).size() - std::pow(2, analog_inputs.getAverageBits(channel) + analog_inputs.getOversampleBits(channel))),
                         (int)analog_inputs.getValues(channel).size()
-                    ),
+                        ),
                     0
-                );
+                    );
 
                 for(unsigned i = start_index; i < analog_inputs.getValues(channel).size(); i++){
                     average += analog_inputs.getValues(channel)[i];
@@ -235,8 +235,8 @@ namespace hel {
 
 namespace nFPGA{
     namespace nRoboRIO_FPGANamespace{
-    	tAI* tAI::create(tRioStatusCode* /*status*/){
-          return new hel::AnalogInputManager();
-    	}
+        tAI* tAI::create(tRioStatusCode* /*status*/){
+            return new hel::AnalogInputManager();
+        }
     }
 }
