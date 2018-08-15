@@ -7,6 +7,8 @@ using System.Reflection;
 using Synthesis.States;
 using Synthesis.Utils;
 using Assets.Scripts.GUI;
+using UnityEngine.SceneManagement;
+using Synthesis.MixAndMatch;
 
 namespace Synthesis.GUI
 {
@@ -97,6 +99,9 @@ namespace Synthesis.GUI
 
             canvas = GetComponent<Canvas>();
 
+            if (DirectSimulatorLaunch())
+                return;
+
             splashScreen.SetActive(false);
 
             //This makes it so that if the user exits from the simulator, 
@@ -136,10 +141,69 @@ namespace Synthesis.GUI
         /// <summary>
         /// Finds all the UI game objects and assigns them to a variable
         /// </summary>
-        void FindAllGameObjects()
+        private void FindAllGameObjects()
         {
             splashScreen = Auxiliary.FindObject(gameObject, "LoadSplash");
             Auxiliary.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+        }
+
+        /// <summary>
+        /// Launches directly into the simulator if command line arguments are provided.
+        /// </summary>
+        /// <returns></returns>
+        private bool DirectSimulatorLaunch()
+        {
+            if (!AppModel.InitialLaunch)
+                return false;
+
+            AppModel.InitialLaunch = false;
+
+            //Loads robot and field directories from command line arguments if valid.
+            string[] args = Environment.GetCommandLineArgs();
+            bool robotDefined = false;
+            bool fieldDefined = false;
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i].ToLower())
+                {
+                    case "-robot":
+                        if (i < args.Length - 1)
+                        {
+                            string robotFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(robotFile);
+                            PlayerPrefs.SetString("RobotDirectory", dirInfo.Parent.FullName);
+                            PlayerPrefs.SetString("simSelectedRobot", robotFile);
+                            PlayerPrefs.SetString("simSelectedRobotName", dirInfo.Name);
+                            robotDefined = true;
+                        }
+                        break;
+                    case "-field":
+                        if (i < args.Length - 1)
+                        {
+                            string fieldFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(fieldFile);
+                            PlayerPrefs.SetString("FieldDirectory", dirInfo.Parent.FullName);
+                            PlayerPrefs.SetString("simSelectedField", fieldFile);
+                            PlayerPrefs.SetString("simSelectedFieldName", dirInfo.Name);
+                            fieldDefined = true;
+                        }
+                        break;
+                }
+            }
+
+            //If command line arguments have been passed, start the simulator.
+            if (robotDefined && fieldDefined)
+            {
+                PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+                SceneManager.LoadScene("Scene");
+                RobotTypeManager.SetProperties(false);
+                return true;
+            }
+
+            return false;
         }
     }
 }

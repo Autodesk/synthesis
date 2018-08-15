@@ -180,7 +180,8 @@ namespace Synthesis.DriverPractice
 
                     if (id == gamepieceIndex)
                     {
-                        change.image.color = Color.green;
+                        //change.image.color = new Color(241f, 133f, 24f;
+                        change.image.color = new Color32(33, 43, 52, 120);
                         change.interactable = false;
                     }
 

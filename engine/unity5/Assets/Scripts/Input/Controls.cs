@@ -135,9 +135,11 @@ namespace Synthesis.Input
 
         public static void Init()
         {
-            TankControls();
-            ArcadeControls();
-            // Nothing. It just call static constructor if needed
+            if (TankDriveEnabled)
+                TankControls();
+            else ArcadeControls();
+
+            Controls.Load();
         }
 
         /// <summary>

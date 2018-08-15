@@ -267,7 +267,6 @@ namespace Synthesis.States
 
             FieldDataHandler.Load(fieldPath);
             Controls.Init();
-            Controls.Load();
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);

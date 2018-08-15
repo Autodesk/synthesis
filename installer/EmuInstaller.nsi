@@ -6,7 +6,7 @@
   OutFile "SynthesisEmuInstaller4.2.exe"
 
   ;Default installation folder
-  InstallDir $PROGRAMFILES\Autodesk\Synthesis\Emulator
+  InstallDir $APPDATA\Synthesis\Emulator
 
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "Software\Synthesis\Emulator" "Install_Dir"
@@ -35,7 +35,7 @@ Section
   
 	perform_install:
 	
-	  SetOutPath "$INSTDIR"
+	  SetOutPath $INSTDIR
   
 	  File /r "Emulator\rootfs.ext4"
 	  File /r "Emulator\zImage"
@@ -44,10 +44,10 @@ Section
 	  ;NSISdl::download "https://qemu.weilnetz.de/w64/qemu-w64-setup-20180725.exe" "$INSTDIR\qemu-w64-setup-20180725.exe"
 	  ${If} ${RunningX64}
 		File /r "Emulator\qemu-w64-setup-20180519.exe"
-		exec '"$PROGRAMFILES\Autodesk\Synthesis\Emulator\qemu-w64-setup-20180519.exe" \s'
+		exec '"$APPDATA\Synthesis\Emulator\qemu-w64-setup-20180519.exe" \s'
 	  ${Else}
 		File /r "Emulator\qemu-w32-setup-20180519.exe"
-		exec '"$PROGRAMFILES\Autodesk\Synthesis\Emulator\qemu-w32-setup-20180519.exe" \s'
+		exec '"$APPDATA\Synthesis\Emulator\qemu-w32-setup-20180519.exe" \s'
 	  ${EndIf}
 	
 	  Quit
