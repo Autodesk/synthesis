@@ -53,9 +53,11 @@ namespace BXDJ
 		void removeComponents(); ///< Removes all components from the Driver.
 		void setComponent(Wheel); ///< Applies a Wheel to the Driver.
 		void setComponent(Pneumatic); ///< Applies a Pneumatic to the Driver.
+		void setComponent(Elevator); ///< Applies a Elevator to the Driver.
 
 		std::unique_ptr<Wheel> getWheel(); ///< Gets any wheel configuration from the Driver. If the Driver has no Wheel, returns nullptr.
 		std::unique_ptr<Pneumatic> getPneumatic(); ///< Gets any pneumatic configuration from the Driver. If the Driver has no Pneumatic, returns nullptr.
+		std::unique_ptr<Elevator> getElevator(); ///< Gets any elevator configuration from the Driver. If the Driver has no Elevator, returns nullptr.
 
 		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
 		void loadJSONObject(const rapidjson::Value&);
@@ -63,6 +65,7 @@ namespace BXDJ
 	private:
 		std::unique_ptr<Wheel> wheel; ///< Wheel attached to the Driver.
 		std::unique_ptr<Pneumatic> pneumatic; ///< Pneumatic attached to the Driver.
+		std::unique_ptr<Elevator> elevator; ///< Elevator attached to the Driver.
 
 		static std::string toString(Type); ///< \return Name of the Driver Type.
 		static std::string toString(Signal); ///< \return Name of the Signal.

@@ -189,6 +189,11 @@ function applyDriverData(driver, fieldset)
         getElByClass(fieldset, 'pneumatic-width').value = driver.pneumatic.width;
         getElByClass(fieldset, 'pneumatic-pressure').value = driver.pneumatic.pressure;
     }
+
+    if (driver.type == DRIVER_ELEVATOR && driver.elevator != null)
+    {
+        getElByClass(fieldset, 'elevator-type').value = driver.elevator.type;
+    }
 }
 
 // Disable submit button if no name entered
@@ -269,14 +274,18 @@ function updateFieldOptions(fieldset)
         // Linear Joint Info
         if ((jointType & JOINT_LINEAR) == JOINT_LINEAR)
         {
-            // Pneumatic Info
             var pneumaticDiv = getElByClass(fieldset, 'pneumatic-div');
+            var elevatorDiv = getElByClass(fieldset, 'has-elevator-div');
 
             if (driverType != DRIVER_BUMPER_PNEUMATIC &&
                 driverType != DRIVER_RELAY_PNEUMATIC)
             {
                 setVisible(pneumaticDiv, false);
-                setVisible(angularJointDiv, true);
+
+                if (driverType == DRIVER_ELEVATOR)
+                    setVisible(elevatorDiv, true);
+                else
+                    setVisible(elevatorDiv, false);
             }
             else
             {
@@ -289,7 +298,7 @@ function updateFieldOptions(fieldset)
                     setPortView(fieldset, 'relay');
 
                 setVisible(pneumaticDiv, true);
-                setVisible(angularJointDiv, false);
+                setVisible(elevatorDiv, false);
             }
         }
     }
@@ -352,6 +361,12 @@ function readConfigData()
                     var pressure = parseInt(getElByClass(fieldset, 'pneumatic-pressure').value);
 
                     joint.driver.pneumatic = createPneumatic(width, pressure);
+                }
+                else if (selectedDriver == DRIVER_ELEVATOR)
+                {
+                    var type = parseInt(getElByClass(fieldset, 'elevator-type').value);
+
+                    joint.driver.elevator = createElevator(type);
                 }
             }
         }
