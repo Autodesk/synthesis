@@ -78,7 +78,7 @@ extern "C"{
             uint8_t device_id = hel::CANDevice::pullDeviceID(*messageID);
             auto instance = hel::RoboRIOManager::getInstance();
             if(instance.first->can_motor_controllers.find(device_id) == instance.first->can_motor_controllers.end()){
-                std::cerr<<"Synthesis warning: Attempting to read from missing CAN motor controller (" + as_string(target_type) + " with ID "<<((unsigned)device_id)<<")\n";
+                std::cerr<<"Synthesis warning: Attempting to read from missing CAN motor controller (" + as_string(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
             } else{
                 std::cerr<<"Synthesis warning: Feature unsupported by Synthesis: Attempting to read from CAN motor controller (" + as_string(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
                 /*

@@ -33,7 +33,7 @@ namespace hel{
          */
 
         enum IDMask: uint32_t{
-            DEVICE_ID = 0b01111111,
+            DEVICE_ID = 0b00111111,
             DEVICE_TYPE = 0b1111000001000000000000000000,
             TALON_SRX_TYPE = 0x02040000,
             VICTOR_SPX_TYPE = 0x01040000,
