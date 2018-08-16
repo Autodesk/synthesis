@@ -35,15 +35,21 @@
             this.exportProgressBar = new System.Windows.Forms.ProgressBar();
             this.statusLabel = new System.Windows.Forms.Label();
             this.exporter = new System.ComponentModel.BackgroundWorker();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.animatedLogo = new System.Windows.Forms.PictureBox();
+            this.verticalLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.fieldNameLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.exportButtonLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            ((System.ComponentModel.ISupportInitialize)(this.animatedLogo)).BeginInit();
+            this.verticalLayoutPanel.SuspendLayout();
+            this.fieldNameLayoutPanel.SuspendLayout();
+            this.exportButtonLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // fieldNameTextBox
             // 
             this.fieldNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.fieldNameTextBox.Location = new System.Drawing.Point(75, 7);
+            this.fieldNameTextBox.Location = new System.Drawing.Point(72, 3);
             this.fieldNameTextBox.Name = "fieldNameTextBox";
             this.fieldNameTextBox.Size = new System.Drawing.Size(501, 20);
             this.fieldNameTextBox.TabIndex = 9;
@@ -52,19 +58,22 @@
             // fieldNameLabel
             // 
             this.fieldNameLabel.AutoSize = true;
-            this.fieldNameLabel.Location = new System.Drawing.Point(6, 10);
+            this.fieldNameLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.fieldNameLabel.Location = new System.Drawing.Point(3, 3);
+            this.fieldNameLabel.Margin = new System.Windows.Forms.Padding(3);
             this.fieldNameLabel.Name = "fieldNameLabel";
-            this.fieldNameLabel.Size = new System.Drawing.Size(63, 13);
+            this.fieldNameLabel.Size = new System.Drawing.Size(63, 20);
             this.fieldNameLabel.TabIndex = 8;
             this.fieldNameLabel.Text = "Field Name:";
+            this.fieldNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // exportButton
             // 
             this.exportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.exportButton.Enabled = false;
-            this.exportButton.Location = new System.Drawing.Point(9, 267);
+            this.exportButton.Location = new System.Drawing.Point(3, 3);
             this.exportButton.Name = "exportButton";
-            this.exportButton.Size = new System.Drawing.Size(128, 32);
+            this.exportButton.Size = new System.Drawing.Size(63, 23);
             this.exportButton.TabIndex = 7;
             this.exportButton.Text = "Export";
             this.exportButton.UseVisualStyleBackColor = true;
@@ -74,21 +83,23 @@
             // 
             this.exportProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.exportProgressBar.Location = new System.Drawing.Point(9, 305);
+            this.exportProgressBar.Location = new System.Drawing.Point(3, 320);
             this.exportProgressBar.Name = "exportProgressBar";
-            this.exportProgressBar.Size = new System.Drawing.Size(567, 34);
+            this.exportProgressBar.Size = new System.Drawing.Size(570, 23);
             this.exportProgressBar.Step = 1;
             this.exportProgressBar.TabIndex = 11;
             // 
             // statusLabel
             // 
-            this.statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(143, 275);
+            this.statusLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.statusLabel.Location = new System.Drawing.Point(72, 3);
+            this.statusLabel.Margin = new System.Windows.Forms.Padding(3);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(138, 13);
+            this.statusLabel.Size = new System.Drawing.Size(138, 23);
             this.statusLabel.TabIndex = 12;
             this.statusLabel.Text = "Please specify a field name.";
+            this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // exporter
             // 
@@ -98,35 +109,91 @@
             this.exporter.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.exporter_ProgressChanged);
             this.exporter.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.exporter_RunWorkerCompleted);
             // 
-            // pictureBox1
+            // animatedLogo
             // 
-            this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
-            this.pictureBox1.Location = new System.Drawing.Point(0, 33);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(582, 214);
-            this.pictureBox1.TabIndex = 13;
-            this.pictureBox1.TabStop = false;
+            this.animatedLogo.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("animatedLogo.BackgroundImage")));
+            this.animatedLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.animatedLogo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.animatedLogo.InitialImage = ((System.Drawing.Image)(resources.GetObject("animatedLogo.InitialImage")));
+            this.animatedLogo.Location = new System.Drawing.Point(3, 29);
+            this.animatedLogo.Name = "animatedLogo";
+            this.animatedLogo.Size = new System.Drawing.Size(570, 256);
+            this.animatedLogo.TabIndex = 13;
+            this.animatedLogo.TabStop = false;
+            // 
+            // verticalLayoutPanel
+            // 
+            this.verticalLayoutPanel.ColumnCount = 1;
+            this.verticalLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.verticalLayoutPanel.Controls.Add(this.animatedLogo, 0, 1);
+            this.verticalLayoutPanel.Controls.Add(this.fieldNameLayoutPanel, 0, 0);
+            this.verticalLayoutPanel.Controls.Add(this.exportProgressBar, 0, 3);
+            this.verticalLayoutPanel.Controls.Add(this.exportButtonLayoutPanel, 0, 2);
+            this.verticalLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.verticalLayoutPanel.Location = new System.Drawing.Point(3, 3);
+            this.verticalLayoutPanel.Name = "verticalLayoutPanel";
+            this.verticalLayoutPanel.RowCount = 4;
+            this.verticalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.verticalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.verticalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.verticalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.verticalLayoutPanel.Size = new System.Drawing.Size(576, 346);
+            this.verticalLayoutPanel.TabIndex = 14;
+            // 
+            // fieldNameLayoutPanel
+            // 
+            this.fieldNameLayoutPanel.AutoSize = true;
+            this.fieldNameLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.fieldNameLayoutPanel.ColumnCount = 2;
+            this.fieldNameLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.fieldNameLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.fieldNameLayoutPanel.Controls.Add(this.fieldNameLabel, 0, 0);
+            this.fieldNameLayoutPanel.Controls.Add(this.fieldNameTextBox, 1, 0);
+            this.fieldNameLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fieldNameLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.fieldNameLayoutPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.fieldNameLayoutPanel.Name = "fieldNameLayoutPanel";
+            this.fieldNameLayoutPanel.RowCount = 1;
+            this.fieldNameLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.fieldNameLayoutPanel.Size = new System.Drawing.Size(576, 26);
+            this.fieldNameLayoutPanel.TabIndex = 14;
+            // 
+            // exportButtonLayoutPanel
+            // 
+            this.exportButtonLayoutPanel.AutoSize = true;
+            this.exportButtonLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.exportButtonLayoutPanel.ColumnCount = 2;
+            this.exportButtonLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.exportButtonLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.exportButtonLayoutPanel.Controls.Add(this.exportButton, 0, 0);
+            this.exportButtonLayoutPanel.Controls.Add(this.statusLabel, 1, 0);
+            this.exportButtonLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.exportButtonLayoutPanel.Location = new System.Drawing.Point(0, 288);
+            this.exportButtonLayoutPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.exportButtonLayoutPanel.Name = "exportButtonLayoutPanel";
+            this.exportButtonLayoutPanel.RowCount = 1;
+            this.exportButtonLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.exportButtonLayoutPanel.Size = new System.Drawing.Size(576, 29);
+            this.exportButtonLayoutPanel.TabIndex = 15;
             // 
             // ExportForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.statusLabel);
-            this.Controls.Add(this.exportProgressBar);
-            this.Controls.Add(this.fieldNameTextBox);
-            this.Controls.Add(this.fieldNameLabel);
-            this.Controls.Add(this.exportButton);
+            this.Controls.Add(this.verticalLayoutPanel);
             this.DoubleBuffered = true;
             this.Name = "ExportForm";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(582, 352);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.animatedLogo)).EndInit();
+            this.verticalLayoutPanel.ResumeLayout(false);
+            this.verticalLayoutPanel.PerformLayout();
+            this.fieldNameLayoutPanel.ResumeLayout(false);
+            this.fieldNameLayoutPanel.PerformLayout();
+            this.exportButtonLayoutPanel.ResumeLayout(false);
+            this.exportButtonLayoutPanel.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -137,6 +204,9 @@
         private System.Windows.Forms.ProgressBar exportProgressBar;
         private System.Windows.Forms.Label statusLabel;
         private System.ComponentModel.BackgroundWorker exporter;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox animatedLogo;
+        private System.Windows.Forms.TableLayoutPanel verticalLayoutPanel;
+        private System.Windows.Forms.TableLayoutPanel fieldNameLayoutPanel;
+        private System.Windows.Forms.TableLayoutPanel exportButtonLayoutPanel;
     }
 }
