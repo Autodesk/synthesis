@@ -44,7 +44,6 @@ namespace FieldExporter.Controls
             this.dynamicLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.massLabel = new System.Windows.Forms.Label();
             this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.gamepieceProperties = new FieldExporter.Components.GamepiecePropertiesForm();
             this.dynamicCheckBox = new System.Windows.Forms.CheckBox();
             this.frictionTrackBar = new System.Windows.Forms.TrackBar();
             this.meshPropertiesGroupBox = new System.Windows.Forms.GroupBox();
@@ -58,8 +57,9 @@ namespace FieldExporter.Controls
             this.removeButton = new System.Windows.Forms.Button();
             this.propertiesLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.propertiesScrollablePanel = new System.Windows.Forms.Panel();
-            this.inventorTreeView = new FieldExporter.Components.InventorTreeView(this.components);
             this.selectionLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.inventorTreeView = new FieldExporter.Components.InventorTreeView(this.components);
+            this.gamepieceProperties = new FieldExporter.Components.GamepiecePropertiesForm();
             this.inventorActionsPanel.SuspendLayout();
             this.physicalPropertiesGroupBox.SuspendLayout();
             this.physicalLayoutPanel.SuspendLayout();
@@ -128,7 +128,7 @@ namespace FieldExporter.Controls
             this.physicalPropertiesGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.physicalPropertiesGroupBox.Location = new System.Drawing.Point(3, 109);
             this.physicalPropertiesGroupBox.Name = "physicalPropertiesGroupBox";
-            this.physicalPropertiesGroupBox.Size = new System.Drawing.Size(270, 243);
+            this.physicalPropertiesGroupBox.Size = new System.Drawing.Size(270, 262);
             this.physicalPropertiesGroupBox.TabIndex = 15;
             this.physicalPropertiesGroupBox.TabStop = false;
             this.physicalPropertiesGroupBox.Text = "Physical Properties";
@@ -151,7 +151,7 @@ namespace FieldExporter.Controls
             this.physicalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.physicalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.physicalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.physicalLayoutPanel.Size = new System.Drawing.Size(264, 224);
+            this.physicalLayoutPanel.Size = new System.Drawing.Size(264, 243);
             this.physicalLayoutPanel.TabIndex = 11;
             // 
             // frictionLabel
@@ -226,7 +226,7 @@ namespace FieldExporter.Controls
             this.dynamicGroupBox.Controls.Add(this.dynamicCheckBox);
             this.dynamicGroupBox.Location = new System.Drawing.Point(3, 70);
             this.dynamicGroupBox.Name = "dynamicGroupBox";
-            this.dynamicGroupBox.Size = new System.Drawing.Size(258, 151);
+            this.dynamicGroupBox.Size = new System.Drawing.Size(258, 170);
             this.dynamicGroupBox.TabIndex = 9;
             this.dynamicGroupBox.TabStop = false;
             // 
@@ -246,7 +246,7 @@ namespace FieldExporter.Controls
             this.dynamicLayoutPanel.RowCount = 2;
             this.dynamicLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.dynamicLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.dynamicLayoutPanel.Size = new System.Drawing.Size(252, 132);
+            this.dynamicLayoutPanel.Size = new System.Drawing.Size(252, 151);
             this.dynamicLayoutPanel.TabIndex = 11;
             // 
             // massLabel
@@ -274,17 +274,6 @@ namespace FieldExporter.Controls
             this.massNumericUpDown.Name = "massNumericUpDown";
             this.massNumericUpDown.Size = new System.Drawing.Size(183, 20);
             this.massNumericUpDown.TabIndex = 10;
-            // 
-            // gamepieceProperties
-            // 
-            this.gamepieceProperties.AutoSize = true;
-            this.gamepieceProperties.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.dynamicLayoutPanel.SetColumnSpan(this.gamepieceProperties, 2);
-            this.gamepieceProperties.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gamepieceProperties.Location = new System.Drawing.Point(3, 29);
-            this.gamepieceProperties.Name = "gamepieceProperties";
-            this.gamepieceProperties.Size = new System.Drawing.Size(246, 100);
-            this.gamepieceProperties.TabIndex = 11;
             // 
             // dynamicCheckBox
             // 
@@ -445,7 +434,7 @@ namespace FieldExporter.Controls
             this.propertiesLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.propertiesLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.propertiesLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.propertiesLayoutPanel.Size = new System.Drawing.Size(276, 355);
+            this.propertiesLayoutPanel.Size = new System.Drawing.Size(276, 374);
             this.propertiesLayoutPanel.TabIndex = 18;
             // 
             // propertiesScrollablePanel
@@ -458,14 +447,6 @@ namespace FieldExporter.Controls
             this.propertiesScrollablePanel.Name = "propertiesScrollablePanel";
             this.propertiesScrollablePanel.Size = new System.Drawing.Size(293, 400);
             this.propertiesScrollablePanel.TabIndex = 19;
-            // 
-            // inventorTreeView
-            // 
-            this.inventorTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.inventorTreeView.Location = new System.Drawing.Point(3, 3);
-            this.inventorTreeView.Name = "inventorTreeView";
-            this.inventorTreeView.Size = new System.Drawing.Size(298, 365);
-            this.inventorTreeView.TabIndex = 12;
             // 
             // selectionLayoutPanel
             // 
@@ -483,6 +464,27 @@ namespace FieldExporter.Controls
             this.selectionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.selectionLayoutPanel.Size = new System.Drawing.Size(304, 400);
             this.selectionLayoutPanel.TabIndex = 20;
+            // 
+            // inventorTreeView
+            // 
+            this.inventorTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.inventorTreeView.Location = new System.Drawing.Point(3, 3);
+            this.inventorTreeView.Name = "inventorTreeView";
+            this.inventorTreeView.Size = new System.Drawing.Size(298, 365);
+            this.inventorTreeView.TabIndex = 12;
+            // 
+            // gamepieceProperties
+            // 
+            this.gamepieceProperties.AutoSize = true;
+            this.gamepieceProperties.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.dynamicLayoutPanel.SetColumnSpan(this.gamepieceProperties, 2);
+            this.gamepieceProperties.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gamepieceProperties.IsGamepiece = false;
+            this.gamepieceProperties.Location = new System.Drawing.Point(3, 29);
+            this.gamepieceProperties.MinimumSize = new System.Drawing.Size(1, 0);
+            this.gamepieceProperties.Name = "gamepieceProperties";
+            this.gamepieceProperties.Size = new System.Drawing.Size(246, 119);
+            this.gamepieceProperties.TabIndex = 11;
             // 
             // ComponentPropertiesForm
             // 

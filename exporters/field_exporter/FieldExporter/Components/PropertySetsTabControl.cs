@@ -82,6 +82,35 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
+        /// Translates the information in each ComponentPropertiesTabPage to a List of PhysicsGroups.
+        /// </summary>
+        /// <returns>The translation</returns>
+        public Exporter.Gamepiece[] TranslateToGamepieces()
+        {
+            List<Exporter.Gamepiece> translation = new List<Exporter.Gamepiece>();
+
+            foreach (TabPage t in TabPages)
+            {
+                if (t is ComponentPropertiesTabPage)
+                {
+                    ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
+
+                    tabPage.Invoke(new Action(() =>
+                    {
+                        Exporter.Gamepiece gp = tabPage.ChildForm.GetGamepiece();
+
+                        if (gp != null)
+                        {
+                            translation.Add(gp);
+                        }
+                    }));
+                }
+            }
+
+            return translation.ToArray();
+        }
+
+        /// <summary>
         /// Scans each nonexcluded InventorTreeView and determines if they contian the supplied key.
         /// </summary>
         /// <param name="key"></param>
