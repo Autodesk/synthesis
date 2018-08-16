@@ -11,7 +11,7 @@ namespace hel{
 
     void PCM::setSolenoids(uint8_t values){
         for(unsigned i = 0; i < solenoids.size(); i++){
-            solenoids[i] = hel::checkBitHigh(values, i);
+            solenoids[i] = checkBitHigh(values, i);
         }
     }
 

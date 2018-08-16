@@ -36,7 +36,7 @@ namespace hel{
         case DSError::Type::ERROR:
             return "ERROR";
         default:
-            throw UnhandledEnumConstantException("DSError::Type");
+            throw UnhandledEnumConstantException("hel::DSError::Type");
         }
     }
 
@@ -55,7 +55,7 @@ namespace hel{
     UnsupportedFeature::UnsupportedFeature()noexcept:UnsupportedFeature(""){}
 
     const char* UnsupportedFeature::what()const throw(){
-        std::string s = "Synthesis exception: Feature unsupported by Synthesis";
+        std::string s = "Synthesis exception: Unsupported feature";
         if(!details.empty()){
             s += ": " + details;
         }

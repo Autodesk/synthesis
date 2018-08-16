@@ -14,9 +14,9 @@ namespace hel{
     std::shared_ptr<SendData> SendDataManager::instance = nullptr;
     std::shared_ptr<ReceiveData> ReceiveDataManager::instance = nullptr;
 
-    std::recursive_mutex hel::RoboRIOManager::roborio_mutex;
-    std::recursive_mutex hel::SendDataManager::send_data_mutex;
-    std::recursive_mutex hel::ReceiveDataManager::receive_data_mutex;
+    std::recursive_mutex RoboRIOManager::roborio_mutex;
+    std::recursive_mutex SendDataManager::send_data_mutex;
+    std::recursive_mutex ReceiveDataManager::receive_data_mutex;
 
     void __attribute__((constructor)) printVersionInfo() {
         std::ifstream vm_info;
