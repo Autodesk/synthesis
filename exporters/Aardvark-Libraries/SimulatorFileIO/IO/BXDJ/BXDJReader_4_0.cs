@@ -904,7 +904,7 @@ public partial class BXDJSkeleton
                     robotSensor.conTypePortA = (SensorConnectionType)Enum.Parse(typeof(SensorConnectionType), reader.ReadElementContentAsString());
                     break;
                 case "SensorPortNumberB":
-                    // Assign a port tpye to the 1st port
+                    // Assign a port type to the 1st port
                     robotSensor.portB = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "SensorSignalTypeB":
