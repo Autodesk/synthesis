@@ -40,6 +40,7 @@ public class SSHClient
             using (SshClient client = new SshClient("127.0.0.1", 10022, "lvuser", ""))
             {
                 client.Connect();
+                client.RunCommand ("killall java && killall FRCUserProgram");
             }
         }).Start();
     }
