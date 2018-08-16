@@ -17,7 +17,7 @@ namespace hel{
         case MXPData::Config::I2C:
             return "I2C";
         default:
-            throw UnhandledEnumConstantException("MXPData::Config");
+            throw UnhandledEnumConstantException("hel::MXPData::Config");
         }
     }
 
