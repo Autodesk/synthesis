@@ -97,7 +97,7 @@ namespace Synthesis.FSM
         /// </summary>
         /// <param name="state"></param>
         /// <param name="pausePrevious"></param>
-        public void PushState(State state, bool pausePrevious)
+        private void PushState(State state, bool pausePrevious)
         {
             if (pausePrevious && CurrentState != null)
             {
