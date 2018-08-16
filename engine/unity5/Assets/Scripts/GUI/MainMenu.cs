@@ -73,7 +73,7 @@ namespace Synthesis.GUI
             updater = update.URL;
 
             string CurrentVersion = "4.2.0.0";
-            Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = CurrentVersion;
+            Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             var localVersion = new Version(CurrentVersion);
             var globalVersion = new Version(update.Version);
