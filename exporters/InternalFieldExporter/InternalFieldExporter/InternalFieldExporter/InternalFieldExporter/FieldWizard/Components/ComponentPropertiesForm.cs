@@ -69,6 +69,10 @@ namespace InternalFieldExporter.FieldWizard
             InteractionEnabled = false;
         }
 
+        /// <summary>
+        /// Gets the collider properties from the property set
+        /// </summary>
+        /// <returns>Colliders</returns>
         public PropertySet.PropertySetCollider GetCollider()
         {
             return colliderProperties.GetCollider();
@@ -92,7 +96,12 @@ namespace InternalFieldExporter.FieldWizard
             return dynamicCheckBox.Checked;
         }
 
+        /// <summary>
+        /// Returns the value of the joint check box
+        /// </summary>
+        /// <returns></returns>
         public bool IsJointed;
+       
 
         /// <summary>
         /// Returns the value of the mass numeric up down.

@@ -95,17 +95,20 @@ namespace InternalFieldExporter.FieldWizard
             int progressPercent = 0;
             int currentOccurrenceID = 0;
 
+            //Gets meshes and colliders and applies them to the property set
             foreach (ComponentOccurrence currentOccurrence in Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences)
             {
+                //Stops the export process
                 if (exporter.CancellationPending)
                 {
                     e.Cancel = true;
                     return;
                 }
 
+                //The progress bar % calculator and label
                 progressPercent = (int)Math.Floor((currentOccurrenceID / (double)numOccurrences) * 100.0);
                 exporter.ReportProgress(progressPercent, "Exporting... " + progressPercent + "%");
-
+                
                 if (currentOccurrence.Visible &&
                     currentOccurrence.ReferencedDocumentDescriptor != null &&
                     currentOccurrence.ReferencedDocumentDescriptor.ReferencedDocumentType == DocumentTypeEnum.kPartDocumentObject &&
@@ -116,6 +119,7 @@ namespace InternalFieldExporter.FieldWizard
                     outputNode.Position = Utilities.ToBXDVector(currentOccurrence.Transformation.Translation);
                     outputNode.Rotation = Utilities.QuaternionFromMatrix(currentOccurrence.Transformation);
 
+                    //Deals with meshes
                     if (!exportedMeshes.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
                     {
                         List<BXDAMesh.BXDASubMesh> outputMeshes = surfaceExporter.Export(currentOccurrence);
@@ -130,6 +134,7 @@ namespace InternalFieldExporter.FieldWizard
 
                     ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
                     
+                    //Deals with the colliders
                     if (componentProperties != null)
                     {
                         outputNode.PropertySetID = componentProperties.Name;
