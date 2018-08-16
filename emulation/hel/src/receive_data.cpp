@@ -7,11 +7,12 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-namespace {
-    const std::function<hel::Maybe<hel::EncoderManager>(hel::Maybe<std::string>)> liftedDeserialize = hel::Maybe<std::string>::lift<hel::EncoderManager>(hel::EncoderManager::deserialize);
-}
-
 namespace hel{
+
+    namespace detail {
+        const auto liftedDeserialize = hel::Maybe<std::string>::lift<hel::EncoderManager>(hel::EncoderManager::deserialize);
+    }
+
     hel::ReceiveData::ReceiveData():last_received_data(""),digital_hdrs(false), digital_mxp({}), joysticks({}), match_info({}), robot_mode({}), encoder_managers({}){}
 
     void hel::ReceiveData::updateShallow()const{
@@ -55,12 +56,12 @@ namespace hel{
 
     std::string hel::ReceiveData::toString()const{
         std::string s = "(";
-        s += "digital_hdrs:" + as_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(as_string))) + ", ";
-        s += "joysticks:" + as_string(joysticks, std::function<std::string(hel::Joystick)>(&Joystick::toString)) + ", ";
-        s += "digital_mxp:" + as_string(digital_mxp, std::function<std::string(hel::MXPData)>(&MXPData::serialize)) + ", ";
+        s += "digital_hdrs:" + asString(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(asString))) + ", ";
+        s += "joysticks:" + asString(joysticks, std::function<std::string(hel::Joystick)>(&Joystick::toString)) + ", ";
+        s += "digital_mxp:" + asString(digital_mxp, std::function<std::string(hel::MXPData)>(&MXPData::serialize)) + ", ";
         s += "match_info:" + match_info.toString() + ", ";
         s += "robot_mode:" + robot_mode.toString() + ", ";
-        s += "encoder_managers:" + as_string(encoder_managers, std::function<std::string(Maybe<EncoderManager>)>([&](Maybe<EncoderManager> a){
+        s += "encoder_managers:" + asString(encoder_managers, std::function<std::string(Maybe<EncoderManager>)>([&](Maybe<EncoderManager> a){
                                                                                                                      if(a){
                                                                                                                          return a.get().toString();
                                                                                                                      }
@@ -139,7 +140,7 @@ namespace hel{
                                                                               return Maybe<EncoderManager>();
                                                                           }
                                                                           Maybe<std::string> a = Maybe<std::string>(str);
-                                                                          return a.fmap(liftedDeserialize);
+                                                                          return a.fmap(detail::liftedDeserialize);
                                                                       }),
                     true);
             } catch(const std::exception& ex){
