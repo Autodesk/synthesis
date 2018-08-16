@@ -28,7 +28,7 @@ public class Serialization
         startinfo.UseShellExecute = false;
         startinfo.FileName = @"C:\Program Files\qemu\qemu-system-arm.exe";
         startinfo.WindowStyle = ProcessWindowStyle.Hidden;
-        startinfo.Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + EmulationDriverStation.emulationDir + "zImage" + " -dtb " + EmulationDriverStation.emulationDir + "zynq-zed.dtb" + " -display none -serial null -serial mon:stdio -localtime -append \"console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0\" -redir tcp:10022::22 -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd " + EmulationDriverStation.emulationDir + "rootfs.ext4";
+        startinfo.Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + EmulationDriverStation.emulationDir + "zImage" + " -dtb " + EmulationDriverStation.emulationDir + "zynq-zed.dtb" + " -display none -serial null -serial mon:stdio -localtime -append \"console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0 rw\" -redir tcp:10022::22 -redir tcp:11000::11000 -redir tcp:11001::11001 -redir tcp:2354::2354 -sd " + EmulationDriverStation.emulationDir + "rootfs.ext4";
         startinfo.Verb = "runas";
         proc = Process.Start(startinfo);
         sender.Start();
