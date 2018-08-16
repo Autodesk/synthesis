@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files\Autodesk\Inventor 2019\Bin\BxDRobotExporter\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\..\Program Files %28x86%29\Autodesk\Synthesis\Exporter\</OutputPath>
     <DefineConstants>TRACE;DEBUG;LITEMODE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
