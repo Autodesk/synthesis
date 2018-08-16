@@ -308,6 +308,9 @@
     <EmbeddedResource Include="FieldWizard\ConfirmMoveDialog.resx">
       <DependentUpon>ConfirmMoveDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FieldWizard\CrashForm.resx">
+      <DependentUpon>CrashForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FieldWizard\EnterFrictionDialog.resx">
       <DependentUpon>EnterFrictionDialog.cs</DependentUpon>
     </EmbeddedResource>

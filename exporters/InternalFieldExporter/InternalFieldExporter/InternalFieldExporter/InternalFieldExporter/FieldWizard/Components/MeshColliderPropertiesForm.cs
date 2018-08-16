@@ -21,9 +21,9 @@ namespace InternalFieldExporter.FieldWizard
         }
 
         /// <summary>
-        /// gets a collider form information contained in the MeshColliderPropertiesForm
+        /// gets a collider from information contained in the MeshColliderPropertiesForm
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A new MeshCollider</returns>
         PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
         {
             return new PropertySet.MeshCollider(convexCheckBox.Checked);

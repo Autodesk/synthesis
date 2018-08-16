@@ -20,6 +20,10 @@ namespace InternalFieldExporter.FieldWizard.Components
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Gets a new collider from the information contained in BoxColliderProperties
+        /// </summary>
+        /// <returns>A new box collider</returns>
         PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
         {
             return new PropertySet.BoxCollider(new BXDVector3(

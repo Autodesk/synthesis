@@ -12,7 +12,9 @@ namespace InternalFieldExporter.FieldWizard
 {
     public partial class CreatePropertySetForm : UserControl
     {
-
+        /// <summary>
+        /// The parent CreatePropertySetTabPage
+        /// </summary>
         private CreatePropertySetTabPage parentTabPage;
 
         /// <summary>

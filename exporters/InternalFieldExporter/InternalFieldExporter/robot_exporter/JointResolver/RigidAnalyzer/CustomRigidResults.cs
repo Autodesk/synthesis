@@ -19,6 +19,8 @@ public class CustomRigidResults
         Console.WriteLine("Building custom dataset");
         groups = new List<CustomRigidGroup>(results.RigidBodyGroups.Count);
         joints = new List<CustomRigidJoint>(results.RigidBodyJoints.Count);
+
+        //Sets groupID if not set and writes the RigidBodyGroups and RigidBodyJoints
         foreach (RigidBodyGroup group in results.RigidBodyGroups)
         {
             CustomRigidGroup tmp = new CustomRigidGroup(group);
@@ -33,6 +35,8 @@ public class CustomRigidResults
             }
             Console.Write("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
         }
+
+        //Adds joints to the RigidBody
         foreach (RigidBodyJoint joint in results.RigidBodyJoints)
         {
             joints.Add(new CustomRigidJoint(joint, groupIDToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupOne)], groupIDToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupTwo)]));

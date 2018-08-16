@@ -80,7 +80,8 @@ namespace InternalFieldExporter.FieldWizard
         private void exporter_DoWork(object sender, DoWorkEventArgs e)
         {
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
-
+            
+            //Adds propertysets to FieldDefinition
             foreach (PropertySet ps in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
             {
                 fieldDefinition.AddPropertySet(ps);
@@ -95,7 +96,7 @@ namespace InternalFieldExporter.FieldWizard
             int progressPercent = 0;
             int currentOccurrenceID = 0;
 
-            //Gets meshes and colliders and applies them to the property set
+            //Gets meshes and colliders and applies them to the property sets and FieldNode
             foreach (ComponentOccurrence currentOccurrence in Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences)
             {
                 //Stops the export process
@@ -116,14 +117,16 @@ namespace InternalFieldExporter.FieldWizard
                 {
                     FieldNode outputNode = new FieldNode(currentOccurrence.Name);
 
+                    //Sets the starting Position and Rotation of the FieldNode
                     outputNode.Position = Utilities.ToBXDVector(currentOccurrence.Transformation.Translation);
                     outputNode.Rotation = Utilities.QuaternionFromMatrix(currentOccurrence.Transformation);
 
-                    //Deals with meshes
+                    //Sets meshes
                     if (!exportedMeshes.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
                     {
                         List<BXDAMesh.BXDASubMesh> outputMeshes = surfaceExporter.Export(currentOccurrence);
 
+                        //Adds submeshes to the fieldDefinition
                         if (outputMeshes.Count > 0)
                         {
                             exportedMeshes.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
@@ -134,7 +137,7 @@ namespace InternalFieldExporter.FieldWizard
 
                     ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
                     
-                    //Deals with the colliders
+                    //Sets the colliders
                     if (componentProperties != null)
                     {
                         outputNode.PropertySetID = componentProperties.Name;
@@ -150,6 +153,7 @@ namespace InternalFieldExporter.FieldWizard
                                 tempMesh.meshes.Add(fieldDefinition.GetSubMesh(outputNode.SubMeshID));
                                 var colliders = ConvexHullCalculator.GetHull(tempMesh);
 
+                                //Adds colliders to the fieldDefinition
                                 if (colliders.Count > 0)
                                 {
                                     exportedColliders.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
@@ -160,8 +164,10 @@ namespace InternalFieldExporter.FieldWizard
                         }
                     }
 
+                    //Clears the old StringBuilder instance
                     pathBuilder.Clear();
 
+                    //Builds a new path for StringBuilder
                     foreach (ComponentOccurrence co in currentOccurrence.OccurrencePath)
                     {
                         pathBuilder.Append(co.Name + "/");

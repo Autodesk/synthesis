@@ -5,9 +5,10 @@ using Inventor;
 
 public class CustomRigidGroup
 {
-  
+    
     public List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
 
+    //Checks to see if the RigidBody is grounded
     public bool grounded;
 
     public string fullQualifier;
@@ -21,6 +22,10 @@ public class CustomRigidGroup
         return group.GroupID + "_" + group.Parent.Parent.Parent.Parent.InternalName + "_" + builder.ToString();
     }
 
+    /// <summary>
+    /// Adds a occurrence for each RigidBodyGroup
+    /// </summary>
+    /// <param name="group"></param>
     public CustomRigidGroup(RigidBodyGroup group)
     {
         foreach (ComponentOccurrence comp in group.Occurrences)
@@ -32,6 +37,10 @@ public class CustomRigidGroup
         fullQualifier = GetGroupQualifier(group);
     }
 
+    /// <summary>
+    /// returns a string that is tagged onto the end of the GroupID
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
         if (occurrences.Count == 1)
@@ -52,6 +61,11 @@ public class CustomRigidGroup
         return res;
     }
 
+    /// <summary>
+    /// Checks to see if object is CustomRigidGroup or a RigidBodyGroup
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object obj)
     {
         if ((obj is CustomRigidGroup))

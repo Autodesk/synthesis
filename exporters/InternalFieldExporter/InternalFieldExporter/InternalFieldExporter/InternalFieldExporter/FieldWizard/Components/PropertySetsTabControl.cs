@@ -38,6 +38,7 @@ namespace InternalFieldExporter.FieldWizard
 
             if (nameDialog.ShowDialog(this).Equals(DialogResult.OK))
             {
+                //Sets the name of the PropertiesTab or displays an error if the name is taken
                 if (TabPages.ContainsKey(nameDialog.nameTextBox.Text))
                 {
                     MessageBox.Show("Name is already taken.", "Invalid name.");
@@ -81,6 +82,7 @@ namespace InternalFieldExporter.FieldWizard
             }
             return translation;
         }
+
         /// <summary>
         /// Scans each nonexcluded InventorTreeView and determines if they contian the supplied key.
         /// </summary>
@@ -105,6 +107,7 @@ namespace InternalFieldExporter.FieldWizard
             }
             return false;
         }
+
         /// <summary>
         /// Returns the TabPage in which the given node is located.
         /// </summary>
@@ -125,6 +128,7 @@ namespace InternalFieldExporter.FieldWizard
             }
             return null;
         }
+
         /// <summary>
         /// Scans each nonexcluded InventorTreeView and removes nodes with the supplied key.
         /// </summary>
@@ -148,6 +152,7 @@ namespace InternalFieldExporter.FieldWizard
                 }
             }
         }
+
         /// <summary>
         /// Checks if interaction events are enabled before switching tabs.
         /// </summary>
@@ -172,6 +177,7 @@ namespace InternalFieldExporter.FieldWizard
                 }
             }
         }
+
         /// <summary>
         /// Adds a new tab if tabs already exist.
         /// </summary>
@@ -190,6 +196,7 @@ namespace InternalFieldExporter.FieldWizard
                 }
             }
         }
+
         /// <summary>
         /// Allows the user to right-click the tabs.
         /// </summary>

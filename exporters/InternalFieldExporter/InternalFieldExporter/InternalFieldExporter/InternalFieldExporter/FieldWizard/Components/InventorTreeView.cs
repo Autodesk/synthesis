@@ -38,7 +38,7 @@ namespace InternalFieldExporter
         /// </summary>
         /// <param name="component"></param>
         /// <param name="node"></param>
-        /// <returns></returns>
+        /// <returns>The node</returns>
         private TreeNode AddComponentChildren(ComponentOccurrence component, TreeNode node)
         {
             IEnumerator enumerator = component.SubOccurrences.GetEnumerator();
@@ -65,7 +65,7 @@ namespace InternalFieldExporter
         /// </summary>
         /// <param name="component"></param>
         /// <param name="node"></param>
-        /// <returns></returns>
+        /// <returns>The node</returns>
         private TreeNode AddComponentParents(ComponentOccurrence component, TreeNode node)
         {
             ComponentOccurrence parentOccurrence;
@@ -90,7 +90,7 @@ namespace InternalFieldExporter
         /// Returns the root of a node.
         /// </summary>
         /// <param name="node"></param>
-        /// <returns></returns>
+        /// <returns>The node</returns>
         private TreeNode FindRootNode(TreeNode node)
         {
             while (node.Parent != null)
@@ -105,7 +105,7 @@ namespace InternalFieldExporter
         /// </summary>
         /// <param name="component"></param>
         /// <param name="node"></param>
-        /// <returns>The node</returns>
+        /// <returns>The node with parent and child relations</returns>
         private TreeNode GenerateFullTree(ComponentOccurrence component, TreeNode node)
         {
             node = AddComponentChildren(component, node);
@@ -120,7 +120,7 @@ namespace InternalFieldExporter
         /// </summary>
         /// <param name="enumerator"></param>
         /// <param name="fullname"></param>
-        /// <returns></returns>
+        /// <returns>The component</returns>
         private ComponentOccurrence FindComponentByFullName(IEnumerator enumerator, string fullname)
         {
             ComponentOccurrence component = null;

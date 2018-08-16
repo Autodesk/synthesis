@@ -112,6 +112,11 @@ namespace InternalFieldExporter.FieldWizard
             Remove();
         }
 
+        /// <summary>
+        /// Allows the user the change the SetName
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void changeNameMenuItem_onClick(object sender, EventArgs e)
         {
             ChangeName();

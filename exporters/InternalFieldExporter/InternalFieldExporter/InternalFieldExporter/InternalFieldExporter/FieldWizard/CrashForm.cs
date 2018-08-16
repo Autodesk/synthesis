@@ -12,6 +12,10 @@ namespace InternalFieldExporter.FieldWizard
 {
     public partial class CrashForm : Form
     {
+        /// <summary>
+        /// Initializes a new instance of the CrashForm class
+        /// </summary>
+        /// <param name="error"></param>
         public CrashForm(string error)
         {
             InitializeComponent();

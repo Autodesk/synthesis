@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 public partial class SurfaceExporter
 {
+    /// <summary>
+    /// Clears the properties of an asset
+    /// </summary>
     public SurfaceExporter()
     {
         assets.Clear();
@@ -36,6 +39,7 @@ public partial class SurfaceExporter
     /// </summary>
     /// <param name="group">Group to export from</param>
     /// <param name="reporter">Progress reporter</param>
+    /// <returns>A list of meshes<returns>
     public BXDAMesh ExportAll(CustomRigidGroup group, Guid guid, BXDIO.ProgressReporter reporter = null)
     {
         // Create output mesh

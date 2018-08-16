@@ -26,6 +26,11 @@ namespace InternalFieldExporter.FieldWizard
         /// </summary>
         private CreatePropertySetForm childForm;
 
+        /// <summary>
+        /// Initializes a new instance of the CreatePropertySetTabPage
+        /// </summary>
+        /// <param name="physicsGroupsTabControl"></param>
+        /// <param name="name"></param>
         public CreatePropertySetTabPage(PropertySetsTabControl physicsGroupsTabControl, string name)
         {
             InitializeComponent();

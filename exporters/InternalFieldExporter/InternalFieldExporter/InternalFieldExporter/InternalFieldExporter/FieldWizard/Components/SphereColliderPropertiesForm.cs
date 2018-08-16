@@ -20,6 +20,10 @@ namespace InternalFieldExporter.FieldWizard.Components
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Gets the collider type selected by the user and sets it
+        /// </summary>
+        /// <returns>A new SphereCollider</returns>
         PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
         {
             return new PropertySet.SphereCollider((float)scaleUpDown.Value);
