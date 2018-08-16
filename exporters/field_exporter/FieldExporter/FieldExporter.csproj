@@ -337,7 +337,7 @@
   <Import Project="..\packages\Costura.Fody.3.1.0\build\Costura.Fody.targets" Condition="Exists('..\packages\Costura.Fody.3.1.0\build\Costura.Fody.targets')" />
   <Import Project="..\packages\Fody.3.1.4\build\Fody.targets" Condition="Exists('..\packages\Fody.3.1.4\build\Fody.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(TargetPath) "C:\Program Files (x86)\Autodesk\Synthesis\FieldExporter\" /Y /R</PostBuildEvent>
+    <PostBuildEvent>xcopy $(TargetDir.TrimEnd('\')) "C:\Program Files (x86)\Autodesk\Synthesis\FieldExporter\" /S /Y /R</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

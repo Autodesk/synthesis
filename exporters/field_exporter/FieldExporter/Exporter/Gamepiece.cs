@@ -8,9 +8,9 @@ namespace FieldExporter.Exporter
 {
     class Gamepiece
     {
-        public string id;
-        public Inventor.ComponentOccurrence component;
+        public string id = "";
+        public Inventor.ComponentOccurrence component = null;
         public uint holdingLimit = uint.MaxValue;
-        public BXDVector3 spawnpoint;
+        public BXDVector3 spawnpoint = new BXDVector3(0, 0, 0);
     }
 }
