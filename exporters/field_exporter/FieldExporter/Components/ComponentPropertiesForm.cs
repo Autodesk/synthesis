@@ -50,6 +50,7 @@ namespace FieldExporter.Controls
         public ComponentPropertiesForm(ComponentPropertiesTabPage tabPage)
         {
             InitializeComponent();
+            dynamicCheckBox_CheckedChanged(this, new EventArgs());
 
             Dock = DockStyle.Fill;
 
@@ -327,11 +328,13 @@ namespace FieldExporter.Controls
         {
             if (dynamicCheckBox.Checked)
             {
-                dynamicGroupBox.Enabled = true;
+                massNumericUpDown.Enabled = true;
+                //gamepieceGroupBox.Enabled = true;
             }
             else
             {
-                dynamicGroupBox.Enabled = false;
+                massNumericUpDown.Enabled = false;
+                //gamepieceGroupBox.Enabled = true;
                 massNumericUpDown.Value = 0;
             }
         }
