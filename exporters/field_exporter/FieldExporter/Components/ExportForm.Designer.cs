@@ -29,11 +29,9 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportForm));
-            this.browseButton = new System.Windows.Forms.Button();
-            this.filePathTextBox = new System.Windows.Forms.TextBox();
-            this.exportLocationLabel = new System.Windows.Forms.Label();
+            this.fieldNameTextBox = new System.Windows.Forms.TextBox();
+            this.fieldNameLabel = new System.Windows.Forms.Label();
             this.exportButton = new System.Windows.Forms.Button();
-            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.exportProgressBar = new System.Windows.Forms.ProgressBar();
             this.statusLabel = new System.Windows.Forms.Label();
             this.exporter = new System.ComponentModel.BackgroundWorker();
@@ -41,34 +39,24 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // browseButton
+            // fieldNameTextBox
             // 
-            this.browseButton.Location = new System.Drawing.Point(122, 6);
-            this.browseButton.Name = "browseButton";
-            this.browseButton.Size = new System.Drawing.Size(64, 24);
-            this.browseButton.TabIndex = 10;
-            this.browseButton.Text = "Browse";
-            this.browseButton.UseVisualStyleBackColor = true;
-            this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
-            // 
-            // filePathTextBox
-            // 
-            this.filePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.fieldNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.filePathTextBox.Location = new System.Drawing.Point(192, 6);
-            this.filePathTextBox.Name = "filePathTextBox";
-            this.filePathTextBox.ReadOnly = true;
-            this.filePathTextBox.Size = new System.Drawing.Size(402, 20);
-            this.filePathTextBox.TabIndex = 9;
+            this.fieldNameTextBox.Location = new System.Drawing.Point(75, 7);
+            this.fieldNameTextBox.Name = "fieldNameTextBox";
+            this.fieldNameTextBox.Size = new System.Drawing.Size(501, 20);
+            this.fieldNameTextBox.TabIndex = 9;
+            this.fieldNameTextBox.TextChanged += new System.EventHandler(this.fieldNameTextBox_TextChanged);
             // 
-            // exportLocationLabel
+            // fieldNameLabel
             // 
-            this.exportLocationLabel.AutoSize = true;
-            this.exportLocationLabel.Location = new System.Drawing.Point(6, 10);
-            this.exportLocationLabel.Name = "exportLocationLabel";
-            this.exportLocationLabel.Size = new System.Drawing.Size(84, 13);
-            this.exportLocationLabel.TabIndex = 8;
-            this.exportLocationLabel.Text = "Export Location:";
+            this.fieldNameLabel.AutoSize = true;
+            this.fieldNameLabel.Location = new System.Drawing.Point(6, 10);
+            this.fieldNameLabel.Name = "fieldNameLabel";
+            this.fieldNameLabel.Size = new System.Drawing.Size(63, 13);
+            this.fieldNameLabel.TabIndex = 8;
+            this.fieldNameLabel.Text = "Field Name:";
             // 
             // exportButton
             // 
@@ -81,11 +69,6 @@
             this.exportButton.Text = "Export";
             this.exportButton.UseVisualStyleBackColor = true;
             this.exportButton.Click += new System.EventHandler(this.exportButton_Click);
-            // 
-            // folderBrowserDialog
-            // 
-            this.folderBrowserDialog.Description = "Select the file path by which to export the BXDF file.";
-            this.folderBrowserDialog.ShowNewFolderButton = false;
             // 
             // exportProgressBar
             // 
@@ -103,9 +86,9 @@
             this.statusLabel.AutoSize = true;
             this.statusLabel.Location = new System.Drawing.Point(143, 275);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(160, 13);
+            this.statusLabel.Size = new System.Drawing.Size(138, 13);
             this.statusLabel.TabIndex = 12;
-            this.statusLabel.Text = "Please select an export location.";
+            this.statusLabel.Text = "Please specify a field name.";
             // 
             // exporter
             // 
@@ -118,10 +101,11 @@
             // pictureBox1
             // 
             this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
-            this.pictureBox1.Location = new System.Drawing.Point(9, 40);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 33);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(532, 221);
+            this.pictureBox1.Size = new System.Drawing.Size(582, 214);
             this.pictureBox1.TabIndex = 13;
             this.pictureBox1.TabStop = false;
             // 
@@ -130,18 +114,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(582, 352);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.exportProgressBar);
-            this.Controls.Add(this.browseButton);
-            this.Controls.Add(this.filePathTextBox);
-            this.Controls.Add(this.exportLocationLabel);
+            this.Controls.Add(this.fieldNameTextBox);
+            this.Controls.Add(this.fieldNameLabel);
             this.Controls.Add(this.exportButton);
             this.DoubleBuffered = true;
             this.Name = "ExportForm";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Load += new System.EventHandler(this.ExportForm_Load);
+            this.Size = new System.Drawing.Size(582, 352);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -149,12 +131,9 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button browseButton;
-        private System.Windows.Forms.TextBox filePathTextBox;
-        private System.Windows.Forms.Label exportLocationLabel;
+        private System.Windows.Forms.TextBox fieldNameTextBox;
+        private System.Windows.Forms.Label fieldNameLabel;
         private System.Windows.Forms.Button exportButton;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.ProgressBar exportProgressBar;
         private System.Windows.Forms.Label statusLabel;
         private System.ComponentModel.BackgroundWorker exporter;
