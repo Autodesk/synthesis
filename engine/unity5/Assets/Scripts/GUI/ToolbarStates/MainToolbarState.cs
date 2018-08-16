@@ -173,6 +173,9 @@ namespace Assets.Scripts.GUI
             }
         }
 
+        /// <summary>
+        /// Change field button callback
+        /// </summary>
         public void OnChangeFieldButtonPressed()
         {
             if (changeFieldPanel.activeSelf)
