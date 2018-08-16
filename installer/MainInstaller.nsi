@@ -183,12 +183,15 @@ SectionEnd
   
 Section "Uninstall"
 
+  MessageBox MB_YESNO "Would you like to remove your robot/replay files?" IDNO NawFam
+  RMDir /r /REBOOTOK $APPDATA\Synthesis
+  
+  NawFam:
   ; Remove registry keys
   DeleteRegKey HKLM SOFTWARE\Synthesis
 
   RMDir /r /REBOOTOK $INSTDIR
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark
-  RMDir /r /REBOOTOK $APPDATA\Synthesis
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
