@@ -62,7 +62,7 @@ namespace hel{
          * \brief The interpreted states of all the digital MXP outputs
          */
 
-        BoundsCheckedArray<hel::MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
+        BoundsCheckedArray<MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
 
         /**
          * \brief The interpreted states of all the digital header outputs
