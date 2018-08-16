@@ -81,14 +81,14 @@ namespace BxDRobotExporter.Wizard
 
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                if (node.GetSkeletalJoint() != null && !WizardData.Instance.WheelNodes.Contains(node))
+                if (node.GetSkeletalJoint() != null && !WizardData.Instance.WheelNodes.Contains(node))// create new part panels for every node
                 {
                     DefinePartPanel panel = new DefinePartPanel(node);
                     panels.Add(panel);
                     AddControlToNewTableRow(panel, DefinePartsLayout);
                     if (node.GetSkeletalJoint().cDriver != null)
                     {
-                        panel.refillValues(node.GetSkeletalJoint());
+                        panel.refillValues(node.GetSkeletalJoint());// refills the panel with existing driver settings
                     }
                 }
             }

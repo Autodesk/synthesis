@@ -35,6 +35,7 @@ namespace BxDRobotExporter.Wizard
         /// Dictionary associating node file names with their respective <see cref="RigidNode_Base"/>s
         /// </summary>
         private Dictionary<string, WheelSetupPanel> setupPanels = new Dictionary<string, WheelSetupPanel>();
+        // lists containing which wheels belong to which panel
         private List<string> leftOrder = new List<string>();
         private List<string> rightOrder = new List<string>();
         private List<string> leftBackOrder = new List<string>();
@@ -79,7 +80,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void DriveTrainDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (DriveTrainDropdown.SelectedIndex)
+            switch (DriveTrainDropdown.SelectedIndex)// depending on drive train type show or hide the corresponding groups and panels
             {
                 case 0: //Undefined
                     this.LeftWheelsGroup.Size = new System.Drawing.Size(224, 480);
@@ -142,7 +143,7 @@ namespace BxDRobotExporter.Wizard
                     break;
             }
 
-            if (DriveTrainDropdown.SelectedIndex > 0)
+            if (DriveTrainDropdown.SelectedIndex > 0)// if there is a drive train selected then enable the buttons, otherwise disable them until a drive train is selected
             {
                 NodeListBox.Enabled = true;
                 AutoFillButton.Enabled = true;
@@ -298,7 +299,25 @@ namespace BxDRobotExporter.Wizard
                 _initialized = value;
             }
         }
+        
+        public event Action ActivateNext;
+        private void OnActivateNext() => ActivateNext?.Invoke();
 
+        public event Action DeactivateNext;
+        private void OnDeactivateNext() => DeactivateNext?.Invoke();
+
+        public event Action<bool> SetEndEarly;
+        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
+
+        // Called when the next page needs to be re-initialized
+        public event InvalidatePageEventHandler InvalidatePage;
+        public void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
+        #endregion
+
+        /// <summary>
+        /// refills wheel panels from existing data in the exporter
+        /// </summary>
+        /// <param name="baseNode"> Top level node in the skeleton that we can read the other nodes off of.</param>
         public void FillFromPreviousSetup(RigidNode_Base baseNode)
         {
             this.DriveTrainDropdown.SelectedIndex = (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType;
@@ -311,7 +330,8 @@ namespace BxDRobotExporter.Wizard
                         node.GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL && node.GetSkeletalJoint().cDriver != null
                         && (node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))) != null)
                 {
-                    if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel) {
+                    if (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).isDriveWheel)
+                    {
                         this.DriveTrainDropdown.SelectedIndex = (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType;
                         switch (((WheelDriverMeta)node.GetSkeletalJoint().cDriver.GetInfo(typeof(WheelDriverMeta))).type)
                         {
@@ -354,22 +374,6 @@ namespace BxDRobotExporter.Wizard
                 }
             }
         }
-            
-        
-
-        public event Action ActivateNext;
-        private void OnActivateNext() => ActivateNext?.Invoke();
-
-        public event Action DeactivateNext;
-        private void OnDeactivateNext() => DeactivateNext?.Invoke();
-
-        public event Action<bool> SetEndEarly;
-        private void OnSetEndEarly(bool enabled) => SetEndEarly?.Invoke(enabled);
-
-        // Called when the next page needs to be re-initialized
-        public event InvalidatePageEventHandler InvalidatePage;
-        public void OnInvalidatePage() => InvalidatePage?.Invoke(typeof(DefineMovingPartsPage));
-        #endregion
 
 
         /// <summary>
@@ -400,7 +404,7 @@ namespace BxDRobotExporter.Wizard
             // Insert into appropriate order
             if (side == WheelSide.LEFT)
             {
-                if (insertBefore == null || !leftOrder.Contains(insertBefore))
+                if (insertBefore == null || !leftOrder.Contains(insertBefore))// determines where in the order the wheel should be placed
                     leftOrder.Add(nodeName);
                 else
                     leftOrder.Insert(leftOrder.IndexOf(insertBefore), nodeName);
@@ -509,7 +513,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="name">Name of the node to remove.</param>
         private void RemoveNodeFromPanel(string name)
         {
-            SetWheelSide(name, WheelSide.UNASSIGNED);
+            SetWheelSide(name, WheelSide.UNASSIGNED);// remove the wheel by simply setting form none
         }
 
         /// <summary>
@@ -757,7 +761,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void Field_DragEnter(object sender, DragEventArgs e)
         {
-            e.Effect = DragDropEffects.Move;
+            e.Effect = DragDropEffects.Move;// allows the user to drop the panel
         }
 
         /// <summary>
@@ -928,7 +932,9 @@ namespace BxDRobotExporter.Wizard
                 StandardAddInServer.Instance.SelectNode(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
             }
         }
-
+        /// <summary>
+        /// attemps to fill all wheels into the correct side group
+        /// </summary>
         private void AutoFill_Click(Object sender, EventArgs e) // Initializes autofill process
         {
             if (Utilities.GUI.SkeletonBase != null || Utilities.GUI.LoadRobotSkeleton()) // Load the robot skeleton
@@ -962,7 +968,9 @@ namespace BxDRobotExporter.Wizard
             // Refresh the UI with new wheel information
             UpdateUI();
         }
-
+        /// <summary>
+        ///Remove all wheels form the form
+        /// </summary>
         private void RemoveWheelsButton_Click(object sender, EventArgs e)
         {
             foreach (string name in leftOrder.ToList())
