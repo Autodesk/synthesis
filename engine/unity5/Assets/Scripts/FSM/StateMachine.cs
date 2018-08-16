@@ -27,7 +27,7 @@ namespace Synthesis.FSM
             get
             {
                 if (sceneGlobal == null)
-                    Debug.LogWarning("No global StateMachine instance has been defined!");
+                    Debug.LogError("No global StateMachine instance has been defined!");
 
                 return sceneGlobal;
             }
@@ -139,7 +139,6 @@ namespace Synthesis.FSM
 
             CurrentState.Pause();
             CurrentState.End();
-            CurrentState.StateMachine = null;
 
             DisableAllObjects(true);
 
