@@ -270,13 +270,13 @@ namespace hel{
     };
 
     /**
-     *\fn std::string as_string(DigitalSystem::DIOConfigurationException::Config config)
+     *\fn std::string asString(DigitalSystem::DIOConfigurationException::Config config)
      * \brief Format the DIOConfigurationException configuration as a string
      * \param config The configuration to convert
      * \return The configuration in string form
      */
 
-    std::string as_string(DigitalSystem::DIOConfigurationException::Config);
+    std::string asString(DigitalSystem::DIOConfigurationException::Config);
 }
 
 #endif
