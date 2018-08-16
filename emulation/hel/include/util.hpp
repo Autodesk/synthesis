@@ -101,7 +101,7 @@ namespace hel{
         }
 
         template<typename R>
-        inline static std::function<Maybe<R>(Maybe<T>)> lift(const std::function<R(T)>& f){
+        inline static auto lift(const std::function<R(T)>& f){
             return (std::function<Maybe<R>(Maybe<T>)>)[f](Maybe<T> arg) {
                 return Maybe<R>(f(arg._data));
             };
@@ -150,7 +150,7 @@ namespace hel{
      */
 
     template<typename T>
-    std::string as_string(const T& iterable, const std::function<std::string(typename T::value_type)>& to_s, const std::string& delimiter = ",", const bool& include_brackets = true){ //TODO use typename Func instead of std::function
+    std::string asString(const T& iterable, const std::function<std::string(typename T::value_type)>& to_s, const std::string& delimiter = ",", const bool& include_brackets = true){ //TODO use typename Func instead of std::function
         std::string s = "";
         if(include_brackets){
             s += "[";
@@ -177,7 +177,7 @@ namespace hel{
      */
 
     template<typename First, typename Second>
-    std::string as_string(const std::pair<First, Second>& a, const std::function<std::string(First)>& first_to_s, const std::function<std::string(Second)>& second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
+    std::string asString(const std::pair<First, Second>& a, const std::function<std::string(First)>& first_to_s, const std::function<std::string(Second)>& second_to_s, const std::string& delimiter = ",", const bool& include_brackets = true){
         std::string s = "";
         if(include_brackets){
             s += "[";
@@ -205,7 +205,7 @@ namespace hel{
      * \return The resulting string
      */
 
-    std::string as_string(bool);
+    std::string asString(bool);
 
     /**
      * \brief Hash function for a constant character array

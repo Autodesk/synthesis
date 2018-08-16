@@ -96,13 +96,13 @@ namespace hel{
     };
 
     /**
-     * \fn std::string as_string(DSError::Type type)
+     * \fn std::string asString(DSError::Type type)
      * \brief Formats a DSError::Type as a string
      * \param type The value to convert
      * \return The type formatted as a string
      */
 
-    std::string as_string(DSError::Type);
+    std::string asString(DSError::Type);
 
     /**
      * \brief An exception for enum constant comparisons which are not handled

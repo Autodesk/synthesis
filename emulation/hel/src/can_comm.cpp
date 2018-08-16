@@ -43,7 +43,7 @@ extern "C"{
                     i != hel::CANMotorController::SendCommandByteMask::SET_INVERTED &&
                     hel::checkBitHigh(command_byte,i)
                     ){
-                    std::cerr<<"Synthesis warning: Unsupported feature: Writing to CAN motor controller ("<<as_string(target_type)<<" with ID "<<((unsigned)controller_id)<<") using unknown command data byte "<<((unsigned)command_byte)<<" (bit "<<i<<")\n";
+                    std::cerr<<"Synthesis warning: Unsupported feature: Writing to CAN motor controller ("<<asString(target_type)<<" with ID "<<((unsigned)controller_id)<<") using unknown command data byte "<<((unsigned)command_byte)<<" (bit "<<i<<")\n";
                 }
             }
             break;
@@ -57,7 +57,7 @@ extern "C"{
         }
         case hel::CANDevice::Type::UNKNOWN:
         case hel::CANDevice::Type::PDP:
-            std::cerr<<"Synthesis warning: Attempting to write to unsupported CAN device (" + as_string(target_type) + ") using message ID "<<messageID<<"\n";
+            std::cerr<<"Synthesis warning: Attempting to write to unsupported CAN device (" + asString(target_type) + ") using message ID "<<messageID<<"\n";
             break;
         default:
             throw hel::UnhandledEnumConstantException("hel::CANDevice::Type");
@@ -78,9 +78,9 @@ extern "C"{
             uint8_t device_id = hel::CANDevice::pullDeviceID(*messageID);
             auto instance = hel::RoboRIOManager::getInstance();
             if(instance.first->can_motor_controllers.find(device_id) == instance.first->can_motor_controllers.end()){
-                std::cerr<<"Synthesis warning: Attempting to read from missing CAN motor controller (" + as_string(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
+                std::cerr<<"Synthesis warning: Attempting to read from missing CAN motor controller (" + asString(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
             } else{
-                std::cerr<<"Synthesis warning: Unsupported feature: Attempting to read from CAN motor controller (" + as_string(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
+                std::cerr<<"Synthesis warning: Unsupported feature: Attempting to read from CAN motor controller (" + asString(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
                 /*
                   if(hel::compareBits(*messageID, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
                   hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array = instance.first->can_motor_controllers[device_id].getSpeedData();
@@ -96,7 +96,7 @@ extern "C"{
         case hel::CANDevice::Type::PCM:
         case hel::CANDevice::Type::UNKNOWN:
         case hel::CANDevice::Type::PDP:
-            std::cerr<<"Synthesis warning: Unsupported feature: Attempting to read from CAN device (" + as_string(target_type) + ") using message ID "<<*messageID<<"\n";
+            std::cerr<<"Synthesis warning: Unsupported feature: Attempting to read from CAN device (" + asString(target_type) + ") using message ID "<<*messageID<<"\n";
             break;
         default:
             throw hel::UnhandledEnumConstantException("hel::CANDevice::Type");

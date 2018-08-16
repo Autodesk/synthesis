@@ -3,7 +3,7 @@
 namespace hel{
     std::string DSError::toString()const{
         std::string s = "(";
-        s += "type:" + as_string(type) + ", ";
+        s += "type:" + asString(type) + ", ";
         s += "error_code:" + std::to_string(error_code) + ", ";
         s += "details:" + details + ", ";
         s += "location:" + location + ", ";
@@ -29,7 +29,7 @@ namespace hel{
 #undef COPY
     }
 
-    std::string as_string(DSError::Type t){
+    std::string asString(DSError::Type t){
         switch(t){
         case DSError::Type::WARNING:
             return "WARNING";

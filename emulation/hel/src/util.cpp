@@ -9,7 +9,7 @@ namespace hel{
         }
     }
 
-    std::string as_string(bool input){
+    std::string asString(bool input){
         return input ? "1" : "0";
     }
 }

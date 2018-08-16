@@ -119,7 +119,7 @@ namespace hel{
 #undef COPY
     }
 
-    std::string as_string(DigitalSystem::DIOConfigurationException::Config config){
+    std::string asString(DigitalSystem::DIOConfigurationException::Config config){
         switch(config){
         case DigitalSystem::DIOConfigurationException::Config::DI:
             return "digital input";
@@ -133,7 +133,7 @@ namespace hel{
     }
 
     const char* DigitalSystem::DIOConfigurationException::what()const throw(){
-        std::string s = "Synthesis exception: digital IO failed attempting " + as_string(expected_configuration) + " but configured for " + as_string(configuration) + " on digital port " + std::to_string(port);
+        std::string s = "Synthesis exception: digital IO failed attempting " + asString(expected_configuration) + " but configured for " + asString(configuration) + " on digital port " + std::to_string(port);
         return s.c_str();
     }
 
@@ -477,7 +477,7 @@ namespace hel{
             for(unsigned i = 0; i < findMostSignificantBit(value); i++){
                 MXPData::Config mxp_config = DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
                 if(mxp_config == MXPData::Config::I2C || mxp_config == MXPData::Config::SPI){
-                    std::cerr<<"Synthesis warning: Unsupported feature: Configuring digital MXP input "<<i<<" for "<<as_string(mxp_config)<<"\n";
+                    std::cerr<<"Synthesis warning: Unsupported feature: Configuring digital MXP input "<<i<<" for "<<asString(mxp_config)<<"\n";
                 }
             }
 

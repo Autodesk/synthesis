@@ -62,7 +62,7 @@ namespace hel{
         return control_word;
     }
 
-    std::string as_string(RobotMode::Mode mode){
+    std::string asString(RobotMode::Mode mode){
         switch(mode){
         case RobotMode::Mode::AUTONOMOUS:
             return "AUTONOMOUS";
@@ -100,22 +100,22 @@ namespace hel{
 
     std::string RobotMode::serialize()const{
         std::string s = "{";
-        s += "\"mode\":" + quote(as_string(mode)) + ", ";
-        s += "\"enabled\":" + as_string(enabled) + ", ";
-        s += "\"emergency_stopped\":" + as_string(emergency_stopped) + ", ";
-        s += "\"fms_attached\":" + as_string(fms_attached) + ", ";
-        s += "\"ds_attached\":" + as_string(ds_attached);
+        s += "\"mode\":" + quote(asString(mode)) + ", ";
+        s += "\"enabled\":" + asString(enabled) + ", ";
+        s += "\"emergency_stopped\":" + asString(emergency_stopped) + ", ";
+        s += "\"fms_attached\":" + asString(fms_attached) + ", ";
+        s += "\"ds_attached\":" + asString(ds_attached);
         s += "}";
         return s;
     }
 
     std::string RobotMode::toString()const{
         std::string s = "(";
-        s += "mode:" + as_string(mode) + ", ";
-        s += "enabled:" + as_string(enabled) + ", ";
-        s += "emergency_stopped:" + as_string(emergency_stopped) + ", ";
-        s += "fms_attached:" + as_string(fms_attached) + ", ";
-        s += "ds_attached:" + as_string(ds_attached);
+        s += "mode:" + asString(mode) + ", ";
+        s += "enabled:" + asString(enabled) + ", ";
+        s += "emergency_stopped:" + asString(emergency_stopped) + ", ";
+        s += "fms_attached:" + asString(fms_attached) + ", ";
+        s += "ds_attached:" + asString(ds_attached);
         s += ")";
         return s;
     }
