@@ -11,8 +11,8 @@ namespace hel{
      * \brief Manager for HEL encoder data
      *
      * The Ni FPGA references either a tCounter or tEncoder object when polling encoder data depending on
-     * configuration. This class is used to map engine encoder data to either a hel::FPGAEncoder or a
-     * hel::Counter depending on robot model export data to ensure the user code finds encoder data where
+     * configuration. This class is used to map engine encoder data to either an FPGAEncoder or a
+     * Counter depending on robot model export data to ensure the user code finds encoder data where
      * it expects it
      */
 

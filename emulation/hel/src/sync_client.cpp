@@ -53,7 +53,7 @@ namespace hel {
             try {
                 while(1) {
                     json_string = readJSONPacket(socket,rest);
-                    auto instance = hel::ReceiveDataManager::getInstance();
+                    auto instance = ReceiveDataManager::getInstance();
                     instance.first->deserializeShallow(json_string);
                     instance.first->updateShallow();
                     instance.second.unlock();
@@ -61,7 +61,7 @@ namespace hel {
                 }
             } catch(std::system_error) {
                 std::cerr << "Synthesis warning: Receiver socket disconnected. User code will continue to run, but inputs will be set to default.\n";
-                auto instance = hel::ReceiveDataManager::getInstance();
+                auto instance = ReceiveDataManager::getInstance();
                 instance.first->deserializeDeep(std::string(DEFAULT_DESERIALIZATION_DATA));
                 instance.first->updateDeep();
                 instance.second.unlock();

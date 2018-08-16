@@ -352,7 +352,7 @@ namespace hel{
         }
 
         FPGAEncoderManager(uint8_t i):index(0){
-            assert(i < hel::FPGAEncoder::NUM_ENCODERS);
+            assert(i < FPGAEncoder::NUM_ENCODERS);
             index = i;
         }
     };

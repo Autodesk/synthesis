@@ -62,7 +62,7 @@ namespace hel{
 
     public:
         CounterManager(uint8_t i):index(0){
-            assert(i < hel::Counter::MAX_COUNTER_COUNT);
+            assert(i < Counter::MAX_COUNTER_COUNT);
             index = i;
         }
 
@@ -75,31 +75,31 @@ namespace hel{
         }
 
         tOutput readOutput(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getCurrentOutput();
         }
 
         bool readOutput_Direction(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getCurrentOutput().Direction;
         }
 
         int32_t readOutput_Value(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getCurrentOutput().Value;
         }
 
         void writeConfig(tConfig value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.first->counters[index].setConfig(value);
             instance.second.unlock();
         }
 
         void writeConfig_UpSource_Channel(uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.UpSource_Channel = value;
             instance.first->counters[index].setConfig(config);
@@ -107,7 +107,7 @@ namespace hel{
         }
 
         void writeConfig_UpSource_Module(uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.UpSource_Module = value;
             instance.first->counters[index].setConfig(config);
@@ -115,7 +115,7 @@ namespace hel{
         }
 
         void writeConfig_UpSource_AnalogTrigger(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.UpSource_AnalogTrigger = value;
             instance.first->counters[index].setConfig(config);
@@ -123,7 +123,7 @@ namespace hel{
         }
 
         void writeConfig_DownSource_Channel(uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.DownSource_Channel = value;
             instance.first->counters[index].setConfig(config);
@@ -131,7 +131,7 @@ namespace hel{
         }
 
         void writeConfig_DownSource_Module(uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.DownSource_Module = value;
             instance.first->counters[index].setConfig(config);
@@ -139,7 +139,7 @@ namespace hel{
         }
 
         void writeConfig_DownSource_AnalogTrigger(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.DownSource_AnalogTrigger = value;
             instance.first->counters[index].setConfig(config);
@@ -147,7 +147,7 @@ namespace hel{
         }
 
         void writeConfig_IndexSource_Channel(uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.IndexSource_Channel = value;
             instance.first->counters[index].setConfig(config);
@@ -155,7 +155,7 @@ namespace hel{
         }
 
         void writeConfig_IndexSource_Module(uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.IndexSource_Module = value;
             instance.first->counters[index].setConfig(config);
@@ -163,7 +163,7 @@ namespace hel{
         }
 
         void writeConfig_IndexSource_AnalogTrigger(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.IndexSource_AnalogTrigger = value;
             instance.first->counters[index].setConfig(config);
@@ -171,7 +171,7 @@ namespace hel{
         }
 
         void writeConfig_IndexActiveHigh(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.IndexActiveHigh = value;
             instance.first->counters[index].setConfig(config);
@@ -179,7 +179,7 @@ namespace hel{
         }
 
         void writeConfig_IndexEdgeSensitive(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.IndexEdgeSensitive = value;
             instance.first->counters[index].setConfig(config);
@@ -187,7 +187,7 @@ namespace hel{
         }
 
         void writeConfig_UpRisingEdge(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.UpRisingEdge = value;
             instance.first->counters[index].setConfig(config);
@@ -195,7 +195,7 @@ namespace hel{
         }
 
         void writeConfig_UpFallingEdge(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.UpFallingEdge = value;
             instance.first->counters[index].setConfig(config);
@@ -203,7 +203,7 @@ namespace hel{
         }
 
         void writeConfig_DownRisingEdge(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.DownRisingEdge = value;
             instance.first->counters[index].setConfig(config);
@@ -211,7 +211,7 @@ namespace hel{
         }
 
         void writeConfig_DownFallingEdge(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.DownFallingEdge = value;
             instance.first->counters[index].setConfig(config);
@@ -219,7 +219,7 @@ namespace hel{
         }
 
         void writeConfig_Mode(uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.Mode = value;
             instance.first->counters[index].setConfig(config);
@@ -227,7 +227,7 @@ namespace hel{
         }
 
         void writeConfig_PulseLengthThreshold(uint16_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tConfig config = instance.first->counters[index].getConfig();
             config.PulseLengthThreshold = value;
             instance.first->counters[index].setConfig(config);
@@ -235,133 +235,133 @@ namespace hel{
         }
 
         tConfig readConfig(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig();
         }
 
         uint8_t readConfig_UpSource_Channel(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().UpSource_Channel;
         }
 
         uint8_t readConfig_UpSource_Module(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().UpSource_Module;
         }
 
         bool readConfig_UpSource_AnalogTrigger(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().UpSource_AnalogTrigger;
         }
 
         uint8_t readConfig_DownSource_Channel(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().DownSource_Channel;
         }
 
         uint8_t readConfig_DownSource_Module(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().DownSource_Module;
         }
 
         bool readConfig_DownSource_AnalogTrigger(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().DownSource_AnalogTrigger;
         }
 
         uint8_t readConfig_IndexSource_Channel(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().IndexSource_Channel;
         }
 
         uint8_t readConfig_IndexSource_Module(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().IndexSource_Module;
         }
 
         bool readConfig_IndexSource_AnalogTrigger(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().IndexSource_AnalogTrigger;
         }
 
         bool readConfig_IndexActiveHigh(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().IndexActiveHigh;
         }
 
         bool readConfig_IndexEdgeSensitive(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().IndexEdgeSensitive;
         }
 
         bool readConfig_UpRisingEdge(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().UpRisingEdge;
         }
 
         bool readConfig_UpFallingEdge(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().UpFallingEdge;
         }
 
         bool readConfig_DownRisingEdge(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().DownRisingEdge;
         }
 
         bool readConfig_DownFallingEdge(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().DownFallingEdge;
         }
 
         uint8_t readConfig_Mode(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().Mode;
         }
 
         uint16_t readConfig_PulseLengthThreshold(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getConfig().PulseLengthThreshold;
         }
 
         tTimerOutput readTimerOutput(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getTimerOutput();
         }
 
         uint32_t readTimerOutput_Period(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getTimerOutput().Period;
         }
 
         int8_t readTimerOutput_Count(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getTimerOutput().Count;
         }
 
         bool readTimerOutput_Stalled(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getTimerOutput().Stalled;
         }
@@ -373,13 +373,13 @@ namespace hel{
         }
 
         void writeTimerConfig(tTimerConfig value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.first->counters[index].setTimerConfig(value);
             instance.second.unlock();
         }
 
         void writeTimerConfig_StallPeriod(uint32_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tTimerConfig timer_config = instance.first->counters[index].getTimerConfig();
             timer_config.StallPeriod = value;
             instance.first->counters[index].setTimerConfig(timer_config);
@@ -387,7 +387,7 @@ namespace hel{
         }
 
         void writeTimerConfig_AverageSize(uint8_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tTimerConfig timer_config = instance.first->counters[index].getTimerConfig();
             timer_config.AverageSize = value;
             instance.first->counters[index].setTimerConfig(timer_config);
@@ -395,7 +395,7 @@ namespace hel{
         }
 
         void writeTimerConfig_UpdateWhenEmpty(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             tTimerConfig timer_config = instance.first->counters[index].getTimerConfig();
             timer_config.UpdateWhenEmpty = value;
             instance.first->counters[index].setTimerConfig(timer_config);
@@ -403,25 +403,25 @@ namespace hel{
         }
 
         tTimerConfig readTimerConfig(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getTimerConfig();
         }
 
         uint32_t readTimerConfig_StallPeriod(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getTimerConfig().StallPeriod;
         }
 
         uint8_t readTimerConfig_AverageSize(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getTimerConfig().AverageSize;
         }
 
         bool readTimerConfig_UpdateWhenEmpty(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->counters[index].getTimerConfig().UpdateWhenEmpty;
         }
