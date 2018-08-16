@@ -168,6 +168,8 @@ namespace hel{
      */
 
     std::string unquote(std::string);
+
+    std::string formatJSON(std::string);
 }
 
 #endif
