@@ -86,6 +86,8 @@ namespace Assets.Scripts.GUI
 
         }
 
+        internal static Serialization s;
+
         private void CloseHelpMenu()
         {
             helpMenu.SetActive(false);
