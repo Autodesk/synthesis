@@ -31,6 +31,15 @@ namespace BXDJ
 		///
 		Joint(RigidNode *, core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
 
+		///
+		/// Creates a joint between an existing RigidNode and one that will be created.
+		/// \param parent RigidNode that will serve as the parent of the joint.
+		/// \param fusionJoint The Fusion as-built joint to base the new Joint off of.
+		/// \param parentOccurrence The Fusion occurrence in the Fusion joint that is owned by the parent RigidNode.
+		///                         The other occurrence in the Fusion joint will become the primary occurrence for the new child RigidNode.
+		///
+		Joint(RigidNode *, core::Ptr<fusion::AsBuiltJoint>, core::Ptr<fusion::Occurrence>);
+
 		RigidNode * getParent() const; ///< \return The parent RigidNode of the Joint.
 		std::shared_ptr<RigidNode> getChild() const; ///< \return The child RigidNode of the Joint.
 		Vector3<> getParentBasePoint() const; ///< \return The point in space at which the parent occurrence is connected to the child occurrence in Fusion.
@@ -58,7 +67,8 @@ namespace BXDJ
 
 	private:
 		OneTwo parentOcc; ///< Specifies which occurrence in the Fusion joint is recognized as the parent.
-		core::Ptr<fusion::Joint> fusionJoint; ///< The Fusion joint used to create this Joint.
+		core::Ptr<fusion::Joint> fusionJoint = nullptr; ///< The Fusion joint used to create this Joint.
+		core::Ptr<fusion::AsBuiltJoint> fusionAsBuiltJoint = nullptr; ///< The Fusion as-built joint used to create this Joint.
 		RigidNode * parent; ///< The RigidNode that this Joint is a child of.
 		std::shared_ptr<RigidNode> child; ///< The RigidNode that is a child of this Joint.
 		std::unique_ptr<Driver> driver; ///< The Driver applied to this Joint.
