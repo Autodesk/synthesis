@@ -28,30 +28,50 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            this.gamepieceGroupbox = new System.Windows.Forms.GroupBox();
+            this.gamepieceCheckBox = new System.Windows.Forms.CheckBox();
+            this.gamepieceGroupbox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // label1
+            // gamepieceGroupbox
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(104, 80);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "TEST";
+            this.gamepieceGroupbox.Controls.Add(this.gamepieceCheckBox);
+            this.gamepieceGroupbox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gamepieceGroupbox.Location = new System.Drawing.Point(0, 0);
+            this.gamepieceGroupbox.Name = "gamepieceGroupbox";
+            this.gamepieceGroupbox.Size = new System.Drawing.Size(250, 100);
+            this.gamepieceGroupbox.TabIndex = 0;
+            this.gamepieceGroupbox.TabStop = false;
+            // 
+            // gamepieceCheckBox
+            // 
+            this.gamepieceCheckBox.AutoSize = true;
+            this.gamepieceCheckBox.Location = new System.Drawing.Point(6, 0);
+            this.gamepieceCheckBox.Name = "gamepieceCheckBox";
+            this.gamepieceCheckBox.Size = new System.Drawing.Size(80, 17);
+            this.gamepieceCheckBox.TabIndex = 0;
+            this.gamepieceCheckBox.Text = "Gamepiece";
+            this.gamepieceCheckBox.UseVisualStyleBackColor = true;
             // 
             // GamepiecePropertiesForm
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.Controls.Add(this.label1);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Controls.Add(this.gamepieceGroupbox);
+            this.MinimumSize = new System.Drawing.Size(250, 0);
             this.Name = "GamepiecePropertiesForm";
-            this.Size = new System.Drawing.Size(326, 165);
+            this.Size = new System.Drawing.Size(250, 100);
+            this.gamepieceGroupbox.ResumeLayout(false);
+            this.gamepieceGroupbox.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.GroupBox gamepieceGroupbox;
+        private System.Windows.Forms.CheckBox gamepieceCheckBox;
     }
 }

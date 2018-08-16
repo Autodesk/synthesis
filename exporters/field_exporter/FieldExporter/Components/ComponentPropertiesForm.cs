@@ -329,12 +329,13 @@ namespace FieldExporter.Controls
             if (dynamicCheckBox.Checked)
             {
                 massNumericUpDown.Enabled = true;
-                //gamepieceGroupBox.Enabled = true;
+                gamepieceProperties.Enabled = true;
             }
             else
             {
                 massNumericUpDown.Enabled = false;
-                //gamepieceGroupBox.Enabled = true;
+                gamepieceProperties.IsGamepiece = false;
+                gamepieceProperties.Enabled = false;
                 massNumericUpDown.Value = 0;
             }
         }
