@@ -39,7 +39,7 @@
             this.createButton.ImageKey = "CreateImage.png";
             this.createButton.Location = new System.Drawing.Point(268, 190);
             this.createButton.Name = "createButton";
-            this.createButton.Size = new System.Drawing.Size(64, 32);
+            this.createButton.Size = new System.Drawing.Size(64, 23);
             this.createButton.TabIndex = 3;
             this.createButton.Text = "Create";
             this.createButton.UseVisualStyleBackColor = true;
