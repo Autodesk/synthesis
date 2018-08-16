@@ -98,6 +98,15 @@ namespace FieldExporter.Controls
         }
 
         /// <summary>
+        /// Returns the configured gamepiece settings, or null if not a gamepiece.
+        /// </summary>
+        /// <returns></returns>
+        public Exporter.Gamepiece GetGamepiece()
+        {
+            return gamepieceProperties.GetGamepiece(ParentTabPage.Name);
+        }
+
+        /// <summary>
         /// Enables interaction events with Inventor.
         /// </summary>
         public void EnableInteractionEvents()

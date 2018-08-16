@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace FieldExporter.Exporter
 {
-    class FieldProperties
+    public class FieldProperties
     {
         BXDVector3[] spawnpoints;
         Gamepiece[] gamepieces;

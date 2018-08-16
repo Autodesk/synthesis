@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace FieldExporter.Exporter
 {
-    class Gamepiece
+    public class Gamepiece
     {
+        public Gamepiece(string id, BXDVector3 spawnpoint)
+        {
+            this.id = id;
+            this.spawnpoint = spawnpoint;
+        }
+
         public string id = "";
-        public Inventor.ComponentOccurrence component = null;
-        public uint holdingLimit = uint.MaxValue;
+        public uint holdingLimit = 1; // uint.MaxValue;
         public BXDVector3 spawnpoint = new BXDVector3(0, 0, 0);
     }
 }

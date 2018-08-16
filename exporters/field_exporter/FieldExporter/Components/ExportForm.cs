@@ -73,7 +73,8 @@ namespace FieldExporter.Components
 
         private void ExportFieldData(string folder)
         {
-            Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints(), new Exporter.Gamepiece[0]);
+            Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints(),
+                                                                               Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToGamepieces());
 
             fieldProps.Write(folder + "\\field_data.xml");
         }
