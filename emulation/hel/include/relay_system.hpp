@@ -77,13 +77,13 @@ namespace hel{
     };
 
     /**
-     * \fn std::string as_string(RelaySystem::State state)
+     * \fn std::string asString(RelaySystem::State state)
      * \brief Format a RelaySystem::State as a string
      * \param state The state to convert
      * \return The resulting string
      */
 
-    std::string as_string(RelaySystem::State);
+    std::string asString(RelaySystem::State);
 }
 
 #endif

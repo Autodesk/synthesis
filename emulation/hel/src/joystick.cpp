@@ -110,15 +110,15 @@ namespace hel{
 
     std::string Joystick::toString()const{
         std::string s = "(";
-        s += "is_xbox:" + as_string(is_xbox) + ", ";
+        s += "is_xbox:" + asString(is_xbox) + ", ";
         s += "type:" + std::to_string(type) + ", ";
         s += "name:" + name + ", ";
         s += "buttons:" + std::to_string(buttons) + ", ";
         s += "button_count:" + std::to_string((int)button_count) + ", ";
-        s += "axes:" + as_string(axes, std::function<std::string(int8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += "axes:" + asString(axes, std::function<std::string(int8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
         s += "axis_count:" + std::to_string(axis_count) + ", ";
-        s += "axis_types" + as_string(axis_types, std::function<std::string(uint8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
-        s += "povs:" + as_string(povs, std::function<std::string(int16_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += "axis_types" + asString(axis_types, std::function<std::string(uint8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
+        s += "povs:" + asString(povs, std::function<std::string(int16_t)>(static_cast<std::string(*)(int)>(std::to_string))) + ", ";
         s += "pov_count:" + std::to_string(pov_count) +", ";
         s += "outputs:" + std::to_string(outputs) + ", ";
         s += "left_rumble:" + std::to_string(left_rumble) + ", ";
@@ -128,7 +128,7 @@ namespace hel{
     }
     std::string Joystick::serialize()const{
         std::string s = "{";
-        s += "\"is_xbox\":" + as_string(is_xbox) + ", ";
+        s += "\"is_xbox\":" + asString(is_xbox) + ", ";
         s += "\"type\":" + std::to_string(type) + ", ";
         s += "\"name\":" + hel::quote(name) + ", ";
         s += "\"buttons\":" + std::to_string(buttons) + ", ";

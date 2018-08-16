@@ -4,7 +4,7 @@
 #include "error.hpp"
 
 namespace hel{
-    std::string as_string(MXPData::Config config){
+    std::string asString(MXPData::Config config){
         switch(config){
         case MXPData::Config::DI:
             return "DI";
@@ -49,14 +49,14 @@ namespace hel{
 
     std::string MXPData::toString()const{
         std::string s = "(";
-        s += "config:" + as_string(config) + ", ";
+        s += "config:" + asString(config) + ", ";
         s += "value:" + std::to_string(value) + ")";
         return s;
     }
 
     std::string MXPData::serialize()const{
         std::string s = "{";
-        s += "\"config\":" + quote(as_string(config)) + ", ";
+        s += "\"config\":" + quote(asString(config)) + ", ";
         s += "\"value\":" + std::to_string(value);
         s += "}";
         return s;

@@ -35,7 +35,7 @@ namespace hel{
         return State::OFF;
     }
 
-    std::string as_string(RelaySystem::State state){
+    std::string asString(RelaySystem::State state){
         switch(state){
         case RelaySystem::State::OFF:
             return "OFF";
