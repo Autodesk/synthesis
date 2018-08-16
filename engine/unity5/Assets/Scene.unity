@@ -10433,6 +10433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7f6358fcc04324986d53762c001210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  settingsMode: {fileID: 0}
   DefaultButtonImage: {fileID: 21300000, guid: e3bb53348c2be6d48a29b7c9ad079cf3, type: 3}
   ActiveButtonImage: {fileID: 21300000, guid: fb673c560cd7b084a9c918ac244dbca8, type: 3}
 --- !u!1 &221755171
@@ -15847,7 +15848,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: a176e5b61928d4c4c861d0fb25b72647, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 542c9acfc5bfb6b4982924770b10695f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -30553,7 +30554,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 6f35d95409b371f4c9096c619faad894, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 377ce23f381e19a46ad60e0228c69115, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -77164,8 +77165,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4350195affeb7684985229f088d2fe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalButton: {fileID: 21300000, guid: d9b1974c2855cfe49b6afc91546d7b05, type: 3}
-  highlightButton: {fileID: 21300000, guid: 25a9518ac00e7004da2b4a9d969874f9, type: 3}
 --- !u!114 &1741231146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77222,7 +77221,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ac4f674ccbdf5144b6b60df75f9bed6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorManager: {fileID: 0}
 --- !u!114 &1741231151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94098,6 +94096,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PresetClones: []
+  PresetsList: []
   Wheels: []
   Bases: []
   Manipulators: []
