@@ -137,4 +137,40 @@ namespace hel{
         input.erase(start, label.size());
         return pullObject(input,start);
     }
+
+    void indent(std::string& input, int bracket_count){
+        for(int i = 0; i < bracket_count; i++){
+            input += "\t";
+        }
+    }
+
+    std::string formatJSON(std::string input){
+        int bracket_count = 0;
+        std::string out = "";
+
+        for(unsigned i = 0; i < input.size(); i++){
+            char c = input[i];
+            if(c == '}' || c == ']'){
+                bracket_count--;
+                out += "\n";
+                indent(out, bracket_count);
+                out += c;
+            } else if(c == '{' || c == '['){
+                bracket_count++;
+                out += c;
+                out += "\n";
+                indent(out, bracket_count);
+            } else if(c == ','){
+                out += c;
+                out += "\n";
+                indent(out, bracket_count);
+                if((i + 1) < input.size() && input[i + 1] == ' '){ //skip space after indenting
+                    i++;
+                }
+            } else {
+                out += c;
+            }
+        }
+        return out;
+    }
 }
