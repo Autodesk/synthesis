@@ -16,5 +16,11 @@ namespace FieldExporter.Components
         {
             InitializeComponent();
         }
+
+        public bool IsGamepiece
+        {
+            get => gamepieceCheckBox.Checked;
+            set => gamepieceCheckBox.Checked = value;
+        }
     }
 }
