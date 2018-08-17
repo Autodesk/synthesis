@@ -32,7 +32,6 @@ namespace Synthesis.GUI.Scrollables
 
             listStyle = new GUIStyle("button");
             listStyle.normal.background = new Texture2D(0, 0);
-            listStyle.hover.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.active.background = Resources.Load("images/New Textures/greenButton") as Texture2D;
             listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
             listStyle.active.textColor = Color.white;
@@ -75,6 +74,8 @@ namespace Synthesis.GUI.Scrollables
             Rect position = new Rect(p.x, Screen.height - p.y, rect.width * scale, rect.height * scale);
 
             listStyle.normal.textColor = ListTextColor;
+            listStyle.hover.textColor = ListTextColor;
+            listStyle.hover.background = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
 
             UnityEngine.GUI.skin.verticalScrollbar.normal.background = null;
             UnityEngine.GUI.skin.verticalScrollbarThumb.normal.background = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
