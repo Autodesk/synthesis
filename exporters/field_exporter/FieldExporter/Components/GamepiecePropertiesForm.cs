@@ -140,6 +140,7 @@ namespace FieldExporter.Components
         {
             if (gamepieceCheckBox.Checked)
             {
+                spawnpointLabel.Enabled = true;
                 selectSpawnpointButton.Enabled = true;
                 holdingLimitCheckBox.Enabled = true;
             }
@@ -149,6 +150,7 @@ namespace FieldExporter.Components
                     DisableInteractionEvents();
 
                 Spawnpoint = new BXDVector3(0, 0, 0);
+                spawnpointLabel.Enabled = false;
                 selectSpawnpointButton.Enabled = false;
 
                 holdingLimitCheckBox.Checked = false;
