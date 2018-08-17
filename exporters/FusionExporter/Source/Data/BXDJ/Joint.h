@@ -61,7 +61,9 @@ namespace BXDJ
 		/// Used for specifying which occurrence in a Joint is recognized as the parent.
 		enum OneTwo : bool { ONE = true /**< joint->occurrenceOne() */, TWO = false /**< joint->occurrenceTwo() */ };
 
-		core::Ptr<fusion::Joint> getFusionJoint() { return fusionJoint; } ///< \return The joint in Fusion that was used to create this Joint.
+		std::unique_ptr<Driver> searchDriver(const ConfigData &); ///< \return The Driver associated with this joint in a ConfigData.
+		std::vector<std::shared_ptr<JointSensor>> searchSensors(const ConfigData &); ///< \return The Sensors associated with this joint in a ConfigData.
+
 		OneTwo getParentOccNum() { return parentOcc; } ///< \return Which Fusion occurrence (One or Two) that the parent of this Joint is in the Fusion joint.
 		virtual void write(XmlWriter &) const; ///< This should be called by any derived Joint classes. Writes driver and sensors to the BXDJ file.
 

@@ -12,13 +12,13 @@ BallJoint::BallJoint(const BallJoint & jointToCopy) : Joint(jointToCopy)
 
 BallJoint::BallJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
-	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
+	this->fusionJointMotion = fusionJoint->jointMotion();
 }
 
 void BallJoint::applyConfig(const ConfigData & config)
 {
 	// Update wheels with actual mesh information
-	std::unique_ptr<Driver> driver = config.getDriver(getFusionJoint());
+	std::unique_ptr<Driver> driver = searchDriver(config);
 	if (driver != nullptr)
 	{
 		setDriver(*driver);
