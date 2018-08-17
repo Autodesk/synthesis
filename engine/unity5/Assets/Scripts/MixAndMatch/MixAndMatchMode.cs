@@ -56,7 +56,7 @@ namespace Synthesis.MixAndMatch
         private GameObject manipulatorRightScroll;
         private GameObject manipulatorLeftScroll;
 
-        private Color orange = new Color(241f, 133f, 24f); //new Color(0.757f, 0.200f, 0.757f);
+        private Color32 orange = new Color32(241, 133, 24, 255); //new Color(0.757f, 0.200f, 0.757f);
         #endregion
         // Use this for initialization
         private void Awake()
