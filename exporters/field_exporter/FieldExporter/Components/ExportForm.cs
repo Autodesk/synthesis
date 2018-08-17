@@ -4,13 +4,16 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 using Inventor;
 
 namespace FieldExporter.Components
 {
-    public partial class ExportForm : Form
+    public partial class ExportForm : UserControl
     {
         public string path;
+
+        public readonly string FIELD_FOLDER = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Fields\\";
 
         /// <summary>
         /// Used for determining if the exporter is running.
@@ -33,21 +36,6 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Launches the file browser dialog window and updates the file path text box text.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void browseButton_Click(object sender, EventArgs e)
-        {
-            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-            {
-                filePathTextBox.Text = folderBrowserDialog.SelectedPath;
-                exportButton.Enabled = true;
-                statusLabel.Text = "Ready to export.";
-            }
-        }
-
-        /// <summary>
         /// Starts the export process when the "Export" button is pressed.
         /// </summary>
         /// <param name="sender"></param>
@@ -57,7 +45,7 @@ namespace FieldExporter.Components
             if (exportButton.Text.Equals("Export") && !exporter.IsBusy)
             {
                 exportButton.Text = "Cancel";
-                browseButton.Enabled = false;
+                fieldNameTextBox.Enabled = false;
 
                 Program.LockInventor();
 
@@ -69,6 +57,27 @@ namespace FieldExporter.Components
             }
         }
 
+        private void fieldNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (fieldNameTextBox.Text.Length > 0)
+            {
+                exportButton.Enabled = true;
+                statusLabel.Text = "Ready to export.";
+            }
+            else
+            {
+                exportButton.Enabled = false;
+                statusLabel.Text = "Please specify a field name.";
+            }
+        }
+
+        private void ExportFieldData(string folder)
+        {
+            Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints(), new Exporter.Gamepiece[0]);
+
+            fieldProps.Write(folder + "\\field_data.xml");
+        }
+
         /// <summary>
         /// Executes the actual exporting.
         /// </summary>
@@ -76,12 +85,22 @@ namespace FieldExporter.Components
         /// <param name="e"></param>
         private void exporter_DoWork(object sender, DoWorkEventArgs e)
         {
+            string directory = FIELD_FOLDER + fieldNameTextBox.Text;
+
+            // Create directory if it does not exist
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+            // Warn user of overwrite if it does exist
+            else if (MessageBox.Show("A field with this name already exists. Continue?", "Overwrite Existing Field", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
 
-            foreach (PropertySet ps in LegacyInterchange.PropSets/*Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets()*/)
-            {
+            foreach (PropertySet ps in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
                 fieldDefinition.AddPropertySet(ps);
-            }
 
             SurfaceExporter surfaceExporter = new SurfaceExporter();
             List<string> exportedMeshes = new List<string>();
@@ -126,12 +145,11 @@ namespace FieldExporter.Components
 
                     outputNode.SubMeshID = exportedMeshes.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
 
-                    //ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
-                    string componentProperties = LegacyInterchange.GetCompFromDictionary(currentOccurrence.Name);
+                    ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
 
                     if (componentProperties != null)
                     {
-                        outputNode.PropertySetID = componentProperties/*.Name*/;
+                        outputNode.PropertySetID = componentProperties.Name;
 
                         PropertySet propertySet = fieldDefinition.GetPropertySets()[outputNode.PropertySetID];
 
@@ -165,17 +183,13 @@ namespace FieldExporter.Components
 
             exporter.ReportProgress(100, "Export Successful!");
 
-            fieldDefinition.GetMeshOutput().WriteToFile(filePathTextBox.Text + "\\mesh.bxda");
+            fieldDefinition.GetMeshOutput().WriteToFile(directory + "\\mesh.bxda");
+            
+            // Field data such as spawnpoints and gamepieces
+            ExportFieldData(directory);
 
-            BXDFProperties.WriteProperties(filePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
-
-            // Use the commented code below for debugging.
-
-            /** /
-            string result;
-            FieldDefinition readDefinition = BXDFProperties.ReadProperties(filePathTextBox.Text + "\\definition.bxdf", out result);
-            MessageBox.Show(result);
-            /**/
+            // Property sets
+            BXDFProperties.WriteProperties(directory + "\\definition.bxdf", fieldDefinition);
         }
 
         /// <summary>
@@ -198,19 +212,17 @@ namespace FieldExporter.Components
         {
             Program.UnlockInventor();
 
-            if (e.Cancelled || e.Error != null)
+            if (e.Cancelled)
+            {
+                statusLabel.Text = "Export Canceled.";
+            }
+            else if (e.Error != null)
             {
                 statusLabel.Text = "Export Failed.";
-                //exportProgressBar.Value = 0;
             }
 
             exportButton.Text = "Export";
-            browseButton.Enabled = true;
-        }
-
-        private void ExportForm_Load(object sender, EventArgs e)
-        {
-
+            fieldNameTextBox.Enabled = true;
         }
     }
 }

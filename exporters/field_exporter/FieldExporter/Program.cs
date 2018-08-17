@@ -234,11 +234,11 @@ namespace FieldExporter
         [STAThread]
         static void Main()
         {
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-            //Application.ThreadException += Application_ThreadException;
-            //Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-            //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.ThreadException += Application_ThreadException;
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             if (!Connect())
             {
@@ -246,7 +246,7 @@ namespace FieldExporter
                 return;
             }
 
-            //Application.Run(MAINWINDOW = new MainWindow());
+            Application.Run(MAINWINDOW = new MainWindow());
 
             try
             {
