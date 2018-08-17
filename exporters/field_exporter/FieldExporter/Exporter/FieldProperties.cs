@@ -9,8 +9,8 @@ namespace FieldExporter.Exporter
 {
     public class FieldProperties
     {
-        public BXDVector3[] spawnpoints { get; private set; }
-        public Gamepiece[] gamepieces { get; private set; }
+        BXDVector3[] spawnpoints;
+        Gamepiece[] gamepieces;
 
         public FieldProperties(BXDVector3[] spawnpoints, Gamepiece[] gamepieces)
         {

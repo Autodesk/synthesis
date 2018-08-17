@@ -48,7 +48,6 @@ namespace FieldExporter
             this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tutorialsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesTabPage.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.metaTabPage.SuspendLayout();
@@ -153,7 +152,6 @@ namespace FieldExporter
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -205,13 +203,6 @@ namespace FieldExporter
             this.tutorialsToolStripMenuItem.Text = "Tutorials";
             this.tutorialsToolStripMenuItem.Click += new System.EventHandler(this.tutorialsToolStripMenuItem_Click);
             // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -256,7 +247,6 @@ namespace FieldExporter
         private System.Windows.Forms.ToolStripMenuItem tutorialsToolStripMenuItem;
         private System.Windows.Forms.TabPage metaTabPage;
         private FieldMetaForm fieldMeta;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
     }
 }
 

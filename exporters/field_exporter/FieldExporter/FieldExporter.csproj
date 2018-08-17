@@ -172,7 +172,6 @@
     <Compile Include="Components\SynthesisColorTable.cs" />
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
-    <Compile Include="Exporter\SaveManager.cs" />
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
