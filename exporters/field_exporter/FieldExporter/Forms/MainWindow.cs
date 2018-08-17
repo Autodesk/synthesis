@@ -47,6 +47,17 @@ namespace FieldExporter
         }
 
         /// <summary>
+        /// Saves the current configuration to the field assembly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.ASSEMBLY_DOCUMENT != null)
+                Exporter.SaveManager.Save(Program.ASSEMBLY_DOCUMENT, null, null);
+        }
+
+        /// <summary>
         /// Resets the size of the window.
         /// </summary>
         /// <param name="sender"></param>
@@ -94,6 +105,5 @@ namespace FieldExporter
             if (exportForm.IsExporting)
                 e.Cancel = true;
         }
-
     }
 }
