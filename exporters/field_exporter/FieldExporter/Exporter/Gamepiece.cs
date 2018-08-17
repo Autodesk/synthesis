@@ -8,7 +8,7 @@ namespace FieldExporter.Exporter
 {
     public class Gamepiece
     {
-        public Gamepiece(string id, BXDVector3 spawnpoint, uint holdingLimit = uint.MaxValue)
+        public Gamepiece(string id, BXDVector3 spawnpoint, ushort holdingLimit = ushort.MaxValue)
         {
             this.id = id;
             this.spawnpoint = spawnpoint;
@@ -17,6 +17,6 @@ namespace FieldExporter.Exporter
 
         public string id = "";
         public BXDVector3 spawnpoint = new BXDVector3(0, 0, 0);
-        public uint holdingLimit = uint.MaxValue;
+        public ushort holdingLimit = ushort.MaxValue;
     }
 }
