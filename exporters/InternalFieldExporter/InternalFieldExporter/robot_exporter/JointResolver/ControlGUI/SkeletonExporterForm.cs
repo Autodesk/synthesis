@@ -9,6 +9,9 @@ namespace JointResolver.ControlGUI
 {
     public partial class SkeletonExporterForm : Form
     {
+        /// <summary>
+        /// Initializes a new instance of the SkeletonExporterForm class
+        /// </summary>
         public SkeletonExporterForm()
         {
             InitializeComponent();
@@ -23,6 +26,12 @@ namespace JointResolver.ControlGUI
             };
         }
 
+        /// <summary>
+        /// Starts the progress bar
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="current"></param>
+        /// <param name="max"></param>
         private void SetProgress(string message, int current, int max)
         {
             // Allows function to be called by other threads
@@ -49,6 +58,12 @@ namespace JointResolver.ControlGUI
             Visible = v;
         }
 
+        /// <summary>
+        /// Finds the Inventor Instance and Detects the assembly
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
         {
 

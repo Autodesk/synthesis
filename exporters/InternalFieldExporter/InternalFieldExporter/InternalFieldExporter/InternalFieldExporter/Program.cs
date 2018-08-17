@@ -111,6 +111,7 @@ namespace InternalFieldExporter
                     FieldSelectForm fieldSelector = new FieldSelectForm();
                     if (fieldSelector.ShowDialog() == DialogResult.OK)
                     {
+                        //Displays the name of each ASSEMBLY_DOCUMENT
                         foreach (Inventor.Document doc in INVENTOR_APPLICATION.Documents.VisibleDocuments.OfType<Inventor.AssemblyDocument>())
                         {
                             if (doc.DisplayName == fieldSelector.SelectedField)
@@ -122,6 +123,7 @@ namespace InternalFieldExporter
 
                         fullDocumentName = ASSEMBLY_DOCUMENT.FullDocumentName;
 
+                        //Starts MainWindow
                         Application.Run(new MainWindow());
                     }
                     else
@@ -251,13 +253,14 @@ namespace InternalFieldExporter
                 return;
             }
 
-            //Application.Run(MAINWINDOW = new MainWindow());
-
             try
             {
                 INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
             }
-            catch { }
+            catch
+            {
+
+            }
         }
     }
 }

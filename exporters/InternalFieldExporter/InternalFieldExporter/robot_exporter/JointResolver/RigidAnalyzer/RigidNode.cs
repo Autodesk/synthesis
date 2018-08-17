@@ -21,11 +21,19 @@ public class RigidNode : OGL_RigidNode
         this.group = grp;
     }
 
+    /// <summary>
+    /// Gets the CustomRigidGroup for use in the exporting process
+    /// </summary>
+    /// <returns>group</returns>
     public override object GetModel()
     {
         return group;
     }
 
+    /// <summary>
+    /// Gets the id for the group componets
+    /// </summary>
+    /// <returns>id</returns>
     public override string GetModelID()
     {
         // Compile a model ID

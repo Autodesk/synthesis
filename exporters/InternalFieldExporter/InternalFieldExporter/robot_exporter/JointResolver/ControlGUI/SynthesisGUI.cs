@@ -76,6 +76,12 @@ public partial class SynthesisGUI : Form
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
 
+    /// <summary>
+    /// Initializes a new instance of the SynthesisGUI
+    /// Gets and assigns OGL_RigidNode
+    /// </summary>
+    /// <param name="MainApplication"></param>
+    /// <param name="MakeOwners"></param>
     public SynthesisGUI(Inventor.Application MainApplication, bool MakeOwners = false)
     {
         InitializeComponent();
@@ -285,9 +291,10 @@ public partial class SynthesisGUI : Form
         return true;
     }
     
-    public void writeLimits(RigidNode_Base skeleton)// generally, this class iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
-        //needed because we want to be able to pull the limits into the joint as the exporter exports, but where the joint is actually written to the .bxdj (the SimulatorAPI) is unable
-        //to access InternalFieldExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue
+    public void writeLimits(RigidNode_Base skeleton)
+    // generally, this class iterates over all the joints in the skeleton and writes the corrosponding Inventor limit
+    //into the internal joint limit needed because we want to be able to pull the limits into the joint as the exporter exports, but where the joint is actually written 
+    //to the .bxdj (the SimulatorAPI) is unable to access InternalFieldExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         skeleton.ListAllNodes(nodes);
@@ -310,6 +317,7 @@ public partial class SynthesisGUI : Form
         {
             if (parentID[i] >= 0)
             {
+                //Joint types are defined here
                 switch (nodes[i].GetSkeletalJoint().GetJointType())
                 {
                     case SkeletalJointType.BALL:
@@ -785,6 +793,11 @@ public partial class SynthesisGUI : Form
         Meshes.Remove(childMesh);
     }
 
+    /// <summary>
+    /// Gets the BXDAMesh for a node
+    /// </summary>
+    /// <param name="node"></param>
+    /// <returns>The Mesh for a node</returns>
     private BXDAMesh GetMesh(RigidNode_Base node)
     {
         return Meshes[SkeletonBase.ListAllNodes().IndexOf(node)];

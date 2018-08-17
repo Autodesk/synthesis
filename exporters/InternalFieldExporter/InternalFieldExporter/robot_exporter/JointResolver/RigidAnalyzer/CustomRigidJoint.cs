@@ -17,6 +17,12 @@ public class CustomRigidJoint
 
     public RigidBodyJointTypeEnum type;
 
+    /// <summary>
+    /// Adds joints and constraints to the CustomRigidJoint
+    /// </summary>
+    /// <param name="joint"></param>
+    /// <param name="groupOnez"></param>
+    /// <param name="groupTwoz"></param>
     public CustomRigidJoint(RigidBodyJoint joint, CustomRigidGroup groupOnez, CustomRigidGroup groupTwoz)
     {
         foreach (AssemblyJoint aj in joint.Joints)
@@ -40,7 +46,7 @@ public class CustomRigidJoint
             jointBased = false;
         }
     }
-
+  
     public override string ToString()
     {
         return "RigidJoint (" + Enum.GetName(typeof(RigidBodyJointTypeEnum), type) + "): " + constraints.Count + "C, " + joints.Count + "J";
