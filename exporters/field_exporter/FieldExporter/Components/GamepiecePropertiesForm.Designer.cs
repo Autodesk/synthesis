@@ -33,8 +33,11 @@
             this.spawnpointLabel = new System.Windows.Forms.Label();
             this.selectSpawnpointButton = new System.Windows.Forms.Button();
             this.gamepieceCheckBox = new System.Windows.Forms.CheckBox();
+            this.holdingLimitCheckBox = new System.Windows.Forms.CheckBox();
+            this.holdingLimitUpDown = new System.Windows.Forms.NumericUpDown();
             this.gamepieceGroupbox.SuspendLayout();
             this.gamepieceLayoutPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.holdingLimitUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // gamepieceGroupbox
@@ -46,7 +49,7 @@
             this.gamepieceGroupbox.Dock = System.Windows.Forms.DockStyle.Top;
             this.gamepieceGroupbox.Location = new System.Drawing.Point(0, 0);
             this.gamepieceGroupbox.Name = "gamepieceGroupbox";
-            this.gamepieceGroupbox.Size = new System.Drawing.Size(250, 48);
+            this.gamepieceGroupbox.Size = new System.Drawing.Size(250, 74);
             this.gamepieceGroupbox.TabIndex = 0;
             this.gamepieceGroupbox.TabStop = false;
             // 
@@ -59,13 +62,15 @@
             this.gamepieceLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.gamepieceLayoutPanel.Controls.Add(this.spawnpointLabel, 0, 0);
             this.gamepieceLayoutPanel.Controls.Add(this.selectSpawnpointButton, 1, 0);
+            this.gamepieceLayoutPanel.Controls.Add(this.holdingLimitCheckBox, 0, 1);
+            this.gamepieceLayoutPanel.Controls.Add(this.holdingLimitUpDown, 1, 1);
             this.gamepieceLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.gamepieceLayoutPanel.Location = new System.Drawing.Point(3, 16);
             this.gamepieceLayoutPanel.Name = "gamepieceLayoutPanel";
             this.gamepieceLayoutPanel.RowCount = 2;
             this.gamepieceLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.gamepieceLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.gamepieceLayoutPanel.Size = new System.Drawing.Size(244, 29);
+            this.gamepieceLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.gamepieceLayoutPanel.Size = new System.Drawing.Size(244, 55);
             this.gamepieceLayoutPanel.TabIndex = 1;
             // 
             // spawnpointLabel
@@ -105,6 +110,26 @@
             this.gamepieceCheckBox.UseVisualStyleBackColor = true;
             this.gamepieceCheckBox.CheckedChanged += new System.EventHandler(this.gamepieceCheckBox_CheckedChanged);
             // 
+            // holdingLimitCheckBox
+            // 
+            this.holdingLimitCheckBox.AutoSize = true;
+            this.holdingLimitCheckBox.Dock = System.Windows.Forms.DockStyle.Left;
+            this.holdingLimitCheckBox.Location = new System.Drawing.Point(3, 32);
+            this.holdingLimitCheckBox.Name = "holdingLimitCheckBox";
+            this.holdingLimitCheckBox.Size = new System.Drawing.Size(108, 20);
+            this.holdingLimitCheckBox.TabIndex = 2;
+            this.holdingLimitCheckBox.Text = "Limit number held";
+            this.holdingLimitCheckBox.UseVisualStyleBackColor = true;
+            this.holdingLimitCheckBox.CheckedChanged += new System.EventHandler(this.holdingLimitCheckBox_CheckedChanged);
+            // 
+            // holdingLimitUpDown
+            // 
+            this.holdingLimitUpDown.Enabled = false;
+            this.holdingLimitUpDown.Location = new System.Drawing.Point(179, 32);
+            this.holdingLimitUpDown.Name = "holdingLimitUpDown";
+            this.holdingLimitUpDown.Size = new System.Drawing.Size(62, 20);
+            this.holdingLimitUpDown.TabIndex = 3;
+            // 
             // GamepiecePropertiesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -114,11 +139,12 @@
             this.Controls.Add(this.gamepieceGroupbox);
             this.MinimumSize = new System.Drawing.Size(250, 0);
             this.Name = "GamepiecePropertiesForm";
-            this.Size = new System.Drawing.Size(250, 48);
+            this.Size = new System.Drawing.Size(250, 74);
             this.gamepieceGroupbox.ResumeLayout(false);
             this.gamepieceGroupbox.PerformLayout();
             this.gamepieceLayoutPanel.ResumeLayout(false);
             this.gamepieceLayoutPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.holdingLimitUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -131,5 +157,7 @@
         private System.Windows.Forms.TableLayoutPanel gamepieceLayoutPanel;
         private System.Windows.Forms.Label spawnpointLabel;
         private System.Windows.Forms.Button selectSpawnpointButton;
+        private System.Windows.Forms.CheckBox holdingLimitCheckBox;
+        private System.Windows.Forms.NumericUpDown holdingLimitUpDown;
     }
 }
