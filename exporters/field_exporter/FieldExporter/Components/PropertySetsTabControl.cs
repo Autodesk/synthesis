@@ -87,14 +87,20 @@ namespace FieldExporter.Components
         /// <param name="propertySets">Property sets to base tabs off of.</param>
         public void ApplyPropertySets(List<PropertySet> propertySets)
         {
+            var tmp = Handle; // Forces creation of window handle so that tabs will appear
+
             foreach (PropertySet p in propertySets)
             {
                 ComponentPropertiesTabPage newPage = new ComponentPropertiesTabPage(this, p.PropertySetID);
+
                 newPage.ChildForm.Collider = p.Collider;
                 newPage.ChildForm.Friction = p.Friction;
                 newPage.ChildForm.Mass = p.Mass;
+                
                 TabPages.Insert(TabPages.Count - 1, newPage);
             }
+
+            SelectedTab = TabPages[0];
         }
 
         /// <summary>
@@ -124,6 +130,30 @@ namespace FieldExporter.Components
             }
 
             return translation.ToArray();
+        }
+
+        /// <summary>
+        /// Creates tabs from a list of property sets.
+        /// </summary>
+        /// <param name="propertySets">Property sets to base tabs off of.</param>
+        public void ApplyGamepieces(Exporter.Gamepiece[] gamepieces)
+        {
+            var tmp = Handle; // Forces creation of window handle so that tabs will appear
+
+            foreach (Exporter.Gamepiece g in gamepieces)
+            {
+                if (TabPages.ContainsKey(g.id))
+                {
+                    TabPage p = TabPages[g.id];
+
+                    if (p is ComponentPropertiesTabPage page)
+                    {
+                        page.ChildForm.Gamepiece = g;
+                    }
+                }
+            }
+
+            SelectedTab = TabPages[0];
         }
 
         /// <summary>

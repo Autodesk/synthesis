@@ -110,6 +110,11 @@ namespace FieldExporter.Controls
                     dec = massNumericUpDown.Minimum;
 
                 massNumericUpDown.Value = dec;
+
+                if (value == 0)
+                    dynamicCheckBox.Checked = false;
+                else
+                    dynamicCheckBox.Checked = true;
             }
         }
 

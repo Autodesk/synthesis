@@ -161,8 +161,7 @@ namespace FieldExporter.Controls
             this.frictionLabel.Location = new System.Drawing.Point(3, 3);
             this.frictionLabel.Margin = new System.Windows.Forms.Padding(3);
             this.frictionLabel.Name = "frictionLabel";
-            this.physicalLayoutPanel.SetRowSpan(this.frictionLabel, 2);
-            this.frictionLabel.Size = new System.Drawing.Size(69, 61);
+            this.frictionLabel.Size = new System.Drawing.Size(69, 35);
             this.frictionLabel.TabIndex = 3;
             this.frictionLabel.Text = "Friction:\r\n50/100";
             this.frictionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -298,7 +297,7 @@ namespace FieldExporter.Controls
             this.frictionTrackBar.TabIndex = 2;
             this.frictionTrackBar.TickFrequency = 50;
             this.frictionTrackBar.Value = 50;
-            this.frictionTrackBar.Scroll += new System.EventHandler(this.frictionTrackBar_Scroll);
+            this.frictionTrackBar.ValueChanged += new System.EventHandler(this.frictionTrackBar_Scroll);
             // 
             // meshPropertiesGroupBox
             // 

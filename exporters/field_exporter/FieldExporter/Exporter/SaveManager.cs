@@ -26,6 +26,7 @@ namespace FieldExporter.Exporter
             {
                 Inventor.PropertySet p = GetPropertySet(inventorPropertySets, "synthesisField");
 
+                // Field Properties
                 SetProperty(p, "spawnpointCount", fieldProps.spawnpoints.Length);
                 for (int i = 0; i < fieldProps.spawnpoints.Length; i++)
                 {
@@ -41,7 +42,17 @@ namespace FieldExporter.Exporter
                     SetProperty(p, "gamepiece" + i.ToString() + ".spawnX", fieldProps.gamepieces[i].spawnpoint.x);
                     SetProperty(p, "gamepiece" + i.ToString() + ".spawnY", fieldProps.gamepieces[i].spawnpoint.y);
                     SetProperty(p, "gamepiece" + i.ToString() + ".spawnZ", fieldProps.gamepieces[i].spawnpoint.z);
-                    SetProperty(p, "gamepiece" + i.ToString() + ".holdingLimit", fieldProps.gamepieces[i].holdingLimit);
+                    SetProperty(p, "gamepiece" + i.ToString() + ".holdingLimit", (int)fieldProps.gamepieces[i].holdingLimit);
+                }
+
+                // Property Sets
+                SetProperty(p, "propertySetCount", propertySets.Count);
+                for (int i = 0; i < propertySets.Count; i++)
+                {
+                    SetProperty(p, "propertySet" + i.ToString() + ".id", propertySets[i].PropertySetID);
+                    SetProperty(p, "propertySet" + i.ToString() + ".collisionType", (int)propertySets[i].Collider.CollisionType);
+                    SetProperty(p, "propertySet" + i.ToString() + ".friction", propertySets[i].Friction);
+                    SetProperty(p, "propertySet" + i.ToString() + ".mass", propertySets[i].Mass);
                 }
             }
             catch (Exception e)
@@ -58,6 +69,7 @@ namespace FieldExporter.Exporter
             {
                 Inventor.PropertySet p = GetPropertySet(inventorPropertySets, "synthesisField");
 
+                // Field Properties
                 BXDVector3[] spawnpoints = new BXDVector3[GetProperty(p, "spawnpointCount", 0)];
                 for (int i = 0; i < spawnpoints.Length; i++)
                 {
@@ -73,11 +85,23 @@ namespace FieldExporter.Exporter
                                                   new BXDVector3(GetProperty(p, "gamepiece" + i.ToString() + ".spawnX", 0.0),
                                                                  GetProperty(p, "gamepiece" + i.ToString() + ".spawnY", 0.0),
                                                                  GetProperty(p, "gamepiece" + i.ToString() + ".spawnZ", 0.0)),
-                                                  GetProperty(p, "gamepiece" + i.ToString() + ".holdingLimit", ushort.MaxValue));
+                                                  (ushort)GetProperty(p, "gamepiece" + i.ToString() + ".holdingLimit", (int)ushort.MaxValue));
                 }
 
                 fieldProps = new FieldProperties(spawnpoints, gamepieces);
+
+                // Property Sets
                 propertySets = new List<PropertySet>();
+
+                int propertySetCount = GetProperty(p, "propertySetCount", 0);
+                for (int i = 0; i < propertySetCount; i++)
+                {
+                    propertySets.Add(new PropertySet(GetProperty(p, "propertySet" + i.ToString() + ".id", "unknown"),
+                                                     new PropertySet.PropertySetCollider((PropertySet.PropertySetCollider.PropertySetCollisionType)GetProperty(p, "propertySet" + i.ToString() + ".collisionType", 0)),
+                                                     GetProperty(p, "propertySet" + i.ToString() + ".friction", 50),
+                                                     GetProperty(p, "propertySet" + i.ToString() + ".mass", 0.0f)));
+                }
+
             }
             catch (Exception e)
             {
