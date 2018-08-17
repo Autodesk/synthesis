@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using FieldExporter.Components;
 using System.Diagnostics;
 
@@ -13,6 +14,23 @@ namespace FieldExporter
         public MainWindow()
         {
             InitializeComponent();
+
+            try
+            {
+                if (Program.ASSEMBLY_DOCUMENT != null)
+                {
+                    Exporter.FieldProperties fieldProps;
+                    List<PropertySet> propSets;
+                    Exporter.SaveManager.Load(Program.ASSEMBLY_DOCUMENT, out fieldProps, out propSets);
+                    //Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints(),
+                    //                                                                   Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToGamepieces());
+                    Program.MAINWINDOW.GetPropertySetsTabControl().ApplyPropertySets(propSets);
+                }
+            }
+            catch (Exporter.FailedToLoadException)
+            {
+                // Failed to load config
+            }
 
             Text = "Synthesis Field Exporter - " + Program.ASSEMBLY_DOCUMENT.DisplayName;
         }
@@ -53,8 +71,20 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.ASSEMBLY_DOCUMENT != null)
-                Exporter.SaveManager.Save(Program.ASSEMBLY_DOCUMENT, null, null);
+            try
+            {
+                if (Program.ASSEMBLY_DOCUMENT != null)
+                {
+                    Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints(),
+                                                                                       Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToGamepieces());
+                    List<PropertySet> propSets = Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets();
+                    Exporter.SaveManager.Save(Program.ASSEMBLY_DOCUMENT, fieldProps, propSets);
+                }
+            }
+            catch (Exporter.FailedToSaveException er)
+            {
+                MessageBox.Show("Failed to save field configuration. The following error occurred:\n" + er.InnerException.ToString(), "Error", MessageBoxButtons.OK);
+            }
         }
 
         /// <summary>
