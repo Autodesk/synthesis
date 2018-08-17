@@ -244,6 +244,7 @@ namespace Synthesis.GUI
         {
             if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
             currentTab = "EmulationTab";
+            EmulationToolbarState.s = new Serialization();
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
 

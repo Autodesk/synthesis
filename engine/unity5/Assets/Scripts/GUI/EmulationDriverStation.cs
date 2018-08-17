@@ -4,6 +4,7 @@ using Synthesis.States;
 using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,6 +58,8 @@ namespace Synthesis.GUI
 
         Image startImage;
         Image stopImage;
+
+        public static string emulationDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Synthesis\Emulator\");
 
         private void Start()
         {

@@ -56,6 +56,7 @@
             this.lblDiameter = new System.Windows.Forms.Label();
             this.metaGearing = new System.Windows.Forms.TabPage();
             this.GearLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.OutputGeartxt = new System.Windows.Forms.NumericUpDown();
             this.lblOutputGear = new System.Windows.Forms.Label();
             this.lblInputGear = new System.Windows.Forms.Label();
             this.InputGeartxt = new System.Windows.Forms.NumericUpDown();
@@ -66,7 +67,6 @@
             this.brakePort1 = new System.Windows.Forms.NumericUpDown();
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
             this.ConfigJointLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.OutputGeartxt = new System.Windows.Forms.NumericUpDown();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             this.JointOptionsLayout.SuspendLayout();
@@ -81,13 +81,13 @@
             this.PneumaticLayout.SuspendLayout();
             this.metaGearing.SuspendLayout();
             this.GearLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).BeginInit();
             this.metaElevatorBrake.SuspendLayout();
             this.BreakLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.brakePort2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePort1)).BeginInit();
             this.ConfigJointLayout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).BeginInit();
             this.SuspendLayout();
             // 
             // cmbJointDriver
@@ -339,7 +339,6 @@
             this.tabsMeta.Controls.Add(this.metaWheel);
             this.tabsMeta.Controls.Add(this.metaPneumatic);
             this.tabsMeta.Controls.Add(this.metaGearing);
-            //this.tabsMeta.Controls.Add(this.metaElevatorBrake);
             this.tabsMeta.Location = new System.Drawing.Point(3, 60);
             this.tabsMeta.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);
             this.tabsMeta.Name = "tabsMeta";
@@ -517,6 +516,29 @@
             this.GearLayout.Size = new System.Drawing.Size(424, 56);
             this.GearLayout.TabIndex = 13;
             // 
+            // OutputGeartxt
+            // 
+            this.OutputGeartxt.DecimalPlaces = 5;
+            this.OutputGeartxt.Location = new System.Drawing.Point(215, 31);
+            this.OutputGeartxt.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.OutputGeartxt.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
+            this.OutputGeartxt.Name = "OutputGeartxt";
+            this.OutputGeartxt.Size = new System.Drawing.Size(206, 22);
+            this.OutputGeartxt.TabIndex = 16;
+            this.OutputGeartxt.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // lblOutputGear
             // 
             this.lblOutputGear.AutoSize = true;
@@ -654,29 +676,6 @@
             this.ConfigJointLayout.Size = new System.Drawing.Size(438, 311);
             this.ConfigJointLayout.TabIndex = 12;
             // 
-            // OutputGeartxt
-            // 
-            this.OutputGeartxt.DecimalPlaces = 5;
-            this.OutputGeartxt.Location = new System.Drawing.Point(215, 31);
-            this.OutputGeartxt.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.OutputGeartxt.Minimum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            -2147483648});
-            this.OutputGeartxt.Name = "OutputGeartxt";
-            this.OutputGeartxt.Size = new System.Drawing.Size(206, 22);
-            this.OutputGeartxt.TabIndex = 16;
-            this.OutputGeartxt.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
             // DriveChooser
             // 
             this.AcceptButton = this.SaveButton;
@@ -716,6 +715,7 @@
             this.metaGearing.PerformLayout();
             this.GearLayout.ResumeLayout(false);
             this.GearLayout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).EndInit();
             this.metaElevatorBrake.ResumeLayout(false);
             this.metaElevatorBrake.PerformLayout();
@@ -725,7 +725,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.brakePort1)).EndInit();
             this.ConfigJointLayout.ResumeLayout(false);
             this.ConfigJointLayout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
