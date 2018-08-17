@@ -1,4 +1,5 @@
 #include "BallJoint.h"
+#include <Fusion/Components/AsBuiltJoint.h>
 #include <Core/Geometry/Vector3D.h>
 #include "../ConfigData.h"
 #include "../Driver.h"
@@ -11,6 +12,11 @@ BallJoint::BallJoint(const BallJoint & jointToCopy) : Joint(jointToCopy)
 }
 
 BallJoint::BallJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
+{
+	this->fusionJointMotion = fusionJoint->jointMotion();
+}
+
+BallJoint::BallJoint(RigidNode * parent, core::Ptr<fusion::AsBuiltJoint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
 	this->fusionJointMotion = fusionJoint->jointMotion();
 }

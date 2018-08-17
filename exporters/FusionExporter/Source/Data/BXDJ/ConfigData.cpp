@@ -131,7 +131,7 @@ void ConfigData::filterJoints(std::vector<core::Ptr<fusion::AsBuiltJoint>> filte
 {
 	// Make list of IDs in filter while adding joints not yet present
 	std::vector<std::string> filterJointIDs;
-	for (core::Ptr<fusion::Joint> joint : filterJoints)
+	for (core::Ptr<fusion::AsBuiltJoint> joint : filterJoints)
 	{
 		std::string id = Utility::getUniqueJointID(joint);
 		filterJointIDs.push_back(id);

@@ -1,5 +1,6 @@
 #include "CylindricalJoint.h"
 #include <Fusion/Components/JointLimits.h>
+#include <Fusion/Components/AsBuiltJoint.h>
 #include <Core/Geometry/Vector3D.h>
 #include "../Driver.h"
 #include "../ConfigData.h"
@@ -12,6 +13,11 @@ CylindricalJoint::CylindricalJoint(const CylindricalJoint & jointToCopy) : Joint
 }
 
 CylindricalJoint::CylindricalJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
+{
+	this->fusionJointMotion = fusionJoint->jointMotion();
+}
+
+CylindricalJoint::CylindricalJoint(RigidNode * parent, core::Ptr<fusion::AsBuiltJoint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
 	this->fusionJointMotion = fusionJoint->jointMotion();
 }
