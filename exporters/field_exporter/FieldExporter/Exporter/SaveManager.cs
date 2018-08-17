@@ -50,9 +50,29 @@ namespace FieldExporter.Exporter
                 for (int i = 0; i < propertySets.Count; i++)
                 {
                     SetProperty(p, "propertySet" + i.ToString() + ".id", propertySets[i].PropertySetID);
-                    SetProperty(p, "propertySet" + i.ToString() + ".collisionType", (int)propertySets[i].Collider.CollisionType);
                     SetProperty(p, "propertySet" + i.ToString() + ".friction", propertySets[i].Friction);
                     SetProperty(p, "propertySet" + i.ToString() + ".mass", propertySets[i].Mass);
+                    
+                    // Collider Info
+                    SetProperty(p, "propertySet" + i.ToString() + ".collisionType", (int)propertySets[i].Collider.CollisionType);
+
+                    if (propertySets[i].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.BOX)
+                    {
+                        PropertySet.BoxCollider box = (PropertySet.BoxCollider)propertySets[i].Collider;
+                        SetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleX", box.Scale.x);
+                        SetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleY", box.Scale.y);
+                        SetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleZ", box.Scale.z);
+                    }
+                    else if (propertySets[i].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.SPHERE)
+                    {
+                        PropertySet.SphereCollider sphere = (PropertySet.SphereCollider)propertySets[i].Collider;
+                        SetProperty(p, "propertySet" + i.ToString() + ".sphereCollider.scale", sphere.Scale);
+                    }
+                    else if (propertySets[i].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
+                    {
+                        PropertySet.MeshCollider mesh = (PropertySet.MeshCollider)propertySets[i].Collider;
+                        SetProperty(p, "propertySet" + i.ToString() + ".meshCollider.convex", mesh.Convex);
+                    }
                 }
             }
             catch (Exception e)
@@ -100,6 +120,9 @@ namespace FieldExporter.Exporter
                                                      new PropertySet.PropertySetCollider((PropertySet.PropertySetCollider.PropertySetCollisionType)GetProperty(p, "propertySet" + i.ToString() + ".collisionType", 0)),
                                                      GetProperty(p, "propertySet" + i.ToString() + ".friction", 50),
                                                      GetProperty(p, "propertySet" + i.ToString() + ".mass", 0.0f)));
+
+                    // Collider Info
+                    //propertySets.Last().Collider = // TODO
                 }
 
             }
