@@ -46,6 +46,8 @@ namespace Synthesis.GUI
         // Use this for initialization
         void Start()
         {
+            UnityEngine.GUI.depth = 0;
+
             listStyle = new GUIStyle();
             listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
             listStyle.normal.textColor = Color.black;
@@ -73,6 +75,7 @@ namespace Synthesis.GUI
 
         void OnGUI()
         {
+
             if (setting.Equals("Screen Mode"))
                 if (!Fullscreen) listEntry = 0;
                 else listEntry = 1;
