@@ -49,7 +49,7 @@
             this.gamepieceGroupbox.Dock = System.Windows.Forms.DockStyle.Top;
             this.gamepieceGroupbox.Location = new System.Drawing.Point(0, 0);
             this.gamepieceGroupbox.Name = "gamepieceGroupbox";
-            this.gamepieceGroupbox.Size = new System.Drawing.Size(250, 74);
+            this.gamepieceGroupbox.Size = new System.Drawing.Size(250, 76);
             this.gamepieceGroupbox.TabIndex = 0;
             this.gamepieceGroupbox.TabStop = false;
             // 
@@ -70,7 +70,7 @@
             this.gamepieceLayoutPanel.RowCount = 2;
             this.gamepieceLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.gamepieceLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.gamepieceLayoutPanel.Size = new System.Drawing.Size(244, 55);
+            this.gamepieceLayoutPanel.Size = new System.Drawing.Size(244, 57);
             this.gamepieceLayoutPanel.TabIndex = 1;
             // 
             // spawnpointLabel
@@ -116,7 +116,7 @@
             this.holdingLimitCheckBox.Dock = System.Windows.Forms.DockStyle.Left;
             this.holdingLimitCheckBox.Location = new System.Drawing.Point(3, 32);
             this.holdingLimitCheckBox.Name = "holdingLimitCheckBox";
-            this.holdingLimitCheckBox.Size = new System.Drawing.Size(108, 20);
+            this.holdingLimitCheckBox.Size = new System.Drawing.Size(108, 22);
             this.holdingLimitCheckBox.TabIndex = 2;
             this.holdingLimitCheckBox.Text = "Limit number held";
             this.holdingLimitCheckBox.UseVisualStyleBackColor = true;
@@ -125,9 +125,10 @@
             // holdingLimitUpDown
             // 
             this.holdingLimitUpDown.Enabled = false;
-            this.holdingLimitUpDown.Location = new System.Drawing.Point(179, 32);
+            this.holdingLimitUpDown.Location = new System.Drawing.Point(180, 33);
+            this.holdingLimitUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.holdingLimitUpDown.Name = "holdingLimitUpDown";
-            this.holdingLimitUpDown.Size = new System.Drawing.Size(62, 20);
+            this.holdingLimitUpDown.Size = new System.Drawing.Size(60, 20);
             this.holdingLimitUpDown.TabIndex = 3;
             // 
             // GamepiecePropertiesForm
@@ -139,7 +140,7 @@
             this.Controls.Add(this.gamepieceGroupbox);
             this.MinimumSize = new System.Drawing.Size(250, 0);
             this.Name = "GamepiecePropertiesForm";
-            this.Size = new System.Drawing.Size(250, 74);
+            this.Size = new System.Drawing.Size(250, 76);
             this.gamepieceGroupbox.ResumeLayout(false);
             this.gamepieceGroupbox.PerformLayout();
             this.gamepieceLayoutPanel.ResumeLayout(false);

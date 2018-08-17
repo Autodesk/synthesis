@@ -33,7 +33,7 @@ namespace FieldExporter.Components
             if (gamepieceCheckBox.Checked)
             {
                 if (holdingLimitCheckBox.Checked)
-                    return new Exporter.Gamepiece(id, Spawnpoint, (uint)holdingLimitUpDown.Value);
+                    return new Exporter.Gamepiece(id, Spawnpoint, (ushort)holdingLimitUpDown.Value);
                 else
                     return new Exporter.Gamepiece(id, Spawnpoint);
             }
