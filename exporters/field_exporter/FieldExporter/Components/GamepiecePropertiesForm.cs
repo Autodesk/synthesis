@@ -31,7 +31,12 @@ namespace FieldExporter.Components
         public Exporter.Gamepiece GetGamepiece(string id)
         {
             if (gamepieceCheckBox.Checked)
-                return new Exporter.Gamepiece(id, Spawnpoint);
+            {
+                if (holdingLimitCheckBox.Checked)
+                    return new Exporter.Gamepiece(id, Spawnpoint, (uint)holdingLimitUpDown.Value);
+                else
+                    return new Exporter.Gamepiece(id, Spawnpoint);
+            }
             else
                 return null;
         }
@@ -136,14 +141,34 @@ namespace FieldExporter.Components
             if (gamepieceCheckBox.Checked)
             {
                 selectSpawnpointButton.Enabled = true;
+                holdingLimitCheckBox.Enabled = true;
             }
             else
             {
                 if (selectingSpawnpoint)
                     DisableInteractionEvents();
 
-                selectSpawnpointButton.Enabled = false;
                 Spawnpoint = new BXDVector3(0, 0, 0);
+                selectSpawnpointButton.Enabled = false;
+
+                holdingLimitCheckBox.Checked = false;
+                holdingLimitCheckBox.Enabled = false;
+            }
+        }
+
+        private void holdingLimitCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (holdingLimitCheckBox.Checked)
+            {
+                holdingLimitUpDown.Enabled = true;
+                holdingLimitUpDown.Value = 1;
+                holdingLimitUpDown.Minimum = 1;
+            }
+            else
+            {
+                holdingLimitUpDown.Enabled = false;
+                holdingLimitUpDown.Minimum = 0;
+                holdingLimitUpDown.Value = 0;
             }
         }
     }
