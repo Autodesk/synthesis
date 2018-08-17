@@ -13,7 +13,7 @@ CylindricalJoint::CylindricalJoint(const CylindricalJoint & jointToCopy) : Joint
 
 CylindricalJoint::CylindricalJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
-	this->fusionJointMotion = getFusionJoint()->jointMotion();
+	this->fusionJointMotion = fusionJoint->jointMotion();
 }
 
 Vector3<> CylindricalJoint::getAxis() const
@@ -72,7 +72,7 @@ float CylindricalJoint::getMaxTranslation() const
 void CylindricalJoint::applyConfig(const ConfigData & config)
 {
 	// Update wheels with actual mesh information
-	std::unique_ptr<Driver> driver = config.getDriver(getFusionJoint());
+	std::unique_ptr<Driver> driver = searchDriver(config);
 	if (driver != nullptr)
 	{
 		setDriver(*driver);

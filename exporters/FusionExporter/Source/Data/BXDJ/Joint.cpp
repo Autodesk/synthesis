@@ -4,6 +4,7 @@
 #include <Core/Geometry/Point3D.h>
 #include "RigidNode.h"
 #include "JointSensor.h"
+#include "ConfigData.h"
 
 using namespace BXDJ;
 
@@ -61,40 +62,42 @@ std::shared_ptr<RigidNode> Joint::getChild() const
 
 Vector3<> Joint::getParentBasePoint() const
 {
+	core::Ptr<fusion::JointGeometry> geometry;
+
 	if (fusionJoint != nullptr)
 	{
-		core::Ptr<fusion::JointGeometry> geometry = (parentOcc ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
+		geometry = (parentOcc ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
+
 		if (geometry == nullptr || geometry->origin() == nullptr)
 			geometry = (!parentOcc ? fusionJoint->geometryOrOriginOne() : fusionJoint->geometryOrOriginTwo());
-
-		if (geometry == nullptr || geometry->origin() == nullptr)
-			return Vector3<>(0, 0, 0);
-
-		return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 	}
 	else
-	{
-		// TODO: Get geometry from as-built joint
-	}
+		geometry = fusionAsBuiltJoint->geometry();
+
+	if (geometry == nullptr || geometry->origin() == nullptr)
+		return Vector3<>(0, 0, 0);
+
+	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 }
 
 Vector3<> Joint::getChildBasePoint() const
 {
+	core::Ptr<fusion::JointGeometry> geometry;
+
 	if (fusionJoint != nullptr)
 	{
-		core::Ptr<fusion::JointGeometry> geometry = (parentOcc ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
+		geometry = (parentOcc ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
+		
 		if (geometry == nullptr || geometry->origin() == nullptr)
 			geometry = (!parentOcc ? fusionJoint->geometryOrOriginTwo() : fusionJoint->geometryOrOriginOne());
-
-		if (geometry == nullptr || geometry->origin() == nullptr)
-			return Vector3<>(0, 0, 0);
-
-		return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 	}
 	else
-	{
-		// TODO: Get geometry from as-built joint
-	}
+		geometry = fusionAsBuiltJoint->geometry();
+
+	if (geometry == nullptr || geometry->origin() == nullptr)
+		return Vector3<>(0, 0, 0);
+
+	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 }
 
 void Joint::setDriver(Driver driver)
@@ -123,6 +126,22 @@ void Joint::addSensor(JointSensor sensor)
 void Joint::clearSensors()
 {
 	sensors.clear();
+}
+
+std::unique_ptr<Driver> Joint::searchDriver(const ConfigData & config)
+{
+	if (fusionJoint != nullptr)
+		return config.getDriver(fusionJoint);
+	else
+		return config.getDriver(fusionAsBuiltJoint);
+}
+
+std::vector<std::shared_ptr<JointSensor>> Joint::searchSensors(const ConfigData & config)
+{
+	if (fusionJoint != nullptr)
+		return config.getSensors(fusionJoint);
+	else
+		return config.getSensors(fusionAsBuiltJoint);
 }
 
 void Joint::write(XmlWriter & output) const
