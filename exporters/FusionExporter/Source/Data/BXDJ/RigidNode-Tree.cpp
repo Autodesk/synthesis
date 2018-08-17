@@ -157,7 +157,7 @@ void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
 		log += std::string(depth - 1, '\t') + "As-Built Joints:\n";
 #endif
 
-		for (core::Ptr<fusion::AsBuiltJoint> joint : jointSummary->parents[rootOccurrence])
+		for (core::Ptr<fusion::AsBuiltJoint> joint : jointSummary->asBuiltParents[rootOccurrence])
 			addJoint(joint, rootOccurrence);
 	}
 

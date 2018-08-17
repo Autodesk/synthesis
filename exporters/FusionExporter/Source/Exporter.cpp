@@ -18,8 +18,6 @@ using namespace SynthesisAddIn;
 
 std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 {
-	std::string stringifiedJoints;
-
 	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
 	std::vector<Ptr<Joint>> joints;
 
@@ -41,8 +39,6 @@ std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 
 std::vector<Ptr<AsBuiltJoint>> Exporter::collectAsBuiltJoints(Ptr<FusionDocument> document)
 {
-	std::string stringifiedJoints;
-
 	std::vector<Ptr<AsBuiltJoint>> allJoints = document->design()->rootComponent()->allAsBuiltJoints();
 	std::vector<Ptr<AsBuiltJoint>> joints;
 
