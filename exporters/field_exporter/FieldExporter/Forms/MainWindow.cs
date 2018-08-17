@@ -21,10 +21,12 @@ namespace FieldExporter
                 {
                     Exporter.FieldProperties fieldProps;
                     List<PropertySet> propSets;
+
                     Exporter.SaveManager.Load(Program.ASSEMBLY_DOCUMENT, out fieldProps, out propSets);
-                    //Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints(),
-                    //                                                                   Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToGamepieces());
-                    Program.MAINWINDOW.GetPropertySetsTabControl().ApplyPropertySets(propSets);
+
+                    fieldMeta.SetSpawnpoints(fieldProps.spawnpoints);
+                    GetPropertySetsTabControl().ApplyPropertySets(propSets);
+                    GetPropertySetsTabControl().ApplyGamepieces(fieldProps.gamepieces);
                 }
             }
             catch (Exporter.FailedToLoadException)
@@ -75,9 +77,9 @@ namespace FieldExporter
             {
                 if (Program.ASSEMBLY_DOCUMENT != null)
                 {
-                    Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints(),
-                                                                                       Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToGamepieces());
-                    List<PropertySet> propSets = Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets();
+                    Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.GetSpawnpoints(),
+                                                                                       GetPropertySetsTabControl().TranslateToGamepieces());
+                    List<PropertySet> propSets = GetPropertySetsTabControl().TranslateToPropertySets();
                     Exporter.SaveManager.Save(Program.ASSEMBLY_DOCUMENT, fieldProps, propSets);
                 }
             }
