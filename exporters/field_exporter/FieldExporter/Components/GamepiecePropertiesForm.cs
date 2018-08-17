@@ -111,8 +111,12 @@ namespace FieldExporter.Components
         public void DisableInteractionEvents()
         {
             interactionEvents.Stop();
-            selectSpawnpointButton.Text = "Select";
             selectingSpawnpoint = false;
+
+            if (InvokeRequired)
+                Invoke((Action)(() => selectSpawnpointButton.Text = "Select"));
+            else
+                selectSpawnpointButton.Text = "Select";
         }
 
         private void selectSpawnpointButton_Click(object sender, EventArgs e)

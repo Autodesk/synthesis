@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 using Inventor;
 
 namespace FieldExporter.Components
@@ -191,6 +192,10 @@ namespace FieldExporter.Components
 
             // Property sets
             BXDFProperties.WriteProperties(directory + "\\definition.bxdf", fieldDefinition);
+
+            // Open the export directory when done
+            if (openFolderCheckBox.Checked)
+                Process.Start("explorer.exe", "/select, " + directory);
         }
 
         /// <summary>
