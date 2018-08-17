@@ -71,14 +71,30 @@ namespace FieldExporter.Components
                         {
                             translation.Add(new PropertySet(
                                 tabPage.Name,
-                                tabPage.ChildForm.GetCollider(),
-                                tabPage.ChildForm.GetFriction(),
-                                tabPage.ChildForm.GetMass()));
+                                tabPage.ChildForm.Collider,
+                                tabPage.ChildForm.Friction,
+                                tabPage.ChildForm.Mass));
                         }));
                 }
             }
 
             return translation;
+        }
+
+        /// <summary>
+        /// Creates tabs from a list of property sets.
+        /// </summary>
+        /// <param name="propertySets">Property sets to base tabs off of.</param>
+        public void ApplyPropertySets(List<PropertySet> propertySets)
+        {
+            foreach (PropertySet p in propertySets)
+            {
+                ComponentPropertiesTabPage newPage = new ComponentPropertiesTabPage(this, p.PropertySetID);
+                newPage.ChildForm.Collider = p.Collider;
+                newPage.ChildForm.Friction = p.Friction;
+                newPage.ChildForm.Mass = p.Mass;
+                TabPages.Insert(TabPages.Count - 1, newPage);
+            }
         }
 
         /// <summary>
@@ -97,7 +113,7 @@ namespace FieldExporter.Components
 
                     tabPage.Invoke(new Action(() =>
                     {
-                        Exporter.Gamepiece gp = tabPage.ChildForm.GetGamepiece();
+                        Exporter.Gamepiece gp = tabPage.ChildForm.Gamepiece;
 
                         if (gp != null)
                         {
