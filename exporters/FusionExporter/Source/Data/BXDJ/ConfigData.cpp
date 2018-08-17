@@ -226,9 +226,9 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 		// Joint Info
 		std::string jointID = jointsJSON[i]["id"].GetString();
 
-		joints[jointID].name = jointsJSON[i]["name"].GetString();
-		joints[jointID].asBuilt = jointsJSON[i]["asBuilt"].GetBool();
-		joints[jointID].motion = (JointMotionType)jointsJSON[i]["type"].GetInt();
+		if (jointsJSON[i].HasMember("name") && jointsJSON[i]["name"].IsString())		joints[jointID].name = jointsJSON[i]["name"].GetString();
+		if (jointsJSON[i].HasMember("asBuilt") && jointsJSON[i]["asBuilt"].IsBool())	joints[jointID].asBuilt = jointsJSON[i]["asBuilt"].GetBool();
+		if (jointsJSON[i].HasMember("type") && jointsJSON[i]["type"].IsNumber())		joints[jointID].motion = (JointMotionType)jointsJSON[i]["type"].GetInt();
 
 		// Driver Information
 		if (jointsJSON[i].HasMember("driver") && jointsJSON[i]["driver"].IsObject())
