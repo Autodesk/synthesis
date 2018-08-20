@@ -122,6 +122,8 @@ namespace BxDRobotExporter.Wizard
             OutputGeartxt.Value = (decimal)joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
             InputGeartxt.Value = (decimal)joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
 
+            chkBoxHasBrake.Checked = joint.cDriver.hasBrake;
+
             #region Meta info recovery
             {
                 PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
@@ -184,7 +186,7 @@ namespace BxDRobotExporter.Wizard
                         PortTwoUpDown.Visible = false;
                         unit = "°";
                         break;
-                    case 6: //Bumper Pneumatics
+                     case 6: //Bumper Pneumatics
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
                         this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
@@ -350,6 +352,7 @@ namespace BxDRobotExporter.Wizard
                         JointDriver driver = new JointDriver(JointDriverType.MOTOR);
                         driver.InputGear = (double)InputGeartxt.Value;
                         driver.OutputGear = (double)OutputGeartxt.Value;
+                        driver.hasBrake = chkBoxHasBrake.Checked;
                         driver.SetPort((int)PortOneUpDown.Value, 1);
                         driver.isCan = this.rbCAN.Checked;
                         return driver;
@@ -357,7 +360,7 @@ namespace BxDRobotExporter.Wizard
                         driver = new JointDriver(JointDriverType.SERVO);
                         driver.SetPort((int)PortOneUpDown.Value, 1);
                         return driver;
-                    case 3: //Bumper Pneumatic
+                    case 6: //Bumper Pneumatic
                         driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
                         PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
                         {
@@ -382,8 +385,9 @@ namespace BxDRobotExporter.Wizard
                         driver.SetPort((int)PortOneUpDown.Value);
                         driver.isCan = this.rbCAN.Checked;
                         return driver;
-                    case 6: //Dual Motor
+                    case 3: //Dual Motor
                         driver = new JointDriver(JointDriverType.DUAL_MOTOR);
+                        driver.hasBrake = chkBoxHasBrake.Checked;
                         driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
                         driver.isCan = this.rbCAN.Checked;
                         return driver;
@@ -403,6 +407,7 @@ namespace BxDRobotExporter.Wizard
                         {
                             type = ElevatorType.NOT_MULTI
                         }; //The info about the wheel attached to the joint.
+                        driver.hasBrake = chkBoxHasBrake.Checked;
                         driver.AddInfo(elevatorDriver);
                         driver.SetPort((int)PortOneUpDown.Value, 1);
                         driver.isCan = this.rbCAN.Checked;
