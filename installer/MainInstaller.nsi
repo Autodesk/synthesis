@@ -5,7 +5,7 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-OutFile "SynthesisInstaller4.2.exe"
+OutFile "SynthesisInstaller4.2.0.1.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -192,6 +192,7 @@ Section "Uninstall"
 
   RMDir /r /REBOOTOK $INSTDIR
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark
+  RMDir /r /REBOOTOK $APPDATA\SynthesisTEMP
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
