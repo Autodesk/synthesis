@@ -67,6 +67,9 @@ namespace Assets.Scripts.GUI
             helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
+        /// <summary>
+        /// Update the Show/Hide Outputs button to hide or show with the correct label
+        /// </summary>
         private void UpdateOutputButton()
         {
             if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() == 0 && Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
@@ -114,13 +117,9 @@ namespace Assets.Scripts.GUI
         }
 
         /// <summary>
-        /// Toggles the state of the sensor button in the toolbar when clicked
+        /// Open the configurations for an existing ultrasonic sensor or add a new ultrasonic sensor
         /// </summary>
-        //public void OnSensorButtonPressed()
-        //{
-        //    sensorManagerGUI.ToggleSensorOption();
-        //}
-
+        /// <param name="i"></param>
         public void OnUltrasonicDropdownClicked(int i)
         {
             if (i == 0) return;
@@ -145,6 +144,10 @@ namespace Assets.Scripts.GUI
             ultrasonicDropdown.value = 0;
         }
 
+        /// <summary>
+        /// Open the configurations for an existing beam break sensor or add a new beam break sensor
+        /// </summary>
+        /// <param name="i"></param>
         public void OnBeamBreakDropdownClicked(int i)
         {
             if (i == 0) return;
@@ -169,6 +172,10 @@ namespace Assets.Scripts.GUI
             beamBreakerDropdown.value = 0;
         }
 
+        /// <summary>
+        /// Open the configurations for an existing gyro sensor or add a new gyro sensor
+        /// </summary>
+        /// <param name="i"></param>
         public void OnGyroDropdownClicked(int i)
         {
             if (i == 0) return;
@@ -193,6 +200,9 @@ namespace Assets.Scripts.GUI
             gyroDropdown.value = 0;
         }
 
+        /// <summary>
+        /// Show or hide the sensor outputs panel
+        /// </summary>
         public void OnShowOutputsButtonPressed()
         {
             sensorManagerGUI.ToggleSensorOutput();
@@ -224,6 +234,9 @@ namespace Assets.Scripts.GUI
             }
         }
 
+        /// <summary>
+        /// Open sensor toolbar help screen
+        /// </summary>
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
@@ -250,6 +263,9 @@ namespace Assets.Scripts.GUI
 
         }
 
+        /// <summary>
+        /// Close sensor toolbar help screen
+        /// </summary>
         private void CloseHelpMenu()
         {
             helpMenu.SetActive(false);
