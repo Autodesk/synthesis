@@ -5,7 +5,7 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-OutFile "SynthesisInstaller4.2.0.1.exe"
+OutFile "SynthesisInstaller4.2.1.exe"
 
 InstallDir $PROGRAMFILES64\Autodesk\Synthesis
 
@@ -25,8 +25,8 @@ RequestExecutionLevel admin
   !define MUI_HEADERIMAGE_RIGHT
   !define MUI_ABORTWARNING
   !define MUI_FINISHPAGE_TEXT 'Synthesis has been successfully installed on your system. $\r$\n $\r$\nIn order to improve this product and understand how it is used, we collect non-personal product usage information. This usage information may consist of custom events like Replay Mode, Driver Practice Mode, Tutorial Link Clicked, etc. $\r$\nThis information is not used to identify or contact you. $\r$\nYou can turn data collection off from the Control Panel within the simulator. $\r$\n $\r$\nBy clicking Finish, you agree that you have read the terms of service agreement and data collection statement above.'
-  !define MUI_FINISHPAGE_LINK "Synthesis GitHub Wiki"
-  !define MUI_FINISHPAGE_LINK_LOCATION "https://github.com/Autodesk/synthesis/wiki"
+  !define MUI_FINISHPAGE_LINK "Synthesis Tutorials Website"
+  !define MUI_FINISHPAGE_LINK_LOCATION "http://bxd.autodesk.com/tutorials.html"
   
 ;--------------------------------
 ;Pages
@@ -99,11 +99,10 @@ Section "Synthesis (required)" SynthesisRequired
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\Synthesis
 
-  ; Put file there
-  ;File "installer.nsi"
   File /r "Synthesis\*"
 
   SetOutPath $INSTDIR
+  File /r "W16_SYN_launch.ico"
   CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
   CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
 
@@ -111,7 +110,7 @@ Section "Synthesis (required)" SynthesisRequired
                 "DisplayName" "Autodesk Synthesis"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "DisplayIcon" "W16_SYN_launch.ico"
+                "DisplayIcon" "$INSTDIR\W16_SYN_launch.ico"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "Publisher" "Autodesk"
@@ -120,7 +119,7 @@ Section "Synthesis (required)" SynthesisRequired
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
   ; Update this on release
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "4.2.0.0"
+                 "DisplayVersion" "4.2.1.0"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
