@@ -183,6 +183,12 @@
     <Compile Include="Wizard\Components\WheelSetupPanel.Designer.cs">
       <DependentUpon>WheelSetupPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Wizard\Pages\ExportOrAdvancedForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizard\Pages\ExportOrAdvancedForm.Designer.cs">
+      <DependentUpon>ExportOrAdvancedForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Wizard\WizardForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -238,6 +244,9 @@
     <EmbeddedResource Include="Wizard\Components\WheelSetupPanel.resx">
       <DependentUpon>WheelSetupPanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Pages\ExportOrAdvancedForm.resx">
+      <DependentUpon>ExportOrAdvancedForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Wizard\WizardForm.resx">
       <DependentUpon>WizardForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -252,6 +261,10 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\SynButton32.bmp" />
+    <None Include="Resources\SynButton16.bmp" />
+    <None Include="Resources\Logo32.bmp" />
+    <None Include="Resources\Logo16.bmp" />
     <None Include="Images\Weight32.png" />
     <None Include="Images\Weight16.png" />
     <None Include="Images\Wand32.png" />
@@ -321,7 +334,7 @@
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.15063.0\x86\mt.exe" -manifest "$(ProjectDir)BxDRobotExporter.X.manifest" -outputresource:"$(TargetPath)";#2 -nologo
-XCopy "$(TargetPath)" "%25ProgramFiles(X86)%25\Autodesk\Synthesis\" /Y /R
+XCopy "$(TargetPath)" "%25ProgramFiles(X86)%25\Autodesk\Synthesis\Exporter\" /Y /R /S
 XCopy "$(ProjectDir)Autodesk.BxDRobotExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
 </PostBuildEvent>
   </PropertyGroup>

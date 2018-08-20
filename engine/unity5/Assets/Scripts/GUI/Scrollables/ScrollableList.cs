@@ -22,6 +22,8 @@ namespace Synthesis.GUI.Scrollables
         private GUIStyle listStyle;
         private GUIStyle highlightStyle;
 
+        private Color ListTextColor { get; set; }
+
         // Use this for initialization
         void Start()
         {
@@ -30,14 +32,18 @@ namespace Synthesis.GUI.Scrollables
 
             listStyle = new GUIStyle("button");
             listStyle.normal.background = new Texture2D(0, 0);
-            listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
-            listStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
+            listStyle.hover.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
+            listStyle.active.background = Resources.Load("images/New Textures/greenButton") as Texture2D;
+            listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
+            listStyle.active.textColor = Color.white;
             listStyle.alignment = TextAnchor.MiddleLeft;
-            listStyle.normal.textColor = Color.white;
+
+            if (ListTextColor == Color.clear) ListTextColor = Color.black;
 
             highlightStyle = new GUIStyle(listStyle);
             highlightStyle.normal.background = listStyle.active.background;
             highlightStyle.hover.background = highlightStyle.normal.background;
+            highlightStyle.hover.textColor = Color.white;
         }
 
         void OnEnable()
@@ -64,9 +70,14 @@ namespace Synthesis.GUI.Scrollables
 
             float scale = GameObject.Find("Canvas").GetComponent<Canvas>().scaleFactor;
             Rect rect = GetComponent<RectTransform>().rect;
-            listStyle.fontSize = Mathf.RoundToInt(16 * scale);
-            highlightStyle.fontSize = Mathf.RoundToInt(20 * scale);
+            listStyle.fontSize = Mathf.RoundToInt(24 * scale);
+            highlightStyle.fontSize = Mathf.RoundToInt(24 * scale);
             Rect position = new Rect(p.x, Screen.height - p.y, rect.width * scale, rect.height * scale);
+
+            listStyle.normal.textColor = ListTextColor;
+
+            UnityEngine.GUI.skin.verticalScrollbar.normal.background = null;
+            UnityEngine.GUI.skin.verticalScrollbarThumb.normal.background = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
 
             GUILayout.BeginArea(new Rect(position.x, position.y * 1.01f, position.width, rect.height * scale * .95f));
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);

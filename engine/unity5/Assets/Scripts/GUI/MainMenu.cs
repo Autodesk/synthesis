@@ -6,6 +6,15 @@ using Synthesis.FSM;
 using System.Reflection;
 using Synthesis.States;
 using Synthesis.Utils;
+using Assets.Scripts.GUI;
+using UnityEngine.SceneManagement;
+using Synthesis.MixAndMatch;
+using System.Net;
+using Newtonsoft.Json;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
+using System.Diagnostics;
+using Assets.Scripts;
 
 namespace Synthesis.GUI
 {
@@ -16,6 +25,9 @@ namespace Synthesis.GUI
     {
         private GameObject splashScreen;
         private Canvas canvas;
+        public string updater;
+
+        GameObject releaseNumber;
 
         /// <summary>
         /// Runs every frame to update the GUI elements.
@@ -25,6 +37,54 @@ namespace Synthesis.GUI
             //Renders the message manager which displays error messages
             UserMessageManager.Render();
             UserMessageManager.scale = canvas.scaleFactor;
+        }
+
+        public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            bool isOk = true;
+            // If there are errors in the certificate chain, look at each error to determine the cause.
+            if (sslPolicyErrors != SslPolicyErrors.None)
+            {
+                for (int i = 0; i < chain.ChainStatus.Length; i++)
+                {
+                    if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+                    {
+                        chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                        chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                        chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
+                        chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                        bool chainIsValid = chain.Build((X509Certificate2)certificate);
+                        if (!chainIsValid)
+                        {
+                            isOk = false;
+                        }
+                    }
+                }
+            }
+            return isOk;
+        }
+
+        private void Awake()
+        {
+            WebClient client = new WebClient();
+            ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+            var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
+            VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
+            updater = update.URL;
+
+            string CurrentVersion = "4.2.0.1";
+            Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
+
+            var localVersion = new Version(CurrentVersion);
+            var globalVersion = new Version(update.Version);
+
+            var check = localVersion.CompareTo(globalVersion);
+
+            if (check < 0)
+            {
+                Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+
+            }//client.DownloadFile(update.URL, @"C:\Users\t_moram\Downloads\Synthesis Installer.exe");
         }
 
         /// <summary>
@@ -51,14 +111,6 @@ namespace Synthesis.GUI
             StateMachine.SceneGlobal.ChangeState(new SimTabState());
         }
 
-        /// <summary>
-        /// Switches to the options tab and its respective UI elements.
-        /// </summary>
-        public void SwitchTabOptions()
-        {
-            StateMachine.SceneGlobal.ChangeState(new OptionsTabState());
-        }
-
         //Exits the program
         public void Exit()
         {
@@ -71,18 +123,19 @@ namespace Synthesis.GUI
         /// </summary>
         void Start()
         {
-            LinkTabs();
             FindAllGameObjects();
-            RegisterButtonCallbacks();
             splashScreen.SetActive(true); //Turns on the loading screen while initializing
+            LinkTabs();
+            ButtonCallbackManager.RegisterButtonCallbacks(StateMachine.SceneGlobal, gameObject);
+            ButtonCallbackManager.RegisterDropdownCallbacks(StateMachine.SceneGlobal, gameObject);
 
             //Creates the replay directory
             FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\");
             file.Directory.Create();
 
             //Assigns the currently store registry values or default file path to the proper variables if they exist.
-            string robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
-            string fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields"));
+            string robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\synthesis\\Robots"));
+            string fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\synthesis\\Fields"));
 
             //If the directory doesn't exist, create it.
             if (!Directory.Exists(robotDirectory))
@@ -102,6 +155,9 @@ namespace Synthesis.GUI
             PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
 
             canvas = GetComponent<Canvas>();
+
+            if (DirectSimulatorLaunch())
+                return;
 
             splashScreen.SetActive(false);
 
@@ -131,11 +187,6 @@ namespace Synthesis.GUI
             LinkTab<LoadFieldState>("SimLoadField");
         }
 
-        /// <summary>
-        /// Links a tab to the provided <see cref="State"/> type from the tab's name.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="tabName"></param>
         private void LinkTab<T>(string tabName, bool strict = true) where T : State
         {
             GameObject tab = Auxiliary.FindGameObject(tabName);
@@ -145,38 +196,81 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
-        /// Finds each Button component in the main menu that doesn't already have a
-        /// listener and registers it with a callback.
-        /// </summary>
-        private void RegisterButtonCallbacks()
-        {
-            foreach (Button b in GetComponentsInChildren<Button>(true))
-                if (b.onClick.GetPersistentEventCount() == 0)
-                    b.onClick.AddListener(() => InvokeCallback("On" + b.name + "Pressed"));
-        }
-
-        /// <summary>
-        /// Invokes a method in the active <see cref="State"/> by the given method name.
-        /// </summary>
-        /// <param name="methodName"></param>
-        private void InvokeCallback(string methodName)
-        {
-            State currentState = StateMachine.SceneGlobal.CurrentState;
-            MethodInfo info = currentState.GetType().GetMethod(methodName);
-
-            if (info == null)
-                Debug.LogWarning("Method " + methodName + " does not have a listener in " + currentState.GetType().ToString());
-            else
-                info.Invoke(currentState, null);
-        }
-
-        /// <summary>
         /// Finds all the UI game objects and assigns them to a variable
         /// </summary>
-        void FindAllGameObjects()
+        private void FindAllGameObjects()
         {
             splashScreen = Auxiliary.FindObject(gameObject, "LoadSplash");
             Auxiliary.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+        }
+
+        /// <summary>
+        /// Launches directly into the simulator if command line arguments are provided.
+        /// </summary>
+        /// <returns></returns>
+        private bool DirectSimulatorLaunch()
+        {
+            if (!AppModel.InitialLaunch)
+                return false;
+
+            AppModel.InitialLaunch = false;
+
+            //Loads robot and field directories from command line arguments if valid.
+            string[] args = Environment.GetCommandLineArgs();
+            bool robotDefined = false;
+            bool fieldDefined = false;
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i].ToLower())
+                {
+                    case "-robot":
+                        if (i < args.Length - 1)
+                        {
+                            string robotFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(robotFile);
+                            PlayerPrefs.SetString("RobotDirectory", dirInfo.Parent.FullName);
+                            PlayerPrefs.SetString("simSelectedRobot", robotFile);
+                            PlayerPrefs.SetString("simSelectedRobotName", dirInfo.Name);
+                            robotDefined = true;
+                        }
+                        break;
+                    case "-field":
+                        if (i < args.Length - 1)
+                        {
+                            string fieldFile = args[++i];
+
+                            DirectoryInfo dirInfo = new DirectoryInfo(fieldFile);
+                            PlayerPrefs.SetString("FieldDirectory", dirInfo.Parent.FullName);
+                            PlayerPrefs.SetString("simSelectedField", fieldFile);
+                            PlayerPrefs.SetString("simSelectedFieldName", dirInfo.Name);
+                            fieldDefined = true;
+                        }
+                        break;
+                }
+            }
+
+            //If command line arguments have been passed, start the simulator.
+            if (robotDefined && fieldDefined)
+            {
+                PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+                SceneManager.LoadScene("Scene");
+                RobotTypeManager.SetProperties(false);
+                return true;
+            }
+
+            return false;
+        }
+
+        public void GetUpdate(bool yes)
+        {
+            if (yes)
+            {
+                Process.Start("http://bxd.autodesk.com");
+                Process.Start(updater);
+            }
+            else Auxiliary.FindObject("UpdatePrompt").SetActive(false);
         }
     }
 }

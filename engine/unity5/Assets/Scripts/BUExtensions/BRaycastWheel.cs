@@ -90,7 +90,6 @@ namespace Synthesis.BUExtensions
             }
 
             RotationalJoint_Base joint = (RotationalJoint_Base)node.GetSkeletalJoint();
-            joint.basePoint.x *= -1;
 
             node.OrientWheelNormals();
 
@@ -102,7 +101,7 @@ namespace Synthesis.BUExtensions
 
             Vector3 localPosition = parent.MainObject.transform.InverseTransformPoint(node.MainObject.transform.position);
 
-            basePoint = localPosition.ToBullet() + new BulletSharp.Math.Vector3(0f, VerticalOffset, 0f);
+            basePoint = localPosition.ToBullet() - robot.RootNode.WheelsNormal.ToBullet() * VerticalOffset;
 
             wheelIndex = robot.AddWheel(driverMeta.type, basePoint, axis.normalized.ToBullet(), VerticalOffset, radius);
         }
@@ -141,6 +140,16 @@ namespace Synthesis.BUExtensions
                 transform.position = wheel.WorldTransform.Origin.ToUnity();
 
             transform.localRotation *= Quaternion.AngleAxis(-wheel.Speed, axis);
+        }
+
+        /// <summary>
+        /// Get the wheel speed to be used for encoder calculations
+        /// </summary>
+        /// <returns></returns>
+        public float GetWheelSpeed()
+        {
+            RobotWheelInfo wheel = robot.RaycastRobot.GetWheelInfo(wheelIndex);
+            return wheel.Speed;
         }
     }
 }

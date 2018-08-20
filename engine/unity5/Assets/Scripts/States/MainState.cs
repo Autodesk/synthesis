@@ -21,6 +21,7 @@ using Synthesis.Sensors;
 using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
+using Synthesis.Field;
 
 namespace Synthesis.States
 {
@@ -65,6 +66,8 @@ namespace Synthesis.States
         private SensorManager sensorManager;
         private SensorManagerGUI sensorManagerGUI;
 
+        private SimUI simUI;
+
         private GameObject fieldObject;
         private UnityFieldDefinition fieldDefinition;
 
@@ -74,11 +77,15 @@ namespace Synthesis.States
         private string robotPath;
 
         public List<SimulatorRobot> SpawnedRobots { get; private set; }
-        private const int MaxRobots = 6;
+        private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
+        public bool isEmulationDownloaded = File.Exists(EmulationDriverStation.emulationDir+"zImage") && File.Exists(EmulationDriverStation.emulationDir + "rootfs.ext4") && File.Exists(EmulationDriverStation.emulationDir + "zynq-zed.dtb");
+        //public bool isEmulationDownloaded = true;
 
-        public static List<List<GameObject>> spawnedGamepieces = new List<List<GameObject>>() {new List<GameObject>(), new List<GameObject>()};
+        bool reset;
+
+        public static List<List<GameObject>> spawnedGamepieces = new List<List<GameObject>>() { new List<GameObject>(), new List<GameObject>() };
         /// <summary>
         /// Called when the script instance is being initialized.
         /// Initializes the bullet physics environment
@@ -117,9 +124,6 @@ namespace Synthesis.States
             //starts a new instance of unity packet which receives packets from the driver station
             unityPacket.Start();
 
-            //loads all the controls
-            Controls.Load();
-
             //If a replay has been selected, load the replay. Otherwise, load the field and robot.
             string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
 
@@ -138,6 +142,8 @@ namespace Synthesis.States
                     AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
                     return;
                 }
+
+                reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
 
                 if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
                 {
@@ -158,13 +164,30 @@ namespace Synthesis.States
             sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
             sensorManagerGUI = StateMachine.gameObject.GetComponent<SensorManagerGUI>();
 
+            simUI = StateMachine.SceneGlobal.GetComponent<SimUI>();
+
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
 
             IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
 
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
+            StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(1).gameObject, false);
             StateMachine.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
             StateMachine.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
+            StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetGamepieceSpawnpointUI"));
+            StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
+            StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
+            StateMachine.Link<SensorSpawnState>(Auxiliary.FindGameObject("ResetSensorSpawnpointUI"));
+            StateMachine.Link<DefineSensorAttachmentState>(Auxiliary.FindGameObject("DefineSensorAttachmentUI"));
+
+            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Autodesk\Synthesis\Emulator");
+            string directoryPath = "";
+
+            if (Directory.Exists(defaultDirectory))
+            {
+                directoryPath = defaultDirectory;
+                isEmulationDownloaded = true;
+            }
         }
 
         /// <summary>
@@ -178,20 +201,27 @@ namespace Synthesis.States
                 return;
             }
 
-            //Spawn a new robot from the same path or switch active robot
-            if (!ActiveRobot.IsResetting)
+            if (reset)
             {
-                if (UnityEngine.Input.GetKeyDown(KeyCode.U) && !MixAndMatchMode.setPresetPanelOpen) LoadRobot(robotPath, ActiveRobot is MaMRobot);
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
+                BeginRobotReset();
+                reset = false;
+            }
+
+            //Spawn a new robot from the same path or switch active robot
+            if (!ActiveRobot.IsResetting && ActiveRobot.ControlIndex == 0)
+            {
+                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
+                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].switchActiveRobot)) SwitchActiveRobot();
+
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) && !MixAndMatchMode.setPresetPanelOpen &&
+            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
                 dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             // Switches to replay mode
-            if (!ActiveRobot.IsResetting && UnityEngine.Input.GetKeyDown(KeyCode.Tab))
+            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -245,6 +275,9 @@ namespace Synthesis.States
             if (!File.Exists(directory + "\\definition.bxdf"))
                 return false;
 
+            FieldDataHandler.Load(fieldPath);
+            Controls.Init();
+
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
             Debug.Log(loadResult);
@@ -259,26 +292,25 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobot(string directory, bool isMixAndMatch)
         {
-            if (SpawnedRobots.Count < MaxRobots)
+            if (SpawnedRobots.Count < MAX_ROBOTS)
             {
-                if (isMixAndMatch)
-                    robotPath = RobotTypeManager.RobotPath;
-                else
-                    robotPath = directory;
-
                 GameObject robotObject = new GameObject("Robot");
                 SimulatorRobot robot;
 
                 if (isMixAndMatch)
                 {
+                    robotPath = RobotTypeManager.RobotPath;
                     MaMRobot mamRobot = robotObject.AddComponent<MaMRobot>();
                     mamRobot.RobotHasManipulator = false; // Defaults to false
                     robot = mamRobot;
                 }
                 else
                 {
+                    robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
                 }
+
+                robot.FilePath = robotPath;
 
                 //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
                 if (!robot.InitializeRobot(robotPath))
@@ -292,6 +324,8 @@ namespace Synthesis.States
 
                 robot.ControlIndex = SpawnedRobots.Count;
                 SpawnedRobots.Add(robot);
+
+                DPMDataHandler.Load(robotPath);
 
                 return true;
             }
@@ -310,10 +344,10 @@ namespace Synthesis.States
             sensorManagerGUI.EndProcesses();
 
             RemoveRobot(SpawnedRobots.IndexOf(ActiveRobot));
+            //ActiveRobot = null;
 
             if (LoadRobot(directory, isMixAndMatch))
             {
-                //dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
                 DynamicCamera.ControlEnabled = true;
                 return true;
             }
@@ -350,8 +384,6 @@ namespace Synthesis.States
                 {
                     ActiveRobot = SpawnedRobots[0];
                 }
-
-                //dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }
 
@@ -363,7 +395,7 @@ namespace Synthesis.States
             if (index < SpawnedRobots.Count)
             {
                 ActiveRobot = SpawnedRobots[index];
-                //dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
+                DPMDataHandler.Load(ActiveRobot.FilePath);
             }
         }
 
@@ -384,6 +416,8 @@ namespace Synthesis.States
             {
                 robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
                 sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
+
+                // TODO: The camera is a bit weird when changing robots. Fix that. Then test other aspects of the simulator and fix anything else that needs fixing.
 
                 MaMRobot mamRobot = SpawnedRobots[index] as MaMRobot;
 
@@ -514,7 +548,7 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
         {
-            if (SpawnedRobots.Count >= MaxRobots)
+            if (SpawnedRobots.Count >= MAX_ROBOTS)
                 return false;
 
             robotPath = baseDirectory;
@@ -522,11 +556,11 @@ namespace Synthesis.States
             GameObject robotObject = new GameObject("Robot");
             MaMRobot robot = robotObject.AddComponent<MaMRobot>();
 
+            robot.FilePath = robotPath;
+
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory)) return false;
-
-            robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
-
+            
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (ActiveRobot == null)
                 ActiveRobot = robot;
@@ -534,6 +568,7 @@ namespace Synthesis.States
             robot.ControlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
+            DPMDataHandler.Load(robotPath);
             return robot.InitializeManipulator(manipulatorDirectory);
         }
 
@@ -545,8 +580,7 @@ namespace Synthesis.States
             lastFrameCount = physicsWorld.frameCount;
             Tracking = true;
 
-            if (!awaitingReplay)
-                CollisionTracker.Reset();
+            CollisionTracker.Reset();
         }
 
         /// <summary>
@@ -617,7 +651,6 @@ namespace Synthesis.States
             foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             {
                 t.Clear();
-
                 CollisionTracker.Reset();
             }
         }
@@ -680,7 +713,6 @@ namespace Synthesis.States
                 if (robot != ActiveRobot) robot.Packet = null;
             }
         }
-
         #endregion
     }
 }

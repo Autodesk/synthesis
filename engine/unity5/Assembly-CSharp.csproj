@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_2_2;UNITY_2018_2;UNITY_2018;PLATFORM_ARCH_64;UNITY_64;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITES;ENABLE_GRID;ENABLE_TILEMAP;ENABLE_TERRAIN;ENABLE_TEXTURE_STREAMING;ENABLE_DIRECTOR;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_TIMELINE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;ENABLE_MONO_BDWGC;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_VIDEO;ENABLE_PACKMAN;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_LOCALIZATION;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_EVENT_QUEUE;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_AR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_VSTU;UNITY_PRO_LICENSE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_2_2;UNITY_2018_2;UNITY_2018;PLATFORM_ARCH_64;UNITY_64;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITES;ENABLE_GRID;ENABLE_TILEMAP;ENABLE_TERRAIN;ENABLE_TEXTURE_STREAMING;ENABLE_DIRECTOR;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_TIMELINE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;ENABLE_MONO_BDWGC;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_VIDEO;ENABLE_PACKMAN;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_LOCALIZATION;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_EVENT_QUEUE;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_AR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_VSTU;UNITY_PRO_LICENSE;CT_FB</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -195,10 +195,19 @@
     <Compile Include="Assets\Scripts\Configuration\MoveArrows.cs" />
     <Compile Include="Assets\Scripts\Configuration\SelectableArrow.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeMode.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice\DPMDataHandler.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice\DriverPractice.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeRobot.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice\Goal.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice\GoalManager.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\Interactor.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice\TrajectoryEditor.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
+    <Compile Include="Assets\Scripts\Emulation\EmuData.cs" />
+    <Compile Include="Assets\Scripts\Emulation\EngineData.cs" />
+    <Compile Include="Assets\Scripts\Emulation\Serialization.cs" />
+    <Compile Include="Assets\Scripts\Emulation\Singletons.cs" />
+    <Compile Include="Assets\Scripts\Emulation\SSHClient.cs" />
     <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
@@ -206,12 +215,17 @@
     <Compile Include="Assets\Scripts\FEA\ReplayImporter.cs" />
     <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
+    <Compile Include="Assets\Scripts\Field\FieldDataHandler.cs" />
+    <Compile Include="Assets\Scripts\Field\Gamepiece.cs" />
+    <Compile Include="Assets\Scripts\Field\UnityFieldDefinition.cs" />
     <Compile Include="Assets\Scripts\FSM\LinkedMonoBehaviour.cs" />
     <Compile Include="Assets\Scripts\FSM\ObjectStateLinker.cs" />
     <Compile Include="Assets\Scripts\FSM\State.cs" />
     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
     <Compile Include="Assets\Scripts\GodMode.cs" />
-    <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
+    <Compile Include="Assets\Scripts\GUI\ButtonCallbackManager.cs" />
+    <Compile Include="Assets\Scripts\GUI\EmulationDriverStation.cs" />
+    <Compile Include="Assets\Scripts\GUI\FileBrowserArchive.cs" />
     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\GUI\NetworkMultiplayerUI.cs" />
@@ -224,9 +238,16 @@
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
+    <Compile Include="Assets\Scripts\GUI\SynthesisFileBrowser.cs" />
+    <Compile Include="Assets\Scripts\GUI\ToolbarStates\DPMToolbarState.cs" />
+    <Compile Include="Assets\Scripts\GUI\ToolbarStates\EmulationToolbarState.cs" />
+    <Compile Include="Assets\Scripts\GUI\ToolbarStates\MainToolbarState.cs" />
+    <Compile Include="Assets\Scripts\GUI\ToolbarStates\ScoringToolbarState.cs" />
+    <Compile Include="Assets\Scripts\GUI\ToolbarStates\SensorToolbarState.cs" />
     <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
+    <Compile Include="Assets\Scripts\GUI\Wizard.cs" />
     <Compile Include="Assets\Scripts\Input\Axis.cs" />
     <Compile Include="Assets\Scripts\Input\Controls.cs" />
     <Compile Include="Assets\Scripts\Input\CreateButton.cs" />
@@ -248,14 +269,11 @@
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMPresetMono.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMSimUI.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
     <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
     <Compile Include="Assets\Scripts\Network\IPCrypt.cs" />
     <Compile Include="Assets\Scripts\Network\MatchManager.cs" />
@@ -278,6 +296,7 @@
     <Compile Include="Assets\Scripts\Robot\RobotBase.cs" />
     <Compile Include="Assets\Scripts\Robot\SimulatorRobot.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
+    <Compile Include="Assets\Scripts\Sensors\Encoder.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorManager.cs" />
@@ -292,14 +311,18 @@
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
     <Compile Include="Assets\Scripts\States\DefaultSimulatorState.cs" />
+    <Compile Include="Assets\Scripts\States\DefineNodeState.cs" />
+    <Compile Include="Assets\Scripts\States\DefineSensorAttachmentState.cs" />
     <Compile Include="Assets\Scripts\States\DisclaimerState.cs" />
     <Compile Include="Assets\Scripts\States\DistributingResourcesState.cs" />
     <Compile Include="Assets\Scripts\States\EnterInfoState.cs" />
     <Compile Include="Assets\Scripts\States\EnterTagState.cs" />
     <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
     <Compile Include="Assets\Scripts\States\FetchingMetadataState.cs" />
+    <Compile Include="Assets\Scripts\States\GamepieceSpawnState.cs" />
     <Compile Include="Assets\Scripts\States\GatheringResourcesState.cs" />
     <Compile Include="Assets\Scripts\States\GeneratingSceneState.cs" />
+    <Compile Include="Assets\Scripts\States\GoalState.cs" />
     <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
     <Compile Include="Assets\Scripts\States\HostJoinState.cs" />
     <Compile Include="Assets\Scripts\States\LoadFieldState.cs" />
@@ -313,6 +336,7 @@
     <Compile Include="Assets\Scripts\States\ReplayState.cs" />
     <Compile Include="Assets\Scripts\States\SaveReplayState.cs" />
     <Compile Include="Assets\Scripts\States\SelectionState.cs" />
+    <Compile Include="Assets\Scripts\States\SensorSpawnState.cs" />
     <Compile Include="Assets\Scripts\States\SimTabState.cs" />
     <Compile Include="Assets\Scripts\States\SyncState.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
@@ -321,13 +345,42 @@
     <Compile Include="Assets\Scripts\Utils\BulletExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
+    <Compile Include="Assets\Scripts\VersionManager.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\Examples.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIMain.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIScenes.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\FileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Config.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Constants.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Helper.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserBase.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserEditor.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserGeneric.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserMac.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserWindows.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\IFileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\IStandaloneFileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\BasicSample.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileImage.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileText.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleSaveFileImage.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleSaveFileText.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserEditor.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserMac.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserWindows.cs" />
     <None Include="Assets\Resources\Materials\Arrow Shader.shader" />
     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
+    <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\VERSIONS.txt" />
+    <None Include="Assets\StandaloneFileBrowser\FileBrowser\README.txt" />
     <None Include="Assets\BulletUnity\license.txt" />
+    <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\id\62455202-c9ff-4b04-b6c3-1d4b836a5fff.txt" />
+    <None Include="Assets\Packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.xml" />
+    <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
-    <None Include="Assets\item_data.xml" />
+    <None Include="Assets\Packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.xml" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
@@ -543,6 +596,18 @@
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="CTCommon">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="CTCommonEditor">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommonEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Ookii.Dialogs">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
       <HintPath>C:/Users/t_buckm/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
@@ -900,6 +965,14 @@
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
       <Project>{7C14F5DB-B04B-B8EC-364F-14F17512EDE5}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Analytics.DataPrivacy.Editor.csproj">
+      <Project>{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}</Project>
+      <Name>Unity.Analytics.DataPrivacy.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Analytics.DataPrivacy.csproj">
+      <Project>{ACDD2F29-AC5D-76DD-A58C-30AA4D1B465F}</Project>
+      <Name>Unity.Analytics.DataPrivacy</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

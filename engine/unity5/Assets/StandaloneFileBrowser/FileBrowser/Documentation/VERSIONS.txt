@@ -1,0 +1,22 @@
+﻿# FileBrowser - Release notes
+
+## 1.2.2 - 07.06.2018
+* Editor integration improved
+* Official support for Unity 2018.1 & 2018.2
+
+## 1.2.1 - 18.04.2018
+* macOS: library is now 64bit to be compatible with the "Mac App Store"
+* macOS: handling of spaces improved
+
+## 1.2.0 - 25.03.2018
+* Interface "IFileBrowser" for file browsers added
+* ReminderCT added
+* Warnings for multiple extensions in Editor added
+
+## 1.1.0 - 21.02.2018
+* Warnings for multiselect in Editor added
+* Official support for Unity 2018
+* Common 1.2.5 added
+
+## 1.0.0 - 28.12.2017
+* Production release

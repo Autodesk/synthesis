@@ -13,8 +13,26 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// <summary>
     /// The port(s) that this joint driver uses.
     /// </summary>
-    public int portA, portB;
+    public int port1, port2;
+     /// <summary>
+    /// The gear ratio that the input gear uses
+    /// </summary>
+    /// <param name="InputGear">Input gear ratio</param>
+    public double InputGear { get; set; }// getter/setter for the input gear internal data structure
 
+    /// <summary>
+    /// The gear ratio that the output gear uses
+    /// </summary>
+    /// <param name="OutputGear">Output gear ratio</param>
+    public double OutputGear { get; set; }// getter/setter for the output gear internal data structure
+    
+    /// <summary>
+    /// Whether or not the driver has an attached brake
+    /// </summary>
+    /// <param name="hasBrake">Determines whether or not the joint has a brake</param>
+    public bool hasBrake { get; set; }// getter/setter for the output gear internal data structure
+
+    //wat
     public bool isCan = false;
 
     /// <summary>
@@ -136,11 +154,11 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
         {
             case SkeletalJointType.ROTATIONAL:
                 // Pneumatic and Worm Screw map to angles
-                return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW, JointDriverType.DUAL_MOTOR};
+                return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO,/* JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,*/ JointDriverType.DUAL_MOTOR};
             case SkeletalJointType.LINEAR:
-                return new JointDriverType[] { JointDriverType.ELEVATOR, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW};
+                return new JointDriverType[] { JointDriverType.ELEVATOR/*, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW*/};
             case SkeletalJointType.CYLINDRICAL:
-                return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,
+                return new JointDriverType[] {/* JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,*/
                 JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.DUAL_MOTOR};
             case SkeletalJointType.PLANAR:
                 //Not sure of an FRC part with planar motion.  Will add later if needed.
@@ -155,12 +173,12 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// <summary>
     /// Sets the port(s) for this driver.
     /// </summary>
-    /// <param name="portA">First port</param>
-    /// <param name="portB">Option second port</param>
-    public void SetPort(int portA, int portB = -1)
+    /// <param name="port1">First port</param>
+    /// <param name="port2">Option second port</param>
+    public void SetPort(int port1, int port2 = -1)
     {
-        this.portA = portA;
-        this.portB = portB;
+        this.port1 = port1;
+        this.port2 = port2;
     }
 
     /// <summary>
@@ -188,7 +206,7 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
         info += jointType.Substring(0, 1).ToUpper() + jointType.Substring(1); // Capitalize first letter
 
         // Port information
-        info += ", Ports: " + type.GetPortType() + " " + portA + (type.HasTwoPorts() ? " and " + portB : "");
+        info += ", Ports: " + type.GetPortType(isCan) + " " + port1 + (type.HasTwoPorts() ? " and " + port2 : "");
 
         return info;
     }
@@ -207,10 +225,12 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// </summary>
     /// <param name="writer">Output stream</param>
     public void WriteBinaryData(System.IO.BinaryWriter writer)
-    {
+    {//these need to stay in the correct order to read the data properly, and need to stay with the same data type so the byte order stays correct
         writer.Write((byte) ((int) GetDriveType()));
-        writer.Write((short)portA); 
-        writer.Write((short)portB);
+        writer.Write((short)port1); 
+        writer.Write((short)port2);
+        writer.Write((double)InputGear);// write the input gear to the Binary writer
+        writer.Write((double)OutputGear);// write the output gear to the Binary writer
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
         writer.Write(isCan);
@@ -228,8 +248,8 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     public void ReadBinaryData(System.IO.BinaryReader reader)
     {
         type = (JointDriverType) ((int) reader.ReadByte());
-        portA = reader.ReadInt16();
-        portB = reader.ReadInt16();
+        port1 = reader.ReadInt16();
+        port2 = reader.ReadInt16();
         lowerLimit = reader.ReadSingle();
         upperLimit = reader.ReadSingle();
         isCan = reader.ReadBoolean();

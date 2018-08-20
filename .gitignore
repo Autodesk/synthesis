@@ -1,4 +1,6 @@
 .vs
+.vs/
+.vs/*
 [Dd]ebug
 [Rr]elease
 engine/unity5/Build_Data
@@ -21,6 +23,9 @@ installer/cygscripts/http*
 *.sdf
 *.VC.db
 
+Synthesis_Data/
+
 Replays/
 *.dll
+!CER_Utility.dll
 *.pdb

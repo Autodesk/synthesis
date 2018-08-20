@@ -34,14 +34,14 @@ public class DynamicCamera : MonoBehaviour
         /// The attached camera instance.
         /// </summary>
         protected MonoBehaviour Mono { get; private set; }
-
+        
         /// <summary>
         /// The state's <see cref="IRobotProvider"/> instance for accessing robot information.
         /// </summary>
         protected IRobotProvider RobotProvider { get; private set; }
 
         /// <summary>
-        /// Initialzes a new <see cref="CameraState"/> instance.
+        /// Initializes a nwe <see cref="CameraState"/> instance.
         /// </summary>
         /// <param name="mono"></param>
         public CameraState(MonoBehaviour mono)
@@ -74,20 +74,18 @@ public class DynamicCamera : MonoBehaviour
         Quaternion startRotation;
         Quaternion lookingRotation;
         Quaternion currentRotation;
-
         //The default starting position of the camera
         static Vector3 position1Vector = new Vector3(0f, 1.5f, -9.5f);
-
         //The opposite default starting position of the camera
         static Vector3 position2Vector = new Vector3(0f, 1.5f, 9.5f);
-
         Vector3 currentPosition;
 
         float transformSpeed;
 
         readonly bool opposite;
 
-        public DriverStationState(MonoBehaviour mono, bool oppositeSide = false) : base(mono)
+        public DriverStationState(MonoBehaviour mono, bool oppositeSide = false)
+            : base(mono)
         {
             opposite = oppositeSide;
         }
@@ -106,7 +104,6 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-
             lookingRotation = Quaternion.LookRotation(RobotProvider.Robot.transform.position - Mono.transform.position);
             currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
 
@@ -121,9 +118,11 @@ public class DynamicCamera : MonoBehaviour
                     currentPosition -= Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
                 }
             }
+
             Mono.transform.rotation = currentRotation;
             Mono.transform.position = currentPosition;
         }
+
 
         public override void End()
         {
@@ -135,20 +134,17 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class OrbitState : CameraState
     {
-        const float lagResponsiveness = 10f;
-        
-        float magnification = 5.0f;
-        float cameraAngle = 45f;
-        float panValue = 0f;
-
         Vector3 targetVector;
         Vector3 rotateVector;
         Vector3 lagVector;
         Vector3 lockedVector;
+        const float lagResponsiveness = 10f;
+        float magnification = 5.0f;
+        float cameraAngle = 45f;
+        float panValue = 0f;
 
-        public OrbitState(MonoBehaviour mono) : base(mono)
-        {
-        }
+        public OrbitState(MonoBehaviour mono)
+            : base(mono) { }
 
         public override void Init()
         {
@@ -160,7 +156,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            if (RobotProvider.Robot == null/* || RobotProvider.Robot.transform.childCount == 0*/)
+            if (RobotProvider.Robot == null)
                 return;
 
             // Focus on node 0 of the robot
@@ -192,6 +188,19 @@ public class DynamicCamera : MonoBehaviour
             else
             {
                 panValue = 0f;
+            }
+
+            if (adjusting)
+            {
+                // Unlocks the camera position for adjustment
+                rotateVector = RotateXZ(rotateVector, targetVector, panValue, magnification);
+                rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+                lockedVector = RobotProvider.Robot.transform.GetChild(0).InverseTransformPoint(rotateVector);
+            }
+            else
+            {
+                rotateVector = RobotProvider.Robot.transform.GetChild(0).TransformPoint(lockedVector);
+                rotateVector.y = targetVector.y + Mathf.Abs(rotateVector.y - targetVector.y);
             }
 
             if (adjusting)
@@ -254,9 +263,8 @@ public class DynamicCamera : MonoBehaviour
         float transformSpeed;
         float scrollWheelSensitivity;
 
-        public FreeroamState(MonoBehaviour mono) : base(mono)
-        {
-        }
+        public FreeroamState(MonoBehaviour mono)
+            : base(mono) { }
 
         public override void Init()
         {
@@ -310,6 +318,7 @@ public class DynamicCamera : MonoBehaviour
         {
             Mono.GetComponent<Camera>().fieldOfView = 60.0f;
         }
+
     }
 
 
@@ -319,12 +328,14 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class OverviewState : CameraState
     {
+        Vector3 lagVector;
         Vector3 positionVector;
         Vector3 rotationVector;
         Vector3 fieldVector;
         GameObject field;
 
-        public OverviewState(MonoBehaviour mono) : base(mono)
+        public OverviewState(MonoBehaviour mono)
+            : base(mono)
         {
             field = GameObject.Find("Field");
             fieldVector = field.transform.position;
@@ -332,13 +343,19 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
-            positionVector = new Vector3(0f, 9f, 0f) + fieldVector;
+            positionVector = new Vector3(0f, 14f, 0f) + fieldVector;
             Mono.transform.position = positionVector;
             rotationVector = new Vector3(90f, 90f, 0f);
             Mono.transform.rotation = Quaternion.Euler(rotationVector);
         }
         public override void Update()
         {
+            if (Input.GetMouseButton(1))
+            {
+                positionVector.y += Input.GetAxis("Mouse Y");
+            }
+            if (positionVector.y > fieldVector.y+1) Mono.transform.position = positionVector;
+            
         }
 
         public override void End()
@@ -351,16 +368,17 @@ public class DynamicCamera : MonoBehaviour
     public class SateliteState : CameraState
     {
         Vector3 targetPosition;
-        Vector3 rotationVector;
+        public GameObject target = GameObject.Find("Robot");
+        public Vector3 targetOffset = new Vector3(0f, 6f, 0f);
+        public Vector3 rotationVector = new Vector3(90f, 90f, 0f);
 
-        public SateliteState(MonoBehaviour mono) : base(mono)
-        {
-        }
+        public SateliteState(MonoBehaviour mono)
+            : base(mono) { }
 
         public override void Init()
         {
-            targetPosition = RobotProvider.Robot.transform.position;
-            rotationVector = new Vector3(90f, 90f, 0f);
+            targetPosition = target.transform.position;
+            Mono.transform.position = targetPosition + targetOffset;
             Mono.transform.rotation = Quaternion.Euler(rotationVector);
         }
 
@@ -369,11 +387,58 @@ public class DynamicCamera : MonoBehaviour
             if (RobotProvider.Robot != null && RobotProvider.Robot.transform.childCount > 0)
                 targetPosition = RobotProvider.Robot.transform.position;
 
-            Mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
+            Mono.transform.position = targetPosition + targetOffset;
+            Mono.transform.rotation = Quaternion.Euler(rotationVector);
         }
 
         public override void End()
         {
+
+        }
+    }
+    public class OrthographicSateliteState : CameraState
+    {
+        Vector3 targetPosition;
+        public GameObject target = GameObject.Find("Robot");
+        public Vector3 targetOffset = new Vector3(0f, 6f, 0f);
+        public Vector3 rotationVector = new Vector3(90f, 90f, 0f);
+        public float orthoSize = 5;
+
+        public OrthographicSateliteState(MonoBehaviour mono)
+            : base(mono) { }
+
+        public override void Init()
+        {
+            targetPosition = target.transform.position;
+
+            Mono.transform.position = targetPosition + targetOffset;
+            Mono.transform.rotation = Quaternion.Euler(rotationVector);
+
+            Mono.GetComponent<Camera>().orthographic = true;
+            Mono.GetComponent<Camera>().orthographicSize = orthoSize;
+        }
+
+        public override void Update()
+        {
+            if (target != null && target.transform.childCount > 0)
+            {
+                targetPosition = target.transform.GetChild(0).transform.position;
+            }
+            else if (target != null)
+            {
+                targetPosition = target.transform.position;
+            }
+
+            Mono.transform.position = targetPosition + targetOffset;
+            Mono.transform.rotation = Quaternion.Euler(rotationVector);
+
+            Mono.GetComponent<Camera>().orthographic = true;
+            Mono.GetComponent<Camera>().orthographicSize = orthoSize;
+        }
+
+        public override void End()
+        {
+            Mono.GetComponent<Camera>().orthographic = false;
         }
     }
 
@@ -387,13 +452,14 @@ public class DynamicCamera : MonoBehaviour
         Vector3 rotateVector;
         Vector3 lagVector;
         const float lagResponsiveness = 10f;
-        float magnification = 2.0f;
+        float magnification = 5.0f;
         float cameraAngle = 45f;
         float panValue = 0f;
         bool isRobotCamera;
         GameObject target;
 
-        public ConfigurationState(MonoBehaviour mono, GameObject targetObject = null) : base(mono)
+        public ConfigurationState(MonoBehaviour mono, GameObject targetObject = null)
+            : base(mono)
         {
             target = targetObject ?? RobotProvider.Robot;
         }
@@ -443,6 +509,7 @@ public class DynamicCamera : MonoBehaviour
             {
                 target = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>().CurrentCamera;
             }
+
         }
 
         public override void End()

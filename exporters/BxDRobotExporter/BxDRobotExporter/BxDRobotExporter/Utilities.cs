@@ -44,7 +44,7 @@ namespace BxDRobotExporter
         {
             try
             {
-                GUI = new SynthesisGUI()
+                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication)// pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
                 {
                     Opacity = 0.00d
                 };
@@ -118,7 +118,9 @@ namespace BxDRobotExporter
             {
                 InventorChildColor = Properties.Settings.Default.ChildColor,
                 GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
-                GeneralUseFancyColors = Properties.Settings.Default.FancyColors
+                GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
+                openSynthesis = Properties.Settings.Default.ExportToField,
+                fieldName = Properties.Settings.Default.SelectedField
             };
         }
     }

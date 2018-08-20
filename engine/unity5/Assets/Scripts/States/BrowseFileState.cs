@@ -1,7 +1,10 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Synthesis.States
 {
@@ -10,8 +13,10 @@ namespace Synthesis.States
         private readonly string prefsKey;
         private readonly string directory;
 
-        private FileBrowser fileBrowser;
-        private GameObject navPanel;
+        public string filePath;
+
+        private SynthesisFileBrowser fileBrowser;
+        Text pathLabel = GameObject.Find("PathLabel").GetComponent<Text>();
 
         /// <summary>
         /// Initializes a new <see cref="BrowseFileState"/> instance.
@@ -30,8 +35,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            navPanel = GameObject.Find("NavigationPanel");
-            navPanel?.SetActive(false);
+
         }
 
         /// <summary>
@@ -40,25 +44,34 @@ namespace Synthesis.States
         /// </summary>
         public override void End()
         {
-            navPanel?.SetActive(true);
+
         }
 
         /// <summary>
-        /// Renders the file browser.
+        /// Renders the file browser. Native filebrowser class derived from Crosstales plugin.
         /// </summary>
         public override void OnGUI()
         {
             if (fileBrowser == null)
             {
-                string robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
-                fileBrowser = new FileBrowser("Choose Robot Directory", directory, true) { Active = true };
-                fileBrowser.OnComplete += OnBrowserComplete;
+                // Standalone plugin adaptions from: https://github.com/gkngkc/UnityStandaloneFileBrowser
+                filePath = SFB.StandaloneFileBrowser.OpenFolderPanel(prefsKey, directory, false);
+
+                //check for empty string(if native file browser is closed without selection) and default to Fields directory
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    filePath = PlayerPrefs.GetString(prefsKey, directory);
+                }
+
+                if (filePath.Length != 0)
+                {
+                    fileBrowser = new GUI.SynthesisFileBrowser("Choose Directory", filePath, true);
+                    filePath = fileBrowser.directoryLocation;
+                    fileBrowser.OnComplete += OnBrowserComplete;
+                    fileBrowser.CompleteDirectorySelection();
+                    pathLabel.text = filePath;
+                }
             }
-
-            fileBrowser.Render();
-
-            if (!fileBrowser.Active)
-                StateMachine.PopState();
         }
 
         /// <summary>
