@@ -300,7 +300,7 @@
             this.metaBrake.Name = "metaElevatorBrake";
             this.metaBrake.Size = new System.Drawing.Size(514, 63);
             this.metaBrake.TabIndex = 3;
-            this.metaBrake.Text = "Brake Info";
+            this.metaBrake.Text = "Brake";
             this.metaBrake.UseVisualStyleBackColor = true;
             // 
             // BrakeLayout
