@@ -15,17 +15,17 @@ WARNING: This is not a simple process. It requires a Linux environment and knowl
 
 ## Preface and Set-Up
 
-This process assumes you are working off of a linux machine of some sort. A virtual machine will suffice for this example. For those who wish to build the image from source but do not have access to a linux environment, VirtualBox is a good free virtual machine software, and Ubuntu Linux is a user-friendly option for the Linux distribution.
+This process assumes you are working off a Linux machine of some sort. A virtual machine will suffice for this example. For those who wish to build the image from source but do not have access to a Linux environment, VirtualBox is a good free virtual machine software, and Ubuntu Linux is a user-friendly option for the Linux distribution.
 
-The amount of space required to make the image is rather large. Due to the number of tools and software needed to actually build the image, it could take upwards of 5 GB of disk space. However, the end result should be no more than 530 MB, and most most of the folders can be deleted once building is complete.
+The amount of space required to make the image is rather large. Due to the number of tools and software needed to build the image, it could take upwards of 5 GB of disk space. However, the result should be no more than 530 MB, and most of the folders can be deleted once building is complete.
 
-There are several tools required to build the image. Most of the utilities involved are core Linux/Unix utilities (i.e. tar, zcat, mkfs, dd). The tools involved that are not core are GCC, G++, GNU Make, the official FRC GCC Compiler for Linux, QEMU (with ARM extention) and (...). Once you have all of those installed, you can proceed to phase 1.
+There are several tools required to build the image. Most of the utilities involved are core Linux/Unix utilities (i.e. tar, zcat, mkfs, dd). The tools involved that are not core are GCC, G++, GNU Make, the official FRC GCC Compiler for Linux, QEMU (with ARM extension) and (...). Once you have all of those installed, you can proceed to phase 1.
 
 Please note that this is not a fast process, as during this you are going to download roughly 4 GB of git repositories and build a large amount of code. The process can take anywhere between 30 minutes and 2 hours depending on internet and computer speed. With all this in mind, please move on to phase 1.
 
 ## Phase 1: Downloads
 
-Enter your linux environment of choice and open up a terminal. Create a temporary folder for all of the git repositories, typically something like `git`. Enter that directory and run the following commands. Note these will both take quite a bit of time.
+Enter your Linux environment of choice and open a terminal. Create a temporary folder for all the git repositories, typically something like `git`. Enter that directory and run the following commands. Note these will both take quite a bit of time.
 
 ```shell
 $ mkdir git
@@ -48,7 +48,7 @@ $ cp ~/git/synthesis/emulation/hel/external-configs/.linux-config ~/git/linux-xl
 $ cp ~/git/synthesis/emulation/hel/external-configs/.buildroot-config ~/git/buildroot/.config
 ```
 
-After you have copied the files, move into the linux directory. After you are in, run the following make commands (replace 8 in -j8
+After you have copied the files, move into the Linux directory. After you are in, run the following make commands (replace 8 in -j8
 with 2 times the number of CPU cores you have). The build process can take several minutes.
 
 ```shell
@@ -68,18 +68,18 @@ After this is complete, move on to building buildroot.
 
 ## Phase 3: Building the Initial RAM Disk
 
-Move into the buildroot directory. This process is much simpler as it is one make command, however it is much longer time-wise.
+Move into the buildroot directory. This process is much simpler as it is one make command; however it is much longer time-wise.
 
 ```shell
 $ cd ~/git/build && make
 $ cp ~/git/buildroot/output/images/rootfs.cpio.gz ~/vm-package
 ```
 
-This process can take upwards of 1 hours, so its recommened you do something else to pass time. After this is complete, move on to phase 3.
+This process can take upwards of 1 hours, so it is recommended you do something else to pass time. After this is complete, move on to phase 3.
 
 ## Phase 4: Setting up WPILib and CTRE Phoenix Libraries
 
-Build WPILib libaries, download CTRE Phoenix library, and copy them to the VM.
+Build WPILib libraries, download CTRE Phoenix library, and copy them to the VM.
 
 ```shell
 $ cd ~/allwpilib
@@ -180,7 +180,6 @@ $ cp /home/lvuser/S90FRCUserProgram /etc/init.d
 # Press control-x then a to close VM
 ```
 
-VM image creation is now complete. It can now be used as a drop in replacement for any current synthesis installations, or used 
-again via the qemu command listed above. 
+VM image creation is now complete. It can now be used as a drop-in replacement for any current synthesis installations, or used again via the qemu command listed above. 
 
 See [`hel/README.md`](./hel/README.md "hel/README.md") for information on how to use the VM.
