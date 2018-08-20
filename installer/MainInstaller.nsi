@@ -110,7 +110,7 @@ Section "Synthesis (required)" SynthesisRequired
                 "DisplayName" "Autodesk Synthesis"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "DisplayIcon" "$INSTDIR\W16_SYN_launch.ico"
+                "DisplayIcon" "$INSTDIR\uninstall.exe"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "Publisher" "Autodesk"
