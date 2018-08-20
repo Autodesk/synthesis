@@ -21,12 +21,14 @@ namespace FieldExporter
                 {
                     Exporter.FieldProperties fieldProps;
                     List<PropertySet> propSets;
+                    Dictionary<string, List<string>> occPropSets;
 
-                    Exporter.SaveManager.Load(Program.ASSEMBLY_DOCUMENT, out fieldProps, out propSets);
+                    Exporter.SaveManager.Load(Program.ASSEMBLY_DOCUMENT, out fieldProps, out propSets, out occPropSets);
 
                     fieldMeta.SetSpawnpoints(fieldProps.spawnpoints);
                     GetPropertySetsTabControl().ApplyPropertySets(propSets);
                     GetPropertySetsTabControl().ApplyGamepieces(fieldProps.gamepieces);
+                    GetPropertySetsTabControl().ApplyOccurrences(occPropSets);
                 }
             }
             catch (Exporter.FailedToLoadException)

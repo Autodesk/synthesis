@@ -115,7 +115,7 @@ namespace FieldExporter.Components
         /// <param name="enumerator"></param>
         /// <param name="fullname"></param>
         /// <returns></returns>
-        private ComponentOccurrence FindComponentByFullName(IEnumerator enumerator, string fullname)
+        public ComponentOccurrence FindComponentByFullName(IEnumerator enumerator, string fullname)
         {
             ComponentOccurrence component = null;
             string componentName = fullname.Contains('\\') ? fullname.Substring(0, fullname.IndexOf('\\')) : fullname;
