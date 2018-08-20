@@ -15,6 +15,31 @@ namespace FieldExporter
         {
             InitializeComponent();
 
+            Text = "Synthesis Field Exporter - " + Program.ASSEMBLY_DOCUMENT.DisplayName;
+        }
+
+        /// <summary>
+        /// Returns the physicsGroupsTabControl instance.
+        /// </summary>
+        /// <returns></returns>
+        public PropertySetsTabControl GetPropertySetsTabControl()
+        {
+            return propertySetsTabControl;
+        }
+
+        /// <summary>
+        /// Prepares the window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_Load(object sender, EventArgs e)
+        {
+            menuStrip.Renderer = new ToolStripProfessionalRenderer(new SynthesisColorTable());
+
+            Forms.PleaseWaitForm pleaseWait = new Forms.PleaseWaitForm();
+            pleaseWait.Show();
+            Enabled = false;
+
             try
             {
                 if (Program.ASSEMBLY_DOCUMENT != null)
@@ -36,26 +61,8 @@ namespace FieldExporter
                 // Failed to load config
             }
 
-            Text = "Synthesis Field Exporter - " + Program.ASSEMBLY_DOCUMENT.DisplayName;
-        }
-
-        /// <summary>
-        /// Returns the physicsGroupsTabControl instance.
-        /// </summary>
-        /// <returns></returns>
-        public PropertySetsTabControl GetPropertySetsTabControl()
-        {
-            return propertySetsTabControl;
-        }
-
-        /// <summary>
-        /// Prepares the window.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MainWindow_Load(object sender, EventArgs e)
-        {
-            menuStrip.Renderer = new ToolStripProfessionalRenderer(new SynthesisColorTable());
+            Enabled = true;
+            pleaseWait.Close();
         }
 
         /// <summary>
@@ -75,6 +82,10 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Forms.PleaseWaitForm pleaseWait = new Forms.PleaseWaitForm();
+            pleaseWait.Show();
+            Enabled = false;
+
             try
             {
                 if (Program.ASSEMBLY_DOCUMENT != null)
@@ -84,10 +95,15 @@ namespace FieldExporter
                     List<PropertySet> propSets = GetPropertySetsTabControl().TranslateToPropertySets();
                     Exporter.SaveManager.Save(Program.ASSEMBLY_DOCUMENT, fieldProps, propSets);
                 }
+
+                Enabled = true;
+                pleaseWait.Close();
             }
             catch (Exporter.FailedToSaveException er)
             {
+                pleaseWait.Close();
                 MessageBox.Show("Failed to save field configuration. The following error occurred:\n" + er.InnerException.ToString(), "Error", MessageBoxButtons.OK);
+                Enabled = true;
             }
         }
 
