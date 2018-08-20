@@ -44,30 +44,16 @@ namespace Synthesis.DriverPractice
         private void ProcessControls()
         {
             for (int i = 0; i < Input.Controls.buttons[controlIndex].pickup.Count; i++)
-            {
-                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
-                {
-                    if (InputControl.GetButton(Controls.buttons[controlIndex].pickup[i])) Intake(i);
-                    else HoldGamepiece(i);
-                }
-            }
+                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 &&
+                     InputControl.GetButton(Controls.buttons[controlIndex].pickup[i])) Intake(i);
             for (int i = 0; i < Input.Controls.buttons[controlIndex].release.Count; i++)
-            {
                 if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
-                {
                     if (InputControl.GetButton(Controls.buttons[controlIndex].release[i])) Release(i);
                     else HoldGamepiece(i);
-                }
-            }
             for (int i = 0; i < Input.Controls.buttons[controlIndex].spawnPieces.Count; i++)
-            {
-                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
-                {
-                    if (InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
-                    else HoldGamepiece(i);
-                }
-            }
-            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].trajectory)) drawing = drawing ? false : true;
+                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 &&
+                    InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
+            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].trajectory)) drawing = !drawing;
         }
         #region DriverPractice Creation Stuff
         public DriverPractice GetDriverPractice(Gamepiece g)
@@ -104,7 +90,7 @@ namespace Synthesis.DriverPractice
                 #endregion
                 #region changes colliders for gamepiece
                 BFixedConstraintEx fc = collisionObject.AddComponent<BFixedConstraintEx>();
-                fc.otherRigidBody = releaseNode.GetComponent<BRigidBody>();  
+                fc.otherRigidBody = releaseNode.GetComponent<BRigidBody>();
                 fc.localConstraintPoint = releasePosition;
                 fc.localRotationOffset = UnityEngine.Quaternion.Inverse(releaseNode.transform.rotation) * collisionObject.transform.rotation;
                 foreach (List<GameObject> l in objectsHeld)
@@ -230,7 +216,7 @@ namespace Synthesis.DriverPractice
                 moveArrows[i].transform.localPosition = DPMDataHandler.dpmodes[i].releasePosition;
             }
         }
-        
+
         /// <summary>
         /// Creates a <see cref="GameObject"/> instantiated from the MoveArrows prefab.
         /// </summary>
@@ -248,7 +234,7 @@ namespace Synthesis.DriverPractice
                 arrows.transform.position += translation;
                 DPMDataHandler.dpmodes[index].releasePosition = arrows.transform.localPosition;
             };
-            
+
             arrows.GetComponent<MoveArrows>().OnClick = () => GetComponent<SimulatorRobot>().LockRobot();
             arrows.GetComponent<MoveArrows>().OnRelease = () => GetComponent<SimulatorRobot>().UnlockRobot();
 
@@ -258,9 +244,9 @@ namespace Synthesis.DriverPractice
         }
         public void DestroyAllHeld(bool clone = false, string name = "")
         {
-            foreach(List<GameObject> gList in objectsHeld)
+            foreach (List<GameObject> gList in objectsHeld)
             {
-                for(int i = 0; i < gList.Count; i++)
+                for (int i = 0; i < gList.Count; i++)
                 {
                     if (!clone || gList[i].name.Equals(name + "(Clone)"))
                     {
