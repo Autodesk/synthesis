@@ -25,6 +25,7 @@ namespace InternalFieldExporter.FieldWizard
             InitializeComponent();
 
             heapAllocationKey = 0x0;
+            this.ActiveControl = nameTextBox;
         }
 
         /// <summary>

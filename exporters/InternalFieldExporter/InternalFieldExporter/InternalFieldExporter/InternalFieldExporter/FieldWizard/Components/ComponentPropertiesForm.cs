@@ -86,16 +86,7 @@ namespace InternalFieldExporter.FieldWizard
         {
             return frictionTrackBar.Value;
         }
-
-        /// <summary>
-        /// Returns the value of the dynamic check box.
-        /// </summary>
-        /// <returns></returns>
-        public bool IsDynamic()
-        {
-            return dynamicCheckBox.Checked;
-        }
-
+        
         /// <summary>
         /// Returns the value of the joint check box
         /// </summary>
@@ -337,25 +328,7 @@ namespace InternalFieldExporter.FieldWizard
         private void frictionTrackBar_Scroll(object sender, EventArgs e)
         {
             UpdateFrictionLabel();
-        }
-
-        /// <summary>
-        /// Enables or disables the DynamicGroupBox.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dynamicCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (dynamicCheckBox.Checked)
-            {
-                massNumericUpDown.Enabled = true;
-            }
-            else
-            {
-                massNumericUpDown.Enabled = false;
-                massNumericUpDown.Value = 0;
-            }
-        }
+        }    
 
         /// <summary>
         /// Allows the user to enter an exact value for the friction.
@@ -371,27 +344,8 @@ namespace InternalFieldExporter.FieldWizard
                 frictionTrackBar.Value = frictionDialog.Friction;
                 UpdateFrictionLabel();
             }
-        }
+        }        
         
-        /// <summary>
-        /// Enables or disables JointsGroupBox
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void jointCheckBox_CheckChanged(object sender, EventArgs e)
-        {
-            if (jointCheckBox.Checked)
-            {
-                jointComboBox.Enabled = true;
-                IsJointed = true;
-            }
-            else
-            {
-                jointComboBox.Enabled = false;
-                IsJointed = false;
-            }
-        }
-
         /// <summary>
         /// Updates the joint properties when the selected joint is changed.
         /// </summary>
@@ -413,9 +367,34 @@ namespace InternalFieldExporter.FieldWizard
             }
         }
 
-        private void massTypeGroupBox_Enter(object sender, EventArgs e)
+        /// <summary>
+        /// Updates the type of property set when the selected mass type is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void massTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            Type selectedtype = null;
 
+            switch (massTypeComboBox.SelectedIndex)
+            {
+                case 0: //Dynamic mass type
+                    jointComboBox.Enabled = false;
+                    IsJointed = false;
+                    break;
+
+                case 1: //Jointed mass type
+                    jointComboBox.Enabled = true;
+                    IsJointed = true;
+                    break;
+
+                case 2: //none
+                    jointComboBox.Enabled = false;
+                    IsJointed = false;
+                    massNumericUpDown.Enabled = false;
+                    massNumericUpDown.Value = 0;
+                    break;
+            }
         }
     }
 }

@@ -63,8 +63,6 @@
             this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.massTypeComboBox = new System.Windows.Forms.ComboBox();
             this.explanationLabel = new System.Windows.Forms.Label();
-            this.jointCheckBox = new System.Windows.Forms.CheckBox();
-            this.dynamicCheckBox = new System.Windows.Forms.CheckBox();
             this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.inventorTreeView = new InternalFieldExporter.InventorTreeView(this.components);
             this.inventorActionsPanel.SuspendLayout();
@@ -135,8 +133,6 @@
             // 
             this.propertiesScrollablePanel.AutoScroll = true;
             this.propertiesScrollablePanel.Controls.Add(this.allOptionsTableLayout);
-            this.propertiesScrollablePanel.Controls.Add(this.jointCheckBox);
-            this.propertiesScrollablePanel.Controls.Add(this.dynamicCheckBox);
             this.propertiesScrollablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertiesScrollablePanel.Location = new System.Drawing.Point(332, 3);
             this.propertiesScrollablePanel.Name = "propertiesScrollablePanel";
@@ -206,7 +202,6 @@
             this.jointTypeLabel.TabIndex = 2;
             this.jointTypeLabel.Text = "Joint Type:";
             this.jointTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.jointTypeLabel.Click += new System.EventHandler(this.jointTypeLabel_Click);
             // 
             // jointComboBox
             // 
@@ -356,7 +351,7 @@
             this.physicalPropertiesGroupBox.AutoSize = true;
             this.physicalPropertiesGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.physicalPropertiesGroupBox.Controls.Add(this.physicalPropertiesLayoutPanel);
-            this.physicalPropertiesGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.physicalPropertiesGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.physicalPropertiesGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.physicalPropertiesGroupBox.Location = new System.Drawing.Point(3, 116);
             this.physicalPropertiesGroupBox.Name = "physicalPropertiesGroupBox";
@@ -485,7 +480,7 @@
             this.dynamicGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.dynamicGroupBox.Location = new System.Drawing.Point(3, 75);
             this.dynamicGroupBox.Name = "dynamicGroupBox";
-            this.dynamicGroupBox.Size = new System.Drawing.Size(306, 109);
+            this.dynamicGroupBox.Size = new System.Drawing.Size(306, 112);
             this.dynamicGroupBox.TabIndex = 3;
             this.dynamicGroupBox.TabStop = false;
             // 
@@ -494,22 +489,22 @@
             this.massLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.massLayoutPanel.ColumnCount = 2;
             this.massLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.massLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.massLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.massLayoutPanel.Controls.Add(this.typeLabel, 0, 1);
             this.massLayoutPanel.Controls.Add(this.massLabel, 0, 0);
             this.massLayoutPanel.Controls.Add(this.massNumericUpDown, 1, 0);
             this.massLayoutPanel.Controls.Add(this.massTypeComboBox, 1, 1);
             this.massLayoutPanel.Controls.Add(this.explanationLabel, 1, 2);
-            this.massLayoutPanel.Location = new System.Drawing.Point(0, 12);
+            this.massLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.massLayoutPanel.Location = new System.Drawing.Point(3, 18);
             this.massLayoutPanel.Name = "massLayoutPanel";
             this.massLayoutPanel.RowCount = 3;
             this.massLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.massLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.massLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.massLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.massLayoutPanel.Size = new System.Drawing.Size(300, 139);
+            this.massLayoutPanel.Size = new System.Drawing.Size(300, 91);
             this.massLayoutPanel.TabIndex = 5;
-            this.massLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.massLayoutPanel_Paint);
             // 
             // typeLabel
             // 
@@ -517,7 +512,7 @@
             this.typeLabel.Dock = System.Windows.Forms.DockStyle.Left;
             this.typeLabel.Location = new System.Drawing.Point(3, 28);
             this.typeLabel.Name = "typeLabel";
-            this.typeLabel.Size = new System.Drawing.Size(48, 30);
+            this.typeLabel.Size = new System.Drawing.Size(48, 31);
             this.typeLabel.TabIndex = 3;
             this.typeLabel.Text = "Type: ";
             this.typeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -529,7 +524,7 @@
             this.massLabel.Location = new System.Drawing.Point(3, 3);
             this.massLabel.Margin = new System.Windows.Forms.Padding(3);
             this.massLabel.Name = "massLabel";
-            this.massLabel.Size = new System.Drawing.Size(63, 22);
+            this.massLabel.Size = new System.Drawing.Size(48, 22);
             this.massLabel.TabIndex = 0;
             this.massLabel.Text = "Mass:";
             this.massLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -538,66 +533,43 @@
             // 
             this.massNumericUpDown.DecimalPlaces = 2;
             this.massNumericUpDown.Dock = System.Windows.Forms.DockStyle.Top;
-            this.massNumericUpDown.Enabled = false;
-            this.massNumericUpDown.Location = new System.Drawing.Point(72, 3);
+            this.massNumericUpDown.Location = new System.Drawing.Point(57, 3);
             this.massNumericUpDown.Maximum = new decimal(new int[] {
             10000,
             0,
             0,
             0});
             this.massNumericUpDown.Name = "massNumericUpDown";
-            this.massNumericUpDown.Size = new System.Drawing.Size(225, 22);
+            this.massNumericUpDown.Size = new System.Drawing.Size(240, 22);
             this.massNumericUpDown.TabIndex = 1;
             // 
             // massTypeComboBox
             // 
             this.massTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.massTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.massTypeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.massTypeComboBox.FormattingEnabled = true;
             this.massTypeComboBox.Items.AddRange(new object[] {
             "Dynamic",
             "Jointed",
             "(none)"});
-            this.massTypeComboBox.Location = new System.Drawing.Point(72, 31);
+            this.massTypeComboBox.Location = new System.Drawing.Point(57, 31);
             this.massTypeComboBox.Name = "massTypeComboBox";
-            this.massTypeComboBox.Size = new System.Drawing.Size(225, 24);
+            this.massTypeComboBox.Size = new System.Drawing.Size(240, 24);
             this.massTypeComboBox.TabIndex = 4;
+            this.massTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.massTypeComboBox_SelectedIndexChanged);
             // 
             // explanationLabel
             // 
             this.massLayoutPanel.SetColumnSpan(this.explanationLabel, 2);
-            this.explanationLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.explanationLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this.explanationLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.explanationLabel.Location = new System.Drawing.Point(3, 58);
+            this.explanationLabel.Location = new System.Drawing.Point(3, 59);
             this.explanationLabel.Name = "explanationLabel";
-            this.explanationLabel.Size = new System.Drawing.Size(294, 81);
+            this.explanationLabel.Size = new System.Drawing.Size(294, 30);
             this.explanationLabel.TabIndex = 5;
-            this.explanationLabel.Text = "If the property set includes a game object, select Dynamic as your mass type. If " +
-    "it includes a jointed assembly, select Jointed. Otherwise, select none. ";
-            this.explanationLabel.Click += new System.EventHandler(this.explanationLabel_Click);
-            // 
-            // jointCheckBox
-            // 
-            this.jointCheckBox.AutoSize = true;
-            this.jointCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.jointCheckBox.Location = new System.Drawing.Point(95, 446);
-            this.jointCheckBox.Name = "jointCheckBox";
-            this.jointCheckBox.Size = new System.Drawing.Size(56, 21);
-            this.jointCheckBox.TabIndex = 0;
-            this.jointCheckBox.Text = "Joint";
-            this.jointCheckBox.UseVisualStyleBackColor = true;
-            this.jointCheckBox.CheckedChanged += new System.EventHandler(this.jointCheckBox_CheckChanged);
-            // 
-            // dynamicCheckBox
-            // 
-            this.dynamicCheckBox.AutoSize = true;
-            this.dynamicCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.dynamicCheckBox.Location = new System.Drawing.Point(9, 446);
-            this.dynamicCheckBox.Name = "dynamicCheckBox";
-            this.dynamicCheckBox.Size = new System.Drawing.Size(80, 21);
-            this.dynamicCheckBox.TabIndex = 4;
-            this.dynamicCheckBox.Text = "Dynamic";
-            this.dynamicCheckBox.UseVisualStyleBackColor = true;
-            this.dynamicCheckBox.CheckedChanged += new System.EventHandler(this.dynamicCheckBox_CheckedChanged);
+            this.explanationLabel.Text = "If your property set is neither dynamic nor jointed, you do not need to give it m" +
+    "ass. ";
             // 
             // mainLayout
             // 
@@ -687,12 +659,10 @@
         private System.Windows.Forms.Label rubberLabel;
         private System.Windows.Forms.TrackBar frictionTrackBar;
         private System.Windows.Forms.GroupBox dynamicGroupBox;
-        private System.Windows.Forms.CheckBox dynamicCheckBox;
         private System.Windows.Forms.NumericUpDown massNumericUpDown;
         private System.Windows.Forms.Label massLabel;
         public InventorTreeView inventorTreeView;
         private System.Windows.Forms.GroupBox jointsGroupBox;
-        private System.Windows.Forms.CheckBox jointCheckBox;
         private System.Windows.Forms.Label jointTypeLabel;
         private System.Windows.Forms.ComboBox jointComboBox;
         private System.Windows.Forms.TableLayoutPanel allOptionsTableLayout;
@@ -703,7 +673,7 @@
         private System.Windows.Forms.TableLayoutPanel physicalPropertiesLayoutPanel;
         private System.Windows.Forms.TableLayoutPanel massLayoutPanel;
         private System.Windows.Forms.Label typeLabel;
-        private System.Windows.Forms.ComboBox massTypeComboBox;
         private System.Windows.Forms.Label explanationLabel;
+        private System.Windows.Forms.ComboBox massTypeComboBox;
     }
 }
