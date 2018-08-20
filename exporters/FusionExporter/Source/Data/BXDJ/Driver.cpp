@@ -52,6 +52,7 @@ void Driver::write(XmlWriter & output) const
 	output.writeElement("UpperLimit", "0.0000"); // the Inventor exporter, so they will be included for safety.
 	
 	output.writeElement("SignalType", toString(portSignal));
+	output.writeElement("HasBrake", "false");
 
 	// Component Information
 	if (wheel != nullptr)
