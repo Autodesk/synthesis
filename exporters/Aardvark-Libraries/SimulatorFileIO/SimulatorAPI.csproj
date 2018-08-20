@@ -59,6 +59,7 @@
     <Compile Include="IO\BXDIO.cs" />
     <Compile Include="IO\BinaryRWObject.cs" />
     <Compile Include="IO\BXDJ\BXDJReader_2_0.cs" />
+    <Compile Include="IO\BXDJ\BXDJReader_4_1.cs" />
     <Compile Include="IO\BXDJ\BXDJReader_4_0.cs" />
     <Compile Include="IO\BXDJ\BXDJReader_3_0.cs" />
     <Compile Include="IO\IOUtilities.cs" />

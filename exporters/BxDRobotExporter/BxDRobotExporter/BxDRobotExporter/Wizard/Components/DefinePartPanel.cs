@@ -165,7 +165,7 @@ namespace BxDRobotExporter.Wizard
                         PortsGroupBox.Text = "Port";
                         PortOneLabel.Text = "Port:";
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
-                        if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                        if (!tabsMeta.TabPages.Contains(metaBrake)) tabsMeta.TabPages.Add(metaBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
@@ -184,7 +184,7 @@ namespace BxDRobotExporter.Wizard
                         PortTwoUpDown.Visible = false;
                         unit = "°";
                         break;
-                    case 3: //Bumper Pneumatics
+                    case 6: //Bumper Pneumatics
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
                         this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
@@ -192,7 +192,7 @@ namespace BxDRobotExporter.Wizard
                         PortOneLabel.Text = "Solenoid Port 1:";
                         PortTwoLabel.Text = "Solenoid Port 2:";
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
-                        if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                        if (!tabsMeta.TabPages.Contains(metaBrake)) tabsMeta.TabPages.Add(metaBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
                         PortsGroupBox.Text = "Solenoid Ports";
                         PortOneLabel.Visible = true;
@@ -207,7 +207,7 @@ namespace BxDRobotExporter.Wizard
                         this.PortLayout.RowStyles[1].Height = 0;
                         PortOneLabel.Text = "Relay Port:";
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
-                        if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                        if (!tabsMeta.TabPages.Contains(metaBrake)) tabsMeta.TabPages.Add(metaBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
                         PortsGroupBox.Text = "Relay Port";
                         PortOneLabel.Visible = true;
@@ -227,7 +227,7 @@ namespace BxDRobotExporter.Wizard
                         PortTwoUpDown.Visible = false;
                         unit = "°";
                         break;
-                    case 6: //Dual Motor
+                    case 3: //Dual Motor
                         this.PortsGroupBox.Visible = true;
                         this.tabsMeta.Visible = true;
                         this.PortLayout.RowStyles[1].SizeType = SizeType.Percent;
@@ -236,7 +236,7 @@ namespace BxDRobotExporter.Wizard
                         PortOneLabel.Text = "Port 1:";
                         PortTwoLabel.Text = "Port 2:";
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
-                        if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                        if (!tabsMeta.TabPages.Contains(metaBrake)) tabsMeta.TabPages.Add(metaBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = true;
@@ -260,7 +260,7 @@ namespace BxDRobotExporter.Wizard
                         PortsGroupBox.Text = "PWM Port";
                         PortOneLabel.Text = "PWM Port:";
                         if (!tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Add(metaGearing);
-                        //if (!tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Add(metaElevatorBrake);
+                        if (!tabsMeta.TabPages.Contains(metaBrake)) tabsMeta.TabPages.Add(metaBrake);
                         if (tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Remove(metaPneumatic);
                         PortOneLabel.Visible = true;
                         PortTwoLabel.Visible = false;
@@ -275,7 +275,7 @@ namespace BxDRobotExporter.Wizard
                         PortOneLabel.Text = "Solenoid Port 1:";
                         PortTwoLabel.Text = "Solenoid Port 2:";
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
-                        if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                        if (tabsMeta.TabPages.Contains(metaBrake)) tabsMeta.TabPages.Remove(metaBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
                         PortsGroupBox.Text = "Solenoid Ports";
                         PortOneLabel.Visible = true;
@@ -290,7 +290,7 @@ namespace BxDRobotExporter.Wizard
                         this.PortLayout.RowStyles[1].Height = 0;
                         PortOneLabel.Text = "Relay Port:";
                         if (!tabsMeta.TabPages.Contains(metaPneumatic)) tabsMeta.TabPages.Add(metaPneumatic);
-                        if (tabsMeta.TabPages.Contains(metaElevatorBrake)) tabsMeta.TabPages.Remove(metaElevatorBrake);
+                        if (tabsMeta.TabPages.Contains(metaBrake)) tabsMeta.TabPages.Remove(metaBrake);
                         if (tabsMeta.TabPages.Contains(metaGearing)) tabsMeta.TabPages.Remove(metaGearing);
                         PortsGroupBox.Text = "Relay Port";
                         PortOneLabel.Visible = true;
