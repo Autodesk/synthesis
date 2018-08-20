@@ -412,5 +412,10 @@ namespace InternalFieldExporter.FieldWizard
                     break;
             }
         }
+
+        private void massTypeGroupBox_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 }
