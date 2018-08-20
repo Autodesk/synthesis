@@ -21,10 +21,10 @@ namespace Synthesis.DriverPractice
         public static void WriteRobot()
         {
             XElement robot = new XElement("RobotData", null);
-            robot.Add(DriverStationData());
+            robot.Add(DriverPracticeData());
             robot.Save(StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.FilePath + "\\" + "robot_data.xml");
         }
-        private static XElement DriverStationData()
+        private static XElement DriverPracticeData()
         {
             XElement dps = new XElement("DriverPractice", null);
             for (int i = 0; i < dpmodes.Count(); i++)
@@ -50,16 +50,6 @@ namespace Synthesis.DriverPractice
         }
         #endregion
         #region getData
-        public static void Load()
-        {
-            if (File.Exists(PlayerPrefs.GetString("simSelectedRobot") + "\\" + "robot_data.xml"))
-            {
-
-                file = XDocument.Load(PlayerPrefs.GetString("simSelectedRobot") + "\\" + "robot_data.xml");
-                dpmodes = getDriverPractice();
-            }
-            else WriteRobot();
-        }
         public static void Load(string filePath)
         {
             if (File.Exists(filePath + "\\" + "robot_data.xml"))
