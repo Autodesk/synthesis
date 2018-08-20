@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Inventor;
 
 namespace FieldExporter.Exporter
@@ -52,7 +53,7 @@ namespace FieldExporter.Exporter
                     SetProperty(p, "propertySet" + i.ToString() + ".id", propertySets[i].PropertySetID);
                     SetProperty(p, "propertySet" + i.ToString() + ".friction", propertySets[i].Friction);
                     SetProperty(p, "propertySet" + i.ToString() + ".mass", propertySets[i].Mass);
-                    
+
                     // Collider Info
                     SetProperty(p, "propertySet" + i.ToString() + ".collisionType", (int)propertySets[i].Collider.CollisionType);
 
@@ -73,6 +74,21 @@ namespace FieldExporter.Exporter
                         PropertySet.MeshCollider mesh = (PropertySet.MeshCollider)propertySets[i].Collider;
                         SetProperty(p, "propertySet" + i.ToString() + ".meshCollider.convex", mesh.Convex);
                     }
+
+                    // Occurrences
+                    var tabPage = (Components.ComponentPropertiesTabPage) Program.MAINWINDOW.GetPropertySetsTabControl().TabPages[propertySets[i].PropertySetID];
+
+                    if (tabPage != null)
+                    {
+                        Components.InventorTreeView treeView = tabPage.ChildForm.inventorTreeView;
+
+                        SetProperty(p, "propertySet" + i.ToString() + ".occurrenceCount", treeView.Nodes.Count);
+
+                        for (int j = 0; j < treeView.Nodes.Count; j++)
+                            SaveOccurrenceTree(treeView.Nodes[j], "propertySet" + i.ToString() + ".occurrence" + j.ToString(), p);
+                    }
+                    else
+                        SetProperty(p, "propertySet" + i.ToString() + ".occurrenceCount", 0);
                 }
             }
             catch (Exception e)
@@ -81,7 +97,16 @@ namespace FieldExporter.Exporter
             }
         }
 
-        public static void Load(AssemblyDocument document, out FieldProperties fieldProps, out List<PropertySet> propertySets)
+        public static void SaveOccurrenceTree(TreeNode node, string propPath, Inventor.PropertySet p)
+        {
+            SetProperty(p, propPath + ".name", node.Name);
+            SetProperty(p, propPath + ".occurrenceCount", node.Nodes.Count);
+
+            for (int i = 0; i < node.Nodes.Count; i++)
+                SaveOccurrenceTree(node.Nodes[i], propPath + ".occurrence" + i.ToString(), p);
+        }
+
+        public static void Load(AssemblyDocument document, out FieldProperties fieldProps, out List<PropertySet> propertySets, out Dictionary<string, List<string>> occurrencePropSets)
         {
             Inventor.PropertySets inventorPropertySets = document.PropertySets;
 
@@ -112,6 +137,7 @@ namespace FieldExporter.Exporter
 
                 // Property Sets
                 propertySets = new List<PropertySet>();
+                occurrencePropSets = new Dictionary<string, List<string>>();
 
                 int propertySetCount = GetProperty(p, "propertySetCount", 0);
                 for (int i = 0; i < propertySetCount; i++)
@@ -138,13 +164,34 @@ namespace FieldExporter.Exporter
                                                              GetProperty(p, "propertySet" + i.ToString() + ".mass", 0.0f));
 
                     propertySets.Add(newPropSet);
-                }
 
+                    // Occurrences
+                    List<string> occurrences = new List<string>();
+
+                    int occurrenceCount = GetProperty(p, "propertySet" + i.ToString() + ".occurrenceCount", 0);
+                    for (int j = 0; j < occurrenceCount; j++)
+                    {
+                        LoadOccurrenceTree("propertySet" + i.ToString() + ".occurrence" + j.ToString(),
+                                           "", occurrences, p);
+                    }
+
+                    occurrencePropSets.Add(newPropSet.PropertySetID, occurrences);
+                }
             }
             catch (Exception e)
             {
                 throw new FailedToLoadException(e);
             }
+        }
+        
+        public static void LoadOccurrenceTree(string propPath, string occPath, List<string> occurrences, Inventor.PropertySet p)
+        {
+            string name = GetProperty(p, propPath + ".name", "unknown");
+            occurrences.Add(occPath + name);
+
+            int occurrenceCount = GetProperty(p, propPath + ".occurrenceCount", 0);
+            for (int i = 0; i < occurrenceCount; i++)
+                LoadOccurrenceTree(propPath + ".occurrence" + i.ToString(), occPath + name + '\\', occurrences, p);
         }
 
         #region Property Utilities

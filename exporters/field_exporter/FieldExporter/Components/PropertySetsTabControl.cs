@@ -157,6 +157,25 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
+        /// Applies a set of occurrences to tabs.
+        /// </summary>
+        /// <param name="occurrencePropSets">Key =  occurrence name, value = property set name.</param>
+        public void ApplyOccurrences(Dictionary<string, List<string>> occurrencePropSets)
+        {
+            foreach (KeyValuePair<string, List<string>> op in occurrencePropSets)
+            {
+                if (TabPages[op.Key] is ComponentPropertiesTabPage propPage)
+                {
+                    foreach (string path in op.Value)
+                    {
+                        InventorTreeView treeView = propPage.ChildForm.inventorTreeView;
+                        treeView.AddComponent(treeView.FindComponentByFullName(Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.GetEnumerator(), path));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Scans each nonexcluded InventorTreeView and determines if they contian the supplied key.
         /// </summary>
         /// <param name="key"></param>
