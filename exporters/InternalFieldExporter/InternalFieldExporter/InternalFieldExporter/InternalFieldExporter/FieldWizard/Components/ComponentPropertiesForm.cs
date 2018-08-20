@@ -91,8 +91,7 @@ namespace InternalFieldExporter.FieldWizard
         /// Returns the value of the joint check box
         /// </summary>
         /// <returns></returns>
-        public bool IsJointed;
-       
+        public bool IsJointed;       
 
         /// <summary>
         /// Returns the value of the mass numeric up down.
@@ -364,7 +363,17 @@ namespace InternalFieldExporter.FieldWizard
                 case 1: //Linear Joint
                     selectedtype = typeof(LinearJoint_Base);
                     break;
+
+                case 2: //No Joint
+                    IsJointed = false;
+                    break;
             }
+        }
+
+        private void massNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            if (massNumericUpDown.Value != 0)
+                massTypeComboBox.Enabled = true;
         }
 
         /// <summary>
@@ -373,19 +382,20 @@ namespace InternalFieldExporter.FieldWizard
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void massTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Type selectedtype = null;
+        {            
 
             switch (massTypeComboBox.SelectedIndex)
             {
                 case 0: //Dynamic mass type
                     jointComboBox.Enabled = false;
                     IsJointed = false;
+                    massNumericUpDown.Enabled = true;
                     break;
 
                 case 1: //Jointed mass type
                     jointComboBox.Enabled = true;
                     IsJointed = true;
+                    massNumericUpDown.Enabled = true;
                     break;
 
                 case 2: //none
@@ -393,6 +403,7 @@ namespace InternalFieldExporter.FieldWizard
                     IsJointed = false;
                     massNumericUpDown.Enabled = false;
                     massNumericUpDown.Value = 0;
+                    jointComboBox.SelectedIndex = 2;
                     break;
             }
         }

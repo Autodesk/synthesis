@@ -150,7 +150,7 @@
             this.allOptionsTableLayout.Controls.Add(this.meshPropertiesGroupBox, 0, 1);
             this.allOptionsTableLayout.Controls.Add(this.propertySetOptionsBox, 0, 0);
             this.allOptionsTableLayout.Controls.Add(this.physicalPropertiesGroupBox, 0, 2);
-            this.allOptionsTableLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.allOptionsTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.allOptionsTableLayout.Location = new System.Drawing.Point(0, 0);
             this.allOptionsTableLayout.Name = "allOptionsTableLayout";
             this.allOptionsTableLayout.RowCount = 4;
@@ -158,7 +158,7 @@
             this.allOptionsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.allOptionsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.allOptionsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.allOptionsTableLayout.Size = new System.Drawing.Size(324, 387);
+            this.allOptionsTableLayout.Size = new System.Drawing.Size(324, 475);
             this.allOptionsTableLayout.TabIndex = 0;
             // 
             // jointsGroupBox
@@ -170,7 +170,7 @@
             this.jointsGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.jointsGroupBox.Location = new System.Drawing.Point(3, 330);
             this.jointsGroupBox.Name = "jointsGroupBox";
-            this.jointsGroupBox.Size = new System.Drawing.Size(318, 54);
+            this.jointsGroupBox.Size = new System.Drawing.Size(318, 142);
             this.jointsGroupBox.TabIndex = 3;
             this.jointsGroupBox.TabStop = false;
             // 
@@ -212,7 +212,8 @@
             this.jointComboBox.FormattingEnabled = true;
             this.jointComboBox.Items.AddRange(new object[] {
             "Rotational",
-            "Linear"});
+            "Linear",
+            "No Joint"});
             this.jointComboBox.Location = new System.Drawing.Point(87, 3);
             this.jointComboBox.Name = "jointComboBox";
             this.jointComboBox.Size = new System.Drawing.Size(222, 24);
@@ -542,11 +543,13 @@
             this.massNumericUpDown.Name = "massNumericUpDown";
             this.massNumericUpDown.Size = new System.Drawing.Size(240, 22);
             this.massNumericUpDown.TabIndex = 1;
+            this.massNumericUpDown.ValueChanged += new System.EventHandler(this.massNumericUpDown_ValueChanged);
             // 
             // massTypeComboBox
             // 
             this.massTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.massTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.massTypeComboBox.Enabled = false;
             this.massTypeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.massTypeComboBox.FormattingEnabled = true;
             this.massTypeComboBox.Items.AddRange(new object[] {
