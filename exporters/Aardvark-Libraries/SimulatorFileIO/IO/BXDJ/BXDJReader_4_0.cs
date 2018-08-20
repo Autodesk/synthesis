@@ -6,14 +6,15 @@ using System.Xml;
 using System.Xml.Schema;
 
 /// <summary>
-/// Utility functions for reading/writing BXDJ files
+/// Utility functions for reading/writing BXDJ files in the engine
 /// </summary>
 public partial class BXDJSkeleton
 {
-    #region XSD Markup
+    #region BXDJ Schema
 
     /// <summary>
     /// The XSD markup to ensure valid document reading.
+    /// This is the schema that the engine reads against when reading back the BXDJ
     /// </summary>
     private const string BXDJ_XSD_4_0 =
         @"
@@ -338,7 +339,7 @@ public partial class BXDJSkeleton
 
         XmlReaderSettings settings = new XmlReaderSettings();
 
-        if (useValidation)
+        if (useValidation)// if the schema should be validated, then run the BXDJ against the schema to make sure all the value are there, oftentimes robot instace invalid issues are found here
         {
             settings.Schemas.Add(XmlSchema.Read(new StringReader(BXDJ_XSD_4_0), null));
             settings.ValidationType = ValidationType.Schema;
@@ -352,11 +353,12 @@ public partial class BXDJSkeleton
 
         try
         {
-            foreach (string name in IOUtilities.AllElements(reader))
+            foreach (string name in IOUtilities.AllElements(reader))// iterates over all the top level data
             {
-                switch (name)
+                switch (name)// handles reading the different XML tags
                 {
                     case "DriveTrainType":
+                        // Reads the current element as a drive train type.
                         root.driveTrainType = (RigidNode_Base.DriveTrainType)Enum.Parse(typeof(RigidNode_Base.DriveTrainType), reader.ReadElementContentAsString());
                         break;
                     case "Node":
@@ -377,7 +379,7 @@ public partial class BXDJSkeleton
             reader.Close();
         }
 
-        return nodes[0];
+        return nodes[0];// returns the base node of the skeleton
     }
 
     /// <summary>
@@ -438,6 +440,7 @@ public partial class BXDJSkeleton
                     nodes[nodes.Count - 1].GetSkeletalJoint().cDriver = ReadJointDriver_4_0(reader.ReadSubtree());
                     break;
                 case "RobotSensor":
+                    // Add a sensor to the skeletal joint of the current node.
                     nodes[nodes.Count - 1].GetSkeletalJoint().attachedSensors.Add(ReadRobotSensor_4_0(reader.ReadSubtree()));
                     break;
             }
@@ -893,23 +896,23 @@ public partial class BXDJSkeleton
                     robotSensor = new RobotSensor((RobotSensorType)Enum.Parse(typeof(RobotSensorType), reader.ReadElementContentAsString()));
                     break;
                 case "SensorPortNumberA":
-                    // Assign a value to the port.
+                    // Assign a value to the 1st port.
                     robotSensor.portA = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "SensorSignalTypeA":
-                    // Assign a value to the port.
+                    // Assign a value to the 2nd port.
                     robotSensor.conTypePortA = (SensorConnectionType)Enum.Parse(typeof(SensorConnectionType), reader.ReadElementContentAsString());
                     break;
                 case "SensorPortNumberB":
-                    // Assign a value to the port.
+                    // Assign a port type to the 1st port
                     robotSensor.portB = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "SensorSignalTypeB":
-                    // Assign a value to the port.
+                    // Assign a port type to the 1st port
                     robotSensor.conTypePortB = (SensorConnectionType)Enum.Parse(typeof(SensorConnectionType), reader.ReadElementContentAsString());
                     break;
                 case "SensorConversionFactor":
-                    // Assign a value to useSecondarySource.
+                    // assings the generic conversion facter, this is a different type/ unit for every robot (CPR in encoders)
                     robotSensor.conversionFactor = double.Parse(reader.ReadElementContentAsString());
                     if(robotSensor.conversionFactor == 0)
                     {
