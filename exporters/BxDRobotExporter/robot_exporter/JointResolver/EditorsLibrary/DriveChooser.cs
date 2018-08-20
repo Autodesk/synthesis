@@ -78,6 +78,7 @@ public partial class DriveChooser : Form
 
             rbPWM.Checked = !joint.cDriver.isCan;
             rbCAN.Checked = joint.cDriver.isCan;
+            chkBoxHasBrake.Checked = joint.cDriver.hasBrake;
                 if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
             {
                 joint.cDriver.OutputGear = 1;
@@ -148,6 +149,8 @@ public partial class DriveChooser : Form
 
             rbPWM.Checked = true;
 
+            chkBoxHasBrake.Checked = false;
+
             cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
             cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
 
@@ -181,7 +184,7 @@ public partial class DriveChooser : Form
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
             txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
             inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear || 
-            rbCAN.Checked != joint.cDriver.isCan)
+            rbCAN.Checked != joint.cDriver.isCan || chkBoxHasBrake.Checked != joint.cDriver.hasBrake)
             return true;
 
         if (pneumatic != null && 
@@ -211,7 +214,6 @@ public partial class DriveChooser : Form
     void PrepLayout()
     {
         chkBoxDriveWheel.Hide();
-        chkBoxHasBrake.Hide();
         rbCAN.Hide();
         rbPWM.Hide();
 
@@ -234,6 +236,7 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Clear();
                 tabsMeta.TabPages.Add(metaWheel);
                 tabsMeta.TabPages.Add(metaGearing);
+                tabsMeta.TabPages.Add(metaBrake);
                 chkBoxDriveWheel.Show();
                 rbCAN.Show();
                 rbPWM.Show();
@@ -243,18 +246,16 @@ public partial class DriveChooser : Form
                 tabsMeta.Visible = true;
                 tabsMeta.TabPages.Clear();
                 tabsMeta.TabPages.Add(metaPneumatic);
+                tabsMeta.TabPages.Add(metaBrake);
             }
             else if (cType.IsElevator())
             {
                 tabsMeta.Visible = true;
-                lblBrakePort.Enabled = false;
-                brakePort1.Enabled = false;
-                brakePort2.Enabled = false;
                 tabsMeta.TabPages.Clear();
-                chkBoxHasBrake.Show();
-                //tabsMeta.TabPages.Add(metaElevatorBrake);
                 tabsMeta.TabPages.Add(metaGearing);
-                
+                tabsMeta.TabPages.Add(metaBrake);
+                chkBoxHasBrake.Show();
+
                 rbCAN.Show();
                 rbPWM.Show();
             }
@@ -314,8 +315,9 @@ public partial class DriveChooser : Form
                 OutputGear = outputGear,// writes the output gear to the internal joint driver so it can be exported
                 lowerLimit = (float)txtLowLimit.Value,
                 upperLimit = (float)txtHighLimit.Value,
-                isCan = rbCAN.Checked
-            };
+                isCan = rbCAN.Checked,
+                hasBrake = chkBoxHasBrake.Checked
+        };
             //Only need to store wheel driver if run by motor and is a wheel.
             if (cType.IsMotor() && (WheelType)cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
             {
@@ -420,7 +422,7 @@ public partial class DriveChooser : Form
 
     private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e)
     {
-        if (chkBoxHasBrake.Checked)
+        /*if (chkBoxHasBrake.Checked)
         {
             lblBrakePort.Enabled = true;
             brakePort1.Enabled = true;
@@ -431,7 +433,7 @@ public partial class DriveChooser : Form
             lblBrakePort.Enabled = false;
             brakePort1.Enabled = false;
             brakePort2.Enabled = false;
-        }
+        }*/
     }
 
     private void rbCAN_CheckedChanged(object sender, EventArgs e)
