@@ -157,7 +157,7 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Applies a set of occurrences to tabs.
+        /// Applies a set of occurrences to existing tabs.
         /// </summary>
         /// <param name="occurrencePropSets">Key =  occurrence name, value = property set name.</param>
         public void ApplyOccurrences(Dictionary<string, List<string>> occurrencePropSets)
