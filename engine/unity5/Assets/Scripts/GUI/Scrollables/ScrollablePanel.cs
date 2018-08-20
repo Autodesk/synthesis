@@ -27,7 +27,7 @@ namespace Synthesis.GUI.Scrollables
         public string selectedEntry { get; set; } //this is set to whatever item is currently being selected
 
         public Texture2D ThumbTexture { get; set; }
-        public Color ListTextColor { get; set; }
+        public Color ListTextColor { get; set; } //better system: set whether it's light or dark theme each time not the specific color
 
         // Use this for initialization
         protected virtual void Start()

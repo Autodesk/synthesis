@@ -391,17 +391,6 @@ namespace Synthesis.Camera
             isEditingFOV = robotCameraManager.IsChangingFOV;
         }
 
-        public void ChangeCameraFOV(int sign)
-        {
-            fovSign = sign;
-            changingFOV = true;
-        }
-
-        public void StopChangingCameraFOV()
-        {
-            changingFOV = false;
-        }
-
         /// <summary>
         /// Toggle FOV edit mode and update FOV from the input
         /// </summary>
