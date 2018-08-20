@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
+using Newtonsoft.Json;
 
 namespace FieldExporter.Exporter
 {
@@ -28,67 +29,28 @@ namespace FieldExporter.Exporter
                 Inventor.PropertySet p = GetPropertySet(inventorPropertySets, "synthesisField");
 
                 // Field Properties
-                SetProperty(p, "spawnpointCount", fieldProps.spawnpoints.Length);
-                for (int i = 0; i < fieldProps.spawnpoints.Length; i++)
-                {
-                    SetProperty(p, "spawnpoint" + i.ToString() + ".x", fieldProps.spawnpoints[i].x);
-                    SetProperty(p, "spawnpoint" + i.ToString() + ".y", fieldProps.spawnpoints[i].y);
-                    SetProperty(p, "spawnpoint" + i.ToString() + ".z", fieldProps.spawnpoints[i].z);
-                }
-
-                SetProperty(p, "gamepieceCount", fieldProps.gamepieces.Length);
-                for (int i = 0; i < fieldProps.gamepieces.Length; i++)
-                {
-                    SetProperty(p, "gamepiece" + i.ToString() + ".id", fieldProps.gamepieces[i].id);
-                    SetProperty(p, "gamepiece" + i.ToString() + ".spawnX", fieldProps.gamepieces[i].spawnpoint.x);
-                    SetProperty(p, "gamepiece" + i.ToString() + ".spawnY", fieldProps.gamepieces[i].spawnpoint.y);
-                    SetProperty(p, "gamepiece" + i.ToString() + ".spawnZ", fieldProps.gamepieces[i].spawnpoint.z);
-                    SetProperty(p, "gamepiece" + i.ToString() + ".holdingLimit", (int)fieldProps.gamepieces[i].holdingLimit);
-                }
+                SetProperty(p, "spawnpoints", JsonConvert.SerializeObject(fieldProps.spawnpoints));
+                SetProperty(p, "gamepieces", JsonConvert.SerializeObject(fieldProps.gamepieces));
 
                 // Property Sets
-                SetProperty(p, "propertySetCount", propertySets.Count);
+                SetProperty(p, "propertySets", JsonConvert.SerializeObject(propertySets, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto } ));
+
+                // Occurrences
                 for (int i = 0; i < propertySets.Count; i++)
                 {
-                    SetProperty(p, "propertySet" + i.ToString() + ".id", propertySets[i].PropertySetID);
-                    SetProperty(p, "propertySet" + i.ToString() + ".friction", propertySets[i].Friction);
-                    SetProperty(p, "propertySet" + i.ToString() + ".mass", propertySets[i].Mass);
-
-                    // Collider Info
-                    SetProperty(p, "propertySet" + i.ToString() + ".collisionType", (int)propertySets[i].Collider.CollisionType);
-
-                    if (propertySets[i].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.BOX)
-                    {
-                        PropertySet.BoxCollider box = (PropertySet.BoxCollider)propertySets[i].Collider;
-                        SetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleX", box.Scale.x);
-                        SetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleY", box.Scale.y);
-                        SetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleZ", box.Scale.z);
-                    }
-                    else if (propertySets[i].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.SPHERE)
-                    {
-                        PropertySet.SphereCollider sphere = (PropertySet.SphereCollider)propertySets[i].Collider;
-                        SetProperty(p, "propertySet" + i.ToString() + ".sphereCollider.scale", sphere.Scale);
-                    }
-                    else if (propertySets[i].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
-                    {
-                        PropertySet.MeshCollider mesh = (PropertySet.MeshCollider)propertySets[i].Collider;
-                        SetProperty(p, "propertySet" + i.ToString() + ".meshCollider.convex", mesh.Convex);
-                    }
-
-                    // Occurrences
                     var tabPage = (Components.ComponentPropertiesTabPage) Program.MAINWINDOW.GetPropertySetsTabControl().TabPages[propertySets[i].PropertySetID];
 
                     if (tabPage != null)
                     {
                         Components.InventorTreeView treeView = tabPage.ChildForm.inventorTreeView;
+                        List<string> occurrences = new List<string>();
+                        foreach (TreeNode node in treeView.Nodes)
+                            CreateOccurrenceList(node, "", occurrences);
 
-                        SetProperty(p, "propertySet" + i.ToString() + ".occurrenceCount", treeView.Nodes.Count);
-
-                        for (int j = 0; j < treeView.Nodes.Count; j++)
-                            SaveOccurrenceTree(treeView.Nodes[j], "propertySet" + i.ToString() + ".occurrence" + j.ToString(), p);
+                        SetProperty(p, "propertySets." + propertySets[i].PropertySetID + ".occurrences", JsonConvert.SerializeObject(occurrences));
                     }
                     else
-                        SetProperty(p, "propertySet" + i.ToString() + ".occurrenceCount", 0);
+                        SetProperty(p, "propertySets." + propertySets[i].PropertySetID + ".occurrences", "[]");
                 }
             }
             catch (Exception e)
@@ -97,13 +59,12 @@ namespace FieldExporter.Exporter
             }
         }
 
-        public static void SaveOccurrenceTree(TreeNode node, string propPath, Inventor.PropertySet p)
+        public static void CreateOccurrenceList(TreeNode node, string path, List<string> occurrences)
         {
-            SetProperty(p, propPath + ".name", node.Name);
-            SetProperty(p, propPath + ".occurrenceCount", node.Nodes.Count);
+            occurrences.Add(path + node.Name);
 
-            for (int i = 0; i < node.Nodes.Count; i++)
-                SaveOccurrenceTree(node.Nodes[i], propPath + ".occurrence" + i.ToString(), p);
+            foreach (TreeNode subnode in node.Nodes)
+                CreateOccurrenceList(subnode, path + node.Name + '\\', occurrences);
         }
 
         public static void Load(AssemblyDocument document, out FieldProperties fieldProps, out List<PropertySet> propertySets, out Dictionary<string, List<string>> occurrencePropSets)
@@ -115,83 +76,32 @@ namespace FieldExporter.Exporter
                 Inventor.PropertySet p = GetPropertySet(inventorPropertySets, "synthesisField");
 
                 // Field Properties
-                BXDVector3[] spawnpoints = new BXDVector3[GetProperty(p, "spawnpointCount", 0)];
-                for (int i = 0; i < spawnpoints.Length; i++)
-                {
-                    spawnpoints[i] = new BXDVector3(GetProperty(p, "spawnpoint" + i.ToString() + ".x", 0.0f),
-                                                    GetProperty(p, "spawnpoint" + i.ToString() + ".y", 0.0f),
-                                                    GetProperty(p, "spawnpoint" + i.ToString() + ".z", 0.0f));
-                }
+                BXDVector3[] spawnpoints = JsonConvert.DeserializeObject<BXDVector3[]>(GetProperty(p, "spawnpoints", "[]"));
+                if (spawnpoints == null)
+                    spawnpoints = new BXDVector3[0];
 
-                Gamepiece[] gamepieces = new Gamepiece[GetProperty(p, "gamepieceCount", 0)];
-                for (int i = 0; i < gamepieces.Length; i++)
-                {
-                    gamepieces[i] = new Gamepiece(GetProperty(p, "gamepiece" + i.ToString() + ".id", "unknown"),
-                                                  new BXDVector3(GetProperty(p, "gamepiece" + i.ToString() + ".spawnX", 0.0),
-                                                                 GetProperty(p, "gamepiece" + i.ToString() + ".spawnY", 0.0),
-                                                                 GetProperty(p, "gamepiece" + i.ToString() + ".spawnZ", 0.0)),
-                                                  (ushort)GetProperty(p, "gamepiece" + i.ToString() + ".holdingLimit", (int)ushort.MaxValue));
-                }
+                Gamepiece[] gamepieces = JsonConvert.DeserializeObject<Gamepiece[]>(GetProperty(p, "gamepieces", "[]"));
+                if (gamepieces == null)
+                    gamepieces = new Gamepiece[0];
 
                 fieldProps = new FieldProperties(spawnpoints, gamepieces);
 
                 // Property Sets
-                propertySets = new List<PropertySet>();
+                propertySets = JsonConvert.DeserializeObject<List<PropertySet>>(GetProperty(p, "propertySets", "[]"), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+
+                // Occurrences
                 occurrencePropSets = new Dictionary<string, List<string>>();
-
-                int propertySetCount = GetProperty(p, "propertySetCount", 0);
-                for (int i = 0; i < propertySetCount; i++)
+                
+                for (int i = 0; i < propertySets.Count(); i++)
                 {
-                    // Create collider
-                    var collisionType = (PropertySet.PropertySetCollider.PropertySetCollisionType)GetProperty(p, "propertySet" + i.ToString() + ".collisionType", 0);
-                    PropertySet.PropertySetCollider newCollider;
-
-                    if (collisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.BOX)
-                        newCollider = new PropertySet.BoxCollider(new BXDVector3(GetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleX", 1.0f),
-                                                                                 GetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleY", 1.0f),
-                                                                                 GetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleZ", 1.0f)));
-
-                    else if (collisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.SPHERE)
-                        newCollider = new PropertySet.SphereCollider(GetProperty(p, "propertySet" + i.ToString() + ".sphereCollider.scale", 1.0f));
-
-                    else
-                        newCollider = new PropertySet.MeshCollider(GetProperty(p, "propertySet" + i.ToString() + ".meshCollider.convex", true));
-
-                    // Create property set
-                    PropertySet newPropSet = new PropertySet(GetProperty(p, "propertySet" + i.ToString() + ".id", "unknown"),
-                                                             newCollider,
-                                                             GetProperty(p, "propertySet" + i.ToString() + ".friction", 50),
-                                                             GetProperty(p, "propertySet" + i.ToString() + ".mass", 0.0f));
-
-                    propertySets.Add(newPropSet);
-
-                    // Occurrences
-                    List<string> occurrences = new List<string>();
-
-                    int occurrenceCount = GetProperty(p, "propertySet" + i.ToString() + ".occurrenceCount", 0);
-                    for (int j = 0; j < occurrenceCount; j++)
-                    {
-                        LoadOccurrenceTree("propertySet" + i.ToString() + ".occurrence" + j.ToString(),
-                                           "", occurrences, p);
-                    }
-
-                    occurrencePropSets.Add(newPropSet.PropertySetID, occurrences);
+                    occurrencePropSets.Add(propertySets[i].PropertySetID,
+                                           JsonConvert.DeserializeObject<List<string>>(GetProperty(p, "propertySets." + propertySets[i].PropertySetID + ".occurrences", "[]")));
                 }
             }
             catch (Exception e)
             {
                 throw new FailedToLoadException(e);
             }
-        }
-        
-        public static void LoadOccurrenceTree(string propPath, string occPath, List<string> occurrences, Inventor.PropertySet p)
-        {
-            string name = GetProperty(p, propPath + ".name", "unknown");
-            occurrences.Add(occPath + name);
-
-            int occurrenceCount = GetProperty(p, propPath + ".occurrenceCount", 0);
-            for (int i = 0; i < occurrenceCount; i++)
-                LoadOccurrenceTree(propPath + ".occurrence" + i.ToString(), occPath + name + '\\', occurrences, p);
         }
 
         #region Property Utilities

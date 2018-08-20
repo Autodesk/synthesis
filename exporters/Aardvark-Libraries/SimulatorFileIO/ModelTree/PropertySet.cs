@@ -6,7 +6,7 @@ public struct PropertySet
     /// <summary>
     /// Stores collider information for a PropertySet.
     /// </summary>
-    public class PropertySetCollider
+    public abstract class PropertySetCollider
     {
         /// <summary>
         /// Used for defining the type of collision for the PropertySetCollider.
