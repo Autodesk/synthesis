@@ -36,15 +36,15 @@
             // 
             this.pleaseWaitLabel.Location = new System.Drawing.Point(13, 13);
             this.pleaseWaitLabel.Name = "pleaseWaitLabel";
-            this.pleaseWaitLabel.Size = new System.Drawing.Size(191, 15);
+            this.pleaseWaitLabel.Size = new System.Drawing.Size(191, 32);
             this.pleaseWaitLabel.TabIndex = 0;
-            this.pleaseWaitLabel.Text = "Please wait...";
-            this.pleaseWaitLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.pleaseWaitLabel.Text = "Please wait...\r\nLoading...";
+            this.pleaseWaitLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.pleaseWaitLabel.UseWaitCursor = true;
             // 
             // pleaseWaitBar
             // 
-            this.pleaseWaitBar.Location = new System.Drawing.Point(12, 31);
+            this.pleaseWaitBar.Location = new System.Drawing.Point(12, 48);
             this.pleaseWaitBar.Name = "pleaseWaitBar";
             this.pleaseWaitBar.Size = new System.Drawing.Size(192, 23);
             this.pleaseWaitBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
@@ -56,11 +56,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(216, 66);
+            this.ClientSize = new System.Drawing.Size(216, 83);
             this.Controls.Add(this.pleaseWaitBar);
             this.Controls.Add(this.pleaseWaitLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PleaseWaitForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PleaseWaitForm";
             this.UseWaitCursor = true;

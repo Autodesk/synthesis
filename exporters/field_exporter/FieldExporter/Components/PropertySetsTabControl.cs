@@ -169,7 +169,7 @@ namespace FieldExporter.Components
                     foreach (string path in op.Value)
                     {
                         InventorTreeView treeView = propPage.ChildForm.inventorTreeView;
-                        treeView.AddComponentShallow(InventorTreeView.FindComponentByFullName(Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.GetEnumerator(), path));
+                        treeView.AddComponentShallow(path);
                     }
                 }
             }

@@ -36,9 +36,9 @@ namespace FieldExporter
         {
             menuStrip.Renderer = new ToolStripProfessionalRenderer(new SynthesisColorTable());
 
-            Forms.PleaseWaitForm pleaseWait = new Forms.PleaseWaitForm();
-            pleaseWait.Show();
+            Forms.PleaseWaitForm pleaseWait = new Forms.PleaseWaitForm("Loading config...");
             Enabled = false;
+            pleaseWait.Show();
 
             try
             {
@@ -61,8 +61,8 @@ namespace FieldExporter
                 // Failed to load config
             }
 
-            Enabled = true;
             pleaseWait.Close();
+            Enabled = true;
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Forms.PleaseWaitForm pleaseWait = new Forms.PleaseWaitForm();
-            pleaseWait.Show();
+            Forms.PleaseWaitForm pleaseWait = new Forms.PleaseWaitForm("Saving config...");
             Enabled = false;
+            pleaseWait.Show();
 
             try
             {
