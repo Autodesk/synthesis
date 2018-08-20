@@ -93,9 +93,9 @@ namespace FieldExporter.Exporter
                 BXDVector3[] spawnpoints = new BXDVector3[GetProperty(p, "spawnpointCount", 0)];
                 for (int i = 0; i < spawnpoints.Length; i++)
                 {
-                    spawnpoints[i].x = GetProperty(p, "spawnpoint" + i.ToString() + ".x", 0.0f);
-                    spawnpoints[i].y = GetProperty(p, "spawnpoint" + i.ToString() + ".y", 0.0f);
-                    spawnpoints[i].z = GetProperty(p, "spawnpoint" + i.ToString() + ".z", 0.0f);
+                    spawnpoints[i] = new BXDVector3(GetProperty(p, "spawnpoint" + i.ToString() + ".x", 0.0f),
+                                                    GetProperty(p, "spawnpoint" + i.ToString() + ".y", 0.0f),
+                                                    GetProperty(p, "spawnpoint" + i.ToString() + ".z", 0.0f));
                 }
 
                 Gamepiece[] gamepieces = new Gamepiece[GetProperty(p, "gamepieceCount", 0)];
@@ -116,13 +116,28 @@ namespace FieldExporter.Exporter
                 int propertySetCount = GetProperty(p, "propertySetCount", 0);
                 for (int i = 0; i < propertySetCount; i++)
                 {
-                    propertySets.Add(new PropertySet(GetProperty(p, "propertySet" + i.ToString() + ".id", "unknown"),
-                                                     new PropertySet.PropertySetCollider((PropertySet.PropertySetCollider.PropertySetCollisionType)GetProperty(p, "propertySet" + i.ToString() + ".collisionType", 0)),
-                                                     GetProperty(p, "propertySet" + i.ToString() + ".friction", 50),
-                                                     GetProperty(p, "propertySet" + i.ToString() + ".mass", 0.0f)));
+                    // Create collider
+                    var collisionType = (PropertySet.PropertySetCollider.PropertySetCollisionType)GetProperty(p, "propertySet" + i.ToString() + ".collisionType", 0);
+                    PropertySet.PropertySetCollider newCollider;
 
-                    // Collider Info
-                    //propertySets.Last().Collider = // TODO
+                    if (collisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.BOX)
+                        newCollider = new PropertySet.BoxCollider(new BXDVector3(GetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleX", 1.0f),
+                                                                                 GetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleY", 1.0f),
+                                                                                 GetProperty(p, "propertySet" + i.ToString() + ".boxCollider.scaleZ", 1.0f)));
+
+                    else if (collisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.SPHERE)
+                        newCollider = new PropertySet.SphereCollider(GetProperty(p, "propertySet" + i.ToString() + ".sphereCollider.scale", 1.0f));
+
+                    else
+                        newCollider = new PropertySet.MeshCollider(GetProperty(p, "propertySet" + i.ToString() + ".meshCollider.convex", true));
+
+                    // Create property set
+                    PropertySet newPropSet = new PropertySet(GetProperty(p, "propertySet" + i.ToString() + ".id", "unknown"),
+                                                             newCollider,
+                                                             GetProperty(p, "propertySet" + i.ToString() + ".friction", 50),
+                                                             GetProperty(p, "propertySet" + i.ToString() + ".mass", 0.0f));
+
+                    propertySets.Add(newPropSet);
                 }
 
             }

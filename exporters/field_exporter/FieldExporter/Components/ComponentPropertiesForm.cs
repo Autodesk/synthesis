@@ -29,6 +29,11 @@ namespace FieldExporter.Controls
         public bool InteractionEnabled { get; private set; }
 
         /// <summary>
+        /// The currently visible form for specifying collider properties
+        /// </summary>
+        ColliderPropertiesForm colliderPropertiesForm = null;
+
+        /// <summary>
         /// Initializes a new ComponentPropertiesForm instance.
         /// </summary>
         public ComponentPropertiesForm(ComponentPropertiesTabPage tabPage)
@@ -50,7 +55,7 @@ namespace FieldExporter.Controls
         /// </summary>
         public PropertySet.PropertySetCollider Collider
         {
-            get => ((ColliderPropertiesForm)meshPropertiesTable.Controls[1]).GetCollider();
+            get => colliderPropertiesForm.Collider;
             set
             {
                 switch (value.CollisionType)
@@ -64,7 +69,12 @@ namespace FieldExporter.Controls
                     case PropertySet.PropertySetCollider.PropertySetCollisionType.MESH:
                         colliderTypeCombobox.SelectedIndex = 2;
                         break;
+                    default:
+                        return;
                 }
+                
+                if (colliderPropertiesForm != null)
+                    colliderPropertiesForm.Collider = value;
             }
         }
 
@@ -314,30 +324,26 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void colliderTypeCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Type selectedType = null;
+            if (colliderPropertiesForm != null)
+                meshPropertiesTable.Controls.Remove((UserControl)colliderPropertiesForm);
 
             switch (colliderTypeCombobox.SelectedIndex)
             {
                 case 0: // Box
-                    selectedType = typeof(BoxColliderPropertiesForm);
+                    colliderPropertiesForm = new BoxColliderPropertiesForm();
                     break;
                 case 1: // Sphere
-                    selectedType = typeof(SphereColliderPropertiesForm);
+                    colliderPropertiesForm = new SphereColliderPropertiesForm();
                     break;
                 case 2: // Mesh
-                    selectedType = typeof(MeshColliderPropertiesForm);
+                    colliderPropertiesForm = new MeshColliderPropertiesForm();
                     break;
-            }
-
-            if (meshPropertiesTable.Controls.Count > 1)
-            {
-                if (selectedType == null || meshPropertiesTable.Controls[1].GetType().Equals(selectedType))
+                default:
+                    colliderPropertiesForm = null;
                     return;
-
-                meshPropertiesTable.Controls.RemoveAt(1);
             }
 
-            meshPropertiesTable.Controls.Add((UserControl)Activator.CreateInstance(selectedType), 0, 1);
+            meshPropertiesTable.Controls.Add((UserControl)colliderPropertiesForm, 0, 1);
         }
 
         /// <summary>
