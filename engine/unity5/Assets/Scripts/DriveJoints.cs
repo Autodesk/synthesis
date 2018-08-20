@@ -169,7 +169,7 @@ public class DriveJoints
                             BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
                             hingedConstraint.enableMotor = true;
                             hingedConstraint.targetMotorAngularVelocity = pwm[i] > 0f ? maxSpeed : pwm[i] < 0f ? -maxSpeed : 0f;
-                            hingedConstraint.maxMotorImpulse = pwm[i] == 0f ? friction : Mathf.Abs(pwm[i] * impulse);
+                            hingedConstraint.maxMotorImpulse = rigidNode.GetSkeletalJoint().cDriver.hasBrake ? HINGE_MOTOR_IMPULSE : pwm[i] == 0f ? friction : Mathf.Abs(pwm[i] * impulse);
                         }
                     }
                     else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
@@ -651,7 +651,7 @@ public class DriveJoints
                             BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
                             hingedConstraint.enableMotor = true;
                             hingedConstraint.targetMotorAngularVelocity = motors[i] > 0f ? maxSpeed : motors[i] < 0f ? -maxSpeed : 0f;
-                            hingedConstraint.maxMotorImpulse = motors[i] == 0f ? friction : Mathf.Abs(motors[i] * impulse);
+                            hingedConstraint.maxMotorImpulse = rigidNode.GetSkeletalJoint().cDriver.hasBrake ? HINGE_MOTOR_IMPULSE : motors[i] == 0f ? friction : Mathf.Abs(motors[i] * impulse);
                         }
                         else if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
                         {
@@ -677,7 +677,7 @@ public class DriveJoints
                             BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
                             hingedConstraint.enableMotor = true;
                             hingedConstraint.targetMotorAngularVelocity = motors[i + 10] > 0f ? maxSpeed : motors[i + 10] < 0f ? -maxSpeed : 0f;
-                            hingedConstraint.maxMotorImpulse = motors[i + 10] == 0f ? friction : Mathf.Abs(motors[i + 10] * impulse);
+                            hingedConstraint.maxMotorImpulse = rigidNode.GetSkeletalJoint().cDriver.hasBrake ? HINGE_MOTOR_IMPULSE : motors[i + 10] == 0f ? friction : Mathf.Abs(motors[i + 10] * impulse);
                         }
                     }
                     else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
