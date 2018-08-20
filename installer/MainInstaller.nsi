@@ -7,7 +7,7 @@ Icon "W16_SYN_launch.ico"
 
 OutFile "SynthesisInstaller4.2.0.1.exe"
 
-InstallDir $PROGRAMFILES\Autodesk\Synthesis
+InstallDir $PROGRAMFILES64\Autodesk\Synthesis
 
 InstallDirRegKey HKLM "Software\Synthesis" "Install_Dir"
 
@@ -224,15 +224,6 @@ Section "Uninstall"
 	Quit
 	
 	Negative: goto uninstall_complete
-	
-  IfFileExists "$PROGRAMFILES\qemu" file_discovered
-  
-	file_discovered:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO Nope
-	exec '"$PROGRAMFILES\qemu\qemu-uninstall.exe" \s'
-	Quit
-	
-	Nope: goto uninstall_complete
 	
 	uninstall_complete:
 
