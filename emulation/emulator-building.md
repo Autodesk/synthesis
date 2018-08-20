@@ -112,6 +112,7 @@ $ cmake . -DCMAKE_BUILD_TYPE=RELEASE -DARCH=ARM
 $ make -j16 hel
 $ cp lib/libhel.so ~/vm-package
 $ cp scripts/frc_program_shooser.sh ~/vm-package
+$ cp scripts/S90FRCUserProgram /etc/init.d
 ```
 
 ## Phase 6: Making the Core VM Image
@@ -175,6 +176,7 @@ $ export LD_LIBRARY_PATH
 $ chmod +x /usr/lib/jvm/bin/*
 $ mv /usr/bin/java /usr/bin/java.bak
 $ ln -s /usr/lib/jvm/bin/java /usr/bin/java
+$ cp /home/lvuser/S90FRCUserProgram /etc/init.d
 # Press control-x then a to close VM
 ```
 
