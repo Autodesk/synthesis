@@ -15,6 +15,9 @@ public partial class NodeEditorPane : UserControl
 
     public List<RigidNode_Base> nodes;
 
+    /// <summary>
+    /// Initializes a new instance of the NodeEditorPane class
+    /// </summary>
     public NodeEditorPane()
     {
         InitializeComponent();

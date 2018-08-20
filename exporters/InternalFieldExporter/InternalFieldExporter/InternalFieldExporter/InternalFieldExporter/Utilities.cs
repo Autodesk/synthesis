@@ -135,7 +135,7 @@ namespace InternalFieldExporter
         public static BXDQuaternion QuaternionFromMatrix(Matrix m)
         {
             BXDQuaternion q = new BXDQuaternion();
-
+            
             double tr = m.Cell[1, 1] + m.Cell[2, 2] + m.Cell[3, 3];
             double s;
 

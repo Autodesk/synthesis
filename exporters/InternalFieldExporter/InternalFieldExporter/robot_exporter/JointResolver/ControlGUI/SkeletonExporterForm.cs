@@ -60,7 +60,6 @@ namespace JointResolver.ControlGUI
 
         /// <summary>
         /// Finds the Inventor Instance and Detects the assembly
-        /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -81,8 +80,10 @@ namespace JointResolver.ControlGUI
 
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
+            //sets skeleton to null so it can be given value in the try catch
             RigidNode_Base skeleton = null;
 
+            //checks if the assembly is empty, has an invalid joint or if nothing is grounded
             try
             {
                 skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
@@ -180,6 +181,11 @@ namespace JointResolver.ControlGUI
             return baseNode;
         }
 
+        /// <summary>
+        /// Closes the ExporterWorker and ends the process
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ExporterWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Close();
