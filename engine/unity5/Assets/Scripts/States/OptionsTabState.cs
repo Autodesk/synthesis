@@ -16,9 +16,6 @@ namespace Synthesis.States
     public class OptionsTabState : State
     {
         private GameObject graphics;
-        private GameObject input;
-        private GameObject bindedKeyPanel;
-        private GameObject settingsMode;
         private GameObject splashScreen;
 
         private static bool inputPanelOn = false;
@@ -29,29 +26,14 @@ namespace Synthesis.States
         public override void Start()
         {
             graphics = Auxiliary.FindGameObject("Graphics");
-            input = Auxiliary.FindGameObject("Input");
-            bindedKeyPanel = Auxiliary.FindGameObject("BindedKeyPanel");
-            settingsMode = Auxiliary.FindGameObject("SettingsMode");
             splashScreen = Auxiliary.FindGameObject("LoadSplash");
 
-            OnInputButtonPressed();
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().GetLastSavedControls();
+            OnGraphicsButtonPressed();
         }
 
         public override void Update()
         {
-            if (KeyButton.Binded() && inputPanelOn)
-            {
-                if (KeyButton.Binded())
-                {
-                    bindedKeyPanel.SetActive(true);
-                }
-                else
-                {
-                    bindedKeyPanel.SetActive(false);
-                }
-            }
+            
         }
 
         /// <summary>
@@ -60,17 +42,12 @@ namespace Synthesis.States
         public void OnInputButtonPressed()
         {
             graphics.SetActive(false);
-            input.SetActive(true);
-            settingsMode.SetActive(true);
             inputPanelOn = true;
         }
 
         public void OnOkButtonPressed()
         {
             graphics.SetActive(false);
-            input.SetActive(true);
-            bindedKeyPanel.SetActive(false);
-            settingsMode.SetActive(true);
             inputPanelOn = true;
         }
 
@@ -80,8 +57,8 @@ namespace Synthesis.States
         public void OnGraphicsButtonPressed()
         {
             graphics.SetActive(true);
-            input.SetActive(false);
-            settingsMode.SetActive(true);
+            //input.SetActive(false);
+            //settingsMode.SetActive(true);
             inputPanelOn = false;
         }
 
@@ -95,9 +72,9 @@ namespace Synthesis.States
         }
 
         /// <summary>
-        /// Applies the graphics settings when the apply button is pressed.
+        /// Applies the graphics settings.
         /// </summary>
-        public void OnApplyButtonPressed()
+        public void OnApplySettingsButtonPressed()
         {
             PopupButton resPopup = GameObject.Find("ResolutionButton").GetComponent<PopupButton>();
             int xRes;
@@ -106,6 +83,15 @@ namespace Synthesis.States
             ParseResolution(resPopup.list[PlayerPrefs.GetInt("resolution")].text, out xRes, out yRes);
 
             Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
+
+            OnBackButtonPressed();
+        }
+
+        /// <summary>
+        /// Exits the state of changing the graphics settings.
+        /// </summary>
+        public void OnBackButtonPressed()
+        {
             StateMachine.ChangeState(new HomeTabState());
         }
 

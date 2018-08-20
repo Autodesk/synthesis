@@ -2,25 +2,30 @@
 
 public enum RobotSensorType : byte
 {
-    LIMIT = 0,
-    ENCODER = 1,
+    ENCODER = 0,
+    LIMIT = 1,
     POTENTIOMETER = 2,
     LIMIT_HALL = 3,
     ACCELEROMETER = 4,
     MAGNETOMETER = 5,
     GYRO = 6
 }
+public enum SensorConnectionType : byte
+{
+    DIO = 0,
+    ANALOG = 1,
+    SPI = 2,
+    I2C = 3,
+}
 
 public class RobotSensor : BinaryRWObject
 {
-    public short module, port;
+    public float portA;
+    public float portB;
     public RobotSensorType type;
-    public Polynomial equation;
-    /// <summary>
-    /// If this is true source the secondary value from the joint.  (Rotational instead of linear for cylindrical)
-    /// </summary>
-    public bool useSecondarySource = false;
-
+    public SensorConnectionType conTypePortA;
+    public SensorConnectionType conTypePortB;
+    public double conversionFactor;
     public RobotSensor()
     {
     }
@@ -28,6 +33,22 @@ public class RobotSensor : BinaryRWObject
     public RobotSensor(RobotSensorType type)
     {
         this.type = type;
+
+        switch (type)
+        {
+            case RobotSensorType.ENCODER:
+                conTypePortA = SensorConnectionType.DIO;
+                conTypePortB = SensorConnectionType.DIO;
+                break;
+            case RobotSensorType.LIMIT:
+                conTypePortA = SensorConnectionType.DIO;
+                conTypePortB = SensorConnectionType.DIO;
+                break;
+            case RobotSensorType.POTENTIOMETER:
+                conTypePortA = SensorConnectionType.ANALOG;
+                conTypePortB = SensorConnectionType.ANALOG;
+                break;
+        }
     }
 
     public static RobotSensorType[] GetAllowedSensors(SkeletalJoint_Base joint)
@@ -35,11 +56,11 @@ public class RobotSensor : BinaryRWObject
         switch (joint.GetJointType())
         {
             case SkeletalJointType.ROTATIONAL:
-                return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
+                return new RobotSensorType[] {RobotSensorType.ENCODER/*, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT*/};
             case SkeletalJointType.LINEAR:
-                return new RobotSensorType[] {RobotSensorType.LIMIT };
+                return new RobotSensorType[] {RobotSensorType.ENCODER };
             case SkeletalJointType.CYLINDRICAL:
-                return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
+                return new RobotSensorType[] {RobotSensorType.ENCODER/*, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT*/};
             case SkeletalJointType.PLANAR:
                 return new RobotSensorType[] { };
             case SkeletalJointType.BALL:
@@ -52,19 +73,19 @@ public class RobotSensor : BinaryRWObject
     public void WriteBinaryData(BinaryWriter writer)
     {
         writer.Write((byte) type);
-        writer.Write(module);
-        writer.Write(port);
-        writer.Write(equation);
-        writer.Write(useSecondarySource);
+        writer.Write(portA);
+        writer.Write((byte)conTypePortA);
+        writer.Write(portB);
+        writer.Write((byte)conTypePortB);
+        writer.Write(conversionFactor);
     }
 
     public void ReadBinaryData(BinaryReader reader)
     {
         type = (RobotSensorType) reader.ReadByte();
-        module = reader.ReadInt16();
-        port = reader.ReadInt16();
-        equation = reader.ReadRWObject<Polynomial>();
-        useSecondarySource = reader.ReadBoolean();
+        portA = reader.ReadInt16();
+        portB = reader.ReadInt16();
+        conversionFactor = reader.ReadDouble();
     }
 
     public static RobotSensor ReadSensorFully(BinaryReader reader)
@@ -80,6 +101,6 @@ public class RobotSensor : BinaryRWObject
     /// <param name="otherSensor"></param>
     public bool Equals(RobotSensor otherSensor)
     {
-        return module == otherSensor.module && port == otherSensor.port;    // Other fields are not important for equivalancy
+        return portA == otherSensor.portA && portB == otherSensor.portB && conversionFactor == otherSensor.conversionFactor;    // Other fields are not important for equivalancy
     }
 }

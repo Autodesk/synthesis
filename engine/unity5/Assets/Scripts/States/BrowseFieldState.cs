@@ -8,8 +8,9 @@ namespace Synthesis.States
         /// Initializes a new <see cref="BrowseFieldState"/> instance.
         /// </summary>
         public BrowseFieldState() : base("FieldDirectory",
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Fields")
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\synthesis\\Fields")
         {
+
         }
     }
 }

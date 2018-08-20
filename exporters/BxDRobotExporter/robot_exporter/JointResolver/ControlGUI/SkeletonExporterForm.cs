@@ -113,21 +113,7 @@ namespace JointResolver.ControlGUI
             {
                 throw new Exporter.EmptyAssemblyException();
             }
-
-            #region CenterJoints
-            int NumCentered = 0;
-
-            SetProgress("Processing joints...", NumCentered, occurrences.Count);
-            foreach (ComponentOccurrence component in occurrences)
-            {
-                Exporter.CenterAllJoints(component);
-
-                NumCentered++;
-
-                SetProgress("Processing joints...", NumCentered, occurrences.Count + 3);
-            }
-            #endregion
-
+            
             #region Build Models
             //Getting Rigid Body Info...
             SetProgress("Getting physics info...", occurrences.Count, occurrences.Count + 3);

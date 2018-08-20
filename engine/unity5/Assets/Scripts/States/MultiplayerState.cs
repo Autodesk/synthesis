@@ -45,7 +45,7 @@ namespace Synthesis.States
         /// <summary>
         /// Used for accessing the active robot in this state.
         /// </summary>
-        /// <returns></returns
+        /// <returns></returns>
         public GameObject Robot => ActiveRobot?.GetComponentInChildren<NetworkMesh>()?.MeshObject ??
             ActiveRobot?.transform.GetChild(0).gameObject;
 

@@ -109,6 +109,7 @@ namespace Synthesis.Camera
             newCamera.transform.parent = anchor;
             newCamera.transform.localPosition = positionOffset;
             newCamera.transform.localRotation = Quaternion.Euler(rotationOffset);
+            newCamera.GetComponent<UnityEngine.Camera>().fieldOfView = 60;
 
             RobotCamera configuration = newCamera.AddComponent<RobotCamera>();
             configuration.UpdateConfiguration();
@@ -348,8 +349,8 @@ namespace Synthesis.Camera
         /// </summary>
         private void UpdateCameraPosition()
         {
-            if (ChangingCameraPosition)
-            {
+            //if (ChangingCameraPosition)
+            //{
                 if (IsChangingFOV) //Control fov
                 {
                     CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView += UnityEngine.Input.GetAxis("CameraVertical");
@@ -366,7 +367,30 @@ namespace Synthesis.Camera
                 }
 
                 CurrentCamera.GetComponent<RobotCamera>().UpdateConfiguration();
-            }
+            //}
+        }
+
+        /// <summary>
+        /// Change angle by a specified amount
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        public virtual void RotateTransform(float x, float y, float z)
+        {
+            //restrict angles to between 0 and 360
+            x = x < 0 ? 360 + x : x;
+            x = x > 360 ? x - 360 : x;
+
+            y = y < 0 ? 360 + y : y;
+            y = y > 360 ? y - 360 : y;
+
+            z = z < 0 ? 360 + z : z;
+            z = z > 360 ? z - 360 : z;
+
+            //actually rotate the camera
+            CurrentCamera.transform.Rotate(new Vector3(x, y, z));
+            UpdateCameraPosition();
         }
 
         /// <summary>

@@ -253,4 +253,10 @@
   <data name="Weight32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Images\Weight32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="SynthesisLogo16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Logo16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SynthesisLogo32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Logo32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

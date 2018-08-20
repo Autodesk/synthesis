@@ -15,8 +15,6 @@ namespace Synthesis.Input
 {
     public class SettingsMode : MonoBehaviour
     {
-        public GameObject settingsMode;
-
         public Sprite DefaultButtonImage;
         public Sprite ActiveButtonImage;
 

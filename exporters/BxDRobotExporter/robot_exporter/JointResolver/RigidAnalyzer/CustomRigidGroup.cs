@@ -9,8 +9,6 @@ public class CustomRigidGroup
 
     public bool grounded;
 
-    public ExporterHint hint;
-
     public string fullQualifier;
     public static string GetGroupQualifier(RigidBodyGroup group)
     {
@@ -28,11 +26,7 @@ public class CustomRigidGroup
         {
             occurrences.Add(comp);
         }
-
-        hint = new ExporterHint();
-        hint.Convex = true;
-        hint.HighResolution = false;
-        hint.MultiColor = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
+        
         grounded = group.Grounded;
         fullQualifier = GetGroupQualifier(group);
     }

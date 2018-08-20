@@ -31,47 +31,6 @@ public class Exporter
         public NoGroundException() : base("Assembly has no ground.") { }
     }
 
-    public static void CenterAllJoints(ComponentOccurrence component)
-    {
-        Console.Write("Centering: " + component.Name);
-        foreach (AssemblyJoint joint in component.Joints)
-        {
-            //Takes the average of the linear or rotational limits and sets the joints position to it.
-            if (joint.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType || joint.Definition.JointType == AssemblyJointTypeEnum.kRotationalJointType)
-            {
-                if (joint.Definition.HasAngularPositionLimits)
-                {
-                    joint.Definition.AngularPosition = (joint.Definition.AngularPositionStartLimit.Value + joint.Definition.AngularPositionEndLimit.Value) / 2.0;
-                }
-            }
-
-            if (joint.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType || joint.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
-            {
-                if (joint.Definition.HasLinearPositionStartLimit && joint.Definition.HasLinearPositionEndLimit)
-                {
-                    joint.Definition.LinearPosition = (joint.Definition.LinearPositionStartLimit.Value + joint.Definition.LinearPositionEndLimit.Value) / 2.0;
-                }
-                else
-                {
-                    //No robot would have a piece that would just keep going.
-                    throw new InvalidJointException(String.Format("Please add limits to \"{0}\" before exporting your robot.", joint.Name), joint);
-                }
-            }
-        }
-
-        try
-        {
-            //Contiues down to subassemblies.
-            foreach (ComponentOccurrence subComponent in component.SubOccurrences)
-            {
-                 CenterAllJoints(subComponent);
-            }
-        }
-        catch
-        {
-        }
-    }
-
     public static RigidNode_Base ExportSkeleton(List<ComponentOccurrence> occurrences)
     {
         if (occurrences.Count == 0) throw new Exception("No components selected!");
@@ -84,18 +43,6 @@ public class Exporter
         SynthesisGUI.Instance.ExporterSetMeshes(2);
 
         int numOccurrences = occurrences.Count;
-        int current = 0;
-
-        //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
-        foreach (ComponentOccurrence component in occurrences)
-        {
-            CenterAllJoints(component);
-            double totalProgress = (((double) (current + 1) / (double) numOccurrences) * 100.0);
-            SynthesisGUI.Instance.ExporterSetSubText(String.Format("Centering {1} / {2}", Math.Round(totalProgress, 2), (current + 1), numOccurrences));
-            SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
-            current++;
-        }
-        Console.WriteLine();
 
         SynthesisGUI.Instance.ExporterStepOverall();
         SynthesisGUI.Instance.ExporterSetOverallText("Getting rigid info");
@@ -155,16 +102,14 @@ public class Exporter
                 {
                     SynthesisGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
-                    surfs.Reset(node.GUID);
                     Console.WriteLine("Exporting meshes...");
-                    surfs.ExportAll(group, (long progress, long total) =>
+                    BXDAMesh output = surfs.ExportAll(group, node.GUID, (long progress, long total) =>
                     {
                         double totalProgress = (((double)progress / (double)total) * 100.0);
                         SynthesisGUI.Instance.ExporterSetSubText(String.Format("Export {1} / {2}", Math.Round(totalProgress, 2), progress, total));
                         SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                     });
                     Console.WriteLine();
-                    BXDAMesh output = surfs.GetOutput();
                     Console.WriteLine("Output: " + output.meshes.Count + " meshes");
                     Console.WriteLine("Computing colliders...");
                     output.colliders.Clear();

@@ -73,7 +73,7 @@ namespace Synthesis.Network
         private void RemoteUpdateRobotInfo(float[] pwm)
         {
             if (RootNode != null)
-                DriveJoints.UpdateAllMotors(RootNode, pwm);
+                DriveJoints.UpdateAllMotors(RootNode, pwm, emuList);
         }
 
         /// <summary>

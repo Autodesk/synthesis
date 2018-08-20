@@ -17,6 +17,8 @@ using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.Utils;
 using Synthesis.Robot;
+using Assets.Scripts.GUI;
+using Synthesis.Field;
 
 namespace Synthesis.GUI
 {
@@ -30,68 +32,68 @@ namespace Synthesis.GUI
 
         new DynamicCamera camera;
         Toolkit toolkit;
-        DriverPracticeMode dpm;
         LocalMultiplayer multiplayer;
         SensorManagerGUI sensorManagerGUI;
         SensorManager sensorManager;
         RobotCameraManager robotCameraManager;
         RobotCameraGUI robotCameraGUI;
+        GoalManager gm;
 
         GameObject canvas;
+        GameObject resetUI;
 
         GameObject freeroamCameraWindow;
-        GameObject spawnPointPanel;
+        GameObject overviewCameraWindow;
+        GameObject spawnpointPanel;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
         GameObject changeFieldPanel;
-        GameObject multiplayerPanel;
 
+        GameObject mixAndMatchPanel;
+        GameObject changePanel;
+        GameObject addPanel;
         GameObject driverStationPanel;
 
         GameObject inputManagerPanel;
         GameObject bindedKeyPanel;
         GameObject checkSavePanel;
         GameObject unitConversionSwitch;
+
         GameObject hotKeyButton;
         GameObject hotKeyPanel;
-
         GameObject analyticsPanel;
 
-        GameObject mixAndMatchPanel;
-        GameObject changePanel;
-        GameObject addPanel;
-        GameObject toolkitPanel;
-        GameObject driverStationSettingsPanel;
-
-        GameObject toolbar;
-
         GameObject exitPanel;
-
-        GameObject orientWindow;
-        bool isOrienting = false;
-        GameObject resetDropdown;
-
         GameObject loadingPanel;
 
-        HashSet<GameObject> panels = new HashSet<GameObject>();
+        GameObject orientWindow;
+        GameObject resetDropdown;
+
+        GameObject tabs;
+        GameObject emulationTab;
 
         private bool freeroamWindowClosed = false;
-
+        private bool overviewWindowClosed = false;
         private bool oppositeSide = false;
-
         public static bool inputPanelOn = false;
+        public static bool changeAnalytics = true;
 
-        SettingsMode settingsMode;
+        private StateMachine tabStateMachine;
+        string currentTab;
+        public Sprite normalButton;
+        public Sprite highlightButton;
+
+        GameObject helpMenu;
+        GameObject overlay;
 
         private void Update()
         {
-            if (dpm == null)
+            if (toolkit == null)
             {
                 camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
 
                 toolkit = GetComponent<Toolkit>();
-                dpm = GetComponent<DriverPracticeMode>();
                 multiplayer = GetComponent<LocalMultiplayer>();
                 sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
@@ -105,37 +107,14 @@ namespace Synthesis.GUI
             {
                 UpdateWindows();
 
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && !InputControl.freeze)
                 {
                     if (!exitPanel.activeSelf)
                     {
-                        bool a = false;
-                        foreach (GameObject o in panels)
-                        {
-                            if (o.activeSelf)
-                            {
-                                a = true;
-                                break;
-                            }
-                        }
-                        if (a)
-                        {
-                            EndOtherProcesses();
-                        }
-                        else
-                        {
-                            MainMenuExit("open");
-                        }
+                        if (GameObject.Find("Dropdown List")) GameObject.Destroy(GameObject.Find("Dropdown List"));
+                        MainMenuExit("open");
                     }
-                    else
-                    {
-                        MainMenuExit("cancel");
-                    }
-                }
-
-                if (UnityEngine.Input.GetKey(KeyCode.LeftControl) && UnityEngine.Input.GetKeyDown(KeyCode.H))
-                {
-                    TogglePanel(toolbar);
+                    else MainMenuExit("cancel");
                 }
 
                 if (KeyButton.Binded() && inputPanelOn)
@@ -143,6 +122,8 @@ namespace Synthesis.GUI
                     ShowBindedInfoPanel();
                 }
             }
+            HighlightTabs();
+            if (State.isEmulationDownloaded) emulationTab.SetActive(true);
         }
 
         private void OnGUI()
@@ -156,10 +137,12 @@ namespace Synthesis.GUI
         private void FindElements()
         {
             canvas = GameObject.Find("Canvas");
+            resetUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
-            spawnPointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
-            multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
+            overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
+            spawnpointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
+            //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
@@ -172,7 +155,7 @@ namespace Synthesis.GUI
             hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
             hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
-            orientWindow = Auxiliary.FindObject(canvas, "OrientWindow");
+            orientWindow = Auxiliary.FindObject(resetUI, "OrientWindow");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -182,42 +165,115 @@ namespace Synthesis.GUI
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
             robotCameraGUI = GetComponent<RobotCameraGUI>();
             mixAndMatchPanel = Auxiliary.FindObject(canvas, "MixAndMatchPanel");
-            toolbar = Auxiliary.FindObject(canvas, "Toolbar");
+
             changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
             addPanel = Auxiliary.FindObject(canvas, "AddPanel");
-            toolkitPanel = Auxiliary.FindObject(canvas, "ToolkitPanel");
-            driverStationSettingsPanel = Auxiliary.FindObject(canvas, "DPMPanel");
 
-            //Fix this - temporary workaround
-            panels.Add(freeroamCameraWindow);
-            panels.Add(spawnPointPanel);
-            panels.Add(multiplayerPanel);
-            panels.Add(driverStationPanel);
-            panels.Add(changeRobotPanel);
-            panels.Add(changeFieldPanel);
-            panels.Add(inputManagerPanel);
-            panels.Add(checkSavePanel);
-            panels.Add(hotKeyPanel);
-            panels.Add(orientWindow);
-            panels.Add(analyticsPanel);
-            panels.Add(mixAndMatchPanel);
-            panels.Add(changePanel);
-            panels.Add(addPanel);
-            panels.Add(toolkitPanel);
-            panels.Add(driverStationSettingsPanel);
-            //Fix this - temporary workaround
+            tabs = Auxiliary.FindGameObject("Tabs");
+            emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
+
+            tabStateMachine = tabs.GetComponent<StateMachine>();
 
             CheckControlPanel();
+
+            LinkToolbars();
+            tabStateMachine.ChangeState(new MainToolbarState());
+            currentTab = "HomeTab";
+
+            ButtonCallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
+            ButtonCallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
+
+            helpMenu = Auxiliary.FindObject(canvas, "Help");
+            overlay = Auxiliary.FindObject(canvas, "Overlay");
         }
 
         private void UpdateWindows()
         {
             if (State != null)
+            {
                 UpdateFreeroamWindow();
+                UpdateOverviewWindow();
+            }
             UpdateSpawnpointWindow();
             UpdateDriverStationPanel();
         }
 
+        #region tab buttons
+        /// <summary>
+        /// Each tab in the simulator is tethered by an OnClick() scripted function (below). Once the tab is clicked,
+        /// each tab will activate a new toolbar state in where all of the toolbar functions will be managed by their
+        /// specific states. 
+        /// </summary>
+        public void OnMainTab()
+        {
+            if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
+            currentTab = "HomeTab";
+            tabStateMachine.ChangeState(new MainToolbarState());
+        }
+
+        public void OnDPMTab()
+        {
+            if (FieldDataHandler.gamepieces.Count > 0)
+            {
+                if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
+                currentTab = "DriverPracticeTab";
+                tabStateMachine.ChangeState(new DPMToolbarState());
+            }
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Driver Practice Disabled.", 3);
+        }
+
+        public void OnScoringTab()
+        {
+            if (FieldDataHandler.gamepieces.Count > 0)
+            {
+                if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
+                currentTab = "ScoringTab";
+                tabStateMachine.ChangeState(new ScoringToolbarState());
+            }
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Scoring Disabled.", 3);
+        }
+
+        public void OnSensorTab()
+        {
+            if (helpMenu.activeSelf) CloseHelpMenu("SensorToolbar");
+            currentTab = "SensorTab";
+            tabStateMachine.ChangeState(new SensorToolbarState());
+        }
+
+        public void OnEmulationTab()
+        {
+            if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
+            currentTab = "EmulationTab";
+            EmulationToolbarState.s = new Serialization();
+            tabStateMachine.ChangeState(new EmulationToolbarState());
+        }
+
+        private void CloseHelpMenu(string currentID = " ")
+        {
+            string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;
+            if (toolbarID.Equals(currentID)) return;
+            helpMenu.SetActive(false);
+            overlay.SetActive(false);
+            tabs.transform.Translate(new Vector3(-300, 0, 0));
+            foreach (Transform t in Auxiliary.FindObject(toolbarID).transform)
+            {
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
+                else t.gameObject.SetActive(true);
+            }
+        }
+
+        private void HighlightTabs()
+        {
+            foreach (Transform t in tabs.transform)
+            {
+                if (t.gameObject.name.Equals(currentTab))
+                {
+                    t.gameObject.GetComponent<Image>().sprite = highlightButton;
+                }
+                else t.gameObject.GetComponent<Image>().sprite = normalButton;
+            }
+        }
+        #endregion
         #region change robot/field functions
         public void ChangeRobot()
         {
@@ -244,7 +300,7 @@ namespace Synthesis.GUI
                 sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
 
                 State.ChangeRobot(directory, false);
-
+                RobotTypeManager.IsMixAndMatch = false;
             }
             else
             {
@@ -308,7 +364,10 @@ namespace Synthesis.GUI
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
                     });
-
+                //FieldDataHandler.Load();
+                //DPMDataHandler.Load();
+                //Controls.Init();
+                //Controls.Load();
                 SceneManager.LoadScene("Scene");
             }
             else
@@ -329,7 +388,43 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
             }
+        }
+        public void TogglePanel(GameObject panel)
+        {
+            if (panel.activeSelf == true)
+            {
+                panel.SetActive(false);
+            }
+            else
+            {
+                panel.SetActive(true);
+            }
+        }
 
+        public void ToggleAddRobotPanel()
+        {
+            if (addPanel.activeSelf == true)
+            {
+                addPanel.SetActive(false);
+            }
+            else
+            {
+                addPanel.SetActive(true);
+                changePanel.SetActive(false);
+            }
+        }
+
+        public void ToggleChangePanel()
+        {
+            if (changePanel.activeSelf == true)
+            {
+                changePanel.SetActive(false);
+            }
+            else
+            {
+                changePanel.SetActive(true);
+                addPanel.SetActive(false);
+            }
         }
 
         #endregion
@@ -395,6 +490,22 @@ namespace Synthesis.GUI
             }
         }
 
+        private void UpdateOverviewWindow()
+        {
+            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)) && !overviewWindowClosed)
+            {
+                if (!overviewWindowClosed)
+                {
+                    overviewCameraWindow.SetActive(true);
+                }
+
+            }
+            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            {
+                overviewCameraWindow.SetActive(false);
+            }
+        }
+
         /// <summary>
         /// Close freeroam camera tool tip
         /// </summary>
@@ -404,6 +515,14 @@ namespace Synthesis.GUI
             freeroamWindowClosed = true;
         }
 
+        /// <summary>
+        /// Close overview camera tooltip
+        /// </summary>
+        public void CloseOverviewWindow()
+        {
+            overviewCameraWindow.SetActive(false);
+            overviewWindowClosed = true;
+        }
 
         /// <summary>
         /// Activate driver station tool tips if the main camera is in driver station state
@@ -456,15 +575,17 @@ namespace Synthesis.GUI
         }
 
         #endregion
-        #region control panel functions
+        #region control panel and analytics functions
         /// <summary>
         /// Toggle the control panel ON/OFF based on the boolean passed.
         /// </summary>
         /// <param name="show"></param>
-        public void ShowControlPanel(bool show)
+        public void ShowControlPanel(bool alreadySaved)
         {
-            if (show)
+            if (!inputManagerPanel.activeSelf)
             {
+                DynamicCamera.ControlEnabled = false;
+                InputControl.freeze = true;
                 EndOtherProcesses();
                 inputManagerPanel.SetActive(true);
                 inputPanelOn = true;
@@ -474,12 +595,14 @@ namespace Synthesis.GUI
             }
             else
             {
+                DynamicCamera.ControlEnabled = true;
+                InputControl.freeze = false;
                 inputManagerPanel.SetActive(false);
                 bindedKeyPanel.SetActive(false);
                 inputPanelOn = false;
                 ToggleHotKeys(false);
 
-                if (Controls.CheckIfSaved())
+                if (!alreadySaved && Controls.CheckIfSaved())
                 {
                     checkSavePanel.SetActive(true);
                 }
@@ -533,6 +656,25 @@ namespace Synthesis.GUI
             }
         }
 
+        public void CheckForSavedControls(string option)
+        {
+            checkSavePanel.SetActive(false);
+
+            switch (option)
+            {
+                case "yes":
+                    Controls.Save();
+                    break;
+                case "no":
+                    Controls.Load();
+                    inputManagerPanel.SetActive(false);
+                    break;
+                case "cancel":
+                    inputManagerPanel.SetActive(true);
+                    break;
+            }
+        }
+
         /// <summary>
         /// Open tutorial link
         /// </summary>
@@ -560,6 +702,21 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 analyticsPanel.SetActive(true);
                 inputManagerPanel.SetActive(true);
+            }
+        }
+
+        /// <summary>
+        /// Toggle for analytics
+        /// </summary>
+        public void ToggleAnalytics(bool tAnalytics)
+        {
+            if (PlayerPrefs.GetInt("analytics") == 0)
+            {
+                PlayerPrefs.SetInt("analytics", 1);
+            }
+            else
+            {
+                PlayerPrefs.SetInt("analytics", 0);
             }
         }
 
@@ -611,12 +768,12 @@ namespace Synthesis.GUI
         {
             if (State.ActiveRobot.IsResetting)
             {
-                spawnPointPanel.SetActive(true);
+                spawnpointPanel.SetActive(true);
                 orientWindow.SetActive(true);
             }
             else
             {
-                spawnPointPanel.SetActive(false);
+                spawnpointPanel.SetActive(false);
                 orientWindow.SetActive(false);
             }
         }
@@ -664,6 +821,7 @@ namespace Synthesis.GUI
         /// <param name="option"></param>
         public void MainMenuExit(string option)
         {
+            if (helpMenu.activeSelf) CloseHelpMenu();
             EndOtherProcesses();
             switch (option)
             {
@@ -671,34 +829,13 @@ namespace Synthesis.GUI
                     exitPanel.SetActive(true);
                     break;
                 case "exit":
-                    Application.LoadLevel("MainMenu");
+                    SceneManager.LoadScene("MainMenu");
                     break;
-
                 case "cancel":
                     exitPanel.SetActive(false);
                     break;
             }
         }
-
-        public void CheckForSavedControls(string option)
-        {
-            checkSavePanel.SetActive(false);
-
-            switch (option)
-            {
-                case "yes":
-                    Controls.Save();
-                    break;
-                case "no":
-                    Controls.Load();
-                    inputManagerPanel.SetActive(false);
-                    break;
-                case "cancel":
-                    inputManagerPanel.SetActive(true);
-                    break;
-            }
-        }
-
 
         /// <summary>
         /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
@@ -717,25 +854,10 @@ namespace Synthesis.GUI
 
             CancelOrientation();
 
-            dpm.EndProcesses();
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();
             robotCameraGUI.EndProcesses();
-        }
-        /// <summary>
-        /// Toggle for analytics
-        /// </summary>
-        public void ToggleAnalytics(bool tAnalytics)
-        {
-            if (PlayerPrefs.GetInt("analytics") == 0)
-            {
-                PlayerPrefs.SetInt("analytics", 1);
-            }
-            else
-            {
-                PlayerPrefs.SetInt("analytics", 0);
-            }
         }
 
         /// <summary>
@@ -746,42 +868,31 @@ namespace Synthesis.GUI
             State.EnterReplayState();
         }
 
-        public void TogglePanel(GameObject panel)
+
+        /// <summary>
+        /// Links the specific toolbars to their specified states
+        /// </summary>
+        private void LinkToolbars()
         {
-            if (panel.activeSelf == true)
-            {
-                panel.SetActive(false);
-            }
-            else
-            {
-                panel.SetActive(true);
-            }
+            LinkToolbar<MainToolbarState>("MainToolbar");
+            LinkToolbar<DPMToolbarState>("DPMToolbar");
+            LinkToolbar<ScoringToolbarState>("ScoringToolbar");
+            LinkToolbar<SensorToolbarState>("SensorToolbar");
+            LinkToolbar<EmulationToolbarState>("EmulationToolbar");
         }
 
-        public void ToggleAddRobotPanel()
+        /// <summary>
+        /// Links each gameobject "tab" to the specified state
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tabName"></param>
+        /// <param name="strict"></param>
+        private void LinkToolbar<T>(string tabName, bool strict = true) where T : State
         {
-            if (addPanel.activeSelf == true)
-            {
-                addPanel.SetActive(false);
-            }
-            else
-            {
-                addPanel.SetActive(true);
-                changePanel.SetActive(false);
-            }
-        }
+            GameObject tab = Auxiliary.FindGameObject(tabName);
 
-        public void ToggleChangePanel()
-        {
-            if (changePanel.activeSelf == true)
-            {
-                changePanel.SetActive(false);
-            }
-            else
-            {
-                changePanel.SetActive(true);
-                addPanel.SetActive(false);
-            }
+            if (tab != null)
+                tabStateMachine.Link<T>(tab, strict);
         }
     }
 }

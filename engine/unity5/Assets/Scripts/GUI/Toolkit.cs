@@ -20,7 +20,6 @@ namespace Synthesis.GUI
         private bool ignoreClick = true;
 
         private GameObject canvas;
-        private GameObject toolkitWindow;
         private SensorManagerGUI sensorManagerGUI;
 
         //ruler variables
@@ -39,10 +38,8 @@ namespace Synthesis.GUI
         private GameObject stopwatchWindow;
         private Text stopwatchText;
         private Text stopwatchStartButtonText;
-        private Text stopwatchPauseButtonText;
 
         private bool stopwatchOn;
-        private bool stopwatchPaused;
         private float stopwatchTime;
 
         private GameObject statsWindow;
@@ -59,7 +56,6 @@ namespace Synthesis.GUI
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
-            toolkitWindow = Auxiliary.FindObject(canvas, "ToolkitPanel");
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
             //Ruler Objects
@@ -75,7 +71,6 @@ namespace Synthesis.GUI
             stopwatchWindow = Auxiliary.FindObject(canvas, "StopwatchPanel");
             stopwatchText = Auxiliary.FindObject(canvas, "StopwatchText").GetComponent<Text>();
             stopwatchStartButtonText = Auxiliary.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
-            stopwatchPauseButtonText = Auxiliary.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
 
             //Stats Objects
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
@@ -103,45 +98,7 @@ namespace Synthesis.GUI
                 UpdateStatsWindow();
             }
             //UpdateControlIndicator();
-            if (UnityEngine.Input.GetKeyDown(KeyCode.P) && stopwatchWindow.activeSelf)
-            {
-                PauseStopwatch();
-            }
         }
-
-        /// <summary>
-        /// Toggle the tookit window on/off according to the show boolean passed in
-        /// </summary>
-        /// <param name="show"></param>
-        public void ToggleToolkitWindow(bool show)
-        {
-            if (show)
-            {
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Opened Toolkit", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
-                toolkitWindow.SetActive(true);
-            }
-            else
-            {
-                ToggleRulerWindow(false);
-                ToggleStopwatchWindow(false);
-                toolkitWindow.SetActive(false);
-            }
-        }
-
-        /// <summary>
-        /// Toggle the toolkit window on/off according to its current state
-        /// </summary>
-        public void ToggleToolkitWindow()
-        {
-            ToggleToolkitWindow(!toolkitWindow.activeSelf);
-        }
-
-
 
         #region Ruler Functions
         /// <summary>
@@ -173,13 +130,16 @@ namespace Synthesis.GUI
         /// <summary>
         /// Initiate ruler
         /// </summary>
+        /// <summary>
+        /// Initiate ruler
+        /// </summary>
         public void StartRuler()
         {
             usingRuler = true;
             rulerStartPoint.SetActive(true);
-            Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(false);
+            Auxiliary.FindObject(canvas, "RulerPanelExtension").SetActive(false);
             Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(true);
-            if (PlayerPrefs.GetInt("analytics") == 1)
+            if (SimUI.changeAnalytics)
             {
                 Analytics.CustomEvent("Used Ruler", new Dictionary<string, object> //for analytics tracking
                 {
@@ -227,7 +187,7 @@ namespace Synthesis.GUI
                     rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
                 }
                 //Display different values based on the measure system it's currently using
-                else if (!State.IsMetric)
+                else if (State.IsMetric)
                 {
                     rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f) / 100 + "ft";
                     rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f) / 100 + "ft";
@@ -259,7 +219,7 @@ namespace Synthesis.GUI
             rulerStartPoint.GetComponent<LineRenderer>().enabled = false;
             rulerStartPoint.SetActive(false);
             rulerEndPoint.SetActive(false);
-            Auxiliary.FindObject(canvas, "RulerStartButton").SetActive(true);
+            Auxiliary.FindObject(canvas, "RulerPanelExtension").SetActive(true);
             Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(false);
         }
         #endregion
@@ -299,6 +259,7 @@ namespace Synthesis.GUI
                 stopwatchTime = 0f;
                 stopwatchStartButtonText.text = "Stop";
                 stopwatchOn = true;
+
                 if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Used Stopwatch", new Dictionary<string, object> //for analytics tracking
@@ -306,29 +267,11 @@ namespace Synthesis.GUI
                     });
                 }
             }
+
             else
             {
                 stopwatchStartButtonText.text = "Start";
                 stopwatchOn = false;
-            }
-            stopwatchPauseButtonText.text = "Pause";
-            stopwatchPaused = false;
-        }
-
-        public void PauseStopwatch()
-        {
-            if (stopwatchOn)
-            {
-                if (!stopwatchPaused)
-                {
-                    stopwatchPauseButtonText.text = "Resume";
-                    stopwatchPaused = true;
-                }
-                else
-                {
-                    stopwatchPauseButtonText.text = "Pause";
-                    stopwatchPaused = false;
-                }
             }
         }
 
@@ -340,7 +283,7 @@ namespace Synthesis.GUI
 
         private void UpdateStopwatch()
         {
-            if (stopwatchOn && !stopwatchPaused)
+            if (stopwatchOn)
             {
                 stopwatchTime += Time.deltaTime;
                 stopwatchText.text = (Mathf.Round(stopwatchTime * 100) / 100).ToString();
@@ -359,6 +302,14 @@ namespace Synthesis.GUI
             if (show) EndProcesses(true);
             statsOn = show;
             statsWindow.SetActive(show);
+
+            if (PlayerPrefs.GetInt("analytics") == 1)
+            {
+                Analytics.CustomEvent("Viewed Statistics", new Dictionary<string, object> //for analytics tracking
+                {
+                });
+            }
+
         }
 
         /// <summary>
@@ -402,14 +353,9 @@ namespace Synthesis.GUI
             if (stopwatchOn)
             {
                 ResetStopwatch();
-                if (stopwatchPaused)
-                {
-                    PauseStopwatch();
-                }
                 ToggleStopwatch();
             }
 
-            toolkitWindow.SetActive(toolkitWindowOn);
             ToggleStatsWindow(false);
             ToggleStopwatchWindow(false);
             sensorManagerGUI.EndProcesses();

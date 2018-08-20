@@ -27,7 +27,7 @@ namespace Synthesis.RN
             Y
         }
 
-        public void CreateJoint(int numWheels, RobotBase robotBase, float wheelFriction = 1f, float lateralFriction = 1f)
+        public void CreateJoint(RobotBase robotBase, float wheelFriction = 1f, float lateralFriction = 1f)
         {
             if (joint != null || GetSkeletalJoint() == null)
             {
@@ -43,10 +43,7 @@ namespace Synthesis.RN
                         RigidNode parent = (RigidNode)GetParent();
 
                         if (parent.MainObject.GetComponent<BRaycastRobot>() == null)
-                        {
-                            BRaycastRobot robot = parent.MainObject.AddComponent<BRaycastRobot>();
-                            robot.NumWheels = numWheels;
-                        }
+                            parent.MainObject.AddComponent<BRaycastRobot>().RootNode = RootNode;
 
                         WheelType wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
 
@@ -64,11 +61,9 @@ namespace Synthesis.RN
                     else
                     {
                         RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
-                        rNode.basePoint.x *= -1;
 
                         BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
                         Vector3 rAxis = rNode.axis.AsV3().normalized;
-                        rAxis.x *= -1f;
 
                         hc.axisInA = rAxis;
                         hc.axisInB = rAxis;
@@ -86,10 +81,16 @@ namespace Synthesis.RN
 
                     CylindricalJoint_Base cNode = (CylindricalJoint_Base)GetSkeletalJoint();
 
-                    B6DOFConstraint bc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(cNode.basePoint.AsV3() - ComOffset, cNode.axis.AsV3(), AxisType.X));
+                    Vector3 cAxis = cNode.axis.AsV3().normalized;
+                    B6DOFConstraint bc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(cNode.basePoint.AsV3() - ComOffset, cAxis, AxisType.X));
 
-                    bc.linearLimitLower = new Vector3(cNode.linearLimitStart * 0.01f, 0f, 0f);
-                    bc.linearLimitUpper = new Vector3(cNode.linearLimitEnd * 0.01f, 0f, 0f);
+                    bc.localConstraintAxisX = cAxis;
+                    bc.localConstraintAxisY = new Vector3(cAxis.y, cAxis.z, cAxis.x);
+
+                    bc.linearLimitLower = new Vector3((cNode.linearLimitStart - cNode.currentLinearPosition) * 0.01f, 0f, 0f);
+                    bc.linearLimitUpper = new Vector3((cNode.linearLimitEnd - cNode.currentLinearPosition) * 0.01f, 0f, 0f);
+
+                    // TODO: Implement angular cylinder limits
 
                     bc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
 
@@ -98,21 +99,14 @@ namespace Synthesis.RN
 
                     LinearJoint_Base lNode = (LinearJoint_Base)GetSkeletalJoint();
 
-                    lNode.basePoint.x *= -1;
-
                     Vector3 lAxis = lNode.axis.AsV3().normalized;
-                    // TODO: Figure out how to make a vertical slider?
-                    BSliderConstraint sc = (BSliderConstraint)(joint = ConfigJoint<BSliderConstraint>(lNode.basePoint.AsV3() - ComOffset, lNode.axis.AsV3(), AxisType.X));
-
-                    if (lAxis.x < 0) lAxis.x *= -1f;
-                    if (lAxis.y < 0) lAxis.y *= -1f;
-                    if (lAxis.z < 0) lAxis.z *= -1f;
+                    BSliderConstraint sc = (BSliderConstraint)(joint = ConfigJoint<BSliderConstraint>(lNode.basePoint.AsV3() - ComOffset, lAxis, AxisType.X));
 
                     sc.localConstraintAxisX = lAxis;
                     sc.localConstraintAxisY = new Vector3(lAxis.y, lAxis.z, lAxis.x);
 
-                    sc.lowerLinearLimit = lNode.linearLimitLow * 0.01f;
-                    sc.upperLinearLimit = lNode.linearLimitHigh * 0.01f;
+                    sc.lowerLinearLimit = (lNode.linearLimitLow - lNode.currentLinearPosition) * 0.01f;
+                    sc.upperLinearLimit = (lNode.linearLimitHigh - lNode.currentLinearPosition) * 0.01f;
 
                     sc.lowerAngularLimitRadians = 0f;
                     sc.upperAngularLimitRadians = 0f;

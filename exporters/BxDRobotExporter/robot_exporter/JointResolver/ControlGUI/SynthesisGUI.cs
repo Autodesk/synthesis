@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using EditorsLibrary;
 using JointResolver.ControlGUI;
 using OGLViewer;
+using Inventor;
 
 public delegate bool ValidationAction(RigidNode_Base baseNode, out string message);
 
@@ -70,20 +71,15 @@ public partial class SynthesisGUI : Form
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
-
+    public Inventor.Application MainApplication;
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
 
-    static SynthesisGUI()
-    {
-    }
-
-    public SynthesisGUI(bool MakeOwners = false)
+    public SynthesisGUI(Inventor.Application MainApplication, bool MakeOwners = false)
     {
         InitializeComponent();
-
+        this.MainApplication = MainApplication;
         Instance = this;
-
         JointPaneForm.Controls.Add(jointEditorPane1);
         if (MakeOwners) JointPaneForm.Owner = this;
         JointPaneForm.FormClosing += Generic_FormClosing;
@@ -284,13 +280,6 @@ public partial class SynthesisGUI : Form
         
         if (liteExporter.DialogResult != DialogResult.OK)
             return false; // Exporter was canceled
-
-        // Export was successful
-        List<RigidNode_Base> nodes = SkeletonBase.ListAllNodes();
-        for (int i = 0; i < Meshes.Count; i++)
-        {
-            ((OGL_RigidNode)nodes[i]).loadMeshes(Meshes[i]);
-        }
             
         return true;
     }
@@ -307,7 +296,7 @@ public partial class SynthesisGUI : Form
             RMeta.ActiveDir = null;
             RMeta.ActiveRobotName = robotName;
             RMeta.FieldName = field;
-
+            
             PluginSettings.GeneralUseFancyColors = colors;
             PluginSettings.OnSettingsChanged();
 
@@ -315,7 +304,43 @@ public partial class SynthesisGUI : Form
         }
         return false;
     }
+    
+    /// <summary>
+    /// Iterates over all the joints in the skeleton and writes the corrosponding Inventor limit into the internal joint limit
+    /// Necessary to pull the limits into the joint as the exporter exports. Where the joint is actually written to the .bxdj,
+    /// we are unable to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue.
+    /// </summary>
+    /// <param name="skeleton">Skeleton to write limits to</param>
+    public void WriteLimits(RigidNode_Base skeleton)
+    {
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        skeleton.ListAllNodes(nodes);
+        int[] parentID = new int[nodes.Count];
 
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i].GetParent() != null)
+            {
+                parentID[i] = nodes.IndexOf(nodes[i].GetParent());
+
+                if (parentID[i] < 0) throw new Exception("Can't resolve parent ID for " + nodes[i].ToString());
+            }
+            else
+            {
+                parentID[i] = -1;
+            }
+        }
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (parentID[i] >= 0)
+            {
+                InventorSkeletalJoint inventorJoint = nodes[i].GetSkeletalJoint() as InventorSkeletalJoint;
+                if (inventorJoint != null)
+                    inventorJoint.ReloadInventorJoint();
+            }
+        }
+    }
     /// <summary>
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
@@ -324,6 +349,7 @@ public partial class SynthesisGUI : Form
     {
         try
         {
+            WriteLimits(SkeletonBase);// write the limits from Inventor to the skeleton
             // If robot has not been named, prompt user for information
             if (RMeta.ActiveRobotName == null)
                 if (!PromptExportSettings())
@@ -334,7 +360,6 @@ public partial class SynthesisGUI : Form
 
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
-
             BXDJSkeleton.SetupFileNames(SkeletonBase);
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
 
@@ -381,6 +406,7 @@ public partial class SynthesisGUI : Form
                 RMeta.ActiveRobotName = Utilities.GetProperty(propertySet, "robot-name", "");
                 RMeta.TotalWeightKg = Utilities.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
                 RMeta.PreferMetric = Utilities.GetProperty(propertySet, "robot-prefer-metric", false);
+                SynthesisGUI.Instance.SkeletonBase.driveTrainType = (RigidNode_Base.DriveTrainType)Utilities.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
             }
 
             // Load joint data
@@ -426,11 +452,14 @@ public partial class SynthesisGUI : Form
                     joint.cDriver = new JointDriver((JointDriverType)Utilities.GetProperty(propertySet, "driver-type", (int)JointDriverType.MOTOR));
                 JointDriver driver = joint.cDriver;
 
-                joint.cDriver.portA = Utilities.GetProperty(propertySet, "driver-portA", 0);
-                joint.cDriver.portB = Utilities.GetProperty(propertySet, "driver-portB", -1);
+                joint.cDriver.port1 = Utilities.GetProperty(propertySet, "driver-port1", 0);
+                joint.cDriver.port2 = Utilities.GetProperty(propertySet, "driver-port2", -1);
                 joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
                 joint.cDriver.lowerLimit = Utilities.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
                 joint.cDriver.upperLimit = Utilities.GetProperty(propertySet, "driver-upperLimit", 0.0f);
+                joint.cDriver.InputGear = Utilities.GetProperty(propertySet, "driver-inputGear", 0.0f);// writes the gearing that the user last had in the exporter to the current gearing value
+                joint.cDriver.OutputGear = Utilities.GetProperty(propertySet, "driver-outputGear", 0.0f);// writes the gearing that the user last had in the exporter to the current gearing value
+                joint.cDriver.hasBrake = Utilities.GetProperty(propertySet, "driver-hasBrake", false);
 
                 // Get other properties stored in meta
                 // Wheel information
@@ -464,6 +493,21 @@ public partial class SynthesisGUI : Form
                     ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
                     elevator.type = (ElevatorType)Utilities.GetProperty(propertySet, "elevator-type", (int)ElevatorType.NOT_MULTI);
+                    if(((int)elevator.type) > 7)
+                    {
+                        elevator.type = ElevatorType.NOT_MULTI;
+                    }
+                }
+                for(int i = 0; i < Utilities.GetProperty(propertySet, "num-sensors", 0); i++)
+                {
+                    RobotSensor addedSensor;
+                    addedSensor = new RobotSensor((RobotSensorType)Utilities.GetProperty(propertySet, "sensorType" + i, (int)RobotSensorType.ENCODER));
+                    addedSensor.portA = ((int)Utilities.GetProperty(propertySet, "sensorPortA" + i, 0));
+                    addedSensor.portB = ((int)Utilities.GetProperty(propertySet, "sensorPortB" + i, 0));
+                    addedSensor.conTypePortA = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortConA" + i, (int)SensorConnectionType.DIO));
+                    addedSensor.conTypePortB = ((SensorConnectionType)Utilities.GetProperty(propertySet, "sensorPortConB" + i, (int)SensorConnectionType.DIO));
+                    addedSensor.conversionFactor = Utilities.GetProperty(propertySet, "sensorConversion" + i, 0.0);
+                    joint.attachedSensors.Add(addedSensor);
                 }
             }
 
@@ -500,6 +544,7 @@ public partial class SynthesisGUI : Form
                 Utilities.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
             Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
             Utilities.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
+            Utilities.SetProperty(propertySet, "robot-driveTrainType", (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType);
 
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
@@ -538,11 +583,14 @@ public partial class SynthesisGUI : Form
             if (driver != null)
             {
                 Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());
-                Utilities.SetProperty(propertySet, "driver-portA", driver.portA);
-                Utilities.SetProperty(propertySet, "driver-portB", driver.portB);
+                Utilities.SetProperty(propertySet, "driver-port1", driver.port1);
+                Utilities.SetProperty(propertySet, "driver-port2", driver.port2);
                 Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
                 Utilities.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
                 Utilities.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
+                Utilities.SetProperty(propertySet, "driver-inputGear", driver.InputGear);// writes the input gear to the .IAM file incase the user wants to reexport their robot later
+                Utilities.SetProperty(propertySet, "driver-outputGear", driver.OutputGear);// writes the ouotput gear to the .IAM file incase the user wants to reexport their robot later
+                Utilities.SetProperty(propertySet, "driver-hasBrake", driver.hasBrake);
 
                 // Save other properties stored in meta
                 // Wheel information
@@ -568,12 +616,34 @@ public partial class SynthesisGUI : Form
 
                 // Elevator information
                 ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+
+
+
                 Utilities.SetProperty(propertySet, "has-elevator", elevator != null);
 
                 if (elevator != null)
                 {
                     Utilities.SetProperty(propertySet, "elevator-type", (int)elevator.type);
                 }
+            }
+            for (int i = 0; i < Utilities.GetProperty(propertySet, "num-sensors", 0); i++)// delete existing sensors
+            {
+                Utilities.RemoveProperty(propertySet, "sensorType" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortA" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortConA" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortB" + i);
+                Utilities.RemoveProperty(propertySet, "sensorPortConB" + i);
+                Utilities.RemoveProperty(propertySet, "sensorConversion" + i);
+            }
+            Utilities.SetProperty(propertySet, "num-sensors", joint.attachedSensors.Count);
+            for(int i = 0; i < joint.attachedSensors.Count; i++) {
+
+                Utilities.SetProperty(propertySet, "sensorType" + i, (int)joint.attachedSensors[i].type);
+                Utilities.SetProperty(propertySet, "sensorPortA" + i, joint.attachedSensors[i].portA);
+                Utilities.SetProperty(propertySet, "sensorPortConA" + i, (int)joint.attachedSensors[i].conTypePortA);
+                Utilities.SetProperty(propertySet, "sensorPortB" + i, joint.attachedSensors[i].portB);
+                Utilities.SetProperty(propertySet, "sensorPortConB" + i, (int)joint.attachedSensors[i].conTypePortB);
+                Utilities.SetProperty(propertySet, "sensorConversion" + i, joint.attachedSensors[i].conversionFactor);
             }
 
             // Recur along this child
