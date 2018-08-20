@@ -137,30 +137,57 @@ namespace EditorsLibrary
             // 
             // Angular_Start_textbox
             // 
+            this.Angular_Start_textbox.DecimalPlaces = 5;
             this.Angular_Start_textbox.Location = new System.Drawing.Point(3, 29);
+            this.Angular_Start_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Angular_Start_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Angular_Start_textbox.Name = "Angular_Start_textbox";
             this.Angular_Start_textbox.Size = new System.Drawing.Size(112, 22);
             this.Angular_Start_textbox.TabIndex = 0;
-            this.Angular_Start_textbox.Maximum = decimal.MaxValue;
-            this.Angular_Start_textbox.Minimum = decimal.MinValue;
             // 
             // Angular_Current_textbox
             // 
+            this.Angular_Current_textbox.DecimalPlaces = 5;
             this.Angular_Current_textbox.Location = new System.Drawing.Point(121, 29);
+            this.Angular_Current_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Angular_Current_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Angular_Current_textbox.Name = "Angular_Current_textbox";
             this.Angular_Current_textbox.Size = new System.Drawing.Size(112, 22);
             this.Angular_Current_textbox.TabIndex = 1;
-            this.Angular_Current_textbox.Maximum = decimal.MaxValue;
-            this.Angular_Current_textbox.Minimum = decimal.MinValue;
             // 
             // Angular_End_textbox
             // 
+            this.Angular_End_textbox.DecimalPlaces = 5;
             this.Angular_End_textbox.Location = new System.Drawing.Point(239, 29);
+            this.Angular_End_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Angular_End_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Angular_End_textbox.Name = "Angular_End_textbox";
             this.Angular_End_textbox.Size = new System.Drawing.Size(113, 22);
             this.Angular_End_textbox.TabIndex = 2;
-            this.Angular_End_textbox.Maximum = decimal.MaxValue;
-            this.Angular_End_textbox.Minimum = decimal.MinValue;
             // 
             // Angular_End
             // 
@@ -228,21 +255,39 @@ namespace EditorsLibrary
             // 
             // Linear_Start_textbox
             // 
+            this.Linear_Start_textbox.DecimalPlaces = 5;
             this.Linear_Start_textbox.Location = new System.Drawing.Point(3, 29);
+            this.Linear_Start_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Linear_Start_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Linear_Start_textbox.Name = "Linear_Start_textbox";
             this.Linear_Start_textbox.Size = new System.Drawing.Size(112, 22);
             this.Linear_Start_textbox.TabIndex = 0;
-            this.Linear_Start_textbox.Maximum = decimal.MaxValue;
-            this.Linear_Start_textbox.Minimum = decimal.MinValue;
             // 
             // Linear_Current_textbox
             // 
+            this.Linear_Current_textbox.DecimalPlaces = 5;
             this.Linear_Current_textbox.Location = new System.Drawing.Point(121, 29);
+            this.Linear_Current_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Linear_Current_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Linear_Current_textbox.Name = "Linear_Current_textbox";
             this.Linear_Current_textbox.Size = new System.Drawing.Size(112, 22);
             this.Linear_Current_textbox.TabIndex = 1;
-            this.Linear_Current_textbox.Maximum = decimal.MaxValue;
-            this.Linear_Current_textbox.Minimum = decimal.MinValue;
             // 
             // Linear_End
             // 
@@ -265,7 +310,6 @@ namespace EditorsLibrary
             this.Linear_Current.Size = new System.Drawing.Size(112, 22);
             this.Linear_Current.TabIndex = 4;
             this.Linear_Current.Text = "       Current";
-            
             // 
             // Linear_Start
             // 
@@ -280,12 +324,21 @@ namespace EditorsLibrary
             // 
             // Linear_End_textbox
             // 
+            this.Linear_End_textbox.DecimalPlaces = 5;
             this.Linear_End_textbox.Location = new System.Drawing.Point(239, 29);
+            this.Linear_End_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Linear_End_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Linear_End_textbox.Name = "Linear_End_textbox";
             this.Linear_End_textbox.Size = new System.Drawing.Size(113, 22);
             this.Linear_End_textbox.TabIndex = 2;
-            this.Linear_End_textbox.Maximum = decimal.MaxValue;
-            this.Linear_End_textbox.Minimum = decimal.MinValue;
             // 
             // AnimateJointButton
             // 
