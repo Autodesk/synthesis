@@ -12,9 +12,11 @@ namespace FieldExporter.Forms
 {
     public partial class PleaseWaitForm : Form
     {
-        public PleaseWaitForm()
+        public PleaseWaitForm(string message)
         {
             InitializeComponent();
+
+            pleaseWaitLabel.Text = "Please wait...\n" + message;
         }
     }
 }
