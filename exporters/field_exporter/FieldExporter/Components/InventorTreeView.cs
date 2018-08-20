@@ -115,7 +115,7 @@ namespace FieldExporter.Components
         /// <param name="enumerator"></param>
         /// <param name="fullname"></param>
         /// <returns></returns>
-        public ComponentOccurrence FindComponentByFullName(IEnumerator enumerator, string fullname)
+        static public ComponentOccurrence FindComponentByFullName(IEnumerator enumerator, string fullname)
         {
             ComponentOccurrence component = null;
             string componentName = fullname.Contains('\\') ? fullname.Substring(0, fullname.IndexOf('\\')) : fullname;
@@ -152,6 +152,34 @@ namespace FieldExporter.Components
             node.Tag = component;
             
             node = GenerateFullTree(component, node);
+
+            TreeNodeCollection iterator = Nodes;
+
+            while (iterator.ContainsKey(node.Name) && node.Nodes.Count == 1)
+            {
+                iterator = iterator[iterator.IndexOfKey(node.Name)].Nodes;
+                node = node.Nodes[0];
+            }
+
+            iterator.RemoveByKey(node.Name);
+            iterator.Add(node);
+        }
+
+        /// <summary>
+        /// Adds the supplied component as a node with only its parents.
+        /// </summary>
+        /// <param name="component"></param>
+        public void AddComponentShallow(ComponentOccurrence component)
+        {
+            if (!component.Visible)
+                return;
+
+            TreeNode node = new TreeNode(component.Name);
+            node.Name = node.Text;
+            node.Tag = component;
+            
+            node = AddComponentParents(component, node);
+            node = FindRootNode(node);
 
             TreeNodeCollection iterator = Nodes;
 
