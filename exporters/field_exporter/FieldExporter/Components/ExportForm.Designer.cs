@@ -39,6 +39,7 @@
             this.verticalLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.fieldNameLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.exportButtonLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.openFolderCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.animatedLogo)).BeginInit();
             this.verticalLayoutPanel.SuspendLayout();
             this.fieldNameLayoutPanel.SuspendLayout();
@@ -115,9 +116,9 @@
             this.animatedLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.animatedLogo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.animatedLogo.InitialImage = ((System.Drawing.Image)(resources.GetObject("animatedLogo.InitialImage")));
-            this.animatedLogo.Location = new System.Drawing.Point(3, 29);
+            this.animatedLogo.Location = new System.Drawing.Point(3, 52);
             this.animatedLogo.Name = "animatedLogo";
-            this.animatedLogo.Size = new System.Drawing.Size(570, 256);
+            this.animatedLogo.Size = new System.Drawing.Size(570, 233);
             this.animatedLogo.TabIndex = 13;
             this.animatedLogo.TabStop = false;
             // 
@@ -125,14 +126,16 @@
             // 
             this.verticalLayoutPanel.ColumnCount = 1;
             this.verticalLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.verticalLayoutPanel.Controls.Add(this.animatedLogo, 0, 1);
+            this.verticalLayoutPanel.Controls.Add(this.animatedLogo, 0, 2);
             this.verticalLayoutPanel.Controls.Add(this.fieldNameLayoutPanel, 0, 0);
-            this.verticalLayoutPanel.Controls.Add(this.exportProgressBar, 0, 3);
-            this.verticalLayoutPanel.Controls.Add(this.exportButtonLayoutPanel, 0, 2);
+            this.verticalLayoutPanel.Controls.Add(this.exportProgressBar, 0, 4);
+            this.verticalLayoutPanel.Controls.Add(this.exportButtonLayoutPanel, 0, 3);
+            this.verticalLayoutPanel.Controls.Add(this.openFolderCheckBox, 0, 1);
             this.verticalLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.verticalLayoutPanel.Location = new System.Drawing.Point(3, 3);
             this.verticalLayoutPanel.Name = "verticalLayoutPanel";
-            this.verticalLayoutPanel.RowCount = 4;
+            this.verticalLayoutPanel.RowCount = 5;
+            this.verticalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.verticalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.verticalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.verticalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -176,6 +179,16 @@
             this.exportButtonLayoutPanel.Size = new System.Drawing.Size(576, 29);
             this.exportButtonLayoutPanel.TabIndex = 15;
             // 
+            // openFolderCheckBox
+            // 
+            this.openFolderCheckBox.AutoSize = true;
+            this.openFolderCheckBox.Location = new System.Drawing.Point(3, 29);
+            this.openFolderCheckBox.Name = "openFolderCheckBox";
+            this.openFolderCheckBox.Size = new System.Drawing.Size(169, 17);
+            this.openFolderCheckBox.TabIndex = 16;
+            this.openFolderCheckBox.Text = "Open export folder when done";
+            this.openFolderCheckBox.UseVisualStyleBackColor = true;
+            // 
             // ExportForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -208,5 +221,6 @@
         private System.Windows.Forms.TableLayoutPanel verticalLayoutPanel;
         private System.Windows.Forms.TableLayoutPanel fieldNameLayoutPanel;
         private System.Windows.Forms.TableLayoutPanel exportButtonLayoutPanel;
+        private System.Windows.Forms.CheckBox openFolderCheckBox;
     }
 }
