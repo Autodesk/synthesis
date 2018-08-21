@@ -2,6 +2,8 @@
 using System.IO;
 using System;
 using System.Collections.Generic;
+using Synthesis.FSM;
+using Synthesis.States;
 
 namespace Synthesis.GUI
 {
@@ -146,12 +148,12 @@ namespace Synthesis.GUI
             selectedDirectoryLocation = defaultDirectory;
 
             //Loads textures and fonts
-            buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
-            buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
+            buttonTexture = Resources.Load("Images/New Textures/Button") as Texture2D;
+            buttonSelected = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
             russoOne = Resources.Load("Fonts/Russo_One") as Font;
-            windowTexture = Resources.Load("Images/greyBackground") as Texture2D;
-            searchedButtonTexture = Resources.Load("Images/searchedButton") as Texture2D;
+            windowTexture = Resources.Load("Images/New Textures/highlightGray") as Texture2D;
+            searchedButtonTexture = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             //Custom style for windows
             fileBrowserWindow = new GUIStyle(UnityEngine.GUI.skin.window);
             fileBrowserWindow.normal.background = windowTexture;
@@ -181,8 +183,8 @@ namespace Synthesis.GUI
             //Custom style for highlighted directory buttons (same theme as seen in the ScrollableList.cs)
             listStyle = new GUIStyle("button");
             listStyle.normal.background = buttonTexture;
-            listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
-            listStyle.active.background = Resources.Load("Images/highlightsquaretexture") as Texture2D;
+            listStyle.hover.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
+            listStyle.active.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.font = russoOne;
 
             //Custome style for highlight feature
@@ -192,7 +194,7 @@ namespace Synthesis.GUI
 
             //Custom style for target folder buttons
             targetStyle = new GUIStyle(listStyle);
-            targetStyle.normal.background = Resources.Load("Images/targetsquaretexture") as Texture2D;
+            targetStyle.normal.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             targetStyle.hover.background = listStyle.active.background;
 
             //Custom style for labels
@@ -286,6 +288,7 @@ namespace Synthesis.GUI
             if (_allowEsc && UnityEngine.GUI.Button(new Rect(410, 10, 80, 20), "Exit", fileBrowserButton))
             {
                 Active = false;
+                StateMachine.SceneGlobal.PopState();
             }
 
             //If hit Up One Level, go back to parent folder level

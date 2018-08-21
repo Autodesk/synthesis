@@ -15,8 +15,8 @@ namespace Synthesis.States
 
         public string filePath;
 
-        private SynthesisFileBrowser fileBrowser;
-        Text pathLabel = GameObject.Find("PathLabel").GetComponent<Text>();
+        private FileBrowserArchive fileBrowser;
+        private GameObject navPanel;
 
         /// <summary>
         /// Initializes a new <see cref="BrowseFileState"/> instance.
@@ -35,7 +35,8 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-
+            navPanel = GameObject.Find("NavigationPanel");
+            navPanel?.SetActive(false);
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Synthesis.States
         /// </summary>
         public override void End()
         {
-
+            navPanel?.SetActive(true);
         }
 
         /// <summary>
@@ -54,24 +55,12 @@ namespace Synthesis.States
         {
             if (fileBrowser == null)
             {
-                // Standalone plugin adaptions from: https://github.com/gkngkc/UnityStandaloneFileBrowser
-                filePath = SFB.StandaloneFileBrowser.OpenFolderPanel(prefsKey, directory, false);
-
-                //check for empty string(if native file browser is closed without selection) and default to Fields directory
-                if (string.IsNullOrEmpty(filePath))
-                {
-                    filePath = PlayerPrefs.GetString(prefsKey, directory);
-                }
-
-                if (filePath.Length != 0)
-                {
-                    fileBrowser = new GUI.SynthesisFileBrowser("Choose Directory", filePath, true);
-                    filePath = fileBrowser.directoryLocation;
-                    fileBrowser.OnComplete += OnBrowserComplete;
-                    fileBrowser.CompleteDirectorySelection();
-                    pathLabel.text = filePath;
-                }
+                string robotDirectory = PlayerPrefs.GetString(prefsKey, directory);
+                fileBrowser = new FileBrowserArchive("Choose Robot Directory", directory, true) { Active = true };
+                fileBrowser.OnComplete += OnBrowserComplete;
             }
+
+            fileBrowser.Render();
         }
 
         /// <summary>
