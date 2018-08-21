@@ -35,27 +35,33 @@ namespace EditorsLibrary
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Angular_Group_Box = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.Angular_Start_textbox = new System.Windows.Forms.TextBox();
-            this.Angular_Current_textbox = new System.Windows.Forms.TextBox();
-            this.Angular_End_textbox = new System.Windows.Forms.TextBox();
+            this.Angular_Start_textbox = new System.Windows.Forms.NumericUpDown();
+            this.Angular_Current_textbox = new System.Windows.Forms.NumericUpDown();
+            this.Angular_End_textbox = new System.Windows.Forms.NumericUpDown();
             this.Angular_End = new System.Windows.Forms.CheckBox();
             this.Angular_Current = new System.Windows.Forms.Label();
             this.Angular_Start = new System.Windows.Forms.CheckBox();
             this.LinearGroup = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.Linear_Start_textbox = new System.Windows.Forms.TextBox();
-            this.Linear_Current_textbox = new System.Windows.Forms.TextBox();
+            this.Linear_Start_textbox = new System.Windows.Forms.NumericUpDown();
+            this.Linear_Current_textbox = new System.Windows.Forms.NumericUpDown();
             this.Linear_End = new System.Windows.Forms.CheckBox();
             this.Linear_Current = new System.Windows.Forms.Label();
             this.Linear_Start = new System.Windows.Forms.CheckBox();
-            this.Linear_End_textbox = new System.Windows.Forms.TextBox();
+            this.Linear_End_textbox = new System.Windows.Forms.NumericUpDown();
             this.AnimateJointButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.Angular_Group_Box.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Angular_Start_textbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Angular_Current_textbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Angular_End_textbox)).BeginInit();
             this.LinearGroup.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Linear_Start_textbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Linear_Current_textbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Linear_End_textbox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -131,21 +137,54 @@ namespace EditorsLibrary
             // 
             // Angular_Start_textbox
             // 
+            this.Angular_Start_textbox.DecimalPlaces = 5;
             this.Angular_Start_textbox.Location = new System.Drawing.Point(3, 29);
+            this.Angular_Start_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Angular_Start_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Angular_Start_textbox.Name = "Angular_Start_textbox";
             this.Angular_Start_textbox.Size = new System.Drawing.Size(112, 22);
             this.Angular_Start_textbox.TabIndex = 0;
             // 
             // Angular_Current_textbox
             // 
+            this.Angular_Current_textbox.DecimalPlaces = 5;
             this.Angular_Current_textbox.Location = new System.Drawing.Point(121, 29);
+            this.Angular_Current_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Angular_Current_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Angular_Current_textbox.Name = "Angular_Current_textbox";
             this.Angular_Current_textbox.Size = new System.Drawing.Size(112, 22);
             this.Angular_Current_textbox.TabIndex = 1;
             // 
             // Angular_End_textbox
             // 
+            this.Angular_End_textbox.DecimalPlaces = 5;
             this.Angular_End_textbox.Location = new System.Drawing.Point(239, 29);
+            this.Angular_End_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Angular_End_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Angular_End_textbox.Name = "Angular_End_textbox";
             this.Angular_End_textbox.Size = new System.Drawing.Size(113, 22);
             this.Angular_End_textbox.TabIndex = 2;
@@ -216,14 +255,36 @@ namespace EditorsLibrary
             // 
             // Linear_Start_textbox
             // 
+            this.Linear_Start_textbox.DecimalPlaces = 5;
             this.Linear_Start_textbox.Location = new System.Drawing.Point(3, 29);
+            this.Linear_Start_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Linear_Start_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Linear_Start_textbox.Name = "Linear_Start_textbox";
             this.Linear_Start_textbox.Size = new System.Drawing.Size(112, 22);
             this.Linear_Start_textbox.TabIndex = 0;
             // 
             // Linear_Current_textbox
             // 
+            this.Linear_Current_textbox.DecimalPlaces = 5;
             this.Linear_Current_textbox.Location = new System.Drawing.Point(121, 29);
+            this.Linear_Current_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Linear_Current_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Linear_Current_textbox.Name = "Linear_Current_textbox";
             this.Linear_Current_textbox.Size = new System.Drawing.Size(112, 22);
             this.Linear_Current_textbox.TabIndex = 1;
@@ -263,7 +324,18 @@ namespace EditorsLibrary
             // 
             // Linear_End_textbox
             // 
+            this.Linear_End_textbox.DecimalPlaces = 5;
             this.Linear_End_textbox.Location = new System.Drawing.Point(239, 29);
+            this.Linear_End_textbox.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.Linear_End_textbox.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.Linear_End_textbox.Name = "Linear_End_textbox";
             this.Linear_End_textbox.Size = new System.Drawing.Size(113, 22);
             this.Linear_End_textbox.TabIndex = 2;
@@ -310,9 +382,15 @@ namespace EditorsLibrary
             this.Angular_Group_Box.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Angular_Start_textbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Angular_Current_textbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Angular_End_textbox)).EndInit();
             this.LinearGroup.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Linear_Start_textbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Linear_Current_textbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Linear_End_textbox)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -323,17 +401,17 @@ namespace EditorsLibrary
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox Angular_Group_Box;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox Angular_Start_textbox;
-        private System.Windows.Forms.TextBox Angular_Current_textbox;
-        private System.Windows.Forms.TextBox Angular_End_textbox;
+        private System.Windows.Forms.NumericUpDown Angular_Start_textbox;
+        private System.Windows.Forms.NumericUpDown Angular_Current_textbox;
+        private System.Windows.Forms.NumericUpDown Angular_End_textbox;
         private System.Windows.Forms.CheckBox Angular_Start;
         private System.Windows.Forms.Label Angular_Current;
         private System.Windows.Forms.CheckBox Angular_End;
         private System.Windows.Forms.GroupBox LinearGroup;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.TextBox Linear_Start_textbox;
-        private System.Windows.Forms.TextBox Linear_Current_textbox;
-        private System.Windows.Forms.TextBox Linear_End_textbox;
+        private System.Windows.Forms.NumericUpDown Linear_Start_textbox;
+        private System.Windows.Forms.NumericUpDown Linear_Current_textbox;
+        private System.Windows.Forms.NumericUpDown Linear_End_textbox;
         private System.Windows.Forms.CheckBox Linear_End;
         private System.Windows.Forms.Label Linear_Current;
         private System.Windows.Forms.CheckBox Linear_Start;

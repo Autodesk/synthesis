@@ -13,6 +13,17 @@ namespace hel{
      */
 
     struct MatchInfo{
+        /**
+         * \brief The Maximum size of the event name string in characters
+         */
+
+        static constexpr unsigned MAX_EVENT_NAME_SIZE = 64;
+
+        /**
+         * \brief The Maximum size of the game specific message string in characters
+         */
+
+        static constexpr unsigned MAX_GAME_SPECIFIC_MESSAGE_SIZE = 64;
     private:
 
         /**
@@ -107,7 +118,7 @@ namespace hel{
          * \return A byte representing the match number of the running match
          */
 
-        uint8_t getMatchNumber()const noexcept;
+        uint16_t getMatchNumber()const noexcept;
 
         /**
          * \brief Set the match number at the event
