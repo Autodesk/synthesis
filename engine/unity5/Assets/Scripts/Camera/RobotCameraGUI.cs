@@ -204,7 +204,7 @@ namespace Synthesis.Camera
             configureCameraPanel.SetActive(robotCameraManager.ChangingCameraPosition);
             if (robotCameraManager.ChangingCameraPosition)
             {
-                preConfigCamState = dynamicCamera.cameraState;
+                preConfigCamState = dynamicCamera.ActiveState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, robotCameraManager.CurrentCamera));
             }
             else
