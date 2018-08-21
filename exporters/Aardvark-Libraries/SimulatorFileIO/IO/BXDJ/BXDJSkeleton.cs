@@ -420,6 +420,8 @@ public static partial class BXDJSkeleton
 
             switch (version.Substring(0, version.LastIndexOf('.')))// sends each version of the BXDJ to the appropriate reader
             {
+                case "4.2":
+                    return ReadSkeleton_4_2(path);
                 case "4.1":
                     return ReadSkeleton_4_1(path);
                 case "4.0":
@@ -431,7 +433,7 @@ public static partial class BXDJSkeleton
                 default: // If version is unknown.
                     // Attempt to read with the most recent version (but without validation).
                     // helps a little with forward compatibility
-                    return ReadSkeleton_4_0(path, false);
+                    return ReadSkeleton_4_2(path, false);
             }
         }
         else
