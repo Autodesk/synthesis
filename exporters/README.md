@@ -7,6 +7,9 @@ This repository consists of several libraries containing shared functionality of
 * SimulatorAPI is a C# API used for importing adn exporting BXDF, BXDJ, and BXDA files.
 * VHACD is a convex hull decomposition library.
 
+## BxDFieldExpoter
+This is the old Inventor addin that was used to exporter fields to Synthesis, this has since been depracated
+
 ## BxDRobotExporter
 This is the main exporter that is bundles with Synthesis. It is broken into a few subprojects:
 * BxDRobotExporter is the Inventor addin that interacts directly with the Inventor GUI.
