@@ -23,6 +23,7 @@ using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
 using UnityEngine.Analytics;
+using UnityEditor.Analytics;
 
 namespace Synthesis.States
 {
@@ -299,18 +300,6 @@ namespace Synthesis.States
                 {
                     robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
-                    if (!PlayerPrefs.HasKey(robot.RootNode.ModelFullID))
-                    {
-                        if (PlayerPrefs.GetInt("analytics") == 1)
-                        {
-                            PlayerPrefs.SetString(robot.RootNode.ModelFullID, "analyzed");
-                            Analytics.CustomEvent(robot.RootNode.exportedWith == 0 ? "Inventor" : "Fusion", new Dictionary<string, object> {});
-                            Analytics.CustomEvent("Robot", new Dictionary<string, object>
-                            {
-                                {"exporter",  robot.RootNode.exportedWith == 0 ? "Inventor" : "Fusion"}
-                            });
-                        }
-                    }
                 }
 
                 robot.FilePath = robotPath;
@@ -329,6 +318,16 @@ namespace Synthesis.States
                 SpawnedRobots.Add(robot);
 
                 DPMDataHandler.Load(robotPath);
+
+                if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()))
+                {
+                    if (PlayerPrefs.GetInt("analytics") == 1)
+                    {
+                        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
+                        AnalyticsSettings.testMode = true;
+                        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
+                    }
+                }
 
                 return true;
             }
