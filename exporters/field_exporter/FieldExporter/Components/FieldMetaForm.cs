@@ -85,7 +85,7 @@ namespace FieldExporter.Components
 
             foreach (dynamic selectedEntity in selectEvents.SelectedEntities)
                 if (selectedEntity is SketchPoint point)
-                    spawnpoints.Add(new BXDVector3(point.Geometry3d.X, point.Geometry3d.Y + 100, point.Geometry3d.Z));
+                    spawnpoints.Add(new BXDVector3(point.Geometry3d.X, point.Geometry3d.Y + 50, point.Geometry3d.Z));
 
             selectCoordinatesButton.Enabled = true;
             Program.UnlockInventor();
