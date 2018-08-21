@@ -76,6 +76,7 @@ namespace BXDJ
 		{
 			std::map<core::Ptr<fusion::Occurrence>, core::Ptr<fusion::Occurrence>> children; ///< Map of all Fusion occurrences that are children of joints/rigidgroups to their parents.
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Joint>>> parents; ///< Map of all Fusion occurrences that are parents of joints to their children.
+			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::AsBuiltJoint>>> asBuiltParents; ///< Map of all Fusion occurrences that are parents of as-built joints to their children.
 			std::map<core::Ptr<fusion::Occurrence>, std::vector<core::Ptr<fusion::Occurrence>>> rigidgroups; ///< Map of all Fusion occurrences that are parents of rigidgroups to their children.
 
 			std::string toString() const; ///< \return A stringified version of the JointSummary.
@@ -116,6 +117,15 @@ namespace BXDJ
 		/// \param parent The occurrence that should be recognized as the parent of the Joint.
 		///
 		void addJoint(core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
+
+		///
+		/// Creates a Joint based on a Fusion as-built joint and attaches it to this RigidNode.
+		/// Unsupported joint types will be treated the same as rigid joints, that is,
+		/// they will be merged into this RigidNode.
+		/// \param joint Fusion as-built joint to base the Joint off of.
+		/// \param parent The occurrence that should be recognized as the parent of the Joint.
+		///
+		void addJoint(core::Ptr<fusion::AsBuiltJoint>, core::Ptr<fusion::Occurrence>);
 		
 		void write(XmlWriter &) const;
 

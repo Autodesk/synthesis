@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+#
+#
+
+case "$1" in
+   *)
+      	echo "Starting"
+	/home/lvuser/frc_program_chooser.sh &
+      	exit 1;
+esac
+exit $?

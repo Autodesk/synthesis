@@ -70,15 +70,6 @@ namespace hel{
     std::string removeExtraneousSpaces(std::string);
 
     /**
-     * \brief Remove the given characters from the input string
-     * \param input The string to remove characters from
-     * \param characters The characters to exclude
-     * \return The input string excluding the specified characters
-     */
-
-    std::string excludeFromString(const std::string&, const std::vector<char>&);
-
-    /**
      * \brief Trims a string of preceding and following whitespace
      * \param input The string to trim
      * \return The trimmed string
@@ -177,6 +168,8 @@ namespace hel{
      */
 
     std::string unquote(std::string);
+
+    std::string formatJSON(std::string);
 }
 
 #endif

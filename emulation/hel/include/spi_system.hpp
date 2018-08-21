@@ -6,7 +6,16 @@
 
 namespace hel{
 
+    /**
+     * \brief Data model for SPI system
+     *
+     * This is currently unsupported by HEL
+     */
+
     struct SPISystem{
+        /**
+         * \cond HIDDEN_SYMBOLS
+         */
     private:
         nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoTriggerConfig auto_trigger_config;
         nFPGA::nRoboRIO_FPGANamespace::tSPI::tAutoByteCount auto_byte_count;
@@ -33,6 +42,9 @@ namespace hel{
         void setEnabledDIO(uint8_t);
         SPISystem()noexcept;
         SPISystem(const SPISystem&)noexcept;
+        /**
+         * \endcond
+         */
     };
 }
 
