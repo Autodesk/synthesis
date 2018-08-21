@@ -18,7 +18,7 @@ public class DriveJoints
     private const float WHEEL_MOTOR_IMPULSE = 0.1f;
     private const float WHEEL_COAST_FRICTION = 0.025f;
 
-    private const float HINGE_MAX_SPEED = 4f;
+    private const float HINGE_MAX_SPEED = 100f;
     private const float HINGE_MOTOR_IMPULSE = 10f;
     private const float HINGE_COAST_FRICTION = 0.1f;
 
@@ -150,8 +150,7 @@ public class DriveJoints
                             float maxSpeed = 0f;
                             float impulse = 0f;
                             float friction = 0f;
-                            if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
-                                impulse *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+                            
 
                             if (rigidNode.HasDriverMeta<WheelDriverMeta>())
                             {
@@ -165,7 +164,12 @@ public class DriveJoints
                                 impulse = HINGE_MOTOR_IMPULSE;
                                 friction = HINGE_COAST_FRICTION;
                             }
-
+                            if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                            {
+                                float gearRatio = Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+                                impulse *= gearRatio;
+                                maxSpeed /= gearRatio;
+                            }
                             BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
                             hingedConstraint.enableMotor = true;
                             hingedConstraint.targetMotorAngularVelocity = pwm[i] > 0f ? maxSpeed : pwm[i] < 0f ? -maxSpeed : 0f;
@@ -647,7 +651,12 @@ public class DriveJoints
                                 impulse = HINGE_MOTOR_IMPULSE;
                                 friction = HINGE_COAST_FRICTION;
                             }
-
+                            if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                            {
+                                float gearRatio = Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+                                impulse /= gearRatio;
+                                maxSpeed *= gearRatio;
+                            }
                             BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
                             hingedConstraint.enableMotor = true;
                             hingedConstraint.targetMotorAngularVelocity = motors[i] > 0f ? maxSpeed : motors[i] < 0f ? -maxSpeed : 0f;
@@ -673,7 +682,12 @@ public class DriveJoints
                                 impulse = HINGE_MOTOR_IMPULSE;
                                 friction = HINGE_COAST_FRICTION;
                             }
-
+                            if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                            {
+                                float gearRatio = Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+                                impulse /= gearRatio;
+                                maxSpeed *= gearRatio;
+                            }
                             BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
                             hingedConstraint.enableMotor = true;
                             hingedConstraint.targetMotorAngularVelocity = motors[i + 10] > 0f ? maxSpeed : motors[i + 10] < 0f ? -maxSpeed : 0f;
