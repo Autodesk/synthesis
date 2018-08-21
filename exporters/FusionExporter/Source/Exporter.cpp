@@ -15,6 +15,8 @@
 
 using namespace SynthesisAddIn;
 
+const std::string CURRENT_VERSION = "4.2.0";
+
 std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 {
 	std::string stringifiedJoints;
@@ -90,7 +92,7 @@ void Exporter::exportExampleXml()
 	std::string filename = Filesystem::getCurrentRobotDirectory("example") + "exampleFusionXml.bxdj";
 	BXDJ::XmlWriter xml(filename, false);
 	xml.startElement("BXDJ");
-	xml.writeAttribute("Version", "4.1.0");
+	xml.writeAttribute("Version", CURRENT_VERSION);
 	xml.startElement("Node");
 	xml.writeAttribute("GUID", "0ba8e1ce-1004-4523-b844-9bfa69efada9");
 	xml.writeElement("ParentID", "-1");
@@ -132,11 +134,12 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 	BXDJ::XmlWriter xml(filenameBXDJ, false);
 
 	xml.startElement("BXDJ");
-	xml.writeAttribute("Version", "4.1.0");
+	xml.writeAttribute("Version", CURRENT_VERSION);
 
 	xml.write(*rootNode);
 
 	xml.writeElement("DriveTrainType", BXDJ::ConfigData::toString(config.drivetrainType));
+	xml.writeElement("SoftwareExportedWith", "FUSION_360");
 	xml.endElement();
 
 	// Write BXDA files
