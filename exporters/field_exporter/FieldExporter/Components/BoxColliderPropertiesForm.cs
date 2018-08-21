@@ -13,15 +13,24 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Used for getting a collider from information contained in the BoxColliderPropertiesForm.
+        /// Used for getting/setting a collider from information contained in the BoxColliderPropertiesForm.
         /// </summary>
         /// <returns></returns>
-        PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
+        PropertySet.PropertySetCollider ColliderPropertiesForm.Collider
         {
-            return new PropertySet.BoxCollider(new BXDVector3(
-                (float)xScaleUpDown.Value,
-                (float)yScaleUpDown.Value,
-                (float)zScaleUpDown.Value));
+            get => new PropertySet.BoxCollider(new BXDVector3((float)xScaleUpDown.Value,
+                                                              (float)yScaleUpDown.Value,
+                                                              (float)zScaleUpDown.Value));
+
+            set
+            {
+                if (value is PropertySet.BoxCollider box)
+                {
+                    xScaleUpDown.Value = (decimal)box.Scale.x;
+                    yScaleUpDown.Value = (decimal)box.Scale.y;
+                    zScaleUpDown.Value = (decimal)box.Scale.z;
+                }
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 #include "RotationalJoint.h"
 #include <Fusion/Components/JointLimits.h>
+#include <Fusion/Components/AsBuiltJoint.h>
 #include <Core/Geometry/Vector3D.h>
 #include "../ConfigData.h"
 #include "../Driver.h"
@@ -15,7 +16,12 @@ RotationalJoint::RotationalJoint(const RotationalJoint & jointToCopy) : Joint(jo
 
 RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
-	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
+	this->fusionJointMotion = fusionJoint->jointMotion();
+}
+
+RotationalJoint::RotationalJoint(RigidNode * parent, core::Ptr<fusion::AsBuiltJoint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
+{
+	this->fusionJointMotion = fusionJoint->jointMotion();
 }
 
 Vector3<> RotationalJoint::getAxisOfRotation() const
@@ -53,7 +59,7 @@ float RotationalJoint::getMaxAngle() const
 void RotationalJoint::applyConfig(const ConfigData & config)
 {
 	// Update wheels with actual mesh information
-	std::unique_ptr<Driver> driver = config.getDriver(getFusionJoint());
+	std::unique_ptr<Driver> driver = searchDriver(config);
 	if (driver != nullptr)
 	{
 		if (driver->getWheel() != nullptr)
@@ -63,7 +69,7 @@ void RotationalJoint::applyConfig(const ConfigData & config)
 	}
 
 	// Add sensors
-	std::vector<std::shared_ptr<JointSensor>> sensors = config.getSensors(getFusionJoint());
+	std::vector<std::shared_ptr<JointSensor>> sensors = searchSensors(config);
 	for (std::shared_ptr<JointSensor> sensor : sensors)
 		if (sensor->type == JointSensor::ENCODER) // Filter out unsupported sensors
 			addSensor(*sensor);
