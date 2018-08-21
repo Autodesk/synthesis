@@ -1,8 +1,7 @@
-## BxDRobotExporter
+# BxDRobotExporter
 
-How to Build addin with Inventor
+##How to Build addin with Inventor
 
-=======================
 1) Install Inventor on your machine
   
 2) follow the instructions here: http://help.autodesk.com/view/INVNTOR/2018/ENU/?guid=GUID-6FD7AA08-1E43-43FC-971B-5F20E56C8846 to install dev tools
