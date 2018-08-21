@@ -351,7 +351,10 @@ namespace hel{
             return instance.first->fpga_encoders[index].getTimerConfig().UpdateWhenEmpty;
         }
 
-        FPGAEncoderManager(uint8_t i):index(i){}
+        FPGAEncoderManager(uint8_t i):index(0){
+            assert(i < FPGAEncoder::NUM_ENCODERS);
+            index = i;
+        }
     };
 }
 

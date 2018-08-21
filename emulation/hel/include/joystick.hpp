@@ -32,6 +32,11 @@ namespace hel{
 
         static constexpr uint8_t MAX_POV_COUNT = 12; //HAL_kMaxJoystickPOVs;
 
+        /**
+         * \brief The Maximum size of the joystick name string in characters
+         */
+
+        static constexpr unsigned MAX_JOYSTICK_NAME_SIZE = 256;
     private:
 
         /**

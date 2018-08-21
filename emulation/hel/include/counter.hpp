@@ -11,6 +11,10 @@ namespace hel{
      */
 
     struct Counter{
+        /**
+         * \brief The number of counters supported by the Ni FPGA
+         */
+
         static constexpr uint8_t MAX_COUNTER_COUNT = nFPGA::nRoboRIO_FPGANamespace::tCounter::kNumSystems;
     private:
 

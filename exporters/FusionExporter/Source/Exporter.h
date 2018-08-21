@@ -18,6 +18,11 @@ namespace SynthesisAddIn
 		/// \param document Fusion document to get joints from.
 		///
 		static std::vector<Ptr<Joint>> collectJoints(Ptr<FusionDocument>);
+		///
+		/// Collects all configurable Fusion as-built joints.
+		/// \param document Fusion document to get joints from.
+		///
+		static std::vector<Ptr<AsBuiltJoint>> collectAsBuiltJoints(Ptr<FusionDocument>);
 
 		///
 		/// Loads ConfigData from a Fusion document's attributes.

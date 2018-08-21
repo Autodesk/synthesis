@@ -3,9 +3,13 @@
     public interface ColliderPropertiesForm
     {
         /// <summary>
-        /// Used for getting a PropertySetCollider from information contained in the control.
+        /// Used for getting/settings a PropertySetCollider from information contained in the control.
         /// </summary>
         /// <returns></returns>
-        PropertySet.PropertySetCollider GetCollider();
+        PropertySet.PropertySetCollider Collider
+        {
+            get;
+            set;
+        }
     }
 }

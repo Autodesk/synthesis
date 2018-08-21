@@ -35,25 +35,25 @@ namespace hel{
         }
 
         void writeEnable(bool value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.first->alarm.setEnabled(value);
             instance.second.unlock();
         }
 
         bool readEnable(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->alarm.getEnabled();
         }
 
         void writeTriggerTime(uint32_t value, tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.first->alarm.setTriggerTime(value);
             instance.second.unlock();
         }
 
         uint32_t readTriggerTime(tRioStatusCode* /*status*/){
-            auto instance = hel::RoboRIOManager::getInstance();
+            auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->alarm.getTriggerTime();
         }
