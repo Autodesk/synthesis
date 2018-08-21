@@ -339,7 +339,6 @@
     <Compile Include="Assets\Scripts\States\SensorSpawnState.cs" />
     <Compile Include="Assets\Scripts\States\SimTabState.cs" />
     <Compile Include="Assets\Scripts\States\SyncState.cs" />
-    <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
     <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
     <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />
     <Compile Include="Assets\Scripts\Utils\BulletExtensions.cs" />
