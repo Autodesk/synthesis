@@ -1,0 +1,73 @@
+﻿[4 byte Integer]	NodeCount
+
+-- BEGIN NODE SPEC --
+[4 byte Integer]	NodeParentIndex	(-1 if no parent)
+[String]			Filename
+If there is a parent there must be a joint so...	if (NodeParent != -1)
+[4 byte Integer]	Driver Index -1 if no driver)
+[1 byte]			Joint Type
+[bytes]				Joint Data
+-- END NODE SPEC --
+
+-- BEGIN ROTATIONAL JOINT DATA SPEC --
+[4 byte float]		Parent_BaseX
+[4 byte float]		Parent_BaseY
+[4 byte float]		Parent_BaseZ
+[4 byte float]		Parent_NormX
+[4 byte float]		Parent_NormY
+[4 byte float]		Parent_NormZ
+[4 byte float]		Child_BaseX
+[4 byte float]		Child_BaseY
+[4 byte float]		Child_BaseZ
+[4 byte float]		Child_NormX
+[4 byte float]		Child_NormY
+[4 byte float]		Child_NormZ
+[1 byte]			HasLimits
+	[Bit 1]			AngularLimits
+
+If there are angular limits...
+[4 byte float]		AngularLimit_Low
+[4 byte float]		AngularLimit_High
+
+-- END ROTATIONAL JOINT DATA SPEC --
+
+-- BEGIN LINEAR JOINT DATA SPEC --
+[4 byte float]		Parent_BaseX
+[4 byte float]		Parent_BaseY
+[4 byte float]		Parent_BaseZ
+[4 byte float]		Parent_NormX
+[4 byte float]		Parent_NormY
+[4 byte float]		Parent_NormZ
+[4 byte float]		Child_BaseX
+[4 byte float]		Child_BaseY
+[4 byte float]		Child_BaseZ
+[4 byte float]		Child_NormX
+[4 byte float]		Child_NormY
+[4 byte float]		Child_NormZ
+[1 byte]			HasLimits
+	[Bit 1]			LinearLimitLow
+	[Bit 2]			LinearLimitHigh
+
+If the bit is set for the limit..
+[4 byte float]		LinearLimit_Low
+[4 byte float]		LinearLimit_High
+
+-- END LINEAR JOINT DATA SPEC --
+
+
+[4 byte integer]	DriverCount
+
+-- BEGIN DRIVER SPEC --
+[1 byte]			Driver Type ENUM
+[2 byte short]		Port A
+[2 byte short]		Port B
+[4 byte float]		Lower Limit
+[4 byte float]		Upper Limit
+[4 byte integer]	Drive extension count
+
+-- BEGIN DRIVER EXTENSION SPEC --
+[4 byte integer]	Drive extension length
+[extensible]		Data
+-- END DRIVER EXTENSION SPEC --
+
+-- END DRIVER SPEC --

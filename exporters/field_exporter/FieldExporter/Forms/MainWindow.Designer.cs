@@ -39,7 +39,6 @@ namespace FieldExporter
             this.metaTabPage = new System.Windows.Forms.TabPage();
             this.fieldMeta = new FieldExporter.Components.FieldMetaForm();
             this.exportTabPage = new System.Windows.Forms.TabPage();
-            this.exportForm = new FieldExporter.Components.ExportForm();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,8 +50,11 @@ namespace FieldExporter
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesTabPage.SuspendLayout();
             this.tabControl.SuspendLayout();
+<<<<<<< HEAD
+=======
             this.metaTabPage.SuspendLayout();
             this.exportTabPage.SuspendLayout();
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,6 +86,7 @@ namespace FieldExporter
             this.propertySetsTabControl.SelectedIndex = 0;
             this.propertySetsTabControl.Size = new System.Drawing.Size(616, 391);
             this.propertySetsTabControl.TabIndex = 0;
+            this.propertySetsTabControl.SelectedIndexChanged += new System.EventHandler(this.propertySetsTabControl_SelectedIndexChanged);
             // 
             // tabControl
             // 
@@ -118,14 +121,22 @@ namespace FieldExporter
             // 
             // exportTabPage
             // 
+<<<<<<< HEAD
+            this.exportTabPage.Location = new System.Drawing.Point(4, 25);
+            this.exportTabPage.Name = "exportTabPage";
+            this.exportTabPage.Size = new System.Drawing.Size(614, 378);
+=======
             this.exportTabPage.Controls.Add(this.exportForm);
             this.exportTabPage.Location = new System.Drawing.Point(4, 22);
             this.exportTabPage.Name = "exportTabPage";
             this.exportTabPage.Size = new System.Drawing.Size(616, 391);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.exportTabPage.TabIndex = 4;
             this.exportTabPage.Text = "Export";
             this.exportTabPage.UseVisualStyleBackColor = true;
             // 
+<<<<<<< HEAD
+=======
             // exportForm
             // 
             this.exportForm.BackColor = System.Drawing.Color.White;
@@ -138,8 +149,10 @@ namespace FieldExporter
             this.exportForm.Size = new System.Drawing.Size(616, 391);
             this.exportForm.TabIndex = 0;
             // 
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             // menuStrip
             // 
+            this.menuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.windowToolStripMenuItem,
@@ -162,7 +175,11 @@ namespace FieldExporter
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+<<<<<<< HEAD
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+=======
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -178,7 +195,11 @@ namespace FieldExporter
             // resetSizeToolStripMenuItem
             // 
             this.resetSizeToolStripMenuItem.Name = "resetSizeToolStripMenuItem";
+<<<<<<< HEAD
+            this.resetSizeToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+=======
             this.resetSizeToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.resetSizeToolStripMenuItem.Text = "Reset Size";
             this.resetSizeToolStripMenuItem.Click += new System.EventHandler(this.resetSizeToolStripMenuItem_Click);
             // 
@@ -186,7 +207,11 @@ namespace FieldExporter
             // 
             this.alwaysOnTopToolStripMenuItem.CheckOnClick = true;
             this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
+<<<<<<< HEAD
+            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+=======
             this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.alwaysOnTopToolStripMenuItem.Text = "Always On Top";
             this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_Click);
             // 
@@ -201,7 +226,11 @@ namespace FieldExporter
             // tutorialsToolStripMenuItem
             // 
             this.tutorialsToolStripMenuItem.Name = "tutorialsToolStripMenuItem";
+<<<<<<< HEAD
+            this.tutorialsToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+=======
             this.tutorialsToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.tutorialsToolStripMenuItem.Text = "Tutorials";
             this.tutorialsToolStripMenuItem.Click += new System.EventHandler(this.tutorialsToolStripMenuItem_Click);
             // 
@@ -228,8 +257,11 @@ namespace FieldExporter
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.propertiesTabPage.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
+<<<<<<< HEAD
+=======
             this.metaTabPage.ResumeLayout(false);
             this.exportTabPage.ResumeLayout(false);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -251,7 +283,6 @@ namespace FieldExporter
         private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetSizeToolStripMenuItem;
-        private ExportForm exportForm;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tutorialsToolStripMenuItem;
         private System.Windows.Forms.TabPage metaTabPage;

@@ -152,8 +152,8 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            if (exportForm.IsExporting)
-                e.Cancel = true;
+            //if (ExportForm.IsExporting)
+            //    e.Cancel = true;
         }
     }
 }

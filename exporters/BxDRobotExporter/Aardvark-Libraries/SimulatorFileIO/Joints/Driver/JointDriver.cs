@@ -15,6 +15,24 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// </summary>
     public int portA, portB;
 
+    /// <summary>
+    /// Gets and sets the gear ratio that the output gear uses
+    /// </summary>
+    public double InputGear
+    {
+        get;
+        set;
+    }
+    
+    /// <summary>
+    /// Gets and sets the gear ratio that the input gear uses
+    /// </summary>
+    public double OutputGear
+    {
+        get;
+        set;
+    }
+   
     public bool isCan = false;
 
     /// <summary>
