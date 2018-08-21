@@ -5,6 +5,9 @@
 #include "FRC_FPGA_ChipObject/tSystemInterface.h"
 
 namespace hel{
+    /**
+     * \cond HIDDEN_SYMBOLS
+     */
     struct SystemInterface: public nFPGA::tSystemInterface{
         const uint16_t getExpectedFPGAVersion();
         const uint32_t getExpectedFPGARevision();
@@ -21,6 +24,9 @@ namespace hel{
 
         void getDmaDescriptor(int, tDMAChannelDescriptor*);
     };
+    /**
+     * \endcond
+     */
 }
 
 #endif
