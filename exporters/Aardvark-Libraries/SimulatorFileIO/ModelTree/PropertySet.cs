@@ -6,27 +6,27 @@ public struct PropertySet
     /// <summary>
     /// Stores collider information for a PropertySet.
     /// </summary>
-    public class PropertySetCollider
+    public abstract class PropertySetCollider
     {
         /// <summary>
         /// Used for defining the type of collision for the PropertySetCollider.
         /// </summary>
-        public enum PropertySetCollisionType
+        public enum PropertySetCollisionType : int
         {
             /// <summary>
             /// Used for approximating collision boundaries with a box.
             /// </summary>
-            BOX,
+            BOX = 0,
 
             /// <summary>
             /// Used for approximating collision boundaries with a sphere.
             /// </summary>
-            SPHERE,
+            SPHERE = 1,
 
             /// <summary>
             /// Used for taking the object's visible mesh and simplifying it for collision.
             /// </summary>
-            MESH
+            MESH = 2
         }
 
         /// <summary>

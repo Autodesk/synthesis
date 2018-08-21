@@ -71,14 +71,36 @@ namespace FieldExporter.Components
                         {
                             translation.Add(new PropertySet(
                                 tabPage.Name,
-                                tabPage.ChildForm.GetCollider(),
-                                tabPage.ChildForm.GetFriction(),
-                                tabPage.ChildForm.GetMass()));
+                                tabPage.ChildForm.Collider,
+                                tabPage.ChildForm.Friction,
+                                tabPage.ChildForm.Mass));
                         }));
                 }
             }
 
             return translation;
+        }
+
+        /// <summary>
+        /// Creates tabs from a list of property sets.
+        /// </summary>
+        /// <param name="propertySets">Property sets to base tabs off of.</param>
+        public void ApplyPropertySets(List<PropertySet> propertySets)
+        {
+            var tmp = Handle; // Forces creation of window handle so that tabs will appear
+
+            foreach (PropertySet p in propertySets)
+            {
+                ComponentPropertiesTabPage newPage = new ComponentPropertiesTabPage(this, p.PropertySetID);
+
+                newPage.ChildForm.Collider = p.Collider;
+                newPage.ChildForm.Friction = p.Friction;
+                newPage.ChildForm.Mass = p.Mass;
+                
+                TabPages.Insert(TabPages.Count - 1, newPage);
+            }
+
+            SelectedTab = TabPages[0];
         }
 
         /// <summary>
@@ -97,7 +119,7 @@ namespace FieldExporter.Components
 
                     tabPage.Invoke(new Action(() =>
                     {
-                        Exporter.Gamepiece gp = tabPage.ChildForm.GetGamepiece();
+                        Exporter.Gamepiece gp = tabPage.ChildForm.Gamepiece;
 
                         if (gp != null)
                         {
@@ -108,6 +130,49 @@ namespace FieldExporter.Components
             }
 
             return translation.ToArray();
+        }
+
+        /// <summary>
+        /// Creates tabs from a list of property sets.
+        /// </summary>
+        /// <param name="propertySets">Property sets to base tabs off of.</param>
+        public void ApplyGamepieces(Exporter.Gamepiece[] gamepieces)
+        {
+            var tmp = Handle; // Forces creation of window handle so that tabs will appear
+
+            foreach (Exporter.Gamepiece g in gamepieces)
+            {
+                if (TabPages.ContainsKey(g.id))
+                {
+                    TabPage p = TabPages[g.id];
+
+                    if (p is ComponentPropertiesTabPage page)
+                    {
+                        page.ChildForm.Gamepiece = g;
+                    }
+                }
+            }
+
+            SelectedTab = TabPages[0];
+        }
+
+        /// <summary>
+        /// Applies a set of occurrences to existing tabs.
+        /// </summary>
+        /// <param name="occurrencePropSets">Key =  occurrence name, value = property set name.</param>
+        public void ApplyOccurrences(Dictionary<string, List<string>> occurrencePropSets)
+        {
+            foreach (KeyValuePair<string, List<string>> op in occurrencePropSets)
+            {
+                if (TabPages[op.Key] is ComponentPropertiesTabPage propPage)
+                {
+                    foreach (string path in op.Value)
+                    {
+                        InventorTreeView treeView = propPage.ChildForm.inventorTreeView;
+                        treeView.AddComponentShallow(path);
+                    }
+                }
+            }
         }
 
         /// <summary>
