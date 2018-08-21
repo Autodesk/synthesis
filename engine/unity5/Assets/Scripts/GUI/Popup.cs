@@ -35,6 +35,8 @@ namespace Synthesis.GUI
             UnityEngine.GUI.Label(position, buttonContent, buttonStyle);
             if (showList)
             {
+                UnityEngine.GUI.depth = -10;
+
                 Rect listRect = new Rect(position.x, position.y + position.height, position.width, listStyle.CalcHeight(listContent[0], 1.0f) * listContent.Length);
                 UnityEngine.GUI.Box(listRect, "", boxStyle);
                 //This is SUPPOSED to change the list entry to whatever your mouse is hovering over when clicking, but all it does is show the list.
@@ -55,6 +57,8 @@ namespace Synthesis.GUI
             }
             if (done)
             {
+                UnityEngine.GUI.depth = 0;
+
                 showList = false;
                 listActive = false;
             }

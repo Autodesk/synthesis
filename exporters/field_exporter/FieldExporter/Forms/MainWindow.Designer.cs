@@ -36,6 +36,8 @@ namespace FieldExporter
             this.propertiesTabPage = new System.Windows.Forms.TabPage();
             this.propertySetsTabControl = new FieldExporter.Components.PropertySetsTabControl();
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.metaTabPage = new System.Windows.Forms.TabPage();
+            this.fieldMeta = new FieldExporter.Components.FieldMetaForm();
             this.exportTabPage = new System.Windows.Forms.TabPage();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,6 +49,11 @@ namespace FieldExporter
             this.tutorialsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesTabPage.SuspendLayout();
             this.tabControl.SuspendLayout();
+<<<<<<< HEAD
+=======
+            this.metaTabPage.SuspendLayout();
+            this.exportTabPage.SuspendLayout();
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,9 +71,9 @@ namespace FieldExporter
             // 
             this.propertiesTabPage.BackColor = System.Drawing.Color.White;
             this.propertiesTabPage.Controls.Add(this.propertySetsTabControl);
-            this.propertiesTabPage.Location = new System.Drawing.Point(4, 25);
+            this.propertiesTabPage.Location = new System.Drawing.Point(4, 22);
             this.propertiesTabPage.Name = "propertiesTabPage";
-            this.propertiesTabPage.Size = new System.Drawing.Size(614, 378);
+            this.propertiesTabPage.Size = new System.Drawing.Size(616, 391);
             this.propertiesTabPage.TabIndex = 0;
             this.propertiesTabPage.Text = "Property Sets";
             // 
@@ -76,31 +83,72 @@ namespace FieldExporter
             this.propertySetsTabControl.Location = new System.Drawing.Point(0, 0);
             this.propertySetsTabControl.Name = "propertySetsTabControl";
             this.propertySetsTabControl.SelectedIndex = 0;
-            this.propertySetsTabControl.Size = new System.Drawing.Size(614, 378);
+            this.propertySetsTabControl.Size = new System.Drawing.Size(616, 391);
             this.propertySetsTabControl.TabIndex = 0;
             this.propertySetsTabControl.SelectedIndexChanged += new System.EventHandler(this.propertySetsTabControl_SelectedIndexChanged);
             // 
             // tabControl
             // 
+            this.tabControl.Controls.Add(this.metaTabPage);
             this.tabControl.Controls.Add(this.propertiesTabPage);
             this.tabControl.Controls.Add(this.exportTabPage);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl.Location = new System.Drawing.Point(0, 28);
+            this.tabControl.Location = new System.Drawing.Point(0, 24);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(622, 407);
+            this.tabControl.Size = new System.Drawing.Size(624, 417);
             this.tabControl.TabIndex = 10;
             this.tabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl_Selecting);
             // 
+            // metaTabPage
+            // 
+            this.metaTabPage.Controls.Add(this.fieldMeta);
+            this.metaTabPage.Location = new System.Drawing.Point(4, 22);
+            this.metaTabPage.Name = "metaTabPage";
+            this.metaTabPage.Size = new System.Drawing.Size(616, 391);
+            this.metaTabPage.TabIndex = 5;
+            this.metaTabPage.Text = "Field Info";
+            this.metaTabPage.UseVisualStyleBackColor = true;
+            // 
+            // fieldMeta
+            // 
+            this.fieldMeta.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fieldMeta.Location = new System.Drawing.Point(0, 0);
+            this.fieldMeta.Name = "fieldMeta";
+            this.fieldMeta.Size = new System.Drawing.Size(616, 391);
+            this.fieldMeta.TabIndex = 0;
+            // 
             // exportTabPage
             // 
+<<<<<<< HEAD
             this.exportTabPage.Location = new System.Drawing.Point(4, 25);
             this.exportTabPage.Name = "exportTabPage";
             this.exportTabPage.Size = new System.Drawing.Size(614, 378);
+=======
+            this.exportTabPage.Controls.Add(this.exportForm);
+            this.exportTabPage.Location = new System.Drawing.Point(4, 22);
+            this.exportTabPage.Name = "exportTabPage";
+            this.exportTabPage.Size = new System.Drawing.Size(616, 391);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.exportTabPage.TabIndex = 4;
             this.exportTabPage.Text = "Export";
             this.exportTabPage.UseVisualStyleBackColor = true;
             // 
+<<<<<<< HEAD
+=======
+            // exportForm
+            // 
+            this.exportForm.BackColor = System.Drawing.Color.White;
+            this.exportForm.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("exportForm.BackgroundImage")));
+            this.exportForm.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.exportForm.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.exportForm.Location = new System.Drawing.Point(0, 0);
+            this.exportForm.Name = "exportForm";
+            this.exportForm.Padding = new System.Windows.Forms.Padding(3);
+            this.exportForm.Size = new System.Drawing.Size(616, 391);
+            this.exportForm.TabIndex = 0;
+            // 
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             // menuStrip
             // 
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -110,7 +158,7 @@ namespace FieldExporter
             this.helpToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(622, 28);
+            this.menuStrip.Size = new System.Drawing.Size(624, 24);
             this.menuStrip.TabIndex = 11;
             this.menuStrip.Text = "Menu";
             // 
@@ -119,13 +167,17 @@ namespace FieldExporter
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+<<<<<<< HEAD
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+=======
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -135,13 +187,17 @@ namespace FieldExporter
             this.resetSizeToolStripMenuItem,
             this.alwaysOnTopToolStripMenuItem});
             this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
-            this.windowToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
+            this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.windowToolStripMenuItem.Text = "Window";
             // 
             // resetSizeToolStripMenuItem
             // 
             this.resetSizeToolStripMenuItem.Name = "resetSizeToolStripMenuItem";
+<<<<<<< HEAD
             this.resetSizeToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+=======
+            this.resetSizeToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.resetSizeToolStripMenuItem.Text = "Reset Size";
             this.resetSizeToolStripMenuItem.Click += new System.EventHandler(this.resetSizeToolStripMenuItem_Click);
             // 
@@ -149,7 +205,11 @@ namespace FieldExporter
             // 
             this.alwaysOnTopToolStripMenuItem.CheckOnClick = true;
             this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
+<<<<<<< HEAD
             this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+=======
+            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.alwaysOnTopToolStripMenuItem.Text = "Always On Top";
             this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_Click);
             // 
@@ -158,13 +218,17 @@ namespace FieldExporter
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tutorialsToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // tutorialsToolStripMenuItem
             // 
             this.tutorialsToolStripMenuItem.Name = "tutorialsToolStripMenuItem";
+<<<<<<< HEAD
             this.tutorialsToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+=======
+            this.tutorialsToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.tutorialsToolStripMenuItem.Text = "Tutorials";
             this.tutorialsToolStripMenuItem.Click += new System.EventHandler(this.tutorialsToolStripMenuItem_Click);
             // 
@@ -172,7 +236,7 @@ namespace FieldExporter
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(158)))), ((int)(((byte)(205)))), ((int)(((byte)(163)))));
-            this.ClientSize = new System.Drawing.Size(622, 435);
+            this.ClientSize = new System.Drawing.Size(624, 441);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -184,6 +248,11 @@ namespace FieldExporter
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.propertiesTabPage.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
+<<<<<<< HEAD
+=======
+            this.metaTabPage.ResumeLayout(false);
+            this.exportTabPage.ResumeLayout(false);
+>>>>>>> 6034f0352f5d61672edc512399ee1dfb2ab1aa0a
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -207,6 +276,8 @@ namespace FieldExporter
         private System.Windows.Forms.ToolStripMenuItem resetSizeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tutorialsToolStripMenuItem;
+        private System.Windows.Forms.TabPage metaTabPage;
+        private FieldMetaForm fieldMeta;
     }
 }
 

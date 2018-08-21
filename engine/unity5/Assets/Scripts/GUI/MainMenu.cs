@@ -9,6 +9,12 @@ using Synthesis.Utils;
 using Assets.Scripts.GUI;
 using UnityEngine.SceneManagement;
 using Synthesis.MixAndMatch;
+using System.Net;
+using Newtonsoft.Json;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
+using System.Diagnostics;
+using Assets.Scripts;
 
 namespace Synthesis.GUI
 {
@@ -19,6 +25,9 @@ namespace Synthesis.GUI
     {
         private GameObject splashScreen;
         private Canvas canvas;
+        public string updater;
+
+        GameObject releaseNumber;
 
         /// <summary>
         /// Runs every frame to update the GUI elements.
@@ -28,6 +37,54 @@ namespace Synthesis.GUI
             //Renders the message manager which displays error messages
             UserMessageManager.Render();
             UserMessageManager.scale = canvas.scaleFactor;
+        }
+
+        public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            bool isOk = true;
+            // If there are errors in the certificate chain, look at each error to determine the cause.
+            if (sslPolicyErrors != SslPolicyErrors.None)
+            {
+                for (int i = 0; i < chain.ChainStatus.Length; i++)
+                {
+                    if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+                    {
+                        chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                        chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                        chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
+                        chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                        bool chainIsValid = chain.Build((X509Certificate2)certificate);
+                        if (!chainIsValid)
+                        {
+                            isOk = false;
+                        }
+                    }
+                }
+            }
+            return isOk;
+        }
+
+        private void Awake()
+        {
+            WebClient client = new WebClient();
+            ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+            var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
+            VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
+            updater = update.URL;
+
+            string CurrentVersion = "4.2.0.0";
+            Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
+
+            var localVersion = new Version(CurrentVersion);
+            var globalVersion = new Version(update.Version);
+
+            var check = localVersion.CompareTo(globalVersion);
+
+            if (check < 0)
+            {
+                Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+
+            }//client.DownloadFile(update.URL, @"C:\Users\t_moram\Downloads\Synthesis Installer.exe");
         }
 
         /// <summary>
@@ -204,6 +261,16 @@ namespace Synthesis.GUI
             }
 
             return false;
+        }
+
+        public void GetUpdate(bool yes)
+        {
+            if (yes)
+            {
+                Process.Start("http://bxd.autodesk.com");
+                Process.Start(updater);
+            }
+            else Auxiliary.FindObject("UpdatePrompt").SetActive(false);
         }
     }
 }
