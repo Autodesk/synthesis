@@ -1,5 +1,5 @@
 # FusionRobotExporter
-Autodesk Fusion 360 Robot exporter using the Fusion 360 API for cpp
+Autodesk Fusion 360 Robot exporter using the Fusion 360 API for C++.
 
 ## Currently builds on:
 *  Windows (VS17)
@@ -8,30 +8,20 @@ Autodesk Fusion 360 Robot exporter using the Fusion 360 API for cpp
 1.  Fusion 360 (Up to date)
 2.  Visual Studio Community 2015+
 
-### Follow these steps to be able to Build (Windows):
-1.  Download Fusion 360
-2.   **Close Fusion 360**
-3.  Open Solution in main repo (`FusionSynth.sln`)
+### Steps to build and debug (first time):
+1.  Install Fusion 360
+2.  Open solution (`FusionSynth.sln`) as administrator
+3.  Change Debug command in project settings to Fusion360.exe (usually located in "AppData\Local\Autodesk\webdeploy\production\<varies>")
+4.  Build the solution
+5.  Start the debugger
+6.  In Fusion 360, open the Add-Ins menu, select the Add-Ins tab, and click the ➕ icon next to "My Add-Ins"
+7.  Select the "FusionExporter" folder
+8.  Close Fusion 360 and start debugging again
 
-## Autodesk API Documentation:
-[Link to Documentation](Documentation)
+## Documentation
+*  [Wiki Page](https://github.com/Autodesk/synthesis/wiki/Fusion-Exporter)
+*  Doxygen Page (Coming Soon)
 
-## Todo list:
-* [ ]  Add Exporting Lib
-* [x]  Add new Workspace
-* [x]  Add button images
-* [x]  Add button listeners
-* [x]  Check for already added workspace (crash currently)
-* [ ]  Make custom popup panels
-* [ ]  Add html insert for downloading CAD from our webpage (ask from Pam)
-
-### Fusion Offline API:
-* http://forums.autodesk.com/t5/api-and-scripts/fusion-360-api-reference-manual-for-offline-viewing/m-p/5832190
-
-### Fusion Online API:
-*  https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-7B5A90C8-E94C-48DA-B16B-430729B734DC
-
-### Fusion API Object Model:
-*  https://help.autodesk.com/cloudhelp/ENU/Fusion-360-API/images/Fusion.pdf
-
-[FusionObjectModel.pdf](https://github.com/HiceS/FusionRobotExporter/files/2121083/FusionObjectModel.pdf)
+## Autodesk Fusion 360 API:
+*  [Documentation](https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-7B5A90C8-E94C-48DA-B16B-430729B734DC)
+*  [Object Model](https://help.autodesk.com/cloudhelp/ENU/Fusion-360-API/images/Fusion.pdf)
