@@ -462,6 +462,7 @@ public class DynamicCamera : MonoBehaviour
             : base(mono)
         {
             target = targetObject ?? RobotProvider.Robot;
+            target.transform.Translate(new Vector3(0.0001f, 0, 0));
         }
 
         public override void Init()
