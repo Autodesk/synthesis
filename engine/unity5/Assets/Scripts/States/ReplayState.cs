@@ -153,24 +153,18 @@ namespace Synthesis.States
         /// <summary>
         /// The replay time in frames.
         /// </summary>
-        private float RewindFrame
-        {
-            get
-            {
-                return (rewindTime / Tracker.Lifetime) * (Tracker.Length - 1);
-            }
-        }
+        private float RewindFrame => (rewindTime / Tracker.Lifetime) * (Tracker.Length - 1);
 
         /// <summary>
         /// An adjusted contact threshold to represent the range of most common values.
         /// </summary>
-        private float AdjustedContactThreshold
-        {
-            get
-            {
-                return contactThreshold * contactThreshold;
-            }
-        }
+        private float AdjustedContactThreshold => contactThreshold * contactThreshold;
+
+        /// <summary>
+        /// Gets the current mouse position in screen coordinates.
+        /// </summary>
+        private Vector2 MousePosition => new Vector2(UnityEngine.Input.mousePosition.x,
+            Screen.height - UnityEngine.Input.mousePosition.y);
 
         /// <summary>
         /// Creates a new ReplayState instance.
@@ -304,7 +298,7 @@ namespace Synthesis.States
         /// </summary>
         public override void OnGUI()
         {
-            Rect controlRect = new Rect(helpMenu.activeSelf ? ControlButtonMargin+200 : ControlButtonMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
+            Rect controlRect = new Rect(helpMenu.activeSelf ? ControlButtonMargin + 200 : ControlButtonMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
                 ButtonSize, ButtonSize);
 
             if (UnityEngine.GUI.Button(controlRect, string.Empty, rewindStyle))
@@ -398,7 +392,7 @@ namespace Synthesis.States
 
                         if (currentContact.AppliedImpulse >= AdjustedContactThreshold)
                         {
-                            float keyframeTime = Tracker.Lifetime - ((float)i / (Tracker.Length - 1)) * Tracker.Lifetime;
+                            float keyframeTime = Tracker.Lifetime - (float)i / (Tracker.Length - 1) * Tracker.Lifetime;
 
                             if (!lastContact.Equals(currentContact))
                             {
@@ -428,7 +422,7 @@ namespace Synthesis.States
 
                                 bool shouldActivate = false;
 
-                                if (circleRect.Contains(Event.current.mousePosition) && !circleHovered)
+                                if (circleRect.Contains(MousePosition) && !circleHovered)
                                 {
                                     UnityEngine.GUI.color = Color.white;
                                     SelectedBody = currentContact.RobotBody;
@@ -437,7 +431,7 @@ namespace Synthesis.States
                                 else
                                 {
                                     UnityEngine.GUI.color = new Color(1f, 1f, 1f, Math.Max((CircleRenderDistance -
-                                        Math.Abs((Tracker.Length - 1 - i) - RewindFrame)) / CircleRenderDistance, 0.1f));
+                                        Math.Abs(Tracker.Length - 1 - i - RewindFrame)) / CircleRenderDistance, 0.1f));
                                 }
 
                                 if (UnityEngine.GUI.Button(circleRect, circleTexture, GUIStyle.none) && Event.current.button == 0 && shouldActivate)
@@ -455,8 +449,8 @@ namespace Synthesis.States
                                     }
                                 }
 
-                                if (circleRect.Contains(Event.current.mousePosition) && shouldActivate)
-                                    UnityEngine.GUI.Label(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y - InfoBoxHeight,
+                                if (circleRect.Contains(MousePosition) && shouldActivate)
+                                    UnityEngine.GUI.Label(new Rect(MousePosition.x, MousePosition.y - InfoBoxHeight,
                                         InfoBoxWidth, InfoBoxHeight), "Impulse: " + currentContact.AppliedImpulse.ToString("F2") + " N", windowStyle);
 
                                 UnityEngine.GUI.color = Color.white;
