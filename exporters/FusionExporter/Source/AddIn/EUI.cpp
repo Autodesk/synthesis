@@ -35,8 +35,11 @@ void EUI::highlightJoint(std::string jointID)
 {
 	std::vector<Ptr<Joint>> joints = Exporter::collectJoints(app->activeDocument());
 
+	Ptr<JointGeometry> geo;
+
 	// Find the joint that was selected
 	Ptr<Joint> highlightedJoint = nullptr;
+
 	for (Ptr<Joint> joint : joints)
 	{
 		if (BXDJ::Utility::getUniqueJointID(joint) == jointID)
@@ -46,22 +49,48 @@ void EUI::highlightJoint(std::string jointID)
 		}
 	}
 
-	if (highlightedJoint == nullptr)
-		return;
+	if (highlightedJoint != nullptr)
+	{
+		geo = highlightedJoint->geometryOrOriginOne();
+		if (geo == nullptr || geo->origin() == nullptr)
+			geo = highlightedJoint->geometryOrOriginTwo();
 
-	// Highlight the parts of the joint
-	UI->activeSelections()->clear();
-	UI->activeSelections()->add(highlightedJoint->occurrenceOne());
+		if (geo == nullptr || geo->origin() == nullptr)
+			return;
+
+		// Highlight the parts of the joint
+		UI->activeSelections()->clear();
+		UI->activeSelections()->add(highlightedJoint->occurrenceOne());
+	}
+	else
+	{
+		std::vector<Ptr<AsBuiltJoint>> asBuiltJoints = Exporter::collectAsBuiltJoints(app->activeDocument());
+
+		// Find the as-built joint that was selected
+		Ptr<AsBuiltJoint> highlightedAsBuiltJoint = nullptr;
+
+		for (Ptr<AsBuiltJoint> joint : asBuiltJoints)
+		{
+			if (BXDJ::Utility::getUniqueJointID(joint) == jointID)
+			{
+				highlightedAsBuiltJoint = joint;
+				break;
+			}
+		}
+
+		// No joint was found, return early
+		if (highlightedAsBuiltJoint == nullptr)
+			return;
+
+		geo = highlightedAsBuiltJoint->geometry();
+
+		// Highlight the parts of the joint
+		UI->activeSelections()->clear();
+		UI->activeSelections()->add(highlightedAsBuiltJoint->occurrenceOne());
+	}
 
 	// Set camera view
 	Ptr<Camera> cam = app->activeViewport()->camera();
-
-	Ptr<JointGeometry> geo = highlightedJoint->geometryOrOriginOne();
-	if (geo == nullptr || geo->origin() == nullptr)
-		geo = highlightedJoint->geometryOrOriginTwo();
-
-	if (geo == nullptr || geo->origin() == nullptr)
-		return;
 
 	Ptr<Point3D> eyeLocation = Point3D::create(geo->origin()->x(), geo->origin()->y(), geo->origin()->z());
 	eyeLocation->translateBy(Vector3D::create(0, 100, 0));

@@ -2,6 +2,7 @@
 #include <Fusion/Components/Occurrences.h>
 #include <Fusion/Components/OccurrenceList.h>
 #include <Fusion/Components/RigidGroup.h>
+#include <Fusion/Components/AsBuiltJoint.h>
 #include "Utility.h"
 #include "ConfigData.h"
 #include "Joint.h"
@@ -77,6 +78,19 @@ RigidNode::JointSummary RigidNode::getJointSummary(core::Ptr<fusion::Component> 
 		}
 	}
 
+	// Find all as-built jointed occurrences in the design
+	for (core::Ptr<fusion::AsBuiltJoint> joint : rootComponent->allAsBuiltJoints())
+	{
+		if (joint->occurrenceOne() != nullptr && joint->occurrenceTwo() != nullptr)
+		{
+			core::Ptr<fusion::Occurrence> lowerOccurrence = joint->occurrenceOne();
+			core::Ptr<fusion::Occurrence> upperOccurrence = joint->occurrenceTwo();
+
+			jointSummary.children[lowerOccurrence] = upperOccurrence;
+			jointSummary.asBuiltParents[upperOccurrence].push_back(joint);
+		}
+	}
+
 	// Find all rigid groups in the design
 	for (core::Ptr<fusion::RigidGroup> rgdGroup : rootComponent->allRigidGroups())
 	{
@@ -136,6 +150,17 @@ void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
 			addJoint(joint, rootOccurrence);
 	}
 
+	// Create a joint from this occurrence if it is the parent of any as-built joints
+	if (jointSummary->asBuiltParents.find(rootOccurrence) != jointSummary->asBuiltParents.end())
+	{
+#if _DEBUG
+		log += std::string(depth - 1, '\t') + "As-Built Joints:\n";
+#endif
+
+		for (core::Ptr<fusion::AsBuiltJoint> joint : jointSummary->asBuiltParents[rootOccurrence])
+			addJoint(joint, rootOccurrence);
+	}
+
 	// Merge this occurrence with any occurrences rigidgrouped to it
 	if (jointSummary->rigidgroups.find(rootOccurrence) != jointSummary->rigidgroups.end())
 	{
@@ -170,6 +195,44 @@ void RigidNode::buildTree(core::Ptr<fusion::Occurrence> rootOccurrence)
 }
 
 void RigidNode::addJoint(core::Ptr<fusion::Joint> joint, core::Ptr<fusion::Occurrence> parent)
+{
+	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
+
+	// Do not add joint if child has changed parents
+	if (jointSummary->children[child] != parent)
+	{
+#if _DEBUG
+		log += std::string(depth, '\t') + "Cannot joint \"" + child->fullPathName() + "\", parent has changed\n";
+#endif
+		return;
+	}
+
+	std::shared_ptr<Joint> newJoint = nullptr;
+
+	fusion::JointTypes jointType = joint->jointMotion()->jointType();
+
+	// Create joint based on the type of joint in Fusion
+	if (jointType == fusion::JointTypes::RevoluteJointType)
+		newJoint = std::make_shared<RotationalJoint>(this, joint, parent);
+	else if (jointType == fusion::JointTypes::SliderJointType)
+		newJoint = std::make_shared<SliderJoint>(this, joint, parent);
+	else if (jointType == fusion::JointTypes::CylindricalJointType)
+		newJoint = std::make_shared<CylindricalJoint>(this, joint, parent);
+	else if (jointType == fusion::JointTypes::BallJointType)
+		newJoint = std::make_shared<BallJoint>(this, joint, parent);
+	else
+	{
+		// If joint type is unsupported, add as if occurrence is attached by rigid joint (same rigidNode)
+		buildTree(child);
+		return;
+	}
+
+	// Apply user configuration to joint
+	newJoint->applyConfig(*configData);
+	childrenJoints.push_back(newJoint);
+}
+
+void RigidNode::addJoint(core::Ptr<fusion::AsBuiltJoint> joint, core::Ptr<fusion::Occurrence> parent)
 {
 	core::Ptr<fusion::Occurrence> child = (joint->occurrenceOne() != parent) ? joint->occurrenceOne() : joint->occurrenceTwo();
 
