@@ -6,6 +6,7 @@ using namespace BXDJ;
 Driver::Driver(const Driver & driverToCopy)
 {
 	type = driverToCopy.type;
+	motor = driverToCopy.motor;
 	portSignal = driverToCopy.portSignal;
 	portOne = driverToCopy.portOne;
 	portTwo = driverToCopy.portTwo;
@@ -26,6 +27,7 @@ Driver::Driver(const Driver & driverToCopy)
 Driver::Driver(Type type)
 {
 	this->type = type;
+	motor = GENERIC;
 	portSignal = PWM;
 	portOne = 0;
 	portTwo = 0;
@@ -38,6 +40,7 @@ void Driver::write(XmlWriter & output) const
 	output.startElement("JointDriver");
 
 	output.writeElement("DriveType", toString(type));
+	output.writeElement("MotorType", toString(motor));
 
 	output.writeElement("Port1", std::to_string(portOne + 1)); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
 	output.writeElement("Port2", std::to_string(portTwo + 1)); // For backwards compatibility, ports will be stored one larger than their actual value.
@@ -203,6 +206,37 @@ std::string Driver::toString(Type type)
 	}
 
 	return "UNKNOWN";
+}
+
+std::string Driver::toString(Motor type)
+{
+	switch (type)
+	{
+	case GENERIC:						return "GENERIC";
+	case CIM:							return "CIM";
+	case MINI_CIM:						return "MINI_CIM";
+	case BAG_MOTOR:						return "BAG_MOTOR";
+	case REDLINE_775_PRO:				return "REDLINE_775_PRO";
+	case _9015:							return "_9015";
+	case BANEBOTS_775_18V:				return "BANEBOTS_775_18v";
+	case BANEBOTS_775_12V:				return "BANEBOTS_775_12v";
+	case BANEBOTS_550_12V:				return "BANEBOTS_550_12v";
+	case ANDYMARK_775_125:				return "ANDYMARK_775_125";
+	case SNOW_BLOWER:					return "SNOW_BLOWER";
+	case NIDEN_BLDC:					return "NIDEN_BLDC";
+	case THROTTLE_MOTOR:				return "THROTTLE_MOTOR";
+	case WINDOW_MOTOR:					return "WINDOW_MOTOR";
+	case NEVEREST:						return "NEVEREST";
+	case TETRIX_MOTOR:					return "TETRIX_MOTOR";
+	case MODERN_ROBOTICS_MATRIX_12V:	return "MODERN_ROBOTICS_MATRIX_12V";
+	case REV_ROBOTICS_HD_HEX_12V:		return "REV_ROBOTICS_HD_HEX_12V";
+	case REV_ROBOTICS_CORE_HEX_12V:		return "REV_ROBOTICS_CORE_HEX_12V";
+	case VEX_V5_SMART_MOTOR:			return "VEX_V5_Smart_Motor";
+	case VEX_269:						return "VEX_269";
+	case VEX_393:						return "VEX_393";
+	}
+
+	return "GENERIC";
 }
 
 std::string Driver::toString(Signal type)
