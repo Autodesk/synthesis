@@ -33,7 +33,7 @@ namespace hel{
          */
 
         enum IDMask: uint32_t{
-            DEVICE_ID = 0b01111111,
+            DEVICE_ID = 0b00111111,
             DEVICE_TYPE = 0b1111000001000000000000000000,
             TALON_SRX_TYPE = 0x02040000,
             VICTOR_SPX_TYPE = 0x01040000,
@@ -60,12 +60,13 @@ namespace hel{
     };
 
     /**
+     * \fn std::string asString(CANDevice::Type type)
      * \brief Converts a CANDevice::Type to a string
      * \param type The CANDevice::Type to convert
      * \return A string representation of the CANDevice::Type
      */
 
-    std::string as_string(CANDevice::Type);
+    std::string asString(CANDevice::Type);
 
     /**
      * \brief Converts a string to a CANDevice::Type
