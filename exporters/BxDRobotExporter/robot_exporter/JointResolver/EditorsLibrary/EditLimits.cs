@@ -23,13 +23,11 @@ namespace EditorsLibrary
         {
             this.joint = joint;// read in the joint base so we can access the correspodinig Inventor Joint to see/ edit the limits
             InitializeComponent();
-            //measure = SynthesisGUI.Instance.MainApplication.UnitsOfMeasure;
-            //MessageBox.Show(measure.MassUnits.GetType().ToString());
             if(!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||// if the joint is a rotational then enable the rotation stuff and disable the linear
                     ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
             {
                 this.LinearGroup.Enabled = false;
-                this.Angular_Current_textbox.Text = Convert.ToString(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).ModelValue * (180 / Math.PI));// convert from RAD to DEG
+                this.Angular_Current_textbox.Value = (decimal)(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPosition).ModelValue * (180 / Math.PI));// convert from RAD to DEG
                 this.Angular_Start.Checked = false;
                 this.Angular_End.Checked = false;
                 this.Angular_Start_textbox.Enabled = false;
@@ -40,27 +38,27 @@ namespace EditorsLibrary
                     this.Angular_End.Checked = true;
                     this.Angular_Start_textbox.Enabled = true;
                     this.Angular_End_textbox.Enabled = true;
-                    this.Angular_Start_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue * (180 / Math.PI)));
-                    this.Angular_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue * (180 / Math.PI)));
+                    this.Angular_Start_textbox.Value = (decimal)((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue * (180 / Math.PI)));
+                    this.Angular_End_textbox.Value = (decimal)((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue * (180 / Math.PI)));
                 }
             }
             else// if the joint is a linear joint then activate the linear stuff and deactivate the rotational stuff
             {
                 this.Angular_Group_Box.Enabled = false;
-                this.Linear_Current_textbox.Text = Convert.ToString(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).ModelValue / 2.54);// convert from CM to IN
+                this.Linear_Current_textbox.Value = (decimal)(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPosition).ModelValue / 2.54);// convert from CM to IN
                 this.Linear_Start.Checked = false;
                 this.Linear_End.Checked = false;
                 this.Linear_Start_textbox.Enabled = false;
                 this.Linear_End_textbox.Enabled = false;
                 if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionStartLimit)// if the joint has a start limit then read it in and activate the corresponding fields
                 {
-                    this.Linear_Start_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue) / 2.54);
+                    this.Linear_Start_textbox.Value = (decimal)((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue) / 2.54);
                     this.Linear_Start_textbox.Enabled = true;
                     this.Linear_Start.Checked = true;
                 }
                 if (((InventorSkeletalJoint)joint).GetWrapped().asmJoint.HasLinearPositionEndLimit)// if the joint has an end limit then read it in and activate the corresponding fields
                 {
-                    this.Linear_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue) / 2.54);
+                    this.Linear_End_textbox.Value = (decimal)((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue) / 2.54);
                     this.Linear_End_textbox.Enabled = true;
                     this.Linear_End.Checked = true;
                 }
@@ -82,119 +80,29 @@ namespace EditorsLibrary
             if (!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
                    ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
             {
-                try
-                {
-                    currentPosition = Convert.ToDouble(Angular_Current_textbox.Text) * (Math.PI / 180);
-                    writeCurrentPosition = true;
-                }
-                catch (Exception)
-                {
-                    canClose = false;
-                    if (Angular_Current_textbox.Text.Equals(""))
-                    {
-                        MessageBox.Show("Error, please make sure that the Curremt text box has a position");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error, please make sure that the Current text box has a position");
-                    }
-                }
+                currentPosition = Convert.ToDouble(Angular_Current_textbox.Value) * (Math.PI / 180);
+                writeCurrentPosition = true;
                 if (this.Angular_End.Checked && this.Angular_Start.Checked)
                 {
-                    try
-                    {
-                        startLimit = Convert.ToDouble(Angular_Start_textbox.Text) * (Math.PI / 180);
-                        writeStartLimit = true;
-                    }
-                    catch (Exception)
-                    {
-                        canClose = false;
-                        if (Angular_Start_textbox.Text.Equals(""))
-                        {
-                            MessageBox.Show("Error, please make sure that the Start text box has a limit");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Error, please make sure that the Start text box has only numbers in it");
-                        }
-                    }
-                    try
-                    {
-                        endLimit = Convert.ToDouble(Angular_End_textbox.Text) * (Math.PI / 180);
-                        writeEndLimit = true;
-                    }
-                    catch (Exception)
-                    {
-                        canClose = false;
-                        if (Angular_End_textbox.Text.Equals(""))
-                        {
-                            MessageBox.Show("Error, please make sure that the End text box has a limit");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Error, please make sure that the End text box has only numbers in it");
-                        }
-                    }
+                    startLimit = Convert.ToDouble(Angular_Start_textbox.Value) * (Math.PI / 180);
+                    writeStartLimit = true;
+                    endLimit = Convert.ToDouble(Angular_End_textbox.Value) * (Math.PI / 180);
+                    writeEndLimit = true;
                 }
             }
             else
             {
-                try
+                currentPosition = Convert.ToDouble(Linear_Current_textbox.Text) * 2.54;
+                writeCurrentPosition = true;
+                if (this.Linear_Start.Checked)
                 {
-                    currentPosition = Convert.ToDouble(Linear_Current_textbox.Text) * 2.54;
-                    writeCurrentPosition = true;
+                    startLimit = Convert.ToDouble(Linear_Start_textbox.Text) * 2.54;
+                    writeStartLimit = true;
                 }
-                catch (Exception)
+                if (this.Linear_End.Checked)
                 {
-                    canClose = false;
-                    if (Linear_Current_textbox.Text.Equals(""))
-                    {
-                        MessageBox.Show("Error, please make sure that the Current text box has a position");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error, please make sure that the Current text box has a position");
-                    }
-                }
-                try
-                {
-                    if (this.Linear_Start.Checked)
-                    {
-                        startLimit = Convert.ToDouble(Linear_Start_textbox.Text) * 2.54;
-                        writeStartLimit = true;
-                    }
-                }
-                catch (Exception)
-                {
-                    canClose = false;
-                    if (Linear_Start_textbox.Text.Equals(""))
-                    {
-                        MessageBox.Show("Error, please make sure that the Start text box has a limit");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error, please make sure that the Start text box has only numbers in it");
-                    }
-                }
-                try
-                {
-                    if (this.Linear_End.Checked)
-                    {
-                        endLimit = Convert.ToDouble(Linear_End_textbox.Text) * 2.54;
-                        writeEndLimit = true;
-                    }
-                }
-                catch (Exception)
-                {
-                    canClose = false;
-                    if (Linear_End_textbox.Text.Equals(""))
-                    {
-                        MessageBox.Show("Error, please make sure that the End text box has a limit");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error, please make sure that the End text box has only numbers in it");
-                    }
+                    endLimit = Convert.ToDouble(Linear_End_textbox.Text) * 2.54;
+                    writeEndLimit = true;
                 }
             }
         }
@@ -285,10 +193,6 @@ namespace EditorsLibrary
             }
         }
 
-        void EditLimits_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
-        {
-        }
-
         private void btnCancel_Click(object sender, EventArgs e)
         {
             Close();
@@ -301,27 +205,13 @@ namespace EditorsLibrary
                     this.Angular_Start.Checked = true;
                     this.Angular_End_textbox.Enabled = true;
                     this.Angular_Start_textbox.Enabled = true;
-                    try
+                    if (this.Angular_End_textbox.Text.Equals(""))
                     {
-                        if (this.Angular_End_textbox.Text.Equals(""))
-                        {
-                            this.Angular_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue));
-                        }
+                        this.Angular_End_textbox.Value = (decimal)(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);
                     }
-                    catch (Exception)
+                    if (this.Angular_Start_textbox.Text.Equals(""))
                     {
-
-                    }
-                    try
-                    {
-                        if (this.Angular_Start_textbox.Text.Equals(""))
-                        {
-                            this.Angular_Start_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue));
-                        }
-                    }
-                    catch (Exception)
-                    {
-
+                        this.Angular_Start_textbox.Value = (decimal)(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);
                     }
                 }
                 else
@@ -339,27 +229,13 @@ namespace EditorsLibrary
                     this.Angular_End.Checked = true;
                     this.Angular_End_textbox.Enabled = true;
                     this.Angular_Start_textbox.Enabled = true;
-                    try
+                    if (this.Angular_End_textbox.Text.Equals(""))
                     {
-                        if (this.Angular_End_textbox.Text.Equals(""))
-                        {
-                            this.Angular_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue));
-                        }
+                        this.Angular_End_textbox.Value = (decimal)(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionEndLimit).ModelValue);
                     }
-                    catch (Exception)
-                    {
-
-                    }
-                    try
-                    {
                     if (this.Angular_Start_textbox.Text.Equals(""))
                     {
-                        this.Angular_Start_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue));
-                    }
-                }
-                    catch (Exception)
-                    {
-
+                        this.Angular_Start_textbox.Value = (decimal)(((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.AngularPositionStartLimit).ModelValue);
                     }
                 }
                 else
@@ -375,16 +251,9 @@ namespace EditorsLibrary
             if (this.Linear_Start.Checked)
             {
                 this.Linear_Start_textbox.Enabled = true;
-                try
+                if (this.Linear_Start_textbox.Text.Equals(""))
                 {
-                    if (this.Linear_Start_textbox.Text.Equals(""))
-                    {
-                        this.Linear_Start_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue) / 2.54);
-                    }
-                }
-                catch (Exception)
-                {
-
+                    this.Linear_Start_textbox.Value = (decimal)((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionStartLimit).ModelValue) / 2.54);
                 }
             }
             else
@@ -398,16 +267,9 @@ namespace EditorsLibrary
             if (this.Linear_End.Checked)
             {
                 this.Linear_End_textbox.Enabled = true;
-                try
+                if (this.Linear_End_textbox.Text.Equals(""))
                 {
-                    if (this.Linear_End_textbox.Text.Equals(""))
-                    {
-                        this.Linear_End_textbox.Text = Convert.ToString((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue) / 2.54);
-                    }
-                }
-                catch (Exception)
-                {
-
+                    this.Linear_End_textbox.Value = (decimal)((((ModelParameter)((InventorSkeletalJoint)joint).GetWrapped().asmJoint.LinearPositionEndLimit).ModelValue) / 2.54);
                 }
             }
             else
