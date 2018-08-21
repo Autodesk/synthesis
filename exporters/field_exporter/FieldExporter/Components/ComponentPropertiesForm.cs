@@ -50,6 +50,7 @@ namespace FieldExporter.Controls
         public ComponentPropertiesForm(ComponentPropertiesTabPage tabPage)
         {
             InitializeComponent();
+            dynamicCheckBox_CheckedChanged(this, new EventArgs());
 
             Dock = DockStyle.Fill;
 
@@ -94,6 +95,15 @@ namespace FieldExporter.Controls
         public float GetMass()
         {
             return (float)Decimal.ToDouble(massNumericUpDown.Value);
+        }
+
+        /// <summary>
+        /// Returns the configured gamepiece settings, or null if not a gamepiece.
+        /// </summary>
+        /// <returns></returns>
+        public Exporter.Gamepiece GetGamepiece()
+        {
+            return gamepieceProperties.GetGamepiece(ParentTabPage.Name);
         }
 
         /// <summary>
@@ -327,11 +337,14 @@ namespace FieldExporter.Controls
         {
             if (dynamicCheckBox.Checked)
             {
-                dynamicGroupBox.Enabled = true;
+                massNumericUpDown.Enabled = true;
+                gamepieceProperties.Enabled = true;
             }
             else
             {
-                dynamicGroupBox.Enabled = false;
+                massNumericUpDown.Enabled = false;
+                gamepieceProperties.IsGamepiece = false;
+                gamepieceProperties.Enabled = false;
                 massNumericUpDown.Value = 0;
             }
         }
