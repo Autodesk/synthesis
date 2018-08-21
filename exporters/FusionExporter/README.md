@@ -11,7 +11,8 @@ Autodesk Fusion 360 Robot exporter using the Fusion 360 API for C++.
 ### Steps to build and debug (first time):
 1.  Install Fusion 360
 2.  Open solution (`FusionSynth.sln`) as administrator
-3.  Change Debug command in project settings to Fusion360.exe (usually located in "AppData\Local\Autodesk\webdeploy\production\<varies>")
+3.  Change Debug command in project settings to Fusion360.exe  
+    (Usually located in "AppData\Local\Autodesk\webdeploy\production\<varies>")
 4.  Build the solution
 5.  Start the debugger
 6.  In Fusion 360, open the Add-Ins menu, select the Add-Ins tab, and click the ➕ icon next to "My Add-Ins"
