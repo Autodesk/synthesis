@@ -115,7 +115,7 @@ namespace FieldExporter.Components
         /// <param name="enumerator"></param>
         /// <param name="fullname"></param>
         /// <returns></returns>
-        private ComponentOccurrence FindComponentByFullName(IEnumerator enumerator, string fullname)
+        static public ComponentOccurrence FindComponentByFullName(IEnumerator enumerator, string fullname)
         {
             ComponentOccurrence component = null;
             string componentName = fullname.Contains('\\') ? fullname.Substring(0, fullname.IndexOf('\\')) : fullname;
@@ -163,6 +163,53 @@ namespace FieldExporter.Components
 
             iterator.RemoveByKey(node.Name);
             iterator.Add(node);
+        }
+
+        /// <summary>
+        /// Adds the supplied component as a node with only its parents.
+        /// </summary>
+        /// <param name="component"></param>
+        public void AddComponentShallow(string componentPath)
+        {
+            TreeNode node = new TreeNode(componentPath.Substring(componentPath.LastIndexOf('\\') + 1));
+            node.Name = node.Text;
+            node.Tag = null;
+            
+            node = AddComponentParentsShallow(componentPath, node);
+
+            // Insert node into tree without overriding existing nodes
+            TreeNodeCollection iterator = Nodes;
+
+            while (iterator.ContainsKey(node.Name))
+            {
+                iterator = iterator[iterator.IndexOfKey(node.Name)].Nodes;
+                node = node.Nodes[0];
+            }
+
+            iterator.RemoveByKey(node.Name);
+            iterator.Add(node);
+        }
+
+        /// <summary>
+        /// Adds parents to a TreeNode based on its Inventor component correspondant.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private TreeNode AddComponentParentsShallow(string path, TreeNode node)
+        {
+            int lastSection = path.LastIndexOf('\\');
+            if (lastSection == -1)
+                return node;
+            path = path.Substring(0, lastSection);
+
+            TreeNode currentNode = new TreeNode(path.Substring(path.LastIndexOf('\\') + 1));
+            currentNode.Name = currentNode.Text;
+            currentNode.Tag = null;
+
+            currentNode.Nodes.Add(node);
+
+            return AddComponentParentsShallow(path, currentNode);
         }
 
         /// <summary>
