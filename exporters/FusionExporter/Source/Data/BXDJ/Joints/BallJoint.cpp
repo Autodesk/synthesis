@@ -1,4 +1,5 @@
 #include "BallJoint.h"
+#include <Fusion/Components/AsBuiltJoint.h>
 #include <Core/Geometry/Vector3D.h>
 #include "../ConfigData.h"
 #include "../Driver.h"
@@ -12,13 +13,18 @@ BallJoint::BallJoint(const BallJoint & jointToCopy) : Joint(jointToCopy)
 
 BallJoint::BallJoint(RigidNode * parent, core::Ptr<fusion::Joint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
 {
-	this->fusionJointMotion = this->getFusionJoint()->jointMotion();
+	this->fusionJointMotion = fusionJoint->jointMotion();
+}
+
+BallJoint::BallJoint(RigidNode * parent, core::Ptr<fusion::AsBuiltJoint> fusionJoint, core::Ptr<fusion::Occurrence> parentOccurrence) : Joint(parent, fusionJoint, parentOccurrence)
+{
+	this->fusionJointMotion = fusionJoint->jointMotion();
 }
 
 void BallJoint::applyConfig(const ConfigData & config)
 {
 	// Update wheels with actual mesh information
-	std::unique_ptr<Driver> driver = config.getDriver(getFusionJoint());
+	std::unique_ptr<Driver> driver = searchDriver(config);
 	if (driver != nullptr)
 	{
 		setDriver(*driver);
