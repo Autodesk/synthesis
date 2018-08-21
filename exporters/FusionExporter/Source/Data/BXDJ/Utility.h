@@ -20,5 +20,12 @@ namespace BXDJ
 		/// \return Unique ID for the joint.
 		///
 		std::string getUniqueJointID(adsk::core::Ptr<adsk::fusion::Joint> joint);
+
+		///
+		/// Generates a unique identifier for a Fusion as-built joint.
+		/// \param joint As-built joint to create identifier for.
+		/// \return Unique ID for the joint.
+		///
+		std::string getUniqueJointID(adsk::core::Ptr<adsk::fusion::AsBuiltJoint> joint);
 	}
 }
