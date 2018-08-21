@@ -11,7 +11,7 @@ public static partial class BXDJSkeleton
     /// <summary>
     /// Represents the current version of the BXDA file.
     /// </summary>
-    public const string BXDJ_CURRENT_VERSION = "4.0.0";
+    public const string BXDJ_CURRENT_VERSION = "4.1.0";
 
     /// <summary>
     /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name.
@@ -288,7 +288,8 @@ public static partial class BXDJSkeleton
         writer.WriteElementString("LowerLimit", driver.lowerLimit.ToString("F4"));
         writer.WriteElementString("UpperLimit", driver.upperLimit.ToString("F4"));
         writer.WriteElementString("SignalType", driver.isCan ? "CAN" : "PWM");
-        
+        writer.WriteElementString("HasBrake", driver.hasBrake.ToString().ToLower());
+
         foreach (JointDriverMeta meta in driver.MetaInfo.Values)
         {
             WriteJointDriverMeta(meta, writer);
@@ -415,6 +416,8 @@ public static partial class BXDJSkeleton
 
             switch (version.Substring(0, version.LastIndexOf('.')))// sends each version of the BXDJ to the appropriate reader
             {
+                case "4.1":
+                    return ReadSkeleton_4_1(path);
                 case "4.0":
                     return ReadSkeleton_4_0(path);
                 case "3.0":

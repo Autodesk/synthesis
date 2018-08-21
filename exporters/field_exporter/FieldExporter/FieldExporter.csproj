@@ -119,6 +119,12 @@
     <Compile Include="Components\FieldMetaForm.Designer.cs">
       <DependentUpon>FieldMetaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\GamepiecePropertiesForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\GamepiecePropertiesForm.Designer.cs">
+      <DependentUpon>GamepiecePropertiesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Exporter\FieldProperties.cs" />
     <Compile Include="Exporter\Gamepiece.cs" />
     <Compile Include="Components\ExportForm.cs">
@@ -235,6 +241,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\GamepiecePropertiesForm.resx">
+      <DependentUpon>GamepiecePropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\InventorTreeView.resx">
       <DependentUpon>InventorTreeView.cs</DependentUpon>

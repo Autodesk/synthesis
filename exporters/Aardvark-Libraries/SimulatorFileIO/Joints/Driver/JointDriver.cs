@@ -25,7 +25,12 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// </summary>
     /// <param name="OutputGear">Output gear ratio</param>
     public double OutputGear { get; set; }// getter/setter for the output gear internal data structure
-
+    
+    /// <summary>
+    /// Whether or not the driver has an attached brake
+    /// </summary>
+    /// <param name="hasBrake">Determines whether or not the joint has a brake</param>
+    public bool hasBrake { get; set; }// getter/setter for the output gear internal data structure
 
     //wat
     public bool isCan = false;
