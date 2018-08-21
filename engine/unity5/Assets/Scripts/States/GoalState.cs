@@ -75,7 +75,7 @@ namespace Synthesis.States
             StateMachine.SceneGlobal.Link<GoalState>(moveArrows);
 
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-            lastCameraState = dynamicCamera.cameraState;
+            lastCameraState = dynamicCamera.ActiveState;
 
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, goalIndicator));
 

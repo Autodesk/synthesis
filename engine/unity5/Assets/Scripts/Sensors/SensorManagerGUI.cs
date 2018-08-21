@@ -176,7 +176,7 @@ namespace Synthesis.Sensors
             isChoosingOption = !isChoosingOption;
             if (isChoosingOption)
             {
-                preConfigState = dynamicCamera.cameraState;
+                preConfigState = dynamicCamera.ActiveState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera));
                 ShowAllSensors();
             }
@@ -500,7 +500,7 @@ namespace Synthesis.Sensors
             configureSensorPanel.SetActive(true);
             sensorConfigHeader.GetComponentInChildren<Text>().text = currentSensor.name;
 
-            if (preConfigState == null) preConfigState = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().cameraState;
+            if (preConfigState == null) preConfigState = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().ActiveState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
         }
 
