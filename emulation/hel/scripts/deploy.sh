@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Deploys files to the emulator
+# If no argument is specified, then deploy libhel.so, FRCUserProgram, and the tests
+# If a file is specified, deploy that
+
 success=true
 libhel_source=lib/libhel.so
 user_program_source=user-code/FRCUserProgram

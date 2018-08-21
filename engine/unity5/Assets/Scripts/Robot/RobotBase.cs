@@ -101,7 +101,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// The starting position of the robot.
         /// </summary>
-        public Vector3 robotStartPosition = new Vector3(0f, 3f, 0f);/*new Vector3(0f, 1f, 0f);*/
+        protected Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
 
         /// <summary>
         /// The starting orientation of the robot.
