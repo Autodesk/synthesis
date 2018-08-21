@@ -2,7 +2,7 @@
 
 case "$1" in
     "emulator")
-        killall qemu-system-arm;
+        killall qemu-system-arm &> /dev/null;
         rm -rf vm-package vm-package.tar.gz vm_lock;
         ;;
     "cmake")
