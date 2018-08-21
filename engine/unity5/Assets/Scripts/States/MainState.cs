@@ -22,6 +22,7 @@ using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
+using UnityEngine.Analytics;
 
 namespace Synthesis.States
 {
@@ -298,6 +299,18 @@ namespace Synthesis.States
                 {
                     robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
+                    if (!PlayerPrefs.HasKey(robot.RootNode.ModelFullID))
+                    {
+                        if (PlayerPrefs.GetInt("analytics") == 1)
+                        {
+                            PlayerPrefs.SetString(robot.RootNode.ModelFullID, "analyzed");
+                            Analytics.CustomEvent(robot.RootNode.exportedWith == 0 ? "Inventor" : "Fusion", new Dictionary<string, object> {});
+                            Analytics.CustomEvent("Robot", new Dictionary<string, object>
+                            {
+                                {"exporter",  robot.RootNode.exportedWith == 0 ? "Inventor" : "Fusion"}
+                            });
+                        }
+                    }
                 }
 
                 robot.FilePath = robotPath;
