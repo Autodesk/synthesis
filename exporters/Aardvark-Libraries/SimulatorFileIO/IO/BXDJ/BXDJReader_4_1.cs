@@ -16,7 +16,7 @@ public partial class BXDJSkeleton
     /// The XSD markup to ensure valid document reading.
     /// This is the schema that the engine reads against when reading back the BXDJ
     /// </summary>
-    private const string BXDJ_XSD_4_0 =
+    private const string BXDJ_XSD_4_1 =
         @"
         <xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
         
@@ -48,6 +48,7 @@ public partial class BXDJSkeleton
         <xs:element name='SideExtremeSlip' type='xs:decimal'/>
         <xs:element name='SideExtremeValue' type='xs:decimal'/>
         <xs:element name='IsDriveWheel' type='xs:boolean'/>
+        <xs:element name='HasBrake' type='xs:boolean'/>
         <xs:element name='Port1' type='xs:integer'/>
         <xs:element name='Port2' type='xs:integer'/>
         <xs:element name='InputGear' type='xs:double'/>
@@ -162,7 +163,7 @@ public partial class BXDJSkeleton
         <xs:attribute name='Version'>
             <xs:simpleType>
                 <xs:restriction base='xs:string'>
-                    <xs:pattern value='4\.0\.\d+'/>
+                    <xs:pattern value='4\.1\.\d+'/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
@@ -273,6 +274,7 @@ public partial class BXDJSkeleton
                     <xs:element ref='LowerLimit'/>
                     <xs:element ref='UpperLimit'/>
                     <xs:element ref='SignalType'/>
+                    <xs:element ref='HasBrake'/>
                     <xs:choice maxOccurs='unbounded' minOccurs='0'>
                         <xs:element ref='ElevatorDriverMeta'/>
                         <xs:element ref='PneumaticDriverMeta'/>
@@ -332,7 +334,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="path"></param>
     /// <param name="useValidation"></param>
-    private static RigidNode_Base ReadSkeleton_4_0(string path, bool useValidation = true)
+    private static RigidNode_Base ReadSkeleton_4_1(string path, bool useValidation = true)
     {
         RigidNode_Base root = null;
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
@@ -341,7 +343,7 @@ public partial class BXDJSkeleton
 
         if (useValidation)// if the schema should be validated, then run the BXDJ against the schema to make sure all the value are there, oftentimes robot instace invalid issues are found here
         {
-            settings.Schemas.Add(XmlSchema.Read(new StringReader(BXDJ_XSD_4_0), null));
+            settings.Schemas.Add(XmlSchema.Read(new StringReader(BXDJ_XSD_4_1), null));
             settings.ValidationType = ValidationType.Schema;
         }
         else
@@ -363,7 +365,7 @@ public partial class BXDJSkeleton
                         break;
                     case "Node":
                         // Reads the current element as a node.
-                        ReadNode_4_0(reader.ReadSubtree(), nodes, ref root);
+                        ReadNode_4_1(reader.ReadSubtree(), nodes, ref root);
                         break;
                 }
             }
@@ -388,7 +390,7 @@ public partial class BXDJSkeleton
     /// <param name="reader"></param>
     /// <param name="nodes"></param>
     /// <param name="root"></param>
-    private static void ReadNode_4_0(XmlReader reader, List<RigidNode_Base> nodes, ref RigidNode_Base root)
+    private static void ReadNode_4_1(XmlReader reader, List<RigidNode_Base> nodes, ref RigidNode_Base root)
     {
         int parentID = -1;
 
@@ -417,31 +419,31 @@ public partial class BXDJSkeleton
                     break;
                 case "BallJoint":
                     // Reads the current element as a BallJoint.
-                    nodes[parentID].AddChild(ReadBallJoint_4_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadBallJoint_4_1(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "CylindricalJoint":
                     // Reads the current element as a CylindricalJoint.
-                    nodes[parentID].AddChild(ReadCylindricalJoint_4_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadCylindricalJoint_4_1(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "LinearJoint":
                     // Reads the current element as a LinearJoint.
-                    nodes[parentID].AddChild(ReadLinearJoint_4_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadLinearJoint_4_1(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "PlanarJoint":
                     // Reads the current element as a PlanarJoint.
-                    nodes[parentID].AddChild(ReadPlanarJoint_4_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadPlanarJoint_4_1(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "RotationalJoint":
                     // Reads the current elemenet as a RotationalJoint.
-                    nodes[parentID].AddChild(ReadRotationalJoint_4_0(reader.ReadSubtree()), nodes[nodes.Count - 1]);
+                    nodes[parentID].AddChild(ReadRotationalJoint_4_1(reader.ReadSubtree()), nodes[nodes.Count - 1]);
                     break;
                 case "JointDriver":
                     // Add a joint driver to the skeletal joint of the current node.
-                    nodes[nodes.Count - 1].GetSkeletalJoint().cDriver = ReadJointDriver_4_0(reader.ReadSubtree());
+                    nodes[nodes.Count - 1].GetSkeletalJoint().cDriver = ReadJointDriver_4_1(reader.ReadSubtree());
                     break;
                 case "RobotSensor":
                     // Add a sensor to the skeletal joint of the current node.
-                    nodes[nodes.Count - 1].GetSkeletalJoint().attachedSensors.Add(ReadRobotSensor_4_0(reader.ReadSubtree()));
+                    nodes[nodes.Count - 1].GetSkeletalJoint().attachedSensors.Add(ReadRobotSensor_4_1(reader.ReadSubtree()));
                     break;
             }
         }
@@ -452,7 +454,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static BallJoint_Base ReadBallJoint_4_0(XmlReader reader)
+    private static BallJoint_Base ReadBallJoint_4_1(XmlReader reader)
     {
         // Create a new BallJoint_Base.
         BallJoint_Base ballJoint = (BallJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.BALL);
@@ -463,7 +465,7 @@ public partial class BXDJSkeleton
             {
                 case "BXDVector3":
                     // Read the BXDVector3 as the basePoint.
-                    ballJoint.basePoint = ReadBXDVector4_0(reader.ReadSubtree());
+                    ballJoint.basePoint = ReadBXDVector4_1(reader.ReadSubtree());
                     break;
             }
         }
@@ -476,7 +478,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static CylindricalJoint_Base ReadCylindricalJoint_4_0(XmlReader reader)
+    private static CylindricalJoint_Base ReadCylindricalJoint_4_1(XmlReader reader)
     {
         // Create a new CylindricalJoint_Base.
         CylindricalJoint_Base cylindricalJoint = (CylindricalJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.CYLINDRICAL);
@@ -490,11 +492,11 @@ public partial class BXDJSkeleton
                     {
                         case "BasePoint":
                             // Assign the BXDVector3 to the basePoint.
-                            cylindricalJoint.basePoint = ReadBXDVector4_0(reader.ReadSubtree());
+                            cylindricalJoint.basePoint = ReadBXDVector4_1(reader.ReadSubtree());
                             break;
                         case "Axis":
                             // Assign the BXDVector3 to the axis.
-                            cylindricalJoint.axis = ReadBXDVector4_0(reader.ReadSubtree());
+                            cylindricalJoint.axis = ReadBXDVector4_1(reader.ReadSubtree());
                             break;
                     }
                     break;
@@ -536,7 +538,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static LinearJoint_Base ReadLinearJoint_4_0(XmlReader reader)
+    private static LinearJoint_Base ReadLinearJoint_4_1(XmlReader reader)
     {
         // Create a new LinearJoint_Base.
         LinearJoint_Base linearJoint = (LinearJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.LINEAR);
@@ -550,11 +552,11 @@ public partial class BXDJSkeleton
                     {
                         case "BasePoint":
                             // Assign the BXDVector3 to the basePoint.
-                            linearJoint.basePoint = ReadBXDVector4_0(reader.ReadSubtree());
+                            linearJoint.basePoint = ReadBXDVector4_1(reader.ReadSubtree());
                             break;
                         case "Axis":
                             // Assign the BXDVector3 to the axis.
-                            linearJoint.axis = ReadBXDVector4_0(reader.ReadSubtree());
+                            linearJoint.axis = ReadBXDVector4_1(reader.ReadSubtree());
                             break;
                     }
                     break;
@@ -583,7 +585,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static PlanarJoint_Base ReadPlanarJoint_4_0(XmlReader reader)
+    private static PlanarJoint_Base ReadPlanarJoint_4_1(XmlReader reader)
     {
         // Create a new PlanarJoint_Base.
         PlanarJoint_Base planarJoint = (PlanarJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.PLANAR);
@@ -597,11 +599,11 @@ public partial class BXDJSkeleton
                     {
                         case "Normal":
                             // Assign the BXDVector3 to the normal.
-                            planarJoint.normal = ReadBXDVector4_0(reader.ReadSubtree());
+                            planarJoint.normal = ReadBXDVector4_1(reader.ReadSubtree());
                             break;
                         case "BasePoint":
                             // Assign the BXDVector3 to the basePoint.s
-                            planarJoint.basePoint = ReadBXDVector4_0(reader.ReadSubtree());
+                            planarJoint.basePoint = ReadBXDVector4_1(reader.ReadSubtree());
                             break;
                     }
                     break;
@@ -616,7 +618,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static RotationalJoint_Base ReadRotationalJoint_4_0(XmlReader reader)
+    private static RotationalJoint_Base ReadRotationalJoint_4_1(XmlReader reader)
     {
         // Create a new RotationalJoint_Base.
         RotationalJoint_Base rotationalJoint = (RotationalJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.ROTATIONAL);
@@ -630,11 +632,11 @@ public partial class BXDJSkeleton
                     {
                         case "BasePoint":
                             // Read the BXDVector3 as the basePoint.
-                            rotationalJoint.basePoint = ReadBXDVector4_0(reader.ReadSubtree());
+                            rotationalJoint.basePoint = ReadBXDVector4_1(reader.ReadSubtree());
                             break;
                         case "Axis":
                             // Read the BXDVector3 as the axis.
-                            rotationalJoint.axis = ReadBXDVector4_0(reader.ReadSubtree());
+                            rotationalJoint.axis = ReadBXDVector4_1(reader.ReadSubtree());
                             break;
                     }
                     break;
@@ -662,7 +664,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static BXDVector3 ReadBXDVector4_0(XmlReader reader)
+    private static BXDVector3 ReadBXDVector4_1(XmlReader reader)
     {
         BXDVector3 vec = new BXDVector3();
 
@@ -693,7 +695,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static JointDriver ReadJointDriver_4_0(XmlReader reader)
+    private static JointDriver ReadJointDriver_4_1(XmlReader reader)
     {
         JointDriver driver = null;
 
@@ -732,21 +734,25 @@ public partial class BXDJSkeleton
                     // Assign a value to the upperLimit.
                     driver.upperLimit = float.Parse(reader.ReadElementContentAsString());
                     break;
+                case "HasBrake":
+                    // Assign a value to the upperLimit.
+                    driver.hasBrake = reader.ReadElementContentAsBoolean();
+                    break;
                 case "SignalType":
                     // Assign a value to isCan.
                     driver.isCan = reader.ReadElementContentAsString().Equals("CAN") ? true : false;
                     break;
                 case "ElevatorDriverMeta":
                     // Add an ElevatorDriverMeta.
-                    driver.AddInfo(ReadElevatorDriverMeta_4_0(reader.ReadSubtree()));
+                    driver.AddInfo(ReadElevatorDriverMeta_4_1(reader.ReadSubtree()));
                     break;
                 case "PneumaticDriverMeta":
                     // Add a PneumaticsDriverMeta.
-                    driver.AddInfo(ReadPneumaticDriverMeta_4_0(reader.ReadSubtree()));
+                    driver.AddInfo(ReadPneumaticDriverMeta_4_1(reader.ReadSubtree()));
                     break;
                 case "WheelDriverMeta":
                     // Add a WheelDriverMeta.
-                    driver.AddInfo(ReadWheelDriverMeta_4_0(reader.ReadSubtree()));
+                    driver.AddInfo(ReadWheelDriverMeta_4_1(reader.ReadSubtree()));
                     break;
             }
         }
@@ -759,7 +765,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static ElevatorDriverMeta ReadElevatorDriverMeta_4_0(XmlReader reader)
+    private static ElevatorDriverMeta ReadElevatorDriverMeta_4_1(XmlReader reader)
     {
         // Create a new ElevatorDriveMeta.
         ElevatorDriverMeta elevatorDriverMeta = new ElevatorDriverMeta();
@@ -783,7 +789,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static PneumaticDriverMeta ReadPneumaticDriverMeta_4_0(XmlReader reader)
+    private static PneumaticDriverMeta ReadPneumaticDriverMeta_4_1(XmlReader reader)
     {
         // Create a new pneumaticDriverMeta.
         PneumaticDriverMeta pneumaticDriverMeta = new PneumaticDriverMeta();
@@ -811,7 +817,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static WheelDriverMeta ReadWheelDriverMeta_4_0(XmlReader reader)
+    private static WheelDriverMeta ReadWheelDriverMeta_4_1(XmlReader reader)
     {
         // Create new WheelDriveMeta.
         WheelDriverMeta wheelDriverMeta = new WheelDriverMeta();
@@ -834,7 +840,7 @@ public partial class BXDJSkeleton
                     break;
                 case "BXDVector3":
                     // Assign a value to the center.
-                    wheelDriverMeta.center = ReadBXDVector4_0(reader.ReadSubtree());
+                    wheelDriverMeta.center = ReadBXDVector4_1(reader.ReadSubtree());
                     break;
                 case "ForwardAsympSlip":
                     // Assign a value to the forwardAsympSlip.
@@ -883,7 +889,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    private static RobotSensor ReadRobotSensor_4_0(XmlReader reader)
+    private static RobotSensor ReadRobotSensor_4_1(XmlReader reader)
     {
         RobotSensor robotSensor = null;
        //throw (new Exception("Reading thing"));
