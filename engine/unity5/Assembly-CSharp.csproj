@@ -263,6 +263,7 @@
     <Compile Include="Assets\Scripts\Input\Inputs\JoystickInput.cs" />
     <Compile Include="Assets\Scripts\Input\Inputs\KeyboardInput.cs" />
     <Compile Include="Assets\Scripts\Input\Inputs\MouseInput.cs" />
+    <Compile Include="Assets\Scripts\Input\JoystickSerializer.cs" />
     <Compile Include="Assets\Scripts\Input\KeyMapping.cs" />
     <Compile Include="Assets\Scripts\Input\Player.cs" />
     <Compile Include="Assets\Scripts\Input\SettingsMode.cs" />
