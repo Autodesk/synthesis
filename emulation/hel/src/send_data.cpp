@@ -6,7 +6,7 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    constexpr char ZEROED_SERIALIZATION_DATA[] = "{\"roborio\":{\"pwm_hdrs\":[0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000],\"relays\":[\"OFF\",\"OFF\",\"OFF\",\"OFF\"],\"analog_outputs\":[0.000000,0.000000],\"digital_mxp\":[{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000}],\"digital_hdrs\":[0,0,0,0,0,0,0,0,0,0],\"can_motor_controllers\":[]}}\x1B";
+    constexpr char ZEROED_SERIALIZATION_DATA[] = "{\"roborio\":{\"pwm_hdrs\":[0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000],\"relays\":[\"OFF\",\"OFF\",\"OFF\",\"OFF\"],\"analog_outputs\":[0.000000,0.000000],\"digital_mxp\":[{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000}],\"digital_hdrs\":[0,0,0,0,0,0,0,0,0,0],\"can_motor_controllers\":[]}}\x1B"; //TODO replace with shallow and deep versions
 
     SendData::SendData():serialized_data(""),new_data(true),enabled(false),pwm_hdrs(0.0), relays(RelaySystem::State::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
 
@@ -40,8 +40,8 @@ namespace hel{
                     remapped_i -= 4;
                 }
                 digital_mxp[i].value = PWMSystem::getPercentOutput(roborio.pwm_system.getMXPPulseWidth(remapped_i));
+                break;
             }
-            break;
             case MXPData::Config::SPI:
             case MXPData::Config::I2C:
             default:
@@ -72,7 +72,7 @@ namespace hel{
             auto values = roborio.digital_system.getOutputs().Headers;
             auto pulses = roborio.digital_system.getPulses().Headers;
             for(unsigned i = 0; i < digital_hdrs.size(); i++){
-                if(checkBitHigh(output_mode.Headers, i)){
+                if(checkBitHigh(output_mode.Headers, i)){ //if digital port is set for output, then set digital output
                     digital_hdrs[i] = (checkBitHigh(values, i) | checkBitHigh(pulses, i));
                 }
             }
@@ -83,12 +83,12 @@ namespace hel{
 
     std::string SendData::toString()const{
         std::string s = "(";
-        s += "pwm_hdrs:" + as_string(pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
-        s += "relays:" + as_string(relays, std::function<std::string(RelaySystem::State)>(static_cast<std::string(*)(RelaySystem::State)>(as_string))) + ", ";
-        s += "analog_outputs:" + as_string(analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
-        s += "digital_mxp:" + as_string(digital_mxp, std::function<std::string(MXPData)>(&MXPData::toString)) + ", ";
-        s += "digital_hdrs:" + as_string(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(as_string))) + ", ";
-        s += "can_motor_controllers:" + as_string(can_motor_controllers, std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){ return "[" + std::to_string(a.first) + ", " + a.second.toString() + "]";}));
+        s += "pwm_hdrs:" + asString(pwm_hdrs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
+        s += "relays:" + asString(relays, std::function<std::string(RelaySystem::State)>(static_cast<std::string(*)(RelaySystem::State)>(asString))) + ", ";
+        s += "analog_outputs:" + asString(analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
+        s += "digital_mxp:" + asString(digital_mxp, std::function<std::string(MXPData)>(&MXPData::toString)) + ", ";
+        s += "digital_hdrs:" + asString(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(asString))) + ", ";
+        s += "can_motor_controllers:" + asString(can_motor_controllers, std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){ return "[" + std::to_string(a.first) + ", " + a.second.toString() + "]";}));
         s += ")";
         return s;
     }
@@ -102,7 +102,7 @@ namespace hel{
             "\"relays\"",
             relays,
             std::function<std::string(RelaySystem::State)>([&](RelaySystem::State r){
-                                                               return quote(as_string(r));
+                                                               return quote(asString(r));
                                                            })
             );
     }
@@ -123,7 +123,7 @@ namespace hel{
         serialized_data += serializeList(
             "\"digital_hdrs\"",
             digital_hdrs,
-            std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(as_string))
+            std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(asString))
             );
     }
 

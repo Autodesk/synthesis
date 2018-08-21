@@ -79,7 +79,17 @@ namespace hel{
 
             std::vector<int32_t> values;
 
+            /**
+             * Constructor for AnalogInput
+             */
+
             AnalogInput()noexcept;
+
+            /**
+             * Constructor for AnalogInput
+             * \param source An AnalogInput object to copy
+             */
+
             AnalogInput(const AnalogInput&)noexcept;
         };
 

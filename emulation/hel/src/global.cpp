@@ -23,7 +23,7 @@ namespace hel{
     }
 
     uint64_t Global::getCurrentTime()noexcept{
-        return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()/TIME_CONSTANT).count(); //TODO system time runs fast
+        return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()/TIME_CONSTANT).count(); //TODO system time runs fast, using a scalar for now
     }
 
     uint64_t Global::getFPGAStartTime()const noexcept{
@@ -66,7 +66,7 @@ namespace hel{
         }
 
         uint16_t readVersion(tRioStatusCode* /*status*/){
-          return 2018; //WPILib assumes this is the competition year
+            return 2018; //WPILib assumes this is the competition year
         }
 
         uint32_t readLocalTime(tRioStatusCode* /*status*/){
@@ -92,16 +92,16 @@ std::thread sync_thread_receive;
 
 namespace nFPGA{
     namespace nRoboRIO_FPGANamespace{
-    	tGlobal* tGlobal::create(tRioStatusCode* /*status*/){
-          sync_thread_send = std::thread([](){
-                                        asio::io_service service;
-                                        hel::SyncServer serv(service);
-                                    });
-          sync_thread_receive = std::thread([](){
-                                             asio::io_service service;
-                                             hel::SyncClient serv(service);
-                                         });
-          return new hel::GlobalManager();
-    	}
+        tGlobal* tGlobal::create(tRioStatusCode* /*status*/){
+            sync_thread_send = std::thread([](){
+                                               asio::io_service service;
+                                               hel::SyncServer serv(service);
+                                           });
+            sync_thread_receive = std::thread([](){
+                                                  asio::io_service service;
+                                                  hel::SyncClient serv(service);
+                                              });
+            return new hel::GlobalManager();
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace hel {
             acceptor.accept(socket);
             std::string data = "";
             while(1) {
-                auto instance = hel::SendDataManager::getInstance();
+                auto instance = SendDataManager::getInstance();
 
                 if(instance.first->hasNewData()){
                     data = instance.first->serializeShallow();

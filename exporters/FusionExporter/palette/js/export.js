@@ -119,6 +119,7 @@ function applyConfigData(configData)
 
         fieldset.id = 'joint-config-' + String(i);
         fieldset.dataset.jointId = joints[i].id;
+        fieldset.dataset.asBuilt = joints[i].asBuilt ? 'true' : 'false';
         fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
@@ -319,6 +320,7 @@ function readConfigData()
         var joint = {
             'driver': null,
             'id': fieldset.dataset.jointId,
+            'asBuilt': fieldset.dataset.asBuilt == 'true',
             'name': getElByClass(fieldset, 'joint-config-legend').innerHTML,
             'type': parseInt(fieldset.dataset.joint_type),
             'sensors': JSON.parse(fieldset.dataset.sensors)

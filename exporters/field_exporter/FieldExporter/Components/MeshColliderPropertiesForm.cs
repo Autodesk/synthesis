@@ -19,9 +19,15 @@ namespace FieldExporter.Components
         /// Used for getting a collider from information contained in the MeshColliderPropertiesForm.
         /// </summary>
         /// <returns></returns>
-        PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
+        PropertySet.PropertySetCollider ColliderPropertiesForm.Collider
         {
-            return new PropertySet.MeshCollider(convexCheckBox.Checked);
+            get => new PropertySet.MeshCollider(convexCheckBox.Checked);
+
+            set
+            {
+                if (value is PropertySet.MeshCollider mesh)
+                    convexCheckBox.Checked = mesh.Convex;
+            }
         }
     }
 }

@@ -13,12 +13,20 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Used for getting a collider from information contained in the SphereColliderPropertiesForm.
+        /// Used for getting/settings a collider from information contained in the SphereColliderPropertiesForm.
         /// </summary>
         /// <returns></returns>
-        PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
+        PropertySet.PropertySetCollider ColliderPropertiesForm.Collider
         {
-            return new PropertySet.SphereCollider((float)scaleUpDown.Value);
+            get => new PropertySet.SphereCollider((float)scaleUpDown.Value);
+
+            set
+            {
+                if (value is PropertySet.SphereCollider sphere)
+                {
+                    scaleUpDown.Value = (decimal)sphere.Scale;
+                }
+            }
         }
     }
 }

@@ -17,9 +17,15 @@ namespace FieldExporter.Components
             InitializeComponent();
         }
 
-        public static BXDVector3[] getSpawnpoints()
+        public static BXDVector3[] GetSpawnpoints()
         {
             return spawnpoints.ToArray();
+        }
+
+        public void SetSpawnpoints(BXDVector3[] points)
+        {
+            spawnpoints = new List<BXDVector3>(points);
+            updatePointView();
         }
 
         /// <summary>
