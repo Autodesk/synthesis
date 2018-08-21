@@ -30465,8 +30465,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231147}
-        m_MethodName: ToggleAddRobotWindow
+      - m_Target: {fileID: 1741231145}
+        m_MethodName: ToggleChangePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
