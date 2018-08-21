@@ -41,8 +41,27 @@ namespace FieldExporter.Components
                 return null;
         }
 
+        /// <summary>
+        /// Sets the configured gamepiece settings, or null if not a gamepiece.
+        /// </summary>
+        /// <returns></returns>
+        public void SetGamepiece(Exporter.Gamepiece g)
+        {
+            if (g != null)
+            {
+                IsGamepiece = true;
+
+                Spawnpoint = g.spawnpoint;
+                HoldingLimit = g.holdingLimit;
+            }
+            else
+            {
+                IsGamepiece = false;
+            }
+        }
+
         private BXDVector3 _spawnpoint;
-        BXDVector3 Spawnpoint
+        public BXDVector3 Spawnpoint
         {
             get => _spawnpoint;
             set
@@ -55,6 +74,23 @@ namespace FieldExporter.Components
 
                 _spawnpoint = value;
                 spawnpointLabel.Text = "Spawnpoint: [" + value.x.ToString("N1") + ',' + value.y.ToString("N1") + ',' + value.z.ToString("N1") + ']';
+            }
+        }
+
+        public ushort HoldingLimit
+        {
+            get => holdingLimitCheckBox.Checked ? (ushort)holdingLimitUpDown.Value : ushort.MaxValue;
+            set
+            {
+                if (value == ushort.MaxValue)
+                {
+                    holdingLimitCheckBox.Checked = false;
+                }
+                else
+                {
+                    holdingLimitCheckBox.Checked = true;
+                    holdingLimitUpDown.Value = value;
+                }
             }
         }
         
@@ -163,14 +199,12 @@ namespace FieldExporter.Components
             if (holdingLimitCheckBox.Checked)
             {
                 holdingLimitUpDown.Enabled = true;
-                holdingLimitUpDown.Value = 1;
-                holdingLimitUpDown.Minimum = 1;
+                HoldingLimit = 1;
             }
             else
             {
                 holdingLimitUpDown.Enabled = false;
-                holdingLimitUpDown.Minimum = 0;
-                holdingLimitUpDown.Value = 0;
+                HoldingLimit = ushort.MaxValue;
             }
         }
     }

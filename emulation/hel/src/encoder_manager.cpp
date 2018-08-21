@@ -6,7 +6,7 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
-    std::string as_string(EncoderManager::Type type){
+    std::string asString(EncoderManager::Type type){
         switch(type){
         case EncoderManager::Type::UNKNOWN:
             return "UNKNOWN";
@@ -18,7 +18,7 @@ namespace hel{
             throw UnhandledEnumConstantException("hel::EncoderManager::Type");
         }
     }
-    std::string as_string(EncoderManager::PortType port_type){
+    std::string asString(EncoderManager::PortType port_type){
         switch(port_type){
         case EncoderManager::PortType::DI:
             return "DI";
@@ -41,7 +41,7 @@ namespace hel{
     }
 
     uint8_t getChannel(uint8_t channel, bool module,EncoderManager::PortType type){
-        if(module){
+        if(module){ //HAL calls this module, but it appears to be simple if it's on the MXP or not
             switch(type){
             case EncoderManager::PortType::AI:
                 return channel + AnalogInputs::NUM_ANALOG_INPUTS_HDRS;
@@ -61,9 +61,7 @@ namespace hel{
         ){
             return false;
         }
-        a = getChannel(a, a_module, a_type);
-        b = getChannel(b, b_module, b_type);
-        if(a != a_channel || b != b_channel){
+        if(getChannel(a, a_module, a_type) != a_channel || getChannel(b, b_module, b_type) != b_channel){
             return false;
         }
         return true;
@@ -71,7 +69,7 @@ namespace hel{
 
     void EncoderManager::updateDevice(){
         auto instance = RoboRIOManager::getInstance();
-        for(unsigned i = 0; i < instance.first->fpga_encoders.size(); i++){
+        for(unsigned i = 0; i < instance.first->fpga_encoders.size(); i++){ //check if FPGA encoder
             tEncoder::tConfig config = instance.first->fpga_encoders[i].getConfig();
             if(checkDevice(config.ASource_Channel,config.ASource_Module,config.ASource_AnalogTrigger,config.BSource_Channel,config.BSource_Module,config.BSource_AnalogTrigger)){
                 type = Type::FPGA_ENCODER;
@@ -80,7 +78,7 @@ namespace hel{
                 return;
             }
         }
-        for(unsigned i = 0; i < instance.first->counters.size(); i++){
+        for(unsigned i = 0; i < instance.first->counters.size(); i++){ //check if counter
             tCounter::tConfig config = instance.first->counters[i].getConfig();
             if(checkDevice(config.UpSource_Channel,config.UpSource_Module,config.UpSource_AnalogTrigger,config.DownSource_Channel,config.DownSource_Module,config.DownSource_AnalogTrigger)){
                 type = Type::COUNTER;
@@ -147,7 +145,7 @@ namespace hel{
         switch(type){
         case Type::UNKNOWN:
             instance.second.unlock();
-            std::cerr<<"Synthesis exception: No matching input found in user code for input configured in robot model (EncoderManager with a channel on "<<as_string(a_type)<<" port "<<((unsigned)a_channel)<<" and b channel on "<<as_string(b_type)<<" port "<<((unsigned)b_channel)<<")\n";
+            std::cerr<<"Synthesis exception: No matching input found in user code for input configured in robot model (EncoderManager with a channel on "<<asString(a_type)<<" port "<<((unsigned)a_channel)<<" and b channel on "<<asString(b_type)<<" port "<<((unsigned)b_channel)<<")\n";
             return;
         case Type::FPGA_ENCODER:
         {
@@ -174,9 +172,9 @@ namespace hel{
     std::string EncoderManager::serialize()const{
         std::string s = "{";
         s += "\"a_channel\":" + std::to_string(a_channel) + ", ";
-        s += "\"a_type\":" + quote(as_string(a_type)) + ", ";
+        s += "\"a_type\":" + quote(asString(a_type)) + ", ";
         s += "\"b_channel\":" + std::to_string(b_channel) + ", ";
-        s += "\"b_type\":" + quote(as_string(b_type)) + ", ";
+        s += "\"b_type\":" + quote(asString(b_type)) + ", ";
         s += "\"ticks\":" + std::to_string(ticks);
         s += "}";
         return s;
@@ -184,22 +182,22 @@ namespace hel{
 
     EncoderManager EncoderManager::deserialize(std::string input){
         EncoderManager a;
-        a.a_channel = std::stoi(hel::pullObject("\"a_channel\"",input));
-        a.b_channel = std::stoi(hel::pullObject("\"b_channel\"",input));
-        a.a_type = hel::s_to_encoder_port_type(unquote(hel::pullObject("\"a_type\"",input)));
-        a.b_type = hel::s_to_encoder_port_type(unquote(hel::pullObject("\"b_type\"",input)));
-        a.ticks = std::stoi(hel::pullObject("\"ticks\"",input));
+        a.a_channel = std::stoi(pullObject("\"a_channel\"",input));
+        a.b_channel = std::stoi(pullObject("\"b_channel\"",input));
+        a.a_type = s_to_encoder_port_type(unquote(pullObject("\"a_type\"",input)));
+        a.b_type = s_to_encoder_port_type(unquote(pullObject("\"b_type\"",input)));
+        a.ticks = std::stoi(pullObject("\"ticks\"",input));
         return a;
     }
 
     std::string EncoderManager::toString()const{
         std::string s = "(";
-        s += "type:" + as_string(type) + ", ";
+        s += "type:" + asString(type) + ", ";
         s += "index:" + std::to_string(index) + ", ";
         s += "a_channel:" + std::to_string(a_channel) + ", ";
-        s += "a_type:" + as_string(a_type) + ", ";
+        s += "a_type:" + asString(a_type) + ", ";
         s += "b_channel:" + std::to_string(b_channel) + ", ";
-        s += "b_type:" + as_string(b_type) + ", ";
+        s += "b_type:" + asString(b_type) + ", ";
         s += "ticks:" + std::to_string(ticks);
         s += "}";
         return s;
