@@ -1,34 +1,13 @@
 # FRC Robot Code Emulation
 
 ## Overview
-The emulator is the Synthesis tool designed to help users test their FRC robot code. Users can upload their own user code as the FRCUserProgram they would normally deploy to the RoboRIO. Its communication with hardware will then be redirected to the engine for simulation and testing.
+The emulator is the Synthesis tool designed to help users test their FRC robot code ([Getting started with FRC control system](https://wpilib.screenstepslive.com/s/currentCS "FRC Control System")). Users can upload their own user code as the FRCUserProgram they would normally deploy to the RoboRIO. Its communication with hardware will then be redirected to the [engine](../engine "Engine Source") for simulation and testing.
 
 ## Hardware Emulation Layer
-The core of Synthesis's emulator is HEL. HEL is a reimplementation of the RoboRIO's hardware abstraction layer (HAL) which runs in an ARM virtual environment rather than the RoboRIO. This allows robot code to run on users' computers and to communicate with Synthesis. This lower layer of robot code runtime was chosen for reimplementation to enable compatibilty across new releases of WPILib and other external solutions. This is a new system that has been integrated into Synthesis, replacing older versions of the emulator such as the HELBuildTool and prior solutions.
+The core of Synthesis's emulator is HEL. HEL is a reimplementation of the Ni FPGA which runs on the RoboRIO which runs in an [ARM virtual environment](./emulator-building.md "Building the Emulator") rather than the RoboRIO and interfaces with a simulation rather than hardware. This allows robot code to run on users' computers and to communicate with Synthesis. This lower layer of robot code runtime was chosen for re-implementation to enable compatibility across new releases of WPILib and other external solutions. This is a new system that has been integrated into Synthesis, replacing older versions of the emulator such as the HELBuildTool and prior solutions. Read more [here](./hel/README.md "HEL README").
 
-## Building
-HEL is emulation of a layer of robot code several levels below that at which users develops. For the easiest user experience, the code is all handled inside of a Linux virtual machine emulating an ARM processor, much akin to the environment that runs on a RoboRIO. For ease of development, the development environment is built around the same operating system, Linux, as the emulator. It is recommended for those seeking to develop emulation to either install Linux or look into running Linux on a virtual machine solution with their current system (Ubuntu is recommended). Once the Linux environment is set up, there are a few pieces of software to install. The first of those is the build system CMake. To install on Ubuntu, the commands are as follows:
+## Engine and Exporter Integration
 
-```shell
-sudo apt update && sudo apt-get install cmake;
+The emulator communicates with the engine over TCP sockets, serializing and deserializing data as JSON. Although HEL may be able to support emulation of a given input or output, it is only valuable if it can interface with the simulation, which can supply the user with feedback on their code and robot designs. Additionally, the engine uses the robot model exported using Synthesis's [robot exporter tool](../exporters/robot_exporter "Robot Exporter Source") for its own simulation and generation and implementation of data used in communication with HEL. In terms of emulation, the robot exporter tool is used to specify which outputs and inputs are attached to which parts of the robot. So as features are added to HEL to interface with robot code, features must also be added to the engine and robot exporter to interface with HEL. 
 
-# Necessary only for Java users
-sudo apt install openjdk-8-jre-headless;
-sudo apt install openjdk-8-jdk;
-
-# Necessary for all users
-sudo apt-add-repository ppa:wpilib/toolchain
-sudo apt update 
-sudo apt install frc-toolchain
-
-```
-
-After the utilities have been installed, all that is left to do is build. To build HEL, navigate to the `hel` directory in a terminal and execute the following command:
-
-```shell
-cmake . -DCMAKE_BUILD_TYPE=RELEASE \
-        -DARCH=ARM;
-make hel;
-
-```
-
+Also, note that currently, the emulator must be installed as part of a separate package from the main Synthesis install. 

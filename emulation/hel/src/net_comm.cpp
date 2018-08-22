@@ -23,7 +23,13 @@ extern "C" {
             Occur(x);
         };
         instance.first->net_comm.occurFunction = newData;
-        ds_spoofer = std::thread([newData](){while(1){newData(42);}});//TODO use NetComm ref_num instead of 42
+        ds_spoofer = std::thread( //call Occur repeatably in the background to signal HAL that the Driver Station has new data for it; this way it won't block and will actually receive HEL DS data
+            [newData](){
+                while(1){
+                    newData(42); //TODO use NetComm ref_num instead of 42
+                }
+            }
+        );
         hel::hal_is_initialized.store(true);
         instance.second.unlock();
     }
