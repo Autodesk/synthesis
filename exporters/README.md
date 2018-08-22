@@ -10,7 +10,7 @@ This exporter is for getting models of fields into Synthesis using an Inventor a
 
 This exporter is the most up-to-date robot exporter, and is available to users through our current release of Synthesis (4.2.0.1 at the time that this README was created). It features an Inventor application addin that allows users to seemlessly export their model to Synthesis.
 
-##FusionExporter
+## FusionExporter
 
 This exporter is similar to BxDRobot, with the exception that it is an addin for Fusion 360 instead of Inventor.
 
