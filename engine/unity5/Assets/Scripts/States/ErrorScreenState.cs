@@ -27,7 +27,7 @@ namespace Synthesis.States
         /// <summary>
         /// Exits this <see cref="State"/> when the OK button is pressed.
         /// </summary>
-        public void OnOkButtonPressed()
+        public void OnOkButtonClicked()
         {
             StateMachine.ChangeState(new HomeTabState());
         }

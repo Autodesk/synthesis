@@ -109,7 +109,7 @@ namespace Synthesis.States
         /// <summary>
         /// Copies the lobby code to the clipboard when the lobby code text is pressed.
         /// </summary>
-        public void OnLobbyCodeTextPressed()
+        public void OnLobbyCodeTextClicked()
         {
             GUIUtility.systemCopyBuffer = lobbyCode;
             UserMessageManager.Dispatch("Lobby code copied to clipboard!", 8f);
@@ -118,7 +118,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches a new <see cref="LoadFieldState"/> when the field button is pressed.
         /// </summary>
-        public void OnFieldButtonPressed()
+        public void OnFieldButtonClicked()
         {
             StateMachine.PushState(new LoadFieldState());
         }
@@ -126,7 +126,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches the load robot state when the robot button is pressed.
         /// </summary>
-        public void OnRobotButtonPressed()
+        public void OnRobotButtonClicked()
         {
             if (connectingPanel.activeSelf)
                 return;
@@ -137,7 +137,7 @@ namespace Synthesis.States
         /// <summary>
         /// Sends a ready signal to the server.
         /// </summary>
-        public void OnReadyButtonPressed()
+        public void OnReadyButtonClicked()
         {
             if (connectingPanel.activeSelf)
                 return;
@@ -148,7 +148,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches a new <see cref="GatheringResourcesState"/> on each client instance.
         /// </summary>
-        public void OnStartButtonPressed()
+        public void OnStartButtonClicked()
         {
             MatchManager.Instance.syncing = true;
             MatchManager.Instance.AwaitPushState<FetchingMetadataState>();
@@ -157,7 +157,7 @@ namespace Synthesis.States
         /// <summary>
         /// Ends the <see cref="LobbyState"/>.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             MultiplayerNetwork network = MultiplayerNetwork.Instance;
             network.ClientConnectionChanged -= OnClientConnectionChanged;

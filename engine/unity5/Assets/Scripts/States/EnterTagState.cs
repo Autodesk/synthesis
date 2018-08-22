@@ -20,7 +20,7 @@ namespace Synthesis.States
         /// Joins the lobby with the given code and player tag when the join button
         /// is pressed.
         /// </summary>
-        public void OnCreateButtonPressed()
+        public void OnCreateButtonClicked()
         {
             string playerTag = GameObject.Find("HostTagText").GetComponent<Text>().text;
 
@@ -38,7 +38,7 @@ namespace Synthesis.States
         /// <summary>
         /// Pops this <see cref="State"/> when the back button is pressed.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             StateMachine.PopState();
         }

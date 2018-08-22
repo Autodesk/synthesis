@@ -33,8 +33,7 @@ namespace Synthesis.Network
             robotButton = transform.Find("RobotButton").GetComponent<Button>();
             readyButton = transform.Find("ReadyButton").GetComponent<Button>();
 
-            NetworkMultiplayerUI.Instance.RegisterButtonCallback(robotButton);
-            NetworkMultiplayerUI.Instance.RegisterButtonCallback(readyButton);
+            UICallbackManager.RegisterButtonCallbacks(NetworkMultiplayerUI.Instance.UIStateMachine, gameObject);
         }
 
         /// <summary>
