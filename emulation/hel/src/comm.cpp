@@ -54,7 +54,7 @@ extern "C" {
     int FRC_NetworkCommunication_getMatchInfo(char* eventName, MatchType_t* matchType, uint16_t* matchNumber, uint8_t* replayNumber, uint8_t* gameSpecificMessage, uint16_t* gameSpecificMessageSize){
         auto instance = hel::RoboRIOManager::getInstance();
         if (eventName != nullptr){ //HAL requires this to be silently handled
-            hel::copystr(instance.first->match_info.getEventName(), eventName);
+            instance.first->match_info.getEventName().copy(eventName,hel::MatchInfo::MAX_EVENT_NAME_SIZE);
         }
         if (matchType != nullptr)
             *matchType = instance.first->match_info.getMatchType();
@@ -64,7 +64,7 @@ extern "C" {
             *replayNumber = instance.first->match_info.getReplayNumber();
 
         if (gameSpecificMessage != nullptr){
-            hel::copystr(instance.first->match_info.getGameSpecificMessage(), reinterpret_cast<char*>(gameSpecificMessage));
+            instance.first->match_info.getGameSpecificMessage().copy(reinterpret_cast<char*>(gameSpecificMessage), hel::MatchInfo::MAX_GAME_SPECIFIC_MESSAGE_SIZE);
         }
 
         if (gameSpecificMessageSize != nullptr)
@@ -162,7 +162,7 @@ extern "C" {
         }
 
         if(name != nullptr){
-            hel::copystr(instance.first->joysticks[joystickNum].getName(), name);
+            instance.first->joysticks[joystickNum].getName().copy(name,hel::Joystick::MAX_JOYSTICK_NAME_SIZE);
         }
         if(isXBox != nullptr)
             *isXBox = instance.first->joysticks[joystickNum].getIsXBox();
