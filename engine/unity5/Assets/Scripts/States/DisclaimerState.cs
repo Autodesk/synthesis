@@ -44,7 +44,7 @@ namespace Synthesis.States
         /// Returns to the previous state if it exists. Otherwise, exits to the main
         /// menu.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             if (isFirstState)
             {
@@ -68,7 +68,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches a new <see cref="HostJoinState"/> when the continue button is pressed.
         /// </summary>
-        public void OnContinueButtonPressed()
+        public void OnContinueButtonClicked()
         {
             StateMachine.ChangeState(new HostJoinState());
         }

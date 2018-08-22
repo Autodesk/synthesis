@@ -104,7 +104,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Change robot button callback
         /// </summary>
-        public void OnChangeRobotButtonPressed()
+        public void OnChangeRobotButtonClicked()
         {
             if (changePanel.activeSelf == true)
             {
@@ -122,7 +122,7 @@ namespace Assets.Scripts.GUI
         /// naming conventions.
         /// </summary>
         /// <param name="i"></param>
-        public void OnResetRobotDropdownClicked(int i)
+        public void OnResetRobotDropdownValueChanged(int i)
         {
             switch (i)
             {
@@ -150,7 +150,7 @@ namespace Assets.Scripts.GUI
         /// Toggles between different dynamic camera states
         /// </summary>
         /// <param name="mode"></param>
-        public void OnCameraDropdownClicked(int mode)
+        public void OnCameraDropdownValueChanged(int mode)
         {
             switch (mode)
             {
@@ -176,7 +176,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Change field button callback
         /// </summary>
-        public void OnChangeFieldButtonPressed()
+        public void OnChangeFieldButtonClicked()
         {
             if (changeFieldPanel.activeSelf)
             {
@@ -193,7 +193,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Enters replay mode
         /// </summary>
-        public void OnReplayModeButtonPressed()
+        public void OnReplayModeButtonClicked()
         {
             State.EnterReplayState();
         }
@@ -201,7 +201,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggles the multiplayer window
         /// </summary>
-        public void OnMultiplayerButtonPressed()
+        public void OnMultiplayerButtonClicked()
         {
             if (multiplayerPanel.activeSelf)
             {
@@ -218,7 +218,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggle the stopwatch window on/off according to its current state
         /// </summary>
-        public void OnStopwatchPressed()
+        public void OnStopwatchClicked()
         {
             toolkit.ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
         }
@@ -226,7 +226,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggle the toolkit window on/off according to its current state
         /// </summary>
-        public void OnStatsPressed()
+        public void OnStatsClicked()
         {
             toolkit.ToggleStatsWindow(!statsWindow.activeSelf);
         }
@@ -234,7 +234,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggle the ruler window on/off according to its current state
         /// </summary>
-        public void OnRulerPressed()
+        public void OnRulerClicked()
         {
             toolkit.ToggleRulerWindow(!rulerWindow.activeSelf);
         }
@@ -242,12 +242,12 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggle the control panel ON/OFF based on its current state
         /// </summary>
-        public void OnInfoButtonPressed()
+        public void OnInfoButtonClicked()
         {
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
         }
 
-        public void OnHelpButtonPressed()
+        public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);
 

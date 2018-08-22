@@ -37,7 +37,7 @@ namespace Assets.Scripts.GUI
             helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
-        public void OnHelpButtonPressed()
+        public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);
 
