@@ -11,7 +11,7 @@ public static partial class BXDJSkeleton
     /// <summary>
     /// Represents the current version of the BXDA file.
     /// </summary>
-    public const string BXDJ_CURRENT_VERSION = "4.1.0";
+    public const string BXDJ_CURRENT_VERSION = "4.2.0";
 
     /// <summary>
     /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name.
@@ -86,6 +86,8 @@ public static partial class BXDJSkeleton
         }
         
         writer.WriteElementString("DriveTrainType", (baseNode.driveTrainType).ToString());
+
+        writer.WriteElementString("SoftwareExportedWith", "INVENTOR");
 
         writer.Close();
     }
@@ -273,6 +275,8 @@ public static partial class BXDJSkeleton
         writer.WriteStartElement("JointDriver");
 
         writer.WriteElementString("DriveType", driver.GetDriveType().ToString());
+        writer.WriteElementString("MotorType", driver.GetMotorType().ToString());
+
         writer.WriteElementString("Port1", (driver.port1 + 1).ToString()); // Synthesis engine downshifts port numbers due to old code using 1 and 2 for drive.
         writer.WriteElementString("Port2", (driver.port2 + 1).ToString()); // For backwards compatibility, ports will be stored one larger than their actual value.
         if (driver.InputGear == 0)// prevents a gearing of 0 from being written to the bxdj
@@ -416,6 +420,8 @@ public static partial class BXDJSkeleton
 
             switch (version.Substring(0, version.LastIndexOf('.')))// sends each version of the BXDJ to the appropriate reader
             {
+                case "4.2":
+                    return ReadSkeleton_4_2(path);
                 case "4.1":
                     return ReadSkeleton_4_1(path);
                 case "4.0":
@@ -427,7 +433,7 @@ public static partial class BXDJSkeleton
                 default: // If version is unknown.
                     // Attempt to read with the most recent version (but without validation).
                     // helps a little with forward compatibility
-                    return ReadSkeleton_4_0(path, false);
+                    return ReadSkeleton_4_2(path, false);
             }
         }
         else
