@@ -22,6 +22,8 @@ using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
+using UnityEngine.Analytics;
+using UnityEditor.Analytics;
 
 namespace Synthesis.States
 {
@@ -326,6 +328,15 @@ namespace Synthesis.States
                 SpawnedRobots.Add(robot);
 
                 DPMDataHandler.Load(robotPath);
+
+                if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()))
+                {
+                    if (PlayerPrefs.GetInt("analytics") == 1)
+                    {
+                        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
+                        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
+                    }
+                }
 
                 return true;
             }
