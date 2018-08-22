@@ -60,9 +60,11 @@ namespace BxDRobotExporter.Wizard
             public void ApplyToNode()
             {
                 Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR);
+
+                Node.GetSkeletalJoint().cDriver.motor = MotorType.GENERIC;
                 //if (WheelType != WizardWheelType.MECANUM)
                 //{
-                    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
+                Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
                 //} else
                 //{
                 //    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort, 1);

@@ -352,6 +352,7 @@ namespace BxDRobotExporter.Wizard
                 {
                     case 1: //Motor
                         JointDriver driver = new JointDriver(JointDriverType.MOTOR);
+                        driver.motor = MotorType.GENERIC;
                         driver.InputGear = 1;
                         driver.OutputGear = 1;
                         driver.hasBrake = chkBoxHasBrake.Checked;
