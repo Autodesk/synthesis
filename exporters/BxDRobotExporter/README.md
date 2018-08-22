@@ -9,11 +9,15 @@
 3) Build Project
 
 2) Copy add-in dll file to one of following locations: 
+
 		a) Anywhere, then *.addin file <Assembly> setting should be updated to the full path including the dll name
+		
 		b) Inventor <InstallPath>\bin\ folder, then *.addin file <Assembly> setting should be the dll name only: <AddInName>.dll
+		
 		c) Inventor <InstallPath>\bin\XX folder, then *.addin file <Assembly> setting shoule be a relative path: XX\<AddInName>.dll
 
 4) Copy.addin manifest file to one of following locations:
+
 	a) Inventor Version Dependent
 		Windows XP:
 			C:\Documents and Settings\All Users\Application Data\Autodesk\Inventor [version]\Addins\
