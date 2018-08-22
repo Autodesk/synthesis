@@ -32,7 +32,7 @@ namespace Synthesis.GUI.Scrollables
         // Use this for initialization
         protected virtual void Start()
         {
-            canvas = GameObject.Find("Canvas");
+            canvas = FindObjectOfType<Canvas>().gameObject;
             //Universal style for all scrollable panels
             listStyle = new GUIStyle("button");
             listStyle.normal.background = new Texture2D(0, 0);
@@ -52,7 +52,6 @@ namespace Synthesis.GUI.Scrollables
         // Update is called once per frame
         protected virtual void OnGUI()
         {
-
             //Uses canvas scale and current rectangle transform data to create a new rectangle that the panel will occupy
             float scale = canvas.GetComponent<Canvas>().scaleFactor;
 
