@@ -4,7 +4,7 @@
 
 1) Install Inventor on your machine
   
-2) follow the instructions here: http://help.autodesk.com/view/INVNTOR/2018/ENU/?guid=GUID-6FD7AA08-1E43-43FC-971B-5F20E56C8846 to install dev tools
+2) follow the instructions [Here](http://help.autodesk.com/view/INVNTOR/2018/ENU/?guid=GUID-6FD7AA08-1E43-43FC-971B-5F20E56C8846than)  to install dev tools
   
 3) Build Project
 
