@@ -18,6 +18,11 @@ are the steps to do so:
 
 You will also need to download and import the NuGet asset.
 * Search 'NuGet' and download and import 'NuGet for Unity'
+* Restart Unity
+* Select the NuGet tab at the top of the screen
+* Go to Install a package
+* Uninstall and Re-Install JSON.NET
+* Uninstall and Re-Install SSH.NET
 * Import all included assets
 * NuGet should now be integrated within the project
 
