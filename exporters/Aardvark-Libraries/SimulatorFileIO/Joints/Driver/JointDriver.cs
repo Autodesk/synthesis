@@ -13,7 +13,7 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// <summary>
     /// The motor type of this joint driver.
     /// </summary>
-    private MotorType motor = 0;
+    public MotorType motor { get; set; }
 
     /// <summary>
     /// The port(s) that this joint driver uses.
