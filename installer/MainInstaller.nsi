@@ -130,14 +130,14 @@ Section "Synthesis (required)" SynthesisRequired
   WriteUninstaller "uninstall.exe"
   
 	;Install Fields
-	SetOutPath $APPDATA\Synthesis\Fields
+	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
 	File /r "Fields\*"
 
 SectionEnd
 
 Section "MixAndMatch Files" MixMatch
 
-SetOutPath $APPDATA\Synthesis\MixAndMatch
+SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
 
 File /r "MixAndMatch\*"
 
@@ -157,7 +157,7 @@ SectionEnd
 
 Section "Robot Files" RoboFiles
 
-SetOutPath $APPDATA\Synthesis\Robots
+SetOutPath $APPDATA\Autodesk\Synthesis\Robots
 
 File /r "Robots\*"
 
@@ -184,6 +184,7 @@ Section "Uninstall"
 
   MessageBox MB_YESNO "Would you like to remove your robot/replay files?" IDNO NawFam
   RMDir /r /REBOOTOK $APPDATA\Synthesis
+  RMDir /r /REBOOTOK $APPDATA\Autodesk\Synthesis
   
   NawFam:
   ; Remove registry keys
