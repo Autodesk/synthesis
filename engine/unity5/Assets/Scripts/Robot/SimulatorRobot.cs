@@ -260,6 +260,7 @@ namespace Synthesis.Robot
         {
             //GetDriverPractice().DestroyAllGamepieces();
 
+            #region fake state UI
             InputControl.freeze = true; //freeze controls during reset
             if (canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject; 
             if (resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject; 
@@ -286,6 +287,7 @@ namespace Synthesis.Robot
             Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             closeHelp.onClick.RemoveAllListeners();
             closeHelp.onClick.AddListener(CloseHelpMenu);
+            #endregion
 
             //switch to camera and set last camera state
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();

@@ -82,11 +82,6 @@ namespace Synthesis.DriverPractice
             while (objectsHeld.Count <= id) objectsHeld.Add(new List<GameObject>()); //increase list depth to equal number of gamepieces
             if (objectsHeld[id].Count() < FieldDataHandler.gamepieces[id].holdingLimit && intakeInteractor[id].GetDetected(id)) //make sure intake exists and holding limit isn't hit
             {
-                #region disables intake functionality for already held gamepieces
-                for (int i = 0; i < objectsHeld[id].Count; i++)
-                    if (objectsHeld[id][i].Equals(intakeInteractor[id].GetObject(id)))
-                        return;
-                #endregion
                 GameObject collisionObject = intakeInteractor[id].GetObject(id);
                 #region move gamepiece to release node location
                 GameObject releaseNode = Auxiliary.FindObject(gameObject, DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[id].name)).ToArray()[0].releaseNode);

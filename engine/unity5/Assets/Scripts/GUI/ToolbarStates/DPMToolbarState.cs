@@ -1,4 +1,5 @@
 ﻿using BulletUnity;
+using Synthesis.BUExtensions;
 using Synthesis.DriverPractice;
 using Synthesis.Field;
 using Synthesis.FSM;
@@ -164,7 +165,9 @@ namespace Assets.Scripts.GUI
         public void OnSpawnButtonPressed()
         {
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
-            GameObject gamepieceClone = GameObject.Instantiate(GameObject.Find(g.name).GetComponentInParent<BRigidBody>().gameObject, g.spawnpoint, UnityEngine.Quaternion.identity);
+            GameObject gamepieceClone = GameObject.Instantiate(Auxiliary.FindGameObject(g.name), g.spawnpoint, UnityEngine.Quaternion.identity);
+            gamepieceClone.SetActive(true);
+            if (gamepieceClone.GetComponent<BFixedConstraintEx>() != null) GameObject.Destroy(gamepieceClone.GetComponent<BFixedConstraintEx>());
             gamepieceClone.name = g.name + "(Clone)";
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
             gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
