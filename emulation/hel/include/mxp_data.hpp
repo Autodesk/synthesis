@@ -76,12 +76,13 @@ namespace hel{
     MXPData::Config s_to_mxp_config(std::string);
 
     /**
+     * std::string asString(MXPData::Config config)
      * \brief Convert an MXP::Config value to a string
      * \param config The value to convert
      * \return The value in string format
      */
 
-    std::string as_string(MXPData::Config);
+    std::string asString(MXPData::Config);
 }
 
 #endif

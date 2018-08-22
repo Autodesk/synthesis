@@ -22,6 +22,8 @@ using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
+using UnityEngine.Analytics;
+using UnityEditor.Analytics;
 
 namespace Synthesis.States
 {
@@ -30,7 +32,7 @@ namespace Synthesis.States
     /// Handles replay tracking and loading
     /// Handles interfaces between the SimUI and the active robot such as resetting, orienting, etc.
     /// </summary>
-    public class MainState : State
+    public class MainState : State, IRobotProvider
     {
         private const int SolverIterations = 100;
 
@@ -42,11 +44,21 @@ namespace Synthesis.States
 
         private UnityPacket unityPacket;
 
-        // TODO: Create more robot classes that suit the needs of MainState.
         /// <summary>
         /// The active robot in this state.
         /// </summary>
         public SimulatorRobot ActiveRobot { get; private set; }
+
+        /// <summary>
+        /// Used for accessing the active robot in this state.
+        /// </summary>
+        /// <returns></returns>
+        public GameObject Robot => ActiveRobot.transform.GetChild(0).gameObject ?? ActiveRobot.gameObject;
+
+        /// <summary>
+        /// True if the robot is not resetting.
+        /// </summary>
+        public bool RobotActive => !ActiveRobot.IsResetting;
 
         private DynamicCamera dynamicCamera;
         public GameObject DynamicCameraObject;
@@ -208,7 +220,7 @@ namespace Synthesis.States
             // Toggles between the different camera states if the camera toggle button is pressed
             if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
-                dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
+                dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             // Switches to replay mode
             if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].replayMode))
@@ -317,6 +329,15 @@ namespace Synthesis.States
 
                 DPMDataHandler.Load(robotPath);
 
+                if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()))
+                {
+                    if (PlayerPrefs.GetInt("analytics") == 1)
+                    {
+                        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
+                        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
+                    }
+                }
+
                 return true;
             }
             return false;
@@ -338,24 +359,11 @@ namespace Synthesis.States
 
             if (LoadRobot(directory, isMixAndMatch))
             {
-                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
                 DynamicCamera.ControlEnabled = true;
                 return true;
             }
 
             return false;
-
-            // Old code below. Not exactly possible with new robot structure.
-
-            //if (ActiveRobot.RobotHasManipulator)
-            //{
-            //    ActiveRobot.DeleteManipulatorNodes();
-            //    ActiveRobot.RobotHasManipulator = false;
-            //}
-
-            //ActiveRobot.RobotIsMixAndMatch = isMixAndMatch;
-
-            //return ActiveRobot.InitializeRobot(directory);
         }
 
         /// <summary>
@@ -387,8 +395,6 @@ namespace Synthesis.States
                 {
                     ActiveRobot = SpawnedRobots[0];
                 }
-
-                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }
 
@@ -401,7 +407,6 @@ namespace Synthesis.States
             {
                 ActiveRobot = SpawnedRobots[index];
                 DPMDataHandler.Load(ActiveRobot.FilePath);
-                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }
 

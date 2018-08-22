@@ -131,13 +131,13 @@ namespace hel{
 
     MatchInfo MatchInfo::deserialize(std::string input){
         MatchInfo a;
-        a.event_name = unquote(hel::pullObject("\"event_name\"",input));
-        a.game_specific_message = unquote(hel::pullObject("\"game_specific_message\"",input));
-        a.match_type = hel::s_to_match_type(unquote(hel::pullObject("\"match_type\"",input)));
-        a.match_number = std::stoi(hel::pullObject("\"match_number\"",input));
-        a.replay_number = std::stoi(hel::pullObject("\"replay_number\"",input));
-        a.alliance_station_id = hel::s_to_alliance_station_id(unquote(hel::pullObject("\"alliance_station_id\"",input)));
-        a.match_time = std::stod(hel::pullObject("\"match_time\"",input));
+        a.event_name = unquote(pullObject("\"event_name\"",input));
+        a.game_specific_message = unquote(pullObject("\"game_specific_message\"",input));
+        a.match_type = s_to_match_type(unquote(pullObject("\"match_type\"",input)));
+        a.match_number = std::stoi(pullObject("\"match_number\"",input));
+        a.replay_number = std::stoi(pullObject("\"replay_number\"",input));
+        a.alliance_station_id = s_to_alliance_station_id(unquote(pullObject("\"alliance_station_id\"",input)));
+        a.match_time = std::stod(pullObject("\"match_time\"",input));
         return a;
     }
 
@@ -145,10 +145,10 @@ namespace hel{
         std::string s = "{";
         s += "\"event_name\":" + quote(event_name) + ", ";
         s += "\"game_specific_message\":" + quote(game_specific_message) + ", ";
-        s += "\"match_type\":" + quote(as_string(match_type)) + ", ";
+        s += "\"match_type\":" + quote(asString(match_type)) + ", ";
         s += "\"match_number\":" + std::to_string(match_number) + ", ";
         s += "\"replay_number\":" + std::to_string(replay_number) + ", ";
-        s += "\"alliance_station_id\":" + quote(as_string(alliance_station_id)) + ", ";
+        s += "\"alliance_station_id\":" + quote(asString(alliance_station_id)) + ", ";
         s += "\"match_time\":" + std::to_string(match_time);
         s += "}";
         return s;
@@ -158,10 +158,10 @@ namespace hel{
         std::string s = "{";
         s += "event_name:" + event_name + ", ";
         s += "game_specific_message:" + game_specific_message + ", ";
-        s += "match_type:" + as_string(match_type) + ", ";
+        s += "match_type:" + asString(match_type) + ", ";
         s += "match_number:" + std::to_string(match_number) + ", ";
         s += "replay_number:" + std::to_string(replay_number) + ", ";
-        s += "alliance_station_id:" + as_string(alliance_station_id) + ", ";
+        s += "alliance_station_id:" + asString(alliance_station_id) + ", ";
         s += "match_time:" + std::to_string(match_time);
         s += "}";
         return s;
