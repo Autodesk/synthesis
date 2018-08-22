@@ -11,8 +11,8 @@ namespace hel{
      * \brief Manager for HEL encoder data
      *
      * The Ni FPGA references either a tCounter or tEncoder object when polling encoder data depending on
-     * configuration. This class is used to map engine encoder data to either a hel::FPGAEncoder or a
-     * hel::Counter depending on robot model export data to ensure the user code finds encoder data where
+     * configuration. This class is used to map engine encoder data to either an FPGAEncoder or a
+     * Counter depending on robot model export data to ensure the user code finds encoder data where
      * it expects it
      */
 
@@ -238,20 +238,22 @@ namespace hel{
     };
 
     /**
+     * \fn std::string asString(EncoderManager::Type type)
      * \brief Convert an EncoderManager::Type to a string
      * \param type The Encoder::Manager::Type to convert
      * \return The type as a string
      */
 
-    std::string as_string(EncoderManager::Type);
+    std::string asString(EncoderManager::Type);
 
     /**
+     * \fn std::string asString(EncoderManager::PortType port_type)
      * \brief Convert the EncoderManager::PortType to a string
      * \param port_type The EncoderManager::PortType to convert
      * \return The port type as a string
      */
 
-    std::string as_string(EncoderManager::PortType);
+    std::string asString(EncoderManager::PortType);
 }
 
 #endif
