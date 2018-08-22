@@ -1,6 +1,6 @@
 # BxDRobotExporter
 
-##How to Build addin with Inventor
+## How to Build addin with Inventor
 
 1) Install Inventor on your machine
   
@@ -37,3 +37,5 @@
 
 To unregister the AddIn, remove the Autodesk.<AddInName>.Inventor.addin from above mentioned .addin manifest file locations directly.
 
+## Dependencies
+1) Aardvark-Libraries: Handles all file writing for the exporter
