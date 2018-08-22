@@ -20,7 +20,7 @@ namespace Assets.Scripts.GUI
     {
         GameObject canvas;
         GameObject dpmToolbar;
-        
+
         GameObject gamepieceDropdownButton;
         GameObject gamepieceDropdownArrow;
         GameObject gamepieceDropdownLabel;
@@ -33,11 +33,12 @@ namespace Assets.Scripts.GUI
 
         GameObject trajectoryPanel;
 
-        int gamepieceIndex;
+        int gamepieceIndex; //IMPORTANT - index of current gamepiece in FieldDataHandler.gamepieces[]
 
         MainState mainState;
         DriverPracticeRobot dpmRobot;
 
+        //help menu stuffs
         GameObject helpMenu;
         GameObject overlay;
         GameObject tabs;
@@ -71,13 +72,13 @@ namespace Assets.Scripts.GUI
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(CloseHelpMenu);
 
-            InitGamepieceDropdown();    
+            InitGamepieceDropdown();
         }
         public override void Update()
         {
             if (dpmRobot == null) dpmRobot = mainState.ActiveRobot.GetDriverPractice();
-            if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) dpmRobot = mainState.ActiveRobot.GetDriverPractice();
-            if (dropdown && buffer)
+            if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) dpmRobot = mainState.ActiveRobot.GetDriverPractice(); //updates active robot to current active robot
+            if (dropdown && buffer) //buffer on gamepiece tab prefabs
                 if (Input.GetMouseButtonUp(0))
                 {
                     dropdown = false;
@@ -89,7 +90,10 @@ namespace Assets.Scripts.GUI
                 {
                     buffer = true;
                 }
-        } 
+        }
+        /// <summary>
+        /// Initializes the gamepiece label
+        /// </summary>
         private void InitGamepieceDropdown()
         {
             SetGamepieceDropdownName();
@@ -100,10 +104,16 @@ namespace Assets.Scripts.GUI
             }
             else gamepieceDropdownArrow.SetActive(true);
         }
+        /// <summary>
+        /// Sets the gamepiece button label to the name of the current gamepiece
+        /// </summary>
         private void SetGamepieceDropdownName()
         {
             gamepieceDropdownLabel.GetComponent<Text>().text = FieldDataHandler.gamepieces.Count() > 0 ? FieldDataHandler.gamepieces[gamepieceIndex].name : "No Gamepieces";
         }
+        /// <summary>
+        /// Creates fake dropdown with button prefabs
+        /// </summary>
         public void OnGamepieceDropdownButtonPressed()
         {
             HideGamepieceDropdown();
@@ -112,22 +122,24 @@ namespace Assets.Scripts.GUI
                 dropdown = true;
                 for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
                 {
-                    int id = i; 
+                    int id = i;
 
                     if (id != gamepieceIndex)
                     {
+                        //create dropdown buttons
                         GameObject gamepieceDropdownElement = GameObject.Instantiate(gamepieceDropdownPrefab);
                         gamepieceDropdownElement.name = "Gamepiece " + id.ToString() + ": " + FieldDataHandler.gamepieces[id].name;
                         gamepieceDropdownElement.transform.parent = dropdownLocation;
-
                         Auxiliary.FindObject(gamepieceDropdownElement, "Name").GetComponent<Text>().text = FieldDataHandler.gamepieces[id].name;
 
+                        //change current gamepiece
                         Button change = Auxiliary.FindObject(gamepieceDropdownElement, "Change").GetComponent<Button>();
                         change.onClick.AddListener(delegate { gamepieceIndex = id; SetGamepieceDropdownName(); HideGamepieceDropdown(); dropdown = false; buffer = false; });
-                        
+
                         gamepieceDropdownElements.Add(gamepieceDropdownElement);
                     }
                 }
+                //show panel
                 gamepieceDropdownExtension.SetActive(true);
             }
 
@@ -138,37 +150,53 @@ namespace Assets.Scripts.GUI
                 });
             }
         }
+        /// <summary>
+        /// Destroys current dropdown and hides it
+        /// </summary>
         private void HideGamepieceDropdown()
         {
             if (gamepieceDropdownElements == null)
-                gamepieceDropdownElements = new List<GameObject>();
-
+                gamepieceDropdownElements = new List<GameObject>(); //avoid null reference 
+            //destroy current dropdown buttons
             while (gamepieceDropdownElements.Count > 0)
             {
                 GameObject.Destroy(gamepieceDropdownElements[0]);
                 gamepieceDropdownElements.RemoveAt(0);
             }
+            //hide panels
             gamepieceDropdownExtension.SetActive(false);
         }
+        /// <summary>
+        /// Change to intake state
+        /// </summary>
         public void OnDefineIntakeButtonPressed()
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, true, dpmRobot));
         }
+        /// <summary>
+        /// Change to release state
+        /// </summary>
         public void OnDefineReleaseButtonPressed()
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, false, dpmRobot));
         }
+        /// <summary>
+        /// Change to gamepiece spawnpoint state
+        /// </summary>
         public void OnSetSpawnpointButtonPressed()
         {
             StateMachine.SceneGlobal.PushState(new GamepieceSpawnState(gamepieceIndex));
         }
+        /// <summary>
+        /// Spawn gamepiece clone
+        /// </summary>
         public void OnSpawnButtonPressed()
         {
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
-            GameObject gamepieceClone = GameObject.Instantiate(Auxiliary.FindGameObject(g.name), g.spawnpoint, UnityEngine.Quaternion.identity);
-            gamepieceClone.SetActive(true);
-            if (gamepieceClone.GetComponent<BFixedConstraintEx>() != null) GameObject.Destroy(gamepieceClone.GetComponent<BFixedConstraintEx>());
-            gamepieceClone.name = g.name + "(Clone)";
+            GameObject gamepieceClone = GameObject.Instantiate(Auxiliary.FindGameObject(g.name), g.spawnpoint, UnityEngine.Quaternion.identity); //clone gamepiece - exact clone will keep joints
+            gamepieceClone.SetActive(true); //show in case all gamepieces are hidden
+            if (gamepieceClone.GetComponent<BFixedConstraintEx>() != null) GameObject.Destroy(gamepieceClone.GetComponent<BFixedConstraintEx>()); //remove joints from clone
+            gamepieceClone.name = g.name + "(Clone)"; //add clone tag to allow clear later
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
             gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
 
@@ -180,20 +208,24 @@ namespace Assets.Scripts.GUI
             }
 
         }
+        /// <summary>
+        /// Clear gamepiece clones
+        /// </summary>
         public void OnClearButtonPressed()
         {
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
             GameObject[] gameObjects = GameObject.FindObjectsOfType<GameObject>();
-            dpmRobot.DestroyAllHeld(true, g.name);
+            dpmRobot.DestroyAllHeld(true, g.name); //destroy clones held by robot
+            //Destory all clones
             foreach (GameObject o in gameObjects.Where(o => o.name.Equals(g.name + "(Clone)")))
-            {
                 GameObject.Destroy(o);
-            }
         }
+
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
 
+            //help menu text - CUT DOWN
             helpBodyText.GetComponent<Text>().text = "The workflow of Driver Practice Mode is intended to be left to right " +
                 "across the toolbar for initial setup." +
                 "\n\n 1. If there are multiple gamepieces, click on the game piece dropdown in the far left and select desired gamepiece.All configuration will be specific to currently selected gamepiece." +
@@ -204,14 +236,12 @@ namespace Assets.Scripts.GUI
                 "\n\nAdd Gamepieces: Click SPAWN to add gamepieces to field" +
                 "\n\nClear Gamepieces: Click CLEAR to delete spawned gamepieces. To reset all field elements, navigate to the HOME tab, open the RESET dropdown, and select RESET FIELD.";
 
-            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "DPMToolbar";
-            overlay.SetActive(true);
-            tabs.transform.Translate(new Vector3(300, 0, 0));
+            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "DPMToolbar"; //set type - there may not be a reason for this
+            overlay.SetActive(true); //set overlay - fades out screen slightly
+            tabs.transform.Translate(new Vector3(300, 0, 0)); //translate to the right
             foreach (Transform t in dpmToolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
-                else t.gameObject.SetActive(false);
-            }
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0)); //translate tabs to the right
+                else t.gameObject.SetActive(false); //hide help button
 
             if (PlayerPrefs.GetInt("analytics") == 1)
             {
@@ -225,12 +255,10 @@ namespace Assets.Scripts.GUI
         {
             helpMenu.SetActive(false);
             overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-300, 0, 0));
+            tabs.transform.Translate(new Vector3(-300, 0, 0)); //translate tabs to the left
             foreach (Transform t in dpmToolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
+                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0)); //translate buttons to the left
+                else t.gameObject.SetActive(true); //show help button
         }
     }
 }

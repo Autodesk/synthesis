@@ -17,7 +17,7 @@ namespace Synthesis.DriverPractice
     public class GoalManager : MonoBehaviour
     {
 
-        public GameObject goalElementPrefab;    
+        public GameObject goalElementPrefab;
 
         GameObject canvas;
 
@@ -26,7 +26,7 @@ namespace Synthesis.DriverPractice
         GameObject scoreboard;
 
         Transform goalDisplay;
-        
+
         private List<GameObject> goalElements;
 
         public List<List<GameObject>> redGoals;
@@ -74,6 +74,7 @@ namespace Synthesis.DriverPractice
             InitializeDisplay();
             goalWindow.SetActive(true);
             Auxiliary.FindObject(goalWindow, "AddGoalButton").GetComponentInChildren<Text>().text = "New " + color + " Goal";
+            //set goal color
             if (color.Equals("Red"))
             {
                 redButton.GetComponent<Button>().image.color = Color.red;
@@ -95,6 +96,9 @@ namespace Synthesis.DriverPractice
         {
             goalWindow.SetActive(false);
         }
+        /// <summary>
+        /// Change goal color
+        /// </summary>
         public void ChangeColor(string color)
         {
             this.color = color;
@@ -112,7 +116,7 @@ namespace Synthesis.DriverPractice
             {
                 if (goalElements == null)
                     goalElements = new List<GameObject>();
-                
+
                 while (goalElements.Count > 0)
                 {
                     Destroy(goalElements[0]);
@@ -126,7 +130,7 @@ namespace Synthesis.DriverPractice
                     GameObject newGoalElement = Instantiate(goalElementPrefab);
                     newGoalElement.transform.parent = goalDisplay;
                     newGoalElement.name = "Goal" + i.ToString();
-
+                    #region Goal buttons
                     InputField descText = Auxiliary.FindObject(newGoalElement, "DescriptionText").GetComponent<InputField>();
                     descText.text = g[i].GetComponent<Goal>().description;
                     descText.onValueChanged.AddListener(delegate { SetGoalDescription(id, descText.text); });
@@ -135,7 +139,7 @@ namespace Synthesis.DriverPractice
 
                     InputField pointValue = Auxiliary.FindObject(newGoalElement, "PointValue").GetComponent<InputField>();
                     pointValue.text = g[i].GetComponent<Goal>().pointValue.ToString();
-                    pointValue.onValueChanged.AddListener(delegate { int value = int.TryParse(pointValue.text, out value) ? int.Parse(pointValue.text) : 0; pointValue.text = value.ToString();  SetGoalPoints(id, value); });
+                    pointValue.onValueChanged.AddListener(delegate { int value = int.TryParse(pointValue.text, out value) ? int.Parse(pointValue.text) : 0; pointValue.text = value.ToString(); SetGoalPoints(id, value); });
 
                     pointValue.onEndEdit.AddListener(delegate { InputControl.freeze = false; });
 
@@ -147,12 +151,15 @@ namespace Synthesis.DriverPractice
 
                     Button deleteButton = Auxiliary.FindObject(newGoalElement, "DeleteButton").GetComponent<Button>();
                     deleteButton.onClick.AddListener(delegate { DeleteGoal(id); });
-
+                    #endregion
                     goalElements.Add(newGoalElement);
                 }
             }
             else Debug.Log("Could not initialize goal display, display not found!");
         }
+        /// <summary>
+        /// Create gamepiece tabs based off of number of gamepieces
+        /// </summary>
         private void CreateTabs()
         {
             if (tabElements == null)
@@ -173,14 +180,15 @@ namespace Synthesis.DriverPractice
 
                     tabButton.transform.parent = tabSystem;
 
+                    //change goal button
                     Button change = Auxiliary.FindObject(tabButton, "Change").GetComponent<Button>();
                     change.onClick.AddListener(delegate { gamepieceIndex = id; OpenGoalManager(); });
 
                     Auxiliary.FindObject(change.gameObject, "Name").GetComponent<Text>().text = FieldDataHandler.gamepieces[id].name;
 
+                    //sets properties of specific tab - color and interactability
                     if (id == gamepieceIndex)
                     {
-                        //change.image.color = new Color(241f, 133f, 24f;
                         change.image.color = new Color32(33, 43, 52, 120);
                         change.interactable = false;
                     }
@@ -189,29 +197,32 @@ namespace Synthesis.DriverPractice
                 }
             }
         }
+        /// <summary>
+        /// Set goal description - pretty much only for user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="description"></param>
         void SetGoalDescription(int id, string description)
         {
-            InputControl.freeze = true;
+            InputControl.freeze = true; //freeze control don't allow user to rotate camera while editing text
             if (color.Equals("Red"))
-            {
                 redGoals[gamepieceIndex][id].GetComponent<Goal>().description = description;
-            }
             else
-            {
                 blueGoals[gamepieceIndex][id].GetComponent<Goal>().description = description;
-            }
+            WriteGoals();
         }
+        /// <summary>
+        /// Set goal point value
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="description"></param>
         void SetGoalPoints(int id, int points)
         {
-            InputControl.freeze = true;
+            InputControl.freeze = true; //freeze control don't allow user to rotate camera while editing text
             if (color.Equals("Red"))
-            {
                 redGoals[gamepieceIndex][id].GetComponent<Goal>().pointValue = points;
-            }
             else
-            {
                 blueGoals[gamepieceIndex][id].GetComponent<Goal>().pointValue = points;
-            }
             WriteGoals();
         }
         void DeleteGoal(int id)
@@ -229,44 +240,54 @@ namespace Synthesis.DriverPractice
                 blueGoals[gamepieceIndex].RemoveAt(id);
             }
             WriteGoals();
-            InitializeDisplay();
+            InitializeDisplay(); //refresh display after deletion
         }
+        /// <summary>
+        /// set local values from global goals
+        /// </summary>
         void GetGoals()
         {
             redGoals = FieldDataHandler.redGoals;
             blueGoals = FieldDataHandler.blueGoals;
         }
+        /// <summary>
+        /// Change state to move goal state
+        /// </summary>
         void MoveGoal(int id)
         {
             StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this, true));
         }
+        /// <summary>
+        /// Change state to scale goal state
+        /// </summary>
         void ScaleGoal(int id)
         {
             StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this, false));
         }
+        /// <summary>
+        /// Create new goal
+        /// </summary>
         public void NewGoal()
         {
             int goalIndex = color.Equals("Red") ? redGoals[gamepieceIndex].Count() : blueGoals[gamepieceIndex].Count();
             GameObject gameobject = new GameObject("Gamepiece" + gamepieceIndex.ToString() + "Goal" + goalIndex.ToString());
+            //physics stuff
             BBoxShape collider = gameobject.AddComponent<BBoxShape>();
             BRigidBody rigid = gameobject.AddComponent<BRigidBody>();
             rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
             Goal goal = gameobject.AddComponent<Goal>();
             collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f);
             rigid.SetPosition(new UnityEngine.Vector3(0, 4, 0));
+            //goal stuff
             goal.position = new UnityEngine.Vector3(0, 4, 0);
             goal.scale = Vector3.one;
             goal.gamepieceKeyword = FieldDataHandler.gamepieces[gamepieceIndex].name;
             goal.description = "New Goal";
             goal.color = color;
             if (color.Equals("Red"))
-            {
                 redGoals[gamepieceIndex].Add(gameobject);
-            }
             else
-            {
                 blueGoals[gamepieceIndex].Add(gameobject);
-            }
             InitializeDisplay();
             WriteGoals();
         }
