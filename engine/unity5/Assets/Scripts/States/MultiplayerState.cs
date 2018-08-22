@@ -117,9 +117,6 @@ namespace Synthesis.States
 
             SpawnedRobots = new List<NetworkRobot>();
 
-            //loads all the controls
-            Controls.Load();
-
             //initializes the dynamic camera
             DynamicCameraObject = GameObject.Find("Main Camera");
             dynamicCamera = DynamicCameraObject.AddComponent<DynamicCamera>();
@@ -180,6 +177,9 @@ namespace Synthesis.States
 
             if (!File.Exists(directory + "\\definition.bxdf"))
                 return false;
+
+            FieldDataHandler.Load(fieldPath);
+            Controls.Init();
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);

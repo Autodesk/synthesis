@@ -328,11 +328,15 @@ public class DriveJoints
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
-        UpdateEmulationJoysticks();
+        for (int i = 0; i < pwm.Length; i++)
+            motors[i] = pwm[i];
 
-        UpdateEmulationMotors(pwm);
-
-        UpdateEmulationSensors(emuList);
+        if (Synthesis.GUI.EmulationDriverStation.Instance != null)
+        {
+            UpdateEmulationJoysticks();
+            UpdateEmulationMotors(pwm);
+            UpdateEmulationSensors(emuList);
+        }
 
         foreach (RigidNode node in listOfSubNodes.Select(n => n as RigidNode))
         {
@@ -442,17 +446,14 @@ public class DriveJoints
     /// <param name="pwm"></param>
     private static void UpdateEmulationMotors(float[] pwm)
     {
+        if (!Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
+            return;
+
         for (int i = 0; i < pwm.Length; i++)
-            motors[i] = pwm[i];
+            motors[i] = (float)Serialization.getPWM(i);
 
-        if (Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
-        {
-            for (int i = 0; i < pwm.Length; i++)
-                motors[i] = (float)Serialization.getPWM(i);
-
-            foreach (var CAN in OutputManager.Instance.Roborio.CANDevices)
-                motors[CAN.id + 10] = CAN.inverted == 0 ? CAN.speed : -CAN.speed;
-        }
+        foreach (var CAN in OutputManager.Instance.Roborio.CANDevices)
+            motors[CAN.id + 10] = CAN.inverted == 0 ? CAN.speed : -CAN.speed;
     }
 
     /// <summary>

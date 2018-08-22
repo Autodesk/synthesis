@@ -56,7 +56,7 @@ namespace Synthesis.Network
             if (PlayerIdentity == null)
                 return;
 
-            playerTagText.color = PlayerIdentity.isLocalPlayer ? Color.green : Color.white;
+            playerTagText.color = PlayerIdentity.isLocalPlayer ? new Color(0.949f, 0.522f, 0.094f) : Color.white;
             playerTagText.text = PlayerIdentity.playerTag;
 
             if (PlayerIdentity.isLocalPlayer)
