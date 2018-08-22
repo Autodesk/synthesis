@@ -44,7 +44,8 @@ namespace Synthesis.States
             if (spawnIndicator != null) GameObject.Destroy(spawnIndicator);
             if (spawnIndicator == null)
             {
-                spawnIndicator = GameObject.Instantiate(Auxiliary.FindObject(gamepiece.name).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                spawnIndicator = GameObject.Instantiate(Auxiliary.FindGameObject(gamepiece.name), new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                spawnIndicator.SetActive(true);
                 spawnIndicator.name = "SpawnIndicator";
                 GameObject.Destroy(spawnIndicator.GetComponent<BRigidBody>());
                 GameObject.Destroy(spawnIndicator.GetComponent<BCollisionShape>());

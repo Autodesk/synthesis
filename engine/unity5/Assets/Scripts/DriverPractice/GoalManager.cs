@@ -256,7 +256,7 @@ namespace Synthesis.DriverPractice
             rigid.SetPosition(new UnityEngine.Vector3(0, 4, 0));
             goal.position = new UnityEngine.Vector3(0, 4, 0);
             goal.scale = Vector3.one;
-            goal.SetKeyword(FieldDataHandler.gamepieces[gamepieceIndex].name);
+            goal.gamepieceKeyword = FieldDataHandler.gamepieces[gamepieceIndex].name;
             goal.description = "New Goal";
             goal.color = color;
             if (color.Equals("Red"))

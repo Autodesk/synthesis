@@ -135,7 +135,7 @@ namespace Synthesis.States
                     return;
                 }
 
-                reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
+                reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999); //reset on start
 
                 if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
                 {
@@ -193,7 +193,7 @@ namespace Synthesis.States
                 return;
             }
 
-            if (reset)
+            if (reset) //reset robot on start
             {
                 BeginRobotReset();
                 reset = false;
@@ -363,7 +363,7 @@ namespace Synthesis.States
         /// </summary>
         public void SwitchActiveRobot(int index)
         {
-            if (index < SpawnedRobots.Count)
+            if (SpawnedRobots.Count() > 0)
             {
                 ActiveRobot = SpawnedRobots[index];
                 DPMDataHandler.Load(ActiveRobot.FilePath); //reload robot data to allow for driver practice for multiplayer

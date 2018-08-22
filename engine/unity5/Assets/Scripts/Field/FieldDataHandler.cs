@@ -153,7 +153,7 @@ namespace Synthesis.Field
                     rigid.SetPosition(goal.position);
                     goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));
                     collider.LocalScaling = goal.scale;
-                    goal.SetKeyword(e.Element("Keyword").Value);
+                    goal.gamepieceKeyword = e.Element("Keyword").Value;
                     goal.description = e.Element("Description").Value;
                     goal.color = e.Attribute("Color").Value;
                     temp.Add(g);
@@ -187,7 +187,7 @@ namespace Synthesis.Field
                     rigid.SetPosition(goal.position);
                     goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));
                     collider.LocalScaling = goal.scale;
-                    goal.SetKeyword(e.Element("Keyword").Value);
+                    goal.gamepieceKeyword = e.Element("Keyword").Value;
                     goal.description = e.Element("Description").Value;
                     goal.color = e.Attribute("Color").Value;
                     temp.Add(g);
