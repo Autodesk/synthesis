@@ -2,6 +2,10 @@
 
 The Synthesis exporters process CAD models from Inventor and Fusion 360 in order to export them to the Synthesis simulator. 
 
+## Aardvark-Libraries
+
+This repository consists of several libraries containing shared functionality of the robot and field exporters and the simulator itself.
+
 ## BxDFieldExporter
 
 This exporter is for getting models of fields into Synthesis using an Inventor application addin. However, due to limitations with Inventor API and the scope of development this version of the field exporter is deprecated, and is no longer available to users. 
