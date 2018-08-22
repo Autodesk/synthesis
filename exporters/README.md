@@ -1,27 +1,26 @@
-# Synthesis Exporters
-
-The Synthesis exporters process CAD models from Inventor and Fusion 360 in order to export them to the Synthesis simulator. 
+# Exporters File Structure
 
 ## Aardvark-Libraries
-
 This repository consists of several libraries containing shared functionality of the robot and field exporters and the simulator itself.
+* CLEW is an OpenCL extension wrangler used in the robot and field exporters to increase export speed.
+* ConvexLibraryWrapper is a C# wrapper for providing functionality to generate simplified convex meshes.
+* SimulatorAPI is a C# API used for importing adn exporting BXDF, BXDJ, and BXDA files.
+* VHACD is a convex hull decomposition library.
 
-## BxDFieldExporter
-
-This exporter is for getting models of fields into Synthesis using an Inventor application addin. However, due to limitations with Inventor API and the scope of development this version of the field exporter is deprecated, and is no longer available to users. 
+## BxDFieldExpoter
+This is the old Inventor addin that was used to exporter fields to Synthesis, this has since been depracated
 
 ## BxDRobotExporter
-
-This exporter is the most up-to-date robot exporter, and is available to users through our current release of Synthesis (4.2.0.1 at the time that this README was created). It features an Inventor application addin that allows users to seemlessly export their model to Synthesis.
+This is the main Inventor exporter that is bundles with Synthesis. It is broken into a few subprojects:
+* BxDRobotExporter is the Inventor addin that interacts directly with the Inventor GUI.
+* packages are external libs that the exporter uses to simplify meshes.
+* robot_exporter is the legacy Inventor plugin tha the BxDRobotExpoter uses for backend robot information and some GUI elements.
 
 ## FusionExporter
-
-This exporter is similar to BxDRobot, with the exception that it is an addin for Fusion 360 instead of Inventor.
+This is the new Fusion 360 Exporter
 
 ## field_exporter
-
-This is the legacy version of the field exporter, which features an application for exporting that connects to an instance of Inventor. A version of this project is under development for internal use only, in order to allow for jointed field elements in the Synthesis simulator. 
+This is the current field exporter, currently it is only used internally for the Synthesis team to export new fields
 
 ## robot_exporter
-
-This is the legacy version of the robot exporter, which the BxDRobotExporter project was based on. Similar to field_exporter, it is a standalone application that is no longer available to users. 
+This is the old robot exporter, it has been deprecated in favor of the BxDRobotExporter. It is a plugin that can hook into the Inventor Instance and read the model data from Inventor to allow users to export their robots
