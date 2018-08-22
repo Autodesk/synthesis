@@ -1,11 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 
+
 /// <summary>
 /// Represents a node inside the hierarchy representing how a robot moves.
 /// </summary>
 public class RigidNode_Base
 {
+    /// <summary>
+    /// Types of joint drivers.
+    /// </summary>
+    public enum SoftwareExportedWith : byte
+    {
+        INVENTOR = 0,
+        FUSION_360 = 1
+    }
+    ///<summary>
+    /// The software this model was orginally exported with
+    /// </summary>
+    public SoftwareExportedWith exportedWith;
     /// <summary>
     /// Generic delegate for creating rigid node instances
     /// </summary>
