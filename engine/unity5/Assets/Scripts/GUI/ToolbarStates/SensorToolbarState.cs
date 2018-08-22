@@ -13,6 +13,9 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
 {
+    /// <summary>
+    /// The toolbar state for the sensor toolbar and related functions.
+    /// </summary>
     public class SensorToolbarState : State
     {
         RobotCameraGUI robotCameraGUI;
@@ -224,6 +227,7 @@ namespace Assets.Scripts.GUI
             }
         }
 
+        #region Help Button and Menu for Sensors
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
@@ -261,5 +265,6 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(true);
             }
         }
+        #endregion
     }
 }
