@@ -334,7 +334,6 @@ namespace Synthesis.States
                     if (PlayerPrefs.GetInt("analytics") == 1)
                     {
                         PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
-                        AnalyticsSettings.testMode = true;
                         Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
                     }
                 }
