@@ -76,7 +76,7 @@ namespace BxDRobotExporter.Wizard
                         wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
                         wheelDriver.forwardExtremeValue = 10; //Force of max static friction force.
                         wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
-                        wheelDriver.forwardAsympValue = 8; //Force of leveld off kinetic friction force.
+                        wheelDriver.forwardAsympValue = 8; //Force of leveled off kinetic friction force.
 
                         if (WheelType == WizardWheelType.OMNI) //Set to relatively low friction, as omni wheels can move sidways.
                         {
