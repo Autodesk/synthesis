@@ -220,7 +220,7 @@ namespace Synthesis.Camera
         /// </summary>
         public void ToggleChangePosition()
         {
-            StateMachine.SceneGlobal.PushState(new SensorSpawnState(robotCameraManager.CurrentCamera));
+            StateMachine.SceneGlobal.PushState(new SensorSpawnState(robotCameraManager.CurrentCamera), true);
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace Synthesis.Camera
         /// </summary>
         public void ToggleChangeNode()
         {
-            StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(robotCameraManager));
+            StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(robotCameraManager), true);
         }
 
         /// <summary>
