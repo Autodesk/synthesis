@@ -20,6 +20,7 @@ using Synthesis.Input;
 using Synthesis.Network;
 using Synthesis.GUI;
 using Synthesis.Field;
+using Assets.Scripts.GUI;
 
 namespace Synthesis.States
 {
@@ -66,6 +67,10 @@ namespace Synthesis.States
 
         public List<NetworkRobot> SpawnedRobots { get; private set; }
         private const int MAX_ROBOTS = 6;
+
+        private GameObject tabCanvas;
+
+        private StateMachine homeTabStateMachine;
 
         public MultiplayerNetwork Network { get; private set; }
 
@@ -126,6 +131,12 @@ namespace Synthesis.States
 
             Network = GameObject.Find("NetworkManager").GetComponent<MultiplayerNetwork>();
             Network.State = this;
+
+            tabCanvas = Auxiliary.FindGameObject("Canvas");
+            homeTabStateMachine = tabCanvas.GetComponent<StateMachine>();
+            homeTabStateMachine.PushState(new MainToolbarState());
+            UICallbackManager.RegisterButtonCallbacks(homeTabStateMachine, tabCanvas);
+            UICallbackManager.RegisterDropdownCallbacks(homeTabStateMachine, tabCanvas);
         }
 
         /// <summary>
