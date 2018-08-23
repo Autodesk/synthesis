@@ -8,7 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -346,19 +347,6 @@
     <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
     <Compile Include="Assets\Scripts\VersionManager.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\Examples.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIMain.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIScenes.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\FileBrowser.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Config.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Constants.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Helper.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserBase.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserEditor.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserGeneric.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserMac.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserWindows.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\IFileBrowser.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\IStandaloneFileBrowser.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\BasicSample.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileImage.cs" />
@@ -373,10 +361,7 @@
     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
-    <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\VERSIONS.txt" />
-    <None Include="Assets\StandaloneFileBrowser\FileBrowser\README.txt" />
     <None Include="Assets\BulletUnity\license.txt" />
-    <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\id\62455202-c9ff-4b04-b6c3-1d4b836a5fff.txt" />
     <None Include="Assets\Packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.xml" />
     <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
@@ -588,20 +573,14 @@
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
-    <Reference Include="Renci.SshNet">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Renci.SshNet.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/System.Windows.Forms.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll</HintPath>
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net45/Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet">
+      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/SSH.NET.2016.1.0/lib/net40/Renci.SshNet.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="CTCommon">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
     </Reference>
     <Reference Include="CTCommonEditor">
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommonEditor.dll</HintPath>
@@ -610,7 +589,7 @@
       <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/System.Windows.Forms.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
       <HintPath>C:/Users/t_corbk/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
