@@ -596,5 +596,6 @@ public partial class DriveChooser : Form
                 MotorTypeDropDown.Items.Add("VEX_393");
                 break;
         }
+        MotorTypeDropDown.SelectedItem = "GENERIC";
     }
 }
