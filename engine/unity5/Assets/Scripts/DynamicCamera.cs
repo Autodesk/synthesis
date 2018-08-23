@@ -350,12 +350,9 @@ public class DynamicCamera : MonoBehaviour
         }
         public override void Update()
         {
-            if (Input.GetMouseButton(1))
-            {
+            if (Input.GetMouseButton(1) && positionVector.y + Input.GetAxis("Mouse Y") > fieldVector.y + 1)
                 positionVector.y += Input.GetAxis("Mouse Y");
-            }
-            if (positionVector.y > fieldVector.y+1) Mono.transform.position = positionVector;
-            
+            mono.transform.position = positionVector;
         }
 
         public override void End()
