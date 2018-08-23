@@ -98,13 +98,13 @@ public partial class BXDJSkeleton
                     <xs:enumeration value='MINI_CIM'/>
                     <xs:enumeration value='BAG_MOTOR'/>
                     <xs:enumeration value='REDLINE_775_PRO'/>
-                    <xs:enumeration value='_9015'/>
+                    <xs:enumeration value='ANDYMARK_9015'/>
                     <xs:enumeration value='BANEBOTS_775_18v'/>
                     <xs:enumeration value='BANEBOTS_775_12v'/>
                     <xs:enumeration value='BANEBOTS_550_12v'/>
                     <xs:enumeration value='ANDYMARK_775_125'/>
                     <xs:enumeration value='SNOW_BLOWER'/>
-                    <xs:enumeration value='NIDEN_BLDC'/>
+                    <xs:enumeration value='NIDEC_BLDC'/>
                     <xs:enumeration value='THROTTLE_MOTOR'/>
                     <xs:enumeration value='WINDOW_MOTOR'/>
                     <xs:enumeration value='NEVEREST'/>
