@@ -92,19 +92,9 @@ namespace Synthesis.Sensors
         /// Instantiate an ultrasonic sensor (a distance sensor actually) and set its name, local position, local rotation, and add it to 
         /// both sensor list and active sensor list
         /// </summary>
-        /// <param name="parent"></param> the parent node to which the sensor is attached
-        /// <param name="position"></param> local position of the sensor
-        /// <param name="rotation"></param> local rotation of the sensor
+        /// <returns></returns>
         public SensorBase AddUltrasonic()
         {
-            //GameObject ultrasonic = GameObject.Instantiate(Ultrasonic, parent.transform);
-            //ultrasonic.transform.localPosition = position;
-            //ultrasonic.transform.localRotation = Quaternion.Euler(rotation);
-            //ultrasonic.name = "Ultrasonic_" + sensorList.Count;
-            //ultrasonic.GetComponent<SensorBase>().Robot = main.ActiveRobot;
-            //sensorList.Add(ultrasonic);
-            //activeSensorList.Add(ultrasonic);
-            //return ultrasonic.GetComponent<UltraSensor>();
             GameObject sensor = AddNewSensor(Ultrasonic, "Ultrasonic", ultrasonicList.Count + 1, 10);
             ultrasonicList.Add(sensor);
             return sensor.GetComponent<UltraSensor>();
@@ -114,22 +104,10 @@ namespace Synthesis.Sensors
         /// Instantiate an beam breaker sensor and set its name, local position, local rotation, and add it to 
         /// both sensor list and active sensor list
         /// </summary>
-        /// <param name="parent"></param> the parent node to which the sensor is attached
-        /// <param name="position"></param> local position of the sensor
-        /// <param name="rotation"></param> local rotation of the sensor
-        /// <param name="distance"></param> the distance offset between the emitter and receiver
+        /// <param name="distance"></param>
+        /// <returns></returns>
         public SensorBase AddBeamBreaker(float distance = 0.4f)
         {
-            //GameObject beamBreaker = GameObject.Instantiate(BeamBreaker, parent.transform);
-            //beamBreaker.transform.localPosition = position;
-            //beamBreaker.transform.localRotation = Quaternion.Euler(rotation);
-            //beamBreaker.name = "BeamBreaker_" + sensorList.Count;
-            //beamBreaker.GetComponent<SensorBase>().Robot = main.ActiveRobot;
-            //sensorList.Add(beamBreaker);
-            //activeSensorList.Add(beamBreaker);
-            //BeamBreaker sensor = beamBreaker.GetComponent<BeamBreaker>();
-            //sensor.SetSensorRange(distance);
-            //return sensor;
             GameObject sensor = AddNewSensor(BeamBreaker, "Beam Break", beamBreakerList.Count + 1, 0.4f);
             beamBreakerList.Add(sensor);
             return sensor.GetComponent<BeamBreaker>();
@@ -139,20 +117,9 @@ namespace Synthesis.Sensors
         /// Instantiate an gyro sensor (measure angular rotation rate) and set its name, local position, local rotation, and add it to 
         /// both sensor list and active sensor list
         /// </summary>
-        /// <param name="parent"></param> the parent node to which the sensor is attached
-        /// <param name="position"></param> local position of the sensor
-        /// <param name="rotation"></param> local rotation of the sensor
+        /// <returns></returns>
         public SensorBase AddGyro()
         {
-            //GameObject gyro = GameObject.Instantiate(Gyro, parent.transform);
-            //gyro.transform.localPosition = position;
-            //gyro.transform.localRotation = Quaternion.Euler(rotation);
-            //gyro.name = "Gyro_" + sensorList.Count;
-            //gyro.GetComponent<SensorBase>().Robot = main.ActiveRobot;
-            //sensorList.Add(gyro);
-            //activeSensorList.Add(gyro);
-            //Gyro sensor = gyro.GetComponent<Gyro>();
-            //return sensor;
             GameObject sensor = AddNewSensor(Gyro, "Gyro", gyroList.Count + 1);
             gyroList.Add(sensor);
             return sensor.GetComponent<Gyro>();
