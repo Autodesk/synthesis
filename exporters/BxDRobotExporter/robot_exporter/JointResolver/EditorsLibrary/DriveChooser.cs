@@ -202,29 +202,45 @@ public partial class DriveChooser : Form
                         RobotCompetitionDropDown.SelectedItem = "FTC";
                         MotorTypeDropDown.SelectedItem = "TETRIX_MOTOR";
                         break;
-                    case MotorType.MODERN_ROBOTICS_MATRIX_12V:
+                    case MotorType.MODERN_ROBOTICS_MATRIX:
                         RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "MODERN_ROBOTICS_MATRIX_12V";
+                        MotorTypeDropDown.SelectedItem = "MODERN_ROBOTICS_MATRIX";
                         break;
-                    case MotorType.REV_ROBOTICS_HD_HEX_12V:
+                    case MotorType.REV_ROBOTICS_HD_HEX_20_TO_1:
                         RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "REV_ROBOTICS_HD_HEX_12V";
+                        MotorTypeDropDown.SelectedItem = "REV_ROBOTICS_HD_HEX_20_TO_1";
                         break;
-                    case MotorType.REV_ROBOTICS_CORE_HEX_12V:
+                    case MotorType.REV_ROBOTICS_HD_HEX_40_TO_1:
                         RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "REV_ROBOTICS_CORE_HEX_12V";
+                        MotorTypeDropDown.SelectedItem = "REV_ROBOTICS_HD_HEX_40_TO_1";
                         break;
-                    case MotorType.VEX_V5_Smart_Motor:
-                        RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_V5_Smart_Motor";
+                    case MotorType.REV_ROBOTICS_CORE_HEX:
+                        RobotCompetitionDropDown.SelectedItem = "FTC";
+                        MotorTypeDropDown.SelectedItem = "REV_ROBOTICS_CORE_HEX";
                         break;
-                    case MotorType.VEX_269:
+                    case MotorType.VEX_V5_Smart_Motor_600_RPM:
                         RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_269";
+                        MotorTypeDropDown.SelectedItem = "VEX_V5_Smart_Motor_600_RPM";
                         break;
-                    case MotorType.VEX_393:
+                    case MotorType.VEX_V5_Smart_Motor_200_RPM:
                         RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_393";
+                        MotorTypeDropDown.SelectedItem = "VEX_V5_Smart_Motor_200_RPM";
+                        break;
+                    case MotorType.VEX_V5_Smart_Motor_100_RPM:
+                        RobotCompetitionDropDown.SelectedItem = "VEX";
+                        MotorTypeDropDown.SelectedItem = "VEX_V5_Smart_Motor_100_RPM";
+                        break;
+                    case MotorType.VEX_393_NORMAL_SPEED:
+                        RobotCompetitionDropDown.SelectedItem = "VEX";
+                        MotorTypeDropDown.SelectedItem = "VEX_393_NORMAL_SPEED";
+                        break;
+                    case MotorType.VEX_393_HIGH_SPEED:
+                        RobotCompetitionDropDown.SelectedItem = "VEX";
+                        MotorTypeDropDown.SelectedItem = "VEX_393_HIGH_SPEED";
+                        break;
+                    case MotorType.VEX_393_TURBO_GEAR_SET:
+                        RobotCompetitionDropDown.SelectedItem = "VEX";
+                        MotorTypeDropDown.SelectedItem = "VEX_393_TURBO_GEAR_SET";
                         break;
                 }
             }
@@ -584,16 +600,20 @@ public partial class DriveChooser : Form
                 MotorTypeDropDown.Items.Add("GENERIC");
                 MotorTypeDropDown.Items.Add("NEVEREST");
                 MotorTypeDropDown.Items.Add("TETRIX_MOTOR");
-                MotorTypeDropDown.Items.Add("MODERN_ROBOTICS_MATRIX_12V");
-                MotorTypeDropDown.Items.Add("REV_ROBOTICS_HD_HEX_12V");
-                MotorTypeDropDown.Items.Add("REV_ROBOTICS_CORE_HEX_12V");
+                MotorTypeDropDown.Items.Add("MODERN_ROBOTICS_MATRIX");
+                MotorTypeDropDown.Items.Add("REV_ROBOTICS_HD_HEX_20_TO_1");
+                MotorTypeDropDown.Items.Add("REV_ROBOTICS_HD_HEX_40_TO_1");
+                MotorTypeDropDown.Items.Add("REV_ROBOTICS_CORE_HEX");
                 break;
             case "VEX":
                 MotorTypeDropDown.Items.Clear();
                 MotorTypeDropDown.Items.Add("GENERIC");
-                MotorTypeDropDown.Items.Add("VEX_V5_Smart_Motor");
-                MotorTypeDropDown.Items.Add("VEX_269");
-                MotorTypeDropDown.Items.Add("VEX_393");
+                MotorTypeDropDown.Items.Add("VEX_V5_Smart_Motor_600_RPM");
+                MotorTypeDropDown.Items.Add("VEX_V5_Smart_Motor_200_RPM");
+                MotorTypeDropDown.Items.Add("VEX_V5_Smart_Motor_100_RPM");
+                MotorTypeDropDown.Items.Add("VEX_393_NORMAL_SPEED");
+                MotorTypeDropDown.Items.Add("VEX_393_HIGH_SPEED");
+                MotorTypeDropDown.Items.Add("VEX_393_TURBO_GEAR_SET");
                 break;
         }
         MotorTypeDropDown.SelectedItem = "GENERIC";
