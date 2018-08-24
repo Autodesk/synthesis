@@ -51,7 +51,7 @@ namespace Synthesis.GUI
         /// </summary>
         /// <param name="stateMachine"></param>
         /// <param name="button"></param>
-        public static void RegisterClickCallback(StateMachine stateMachine, UnityEvent unityEvent, string selectableName)
+        private static void RegisterClickCallback(StateMachine stateMachine, UnityEvent unityEvent, string selectableName)
         {
             unityEvent.AddListener(() => InvokeCallback(stateMachine,
                 "On" + selectableName + "Clicked"));
@@ -62,7 +62,7 @@ namespace Synthesis.GUI
         /// </summary>
         /// <param name="stateMachine"></param>
         /// <param name="dropdown"></param>
-        public static void RegisterValueChangedCallback<T>(StateMachine stateMachine, UnityEvent<T> unityEvent, string selectableName)
+        private static void RegisterValueChangedCallback<T>(StateMachine stateMachine, UnityEvent<T> unityEvent, string selectableName)
         {
             unityEvent.AddListener(arg => InvokeCallback(stateMachine,
                 "On" + selectableName + "ValueChanged", arg));
