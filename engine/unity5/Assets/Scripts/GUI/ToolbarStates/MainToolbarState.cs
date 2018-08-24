@@ -17,7 +17,7 @@ using Synthesis.Sensors;
 using Synthesis.Camera;
 using Synthesis.Field;
 
-namespace Assets.Scripts.GUI
+namespace Synthesis.GUI
 {
     /// <summary>
     /// The MainToolbarState controls the functions of each of the main toolbar functions such as 
@@ -147,6 +147,17 @@ namespace Assets.Scripts.GUI
         }
 
         /// <summary>
+        /// Resets the robot when the reset button is clicked.
+        /// </summary>
+        public void OnResetRobotButtonClicked()
+        {
+            MultiplayerState multiplayerState = StateMachine.SceneGlobal.CurrentState as MultiplayerState;
+
+            if (multiplayerState != null)
+                multiplayerState.ActiveRobot.CmdResetRobot();
+        }
+
+        /// <summary>
         /// Toggles between different dynamic camera states
         /// </summary>
         /// <param name="mode"></param>
@@ -250,12 +261,6 @@ namespace Assets.Scripts.GUI
         public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);
-
-            helpBodyText.GetComponent<Text>().text = "\n\nTutorials: bxd.autodesk.com" +
-                "\n\nHome Tab: Main simulator functions" +
-                "\n\nDriver Practice Tab: Gamepiece setup and interaction" +
-                "\n\nScoring Tab: Match play" +
-                "\n\nSensors Tab: Robot camera and sensors";
 
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
             overlay.SetActive(true);

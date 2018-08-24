@@ -297,24 +297,7 @@ namespace Synthesis.Robot
             {
                 IsResetting = true;
 
-                foreach (RigidNode n in RootNode.ListAllNodes())
-                {
-                    BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
-
-                    if (br == null)
-                        continue;
-
-                    RigidBody r = (RigidBody)br.GetCollisionObject();
-
-                    r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
-                    r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
-
-                    BulletSharp.Math.Matrix newTransform = r.WorldTransform;
-                    newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
-                    newTransform.Basis = BulletSharp.Math.Matrix.Identity;
-                    r.WorldTransform = newTransform;
-                }
-
+                BeginRobotReset();
                 OnBeginReset();
 
                 //Where "save orientation" works
@@ -388,17 +371,7 @@ namespace Synthesis.Robot
         {
             IsResetting = false;
 
-            foreach (RigidNode n in RootNode.ListAllNodes())
-            {
-                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
-
-                if (br == null)
-                    continue;
-
-                RigidBody r = (RigidBody)br.GetCollisionObject();
-
-                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
-            }
+            EndRobotReset();
 
             if (lastCameraState != null)
             {

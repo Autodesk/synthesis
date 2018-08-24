@@ -91696,7 +91696,19 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: '
+
+
+    Tutorials: bxd.autodesk.com
+
+
+    Home Tab: Main simulator functions
+
+
+    Driver Practice Tab: Gamepiece setup and interaction
+
+
+    Scoring Tab: Match play'
 --- !u!222 &2034670807
 CanvasRenderer:
   m_ObjectHideFlags: 0

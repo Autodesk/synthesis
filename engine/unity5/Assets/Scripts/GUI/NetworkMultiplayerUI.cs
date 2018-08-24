@@ -1,4 +1,5 @@
 ﻿using Synthesis.FSM;
+using Synthesis.Network;
 using Synthesis.States;
 using Synthesis.Utils;
 using System;
@@ -33,11 +34,18 @@ namespace Synthesis.GUI
             {
                 visible = value;
                 canvas.enabled = visible;
+                tabCanvas.SetActive(!visible);
 
                 if (visible)
+                {
                     FindObjectOfType<UnityEngine.Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Default"));
+                    while (tabStateMachine.PopState()) ;
+                }
                 else
+                {
                     FindObjectOfType<UnityEngine.Camera>().cullingMask |= (1 << LayerMask.NameToLayer("Default"));
+                    tabStateMachine.PushState(new MainToolbarState());
+                }
             }
         }
 
@@ -48,6 +56,9 @@ namespace Synthesis.GUI
 
         private bool visible;
         private Canvas canvas;
+        private GameObject tabCanvas;
+        private GameObject exitPanel;
+        private StateMachine tabStateMachine;
 
         /// <summary>
         /// Initializes the global instance reference.
@@ -65,6 +76,11 @@ namespace Synthesis.GUI
         {
             UIStateMachine = GetComponent<StateMachine>();
             canvas = GetComponent<Canvas>();
+            tabCanvas = Auxiliary.FindGameObject("Canvas");
+            exitPanel = Auxiliary.FindGameObject("ExitPanel");
+            tabStateMachine = tabCanvas.GetComponent<StateMachine>();
+            UICallbackManager.RegisterButtonCallbacks(tabStateMachine, tabCanvas);
+            UICallbackManager.RegisterDropdownCallbacks(tabStateMachine, tabCanvas);
 
             LinkPanels();
             UICallbackManager.RegisterButtonCallbacks(UIStateMachine, gameObject);
@@ -97,6 +113,35 @@ namespace Synthesis.GUI
                 Auxiliary.FindGameObject("ExitingPanel").SetActive(true);
                 SceneManager.LoadScene("MainMenu");
             }
+        }
+
+        /// <summary>
+        /// Opens the exit panel.
+        /// </summary>
+        public void OpenExitPanel()
+        {
+            exitPanel.SetActive(true);
+        }
+
+        /// <summary>
+        /// Closes the exit panel.
+        /// </summary>
+        public void CloseExitPanel()
+        {
+            exitPanel.SetActive(false);
+        }
+
+        /// <summary>
+        /// Loads the main menu scene.
+        /// </summary>
+        public void ReturnToMainMenu()
+        {
+            if (MultiplayerNetwork.Instance.Host)
+                MultiplayerNetwork.Instance.StopHost();
+            else
+                MultiplayerNetwork.Instance.StopClient();
+
+            SceneManager.LoadScene("MainMenu");
         }
 
         /// <summary>
