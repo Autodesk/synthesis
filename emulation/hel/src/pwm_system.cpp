@@ -215,7 +215,7 @@ namespace hel{
 namespace nFPGA{
     namespace nRoboRIO_FPGANamespace{
         tPWM* tPWM::create(tRioStatusCode* /*status*/){
-    		return new hel::PWMManager();
-    	}
+            return new hel::PWMManager();
+        }
     }
 }

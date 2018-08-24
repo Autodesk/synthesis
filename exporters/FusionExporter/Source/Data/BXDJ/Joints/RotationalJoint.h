@@ -22,6 +22,15 @@ namespace BXDJ
 		///
 		RotationalJoint(RigidNode *, core::Ptr<fusion::Joint>, core::Ptr<fusion::Occurrence>);
 
+		///
+		/// Creates a joint between an existing RigidNode and one that will be created.
+		/// \param parent RigidNode that will serve as the parent of the joint.
+		/// \param fusionJoint The Fusion as-built joint to base the new Joint off of.
+		/// \param parentOccurrence The Fusion occurrence in the Fusion joint that is owned by the parent RigidNode.
+		///                         The other occurrence in the Fusion joint will become the primary occurrence for the new child RigidNode.
+		///
+		RotationalJoint(RigidNode *, core::Ptr<fusion::AsBuiltJoint>, core::Ptr<fusion::Occurrence>);
+
 		Vector3<> getAxisOfRotation() const; ///< \return The axis along which the child may rotate.
 		float getCurrentAngle() const; ///< \return The current angle of the child.
 		bool hasLimits() const; ///< \return Whether or not rotation is limited.

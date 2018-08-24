@@ -21,9 +21,11 @@ namespace Synthesis.GUI
 {
     /// <summary>
     /// The MainToolbarState controls the functions of each of the main toolbar functions such as 
-    /// change robots/fields, reset, camera views, etc. Because each toolbar button is controlled by a StateMachine,
-    /// you will need to follow conventions to register a button with a callback. For an example, your button name will need to start
-    /// with "On" and end with "Pressed" to register a callback. Ex: OnChangeRobotButtonPressed.
+    /// change robots/fields, reset, camera views, etc. 
+    /// 
+    /// Toolbar state composition
+    /// -Button/Dropdowns for toolbar functions
+    /// -Help menu
     /// </summary>
     public class MainToolbarState : State
     {
@@ -88,6 +90,7 @@ namespace Synthesis.GUI
             bindedKeyPanel = Auxiliary.FindObject(canvas, "BindedKeyPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
             
+            // To access instatiate classes within a state, use the StateMachine.SceneGlobal
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();
             multiplayer = StateMachine.SceneGlobal.GetComponent<LocalMultiplayer>();
             simUI = StateMachine.SceneGlobal.GetComponent<SimUI>();
@@ -102,7 +105,7 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
-        /// Change robot button callback
+        /// Change robot button callback. Note: Buttons register with "On...Pressed"
         /// </summary>
         public void OnChangeRobotButtonClicked()
         {
@@ -258,6 +261,9 @@ namespace Synthesis.GUI
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
         }
 
+        /// <summary>
+        /// Help button and menu text.
+        /// </summary>
         public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);

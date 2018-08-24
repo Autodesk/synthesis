@@ -22,6 +22,7 @@ installer/README.pdf
 installer/cygscripts/http*
 *.sdf
 *.VC.db
+*.DS_Store
 
 Synthesis_Data/
 

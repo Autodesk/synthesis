@@ -11,38 +11,27 @@ namespace FieldExporter.Controls
         /// <summary>
         /// The parent ComponentPropertiesTabPage.
         /// </summary>
-        public ComponentPropertiesTabPage ParentTabPage
-        {
-            get;
-            private set;
-        }
+        public ComponentPropertiesTabPage ParentTabPage { get; private set; }
 
         /// <summary>
         /// The events caused by user interaction with Inventor.
         /// </summary>
-        public InteractionEvents InteractionEvents
-        {
-            get;
-            private set;
-        }
+        InteractionEvents InteractionEvents;
 
         /// <summary>
         /// The events triggered by object selection in Inventor.
         /// </summary>
-        public SelectEvents SelectEvents
-        {
-            get;
-            private set;
-        }
+        SelectEvents SelectEvents;
 
         /// <summary>
         /// Used to determine if Inventor interaction is enabled.
         /// </summary>
-        public bool InteractionEnabled
-        {
-            get;
-            private set;
-        }
+        public bool InteractionEnabled { get; private set; }
+
+        /// <summary>
+        /// The currently visible form for specifying collider properties
+        /// </summary>
+        ColliderPropertiesForm colliderPropertiesForm = null;
 
         /// <summary>
         /// Initializes a new ComponentPropertiesForm instance.
@@ -62,48 +51,91 @@ namespace FieldExporter.Controls
         }
 
         /// <summary>
-        /// Returns the selected type of collision.
+        /// The selected type of collision.
         /// </summary>
-        /// <returns></returns>
-        public PropertySet.PropertySetCollider GetCollider()
+        public PropertySet.PropertySetCollider Collider
         {
-            return ((ColliderPropertiesForm)meshPropertiesTable.Controls[1]).GetCollider();
+            get => colliderPropertiesForm.Collider;
+            set
+            {
+                switch (value.CollisionType)
+                {
+                    case PropertySet.PropertySetCollider.PropertySetCollisionType.BOX:
+                        colliderTypeCombobox.SelectedIndex = 0;
+                        break;
+                    case PropertySet.PropertySetCollider.PropertySetCollisionType.SPHERE:
+                        colliderTypeCombobox.SelectedIndex = 1;
+                        break;
+                    case PropertySet.PropertySetCollider.PropertySetCollisionType.MESH:
+                        colliderTypeCombobox.SelectedIndex = 2;
+                        break;
+                    default:
+                        return;
+                }
+                
+                if (colliderPropertiesForm != null)
+                    colliderPropertiesForm.Collider = value;
+            }
         }
 
         /// <summary>
-        /// Returns the value of the friction track bar.
+        /// The value of the friction track bar.
         /// </summary>
-        /// <returns></returns>
-        public int GetFriction()
+        public int Friction
         {
-            return frictionTrackBar.Value;
+            get => frictionTrackBar.Value;
+            set
+            {
+                if (value > frictionTrackBar.Maximum)
+                    value = frictionTrackBar.Maximum;
+                else if (value < frictionTrackBar.Minimum)
+                    value = frictionTrackBar.Minimum;
+
+                frictionTrackBar.Value = value;
+            }
         }
 
         /// <summary>
-        /// Returns the value of the dynamic check box.
+        /// The value of the dynamic check box.
         /// </summary>
-        /// <returns></returns>
-        public bool IsDynamic()
+        public bool IsDynamic
         {
-            return dynamicCheckBox.Checked;
+            get => dynamicCheckBox.Checked;
+            set => dynamicCheckBox.Checked = value;
         }
 
         /// <summary>
-        /// Returns the value of the mass numeric up down.
+        /// The value of the mass numeric up down.
         /// </summary>
-        /// <returns></returns>
-        public float GetMass()
+        public float Mass
         {
-            return (float)Decimal.ToDouble(massNumericUpDown.Value);
+            get => (float)Decimal.ToDouble(massNumericUpDown.Value);
+            set
+            {
+                decimal dec = (decimal)value;
+
+                if (dec > massNumericUpDown.Maximum)
+                    dec = massNumericUpDown.Maximum;
+                else if (dec < massNumericUpDown.Minimum)
+                    dec = massNumericUpDown.Minimum;
+
+                massNumericUpDown.Value = dec;
+
+                if (value == 0)
+                    dynamicCheckBox.Checked = false;
+                else
+                    dynamicCheckBox.Checked = true;
+            }
         }
 
         /// <summary>
         /// Returns the configured gamepiece settings, or null if not a gamepiece.
         /// </summary>
         /// <returns></returns>
-        public Exporter.Gamepiece GetGamepiece()
+        public Exporter.Gamepiece Gamepiece
         {
-            return gamepieceProperties.GetGamepiece(ParentTabPage.Name);
+            get => gamepieceProperties.GetGamepiece(ParentTabPage.Name);
+            set => gamepieceProperties.SetGamepiece(value);
         }
 
         /// <summary>
@@ -292,30 +324,26 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void colliderTypeCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Type selectedType = null;
+            if (colliderPropertiesForm != null)
+                meshPropertiesTable.Controls.Remove((UserControl)colliderPropertiesForm);
 
             switch (colliderTypeCombobox.SelectedIndex)
             {
                 case 0: // Box
-                    selectedType = typeof(BoxColliderPropertiesForm);
+                    colliderPropertiesForm = new BoxColliderPropertiesForm();
                     break;
                 case 1: // Sphere
-                    selectedType = typeof(SphereColliderPropertiesForm);
+                    colliderPropertiesForm = new SphereColliderPropertiesForm();
                     break;
                 case 2: // Mesh
-                    selectedType = typeof(MeshColliderPropertiesForm);
+                    colliderPropertiesForm = new MeshColliderPropertiesForm();
                     break;
-            }
-
-            if (meshPropertiesTable.Controls.Count > 1)
-            {
-                if (selectedType == null || meshPropertiesTable.Controls[1].GetType().Equals(selectedType))
+                default:
+                    colliderPropertiesForm = null;
                     return;
-
-                meshPropertiesTable.Controls.RemoveAt(1);
             }
 
-            meshPropertiesTable.Controls.Add((UserControl)Activator.CreateInstance(selectedType), 0, 1);
+            meshPropertiesTable.Controls.Add((UserControl)colliderPropertiesForm, 0, 1);
         }
 
         /// <summary>

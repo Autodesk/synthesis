@@ -67,3 +67,9 @@ TEST(JSONUtilTest, DeserializeTest){
 
 }
 
+
+TEST(JSONUtilTest, FormatJSONTest){
+    const std::string INPUT = "{\"mode\":\"TELEOPERATED\", \"enabled\":0, \"emergency_stopped\":0, \"fms_attached\":0, \"ds_attached\":1,\"arr\": [{\"a_channel\":0, \"a_type\":\"DI\", \"b_channel\":0, \"b_type\":\"DI\", \"ticks\":0}, {\"a_channel\":0, \"a_type\":\"DI\", \"b_channel\":0, \"b_type\":\"DI\", \"ticks\":0}, {\"a_channel\":0, \"a_type\":\"DI\", \"b_channel\":0, \"b_type\":\"DI\", \"ticks\":0}]}";
+    std::cout<<"Formated JSON:\n"<<hel::formatJSON(INPUT)<<"\n";
+    
+}
