@@ -12,6 +12,9 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
 {
+    /// <summary>
+    /// This callback manager is used for registering Unity button and dropdown callbacks for the tab StateMachine.
+    /// </summary>
     public static class ButtonCallbackManager
     {
         /// <summary>
@@ -25,6 +28,10 @@ namespace Assets.Scripts.GUI
                     b.onClick.AddListener(() => InvokeCallback(stateMachine, "On" + b.name + "Pressed"));
         }
 
+        /// <summary>
+        /// Finds each Dropdown component in the main menu that doesn't already have a
+        /// listener and registers it with a callback.
+        /// </summary>
         public static void RegisterDropdownCallbacks(StateMachine stateMachine, GameObject dropdownRoot)
         {
             //Add listener for when the value of the Dropdown changes, to take action

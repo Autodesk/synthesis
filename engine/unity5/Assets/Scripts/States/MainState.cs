@@ -23,7 +23,7 @@ using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
 using UnityEngine.Analytics;
-using UnityEditor.Analytics;
+//using UnityEditor.Analytics;
 
 namespace Synthesis.States
 {
