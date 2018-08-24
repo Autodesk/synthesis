@@ -115,7 +115,7 @@ public partial class BXDJSkeleton
                     <xs:enumeration value='REV_ROBOTICS_CORE_HEX'/>
                     <xs:enumeration value='VEX_V5_Smart_Motor_600_RPM'/>
                     <xs:enumeration value='VEX_V5_Smart_Motor_200_RPM'/>
-                    <xs:enumeration value='VEX_V5_Smart_Motor_100_RPM'/
+                    <xs:enumeration value='VEX_V5_Smart_Motor_100_RPM'/>
                     <xs:enumeration value='VEX_393_NORMAL_SPEED'/>
                     <xs:enumeration value='VEX_393_HIGH_SPEED'/>
                     <xs:enumeration value='VEX_393_TURBO_GEAR_SET'/>
@@ -752,6 +752,10 @@ public partial class BXDJSkeleton
                 case "DriveType":
                     // Initialize the driver.
                     driver = new JointDriver((JointDriverType)Enum.Parse(typeof(JointDriverType), reader.ReadElementContentAsString()));
+                    break;
+                case "MotorType":
+                    // Initialize the driver.
+                    driver.motor = (MotorType)Enum.Parse(typeof(MotorType), reader.ReadElementContentAsString());
                     break;
                 case "Port1":
                     // Assign a value to port1.
