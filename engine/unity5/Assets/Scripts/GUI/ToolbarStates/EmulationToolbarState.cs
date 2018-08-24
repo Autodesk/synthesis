@@ -14,6 +14,9 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
 {
+    /// <summary>
+    /// This state controls the emulation toolbar and interface to starting emulation robot code.
+    /// </summary>
     public class EmulationToolbarState : State
     {
         EmulationDriverStation emulationDriverStation;
@@ -43,11 +46,17 @@ namespace Assets.Scripts.GUI
             helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
+        /// <summary>
+        /// Selects robot code and starts VM. 
+        /// </summary>
         public void OnSelectRobotCodeButtonPressed()
         {
             SSHClient.SCPFileSender();
         }
 
+        /// <summary>
+        /// Opens the Synthesis Driver Station for emulation
+        /// </summary>
         public void OnDriverStationButtonPressed()
         {
             emulationDriverStation.OpenDriverStation();
@@ -60,10 +69,12 @@ namespace Assets.Scripts.GUI
             //Serialization.RestartThreads("10.140.148.66");
         }
 
+        #region Help Button and Menu
         public void OnHelpButtonPressed()
         {
             helpMenu.SetActive(true);
 
+            // Used to change the text of emulation help menu
             helpBodyText.GetComponent<Text>().text = "\n\nStart Code: Select your code file" +
                 "\n\nDriver Station: Access the Synthesis FRC Driver Station to manipulate your robot" +
                 "\n\nStart Code/ Stop Code: Run or disable code";
@@ -99,5 +110,6 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(true);
             }
         }
+        #endregion
     }
 }
