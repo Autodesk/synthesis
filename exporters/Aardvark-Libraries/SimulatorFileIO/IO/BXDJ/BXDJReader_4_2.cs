@@ -109,12 +109,16 @@ public partial class BXDJSkeleton
                     <xs:enumeration value='WINDOW_MOTOR'/>
                     <xs:enumeration value='NEVEREST'/>
                     <xs:enumeration value='TETRIX_MOTOR'/>
-                    <xs:enumeration value='MODERN_ROBOTICS_MATRIX_12V'/>
-                    <xs:enumeration value='REV_ROBOTICS_HD_HEX_12V'/>
-                    <xs:enumeration value='REV_ROBOTICS_CORE_HEX_12V'/>
-                    <xs:enumeration value='VEX_V5_Smart_Motor'/>
-                    <xs:enumeration value='VEX_269'/>
-                    <xs:enumeration value='VEX_393'/>
+                    <xs:enumeration value='MODERN_ROBOTICS_MATRIX'/>
+                    <xs:enumeration value='REV_ROBOTICS_HD_HEX_20_TO_1'/>
+                    <xs:enumeration value='REV_ROBOTICS_HD_HEX_40_TO_1'/>
+                    <xs:enumeration value='REV_ROBOTICS_CORE_HEX'/>
+                    <xs:enumeration value='VEX_V5_Smart_Motor_600_RPM'/>
+                    <xs:enumeration value='VEX_V5_Smart_Motor_200_RPM'/>
+                    <xs:enumeration value='VEX_V5_Smart_Motor_100_RPM'/
+                    <xs:enumeration value='VEX_393_NORMAL_SPEED'/>
+                    <xs:enumeration value='VEX_393_HIGH_SPEED'/>
+                    <xs:enumeration value='VEX_393_TURBO_GEAR_SET'/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>

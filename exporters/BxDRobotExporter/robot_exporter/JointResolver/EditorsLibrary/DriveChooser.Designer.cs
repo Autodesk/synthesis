@@ -100,7 +100,7 @@
             this.cmbJointDriver.Location = new System.Drawing.Point(5, 21);
             this.cmbJointDriver.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmbJointDriver.Name = "cmbJointDriver";
-            this.cmbJointDriver.Size = new System.Drawing.Size(420, 24);
+            this.cmbJointDriver.Size = new System.Drawing.Size(508, 24);
             this.cmbJointDriver.TabIndex = 0;
             this.cmbJointDriver.SelectedIndexChanged += new System.EventHandler(this.cmbJointDriver_SelectedIndexChanged);
             // 
@@ -111,7 +111,7 @@
             this.grpChooseDriver.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.grpChooseDriver.Name = "grpChooseDriver";
             this.grpChooseDriver.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.grpChooseDriver.Size = new System.Drawing.Size(432, 54);
+            this.grpChooseDriver.Size = new System.Drawing.Size(516, 54);
             this.grpChooseDriver.TabIndex = 1;
             this.grpChooseDriver.TabStop = false;
             this.grpChooseDriver.Text = "Joint Driver";
@@ -126,7 +126,7 @@
             this.grpDriveOptions.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.grpDriveOptions.Name = "grpDriveOptions";
             this.grpDriveOptions.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.grpDriveOptions.Size = new System.Drawing.Size(432, 121);
+            this.grpDriveOptions.Size = new System.Drawing.Size(516, 121);
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
             this.grpDriveOptions.Text = "Other";
@@ -157,7 +157,7 @@
             this.JointOptionsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.JointOptionsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.JointOptionsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.JointOptionsLayout.Size = new System.Drawing.Size(426, 102);
+            this.JointOptionsLayout.Size = new System.Drawing.Size(510, 102);
             this.JointOptionsLayout.TabIndex = 0;
             // 
             // txtHighLimit
@@ -169,7 +169,7 @@
             0,
             0,
             65536});
-            this.txtHighLimit.Location = new System.Drawing.Point(149, 78);
+            this.txtHighLimit.Location = new System.Drawing.Point(191, 78);
             this.txtHighLimit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtHighLimit.Minimum = new decimal(new int[] {
             100,
@@ -177,7 +177,7 @@
             0,
             -2147483648});
             this.txtHighLimit.Name = "txtHighLimit";
-            this.txtHighLimit.Size = new System.Drawing.Size(140, 22);
+            this.txtHighLimit.Size = new System.Drawing.Size(182, 22);
             this.txtHighLimit.TabIndex = 4;
             this.txtHighLimit.Visible = false;
             // 
@@ -208,7 +208,7 @@
             0,
             -2147483648});
             this.txtLowLimit.Name = "txtLowLimit";
-            this.txtLowLimit.Size = new System.Drawing.Size(140, 22);
+            this.txtLowLimit.Size = new System.Drawing.Size(182, 22);
             this.txtLowLimit.TabIndex = 3;
             this.txtLowLimit.Visible = false;
             // 
@@ -218,7 +218,7 @@
             this.txtPort1.Location = new System.Drawing.Point(3, 27);
             this.txtPort1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtPort1.Name = "txtPort1";
-            this.txtPort1.Size = new System.Drawing.Size(140, 22);
+            this.txtPort1.Size = new System.Drawing.Size(182, 22);
             this.txtPort1.TabIndex = 1;
             this.txtPort1.Value = new decimal(new int[] {
             1,
@@ -229,10 +229,10 @@
             // txtPort2
             // 
             this.txtPort2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtPort2.Location = new System.Drawing.Point(149, 27);
+            this.txtPort2.Location = new System.Drawing.Point(191, 27);
             this.txtPort2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtPort2.Name = "txtPort2";
-            this.txtPort2.Size = new System.Drawing.Size(140, 22);
+            this.txtPort2.Size = new System.Drawing.Size(182, 22);
             this.txtPort2.TabIndex = 2;
             this.txtPort2.Value = new decimal(new int[] {
             1,
@@ -255,7 +255,7 @@
             // 
             this.rbCAN.AutoSize = true;
             this.rbCAN.Dock = System.Windows.Forms.DockStyle.Right;
-            this.rbCAN.Location = new System.Drawing.Point(363, 27);
+            this.rbCAN.Location = new System.Drawing.Point(447, 27);
             this.rbCAN.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rbCAN.Name = "rbCAN";
             this.rbCAN.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -271,7 +271,7 @@
             // 
             this.rbPWM.AutoSize = true;
             this.rbPWM.Dock = System.Windows.Forms.DockStyle.Right;
-            this.rbPWM.Location = new System.Drawing.Point(295, 27);
+            this.rbPWM.Location = new System.Drawing.Point(379, 27);
             this.rbPWM.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rbPWM.Name = "rbPWM";
             this.rbPWM.Size = new System.Drawing.Size(62, 22);
@@ -298,7 +298,7 @@
             this.SaveButton.Location = new System.Drawing.Point(3, 281);
             this.SaveButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(432, 28);
+            this.SaveButton.Size = new System.Drawing.Size(513, 28);
             this.SaveButton.TabIndex = 11;
             this.SaveButton.Text = "Save";
             this.SaveButton.UseVisualStyleBackColor = true;
@@ -348,7 +348,7 @@
             this.tabsMeta.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);
             this.tabsMeta.Name = "tabsMeta";
             this.tabsMeta.SelectedIndex = 0;
-            this.tabsMeta.Size = new System.Drawing.Size(432, 92);
+            this.tabsMeta.Size = new System.Drawing.Size(516, 92);
             this.tabsMeta.TabIndex = 11;
             // 
             // metaWheel
@@ -634,7 +634,7 @@
             this.metaMotorType.Controls.Add(this.tableLayoutPanel1);
             this.metaMotorType.Location = new System.Drawing.Point(4, 25);
             this.metaMotorType.Name = "metaMotorType";
-            this.metaMotorType.Size = new System.Drawing.Size(424, 63);
+            this.metaMotorType.Size = new System.Drawing.Size(508, 63);
             this.metaMotorType.TabIndex = 4;
             this.metaMotorType.Text = "Motor Type";
             this.metaMotorType.UseVisualStyleBackColor = true;
@@ -643,8 +643,8 @@
             // 
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 38.38583F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 61.61417F));
             this.tableLayoutPanel1.Controls.Add(this.MotorTypeLabel, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.RobotCompetitionDropDown, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.MotorTypeDropDown, 1, 1);
@@ -655,13 +655,13 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(424, 63);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(508, 63);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // MotorTypeLabel
             // 
             this.MotorTypeLabel.AutoSize = true;
-            this.MotorTypeLabel.Location = new System.Drawing.Point(215, 0);
+            this.MotorTypeLabel.Location = new System.Drawing.Point(197, 0);
             this.MotorTypeLabel.Name = "MotorTypeLabel";
             this.MotorTypeLabel.Size = new System.Drawing.Size(80, 17);
             this.MotorTypeLabel.TabIndex = 16;
@@ -680,7 +680,7 @@
             this.RobotCompetitionDropDown.Location = new System.Drawing.Point(3, 33);
             this.RobotCompetitionDropDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.RobotCompetitionDropDown.Name = "RobotCompetitionDropDown";
-            this.RobotCompetitionDropDown.Size = new System.Drawing.Size(206, 24);
+            this.RobotCompetitionDropDown.Size = new System.Drawing.Size(188, 24);
             this.RobotCompetitionDropDown.TabIndex = 14;
             this.RobotCompetitionDropDown.SelectedIndexChanged += new System.EventHandler(this.RobotCompetitionDropDown_SelectedIndexChanged);
             // 
@@ -689,10 +689,10 @@
             this.MotorTypeDropDown.Dock = System.Windows.Forms.DockStyle.Top;
             this.MotorTypeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.MotorTypeDropDown.FormattingEnabled = true;
-            this.MotorTypeDropDown.Location = new System.Drawing.Point(215, 33);
+            this.MotorTypeDropDown.Location = new System.Drawing.Point(197, 33);
             this.MotorTypeDropDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MotorTypeDropDown.Name = "MotorTypeDropDown";
-            this.MotorTypeDropDown.Size = new System.Drawing.Size(206, 24);
+            this.MotorTypeDropDown.Size = new System.Drawing.Size(308, 24);
             this.MotorTypeDropDown.TabIndex = 13;
             // 
             // RobotCompetitonLabel
@@ -701,7 +701,7 @@
             this.RobotCompetitonLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RobotCompetitonLabel.Location = new System.Drawing.Point(3, 0);
             this.RobotCompetitonLabel.Name = "RobotCompetitonLabel";
-            this.RobotCompetitonLabel.Size = new System.Drawing.Size(206, 31);
+            this.RobotCompetitonLabel.Size = new System.Drawing.Size(188, 31);
             this.RobotCompetitonLabel.TabIndex = 15;
             this.RobotCompetitonLabel.Text = "Robot Competition";
             // 
@@ -723,7 +723,7 @@
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.ConfigJointLayout.Size = new System.Drawing.Size(438, 311);
+            this.ConfigJointLayout.Size = new System.Drawing.Size(522, 311);
             this.ConfigJointLayout.TabIndex = 12;
             // 
             // DriveChooser

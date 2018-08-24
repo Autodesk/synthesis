@@ -33,12 +33,16 @@ public enum MotorType : byte
     WINDOW_MOTOR = 13,
     NEVEREST = 14,
     TETRIX_MOTOR = 15,
-    MODERN_ROBOTICS_MATRIX_12V = 16,
-    REV_ROBOTICS_HD_HEX_12V = 17,
-    REV_ROBOTICS_CORE_HEX_12V = 18,
-    VEX_V5_Smart_Motor = 19,
-    VEX_269 = 20,
-    VEX_393 = 21
+    MODERN_ROBOTICS_MATRIX = 16,
+    REV_ROBOTICS_HD_HEX_20_TO_1 = 17,
+    REV_ROBOTICS_HD_HEX_40_TO_1 = 18,
+    REV_ROBOTICS_CORE_HEX = 19,
+    VEX_V5_Smart_Motor_600_RPM = 20,
+    VEX_V5_Smart_Motor_200_RPM = 21,
+    VEX_V5_Smart_Motor_100_RPM = 22,
+    VEX_393_NORMAL_SPEED = 23,
+    VEX_393_HIGH_SPEED = 24,
+    VEX_393_TURBO_GEAR_SET = 25
 }
 
 public static class JointDriverTypeExtensions
