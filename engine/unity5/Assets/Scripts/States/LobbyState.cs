@@ -69,7 +69,7 @@ namespace Synthesis.States
             else
             {
                 lobbyCodeText.text = "Lobby Code: " + lobbyCode;
-                fieldButton.enabled = false;
+                fieldButton.interactable = false;
                 connectingPanel.SetActive(true);
 
                 network.networkAddress = IPCrypt.Decrypt(lobbyCode);

@@ -42,7 +42,7 @@ namespace Synthesis.States
         /// <summary>
         /// The active robot in this state.
         /// </summary>
-        public NetworkRobot ActiveRobot { get; private set; }
+        public NetworkRobot ActiveRobot { get; set; }
 
         /// <summary>
         /// Used for accessing the active robot in this state.
@@ -131,12 +131,6 @@ namespace Synthesis.States
 
             Network = GameObject.Find("NetworkManager").GetComponent<MultiplayerNetwork>();
             Network.State = this;
-
-            tabCanvas = Auxiliary.FindGameObject("Canvas");
-            homeTabStateMachine = tabCanvas.GetComponent<StateMachine>();
-            homeTabStateMachine.PushState(new MainToolbarState());
-            UICallbackManager.RegisterButtonCallbacks(homeTabStateMachine, tabCanvas);
-            UICallbackManager.RegisterDropdownCallbacks(homeTabStateMachine, tabCanvas);
         }
 
         /// <summary>

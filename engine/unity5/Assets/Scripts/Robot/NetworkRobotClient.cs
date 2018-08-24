@@ -34,7 +34,7 @@ namespace Synthesis.Network
         [ClientRpc]
         void RpcUpdateTransforms(float[] transforms)
         {
-            if (isServer || rigidBodies == null || !correctionEnabled)
+            if (isServer || rigidBodies == null)
                 return;
 
             BulletSharp.Math.Matrix[] bmTransforms = new BulletSharp.Math.Matrix[rigidBodies.Length];
