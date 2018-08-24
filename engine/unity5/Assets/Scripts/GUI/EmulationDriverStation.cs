@@ -16,7 +16,6 @@ namespace Synthesis.GUI
 {
     class EmulationDriverStation : MonoBehaviour
     {
-
         public static EmulationDriverStation Instance { get; private set; }
 
         public enum DriveState
@@ -40,15 +39,15 @@ namespace Synthesis.GUI
         public AllianceStation allianceStation;
 
         public bool isRobotDisabled = false;
-        public bool isActiveState;
         public bool isRunCode = false;
-        public int teamStation;
 
         GameObject canvas;
         InputField gameDataInput;
         GameObject emuDriverStationPanel;
         GameObject runButton;
 
+        // Sprites for emulation coloring details
+        // Tethered in Unity > Simulator > Attached to the EmulationDriverStation script
         public Sprite HighlightColor;
         public Sprite DefaultColor;
         public Sprite EnableColor;
@@ -75,11 +74,9 @@ namespace Synthesis.GUI
             Instance = this;
         }
 
-        private void Update()
-        {
-
-        }
-
+        /// <summary>
+        /// Opens the emulation driver station
+        /// </summary>
         public void OpenDriverStation()
         {
             if (emuDriverStationPanel.activeSelf == true)
@@ -104,6 +101,9 @@ namespace Synthesis.GUI
             }
         }
 
+        /// <summary>
+        /// Toggle button for run/stop code toolbar button
+        /// </summary>
         public void ToggleRobotCodeButton()
         {
             if (!isRunCode)
@@ -120,6 +120,10 @@ namespace Synthesis.GUI
             }
         }
 
+        /// <summary>
+        /// Selected state for the driver station
+        /// </summary>
+        /// <param name="theState"></param>
         public void RobotState(string theState)
         {
             switch (theState)
@@ -171,9 +175,12 @@ namespace Synthesis.GUI
             GameObject.Find("Disable").GetComponent<Image>().sprite = DisableColor;
         }
 
+        /// <summary>
+        /// Selected team alliance station
+        /// </summary>
+        /// <param name="teamStation"></param>
         public void TeamStation(int teamStation)
         {
-
             switch (teamStation)
             {
                 case 0:

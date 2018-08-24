@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 //=========================================================================================
 //                                      SettingsMode.cs
-// Description: The sciprt that enables all the control panel functions.
+// Description: The script that enables all the control panel functions.
 // Main Content: Primarily functions attached to control panel buttons.
 //=========================================================================================
 
