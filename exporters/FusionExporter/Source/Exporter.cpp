@@ -3,6 +3,7 @@
 #include <Fusion/Fusion/Design.h>
 #include <Fusion/Components/Component.h>
 #include <Fusion/Components/JointMotion.h>
+#include <Fusion/Components/AsBuiltJoint.h>
 #include <Core/Application/Attributes.h>
 #include <Core/Application/Attribute.h>
 #include "Data/Filesystem.h"
@@ -17,14 +18,33 @@ using namespace SynthesisAddIn;
 
 std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 {
-	std::string stringifiedJoints;
-
 	std::vector<Ptr<Joint>> allJoints = document->design()->rootComponent()->allJoints();
 	std::vector<Ptr<Joint>> joints;
 
 	for (int j = 0; j < allJoints.size(); j++)
 	{
 		Ptr<Joint> joint = allJoints[j];
+
+		JointTypes type = joint->jointMotion()->jointType();
+
+		// Check if joint is supported to have drivers
+		if (type == JointTypes::RevoluteJointType ||
+			type == JointTypes::SliderJointType ||
+			type == JointTypes::CylindricalJointType)
+			joints.push_back(joint);
+	}
+
+	return joints;
+}
+
+std::vector<Ptr<AsBuiltJoint>> Exporter::collectAsBuiltJoints(Ptr<FusionDocument> document)
+{
+	std::vector<Ptr<AsBuiltJoint>> allJoints = document->design()->rootComponent()->allAsBuiltJoints();
+	std::vector<Ptr<AsBuiltJoint>> joints;
+
+	for (int j = 0; j < allJoints.size(); j++)
+	{
+		Ptr<AsBuiltJoint> joint = allJoints[j];
 
 		JointTypes type = joint->jointMotion()->jointType();
 
@@ -47,6 +67,7 @@ BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 		config.fromJSONString(attr->value());
 
 	config.filterJoints(collectJoints(document));
+	config.filterJoints(collectAsBuiltJoints(document));
 
 	return config;
 }

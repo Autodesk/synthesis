@@ -346,19 +346,6 @@
     <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
     <Compile Include="Assets\Scripts\VersionManager.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\Examples.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIMain.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Demo\Scripts\GUIScenes.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\FileBrowser.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Config.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Constants.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Util\Helper.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserBase.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserEditor.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserGeneric.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserMac.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\FileBrowserWindows.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\FileBrowser\Scripts\Wrapper\IFileBrowser.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\IStandaloneFileBrowser.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\BasicSample.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileImage.cs" />
@@ -373,10 +360,7 @@
     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
-    <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\VERSIONS.txt" />
-    <None Include="Assets\StandaloneFileBrowser\FileBrowser\README.txt" />
     <None Include="Assets\BulletUnity\license.txt" />
-    <None Include="Assets\StandaloneFileBrowser\FileBrowser\Documentation\id\62455202-c9ff-4b04-b6c3-1d4b836a5fff.txt" />
     <None Include="Assets\Packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.xml" />
     <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
@@ -591,6 +575,9 @@
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.5f1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms 1">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/System.Windows.Forms 1.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.11.0.2/lib/net45/Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -602,9 +589,6 @@
     </Reference>
     <Reference Include="CTCommon">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
-    </Reference>
-    <Reference Include="CTCommonEditor">
-      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommonEditor.dll</HintPath>
     </Reference>
     <Reference Include="Ookii.Dialogs">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>

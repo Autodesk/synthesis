@@ -12,6 +12,10 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
 {
+    /// <summary>
+    /// The state that controls the scoring toolbar and related state functions. Because of the nature of the specific functions,
+    /// the scoring toolbar buttons are tethered within Unity.
+    /// </summary>
     public class ScoringToolbarState : State
     {
         GameObject canvas;
@@ -79,6 +83,5 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(true);
             }
         }
-
     }
 }

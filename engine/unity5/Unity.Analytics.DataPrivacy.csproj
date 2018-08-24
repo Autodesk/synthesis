@@ -293,6 +293,9 @@
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.5f1/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms 1">
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/System.Windows.Forms 1.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetZip">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/NuGet/Editor/DotNetZip.dll</HintPath>
     </Reference>
@@ -312,7 +315,7 @@
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
     </Reference>
     <Reference Include="CTCommonEditor">
-      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommonEditor.dll</HintPath>
+      <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Common/Editor/CTCommonEditor.dll</HintPath>
     </Reference>
     <Reference Include="Ookii.Dialogs">
       <HintPath>C:/Users/t_buckm/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>

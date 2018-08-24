@@ -1,1 +1,0 @@
-﻿public enum ColliderType { BOX_COLLIDER, SPHERE_COLLIDER, MESH_COLLIDER, NO_COLLIDER }

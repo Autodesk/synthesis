@@ -29,6 +29,9 @@ namespace Synthesis.States
         {
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
             robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectScrollable>();
+
+            robotList.ThumbTexture = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
+            robotList.ListTextColor = Color.black;
         }
 
         /// <summary>
@@ -78,7 +81,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnRobotExportButtonClicked()
         {
-            Application.OpenURL("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
+            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
         }
 
         /// <summary>
