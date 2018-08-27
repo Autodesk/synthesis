@@ -67,7 +67,7 @@ namespace Assets.Scripts.GUI
 
             trajectoryPanel = Auxiliary.FindObject(canvas, "TrajectoryPanel");
 
-            gamepieceIndex = 0;
+            gamepieceIndex = FieldDataHandler.gamepieceIndex;
 
             Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
@@ -231,6 +231,10 @@ namespace Assets.Scripts.GUI
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
+        }
+        public override void End()
+        {
+            FieldDataHandler.gamepieceIndex = gamepieceIndex;
         }
     }
 }

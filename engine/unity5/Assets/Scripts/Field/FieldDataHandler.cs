@@ -16,6 +16,7 @@ namespace Synthesis.Field
         public static List<List<GameObject>> redGoals = new List<List<GameObject>>();
         public static List<List<GameObject>> blueGoals = new List<List<GameObject>>();
         public static Vector3 robotSpawn = new Vector3(0f,3f,0f);
+        public static int gamepieceIndex = 0;
         #endregion
         #region fileWriting
         public static void WriteField()
