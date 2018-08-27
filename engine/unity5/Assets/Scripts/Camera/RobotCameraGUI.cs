@@ -296,6 +296,10 @@ namespace Synthesis.Camera
             }
         }
 
+        /// <summary>
+        /// Start changing camera x angle
+        /// </summary>
+        /// <param name="sign"></param>
         public void ChangeCameraAngleX(int sign)
         {
             angleSign = sign;
@@ -303,6 +307,10 @@ namespace Synthesis.Camera
             changingAngle = true;
         }
 
+        /// <summary>
+        /// Start changing camera y angle
+        /// </summary>
+        /// <param name="sign"></param>
         public void ChangeCameraAngleY(int sign)
         {
             angleSign = sign;
@@ -310,6 +318,10 @@ namespace Synthesis.Camera
             changingAngle = true;
         }
 
+        /// <summary>
+        /// Start changing camera z angle
+        /// </summary>
+        /// <param name="sign"></param>
         public void ChangeCameraAngleZ(int sign)
         {
             angleSign = sign;
@@ -317,6 +329,9 @@ namespace Synthesis.Camera
             changingAngle = true;
         }
 
+        /// <summary>
+        /// Stop changing camera angle (called when +/- button is released)
+        /// </summary>
         public void StopChangingCameraAngle()
         {
             changingAngleX = false;
@@ -347,12 +362,19 @@ namespace Synthesis.Camera
             robotCameraManager.CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView = temp;
         }
 
+        /// <summary>
+        /// Start changing camera fov
+        /// </summary>
+        /// <param name="sign"></param>
         public void ChangeFOV(int sign)
         {
             fovSign = sign;
             changingFOV = true;
         }
 
+        /// <summary>
+        /// Stop changing camera fov (called when +/- button is released)
+        /// </summary>
         public void StopChangingFOV()
         {
             changingFOV = false;
@@ -367,17 +389,6 @@ namespace Synthesis.Camera
             robotCameraManager.IsChangingFOV = !robotCameraManager.IsChangingFOV;
             cameraFOVPanel.SetActive(robotCameraManager.IsChangingFOV);
             isEditingFOV = robotCameraManager.IsChangingFOV;
-        }
-
-        public void ChangeCameraFOV(int sign)
-        {
-            fovSign = sign;
-            changingFOV = true;
-        }
-
-        public void StopChangingCameraFOV()
-        {
-            changingFOV = false;
         }
 
         /// <summary>
