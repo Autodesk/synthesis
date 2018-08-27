@@ -81,6 +81,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_20.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -118,6 +121,12 @@
     </Compile>
     <Compile Include="Components\FieldMetaForm.Designer.cs">
       <DependentUpon>FieldMetaForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\GamepiecePropertiesForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\GamepiecePropertiesForm.Designer.cs">
+      <DependentUpon>GamepiecePropertiesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Exporter\FieldProperties.cs" />
     <Compile Include="Exporter\Gamepiece.cs" />
@@ -166,6 +175,7 @@
     <Compile Include="Components\SynthesisColorTable.cs" />
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
+    <Compile Include="Exporter\SaveManager.cs" />
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
@@ -211,6 +221,12 @@
     <Compile Include="Forms\ErrorSubmissionForm.Designer.cs">
       <DependentUpon>ErrorSubmissionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PleaseWaitForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PleaseWaitForm.Designer.cs">
+      <DependentUpon>PleaseWaitForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="LegacyInterchange.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -235,6 +251,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\GamepiecePropertiesForm.resx">
+      <DependentUpon>GamepiecePropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\InventorTreeView.resx">
       <DependentUpon>InventorTreeView.cs</DependentUpon>
@@ -269,6 +288,9 @@
     <EmbeddedResource Include="Forms\ErrorSubmissionForm.resx">
       <DependentUpon>ErrorSubmissionForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PleaseWaitForm.resx">
+      <DependentUpon>PleaseWaitForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -279,6 +301,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

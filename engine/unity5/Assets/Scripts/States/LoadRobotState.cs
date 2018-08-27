@@ -8,15 +8,26 @@ namespace Synthesis.States
 {
     public class LoadRobotState : State
     {
+        private readonly State nextState;
+
         private string robotDirectory;
         private SelectScrollable robotList;
+
+        /// <summary>
+        /// Initializes a new <see cref="LoadRobotState"/> instance.
+        /// </summary>
+        /// <param name="nextState"></param>
+        public LoadRobotState(State nextState = null)
+        {
+            this.nextState = nextState;
+        }
 
         /// <summary>
         /// Initializes the <see cref="LoadRobotState"/>.
         /// </summary>
         public override void Start()
         {
-            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\synthesis\\Robots"));
+            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
             robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectScrollable>();
 
             robotList.ThumbTexture = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
@@ -54,7 +65,10 @@ namespace Synthesis.States
                 PlayerPrefs.SetString("simSelectedRobot", robotDirectory + "\\" + simSelectedRobotName + "\\");
                 PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
 
-                StateMachine.PopState();
+                if (nextState == null)
+                    StateMachine.PopState();
+                else
+                    StateMachine.PushState(nextState);
             }
             else
             {
@@ -67,7 +81,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnRobotExportButtonPressed()
         {
-            Application.OpenURL("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
+            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
         }
 
         /// <summary>

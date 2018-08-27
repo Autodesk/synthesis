@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 using Inventor;
 
 namespace FieldExporter.Components
@@ -73,7 +74,8 @@ namespace FieldExporter.Components
 
         private void ExportFieldData(string folder)
         {
-            Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.getSpawnpoints(), new Exporter.Gamepiece[0]);
+            Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.GetSpawnpoints(),
+                                                                               Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToGamepieces());
 
             fieldProps.Write(folder + "\\field_data.xml");
         }
@@ -190,6 +192,10 @@ namespace FieldExporter.Components
 
             // Property sets
             BXDFProperties.WriteProperties(directory + "\\definition.bxdf", fieldDefinition);
+
+            // Open the export directory when done
+            if (openFolderCheckBox.Checked)
+                Process.Start("explorer.exe", "/select, " + directory);
         }
 
         /// <summary>

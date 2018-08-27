@@ -186,7 +186,7 @@ namespace Synthesis.Robot
                 SceneManager.LoadScene("Scene");
             }
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
-                !state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+                !state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HoldTime)
                     BeginReset();
@@ -291,7 +291,7 @@ namespace Synthesis.Robot
 
             //switch to camera and set last camera state
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-            lastCameraState = dynamicCamera.cameraState;
+            lastCameraState = dynamicCamera.ActiveState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
 
             foreach (SimulatorRobot robot in state.SpawnedRobots)
@@ -299,7 +299,7 @@ namespace Synthesis.Robot
                     if (rb != null && !rb.GetCollisionObject().IsActive)
                         rb.GetCollisionObject().Activate();
 
-            if (!state.DynamicCameraObject.GetComponent<DynamicCamera>().cameraState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
+            if (!state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 IsResetting = true;
 

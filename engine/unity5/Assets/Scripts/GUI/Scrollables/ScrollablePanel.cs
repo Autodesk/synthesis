@@ -27,7 +27,7 @@ namespace Synthesis.GUI.Scrollables
         public string selectedEntry { get; set; } //this is set to whatever item is currently being selected
 
         public Texture2D ThumbTexture { get; set; }
-        public Color ListTextColor { get; set; }
+        public Color ListTextColor { get; set; } //better system: set whether it's light or dark theme each time not the specific color
 
         // Use this for initialization
         protected virtual void Start()
@@ -36,7 +36,6 @@ namespace Synthesis.GUI.Scrollables
             //Universal style for all scrollable panels
             listStyle = new GUIStyle("button");
             listStyle.normal.background = new Texture2D(0, 0);
-            listStyle.hover.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.active.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
             listStyle.alignment = TextAnchor.MiddleLeft;
@@ -65,9 +64,11 @@ namespace Synthesis.GUI.Scrollables
                 highlightStyle.fontSize = Mathf.RoundToInt(24 * scale);
             }
 
+            listStyle.hover.background = ThumbTexture;
             UnityEngine.GUI.skin.verticalScrollbar.normal.background = null;
             UnityEngine.GUI.skin.verticalScrollbarThumb.normal.background = ThumbTexture;
             listStyle.normal.textColor = ListTextColor;
+            listStyle.hover.textColor = ListTextColor;
 
             //Sets up the new rectangle area for drawing UI components
             GUILayout.BeginArea(new Rect(area.x, area.y * 1.01f, area.width, rect.height * scale * .95f));

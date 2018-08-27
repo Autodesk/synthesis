@@ -31,8 +31,10 @@ namespace Synthesis.States
     /// Handles replay tracking and loading
     /// Handles interfaces between the SimUI and the active robot such as resetting, orienting, etc.
     /// </summary>
-    public class MainState : State
+    public class MainState : State, IRobotProvider
     {
+        private string[] SampleRobotGUIDs = { "ee85355c-6daf-4588-ba47-cdf3f9143922", "fde5a9e9-4a1d-4d07-bafd-ae18bada7a8d", "d7f2959a-f9eb-4581-a4bb-898550193bda", "d1859211-db0f-4b75-866c-2d0e81b6732b", "52eb1ada-b051-461a-9cc4-1b5b74764ce5", "decdc6a1-5f76-4dea-add7-4c358f4a9921", "6b5d4484-db3c-425b-98b8-546c06d8d8bf", "c3bb1b94-dad8-4a8c-aa67-9c09eb9379c1", "ef4e3e2b-8cfb-437d-b63d-8bebc05fa3ba", "7d31cb8a-01e8-4eeb-9086-2955a993a374", "1478855a-60bd-42cb-8841-eece4fa0fbeb", "0b43729a-d8d3-4df2-bcbb-684343933c23", "9f19586c-a26f-4b28-9fb9-e06731178166", "f1225b7a-180e-456b-88d1-7315b0086001" };
+
         private const int SolverIterations = 100;
 
         private BPhysicsWorld physicsWorld;
@@ -43,11 +45,21 @@ namespace Synthesis.States
 
         private UnityPacket unityPacket;
 
-        // TODO: Create more robot classes that suit the needs of MainState.
         /// <summary>
         /// The active robot in this state.
         /// </summary>
         public SimulatorRobot ActiveRobot { get; private set; }
+
+        /// <summary>
+        /// Used for accessing the active robot in this state.
+        /// </summary>
+        /// <returns></returns>
+        public GameObject Robot => ActiveRobot.transform.GetChild(0).gameObject ?? ActiveRobot.gameObject;
+
+        /// <summary>
+        /// True if the robot is not resetting.
+        /// </summary>
+        public bool RobotActive => !ActiveRobot.IsResetting;
 
         private DynamicCamera dynamicCamera;
         public GameObject DynamicCameraObject;
@@ -172,7 +184,7 @@ namespace Synthesis.States
             StateMachine.Link<SensorSpawnState>(Auxiliary.FindGameObject("ResetSensorSpawnpointUI"));
             StateMachine.Link<DefineSensorAttachmentState>(Auxiliary.FindGameObject("DefineSensorAttachmentUI"));
 
-            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Autodesk\Synthesis\Emulator");
+            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Emulator");
             string directoryPath = "";
 
             if (Directory.Exists(defaultDirectory))
@@ -210,7 +222,7 @@ namespace Synthesis.States
             // Toggles between the different camera states if the camera toggle button is pressed
             if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
-                dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
+                dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             // Switches to replay mode
             if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].replayMode))
@@ -320,6 +332,15 @@ namespace Synthesis.States
                 //for mix and match data file is specific to drive base
                 DPMDataHandler.Load(robotPath); //load robot data
 
+                if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
+                {
+                    if (PlayerPrefs.GetInt("analytics") == 1)
+                    {
+                        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
+                        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
+                    }
+                }
+
                 return true;
             }
             return false;
@@ -341,7 +362,6 @@ namespace Synthesis.States
 
             if (LoadRobot(directory, isMixAndMatch))
             {
-                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
                 DynamicCamera.ControlEnabled = true;
                 return true;
             }
@@ -358,7 +378,6 @@ namespace Synthesis.States
             mamRobot?.DeleteManipulatorNodes();
         }
 
-        /// <summary>
         /// Changes the active robot to a different robot based on a given index
         /// </summary>
         public void SwitchActiveRobot(int index)
@@ -367,7 +386,6 @@ namespace Synthesis.States
             {
                 ActiveRobot = SpawnedRobots[index];
                 DPMDataHandler.Load(ActiveRobot.FilePath); //reload robot data to allow for driver practice for multiplayer
-                dynamicCamera.cameraState.robot = ActiveRobot.gameObject;
             }
         }
 

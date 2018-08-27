@@ -1,9 +1,9 @@
 # Simulator Engine
 
-This project folder is the simulation engine component. Made in Unity 5 using Bullet Physics libraries, this is the executable that loads exported robots and fields and provides a real time physics environment for them to interact with each other.
+This project folder is the simulation engine component. Made in Unity 2018 using Bullet Physics libraries, this is the executable that loads exported robots and fields and provides a real time physics environment for them to interact with each other.
 
 ## Requirements:
-* Unity 5.6.2 (Required)
+* Unity 2018.2.2 (Required)
 * Visual Studio 2017 (Recommended)
 
 ## Setup Instructions
@@ -16,9 +16,19 @@ are the steps to do so:
 * Import all included assets and ignore warning message
 * Bullet Physics should now be integrated within the project!
 
+You will also need to download and import the NuGet asset.
+* Search 'NuGet' and download and import 'NuGet for Unity'
+* Restart Unity
+* Select the NuGet tab at the top of the screen
+* Go to Install a package
+* Uninstall and Re-Install JSON.NET
+* Uninstall and Re-Install SSH.NET
+* Import all included assets
+* NuGet should now be integrated within the project
+
 If you want to test, you will need to open the MainMenu.unity scene by double clicking the scene or dragging the scene to the 'Hiearchy' (the upper left hand column.) You can run it from there as you will need to select and load a robot and field for the simulator to properly intialize.
 
-![synthesiscompiling](https://user-images.githubusercontent.com/6741771/35821700-bd18230a-0a5e-11e8-97b4-87d1d8ec96ac.png)
+![unity-screenshot](https://user-images.githubusercontent.com/22991715/44364221-42982500-a47b-11e8-96d9-015836ecc307.png)
 
 * Remember to click Assets and then double click MainMenu with the viewcube in order to compile it correctly.
 * This will come after importing of the Bullet Asset files.

@@ -49,7 +49,7 @@ namespace hel{
         /**
          * \brief The period of the most recent pulse
          * Stalled represents the encoder stalled state (i.e. it it's stopped turning)
-         * Period is the time taken to count \bCount encoder ticks in units of system ticks (40 microseconds per system tick). It increments by 2's but uses the first bit, so it must be left bit-shifted one before interpretation.
+         * Period is the time taken to reach Count encoder ticks in units of system ticks (40 microseconds per system tick). It increments by 2's but uses the first bit, so it must be left bit-shifted one before interpretation.
          * Count is the encoder count during the polling period
          */
 

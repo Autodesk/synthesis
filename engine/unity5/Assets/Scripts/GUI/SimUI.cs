@@ -80,8 +80,9 @@ namespace Synthesis.GUI
 
         private StateMachine tabStateMachine;
         string currentTab;
-        public Sprite normalButton;
-        public Sprite highlightButton;
+
+        public Sprite normalButton; // these sprites are attached to the SimUI script
+        public Sprite highlightButton; // in the Scene simulator
 
         GameObject helpMenu;
         GameObject overlay;
@@ -168,9 +169,9 @@ namespace Synthesis.GUI
             changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
             addPanel = Auxiliary.FindObject(canvas, "AddPanel");
 
+            // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
-
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
             CheckControlPanel();
@@ -261,6 +262,9 @@ namespace Synthesis.GUI
             }
         }
 
+        /// <summary>
+        /// Performs a sprite swap for the active tab.
+        /// </summary>
         private void HighlightTabs()
         {
             foreach (Transform t in tabs.transform)
@@ -375,6 +379,9 @@ namespace Synthesis.GUI
             }
         }
 
+        /// <summary>
+        /// These toggle, change, and add functions are tethered in Unity
+        /// </summary>
         public void ToggleChangeFieldPanel()
         {
             if (changeFieldPanel.activeSelf)
@@ -460,13 +467,13 @@ namespace Synthesis.GUI
         /// </summary>
         public void CameraToolTips()
         {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
+            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
                 camera.GetComponent<Text>().text = "Driver Station";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
                 camera.GetComponent<Text>().text = "Freeroam";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
                 camera.GetComponent<Text>().text = "Orbit Robot";
-            else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
                 camera.GetComponent<Text>().text = "Overview";
         }
 
@@ -475,7 +482,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateFreeroamWindow()
         {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
+            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
             {
                 if (!freeroamWindowClosed)
                 {
@@ -483,7 +490,7 @@ namespace Synthesis.GUI
                 }
 
             }
-            else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
             {
                 freeroamCameraWindow.SetActive(false);
             }
@@ -491,7 +498,7 @@ namespace Synthesis.GUI
 
         private void UpdateOverviewWindow()
         {
-            if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)) && !overviewWindowClosed)
+            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)) && !overviewWindowClosed)
             {
                 if (!overviewWindowClosed)
                 {
@@ -499,7 +506,7 @@ namespace Synthesis.GUI
                 }
 
             }
-            else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
             {
                 overviewCameraWindow.SetActive(false);
             }
@@ -528,7 +535,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateDriverStationPanel()
         {
-            driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+            driverStationPanel.SetActive(camera.ActiveState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
         }
 
         /// <summary>
@@ -866,7 +873,6 @@ namespace Synthesis.GUI
         {
             State.EnterReplayState();
         }
-
 
         /// <summary>
         /// Links the specific toolbars to their specified states

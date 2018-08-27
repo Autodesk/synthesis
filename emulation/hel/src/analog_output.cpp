@@ -5,11 +5,11 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
     uint16_t AnalogOutputs::getMXPOutput(uint8_t index)const{
-    	return mxp_outputs[index];
+        return mxp_outputs[index];
     }
 
     void AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
-    	mxp_outputs[index] = value;
+        mxp_outputs[index] = value;
     }
 
     AnalogOutputs::AnalogOutputs()noexcept:mxp_outputs(0){}
@@ -40,8 +40,8 @@ namespace hel{
 
 namespace nFPGA{
     namespace nRoboRIO_FPGANamespace{
-    	tAO* tAO::create(tRioStatusCode* /*status*/){
-    		return new hel::AnalogOutputManager();
-    	}
+        tAO* tAO::create(tRioStatusCode* /*status*/){
+            return new hel::AnalogOutputManager();
+        }
     }
 }

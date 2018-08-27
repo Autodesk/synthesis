@@ -17,9 +17,15 @@ namespace FieldExporter.Components
             InitializeComponent();
         }
 
-        public static BXDVector3[] getSpawnpoints()
+        public static BXDVector3[] GetSpawnpoints()
         {
             return spawnpoints.ToArray();
+        }
+
+        public void SetSpawnpoints(BXDVector3[] points)
+        {
+            spawnpoints = new List<BXDVector3>(points);
+            updatePointView();
         }
 
         /// <summary>
@@ -85,7 +91,7 @@ namespace FieldExporter.Components
 
             foreach (dynamic selectedEntity in selectEvents.SelectedEntities)
                 if (selectedEntity is SketchPoint point)
-                    spawnpoints.Add(new BXDVector3(point.Geometry3d.X, point.Geometry3d.Y + 100, point.Geometry3d.Z));
+                    spawnpoints.Add(new BXDVector3(point.Geometry3d.X, point.Geometry3d.Y + 50, point.Geometry3d.Z));
 
             selectCoordinatesButton.Enabled = true;
             Program.UnlockInventor();
