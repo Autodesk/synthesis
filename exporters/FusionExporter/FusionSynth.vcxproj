@@ -52,7 +52,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>C:\Users\t_walkn\Documents\GitHub\synthesis\exporters\FusionExporter\Include;$(IncludePath)</IncludePath>
+    <IncludePath>\\Mac\Home\Documents\git\synthesis\exporters\FusionExporter\Include;C:\Users\t_walkn\Documents\GitHub\synthesis\exporters\FusionExporter\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
