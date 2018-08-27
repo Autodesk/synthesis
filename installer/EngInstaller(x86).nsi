@@ -97,11 +97,11 @@ Section "Synthesis (required)" SynthesisRequired
   
   SetOutPath $INSTDIR
 
-  File /r "Synthesis\*"
+  File /r "Synthesis32\*"
 
   SetOutPath $INSTDIR
-  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
-  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
+  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
+  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayName" "Autodesk Synthesis (x86)"
