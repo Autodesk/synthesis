@@ -80,7 +80,8 @@ namespace Synthesis.States
 
             //camera stuff
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
-            lastCameraState = dynamicCamera.cameraState;
+            lastCameraState = dynamicCamera.ActiveState;
+
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, goalIndicator));
 
             //help menu stuff

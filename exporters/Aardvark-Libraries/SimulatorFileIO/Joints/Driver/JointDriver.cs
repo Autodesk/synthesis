@@ -11,6 +11,11 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     private JointDriverType type;
 
     /// <summary>
+    /// The motor type of this joint driver.
+    /// </summary>
+    private MotorType motor = 0;
+
+    /// <summary>
     /// The port(s) that this joint driver uses.
     /// </summary>
     public int port1, port2;
@@ -25,7 +30,12 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     /// </summary>
     /// <param name="OutputGear">Output gear ratio</param>
     public double OutputGear { get; set; }// getter/setter for the output gear internal data structure
-
+    
+    /// <summary>
+    /// Whether or not the driver has an attached brake
+    /// </summary>
+    /// <param name="hasBrake">Determines whether or not the joint has a brake</param>
+    public bool hasBrake { get; set; }// getter/setter for the output gear internal data structure
 
     //wat
     public bool isCan = false;
@@ -213,6 +223,15 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
     public JointDriverType GetDriveType()
     {
         return type;
+    }
+
+    /// <summary>
+    /// Gets the motor of this joint driver.
+    /// </summary>
+    /// <returns>Motor type</returns>
+    public MotorType GetMotorType()
+    {
+        return motor;
     }
 
     /// <summary>

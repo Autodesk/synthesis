@@ -12,6 +12,35 @@ public enum JointDriverType : byte
     ELEVATOR = 7
 }
 
+/// <summary>
+/// Types of joint motors
+/// </summary>
+public enum MotorType : byte
+{
+    GENERIC = 0,
+    CIM = 1,
+    MINI_CIM = 2,
+    BAG_MOTOR = 3,
+    REDLINE_775_PRO = 4,
+    _9015 = 5,
+    BANEBOTS_775_18v = 6,
+    BANEBOTS_775_12v = 7,
+    BANEBOTS_550_12v = 8,
+    ANDYMARK_775_125 = 9,
+    SNOW_BLOWER = 10,
+    NIDEN_BLDC = 11,
+    THROTTLE_MOTOR = 12,
+    WINDOW_MOTOR = 13,
+    NEVEREST = 14,
+    TETRIX_MOTOR = 15,
+    MODERN_ROBOTICS_MATRIX_12V = 16,
+    REV_ROBOTICS_HD_HEX_12V = 17,
+    REV_ROBOTICS_CORE_HEX_12V = 18,
+    VEX_V5_Smart_Motor = 19,
+    VEX_269 = 20,
+    VEX_393 = 21
+}
+
 public static class JointDriverTypeExtensions
 {
     /// <summary>

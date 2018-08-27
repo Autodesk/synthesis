@@ -5,62 +5,115 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class NetworkMesh : MonoBehaviour
+namespace Synthesis.Network
 {
-    private const float CorrectionThreshold = 0.9f;
-
-    private BRigidBody bRigidBody;
-
-    private Vector3 deltaPosition;
-    private Quaternion deltaRotation;
-
-    private float interpolationFactor;
-
     /// <summary>
-    /// Updates the NetworkMesh offset from the given new position and rotations.
+    /// This class solves the jittery movement effect of objects synchronized over the network
+    /// by smoothing out the movments of their associated meshes.
     /// </summary>
-    /// <param name="newPosition"></param>
-    /// <param name="newRotation"></param>
-    public void UpdateMeshTransform(Vector3 newPosition, Quaternion newRotation)
+    public class NetworkMesh : MonoBehaviour
     {
-        deltaPosition = newPosition - transform.position;
-        deltaRotation = newRotation * transform.rotation;
+        /// <summary>
+        /// The rate of acceleration for making apadtive corrections.
+        /// A high value means that the mesh will react quickly to larget offsets
+        /// with the physical robot's position.
+        /// </summary>
+        private const float AdaptiveLinearAcceleration = 100f;
 
-        interpolationFactor = 1.0f;
+        /// <summary>
+        /// The damping factor for making adaptive corrections.
+        /// A higher value means corrections will be slow and smooth as the difference
+        /// between the mesh's position and physical robot's position becomes small.
+        /// </summary>
+        private const float AdaptiveLinearDampingFactor = 10f;
 
-        // TODO: Try storing the new rotation but interpolate using a delta (e.g. new rotation will change as transform does).
-    }
+        /// <summary>
+        /// The maximum correction speed for the mesh when making adaptive corrections.
+        /// Limiting this value prevents adaptive correction from overshooting the target.
+        /// </summary>
+        private const float AdaptiveMaxLinearSpeed = 15f;
 
-    /// <summary>
-    /// Initializes the NetworkMesh
-    /// </summary>
-    private void Start()
-    {
-        deltaPosition = Vector3.zero;
-        deltaRotation = Quaternion.identity;
+        /// <summary>
+        /// The maximum linear dapming for the mesh when making adaptive corrections.
+        /// Limiting this value prevents the mesh from never fully reaching its target.
+        /// </summary>
+        private const float AdaptiveMaxLinearDamping = 30f;
 
-        interpolationFactor = 0.0f;
-    }
+        /// <summary>
+        /// The factor controlling how quickly the velocity of the mesh reacts to
+        /// linear velocity changes of the target.
+        /// A high value indicates that the mesh will react quickly to changes in the
+        /// target velocity.
+        /// </summary>
+        private const float LinearVelocityCorrectionScalar = 100f;
 
-    /// <summary>
-    /// Updates the interpolation factor, which slowly moves the visible mesh to the position of the robot.
-    /// </summary>
-    private void FixedUpdate()
-    {
-        interpolationFactor *= CorrectionThreshold;
-    }
+        /// <summary>
+        /// The factor controlling how quickly the rotation of the mesh reacts to
+        /// rotational changes of the target.
+        /// A high value indicates that the mesh will rotate quickly to correct any
+        /// offset with the target's rotation.
+        /// </summary>
+        private const float RotationCorrectionScalar = 10f;
 
-    /// <summary>
-    /// Updates the transform of the visible mesh.
-    /// </summary>
-    private void Update()
-    {
-        if ((bRigidBody == null && (bRigidBody = GetComponent<BRigidBody>()) == null) || interpolationFactor < 0.01f)
-            return;
+        private Vector3 matchedLinearVelocity;
+        private Vector3 adaptiveLinearVelocity;
 
-        transform.position = bRigidBody.GetCollisionObject().WorldTransform.Origin.ToUnity() - deltaPosition * interpolationFactor;
+        /// <summary>
+        /// The target linear velocity of the <see cref="NetworkMesh"/>.
+        /// </summary>
+        public Vector3 TargetLinearVelocity { get; set; }
 
-        Quaternion currentRotation = bRigidBody.GetCollisionObject().WorldTransform.Orientation.ToUnity();
-        transform.rotation = Quaternion.Inverse(Quaternion.Slerp(currentRotation, currentRotation * Quaternion.Inverse(deltaRotation), interpolationFactor));
+        /// <summary>
+        /// The mesh object associated with this instance.
+        /// </summary>
+        public GameObject MeshObject { get; private set; }
+
+        /// <summary>
+        /// Initializes the NetworkMesh.
+        /// </summary>
+        private void Start()
+        {
+            MeshObject = new GameObject(transform.name + "_network_mesh");
+            MeshObject.transform.position = transform.position;
+            MeshObject.transform.rotation = transform.rotation;
+
+            Transform[] childTransforms = new Transform[transform.childCount];
+
+            for (int i = 0; i < childTransforms.Length; i++)
+                childTransforms[i] = transform.GetChild(i);
+
+            for (int i = 0; i < childTransforms.Length; i++)
+                childTransforms[i].parent = MeshObject.transform;
+        }
+
+        /// <summary>
+        /// Updates the transform of the visible mesh.
+        /// </summary>
+        private void Update()
+        {
+            matchedLinearVelocity = Vector3.Lerp(matchedLinearVelocity, TargetLinearVelocity, Time.deltaTime * LinearVelocityCorrectionScalar);
+
+            MeshObject.transform.position += matchedLinearVelocity * Time.deltaTime;
+
+            Vector3 offset = transform.position - MeshObject.transform.position;
+
+            adaptiveLinearVelocity += offset * AdaptiveLinearAcceleration * Time.deltaTime;
+            adaptiveLinearVelocity /= 1 + Math.Min((AdaptiveLinearDampingFactor / offset.magnitude), AdaptiveMaxLinearDamping) * Time.deltaTime;
+
+            if (adaptiveLinearVelocity.magnitude > AdaptiveMaxLinearSpeed)
+                adaptiveLinearVelocity = adaptiveLinearVelocity.normalized * AdaptiveMaxLinearSpeed;
+
+            MeshObject.transform.position += adaptiveLinearVelocity * Time.deltaTime;
+
+            MeshObject.transform.rotation = Quaternion.Lerp(MeshObject.transform.rotation, transform.rotation, Time.deltaTime * RotationCorrectionScalar);
+        }
+
+        /// <summary>
+        /// Destroys the associated mesh object when this instance is destroyed.
+        /// </summary>
+        private void OnDestroy()
+        {
+            Destroy(MeshObject);
+        }
     }
 }

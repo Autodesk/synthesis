@@ -176,7 +176,7 @@ namespace Synthesis.Sensors
             isChoosingOption = !isChoosingOption;
             if (isChoosingOption)
             {
-                preConfigState = dynamicCamera.cameraState;
+                preConfigState = dynamicCamera.ActiveState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera));
                 ShowAllSensors();
             }
@@ -426,16 +426,28 @@ namespace Synthesis.Sensors
             cancelTypeButton.SetActive(false);
         }
 
+        /// <summary>
+        /// Set currentSensor to a specified ultrasonic
+        /// </summary>
+        /// <param name="i"></param>
         public void SetUltrasonicAsCurrent(int i)
         {
             currentSensor = sensorManager.ultrasonicList[i].GetComponent<SensorBase>();
         }
 
+        /// <summary>
+        /// Set currentSensor to a specified beam breaker
+        /// </summary>
+        /// <param name="i"></param>
         public void SetBeamBreakerAsCurrent(int i)
         {
             currentSensor = sensorManager.beamBreakerList[i].GetComponent<SensorBase>();
         }
 
+        /// <summary>
+        /// Set currentSensor to a specified gyro
+        /// </summary>
+        /// <param name="i"></param>
         public void SetGyroAsCurrent(int i)
         {
             currentSensor = sensorManager.gyroList[i].GetComponent<SensorBase>();
@@ -500,7 +512,7 @@ namespace Synthesis.Sensors
             configureSensorPanel.SetActive(true);
             sensorConfigHeader.GetComponentInChildren<Text>().text = currentSensor.name;
 
-            if (preConfigState == null) preConfigState = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().cameraState;
+            if (preConfigState == null) preConfigState = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>().ActiveState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
         }
 
@@ -572,6 +584,10 @@ namespace Synthesis.Sensors
             //}
         }
 
+        /// <summary>
+        /// Start changing sensor x angle
+        /// </summary>
+        /// <param name="sign"></param>
         public void ChangeSensorAngleX(int sign)
         {
             angleSign = sign;
@@ -579,6 +595,10 @@ namespace Synthesis.Sensors
             changingAngle = true;
         }
 
+        /// <summary>
+        /// Start changing sensor y angle
+        /// </summary>
+        /// <param name="sign"></param>
         public void ChangeSensorAngleY(int sign)
         {
             angleSign = sign;
@@ -586,6 +606,10 @@ namespace Synthesis.Sensors
             changingAngle = true;
         }
 
+        /// <summary>
+        /// Start changing sensor z angle
+        /// </summary>
+        /// <param name="sign"></param>
         public void ChangeSensorAngleZ(int sign)
         {
             angleSign = sign;
@@ -593,6 +617,9 @@ namespace Synthesis.Sensors
             changingAngle = true;
         }
 
+        /// <summary>
+        /// Stop changing sensor angle (called when +/- button is released)
+        /// </summary>
         public void StopChangingSensorAngle()
         {
             changingAngleX = false;
@@ -703,6 +730,10 @@ namespace Synthesis.Sensors
                 sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
         }
 
+        /// <summary>
+        /// Remove the current sensor from the robot
+        /// </summary>
+        /// <param name="robot"></param>
         public void RemoveSensorsFromRobot(SimulatorRobot robot)
         {
             List<GameObject> sensorsOnRobot = sensorManager.GetSensorsFromRobot(robot);

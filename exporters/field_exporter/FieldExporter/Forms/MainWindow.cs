@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using FieldExporter.Components;
 using System.Diagnostics;
 
@@ -34,6 +35,34 @@ namespace FieldExporter
         private void MainWindow_Load(object sender, EventArgs e)
         {
             menuStrip.Renderer = new ToolStripProfessionalRenderer(new SynthesisColorTable());
+
+            Forms.PleaseWaitForm pleaseWait = new Forms.PleaseWaitForm("Loading config...");
+            Enabled = false;
+            pleaseWait.Show();
+
+            try
+            {
+                if (Program.ASSEMBLY_DOCUMENT != null)
+                {
+                    Exporter.FieldProperties fieldProps;
+                    List<PropertySet> propSets;
+                    Dictionary<string, List<string>> occPropSets;
+
+                    Exporter.SaveManager.Load(Program.ASSEMBLY_DOCUMENT, out fieldProps, out propSets, out occPropSets);
+
+                    fieldMeta.SetSpawnpoints(fieldProps.spawnpoints);
+                    GetPropertySetsTabControl().ApplyPropertySets(propSets);
+                    GetPropertySetsTabControl().ApplyGamepieces(fieldProps.gamepieces);
+                    GetPropertySetsTabControl().ApplyOccurrences(occPropSets);
+                }
+            }
+            catch (Exporter.FailedToLoadException)
+            {
+                // Failed to load config
+            }
+
+            pleaseWait.Close();
+            Enabled = true;
         }
 
         /// <summary>
@@ -44,6 +73,38 @@ namespace FieldExporter
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        /// <summary>
+        /// Saves the current configuration to the field assembly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Forms.PleaseWaitForm pleaseWait = new Forms.PleaseWaitForm("Saving config...");
+            Enabled = false;
+            pleaseWait.Show();
+
+            try
+            {
+                if (Program.ASSEMBLY_DOCUMENT != null)
+                {
+                    Exporter.FieldProperties fieldProps = new Exporter.FieldProperties(FieldMetaForm.GetSpawnpoints(),
+                                                                                       GetPropertySetsTabControl().TranslateToGamepieces());
+                    List<PropertySet> propSets = GetPropertySetsTabControl().TranslateToPropertySets();
+                    Exporter.SaveManager.Save(Program.ASSEMBLY_DOCUMENT, fieldProps, propSets);
+                }
+
+                Enabled = true;
+                pleaseWait.Close();
+            }
+            catch (Exporter.FailedToSaveException er)
+            {
+                pleaseWait.Close();
+                MessageBox.Show("Failed to save field configuration. The following error occurred:\n" + er.InnerException.ToString(), "Error", MessageBoxButtons.OK);
+                Enabled = true;
+            }
         }
 
         /// <summary>
@@ -94,6 +155,5 @@ namespace FieldExporter
             if (exportForm.IsExporting)
                 e.Cancel = true;
         }
-
     }
 }
