@@ -18,6 +18,9 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
 {
+    /// <summary>
+    /// The Driver Practice toolbar. Controls buttons and states on the driver practice toolbar.
+    /// </summary>
     public class DPMToolbarState : State
     {
         GameObject canvas;
