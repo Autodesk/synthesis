@@ -56,7 +56,7 @@ namespace Synthesis.GUI.Scrollables
         {
             if (listType.Equals("Replays") && items.Count == 0)
             {
-                string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\", "*.replay");
+                string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\", "*.replay");
 
                 foreach (string file in files)
                     items.Add(new FileInfo(file).Name.Split('.')[0]);
