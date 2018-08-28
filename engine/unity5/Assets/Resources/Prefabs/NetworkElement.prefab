@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 114997454565643914}
   - component: {fileID: 114732049608404068}
   - component: {fileID: 114117517250532262}
-  - component: {fileID: 114451053021415180}
   m_Layer: 0
   m_Name: NetworkElement
   m_TagString: Untagged
@@ -64,17 +63,6 @@ MonoBehaviour:
   m_SnapThreshold: 5
   m_InterpolateRotation: 1
   m_InterpolateMovement: 1
---- !u!114 &114451053021415180
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1390732989618420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ac0639010a7f55448d29d28724f6885, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114732049608404068
 MonoBehaviour:
   m_ObjectHideFlags: 1
