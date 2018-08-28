@@ -94,18 +94,6 @@ namespace Synthesis.Field
         }
         #endregion
         #region getData
-        public static void Load()
-        {
-            if (File.Exists(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml"))
-            {
-                file = XDocument.Load(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml");
-                gamepieces = getGamepieces();
-                redGoals = getRedGoals();
-                blueGoals = getBlueGoals();
-                robotSpawn = getRobotSpawn();
-            } else WriteField();
-        }
-
         public static void Load(string fieldPath)
         {
             if (File.Exists(fieldPath + "\\" + "field_data.xml"))
@@ -115,6 +103,7 @@ namespace Synthesis.Field
                 redGoals = getRedGoals();
                 blueGoals = getBlueGoals();
                 robotSpawn = getRobotSpawn();
+                gamepieceIndex = 0;
             }
             else WriteField();
         }
