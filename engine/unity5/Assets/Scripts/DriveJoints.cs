@@ -166,19 +166,22 @@ public class DriveJoints
                     }
                     else if (joint.cDriver.GetDriveType().IsPneumatic() && rigidNode.HasDriverMeta<PneumaticDriverMeta>())
                     {
-                        float output = motors[joint.cDriver.port1 - 1];
-
-                        float psi = rigidNode.GetDriverMeta<PneumaticDriverMeta>().pressurePSI;
-                        float width = rigidNode.GetDriverMeta<PneumaticDriverMeta>().widthMM;
-
-                        float force = psi * ((float)Math.PI) * width * width / 4f;
-                        float speed = 1000f;
-
                         BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
                         SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
+
+                        float output = motors[joint.cDriver.port1 - 1];
+                        
+                        float psi = rigidNode.GetDriverMeta<PneumaticDriverMeta>().pressurePSI;
+                        float width = rigidNode.GetDriverMeta<PneumaticDriverMeta>().widthMM;
+                float stroke = (sc.UpperLinearLimit - sc.LowerLinearLimit) / 0.01f;
+
+                        float force = psi * ((float)Math.PI) * width * width / 4f;
+                        float speed =  stroke / 60f;
+                        
                         sc.PoweredLinearMotor = true;
                         sc.MaxLinearMotorForce = force;
                         sc.TargetLinearMotorVelocity = output * speed;
+                        Debug.Log(sc.LinearPos);
                     }
                 }
             }
@@ -423,19 +426,21 @@ public class DriveJoints
             }
             else if (joint.cDriver.GetDriveType().IsPneumatic() && node.HasDriverMeta<PneumaticDriverMeta>())
             {
+                BSliderConstraint bSliderConstraint = node.MainObject.GetComponent<BSliderConstraint>();
+                SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
+
                 float output = motors[joint.cDriver.port1 - 1];
 
                 float psi = node.GetDriverMeta<PneumaticDriverMeta>().pressurePSI;
                 float width = node.GetDriverMeta<PneumaticDriverMeta>().widthMM;
+                float stroke = (sc.UpperLinearLimit - sc.LowerLinearLimit) / 0.01f;
 
                 float force = psi * ((float)Math.PI) * width * width / 4f;
-                float speed = 1000f;
+                float speed = stroke / 60f;
 
-                BSliderConstraint bSliderConstraint = node.MainObject.GetComponent<BSliderConstraint>();
-                SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
                 sc.PoweredLinearMotor = true;
                 sc.MaxLinearMotorForce = force;
-                sc.TargetLinearMotorVelocity = output * speed;
+                sc.TargetLinearMotorVelocity = sc.TargetLinearMotorVelocity != 0 && output == 0 ? sc.TargetLinearMotorVelocity : output * speed;
             }
         }
     }
