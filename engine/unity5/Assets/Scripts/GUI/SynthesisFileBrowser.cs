@@ -53,7 +53,6 @@ namespace Synthesis.GUI
                                                                       || directorySelection.GetFiles("*.bxdj").Length != 0)
                     {
                         UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
-                        //defaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + ("//synthesis//");
                         directorySelection = directorySelection.Parent;
                         directoryPath = directorySelection.FullName;
                         directoryLocation = directorySelection.FullName;
