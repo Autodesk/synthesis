@@ -431,8 +431,8 @@ public class DriveJoints
 
                 float output = motors[joint.cDriver.port1 - 1];
 
-                float psi = node.GetDriverMeta<PneumaticDriverMeta>().pressurePSI;
-                float width = node.GetDriverMeta<PneumaticDriverMeta>().widthMM;
+                float psi = node.GetDriverMeta<PneumaticDriverMeta>().pressurePSI * 6894.76f;
+                float width = node.GetDriverMeta<PneumaticDriverMeta>().widthMM * 0.001f;
                 float stroke = (sc.UpperLinearLimit - sc.LowerLinearLimit) / 0.01f;
 
                 float force = psi * ((float)Math.PI) * width * width / 4f;
