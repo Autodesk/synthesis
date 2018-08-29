@@ -1,13 +1,5 @@
 ﻿using System.IO;
 
-﻿// TODO find proper specs for these
-public enum PneumaticDiameter : byte
-{
-    HIGH = 0,
-    MEDIUM = 1,
-    LOW = 2
-}
-
 public enum PneumaticPressure : byte
 {
     HIGH = 0,
@@ -25,33 +17,8 @@ public class PneumaticDriverMeta : JointDriverMeta
     public float pressurePSI;
 
     #region WHERE IS YOUR _TODD_ NOW
-    public PneumaticDiameter widthEnum
-    {
-        set
-        {
-            switch (value)
-            {
-                case PneumaticDiameter.HIGH:
-                    widthMM = 10;
-                    break;
-                case PneumaticDiameter.LOW:
-                    widthMM = 1;
-                    break;
-                case PneumaticDiameter.MEDIUM:
-                default:
-                    widthMM = 5;
-                    break;
-            }
-        }
-        get
-        {
-            if (widthMM == 10)
-                return PneumaticDiameter.HIGH;
-            if (widthMM == 1)
-                return PneumaticDiameter.LOW;
-            return PneumaticDiameter.MEDIUM;
-        }
-    }
+    public double width;
+
 
     public PneumaticPressure pressureEnum
     {

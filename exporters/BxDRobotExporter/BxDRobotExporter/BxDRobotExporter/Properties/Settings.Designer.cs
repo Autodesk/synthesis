@@ -34,7 +34,22 @@ namespace BxDRobotExporter.Properties {
                 this["ChildColor"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("GENERIC")]
+        public string DefaultRobotCompetition
+        {
+            get
+            {
+                return ((string)(this["DefaultRobotCompetition"]));
+            }
+            set
+            {
+                this["DefaultRobotCompetition"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
