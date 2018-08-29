@@ -269,6 +269,7 @@ namespace Synthesis.GUI
             {
                 Process.Start("http://bxd.autodesk.com");
                 Process.Start(updater);
+                Application.Quit();
             }
             else Auxiliary.FindObject("UpdatePrompt").SetActive(false);
         }
