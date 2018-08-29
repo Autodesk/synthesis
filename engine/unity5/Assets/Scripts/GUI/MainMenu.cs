@@ -72,7 +72,7 @@ namespace Synthesis.GUI
             VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
             updater = update.URL;
 
-            string CurrentVersion = "4.2.0.1";
+            string CurrentVersion = "4.2.1";
             Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             var localVersion = new Version(CurrentVersion);
