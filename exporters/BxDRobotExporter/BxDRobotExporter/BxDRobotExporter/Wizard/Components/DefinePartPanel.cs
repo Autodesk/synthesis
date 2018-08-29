@@ -69,19 +69,19 @@ namespace BxDRobotExporter.Wizard
                     "No Driver",
                     "Motor",
                     "Servo",
-                    /*"Bumper Pneumatic",
+                    "Bumper Pneumatic",
                     "Relay Pneumatic",
-                    "Worm Screw",*/
+                    "Worm Screw",
                     "Dual Motor"});
             } else
             {
                 this.DriverComboBox.Items.Clear();
                 this.DriverComboBox.Items.AddRange(new object[] {
                     "No Driver",
-                    "Elevator"//,
-                    /*"Bumper Pneumatic",
+                    "Elevator",
+                    "Bumper Pneumatic",
                     "Relay Pneumatic",
-                    "Worm Screw"*/});
+                    "Worm Screw"});
             }
             DriverComboBox.SelectedIndex = 0;
             DriverComboBox_SelectedIndexChanged(null, null);
@@ -131,12 +131,12 @@ namespace BxDRobotExporter.Wizard
                 PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
                 if (pneumaticMeta != null)
                 {
-                    cmbPneumaticDiameter.SelectedIndex = (int)pneumaticMeta.widthEnum;
+                    numericUpDownPnuDia.Value = (decimal)pneumaticMeta.width;
                     cmbPneumaticPressure.SelectedIndex = (int)pneumaticMeta.pressureEnum;
                 }
                 else
                 {
-                    cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
+                    numericUpDownPnuDia.Value = (decimal)0.5;
                     cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.HIGH;
                 }
             }
@@ -188,7 +188,7 @@ namespace BxDRobotExporter.Wizard
                         PortTwoUpDown.Visible = false;
                         unit = "°";
                         break;
-                     case 6: //Bumper Pneumatics
+                     case 3: //Bumper Pneumatics
                         this.PortsGroupBox.Visible = true;
                         tabsMeta.Visible = true;
                         this.PortLayout.RowStyles[1].SizeType = SizeType.Absolute;
@@ -231,7 +231,7 @@ namespace BxDRobotExporter.Wizard
                         PortTwoUpDown.Visible = false;
                         unit = "°";
                         break;
-                    case 3: //Dual Motor
+                    case 6: //Dual Motor
                         this.PortsGroupBox.Visible = true;
                         this.tabsMeta.Visible = true;
                         this.PortLayout.RowStyles[1].SizeType = SizeType.Percent;
@@ -363,12 +363,12 @@ namespace BxDRobotExporter.Wizard
                         driver = new JointDriver(JointDriverType.SERVO);
                         driver.SetPort((int)PortOneUpDown.Value, 1);
                         return driver;
-                    case 6: //Bumper Pneumatic
+                    case 3: //Bumper Pneumatic
                         driver = new JointDriver(JointDriverType.BUMPER_PNEUMATIC);
                         PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
                         {
                             pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
-                            widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                            width = (double) numericUpDownPnuDia.Value
                         }; //The info about the wheel attached to the joint.
                         driver.AddInfo(pneumaticDriver);
                         driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
@@ -378,7 +378,7 @@ namespace BxDRobotExporter.Wizard
                         PneumaticDriverMeta pneumaticDriver2 = new PneumaticDriverMeta()
                         {
                             pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
-                            widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                            width = (double)numericUpDownPnuDia.Value
                         }; //The info about the wheel attached to the joint.
                         driver.AddInfo(pneumaticDriver2);
                         driver.SetPort((int)PortOneUpDown.Value, 1);
@@ -388,7 +388,7 @@ namespace BxDRobotExporter.Wizard
                         driver.SetPort((int)PortOneUpDown.Value);
                         driver.isCan = this.rbCAN.Checked;
                         return driver;
-                    case 3: //Dual Motor
+                    case 6: //Dual Motor
                         driver = new JointDriver(JointDriverType.DUAL_MOTOR);
                         driver.hasBrake = chkBoxHasBrake.Checked;
                         driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
@@ -420,7 +420,7 @@ namespace BxDRobotExporter.Wizard
                         PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
                         {
                             pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
-                            widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                            width = (double)numericUpDownPnuDia.Value
                         }; //The info about the wheel attached to the joint.
                         driver.AddInfo(pneumaticDriver);
                         driver.SetPort((int)PortOneUpDown.Value, (int)PortTwoUpDown.Value);
@@ -430,7 +430,7 @@ namespace BxDRobotExporter.Wizard
                         PneumaticDriverMeta pneumaticDriver2 = new PneumaticDriverMeta()
                         {
                             pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
-                            widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                            width = (double)numericUpDownPnuDia.Value
                         }; //The info about the wheel attached to the joint.
                         driver.AddInfo(pneumaticDriver2);
                         driver.SetPort((int)PortOneUpDown.Value, 1);

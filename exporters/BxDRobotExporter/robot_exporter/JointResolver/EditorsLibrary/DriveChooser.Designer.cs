@@ -51,8 +51,10 @@
             this.lblType = new System.Windows.Forms.Label();
             this.metaPneumatic = new System.Windows.Forms.TabPage();
             this.PneumaticLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.numericUpDownPnuDia = new System.Windows.Forms.NumericUpDown();
+            this.PnuDiaUnits = new System.Windows.Forms.Label();
             this.lblPressure = new System.Windows.Forms.Label();
-            this.cmbPneumaticDiameter = new System.Windows.Forms.ComboBox();
             this.lblDiameter = new System.Windows.Forms.Label();
             this.metaGearing = new System.Windows.Forms.TabPage();
             this.GearLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -82,6 +84,8 @@
             this.WheelLayout.SuspendLayout();
             this.metaPneumatic.SuspendLayout();
             this.PneumaticLayout.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPnuDia)).BeginInit();
             this.metaGearing.SuspendLayout();
             this.GearLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).BeginInit();
@@ -285,7 +289,7 @@
             // 
             this.chkBoxDriveWheel.AutoSize = true;
             this.chkBoxDriveWheel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.chkBoxDriveWheel.Location = new System.Drawing.Point(310, 27);
+            this.chkBoxDriveWheel.Location = new System.Drawing.Point(394, 27);
             this.chkBoxDriveWheel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkBoxDriveWheel.Name = "chkBoxDriveWheel";
             this.chkBoxDriveWheel.Size = new System.Drawing.Size(111, 24);
@@ -317,7 +321,7 @@
             this.cmbWheelType.Location = new System.Drawing.Point(3, 27);
             this.cmbWheelType.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmbWheelType.Name = "cmbWheelType";
-            this.cmbWheelType.Size = new System.Drawing.Size(135, 24);
+            this.cmbWheelType.Size = new System.Drawing.Size(163, 24);
             this.cmbWheelType.TabIndex = 7;
             this.cmbWheelType.SelectedIndexChanged += new System.EventHandler(this.cmbWheelType_SelectedIndexChanged);
             // 
@@ -331,10 +335,10 @@
             "60 psi",
             "20 psi",
             "10 psi"});
-            this.cmbPneumaticPressure.Location = new System.Drawing.Point(215, 27);
+            this.cmbPneumaticPressure.Location = new System.Drawing.Point(257, 27);
             this.cmbPneumaticPressure.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmbPneumaticPressure.Name = "cmbPneumaticPressure";
-            this.cmbPneumaticPressure.Size = new System.Drawing.Size(206, 24);
+            this.cmbPneumaticPressure.Size = new System.Drawing.Size(248, 24);
             this.cmbPneumaticPressure.TabIndex = 6;
             // 
             // tabsMeta
@@ -357,7 +361,7 @@
             this.metaWheel.Location = new System.Drawing.Point(4, 25);
             this.metaWheel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.metaWheel.Name = "metaWheel";
-            this.metaWheel.Size = new System.Drawing.Size(424, 63);
+            this.metaWheel.Size = new System.Drawing.Size(508, 63);
             this.metaWheel.TabIndex = 0;
             this.metaWheel.Text = "Wheel";
             this.metaWheel.UseVisualStyleBackColor = true;
@@ -382,13 +386,13 @@
             this.WheelLayout.RowCount = 2;
             this.WheelLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.WheelLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.WheelLayout.Size = new System.Drawing.Size(424, 53);
+            this.WheelLayout.Size = new System.Drawing.Size(508, 53);
             this.WheelLayout.TabIndex = 13;
             // 
             // lblFriction
             // 
             this.lblFriction.AutoSize = true;
-            this.lblFriction.Location = new System.Drawing.Point(145, 4);
+            this.lblFriction.Location = new System.Drawing.Point(173, 4);
             this.lblFriction.Margin = new System.Windows.Forms.Padding(4);
             this.lblFriction.Name = "lblFriction";
             this.lblFriction.Size = new System.Drawing.Size(92, 17);
@@ -404,10 +408,10 @@
             "High",
             "Medium",
             "Low"});
-            this.cmbFrictionLevel.Location = new System.Drawing.Point(144, 27);
+            this.cmbFrictionLevel.Location = new System.Drawing.Point(172, 27);
             this.cmbFrictionLevel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmbFrictionLevel.Name = "cmbFrictionLevel";
-            this.cmbFrictionLevel.Size = new System.Drawing.Size(135, 24);
+            this.cmbFrictionLevel.Size = new System.Drawing.Size(163, 24);
             this.cmbFrictionLevel.TabIndex = 13;
             // 
             // lblType
@@ -426,7 +430,7 @@
             this.metaPneumatic.Location = new System.Drawing.Point(4, 25);
             this.metaPneumatic.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.metaPneumatic.Name = "metaPneumatic";
-            this.metaPneumatic.Size = new System.Drawing.Size(424, 63);
+            this.metaPneumatic.Size = new System.Drawing.Size(508, 63);
             this.metaPneumatic.TabIndex = 1;
             this.metaPneumatic.Text = "Pneumatic";
             this.metaPneumatic.UseVisualStyleBackColor = true;
@@ -438,9 +442,9 @@
             this.PneumaticLayout.ColumnCount = 2;
             this.PneumaticLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.PneumaticLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PneumaticLayout.Controls.Add(this.tableLayoutPanel2, 0, 1);
             this.PneumaticLayout.Controls.Add(this.cmbPneumaticPressure, 1, 1);
             this.PneumaticLayout.Controls.Add(this.lblPressure, 1, 0);
-            this.PneumaticLayout.Controls.Add(this.cmbPneumaticDiameter, 0, 1);
             this.PneumaticLayout.Controls.Add(this.lblDiameter, 0, 0);
             this.PneumaticLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.PneumaticLayout.Location = new System.Drawing.Point(0, 0);
@@ -449,34 +453,58 @@
             this.PneumaticLayout.RowCount = 2;
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.PneumaticLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.PneumaticLayout.Size = new System.Drawing.Size(424, 53);
+            this.PneumaticLayout.Size = new System.Drawing.Size(508, 63);
             this.PneumaticLayout.TabIndex = 13;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 63F));
+            this.tableLayoutPanel2.Controls.Add(this.numericUpDownPnuDia, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.PnuDiaUnits, 1, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 28);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(248, 32);
+            this.tableLayoutPanel2.TabIndex = 15;
+            // 
+            // numericUpDownPnuDia
+            // 
+            this.numericUpDownPnuDia.DecimalPlaces = 6;
+            this.numericUpDownPnuDia.Location = new System.Drawing.Point(3, 3);
+            this.numericUpDownPnuDia.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numericUpDownPnuDia.Name = "numericUpDownPnuDia";
+            this.numericUpDownPnuDia.Size = new System.Drawing.Size(179, 22);
+            this.numericUpDownPnuDia.TabIndex = 0;
+            // 
+            // PnuDiaUnits
+            // 
+            this.PnuDiaUnits.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.PnuDiaUnits.AutoSize = true;
+            this.PnuDiaUnits.Location = new System.Drawing.Point(189, 7);
+            this.PnuDiaUnits.Margin = new System.Windows.Forms.Padding(4);
+            this.PnuDiaUnits.Name = "PnuDiaUnits";
+            this.PnuDiaUnits.Size = new System.Drawing.Size(29, 17);
+            this.PnuDiaUnits.TabIndex = 15;
+            this.PnuDiaUnits.Text = "(in)";
+            this.PnuDiaUnits.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblPressure
             // 
             this.lblPressure.AutoSize = true;
-            this.lblPressure.Location = new System.Drawing.Point(216, 4);
+            this.lblPressure.Location = new System.Drawing.Point(258, 4);
             this.lblPressure.Margin = new System.Windows.Forms.Padding(4);
             this.lblPressure.Name = "lblPressure";
             this.lblPressure.Size = new System.Drawing.Size(65, 17);
             this.lblPressure.TabIndex = 13;
             this.lblPressure.Text = "Pressure";
             this.lblPressure.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-            // 
-            // cmbPneumaticDiameter
-            // 
-            this.cmbPneumaticDiameter.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cmbPneumaticDiameter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPneumaticDiameter.FormattingEnabled = true;
-            this.cmbPneumaticDiameter.Items.AddRange(new object[] {
-            "1 in",
-            ".5 in",
-            ".25 in"});
-            this.cmbPneumaticDiameter.Location = new System.Drawing.Point(3, 27);
-            this.cmbPneumaticDiameter.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.cmbPneumaticDiameter.Name = "cmbPneumaticDiameter";
-            this.cmbPneumaticDiameter.Size = new System.Drawing.Size(206, 24);
-            this.cmbPneumaticDiameter.TabIndex = 12;
             // 
             // lblDiameter
             // 
@@ -495,7 +523,7 @@
             this.metaGearing.Location = new System.Drawing.Point(4, 25);
             this.metaGearing.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.metaGearing.Name = "metaGearing";
-            this.metaGearing.Size = new System.Drawing.Size(424, 63);
+            this.metaGearing.Size = new System.Drawing.Size(508, 63);
             this.metaGearing.TabIndex = 2;
             this.metaGearing.Text = "Gear Ratio";
             this.metaGearing.UseVisualStyleBackColor = true;
@@ -518,13 +546,13 @@
             this.GearLayout.RowCount = 2;
             this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.GearLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.GearLayout.Size = new System.Drawing.Size(424, 56);
+            this.GearLayout.Size = new System.Drawing.Size(508, 56);
             this.GearLayout.TabIndex = 13;
             // 
             // OutputGeartxt
             // 
             this.OutputGeartxt.DecimalPlaces = 5;
-            this.OutputGeartxt.Location = new System.Drawing.Point(215, 31);
+            this.OutputGeartxt.Location = new System.Drawing.Point(257, 31);
             this.OutputGeartxt.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -547,7 +575,7 @@
             // lblOutputGear
             // 
             this.lblOutputGear.AutoSize = true;
-            this.lblOutputGear.Location = new System.Drawing.Point(216, 4);
+            this.lblOutputGear.Location = new System.Drawing.Point(258, 4);
             this.lblOutputGear.Margin = new System.Windows.Forms.Padding(4);
             this.lblOutputGear.Name = "lblOutputGear";
             this.lblOutputGear.Size = new System.Drawing.Size(78, 20);
@@ -594,7 +622,7 @@
             this.metaBrake.Location = new System.Drawing.Point(4, 25);
             this.metaBrake.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.metaBrake.Name = "metaBrake";
-            this.metaBrake.Size = new System.Drawing.Size(424, 63);
+            this.metaBrake.Size = new System.Drawing.Size(508, 63);
             this.metaBrake.TabIndex = 3;
             this.metaBrake.Text = "Brake";
             this.metaBrake.UseVisualStyleBackColor = true;
@@ -614,7 +642,7 @@
             this.BreakLayout.RowCount = 2;
             this.BreakLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.BreakLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.BreakLayout.Size = new System.Drawing.Size(424, 29);
+            this.BreakLayout.Size = new System.Drawing.Size(508, 29);
             this.BreakLayout.TabIndex = 13;
             // 
             // chkBoxHasBrake
@@ -661,7 +689,7 @@
             // MotorTypeLabel
             // 
             this.MotorTypeLabel.AutoSize = true;
-            this.MotorTypeLabel.Location = new System.Drawing.Point(197, 0);
+            this.MotorTypeLabel.Location = new System.Drawing.Point(198, 0);
             this.MotorTypeLabel.Name = "MotorTypeLabel";
             this.MotorTypeLabel.Size = new System.Drawing.Size(80, 17);
             this.MotorTypeLabel.TabIndex = 16;
@@ -680,7 +708,7 @@
             this.RobotCompetitionDropDown.Location = new System.Drawing.Point(3, 33);
             this.RobotCompetitionDropDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.RobotCompetitionDropDown.Name = "RobotCompetitionDropDown";
-            this.RobotCompetitionDropDown.Size = new System.Drawing.Size(188, 24);
+            this.RobotCompetitionDropDown.Size = new System.Drawing.Size(189, 24);
             this.RobotCompetitionDropDown.TabIndex = 14;
             this.RobotCompetitionDropDown.SelectedIndexChanged += new System.EventHandler(this.RobotCompetitionDropDown_SelectedIndexChanged);
             // 
@@ -689,10 +717,10 @@
             this.MotorTypeDropDown.Dock = System.Windows.Forms.DockStyle.Top;
             this.MotorTypeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.MotorTypeDropDown.FormattingEnabled = true;
-            this.MotorTypeDropDown.Location = new System.Drawing.Point(197, 33);
+            this.MotorTypeDropDown.Location = new System.Drawing.Point(198, 33);
             this.MotorTypeDropDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MotorTypeDropDown.Name = "MotorTypeDropDown";
-            this.MotorTypeDropDown.Size = new System.Drawing.Size(308, 24);
+            this.MotorTypeDropDown.Size = new System.Drawing.Size(307, 24);
             this.MotorTypeDropDown.TabIndex = 13;
             // 
             // RobotCompetitonLabel
@@ -701,7 +729,7 @@
             this.RobotCompetitonLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RobotCompetitonLabel.Location = new System.Drawing.Point(3, 0);
             this.RobotCompetitonLabel.Name = "RobotCompetitonLabel";
-            this.RobotCompetitonLabel.Size = new System.Drawing.Size(188, 31);
+            this.RobotCompetitonLabel.Size = new System.Drawing.Size(189, 31);
             this.RobotCompetitonLabel.TabIndex = 15;
             this.RobotCompetitonLabel.Text = "Robot Competition";
             // 
@@ -761,6 +789,9 @@
             this.metaPneumatic.PerformLayout();
             this.PneumaticLayout.ResumeLayout(false);
             this.PneumaticLayout.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPnuDia)).EndInit();
             this.metaGearing.ResumeLayout(false);
             this.metaGearing.PerformLayout();
             this.GearLayout.ResumeLayout(false);
@@ -797,7 +828,6 @@
     private System.Windows.Forms.TabPage metaWheel;
     private System.Windows.Forms.TabPage metaPneumatic;
     private System.Windows.Forms.ComboBox cmbFrictionLevel;
-    private System.Windows.Forms.ComboBox cmbPneumaticDiameter;
     private System.Windows.Forms.Label lblDiameter;
     private System.Windows.Forms.TabPage metaGearing;
     private System.Windows.Forms.Label lblInputGear;
@@ -827,4 +857,7 @@
     private System.Windows.Forms.ComboBox RobotCompetitionDropDown;
     private System.Windows.Forms.ComboBox MotorTypeDropDown;
     private System.Windows.Forms.Label RobotCompetitonLabel;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+    private System.Windows.Forms.NumericUpDown numericUpDownPnuDia;
+    private System.Windows.Forms.Label PnuDiaUnits;
 }

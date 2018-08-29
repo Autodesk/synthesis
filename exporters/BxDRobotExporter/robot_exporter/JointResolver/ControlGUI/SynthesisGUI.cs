@@ -482,7 +482,7 @@ public partial class SynthesisGUI : Form
                         driver.AddInfo(new PneumaticDriverMeta());
                     PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
 
-                    pneumatic.widthEnum = (PneumaticDiameter)Utilities.GetProperty(propertySet, "pneumatic-diameter", (int)PneumaticDiameter.MEDIUM);
+                    pneumatic.width = Utilities.GetProperty(propertySet, "pneumatic-diameter", (double)0.5);
                     pneumatic.pressureEnum = (PneumaticPressure)Utilities.GetProperty(propertySet, "pneumatic-pressure", (int)PneumaticPressure.MEDIUM);
                 }
 
@@ -612,7 +612,7 @@ public partial class SynthesisGUI : Form
 
                 if (pneumatic != null)
                 {
-                    Utilities.SetProperty(propertySet, "pneumatic-diameter", (int)pneumatic.widthEnum);
+                    Utilities.SetProperty(propertySet, "pneumatic-diameter", (double)pneumatic.width);
                     Utilities.SetProperty(propertySet, "pneumatic-pressure", (int)pneumatic.pressureEnum);
                 }
 

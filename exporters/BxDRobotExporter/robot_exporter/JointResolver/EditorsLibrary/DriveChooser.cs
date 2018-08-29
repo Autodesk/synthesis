@@ -95,12 +95,12 @@ public partial class DriveChooser : Form
                 PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
                 if (pneumaticMeta != null)
                 {
-                    cmbPneumaticDiameter.SelectedIndex = (int)pneumaticMeta.widthEnum;
+                    numericUpDownPnuDia.Value = (decimal)pneumaticMeta.width;
                     cmbPneumaticPressure.SelectedIndex = (int)pneumaticMeta.pressureEnum;
                 }
                 else
                 {
-                    cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
+                    numericUpDownPnuDia.Value = (decimal)pneumaticMeta.width;
                     cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.HIGH;
                 }
             }
@@ -260,7 +260,7 @@ public partial class DriveChooser : Form
 
             chkBoxHasBrake.Checked = false;
 
-            cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
+            numericUpDownPnuDia.Value = (decimal)0.5;
             cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
 
             cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
@@ -300,7 +300,7 @@ public partial class DriveChooser : Form
             return true;
 
         if (pneumatic != null && 
-            (cmbPneumaticDiameter.SelectedIndex != (int)pneumatic.widthEnum ||
+            (numericUpDownPnuDia.Value != (decimal)pneumatic.width ||
             cmbPneumaticPressure.SelectedIndex != (int)pneumatic.pressureEnum))
             return true;
 
@@ -465,7 +465,7 @@ public partial class DriveChooser : Form
                 PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
                 {
                     pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
-                    widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
+                    width = (double)numericUpDownPnuDia.Value
                 }; //The info about the wheel attached to the joint.
                 joint.cDriver.AddInfo(pneumaticDriver);
                 #endregion
