@@ -39,7 +39,7 @@ namespace Synthesis.GUI
                 if (visible)
                 {
                     FindObjectOfType<UnityEngine.Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Default"));
-                    while (tabStateMachine.PopState()) ;
+                    while (tabStateMachine.PopState() != null) ;
                 }
                 else
                 {
