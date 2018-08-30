@@ -14,19 +14,20 @@
   ;Request application privileges
   RequestExecutionLevel admin
 
-;--------------------------------
-;Installer Sections
-
 Section
 
-  IfFileExists "$PROGRAMFILES\Autodesk\Synthesis\Synthesis\Synthesis.exe" file_found file_not_found
+  IfFileExists "$PROGRAMFILES64\Autodesk\Synthesis\Synthesis\Synthesis.exe" file_found file_not_found
 
   file_found: goto perform_install
   
-  file_not_found:
+  file_not_found: IfFileExists "$PROGRAMFILES\Autodesk\Synthesis\Synthesis32.exe" file_detected file_not_detected
+  
+  file_detected: goto perform_install
+  
+  file_not_detected:
   
 	MessageBox MB_YESNO "It appears that you do not have Synthesis installed. Would you like to download it now?" IDNO NoDownload
-      ExecShell "open" "http://bxd.autodesk.com/download.html"
+      ExecShell "open" "http://synthesis.autodesk.com/download.html"
 	  ExecShell "open" "http://synthesis.autodesk.com/Downloadables/Synthesis%20Installer.exe"
 	  
 	  Quit
