@@ -34,7 +34,7 @@ public class DriveJoints
         {
             this.baseTorque = baseTorque / 60;
             this.maxSpeed = maxSpeed * 0.104719755f;
-            this.slope = baseTorque/maxSpeed;
+            this.slope = 0f;
         }
     }
 
@@ -118,10 +118,10 @@ public class DriveJoints
 
                         MotorType motorType = joint.cDriver.GetMotorType();
 
-                        float torque = motorType == MotorType.GENERIC ? 2.42f : motorDefinition[motorType].baseTorque - motorDefinition[motorType].slope * ((RigidBody)(rigidNode.MainObject.GetComponent<BRigidBody>().GetCollisionObject())).AngularVelocity.Length / 9.549297f;
+                        float torque = motorType == MotorType.GENERIC ? 2.42f : 60 * motorDefinition[motorType].baseTorque - motorDefinition[motorType].slope * raycastWheel.GetWheelSpeed() / 9.549297f;
 
                         if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                            torque *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
+                            torque /= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
 
                         raycastWheel.ApplyForce(output, torque, motorType == MotorType.GENERIC);
                     }
@@ -388,10 +388,10 @@ public class DriveJoints
 
                 MotorType motorType = joint.cDriver.GetMotorType();
 
-                float torque = motorType == MotorType.GENERIC ? 2.42f : motorDefinition[motorType].baseTorque - motorDefinition[motorType].slope * ((RigidBody)(node.MainObject.GetComponent<BRigidBody>().GetCollisionObject())).AngularVelocity.Length / 9.549297f;
+                float torque = motorType == MotorType.GENERIC ? 2.42f : 60 * motorDefinition[motorType].baseTorque - motorDefinition[motorType].slope * raycastWheel.GetWheelSpeed() / 9.549297f;
 
                 if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                    torque *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
+                    torque /= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
 
                 raycastWheel.ApplyForce(output, torque, motorType == MotorType.GENERIC);
             }
