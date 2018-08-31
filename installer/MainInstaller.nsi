@@ -219,12 +219,10 @@ Section "Uninstall"
   IfFileExists "$PROGRAMFILES64\qemu" file_found
   
 	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO Negative
+	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO Uninstall_Complete
 	exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe" \s'
 	Quit
 	
-	Negative: goto uninstall_complete
-	
-	uninstall_complete:
+	Uninstall_Complete:
 
 SectionEnd
