@@ -115,9 +115,15 @@ public class DriveJoints
                     if (joint.cDriver.port1 == i + 1)
                     {
                         float output = pwm[i];
+
+                        MotorType motorType = joint.cDriver.GetMotorType();
+
+                        float torque = motorType == MotorType.GENERIC ? 2.42f : motorDefinition[motorType].baseTorque - motorDefinition[motorType].slope * ((RigidBody)(rigidNode.MainObject.GetComponent<BRigidBody>().GetCollisionObject())).AngularVelocity.Length;
+
                         if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                            output *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-                        raycastWheel.ApplyForce(output);
+                            torque *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
+
+                        raycastWheel.ApplyForce(output, torque, motorType == MotorType.GENERIC);
                     }
                 }
 
@@ -134,7 +140,7 @@ public class DriveJoints
                             friction = HingeCostFriction;
 
                             MotorType motorType = joint.cDriver.GetMotorType();
-                            Motor motor = motorType == MotorType.GENERIC ? (rigidNode.HasDriverMeta<WheelDriverMeta>() ? new Motor(0.1f, 300f, 0f) : new Motor(10f, 4f, 0f)) : motorDefinition[motorType];
+                            Motor motor = motorType == MotorType.GENERIC ? new Motor(10f, 4f, 0f) : motorDefinition[motorType];
 
                             maxSpeed = motor.maxSpeed;
                             impulse = motor.baseTorque - motor.slope * ((RigidBody)(rigidNode.MainObject.GetComponent<BRigidBody>().GetCollisionObject())).AngularVelocity.Length;
@@ -170,18 +176,17 @@ public class DriveJoints
                         SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
 
                         float output = motors[joint.cDriver.port1 - 1];
-                        
-                        float psi = rigidNode.GetDriverMeta<PneumaticDriverMeta>().pressurePSI;
-                        float width = rigidNode.GetDriverMeta<PneumaticDriverMeta>().widthMM;
-                float stroke = (sc.UpperLinearLimit - sc.LowerLinearLimit) / 0.01f;
+
+                        float psi = node.GetDriverMeta<PneumaticDriverMeta>().pressurePSI * 6894.76f;
+                        float width = node.GetDriverMeta<PneumaticDriverMeta>().widthMM * 0.001f;
+                        float stroke = (sc.UpperLinearLimit - sc.LowerLinearLimit) / 0.01f;
 
                         float force = psi * ((float)Math.PI) * width * width / 4f;
-                        float speed =  stroke / 60f;
-                        
+                        float speed = stroke / 60f;
+
                         sc.PoweredLinearMotor = true;
                         sc.MaxLinearMotorForce = force;
-                        sc.TargetLinearMotorVelocity = output * speed;
-                        Debug.Log(sc.LinearPos);
+                        sc.TargetLinearMotorVelocity = sc.TargetLinearMotorVelocity != 0 && output == 0 ? sc.TargetLinearMotorVelocity : output * speed;
                     }
                 }
             }
@@ -381,10 +386,14 @@ public class DriveJoints
             {
                 float output = motors[node.GetSkeletalJoint().cDriver.port1 - 1];
 
-                if (node.GetSkeletalJoint().cDriver.InputGear != 0 && node.GetSkeletalJoint().cDriver.OutputGear != 0)
-                    output *= Convert.ToSingle(node.GetSkeletalJoint().cDriver.InputGear / node.GetSkeletalJoint().cDriver.OutputGear);
+                MotorType motorType = joint.cDriver.GetMotorType();
 
-                raycastWheel.ApplyForce(output);
+                float torque = motorType == MotorType.GENERIC ? 2.42f : motorDefinition[motorType].baseTorque - motorDefinition[motorType].slope * ((RigidBody)(node.MainObject.GetComponent<BRigidBody>().GetCollisionObject())).AngularVelocity.Length;
+
+                if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
+                    torque *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
+
+                raycastWheel.ApplyForce(output, torque, motorType == MotorType.GENERIC);
             }
             else if (joint.cDriver.GetDriveType().IsMotor() && node.MainObject.GetComponent<BHingedConstraint>() != null)
             {
@@ -396,7 +405,7 @@ public class DriveJoints
                 friction = HingeCostFriction;
 
                 MotorType motorType = joint.cDriver.GetMotorType();
-                Motor motor = motorType == MotorType.GENERIC ? (node.HasDriverMeta<WheelDriverMeta>() ? new Motor(0.1f, 300f, 0f) : new Motor(10f, 4f, 0f)) : motorDefinition[motorType];
+                Motor motor = motorType == MotorType.GENERIC ? new Motor(10f, 4f, 0f) : motorDefinition[motorType];
 
                 maxSpeed = motor.maxSpeed;
                 impulse = motor.baseTorque - motor.slope * ((RigidBody)(node.MainObject.GetComponent<BRigidBody>().GetCollisionObject())).AngularVelocity.Length;
@@ -541,6 +550,15 @@ public class DriveJoints
         motorDefinition.Add(MotorType.NEVEREST, new Motor(0.17f, 5480f, 0));
         motorDefinition.Add(MotorType.TETRIX_MOTOR, new Motor(0.38f, 150f, 0));
         motorDefinition.Add(MotorType.MODERN_ROBOTICS_MATRIX, new Motor(3.27f, 190f, 0));
+        motorDefinition.Add(MotorType.REV_ROBOTICS_HD_HEX_20_TO_1, new Motor(0f, 0f, 0f));
+        motorDefinition.Add(MotorType.REV_ROBOTICS_HD_HEX_40_TO_1, new Motor(0f, 0f, 0f));
+        motorDefinition.Add(MotorType.REV_ROBOTICS_CORE_HEX, new Motor(0f, 0f, 0f));
+        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_600_RPM, new Motor(0f, 0f, 0f));
+        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_200_RPM, new Motor(0f, 0f, 0f));
+        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_100_RPM, new Motor(0f, 0f, 0f));
+        motorDefinition.Add(MotorType.VEX_393_NORMAL_SPEED, new Motor(0f, 0f, 0f));
+        motorDefinition.Add(MotorType.VEX_393_HIGH_SPEED, new Motor(0f, 0f, 0f));
+        motorDefinition.Add(MotorType.VEX_393_TURBO_GEAR_SET, new Motor(0f, 0f, 0f));
     }
     #endregion
 }
