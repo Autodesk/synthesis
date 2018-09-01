@@ -102,7 +102,7 @@ Section "Synthesis (required)" SynthesisRequired
   File /r "Synthesis\*"
 
   SetOutPath $INSTDIR
-  File /r "W16_SYN_launch.ico"
+  
   CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
   CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
 
