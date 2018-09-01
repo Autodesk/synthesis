@@ -100,7 +100,7 @@ public partial class DriveChooser : Form
                 }
                 else
                 {
-                    numericUpDownPnuDia.Value = (decimal)pneumaticMeta.width;
+                    numericUpDownPnuDia.Value = (decimal)1.0;
                     cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.HIGH;
                 }
             }
@@ -139,7 +139,7 @@ public partial class DriveChooser : Form
                 switch (joint.cDriver.motor)
                 {
                     case MotorType.GENERIC:
-                        RobotCompetitionDropDown.SelectedItem = "GENERIC";
+                        RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition.ToString();
                         MotorTypeDropDown.SelectedItem = "GENERIC";
                         break;
                     case MotorType.CIM:
@@ -267,7 +267,7 @@ public partial class DriveChooser : Form
             cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
             chkBoxDriveWheel.Checked = false;
 
-            RobotCompetitionDropDown.SelectedItem = "GENERIC";
+            RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition;
             MotorTypeDropDown.SelectedItem = "GENERIC";
         }
 
@@ -432,11 +432,12 @@ public partial class DriveChooser : Form
         };
             if (cType.IsMotor())
             {
-                if(! Enum.TryParse(MotorTypeDropDown.SelectedItem.ToString(), out MotorType motor))
+                if (!Enum.TryParse(MotorTypeDropDown.SelectedItem.ToString(), out MotorType motor))
                 {
                     motor = MotorType.GENERIC;
                 }
                 joint.cDriver.motor = motor;
+                SynthesisGUI.PluginSettings.defaultRobotCompetition = RobotCompetitionDropDown.SelectedItem.ToString();
             }
             //Only need to store wheel driver if run by motor and is a wheel.
             if (cType.IsMotor() && (WheelType)cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)

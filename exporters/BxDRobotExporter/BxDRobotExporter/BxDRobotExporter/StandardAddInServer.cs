@@ -634,7 +634,7 @@ namespace BxDRobotExporter
         /// <param name="Child"></param>
         /// <param name="UseFancyColors"></param>
         /// <param name="SaveLocation"></param>
-        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation, bool openSynthesis, string fieldLocation)
+        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition)
         {
             ChildHighlight.Color = Utilities.GetInventorColor(Child);
 
@@ -644,6 +644,7 @@ namespace BxDRobotExporter
             Properties.Settings.Default.ChildColor = Child;
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
+            Properties.Settings.Default.DefaultRobotCompetition = defaultRobotCompetition;
             Properties.Settings.Default.ConfigVersion = 1; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Properties.Settings.Default.Save();
         } 
