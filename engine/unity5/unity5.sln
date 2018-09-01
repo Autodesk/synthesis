@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Assembly-CSharp.csproj", "{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Assembly-CSharp-firstpass.csproj", "{7C14F5DB-B04B-B8EC-364F-14F17512EDE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{7C14F5DB-B04B-B8EC-364F-14F17512EDE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Unity.Analytics.DataPrivacy.csproj", "{ACDD2F29-AC5D-76DD-A58C-30AA4D1B465F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Analytics.DataPrivacy", "Unity.Analytics.DataPrivacy.csproj", "{ACDD2F29-AC5D-76DD-A58C-30AA4D1B465F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Assembly-CSharp-Editor.csproj", "{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{9C9EFCBB-A753-ADFC-7E48-C7CC086DD0E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "Unity.Analytics.DataPrivacy.Editor.csproj", "{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Analytics.DataPrivacy.Editor", "Unity.Analytics.DataPrivacy.Editor.csproj", "{6E6475FC-4A82-4E5E-B0B7-6453B8CBD91A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
