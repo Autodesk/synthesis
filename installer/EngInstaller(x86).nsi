@@ -99,7 +99,6 @@ Section "Synthesis (required)" SynthesisRequired
 
   File /r "Synthesis32\*"
 
-  SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
   CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
 
