@@ -31,7 +31,7 @@ namespace JointResolver.ControlGUI
         {
             if (fields.Count == 0)
             {
-                var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Fields");
+                var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Fields");
 
                 foreach (var dir in dirs)
                 {

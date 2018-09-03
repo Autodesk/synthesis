@@ -14,7 +14,7 @@ namespace FieldExporter.Components
     {
         public string path;
 
-        public readonly string FIELD_FOLDER = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Fields\\";
+        public readonly string FIELD_FOLDER = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Autodesk\\Synthesis\\Fields\\";
 
         /// <summary>
         /// Used for determining if the exporter is running.

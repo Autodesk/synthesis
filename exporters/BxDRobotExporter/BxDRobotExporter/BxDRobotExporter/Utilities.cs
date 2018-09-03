@@ -111,8 +111,8 @@ namespace BxDRobotExporter
         public static void LoadSettings()
         {
             // Old configurations get overriden (version numbers below 1)
-            if (Properties.Settings.Default.SaveLocation == "" || Properties.Settings.Default.SaveLocation == "firstRun" || Properties.Settings.Default.ConfigVersion < 1 )
-                Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Robots";
+            if (Properties.Settings.Default.SaveLocation == "" || Properties.Settings.Default.SaveLocation == "firstRun" || Properties.Settings.Default.ConfigVersion < 2 )
+                Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
 
             SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
             {
@@ -120,7 +120,8 @@ namespace BxDRobotExporter
                 GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
                 GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
                 openSynthesis = Properties.Settings.Default.ExportToField,
-                fieldName = Properties.Settings.Default.SelectedField
+                fieldName = Properties.Settings.Default.SelectedField,
+                defaultRobotCompetition = Properties.Settings.Default.DefaultRobotCompetition
             };
         }
     }
