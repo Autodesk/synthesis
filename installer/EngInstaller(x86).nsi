@@ -5,9 +5,9 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-OutFile "SynthesisInstaller4.2.1.exe"
+OutFile "SynthesisInstaller(x86)4.2.1.exe"
 
-InstallDir $PROGRAMFILES64\Autodesk\Synthesis
+InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
 InstallDirRegKey HKLM "Software\Synthesis" "Install_Dir"
 
@@ -33,7 +33,6 @@ RequestExecutionLevel admin
 
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE "Apache2.txt"
-  !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
 
@@ -95,19 +94,17 @@ SectionEnd
 Section "Synthesis (required)" SynthesisRequired
 
   SectionIn RO
+  
+  SetOutPath $INSTDIR
 
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\Synthesis
-
-  File /r "Synthesis\*"
+  File /r "Synthesis32\*"
 
   SetOutPath $INSTDIR
-  
-  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
-  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
+  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
+  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "DisplayName" "Autodesk Synthesis"
+                "DisplayName" "Autodesk Synthesis (x86)"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayIcon" "$INSTDIR\uninstall.exe"
@@ -143,18 +140,6 @@ File /r "MixAndMatch\*"
 
 SectionEnd
 
-Section "Inventor Exporter Plugin" Exporter
-
-  ; Set output path to plugin directory
-  
-  SetOutPath $INSTDIR
-  File /r "Exporter"
-  
-  SetOutPath $APPDATA\Autodesk\ApplicationPlugins
-  File /r "Exporter\Autodesk.BxDRobotExporter.Inventor.addin"
-
-SectionEnd
-
 Section "Robot Files" RoboFiles
 
 SetOutPath $APPDATA\Autodesk\Synthesis\Robots
@@ -162,21 +147,6 @@ SetOutPath $APPDATA\Autodesk\Synthesis\Robots
 File /r "Robots\*"
 
 SectionEnd
-
-;--------------------------------
-;Component Descriptions
-
-  LangString DESC_SynthesisRequired ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
-  LangString DESC_MixMatch ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
-  LangString DESC_Exporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor Addin used to import Autodesk Inventor Assemblies directly into the simulator"
-  LangString DESC_RoboFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
-
-  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
-  !insertmacro MUI_DESCRIPTION_TEXT ${MixMatch} $(DESC_MixMatch)
-  !insertmacro MUI_DESCRIPTION_TEXT ${Exporter} $(DESC_Exporter)
-  !insertmacro MUI_DESCRIPTION_TEXT ${RoboFiles} $(DESC_RoboFiles)
-  !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
 ;--------------------------------
   
@@ -206,7 +176,6 @@ Section "Uninstall"
   Delete "$DESKTOP\Synthesis.lnk"
   Delete "$DESKTOP\BXD Synthesis.lnk"
 
-  ; Remove Installshield shortcuts
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   Delete "$SMPROGRAMS\BXD Synthesis.lnk"
@@ -216,13 +185,15 @@ Section "Uninstall"
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
   
-  IfFileExists "$PROGRAMFILES64\qemu" file_found
+  IfFileExists "$PROGRAMFILES\qemu" file_found
   
 	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO Uninstall_Complete
-	exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe" \s'
+	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO Negative
+	exec '"$PROGRAMFILES\qemu\qemu-uninstall.exe" \s'
 	Quit
 	
-	Uninstall_Complete:
+	Negative: goto uninstall_complete
+	
+	uninstall_complete:
 
 SectionEnd

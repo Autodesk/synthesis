@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation);
+    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation, string defaultRobotCompetit);
 
     public partial class PluginSettingsForm : Form
     {
@@ -66,7 +66,7 @@ namespace EditorsLibrary
             {
                 InventorChildColor = Color.FromArgb(255, 0, 125, 255),
                 GeneralUseFancyColors = false,
-                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Synthesis\Robots"
+                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots"
             };
         }
 
@@ -79,13 +79,14 @@ namespace EditorsLibrary
             public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged()
             {
-                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName);
+                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName, defaultRobotCompetition);
             }
 
             //General
             public string GeneralSaveLocation;
             public bool GeneralUseFancyColors;
             public string fieldName;
+            public String defaultRobotCompetition;
             public bool openSynthesis;
             //Inventor
             public Color InventorChildColor;
