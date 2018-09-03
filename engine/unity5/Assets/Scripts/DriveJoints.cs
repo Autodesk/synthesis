@@ -534,14 +534,13 @@ public class DriveJoints
     #region add to dictionary
     private static void DefineMotors()
     {
-        //TO DO - add motor slopes and vex/ftc compatibality
         motorDefinition.Add(MotorType.CIM, new Motor(2.41f, 5330f));
         motorDefinition.Add(MotorType.MINI_CIM, new Motor(1.41f, 5840f));
         motorDefinition.Add(MotorType.BAG_MOTOR, new Motor(0.43f, 13180f));
         motorDefinition.Add(MotorType.REDLINE_775_PRO, new Motor(0.71f, 18730f));
         motorDefinition.Add(MotorType.ANDYMARK_9015, new Motor(0.36f, 14270f));
         motorDefinition.Add(MotorType.BANEBOTS_775_18v, new Motor(0.72f, 13050f));
-        motorDefinition.Add(MotorType.BANEBOTS_775_12v, new Motor(0, 0));
+        motorDefinition.Add(MotorType.BANEBOTS_775_12v, new Motor(0.43f, 8700f));
         motorDefinition.Add(MotorType.BANEBOTS_550_12v, new Motor(0.38f, 19000f));
         motorDefinition.Add(MotorType.ANDYMARK_775_125, new Motor(0.28f, 5800f));
         motorDefinition.Add(MotorType.SNOW_BLOWER, new Motor(7.9f, 100f));
@@ -551,15 +550,15 @@ public class DriveJoints
         motorDefinition.Add(MotorType.NEVEREST, new Motor(0.17f, 5480f));
         motorDefinition.Add(MotorType.TETRIX_MOTOR, new Motor(0.38f, 150f));
         motorDefinition.Add(MotorType.MODERN_ROBOTICS_MATRIX, new Motor(3.27f, 190f));
-        motorDefinition.Add(MotorType.REV_ROBOTICS_HD_HEX_20_TO_1, new Motor(0f, 0f));
-        motorDefinition.Add(MotorType.REV_ROBOTICS_HD_HEX_40_TO_1, new Motor(0f, 0f));
-        motorDefinition.Add(MotorType.REV_ROBOTICS_CORE_HEX, new Motor(0f, 0f));
-        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_600_RPM, new Motor(0f, 0f));
-        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_200_RPM, new Motor(0f, 0f));
-        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_100_RPM, new Motor(0f, 0f));
-        motorDefinition.Add(MotorType.VEX_393_NORMAL_SPEED, new Motor(0f, 0f));
-        motorDefinition.Add(MotorType.VEX_393_HIGH_SPEED, new Motor(0f, 0f));
-        motorDefinition.Add(MotorType.VEX_393_TURBO_GEAR_SET, new Motor(0f, 0f));
+        motorDefinition.Add(MotorType.REV_ROBOTICS_HD_HEX_20_TO_1, new Motor(2.1f, 300f));
+        motorDefinition.Add(MotorType.REV_ROBOTICS_HD_HEX_40_TO_1, new Motor(4.2f, 150f));
+        motorDefinition.Add(MotorType.REV_ROBOTICS_CORE_HEX, new Motor(3.2f, 125f));
+        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_600_RPM, new Motor(2.1f, 600f)); //torque may be wrong
+        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_200_RPM, new Motor(2.1f, 200f)); //torque may be wrong
+        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_100_RPM, new Motor(2.1f, 100f)); //torque may be wrong
+        motorDefinition.Add(MotorType.VEX_393_NORMAL_SPEED, new Motor(1.67f, 100f));
+        motorDefinition.Add(MotorType.VEX_393_HIGH_SPEED, new Motor(1.04f, 160f));
+        motorDefinition.Add(MotorType.VEX_393_TURBO_GEAR_SET, new Motor(0.7f, 240f));
     }
     #endregion
 }
