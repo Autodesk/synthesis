@@ -70,7 +70,7 @@ IfFileExists "$INSTDIR" +1 +28
         Delete "$DESKTOP\Synthesis.lnk"
         Delete "$DESKTOP\BXD Synthesis.lnk"
 
-        ;Remvoe Installshield shortcuts
+        ;Remove launcher shortcuts
         Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
         Delete "$DESKTOP\Autodesk Synthesis.lnk"
         Delete "$DESKTOP\BXD Synthesis.lnk"
@@ -171,11 +171,10 @@ Section "Uninstall"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
   
-  ; Remove shortcuts, if any
+  ; Remove any shortcuts
   Delete "$SMPROGRAMS\Synthesis.lnk"
   Delete "$DESKTOP\Synthesis.lnk"
   Delete "$DESKTOP\BXD Synthesis.lnk"
-
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   Delete "$SMPROGRAMS\BXD Synthesis.lnk"
