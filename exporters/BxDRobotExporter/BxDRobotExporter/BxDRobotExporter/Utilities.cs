@@ -140,6 +140,7 @@ namespace BxDRobotExporter
                     };
                 }
             }
+            catch (Exception) { }
         }
     }
 }
