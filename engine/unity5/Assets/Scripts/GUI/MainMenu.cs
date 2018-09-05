@@ -66,25 +66,50 @@ namespace Synthesis.GUI
 
         private void Awake()
         {
-            WebClient client = new WebClient();
-            ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
-            var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
-            VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
-            updater = update.URL;
-
             string CurrentVersion = "4.2.0.1";
-            Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
-            var localVersion = new Version(CurrentVersion);
-            var globalVersion = new Version(update.Version);
-
-            var check = localVersion.CompareTo(globalVersion);
-
-            if (check < 0)
+            if (CheckConnection())
             {
-                Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+                var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
+                VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
+                updater = update.URL;
 
-            }//client.DownloadFile(update.URL, @"C:\Users\t_moram\Downloads\Synthesis Installer.exe");
+               
+                Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
+
+                var localVersion = new Version(CurrentVersion);
+                var globalVersion = new Version(update.Version);
+
+                var check = localVersion.CompareTo(globalVersion);
+
+                if (check < 0)
+                {
+                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+
+                }
+            }
+            else
+            {
+                Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
+            }
+        }
+
+        public static bool CheckConnection()
+        {
+            try
+            {
+                using (WebClient client = new WebClient())
+                using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json"))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
