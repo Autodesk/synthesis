@@ -535,7 +535,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ToggleChangeNode()
         {
-            StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(currentSensor));
+            StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(currentSensor), true);
         }
 
         /// <summary>
@@ -695,7 +695,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public void ToggleChangePosition()
         {
-            StateMachine.SceneGlobal.PushState(new SensorSpawnState(currentSensor.gameObject));
+            StateMachine.SceneGlobal.PushState(new SensorSpawnState(currentSensor.gameObject), true);
         }
 
         /// <summary>

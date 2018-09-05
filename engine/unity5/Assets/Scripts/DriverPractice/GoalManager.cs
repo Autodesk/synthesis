@@ -238,11 +238,11 @@ namespace Synthesis.DriverPractice
         }
         void MoveGoal(int id)
         {
-            StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this, true));
+            StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this, true), true);
         }
         void ScaleGoal(int id)
         {
-            StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this, false));
+            StateMachine.SceneGlobal.PushState(new GoalState(color, gamepieceIndex, id, this, false), true);
         }
         public void NewGoal()
         {
