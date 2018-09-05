@@ -122,8 +122,7 @@ namespace BxDRobotExporter
                     GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
                     GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
                     openSynthesis = Properties.Settings.Default.ExportToField,
-                    fieldName = Properties.Settings.Default.SelectedField,
-                    defaultRobotCompetition = "GENERIC"
+                    fieldName = Properties.Settings.Default.SelectedField
                 };
             }
             else
@@ -134,8 +133,7 @@ namespace BxDRobotExporter
                     GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
                     GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
                     openSynthesis = Properties.Settings.Default.ExportToField,
-                    fieldName = Properties.Settings.Default.SelectedField,
-                    defaultRobotCompetition = "GENERIC"
+                    fieldName = Properties.Settings.Default.SelectedField
                 };
                 
             }
