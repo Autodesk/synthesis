@@ -110,34 +110,46 @@ namespace BxDRobotExporter
         /// </summary>
         public static void LoadSettings()
         {
-            
+            try { 
             // Old configurations get overriden (version numbers below 1)
             if (Properties.Settings.Default.SaveLocation == "" || Properties.Settings.Default.SaveLocation == "firstRun" || Properties.Settings.Default.ConfigVersion < 2)
                 Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
-            if (Properties.Settings.Default.ConfigVersion < 3)
-            {
-                SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
-                {
-                    InventorChildColor = Properties.Settings.Default.ChildColor,
-                    GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
-                    GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
-                    openSynthesis = Properties.Settings.Default.ExportToField,
-                    fieldName = Properties.Settings.Default.SelectedField,
-                    defaultRobotCompetition = "GENERIC"
-                };
+
             }
-            else
-            {
-                SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
+            catch (Exception e) {
+                MessageBox.Show("1");
+            }
+            try { 
+                if (Properties.Settings.Default.ConfigVersion < 3)
                 {
-                    InventorChildColor = Properties.Settings.Default.ChildColor,
-                    GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
-                    GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
-                    openSynthesis = Properties.Settings.Default.ExportToField,
-                    fieldName = Properties.Settings.Default.SelectedField,
-                    defaultRobotCompetition = Properties.Settings.Default.DefaultRobotCompetition
-                };
+                    SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
+                    {
+                        InventorChildColor = Properties.Settings.Default.ChildColor,
+                        GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
+                        GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
+                        openSynthesis = Properties.Settings.Default.ExportToField,
+                        fieldName = Properties.Settings.Default.SelectedField,
+                        defaultRobotCompetition = "GENERIC"
+                    };
+                }
+                else
+                {
+                    SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
+                    {
+                        InventorChildColor = Properties.Settings.Default.ChildColor,
+                        GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
+                        GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
+                        openSynthesis = Properties.Settings.Default.ExportToField,
+                        fieldName = Properties.Settings.Default.SelectedField,
+                        defaultRobotCompetition = Properties.Settings.Default.DefaultRobotCompetition
+                    };
                 
+                }
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("1");
             }
         }
     }
