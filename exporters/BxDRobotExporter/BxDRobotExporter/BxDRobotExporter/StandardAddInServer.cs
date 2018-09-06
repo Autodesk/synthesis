@@ -93,9 +93,15 @@ namespace BxDRobotExporter
 
             MainApplication = AddInSiteObject.Application; //Gets the application object, which is used in many different ways throughout this whole process
             string ClientID = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
-            
-            Utilities.LoadSettings();
-            
+            try
+            {
+                Utilities.LoadSettings();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("3");
+                Utilities.LoadMostSettings();
+            }
             #region Add Parallel Environment
 
             #region Load Images
