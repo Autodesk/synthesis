@@ -96,11 +96,14 @@ namespace Synthesis.GUI
             }
         }
 
-        public static bool CheckConnection()
+        public bool CheckConnection()
         {
             try
             {
-                using (WebClient client = new WebClient())
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+
+
                 using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json"))
                 {
                     return true;
