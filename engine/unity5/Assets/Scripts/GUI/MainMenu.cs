@@ -66,7 +66,7 @@ namespace Synthesis.GUI
 
         private void Awake()
         {
-            string CurrentVersion = "4.2.0.1";
+            string CurrentVersion = "4.2.1.0";
 
             if (CheckConnection())
             {
@@ -87,7 +87,6 @@ namespace Synthesis.GUI
                 if (check < 0)
                 {
                     Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
-
                 }
             }
             else
@@ -102,7 +101,6 @@ namespace Synthesis.GUI
             {
                 WebClient client = new WebClient();
                 ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
-
 
                 using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json"))
                 {
@@ -297,6 +295,7 @@ namespace Synthesis.GUI
             {
                 Process.Start("http://bxd.autodesk.com");
                 Process.Start(updater);
+                Application.Quit();
             }
             else Auxiliary.FindObject("UpdatePrompt").SetActive(false);
         }
