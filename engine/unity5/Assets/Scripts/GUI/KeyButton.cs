@@ -18,7 +18,6 @@ namespace Synthesis.GUI
         public static KeyButton selectedButton = null;
         public static bool ignoreMouseMovement = true;
         public static bool useKeyModifiers = false;
-        public static bool keyBinded = false;
 
         public KeyMapping keyMapping;
         public int keyIndex;
@@ -53,7 +52,7 @@ namespace Synthesis.GUI
                         SetInput(new KeyboardInput());
                     }
                     else if (CurrentInput.modifiers == KeyModifier.NoModifier && CurrentInput is KeyboardInput
-                        && ((KeyboardInput)CurrentInput).key == KeyCode.Backspace || Binded())
+                        && ((KeyboardInput)CurrentInput).key == KeyCode.Backspace)
                     {
                         SetInput(new KeyboardInput());
                     }
@@ -102,18 +101,6 @@ namespace Synthesis.GUI
             }
 
             mKeyText.text = "Press Key";
-        }
-
-        public static bool Binded()
-        {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.W) || UnityEngine.Input.GetKeyDown(KeyCode.A) || UnityEngine.Input.GetKeyDown(KeyCode.S) || UnityEngine.Input.GetKeyDown(KeyCode.D))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         /// <summary>

@@ -72,6 +72,8 @@ namespace Synthesis.DriverPractice
                 if (trajectory && !editing) UpdateTrajectoryValues();
                 if (dpmRobot.drawing && DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray().Length > 0) DrawTrajectory();
                 else trajectoryLine.GetComponent<LineRenderer>().enabled = false;
+                if (mainState.ActiveRobot.IsResetting && trajectoryPanel.activeSelf) HideEditor();
+                else if (!mainState.ActiveRobot.IsResetting && !trajectoryPanel.activeSelf && trajectory) ShowEditor();
             }
         }
         void FindElements()
@@ -126,6 +128,18 @@ namespace Synthesis.DriverPractice
             dpmRobot.drawing = false;
             DPMDataHandler.WriteRobot();
             moveArrows.SetActive(false);
+        }
+        public void HideEditor()
+        {
+            trajectoryPanel.SetActive(false);
+            dpmRobot.drawing = false;
+            moveArrows.SetActive(false);
+        }
+        public void ShowEditor()
+        {
+            trajectoryPanel.SetActive(true);
+            dpmRobot.drawing = true;
+            moveArrows.SetActive(true);
         }
         private void UpdateTrajectoryValues()
         {

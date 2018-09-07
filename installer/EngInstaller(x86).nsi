@@ -70,7 +70,7 @@ IfFileExists "$INSTDIR" +1 +28
         Delete "$DESKTOP\Synthesis.lnk"
         Delete "$DESKTOP\BXD Synthesis.lnk"
 
-        ;Remvoe Installshield shortcuts
+        ;Remove launcher shortcuts
         Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
         Delete "$DESKTOP\Autodesk Synthesis.lnk"
         Delete "$DESKTOP\BXD Synthesis.lnk"
@@ -99,7 +99,6 @@ Section "Synthesis (required)" SynthesisRequired
 
   File /r "Synthesis32\*"
 
-  SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
   CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
 
@@ -171,11 +170,10 @@ Section "Uninstall"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
   
-  ; Remove shortcuts, if any
+  ; Remove any shortcuts
   Delete "$SMPROGRAMS\Synthesis.lnk"
   Delete "$DESKTOP\Synthesis.lnk"
   Delete "$DESKTOP\BXD Synthesis.lnk"
-
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   Delete "$SMPROGRAMS\BXD Synthesis.lnk"
@@ -185,14 +183,12 @@ Section "Uninstall"
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
   
-  IfFileExists "$PROGRAMFILES\qemu" file_found
+  IfFileExists "$PROGRAMFILES\qemu" file_found uninstall_complete
   
 	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO Negative
+	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO uninstall_complete
 	exec '"$PROGRAMFILES\qemu\qemu-uninstall.exe" \s'
 	Quit
-	
-	Negative: goto uninstall_complete
 	
 	uninstall_complete:
 
