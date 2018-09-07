@@ -6,8 +6,10 @@ using Synthesis.Field;
 using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -178,6 +180,7 @@ namespace Synthesis.States
             RevertNodeColors(hoveredNode, hoveredColors);
             RevertHighlight();
             if (helpMenu.activeSelf) CloseHelpMenu();
+
             StateMachine.PopState();
         }
         private void HelpMenu()

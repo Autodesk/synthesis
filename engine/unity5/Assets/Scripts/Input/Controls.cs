@@ -266,10 +266,10 @@ namespace Synthesis.Input
 
             #region Primary Controls
             //Basic Controls
-            buttons[0].forward = InputControl.SetKey("1: Forward", PlayerOneIndex, KeyCode.UpArrow, false);
-            buttons[0].backward = InputControl.SetKey("1: Backward", PlayerOneIndex, KeyCode.DownArrow, false);
-            buttons[0].left = InputControl.SetKey("1: Left", PlayerOneIndex, KeyCode.LeftArrow, false);
-            buttons[0].right = InputControl.SetKey("1: Right", PlayerOneIndex, KeyCode.RightArrow, false);
+            buttons[0].forward = InputControl.SetKey("1: Forward", PlayerOneIndex, KeyCode.W, false);
+            buttons[0].backward = InputControl.SetKey("1: Backward", PlayerOneIndex, KeyCode.S, false);
+            buttons[0].left = InputControl.SetKey("1: Left", PlayerOneIndex, KeyCode.A, false);
+            buttons[0].right = InputControl.SetKey("1: Right", PlayerOneIndex, KeyCode.D, false);
 
             //Remaining PWM controls
             buttons[0].pwm2Plus = InputControl.SetKey("1: PWM 2 Positive", PlayerOneIndex, KeyCode.Alpha1, false);
