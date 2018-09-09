@@ -1,4 +1,4 @@
-﻿using BulletUnity;
+using BulletUnity;
 using Synthesis.BUExtensions;
 using Synthesis.DriverPractice;
 using Synthesis.Field;

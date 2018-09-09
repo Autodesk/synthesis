@@ -50,7 +50,6 @@ namespace Assets.Scripts.GUI
         GameObject statsWindow;
         GameObject rulerWindow;
         GameObject inputManagerPanel;
-        GameObject bindedKeyPanel;
         GameObject checkSavePanel;
         GameObject helpMenu;
         GameObject toolbar;
@@ -87,7 +86,6 @@ namespace Assets.Scripts.GUI
             rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
 
             inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
-            bindedKeyPanel = Auxiliary.FindObject(canvas, "BindedKeyPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
             
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal

@@ -55,7 +55,6 @@ namespace Synthesis.GUI
         GameObject driverStationPanel;
 
         GameObject inputManagerPanel;
-        GameObject bindedKeyPanel;
         GameObject checkSavePanel;
         GameObject unitConversionSwitch;
 
@@ -116,11 +115,6 @@ namespace Synthesis.GUI
                     }
                     else MainMenuExit("cancel");
                 }
-
-                if (KeyButton.Binded() && inputPanelOn)
-                {
-                    ShowBindedInfoPanel();
-                }
             }
             HighlightTabs();
             if (State.isEmulationDownloaded) emulationTab.SetActive(true);
@@ -148,7 +142,6 @@ namespace Synthesis.GUI
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
             inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
-            bindedKeyPanel = Auxiliary.FindObject(canvas, "BindedKeyPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
             unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
 
@@ -604,7 +597,6 @@ namespace Synthesis.GUI
                 DynamicCamera.ControlEnabled = true;
                 InputControl.freeze = false;
                 inputManagerPanel.SetActive(false);
-                bindedKeyPanel.SetActive(false);
                 inputPanelOn = false;
                 ToggleHotKeys(false);
 
@@ -627,22 +619,6 @@ namespace Synthesis.GUI
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
             inputManagerPanel.SetActive(false);
-        }
-
-        /// <summary>
-        /// Pop up error-panel if user enters WASD for robot controls
-        /// </summary>
-        public void ShowBindedInfoPanel()
-        {
-            if (KeyButton.Binded())
-            {
-                bindedKeyPanel.SetActive(true);
-            }
-            else
-            {
-                bindedKeyPanel.SetActive(false);
-                ToggleHotKeys(false);
-            }
         }
 
         /// <summary>

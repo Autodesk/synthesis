@@ -128,6 +128,7 @@ namespace Synthesis.DriverPractice
         /// </summary>
         public void SetAllInteractors()
         {
+            while (intakeInteractor.Count() < FieldDataHandler.gamepieces.Count) intakeInteractor.Add(new Interactor());
             for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
             {
                 if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
