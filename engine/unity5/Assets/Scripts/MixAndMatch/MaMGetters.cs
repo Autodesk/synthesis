@@ -17,19 +17,19 @@ namespace Synthesis.MixAndMatch
             {
                 case 0: //Default Drive Base
                     RobotTypeManager.IsMecanum = false;
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\DriveBases\\Default");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\DriveBases\Default");
                 case 1: //Mech Drive Base
                     RobotTypeManager.IsMecanum = true;
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\DriveBases\\SyntheMac");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\DriveBases\SyntheMac");
                 case 2: //Swerve Drive
                     RobotTypeManager.IsMecanum = false;
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\DriveBases\\SyntheSwerve");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\DriveBases\SyntheSwerve");
                 case 3: //Narrow Drive
                     RobotTypeManager.IsMecanum = false;
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\DriveBases\\Non");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\DriveBases\Non");
             }
 
-            return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\DriveBases\\DriveBase2557");
+            return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\DriveBases\DriveBase2557");
         }
 
         /// <summary>
@@ -45,15 +45,15 @@ namespace Synthesis.MixAndMatch
                     break;
                 case 1: //SyntheClaw
                     RobotTypeManager.HasManipulator = true;
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Manipulators\\Claw");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Manipulators\Claw");
                 case 2: //SyntheShot
                     RobotTypeManager.HasManipulator = true;
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Manipulators\\SyntheShot");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Manipulators\SyntheShot");
                 case 3: //Lift
                     RobotTypeManager.HasManipulator = true;
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Manipulators\\SyntheLift");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Manipulators\SyntheLift");
             }
-            return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Manipulators\\Claw");
+            return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Manipulators\Claw");
         }
 
         ///<summary>
@@ -64,17 +64,17 @@ namespace Synthesis.MixAndMatch
             switch (wheelID)
             {
                 case 0: //traction wheel
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Wheels\\Traction");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Wheels\Traction");
                 case 1: //colson wheel
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Wheels\\Colson");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Wheels\Colson");
                 case 2: //omni wheel
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Wheels\\Omni");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Wheels\Omni");
                 case 3: //pnemuatic wheel
-                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Wheels\\Pneumatic");
+                    return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Wheels\Pneumatic");
 
             }
 
-            return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\MixAndMatch\\Wheels\\Colson");
+            return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\MixAndMatch\Wheels\Colson");
         }
 
         ///<summary> 

@@ -644,7 +644,7 @@ namespace BxDRobotExporter
             Properties.Settings.Default.ChildColor = Child;
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
-            Properties.Settings.Default.ConfigVersion = 1; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
+            Properties.Settings.Default.ConfigVersion = 2; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Properties.Settings.Default.Save();
         } 
         #endregion
