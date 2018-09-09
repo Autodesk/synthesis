@@ -23,7 +23,6 @@ using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
 using UnityEngine.Analytics;
-//using UnityEditor.Analytics;
 
 namespace Synthesis.States
 {
@@ -90,6 +89,7 @@ namespace Synthesis.States
         bool reset;
 
         public static List<List<GameObject>> spawnedGamepieces = new List<List<GameObject>>() { new List<GameObject>(), new List<GameObject>() };
+        
         /// <summary>
         /// Called when the script instance is being initialized.
         /// Initializes the bullet physics environment
@@ -147,7 +147,7 @@ namespace Synthesis.States
                     return;
                 }
 
-                reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
+                reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999); //reset on start
 
                 if (RobotTypeManager.IsMixAndMatch && RobotTypeManager.HasManipulator)
                 {
@@ -205,7 +205,7 @@ namespace Synthesis.States
                 return;
             }
 
-            if (reset)
+            if (reset) //reset robot on start
             {
                 BeginRobotReset();
                 reset = false;
@@ -215,7 +215,7 @@ namespace Synthesis.States
             if (!ActiveRobot.IsResetting && ActiveRobot.ControlIndex == 0)
             {
                 if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
-                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].switchActiveRobot)) SwitchActiveRobot();
+                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].switchActiveRobot)) SwitchActiveRobot(SpawnedRobots.IndexOf(ActiveRobot) + 1 < SpawnedRobots.Count() ? SpawnedRobots.IndexOf(ActiveRobot) + 1 : 0);
 
             }
 
@@ -279,8 +279,8 @@ namespace Synthesis.States
             if (!File.Exists(directory + "\\definition.bxdf"))
                 return false;
 
-            FieldDataHandler.Load(fieldPath);
-            Controls.Init();
+            FieldDataHandler.Load(fieldPath); //load field data
+            Controls.Init(); //controls MUST be initialized on field change to update pickup, release and spawn controls to number of gamepieces
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
@@ -303,7 +303,7 @@ namespace Synthesis.States
 
                 if (isMixAndMatch)
                 {
-                    robotPath = RobotTypeManager.RobotPath;
+                    robotPath = RobotTypeManager.RobotPath; //path to drive base directory
                     MaMRobot mamRobot = robotObject.AddComponent<MaMRobot>();
                     mamRobot.RobotHasManipulator = false; // Defaults to false
                     robot = mamRobot;
@@ -314,7 +314,7 @@ namespace Synthesis.States
                     robot = robotObject.AddComponent<SimulatorRobot>();
                 }
 
-                robot.FilePath = robotPath;
+                robot.FilePath = robotPath; //sets robot file path to directory to write to active robot rather than sim selected robot
 
                 //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
                 if (!robot.InitializeRobot(robotPath))
@@ -329,7 +329,8 @@ namespace Synthesis.States
                 robot.ControlIndex = SpawnedRobots.Count;
                 SpawnedRobots.Add(robot);
 
-                DPMDataHandler.Load(robotPath);
+                //for mix and match data file is specific to drive base
+                DPMDataHandler.Load(robotPath); //load robot data
 
                 if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
                 {
@@ -377,38 +378,14 @@ namespace Synthesis.States
             mamRobot?.DeleteManipulatorNodes();
         }
 
-        /// <summary>
-        /// Changes the active robot from the current one to the next one in the list
-        /// </summary>
-        private void SwitchActiveRobot()
-        {
-            if (SpawnedRobots.Count >= 1)
-            {
-                if (ActiveRobot != null)
-                {
-                    int index = SpawnedRobots.IndexOf(ActiveRobot);
-
-                    if (index < SpawnedRobots.Count - 1)
-                        ActiveRobot = SpawnedRobots[index + 1];
-                    else
-                        ActiveRobot = SpawnedRobots[0];
-                }
-                else
-                {
-                    ActiveRobot = SpawnedRobots[0];
-                }
-            }
-        }
-
-        /// <summary>
         /// Changes the active robot to a different robot based on a given index
         /// </summary>
         public void SwitchActiveRobot(int index)
         {
-            if (index < SpawnedRobots.Count)
+            if (SpawnedRobots.Count() > 0)
             {
                 ActiveRobot = SpawnedRobots[index];
-                DPMDataHandler.Load(ActiveRobot.FilePath);
+                DPMDataHandler.Load(ActiveRobot.FilePath); //reload robot data to allow for driver practice for multiplayer
             }
         }
 
@@ -427,10 +404,9 @@ namespace Synthesis.States
         {
             if (index < SpawnedRobots.Count)
             {
+                //remove attached sensors/cameras
                 robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
-                sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
-
-                // TODO: The camera is a bit weird when changing robots. Fix that. Then test other aspects of the simulator and fix anything else that needs fixing.
+                sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]); 
 
                 MaMRobot mamRobot = SpawnedRobots[index] as MaMRobot;
 
@@ -440,7 +416,7 @@ namespace Synthesis.States
                 UnityEngine.Object.Destroy(SpawnedRobots[index].gameObject);
                 SpawnedRobots.RemoveAt(index);
                 ActiveRobot = null;
-                SwitchActiveRobot();
+                SwitchActiveRobot(index < SpawnedRobots.Count() ? index : SpawnedRobots.Count() - 1); //switch to either old location or last active robot
 
                 int i = 0;
                 foreach (SimulatorRobot robot in SpawnedRobots)
@@ -450,8 +426,7 @@ namespace Synthesis.States
                 }
             }
         }
-
-
+        
         #region Replay Functions
         /// <summary>
         /// Loads the replay from the given replay file name.
@@ -620,8 +595,7 @@ namespace Synthesis.States
             }
         }
         #endregion
-
-
+        
         #region Robot Interaction Functions
 
         /// <summary>

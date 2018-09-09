@@ -196,7 +196,7 @@ namespace Synthesis.Field
                     else
                     {
                         subObject.AddComponent<Tracker>();
-                        subObject.name = currentPropertySet.PropertySetID;
+                        subObject.name = currentPropertySet.PropertySetID; //sets game elements to the same name as the property set - used to identify proper colliders
                     }
 
                     meshObject.transform.parent = subObject.transform;
