@@ -101,7 +101,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// The starting position of the robot.
         /// </summary>
-        protected Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
+        public Vector3 robotStartPosition = new Vector3(0f, 3f, 0f); /*new Vector3(0f, 1f, 0f);*/ //default
 
         /// <summary>
         /// The starting orientation of the robot.
@@ -148,7 +148,7 @@ namespace Synthesis.Robot
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
-            robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
+            robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition; //set to field_data.xml spawnpoint
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
             if (!File.Exists(directory + "\\skeleton.bxdj"))
@@ -162,8 +162,6 @@ namespace Synthesis.Robot
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
             RootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj") as RigidNode;
             RootNode.ListAllNodes(nodes);
-
-            Debug.Log(RootNode.driveTrainType.ToString());
 
             emuList = new List<EmuNetworkInfo>();
 

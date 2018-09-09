@@ -11,21 +11,28 @@ namespace Synthesis.Field
     public class FieldDataHandler
     {
         #region values
-        private static XDocument file;
-        public static List<Gamepiece> gamepieces = new List<Gamepiece>();
-        public static List<List<GameObject>> redGoals = new List<List<GameObject>>();
-        public static List<List<GameObject>> blueGoals = new List<List<GameObject>>();
-        public static Vector3 robotSpawn = new Vector3(0f,3f,0f);
-        public static int gamepieceIndex = 0;
+        private static XDocument file; //file_data.xml in corresponding field folder
+        public static List<Gamepiece> gamepieces = new List<Gamepiece>(); //List of available gamepieces
+        public static List<List<GameObject>> redGoals = new List<List<GameObject>>(); //List of available red goals
+        public static List<List<GameObject>> blueGoals = new List<List<GameObject>>(); //List of available blue goals
+        public static Vector3 robotSpawn = new Vector3(0f,3f,0f); //robot spawn defaults to 0,3,0 if nothing defined
         #endregion
         #region fileWriting
+        /// <summary>
+        /// Writes to field_data.xml file - does not append
+        /// </summary>
         public static void WriteField()
         {
-            XElement field = new XElement("FieldData", null);
+            //wrap all data
+            XElement field = new XElement("FieldData", null); //parent
             field.Add(GoalData());
             field.Add(GeneralData());
+            //save function
             field.Save(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml");
         }
+        /// <summary>
+        /// Get Goal Data as an XElement - Split into Red and Blue Goals
+        /// </summary>
         private static XElement GoalData()
         {
             //create goal elements
@@ -70,14 +77,16 @@ namespace Synthesis.Field
             }
 
             //wrap goal elements
-            XElement goals = new XElement("Goals", null);
-            goals.Add(xRedGoals);
-            goals.Add(xBlueGoals);
+            XElement goals = new XElement("Goals", null); //Goal parent
+            goals.Add(xRedGoals); //red goal child
+            goals.Add(xBlueGoals); //blue goal child
             return goals;
         }
+        /// <summary>
+        /// Get General Data as an XElement - Contains Gamepieces and RobotSpawnPoint
+        /// </summary>
         private static XElement GeneralData()
         {
-            XElement gen = new XElement("General", null);
             XElement pieces = new XElement("Gamepieces", from g in gamepieces
                                                          select new XElement("gamepiece", new XAttribute("id", g.name),
                                                                                           new XAttribute("holdinglimit", g.holdingLimit),
@@ -88,12 +97,18 @@ namespace Synthesis.Field
                                             new XAttribute("x", robotSpawn.x),
                                             new XAttribute("y", robotSpawn.y),
                                             new XAttribute("z", robotSpawn.z));
+            //wrap general data
+            XElement gen = new XElement("General", null); //parent
             gen.Add(pieces);
             gen.Add(robotSpawnPoint);
             return gen;
         }
         #endregion
         #region getData
+        /// <summary>
+        /// Assigns global variables values from field_data.xml
+        /// </summary>
+        /// <param name="fieldPath">location to field folder passed upon field load</param>
         public static void Load(string fieldPath)
         {
             if (File.Exists(fieldPath + "\\" + "field_data.xml"))
@@ -103,20 +118,22 @@ namespace Synthesis.Field
                 redGoals = getRedGoals();
                 blueGoals = getBlueGoals();
                 robotSpawn = getRobotSpawn();
-                gamepieceIndex = 0;
             }
-            else WriteField();
+            else WriteField(); //creates dummy file - allows robot spawn point functionality (No gamepieces)
         }
-
+        /// <summary>
+        /// Gets gamepiece as list of Gamepiece objects from field_data.xml
+        /// </summary>
         private static List<Gamepiece> getGamepieces()
         {
             List<Gamepiece> pieces = new List<Gamepiece>();
             foreach (XElement g in file.Root.Element("General").Element("Gamepieces").Elements())
-            {
                 pieces.Add(new Gamepiece(g));
-            }
             return pieces;
         }
+        /// <summary>
+        /// Gets red goals as list of list of Goal objects from field_data.xml
+        /// </summary>
         private static List<List<GameObject>> getRedGoals()
         {
             List<List<GameObject>> goals = new List<List<GameObject>>();
@@ -136,22 +153,21 @@ namespace Synthesis.Field
                     rigid.SetPosition(goal.position);
                     goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));
                     collider.LocalScaling = goal.scale;
-                    goal.SetKeyword(e.Element("Keyword").Value);
+                    goal.gamepieceKeyword = e.Element("Keyword").Value;
                     goal.description = e.Element("Description").Value;
                     goal.color = e.Attribute("Color").Value;
                     temp.Add(g);
                 }
                 goals.Add(temp);
             }
-            if(file.Root.Element("Goals").Element("RedGoals").Elements().Count() == 0)
-            {
-                foreach(Gamepiece g in gamepieces)
-                {
-                    goals.Add(new List<GameObject>());
-                }
-            }
+            //increases depth of list to number of gamepieces for future goal writing
+            while(goals.Count != gamepieces.Count)
+                goals.Add(new List<GameObject>());
             return goals;
         }
+        /// <summary>
+        /// Gets blue goals as list of list of Goal objects from field_data.xml
+        /// </summary>
         private static List<List<GameObject>> getBlueGoals()
         {
             List<List<GameObject>> goals = new List<List<GameObject>>();
@@ -171,22 +187,21 @@ namespace Synthesis.Field
                     rigid.SetPosition(goal.position);
                     goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));
                     collider.LocalScaling = goal.scale;
-                    goal.SetKeyword(e.Element("Keyword").Value);
+                    goal.gamepieceKeyword = e.Element("Keyword").Value;
                     goal.description = e.Element("Description").Value;
                     goal.color = e.Attribute("Color").Value;
                     temp.Add(g);
                 }
                 goals.Add(temp);
             }
-            if (file.Root.Element("Goals").Element("BlueGoals").Elements().Count() == 0)
-            {
-                foreach(Gamepiece g in gamepieces)
-                {
-                    goals.Add(new List<GameObject>());
-                }
-            }
+            //increases depth of list to number of gamepieces for future goal writing
+            while (goals.Count != gamepieces.Count)
+                goals.Add(new List<GameObject>());
             return goals;
         }
+        /// <summary>
+        /// Gets robot spawn point as Vector from field_data.xml
+        /// </summary>
         private static Vector3 getRobotSpawn()
         {
             return new Vector3(float.Parse(file.Root.Element("General").Element("RobotSpawnPoint").Attribute("x").Value), float.Parse(file.Root.Element("General").Element("RobotSpawnPoint").Attribute("y").Value), float.Parse(file.Root.Element("General").Element("RobotSpawnPoint").Attribute("z").Value)); ;
